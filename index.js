@@ -9,7 +9,7 @@ const bot = new Discord.Client({
         Discord.Partials.Channel, Discord.Partials.User, Discord.Partials.GuildMember, Discord.Partials.Message
     ],
 });
-
+//Test
 // Modules and Files
 const mongoose = require('mongoose');
 const threaddb = require('./Datenbank/threaddb');
