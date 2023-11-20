@@ -1,0 +1,51 @@
+const Discord = require('discord.js');
+const mongoose = require('mongoose');
+
+const serverSchema = new mongoose.Schema({
+    guildID: {
+        type: String,
+        required: true,
+    },
+
+    deactivated: {
+        type: Object,
+        required: false,
+    },
+
+    updateMessage: {
+        type: String,
+        required: false,
+    },
+    
+    updateWeek: {
+        type: String,
+        required: false,
+    },
+
+    support: {
+        type: Object,
+        required: false,
+    },
+
+    system: {
+        type: Object,
+        required: false,
+    },
+
+    gift: {
+        type: Object,
+        required: false,
+    },
+
+    verify: {
+        type: Object,
+        required: false,
+    },
+
+    minecraft: {
+        type: Object,
+        required: false,
+    },
+});
+
+module.exports = mongoose.model('server-data', serverSchema)

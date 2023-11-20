@@ -1,0 +1,17 @@
+{
+  "name": "red3405s-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "config.json": "^0.0.4",
+    "discord.js": "^14.13.0",
+    "mongoose": "^7.5.0",
+    "node-cron": "^3.0.2"
+  }
+}
