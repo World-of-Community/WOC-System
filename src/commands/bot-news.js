@@ -1,0 +1,356 @@
+const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder } = require("discord.js");
+const fs = require('fs');
+const serverdb = require("../../Datenbank/serverdb");
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('bot-news')
+        .setDescription('» Füge ein Update hinzu.')
+        .addStringOption(option =>
+            option.setName('kategorie').setDescription('Wähle eine Update-Kategorie').setRequired(true)
+                .addChoices({ name: 'WOC SUPPORT', value: 'support' }, { name: 'WOC SYSTEM', value: 'system' }, { name: 'WOC GIFT', value: 'gift' }, { name: 'WOC VERIFY', value: 'verify' }, { name: 'MINECRAFT', value: 'minecraft' })
+        )
+        .addStringOption(option =>
+            option.setName('emoji').setDescription('Wähle ein Update-Emoji').setRequired(true)
+                .addChoices({ name: '🔴 = Bug behoben', value: '<:PointRed:1123612255800524940>' }, { name: '🟠 = Änderung', value: '<:PointOrange:1123612277669630092>' }, { name: '🟡 = Wartungsarbeiten', value: '<:PointYellow:1123612299140280400>' }, { name: '🟢 = Neu hinzugefügt', value: '<:PointGreen:1123612318694117477>' })
+        )
+        .addStringOption(option => option.setName('update').setDescription('Beschreibe was geändert wurde').setRequired(true)),
+
+    async execute(interaction) {
+        const file = fs.readFileSync('src/json/config.json', 'utf-8');
+        const config = JSON.parse(file);
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
+
+        if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
+        const kategorie = interaction.options.getString('kategorie')
+        const emoji = interaction.options.getString('emoji')
+        const update = interaction.options.getString('update')
+        const serverData = await serverdb.findOne({ guildID: interaction.guildId })
+        if (!serverData) return;
+        const channel = await interaction.client.channels.cache.get(config.changelog)
+
+        if (kategorie === 'support') {
+            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { support: `${emoji} » ${update}` } })
+            const embed = channel.messages.fetch(serverData.updateMessage).then(msg => {
+                interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
+                setTimeout(() => {
+                    // Week Date
+                    const today = new Date();
+                    const nextWeek = new Date(today);
+                    nextWeek.setDate(today.getDate() + 6);
+
+                    const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+                    const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                    const updateEmbed = new EmbedBuilder()
+                        .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${serverData.updateWeek}]`)
+                        .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointYellow:1123612299140280400> = Wartungsarbeiten\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n')
+                        .setColor('#ff7b00')
+                        .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1146801543056723968/Update_WochenRuckblick_Banner.png')
+                        .setFooter({ text: 'Wir wünschen euch viel Spaß mit dem neuen Update!', iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+                        .setTimestamp()
+
+                    if (serverData.support) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
+                                value: `${serverData.support.join('\n')}\n${emoji} » ${update}\n** **`
+                            }
+                        )
+                    }
+                    if (serverData.system.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
+                                value: `${serverData.system.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.gift.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
+                                value: `${serverData.gift.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.verify.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:yes_tick:1042831133303386122> - **WOC`✅`VERIFY (BOT)** - UPDATE',
+                                value: `${serverData.verify.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.minecraft.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
+                                value: `${serverData.minecraft.join('\n')}`
+                            }
+                        )
+                    }
+                    interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
+                    msg.edit({ embeds: [updateEmbed] })
+                }, 5000);
+            })
+        } else if (kategorie === 'system') {
+            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { system: `${emoji} » ${update}` } })
+            const embed = channel.messages.fetch(serverData.updateMessage).then(msg => {
+                interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
+                setTimeout(() => {
+                    // Week Date
+                    const today = new Date();
+                    const nextWeek = new Date(today);
+                    nextWeek.setDate(today.getDate() + 6);
+
+                    const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+                    const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                    const updateEmbed = new EmbedBuilder()
+                        .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${serverData.updateWeek}]`)
+                        .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointYellow:1123612299140280400> = Wartungsarbeiten\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n')
+                        .setColor('#ff7b00')
+                        .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1146801543056723968/Update_WochenRuckblick_Banner.png')
+                        .setFooter({ text: 'Wir wünschen euch viel Spaß mit dem neuen Update!', iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+
+                    if (serverData.support.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
+                                value: `${serverData.support.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.system) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
+                                value: `${serverData.system.join('\n')}\n${emoji} » ${update}\n** **`
+                            }
+                        )
+                    }
+                    if (serverData.gift.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
+                                value: `${serverData.gift.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.verify.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:yes_tick:1042831133303386122> - **WOC`✅`VERIFY (BOT)** - UPDATE',
+                                value: `${serverData.verify.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.minecraft.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
+                                value: `${serverData.minecraft.join('\n')}`
+                            }
+                        )
+                    }
+                    interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
+                    msg.edit({ embeds: [updateEmbed] })
+                }, 5000);
+            })
+        } else if (kategorie === 'gift') {
+            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { gift: `${emoji} » ${update}` } })
+            const embed = channel.messages.fetch(serverData.updateMessage).then(msg => {
+                interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
+                setTimeout(() => {
+                    // Week Date
+                    const today = new Date();
+                    const nextWeek = new Date(today);
+                    nextWeek.setDate(today.getDate() + 6);
+
+                    const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+                    const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                    const updateEmbed = new EmbedBuilder()
+                        .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${serverData.updateWeek}]`)
+                        .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointYellow:1123612299140280400> = Wartungsarbeiten\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n')
+                        .setColor('#ff7b00')
+                        .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1146801543056723968/Update_WochenRuckblick_Banner.png')
+                        .setFooter({ text: 'Wir wünschen euch viel Spaß mit dem neuen Update!', iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+
+                    if (serverData.support.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
+                                value: `${serverData.support.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.system.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
+                                value: `${serverData.system.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.gift) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
+                                value: `${serverData.gift.join('\n')}\n${emoji} » ${update}\n** **`
+                            }
+                        )
+                    }
+                    if (serverData.verify.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:yes_tick:1042831133303386122> - **WOC`✅`VERIFY (BOT)** - UPDATE',
+                                value: `${serverData.verify.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.minecraft.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
+                                value: `${serverData.minecraft.join('\n')}`
+                            }
+                        )
+                    }
+                    interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
+                    msg.edit({ embeds: [updateEmbed] })
+                }, 5000);
+            })
+        } else if (kategorie === 'verify') {
+            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { verify: `${emoji} » ${update}` } })
+            const embed = channel.messages.fetch(serverData.updateMessage).then(msg => {
+                interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
+                setTimeout(() => {
+                    // Week Date
+                    const today = new Date();
+                    const nextWeek = new Date(today);
+                    nextWeek.setDate(today.getDate() + 6);
+
+                    const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+                    const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                    const updateEmbed = new EmbedBuilder()
+                        .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${serverData.updateWeek}]`)
+                        .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointYellow:1123612299140280400> = Wartungsarbeiten\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n')
+                        .setColor('#ff7b00')
+                        .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1146801543056723968/Update_WochenRuckblick_Banner.png')
+                        .setFooter({ text: 'Wir wünschen euch viel Spaß mit dem neuen Update!', iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+
+                    if (serverData.support.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
+                                value: `${serverData.support.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.system.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
+                                value: `${serverData.system.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.gift.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
+                                value: `${serverData.gift.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.verify) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:yes_tick:1042831133303386122> - **WOC`✅`VERIFY (BOT)** - UPDATE',
+                                value: `${serverData.verify.join('\n')}\n${emoji} » ${update}\n** **`
+                            }
+                        )
+                    }
+                    if (serverData.minecraft.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
+                                value: `${serverData.minecraft.join('\n')}`
+                            }
+                        )
+                    }
+                    interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
+                    msg.edit({ embeds: [updateEmbed] })
+                }, 5000);
+            })
+        } else if (kategorie === 'minecraft') {
+            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { minecraft: `${emoji} » ${update}` } })
+            const embed = channel.messages.fetch(serverData.updateMessage).then(msg => {
+                interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
+                setTimeout(() => {
+                    // Week Date
+                    const today = new Date();
+                    const nextWeek = new Date(today);
+                    nextWeek.setDate(today.getDate() + 6);
+
+                    const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+                    const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                    const updateEmbed = new EmbedBuilder()
+                        .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${serverData.updateWeek}]`)
+                        .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointYellow:1123612299140280400> = Wartungsarbeiten\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n')
+                        .setColor('#ff7b00')
+                        .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1146801543056723968/Update_WochenRuckblick_Banner.png')
+                        .setFooter({ text: 'Wir wünschen euch viel Spaß mit dem neuen Update!', iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+
+                    if (serverData.support.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
+                                value: `${serverData.support.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.system.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
+                                value: `${serverData.system.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.gift.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
+                                value: `${serverData.gift.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.verify.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:yes_tick:1042831133303386122> - **WOC`✅`VERIFY (BOT)** - UPDATE',
+                                value: `${serverData.verify.join('\n')}`
+                            }
+                        )
+                    }
+                    if (serverData.minecraft.length > 0) {
+                        updateEmbed.addFields(
+                            {
+                                name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
+                                value: `${serverData.minecraft.join('\n')}\n${emoji} » ${update}\n** **`
+                            }
+                        )
+                    }
+                    interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
+                    msg.edit({ embeds: [updateEmbed] })
+                }, 5000);
+            })
+        }
+
+    }
+}

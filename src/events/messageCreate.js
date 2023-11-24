@@ -1,0 +1,205 @@
+const { Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, PermissionsBitField } = require("discord.js");
+const fs = require('fs');
+const serverdb = require("../../Datenbank/serverdb");
+const userdb = require("../../Datenbank/userdb");
+
+module.exports = {
+    name: Events.MessageCreate,
+    async execute(message) {
+        const file = fs.readFileSync('src/json/config.json', 'utf-8');
+        const config = JSON.parse(file);
+
+        // Auto Delete
+        if (message.channelId === config.autoDelete) {
+            setTimeout(async () => {
+                await message.delete()
+            }, 30000);
+        }
+
+        if (message.author.bot) return;
+
+        // Server Database
+        const serverData = await serverdb.findOne({ guildID: message.guildId })
+        if (!serverData) {
+            const newServer = new serverdb({
+                guildID: message.guildId,
+                deactivated: [],
+                updateMessage: '',
+                updateWeek: '',
+                support: [],
+                system: [],
+                gift: [],
+                verify: [],
+                minecraft: [],
+            });
+            await newServer.save()
+        }
+
+        // User Database
+        const userData = await userdb.findOne({ userID: message.author.id })
+        if (!userData) {
+            const newUser = new userdb({
+                userID: message.author.id,
+                reactions: [],
+            });
+            await newUser.save()
+        }
+
+        // Ping Reaction
+        if (message.mentions.users.size > 0) {
+            if (message.author.bot) return;
+            for (const [_, mentionedUser] of message.mentions.users) {
+                const mentionData = await userdb.findOne({ userID: mentionedUser.id });
+
+                if (mentionData && mentionData.reactions && mentionData.reactions.length > 0) {
+                    mentionData.reactions.forEach(async (reaction) => {
+                        await message.react(reaction);
+                    });
+                }
+            }
+        }
+
+        // Suggestion Channel
+        if (message.channelId === config.vorschläge) {
+            if (message.author.bot) return;
+            if (await serverdb.findOne({ guildID: message.guildId, deactivated: { $in: ['vorschläge'] } })) return message.reply({ content: '> `⛔` » Das Vorschläge System ist momentan deaktiviert.' })
+
+            let content = message.content
+
+            await message.delete().then(async msg => {
+                const buttons = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('einreichen')
+                            .setLabel('Einreichen')
+                            .setEmoji('✅')
+                            .setStyle(ButtonStyle.Success),
+
+                        new ButtonBuilder()
+                            .setCustomId('abbrechen')
+                            .setLabel('Abbrechen')
+                            .setEmoji('❌')
+                            .setStyle(ButtonStyle.Secondary),
+                    )
+
+                await msg.channel.send({ content: `> Möchtest du den Vorschlag wirklich einreichen?\n\n> Dein Vorschlag:\n> ${content}\n\n> Klicke auf die unteren Buttons`, components: [buttons] }).then(async interaction => {
+                    await message.client.on('interactionCreate', async (inter) => {
+                        if (inter.customId === 'einreichen') {
+                            await interaction.delete().catch(error => console.log(error))
+                            const vorschlagEmbed = new EmbedBuilder()
+                                .setAuthor({ name: `Eingereicht von ${inter.user.displayName}` })
+                                .setTitle('» `🔎` - NEUER VORSCHLAG!')
+                                .setDescription(`> ${content}\n\n─────────────────────────\n\n`)
+                                .addFields({ name: '`💡` - Vorschläge', value: '» Schreibe eigene Vorschläge in diesem Kanal\num sie für den WOC-Discord einzureichen.' })
+                                .setColor('#515558')
+                                .setThumbnail('https://images-ext-1.discordapp.net/external/5IVIzj8wJ6S4-jJ13JsBzKChdJeU0_Mg541jcWFomlo/https/i.imgur.com/emyqXev.png')
+                                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1145779220476329984/WOC_Banner_Server_Idee_Eingereicht.png')
+                            await inter.channel.send({ embeds: [vorschlagEmbed] }).then(int => {
+                                int.react('<a:upvote:1033452503309758525>')
+                                int.react('<a:downvote:1033452526340673596>')
+                            })
+                        } else if (inter.customId === 'abbrechen') {
+                            await interaction.delete()
+                            await inter.reply({ content: '> `❗` » Du hast den Vorschlag nicht eingereicht.', ephemeral: true })
+                        }
+                    });
+                })
+            })
+        }
+
+        // Spielersuche
+        if (message.channelId === config.threads) {
+            if (await serverdb.findOne({ guildID: message.guildId, deactivated: { $in: ['spielersuche'] } })) return message.reply({ content: '> `⛔` » Das Spielersuche System ist momentan deaktiviert.' })
+
+            await message.channel.threads.create({
+                name: message.content
+            }).then(async (channel) => {
+                const newThread = new threaddb({
+                    threadID: channel.id,
+                    creator: message.author.id,
+                    createdAt: new Date()
+                })
+                await newThread.save()
+
+                await channel.send({ content: '> `✅` » Ich habe für dich ein Thread erstellt: ' + channel.name })
+            });
+        }
+
+        // Ränge Info
+        if (message.content === '!ränge-info') {
+            if (!message.member.permissions.has('Administrator')) return;
+            await message.delete()
+
+            const rängeEmbed = new EmbedBuilder()
+                .setTitle('🏆 𑁉 Erhalte neue Ränge & einzigartige Erfolge!')
+                .setDescription('» Hier findest du alle Informationen über die meisten Ränge auf unserem Server und dessen Vorteile, Anforderungen und/oder Aufgaben.\n\n`📌` » Klicke auf eine Kategorie, um dir die Listen anzusehen!\n`🚑` » Öffne ein Ticket im Support bei Fragen oder Problemen.')
+                .setColor('#ff8800')
+                .setThumbnail('https://cdn.discordapp.com/attachments/969637733033205851/1145774783708020777/levels.png')
+                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1145779168194351214/WOC_Banner_Range_Information.png')
+                .setFooter({ text: 'Klicke auf eine Kategorie, um dir die Rollen anzusehen!', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
+
+            const rängeMenu = new ActionRowBuilder()
+                .addComponents(
+                    new StringSelectMenuBuilder()
+                        .setCustomId('ränge-menu')
+                        .setPlaceholder('📚 » ROLLEN - INFORMATIONEN')
+                        .addOptions(
+                            {
+                                label: '× SERVER - ERFOLGE',
+                                description: '» Erhalte einzigartige Erfolge. 🏆',
+                                emoji: '<a:trophe:1112823561992818859>',
+                                value: 'server',
+                            },
+                            {
+                                label: '× SPIELER - RÄNGE',
+                                description: '» Hier sind Alle Spieler-Ränge aufgelistet. 👥',
+                                emoji: '<:members:1055964826960154625>',
+                                value: 'spieler',
+                            },
+                            {
+                                label: '× EXKLUSIVE - ROLLEN',
+                                description: '» Besondere Rollen mit besonderen Vorteilen. 👑',
+                                emoji: '<a:krone:1112823594649665607>',
+                                value: 'exklusive',
+                            },
+                            {
+                                label: '× TEAM - RÄNGE',
+                                description: '» Schau dir unser Server-Team an. 🚨',
+                                emoji: '<:StaffAbzeichen:1056602972789948466>',
+                                value: 'team',
+                            },
+                            {
+                                label: '× BOT - ROLLEN',
+                                description: '» Sieh dir die Aufgaben unserer Bots an. 🤖',
+                                emoji: '<a:pin:1112823671363473468>',
+                                value: 'bot',
+                            },
+                        )
+                )
+            await message.channel.send({ embeds: [rängeEmbed], components: [rängeMenu] })
+        }
+
+        // Regelwerk
+        if (message.content === '!regelwerk') {
+            if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
+            await message.delete()
+
+            const regelwerkEmbed = new EmbedBuilder()
+                .setTitle('<:PointRed:1123612255800524940> » World Of Community - Regelwerk')
+                .setDescription('» An diesen Regeln musst du dich jederzeit halten, damit wir eine friedliche Atmosphäre wahren können. Solltest du dies nicht tun, können Sanktionen gegen deinem Account folgen.\n\n <:Pfeil:1119709908540076124> **Bei der Nutzung dieses Discord Servers bist du automatisch mit den Regeln einverstanden.**\n\n─────────────────────────\n\n1️⃣ 𑁉 Behandle alle Mitglieder stets respektvoll. Wir tolerieren keine Streitigkeiten oder andere toxischen Inhalte im Chat!\n\n2️⃣ 𑁉 NSFW-Inhalte (Nacktheit, Gewalt & mehr) können verstörend auf Mitglieder wirken und sind daher untersagt.\n\n3️⃣ 𑁉 Übersteuerte Geräusche & flackernde Emojis sind verboten, da sie das Wohlempfinden beeinträchtigen können.\n\n4️⃣ 𑁉 Werbung ist nur in den dazugehörigen Textkanälen gestattet, um unsere Mitglieder nicht unnötig zu nerven.\n\n5️⃣ 𑁉 Spam jeglicher Art (Doppelte Nachrichten, Channelhopping & u.ä.) ist aufgrund von Levelvorteilen verboten.\n\n6️⃣ 𑁉 Das Ausgeben von andere Nutzer, Mitglieder oder Teammitglieder ist untersagt und führt zur Sperrung.\n\n7️⃣ 𑁉 Postet auf keinen Fall irgendwelche privaten Adressen oder Telefonnummern in den Öffentlichen Chat, egal ob von euch oder jemand anderen.\n\n8️⃣ 𑁉 Unwissenheit schützt nicht vor einer Strafe. Allerdings hast du das Recht, einen Antrag auf Entsperrung bei uns einzureichen.\n\n9️⃣ 𑁉 Das Betteln um Ränge oder Berechtigungen ist ebenfalls untersagt.\n\n🔟 𑁉 Stimmverzerrer oder Soundboards sind nur gestattet, wenn dies ein Teammitglied erlaubt.')
+                .setColor('#c53a2b')
+                .setImage('https://cdn.discordapp.com/attachments/943859953318371359/1045406350903095357/WOC_Server_Regeln.png')
+                .setFooter({ text: 'Das Regelwerk wurde zuletzt am Mittwoch, 22.02.2023 bearbeitet.', iconURL: 'https://media.discordapp.net/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+
+            const regelButton = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('seite-2')
+                        .setLabel('📚 » Nächste Seite')
+                        .setStyle(ButtonStyle.Danger)
+                )
+            await message.channel.send({ embeds: [regelwerkEmbed], components: [regelButton] })
+        }
+
+    }
+}
