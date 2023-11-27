@@ -127,7 +127,7 @@ module.exports = {
 
         // Ränge Info
         if (message.content === '!ränge-info') {
-            if (!message.member.permissions.has('Administrator')) return;
+            if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()
 
             const rängeEmbed = new EmbedBuilder()
