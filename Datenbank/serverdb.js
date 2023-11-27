@@ -46,6 +46,14 @@ const serverSchema = new mongoose.Schema({
         type: Object,
         required: false,
     },
+    webseite: {
+        type: Object,
+        required: false,
+    },
+    dc: {
+        type: Object,
+        required: false,
+    },
 });
 
 module.exports = mongoose.model('server-data', serverSchema)
