@@ -2,12 +2,21 @@ const { Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Stri
 const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
+const messagedb = require("../../Datenbank/messagedb");
 
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
+
+
+        if (message.channelId === config.willkommen) {
+            const messageData = await messagedb.findOne({guildID: config.server})
+            messageData.messages = parseInt(messageData.messages) + 1
+            await messageData.save()
+        }
+
 
         // Auto Delete
         if (message.channelId === config.autoDelete) {

@@ -1,5 +1,8 @@
 const { Events, ActivityType } = require("discord.js");
-const fs = require('fs')
+const fs = require('fs');
+const func = require("../ressources/funktionen");
+const messagedb = require("../../Datenbank/messagedb");
+
 
 module.exports = {
     name: Events.ClientReady,
@@ -36,6 +39,26 @@ module.exports = {
             await guild.channels.cache.get(config.category1).setName(`(🌍) - [INFOS] - (USER: ${memberCount})`)
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
         }, 30000);
+
+        setInterval(async () => {
+            const channel = await client.channels.fetch(config.willkommen);
+            const messageData = await messagedb.findOne({ guildID: config.server })
+
+            if (!messageData) return;
+            const messages = messageData.messages
+            await channel.setTopic(`<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**
+
+    𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!
+    
+    <a:Information:1007267420316106903> **| __WICHTIGE INFORMATION__**
+    » Um eine freundliche Atmosphäre beizubehalten, denke bitte immer daran, dich an unsere **Server-Regeln** zu halten: <#815922286502346773>.
+    
+    :information_source: | __Du möchtest ein Mitglied melden?__
+    » Benutze: **/report <user> <grund>**
+    » **Das ausnutzen des Report Befehls wird bestraft!**
+    
+    :pushpin: » Solltest du **Fragen** haben, zögere nicht und Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`)
+        }, 1000 * 60 * 5)
 
     }
 }
