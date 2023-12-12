@@ -1,4 +1,3 @@
-const Discord = require('discord.js');
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -11,6 +10,10 @@ const userSchema = new mongoose.Schema({
         type: Object,
         required: false,
     },
+    afk: {
+        type: Boolean,
+        required: false,
+    }
 });
 
 module.exports = mongoose.model('user-data', userSchema)

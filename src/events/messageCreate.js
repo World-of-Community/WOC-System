@@ -10,9 +10,25 @@ module.exports = {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
+        const uD = await userdb.findOne({ userID: message.author.id });
+        if (uD) {
+            if (uD.afk) {
+                uD.afk = false
+                await uD.save()
+                const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**
+> *Dein AFK-Status wurde entfernt.*`)
+                setTimeout(async () => {
+                    try {
+                        await m.delete()
+                    } catch (error) {
+
+                    }
+                }, 5000)
+            }
+        }
 
         if (message.channelId === config.willkommen) {
-            const messageData = await messagedb.findOne({guildID: config.server})
+            const messageData = await messagedb.findOne({ guildID: config.server })
             messageData.messages = parseInt(messageData.messages) + 1
             await messageData.save()
         }
@@ -64,6 +80,18 @@ module.exports = {
                     mentionData.reactions.forEach(async (reaction) => {
                         await message.react(reaction);
                     });
+                }
+                if (mentionData && mentionData.afk && mentionedUser.id != message.author.id) {
+                    const m = await message.reply(`<:AFK:1021086267557023775> | ${mentionedUser} **ist abwesend!**`)
+
+                    setTimeout(async () => {
+                        try {
+                            await m.delete()
+
+                        } catch (error) {
+
+                        }
+                    }, 5000)
                 }
             }
         }
