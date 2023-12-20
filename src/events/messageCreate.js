@@ -237,6 +237,25 @@ module.exports = {
                 )
             await message.channel.send({ embeds: [regelwerkEmbed], components: [regelButton] })
         }
+        // Partner bewerben
+
+        if (message.content === '!partner') {
+            if (!message.member.permissions.has('Administrator')) return;
+            message.delete()
+
+            const partnerEmbed = new EmbedBuilder()
+                .setDescription('# `👥` - **SO WIRST DU EIN PARTNER!**\nEin **Server-Partner** von uns zu sein ist eine **einmalige Möglichkeit**, um eine **riesige Auswahl an Usern** zu erreichen.\n\n# `🔥` ᕁ **WAS SIND DIE BEDINGUNGEN?**\n\n<:Pfeil:1119709908540076124> Um ein Partner zu werden, musst du die **unteren Voraussetzungen** erfüllen, damit du dich bewerben kannst.\n\n- `👥` » Mindestens **100 Server-Mitglieder** besitzen!\n- `💬` » Hält <#815922286502346773> und die **[Discord ToS](https://discord.com/terms)** ein!\n- `❤️` » Ist ein **vollständiger deutscher Discord-Server**!\n- `📢` » Muss unserem <#1177536720229650442> Kanal **folgen**!\n\n# `📡` ᕁ **WAS SIND DIE VORTEILE?**\n<:Pfeil:1119709908540076124> Wir veranstalten regelmäßig Events um die Server unserer Partner noch etwas bekannter zu machen.')
+                .setColor('Blurple')
+
+            const partnerButton = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('partner')
+                        .setLabel('✅ » Als Partner bewerben')
+                        .setStyle(ButtonStyle.Success)
+                )
+            await message.channel.send({ embeds: [partnerEmbed], components: [partnerButton] })
+        }
 
     }
 }
