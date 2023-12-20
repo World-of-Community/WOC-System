@@ -202,105 +202,110 @@ module.exports = {
             });
         }
 
-        if (interaction.customId === 'partner') {
-            const partnerModal = new ModalBuilder()
-                .setTitle('BEWERBEN ALS PARTNER')
-                .setCustomId('partner-modal');
+        
+        if (interaction.isModalSubmit()) {
+            if (interaction.customId === "partner-modal") {
+                const partnerName = await interaction.fields.getTextInputValue('partner-name');
+                const partnerBeschreibung = await interaction.fields.getTextInputValue('partner-beschreibung');
 
-            const partnernameInput = new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
-                    .setCustomId('partner-name')
-                    .setLabel('🔗 - WIE IST DER EINLADUNGSLINK DES SERVERS?')
-                    .setPlaceholder('https://discord.gg/VxhFXjkrPW')
-                    .setStyle(TextInputStyle.Short)
-                    .setRequired(true)
-            )
+                const channel = await interaction.client.channels.fetch("1187028500461391984")
 
-            const partnerbeschreibungInput = new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
-                    .setCustomId('partner-beschreibung')
-                    .setLabel('✍️ - BESCHREIBUNG DES SERVERS')
-                    .setPlaceholder('Wir sind ein allgemeiner Deutscher Discord Server mit Gaming, Community und vielem mehr!')
-                    .setMinLength(25)
-                    .setMaxLength(500)
-                    .setStyle(TextInputStyle.Short)
-                    .setRequired(true)
-            )
-
-            partnerModal.addComponents(partnernameInput, partnerbeschreibungInput);
-
-            await interaction.showModal(partnerModal);
-        }
-
-        if (interaction.customId === "partner-modal") {
-            const partnerName = await interaction.fields.getTextInputValue('partner-name');
-            const partnerBeschreibung = await interaction.fields.getTextInputValue('partner-beschreibung');
-
-            const channel = await interaction.client.channels.fetch("1187028500461391984")
-
-            await channel.send({
-                embeds: [
-                    new EmbedBuilder()
-                        .setDescription(`${interaction.user} möchte sich als Partner bewerben!
+                await channel.send({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setDescription(`${interaction.user} möchte sich als Partner bewerben!
                 
 > **Server-Link**
 \`${partnerName}\`
 
 > **Server-Beschreibung**
 \`${partnerBeschreibung}\``)
-                        .setColor("Blue")
-                ],
-                components: [
-                    new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId(`partner_accept_${interaction.user.id}`)
-                                .setLabel("Akzeptieren")
-                                .setStyle(ButtonStyle.Success),
-                            new ButtonBuilder()
-                                .setCustomId(`partner_deny_${interaction.user.id}`)
-                                .setLabel("Ablehnen")
-                                .setStyle(ButtonStyle.Danger)
-                        )
-                ]
-            })
-            await interaction.reply({ content: "Deine Anfrage wurde abgesendet!", ephemeral: true })
+                            .setColor("Blue")
+                    ],
+                    components: [
+                        new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId(`partner_accept_${interaction.user.id}`)
+                                    .setLabel("Akzeptieren")
+                                    .setStyle(ButtonStyle.Success),
+                                new ButtonBuilder()
+                                    .setCustomId(`partner_deny_${interaction.user.id}`)
+                                    .setLabel("Ablehnen")
+                                    .setStyle(ButtonStyle.Danger)
+                            )
+                    ]
+                })
+                await interaction.reply({ content: "Deine Anfrage wurde abgesendet!", ephemeral: true })
 
 
+            }
         }
-        if (interaction.customId.startsWith("partner_accept_")) {
-            const list = await interaction.customId.split("_")
-            const id = list[2]
-            const user = await interaction.client.users.fetch(id)
-            await user.send({
-                embeds: [
-                    new EmbedBuilder()
-                        .setTitle("Anfrage angenommen")
-                        .setDescription("Deine Partnerbewerbung auf WOC wurde angenommen.")
-                        .setColor("Green")
-                ]
-            })
-            await interaction.message.edit({components: []})
-            await interaction.reply("Anfrage angenommen!")
+        if (interaction.isButton()) {
 
-        }
+            if (interaction.customId === 'partner') {
+                const partnerModal = new ModalBuilder()
+                    .setTitle('BEWERBEN ALS PARTNER')
+                    .setCustomId('partner-modal');
+    
+                const partnernameInput = new ActionRowBuilder().addComponents(
+                    new TextInputBuilder()
+                        .setCustomId('partner-name')
+                        .setLabel('🔗 - WIE IST DER EINLADUNGSLINK DES SERVERS?')
+                        .setPlaceholder('https://discord.gg/VxhFXjkrPW')
+                        .setStyle(TextInputStyle.Short)
+                        .setRequired(true)
+                )
+    
+                const partnerbeschreibungInput = new ActionRowBuilder().addComponents(
+                    new TextInputBuilder()
+                        .setCustomId('partner-beschreibung')
+                        .setLabel('✍️ - BESCHREIBUNG DES SERVERS')
+                        .setPlaceholder('Wir sind ein allgemeiner Deutscher Discord Server mit Gaming, Community und vielem mehr!')
+                        .setMinLength(25)
+                        .setMaxLength(500)
+                        .setStyle(TextInputStyle.Short)
+                        .setRequired(true)
+                )
+    
+                partnerModal.addComponents(partnernameInput, partnerbeschreibungInput);
+    
+                await interaction.showModal(partnerModal);
+            }
+            if (interaction.customId.startsWith("partner_accept_")) {
+                const list = await interaction.customId.split("_")
+                const id = list[2]
+                const user = await interaction.client.users.fetch(id)
+                await user.send({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setTitle("Anfrage angenommen")
+                            .setDescription("Deine Partnerbewerbung auf WOC wurde angenommen.")
+                            .setColor("Green")
+                    ]
+                })
+                await interaction.message.edit({ components: [] })
+                await interaction.reply("Anfrage angenommen!")
 
-        if (interaction.customId.startsWith("partner_deny_")) {
-            const list = await interaction.customId.split("_")
-            const id = list[2]
-            const user = await interaction.client.users.fetch(id)
-            await user.send({
-                embeds: [
-                    new EmbedBuilder()
-                        .setTitle("Anfrage abgelehnt")
-                        .setDescription("Deine Partnerbewerbung auf WOC wurde abgelehnt.")
-                        .setColor("Red")
-                ]
-            })
-            await interaction.message.edit({components: []})
-            await interaction.reply("Anfrage abgelehnt!")
+            }
+
+            if (interaction.customId.startsWith("partner_deny_")) {
+                const list = await interaction.customId.split("_")
+                const id = list[2]
+                const user = await interaction.client.users.fetch(id)
+                await user.send({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setTitle("Anfrage abgelehnt")
+                            .setDescription("Deine Partnerbewerbung auf WOC wurde abgelehnt.")
+                            .setColor("Red")
+                    ]
+                })
+                await interaction.message.edit({ components: [] })
+                await interaction.reply("Anfrage abgelehnt!")
 
 
+            }
         }
 
         if (!interaction.isCommand()) return
