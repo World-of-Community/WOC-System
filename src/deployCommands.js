@@ -28,7 +28,7 @@ const deployCommands = async function deploy() {
 
     restClient.put(Routes.applicationCommands(config.application, config.server),
         { body: commands })
-        .then(() => console.log("Succesfully registered Commands!"))
+        .then(() => console.log("Successfully registered Commands!"))
         .catch(console.error)
 }
 module.exports = { deployCommands }
