@@ -4,7 +4,7 @@ const userdb = require("../../Datenbank/userdb");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("afk")
-        .setDescription("-"),
+        .setDescription("» Zeige allen das du gerade abwesend (AFK) bist. ⌛"),
     async execute(interaction) {
         const userData = await userdb.findOne({ userID: interaction.user.id })
         if (!userData) { return await interaction.reply({ content: "No userdata found" }) }
