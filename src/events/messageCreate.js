@@ -188,8 +188,8 @@ module.exports = {
                                 value: 'server',
                             },
                             {
-                                label: '× SPIELER - RÄNGE',
-                                description: '» Hier sind Alle Spieler-Ränge aufgelistet. 👥',
+                                label: '× MITGLIEDER - ROLLEN',
+                                description: '» Hier sind Alle Mitglieder-Rollen aufgelistet. 👥',
                                 emoji: '<:members:1055964826960154625>',
                                 value: 'spieler',
                             },
@@ -200,7 +200,7 @@ module.exports = {
                                 value: 'exklusive',
                             },
                             {
-                                label: '× TEAM - RÄNGE',
+                                label: '× TEAM - ROLLEN',
                                 description: '» Schau dir unser Server-Team an. 🚨',
                                 emoji: '<:StaffAbzeichen:1056602972789948466>',
                                 value: 'team',
@@ -226,7 +226,7 @@ module.exports = {
                 .setDescription('» An diesen Regeln musst du dich jederzeit halten, damit wir eine friedliche Atmosphäre wahren können. Solltest du dies nicht tun, können Sanktionen gegen deinem Account folgen.\n\n <:Pfeil:1119709908540076124> **Bei der Nutzung dieses Discord Servers bist du automatisch mit den Regeln einverstanden.**\n\n─────────────────────────\n\n1️⃣ 𑁉 Behandle alle Mitglieder stets respektvoll. Wir tolerieren keine Streitigkeiten oder andere toxischen Inhalte im Chat!\n\n2️⃣ 𑁉 NSFW-Inhalte (Nacktheit, Gewalt & mehr) können verstörend auf Mitglieder wirken und sind daher untersagt.\n\n3️⃣ 𑁉 Übersteuerte Geräusche & flackernde Emojis sind verboten, da sie das Wohlempfinden beeinträchtigen können.\n\n4️⃣ 𑁉 Werbung ist nur in den dazugehörigen Textkanälen gestattet, um unsere Mitglieder nicht unnötig zu nerven.\n\n5️⃣ 𑁉 Spam jeglicher Art (Doppelte Nachrichten, Channelhopping & u.ä.) ist aufgrund von Levelvorteilen verboten.\n\n6️⃣ 𑁉 Das Ausgeben von andere Nutzer, Mitglieder oder Teammitglieder ist untersagt und führt zur Sperrung.\n\n7️⃣ 𑁉 Postet auf keinen Fall irgendwelche privaten Adressen oder Telefonnummern in den Öffentlichen Chat, egal ob von euch oder jemand anderen.\n\n8️⃣ 𑁉 Unwissenheit schützt nicht vor einer Strafe. Allerdings hast du das Recht, einen Antrag auf Entsperrung bei uns einzureichen.\n\n9️⃣ 𑁉 Das Betteln um Ränge oder Berechtigungen ist ebenfalls untersagt.\n\n🔟 𑁉 Stimmverzerrer oder Soundboards sind nur gestattet, wenn dies ein Teammitglied erlaubt.')
                 .setColor('#c53a2b')
                 .setImage('https://cdn.discordapp.com/attachments/943859953318371359/1045406350903095357/WOC_Server_Regeln.png')
-                .setFooter({ text: 'Das Regelwerk wurde zuletzt am Mittwoch, 22.02.2023 bearbeitet.', iconURL: 'https://media.discordapp.net/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+                .setFooter({ text: 'Du erklärst dich mit diesen Regeln bei der Nutzung unseres Discord-Servers einverstanden.', iconURL: 'https://media.discordapp.net/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
 
             const regelButton = new ActionRowBuilder()
                 .addComponents(
