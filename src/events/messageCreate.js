@@ -15,8 +15,9 @@ module.exports = {
             if (uD.afk) {
                 uD.afk = false
                 await uD.save()
-                const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**
-> *Dein AFK-Status wurde entfernt.*`)
+                const timestamp = Math.floor(dic[message.author.id] / 1000); // Zeitstempel im UNIX-Zeitformat
+                const discordTimestamp = `<t:${timestamp}:R>`;
+                const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: ${discordTimestamp})*`)
                 setTimeout(async () => {
                     try {
                         await m.delete()
@@ -24,6 +25,11 @@ module.exports = {
 
                     }
                 }, 5000)
+                var member = await message.guild.members.cache.get(message.author.id);
+                await member.setNickname("").catch(err => {
+                })
+                delete dic[message.author.id]
+                fs.writeFileSync('./afk.json', JSON.stringify(dic))
             }
         }
 
@@ -42,6 +48,28 @@ module.exports = {
         }
 
         if (message.author.bot) return;
+
+        // AFK System
+        const jsonContent = fs.readFileSync('./afk.json', 'utf-8');
+        var dic = await JSON.parse(jsonContent)
+        const channel = interaction.channel;
+        const afktexte = [
+            'Die Tür vom Nachbarn mit Brettern zunageln. <a:Ping_Hammer:1077295673289998417>',
+            'Lädt sich ein Update fürs Real Life herunter! <a:Ladevorgang:1077295605501661375>',
+            'Mal schauen was der Tag so von sich bringt. <a:drink:967313385127542854>'
+        ]
+        var grund = await interaction.options.getString('grund');
+        if (!grund) {
+            grund = afktexte[Math.floor(Math.random() * afktexte.length)];
+        }
+        const msg = await interaction.reply(`<:AFK:1021086267557023775> | ${interaction.member} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund}`);
+        afktexte.push(interaction.member.id)
+        await interaction.member.setNickname('AFK | ' + interaction.member.displayName).catch(err => {
+            console.log(err.message)
+        })
+        dic[interaction.user.id] = interaction.createdTimestamp
+        await fs.writeFileSync('./afk.json', JSON.stringify(dic))
+        console.log(new Date(interaction.createdTimestamp))
 
         // Server Database
         const serverData = await serverdb.findOne({ guildID: message.guildId })
