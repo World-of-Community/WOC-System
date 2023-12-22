@@ -74,6 +74,19 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 
+// Werbung
+cron.schedule('0 6 * * 1', async() => {
+    const channel = bot.channels.cache.get(config.werbung);
+
+    const werbungEmbed = new Discord.EmbedBuilder()
+    .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
+    .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `🤖` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n» Link: https://discord.gg/686M8Cxsaa')
+    .setColor('Blurple')
+    .setFooter({ text: 'World Of Community - Werbung'})
+
+    await channel.send({ embeds: [werbungEmbed] })
+})
+
 // Changelog Embed
 cron.schedule('0 0 * * 1', async () => {
     const channel = bot.channels.cache.get(config.changelog);
