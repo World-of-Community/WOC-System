@@ -40,7 +40,7 @@ module.exports = {
                     { name: '`🚧` - **Status**', value: `» Dieser Vorschlag ist bereits in Planung und wird bald umgesetzt.\n**Grund:** \`${grund}\` ` }
                 )
                 .setThumbnail('https://cdn.discordapp.com/attachments/1145779055644393592/1146793359231430676/bearbeitung.png')
-                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1165934478028447764/WOC_Banner_Server_Idee_in_Planung.jpg?ex=6548a819&is=65363319&hm=0ecdc4384b7247f1bc07d5b0414690a530da1370739d2e6d1ec3351c1f6f71f0&')
+                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1191452927102029844/WOC_Banner_Server_Idee_in_Planung.jpg?ex=65a57e01&is=65930901&hm=3bc2e89a698424e1a93a057bde144f3446e4562f760bac233e07efad0cf3b2fd&')
                 .setFooter({ text: `» Eingereicht von ${interaction.user.name}` })
 
             await msg.edit({ embeds: [editEmbed] });
