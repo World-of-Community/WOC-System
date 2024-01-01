@@ -40,7 +40,8 @@ module.exports = {
                     { name: '`❌` - **Status**', value: `» Dieser Vorschlag wurde vom Team abgelehnt.\n**Grund:** \`${grund}\` ` }
                 )
                 .setThumbnail('https://cdn.discordapp.com/attachments/1145779055644393592/1146793380085518407/abgelehnt.png')
-                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1145779340601213069/WOC_Server_Idee_Abgelehnt.png')
+                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1190736049551446096/WOC_Banner_Server_Idee_Abgelehnt.jpg?ex=65a2e25d&is=65906d5d&hm=8cc34a968e3efc798ed0559fe0e3a0773ef080df1b9c70e0953eb325b406aea5&')
+                .setFooter({ text: `» Eingereicht von ${interaction.user.name} - \`${interaction.user.id}\``, icon: interaction.user.iconURL({ dynamic: true }) })
 
             await msg.edit({ embeds: [editEmbed] });
             await msg.reactions.removeAll()

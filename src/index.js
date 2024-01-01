@@ -12,6 +12,7 @@ const bot = new Discord.Client({
         Discord.Partials.Channel, Discord.Partials.User, Discord.Partials.GuildMember, Discord.Partials.Message
     ],
 });
+
 // Modules and Files
 const mongoose = require('mongoose');
 const threaddb = require('../Datenbank/threaddb');
@@ -24,7 +25,7 @@ const serverdb = require('../Datenbank/serverdb');
 const userdb = require('../Datenbank/userdb');
 const { deployCommands } = require('./deployCommands');
 
-//Lade Commands
+// Lade Commands
 deployCommands()
 bot.commands = new Discord.Collection()
 
@@ -41,7 +42,7 @@ for (const file of commandFiles) {
 }
 console.log('-------------------------------------------')
 
-//Load Events
+// Load Events
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
@@ -54,6 +55,7 @@ for (const file of eventFiles) {
         bot.on(event.name, (...args) => event.execute(...args));
     }
 }
+
 // Threads Checker
 cron.schedule('0 0 * * *', async () => {
     const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;

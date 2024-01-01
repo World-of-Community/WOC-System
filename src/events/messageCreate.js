@@ -147,7 +147,7 @@ module.exports = {
                             .setStyle(ButtonStyle.Secondary),
                     )
 
-                await msg.channel.send({ content: `> Möchtest du den Vorschlag wirklich einreichen?\n\n> Dein Vorschlag:\n> ${content}\n\n> Klicke auf die unteren Buttons`, components: [buttons] }).then(async interaction => {
+                await msg.channel.send({ content: `> Möchtest du den Vorschlag wirklich einreichen?\n\n> Dein Vorschlag:\n> **${content}**\n\n> Klicke auf die unteren Buttons`, components: [buttons] }).then(async interaction => {
                     await message.client.on('interactionCreate', async (inter) => {
                         if (inter.customId === 'einreichen') {
                             await interaction.delete().catch(error => console.log(error))
@@ -158,7 +158,8 @@ module.exports = {
                                 .addFields({ name: '`💡` - Vorschläge', value: '» Schreibe eigene Vorschläge in diesem Kanal\num sie für den WOC-Discord einzureichen.' })
                                 .setColor('#515558')
                                 .setThumbnail('https://images-ext-1.discordapp.net/external/5IVIzj8wJ6S4-jJ13JsBzKChdJeU0_Mg541jcWFomlo/https/i.imgur.com/emyqXev.png')
-                                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1145779220476329984/WOC_Banner_Server_Idee_Eingereicht.png')
+                                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1190736182661882006/WOC_Banner_Server_Idee_Eingereicht.jpg?ex=65a2e27c&is=65906d7c&hm=b601ecc960883375ce6460df9f427fe42129698c8dd7e66f3f47bd01ee43cf44&')
+                                .setFooter({ text: `» Eingereicht von ${inter.user.name} - \`${interaction.user.id}\``, icon: interaction.user.iconURL({ dynamic: true }) })
                             await inter.channel.send({ embeds: [vorschlagEmbed] }).then(int => {
                                 int.react('<a:upvote:1033452503309758525>')
                                 int.react('<a:downvote:1033452526340673596>')
