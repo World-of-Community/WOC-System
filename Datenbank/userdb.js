@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema({
     afk: {
         type: Boolean,
         required: false,
+    },
+    afkReason: {
+        type: String,
+        required: false,
+    },
+    afkStamp: {
+        type: String,
+        required: false,
     }
 });
 

@@ -41,7 +41,7 @@ module.exports = {
                 )
                 .setThumbnail('https://cdn.discordapp.com/attachments/1145779055644393592/1146793338251522048/akzeptiert.png')
                 .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1145779363019751554/WOC_Server_Idee_Akzeptiert.png')
-                .setFooter({ text: `» Eingereicht von ${interaction.user.name}` })
+                .setFooter(vorschlagEmbed.footer)
 
             await msg.edit({ embeds: [editEmbed] });
             await msg.reactions.removeAll()

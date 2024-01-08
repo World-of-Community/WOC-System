@@ -7,17 +7,21 @@ const messagedb = require("../../Datenbank/messagedb");
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
+
+        // console.log(Math.floor((message.createdTimestamp) / 1000) + 86400)
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
         const uD = await userdb.findOne({ userID: message.author.id });
         if (uD) {
             if (uD.afk) {
+
+
+                const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: ${uD.afkStamp})*`)
                 uD.afk = false
+                uD.afkReason = ""
+                uD.afkStamp = ""
                 await uD.save()
-                const timestamp = Math.floor(dic[message.author.id] / 1000); // Zeitstempel im UNIX-Zeitformat
-                const discordTimestamp = `<t:${timestamp}:R>`;
-                const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: ${discordTimestamp})*`)
                 setTimeout(async () => {
                     try {
                         await m.delete()
@@ -25,11 +29,10 @@ module.exports = {
 
                     }
                 }, 5000)
-                var member = await message.guild.members.cache.get(message.author.id);
-                await member.setNickname("").catch(err => {
-                })
-                delete dic[message.author.id]
-                fs.writeFileSync('./afk.json', JSON.stringify(dic))
+
+
+                await message.member.setNickname(`${message.member.displayName.replace("AFK | ", "")}`).catch((err) => { })
+
             }
         }
 
@@ -50,26 +53,26 @@ module.exports = {
         if (message.author.bot) return;
 
         // AFK System
-        const jsonContent = fs.readFileSync('./afk.json', 'utf-8');
-        var dic = await JSON.parse(jsonContent)
-        const channel = interaction.channel;
-        const afktexte = [
-            'Die Tür vom Nachbarn mit Brettern zunageln. <a:Ping_Hammer:1077295673289998417>',
-            'Lädt sich ein Update fürs Real Life herunter! <a:Ladevorgang:1077295605501661375>',
-            'Mal schauen was der Tag so von sich bringt. <a:drink:967313385127542854>'
-        ]
-        var grund = await interaction.options.getString('grund');
-        if (!grund) {
-            grund = afktexte[Math.floor(Math.random() * afktexte.length)];
-        }
-        const msg = await interaction.reply(`<:AFK:1021086267557023775> | ${interaction.member} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund}`);
-        afktexte.push(interaction.member.id)
-        await interaction.member.setNickname('AFK | ' + interaction.member.displayName).catch(err => {
-            console.log(err.message)
-        })
-        dic[interaction.user.id] = interaction.createdTimestamp
-        await fs.writeFileSync('./afk.json', JSON.stringify(dic))
-        console.log(new Date(interaction.createdTimestamp))
+        // const jsonContent = fs.readFileSync('./afk.json', 'utf-8');
+        // var dic = await JSON.parse(jsonContent)
+        // const channel = interaction.channel;
+        // const afktexte = [
+        //     'Die Tür vom Nachbarn mit Brettern zunageln. <a:Ping_Hammer:1077295673289998417>',
+        //     'Lädt sich ein Update fürs Real Life herunter! <a:Ladevorgang:1077295605501661375>',
+        //     'Mal schauen was der Tag so von sich bringt. <a:drink:967313385127542854>'
+        // ]
+        // var grund = await interaction.options.getString('grund');
+        // if (!grund) {
+        // grund = afktexte[Math.floor(Math.random() * afktexte.length)];
+        // }
+        // const msg = await interaction.reply(`<:AFK:1021086267557023775> | ${interaction.member} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund}`);
+        // afktexte.push(interaction.member.id)
+        // await interaction.member.setNickname('AFK | ' + interaction.member.displayName).catch(err => {
+        //     console.log(err.message)
+        // })
+        // dic[interaction.user.id] = interaction.createdTimestamp
+        // await fs.writeFileSync('./afk.json', JSON.stringify(dic))
+        // console.log(new Date(interaction.createdTimestamp))
 
         // Server Database
         const serverData = await serverdb.findOne({ guildID: message.guildId })
@@ -106,11 +109,12 @@ module.exports = {
 
                 if (mentionData && mentionData.reactions && mentionData.reactions.length > 0) {
                     mentionData.reactions.forEach(async (reaction) => {
-                        await message.react(reaction);
+                        await message.react(reaction).catch((err) => { });
                     });
                 }
                 if (mentionData && mentionData.afk && mentionedUser.id != message.author.id) {
-                    const m = await message.reply(`<:AFK:1021086267557023775> | ${mentionedUser} **ist abwesend!**`)
+                    const m = await message.reply(`<:AFK:1021086267557023775> | ${mentionedUser} **ist abwesend!**
+*${mentionData.afkReason.replace("*", "")}*`)
 
                     setTimeout(async () => {
                         try {
@@ -131,7 +135,7 @@ module.exports = {
 
             let content = message.content
 
-            await message.delete().then(async msg => {
+            await message.delete().catch((err) => { }).then(async msg => {
                 const buttons = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
@@ -159,13 +163,13 @@ module.exports = {
                                 .setColor('#515558')
                                 .setThumbnail('https://images-ext-1.discordapp.net/external/5IVIzj8wJ6S4-jJ13JsBzKChdJeU0_Mg541jcWFomlo/https/i.imgur.com/emyqXev.png')
                                 .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1190736182661882006/WOC_Banner_Server_Idee_Eingereicht.jpg?ex=65a2e27c&is=65906d7c&hm=b601ecc960883375ce6460df9f427fe42129698c8dd7e66f3f47bd01ee43cf44&')
-                                .setFooter({ text: `» Eingereicht von ${inter.user.name} - \`${interaction.user.id}\``, icon: interaction.user.iconURL({ dynamic: true }) })
+                                .setFooter({ text: `» Eingereicht von ${inter.user.displayName} - ${inter.user.id}`, iconURL: inter.user.displayAvatarURL({ dynamic: true }) })
                             await inter.channel.send({ embeds: [vorschlagEmbed] }).then(int => {
                                 int.react('<a:upvote:1033452503309758525>')
                                 int.react('<a:downvote:1033452526340673596>')
                             })
                         } else if (inter.customId === 'abbrechen') {
-                            await interaction.delete()
+                            await interaction.delete().catch((err) => { })
                             await inter.reply({ content: '> `❗` » Du hast den Vorschlag nicht eingereicht.', ephemeral: true })
                         }
                     });
