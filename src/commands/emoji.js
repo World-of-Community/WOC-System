@@ -1,12 +1,13 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionsBitField } = require("discord.js");
 const userdb = require("../../Datenbank/userdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('emoji')
         .setDescription('» Lege eine eigene Ping-Reaktion fest. 📌')
-        .addStringOption(option => option.setName('emoji').setDescription('Wähle bis zu 3 Emojis').setRequired(true)),
-    async execute(interaction) {
+        .addStringOption(option => option.setName('emoji').setDescription('Wähle bis zu 3 Emojis').setRequired(true))
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
+        async execute(interaction) {
         const emojisInput = await interaction.options.getString('emoji')
         const userData = await userdb.findOne({ userID: interaction.user.id })
         if (!userData) return;
