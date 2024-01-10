@@ -34,7 +34,6 @@ module.exports = {
                     .setColor('#ff7b00')
                     .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1186716971883049102/WOC_Banner_Update_Wochenruckblick.jpg?ex=6594434e&is=6581ce4e&hm=f324b57bfaa32b34f5f6606623d575e2028f477f730279e99df12d8d601d3273&')
                     .setFooter({ text: `Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData.updateWeek.split(" - ")[0]}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
-                    .setTimestamp()
 
                 if (serverData.support.length > 0) {
                     updateEmbed.addFields(

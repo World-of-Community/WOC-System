@@ -52,28 +52,6 @@ module.exports = {
 
         if (message.author.bot) return;
 
-        // AFK System
-        // const jsonContent = fs.readFileSync('./afk.json', 'utf-8');
-        // var dic = await JSON.parse(jsonContent)
-        // const channel = interaction.channel;
-        // const afktexte = [
-        //     'Die Tür vom Nachbarn mit Brettern zunageln. <a:Ping_Hammer:1077295673289998417>',
-        //     'Lädt sich ein Update fürs Real Life herunter! <a:Ladevorgang:1077295605501661375>',
-        //     'Mal schauen was der Tag so von sich bringt. <a:drink:967313385127542854>'
-        // ]
-        // var grund = await interaction.options.getString('grund');
-        // if (!grund) {
-        // grund = afktexte[Math.floor(Math.random() * afktexte.length)];
-        // }
-        // const msg = await interaction.reply(`<:AFK:1021086267557023775> | ${interaction.member} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund}`);
-        // afktexte.push(interaction.member.id)
-        // await interaction.member.setNickname('AFK | ' + interaction.member.displayName).catch(err => {
-        //     console.log(err.message)
-        // })
-        // dic[interaction.user.id] = interaction.createdTimestamp
-        // await fs.writeFileSync('./afk.json', JSON.stringify(dic))
-        // console.log(new Date(interaction.createdTimestamp))
-
         // Server Database
         const serverData = await serverdb.findOne({ guildID: message.guildId })
         if (!serverData) {
@@ -113,8 +91,7 @@ module.exports = {
                     });
                 }
                 if (mentionData && mentionData.afk && mentionedUser.id != message.author.id) {
-                    const m = await message.reply(`<:AFK:1021086267557023775> | ${mentionedUser} **ist abwesend!**
-*${mentionData.afkReason.replace("*", "")}*`)
+                    const m = await message.reply(`<:AFK:1021086267557023775> | ${mentionedUser} **ist abwesend!**\n${mentionData.afkReason.replace("*", "")}`)
 
                     setTimeout(async () => {
                         try {
@@ -270,6 +247,7 @@ module.exports = {
                 )
             await message.channel.send({ embeds: [regelwerkEmbed], components: [regelButton] })
         }
+
         // Partner bewerben
 
         if (message.content === '!partner') {
