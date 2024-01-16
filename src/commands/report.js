@@ -24,7 +24,7 @@ module.exports = {
         const reportEmbed = new EmbedBuilder()
             .setTitle(`\`📝\` | Neuer Report von ${interaction.user.displayName}`)
             .setDescription(`${reportedUser} wurde von ${interaction.user} gemeldet.\n\n> \`👤\` - **BENUTZER INFORMATIONEN**\nReportgrund: ${grund}\nBenutzername: ${reportedUser.displayName} (\`${reportedUser.id}\`) (${reportedUser})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
-            .setFooter({ text: "©️ World Of Community - Report System", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
+            .setFooter({ text: `©️ ${interaction.guild.name} - Report System`, iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
             .setColor('Red')
         const modChannel = await interaction.guild.channels.fetch(reportchannel);
         if (modChannel) {

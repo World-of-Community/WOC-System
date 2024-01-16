@@ -25,7 +25,7 @@ module.exports = {
             .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
             .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` - **BENUTZER INFORMATIONEN**\nBanngrund: \`${reason}\`\nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
             .setColor('#ff0000')
-            .setFooter({ text: '©️ World Of Community | Bann-System', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
+            .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
         member.roles.add(config.banRolle)
         member.roles.remove(config.memberRolle)
         await banLog.send({ embeds: [banLogEmbed] })

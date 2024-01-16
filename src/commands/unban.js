@@ -24,7 +24,7 @@ module.exports = {
             .setTitle(`\`✅\` - ${member.displayName} wurde Entbannt.`)
             .setDescription(`${member} wurde von ${interaction.user} Entbannt.\n\n\`👤\` - **BENUTZER INFORMATIONEN**\nEntbannungs-Grund: \`${reason}\`\nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
             .setColor('#04ff00')
-            .setFooter({ text: '©️ World Of Community | Bann-System', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
+            .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
         member.roles.remove(config.banRolle)
         member.roles.add(config.memberRolle)
         await banLog.send({ embeds: [unbanLogEmbed] })
