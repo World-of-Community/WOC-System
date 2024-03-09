@@ -29,5 +29,20 @@ module.exports = {
         const rndContent = Math.floor(Math.random() * contents.length)
 
         await welcomeChannel.send({ content: `${contents[rndContent]}` })
+
+        // Server-Regeln Erwähnung neue Mitglieder
+
+        const channel = member.guild.channels.cache.get('815922286502346773');
+        if (!channel) return console.error('Kanal wurde nicht gefunden.');
+
+        try {
+            const message = await channel.send(`Willkommen auf unserem Discord-Server, ${member}!`);
+
+            setTimeout(() => {
+                message.delete();
+            }, 5000);
+        } catch (err) {
+            console.error('Fehler beim Senden der Nachricht:', err);
+        }
     }
 }
