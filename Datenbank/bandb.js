@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const banSchema = new mongoose.Schema({
     creator: {
         type: String,
-        required: true,
+        required: false,
     },
     user: {
         type: String,
@@ -12,7 +12,7 @@ const banSchema = new mongoose.Schema({
     },
     reason: {
         type: String,
-        required: true,
+        required: false,
     },
     duration: {
         type: Number,
