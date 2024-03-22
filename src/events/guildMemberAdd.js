@@ -36,11 +36,11 @@ module.exports = {
         if (!channel) return console.error('Kanal wurde nicht gefunden.');
 
         try {
-            const message = await channel.send(`Willkommen auf unserem Discord-Server, ${member}!`);
+            const message = await channel.send(`Willkommen auf unserem Discord-Server, ${member}! Bitte Verifiziere dich bei den Server-Regeln`);
 
             setTimeout(() => {
                 message.delete();
-            }, 5000);
+            }, 1 * 60 * 60 * 1000); // 1 Stunde in Millisekunden
         } catch (err) {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
