@@ -4,18 +4,19 @@ const fs = require('fs');
 const func = require("../ressources/funktionen");
 const messagedb = require("../../Datenbank/messagedb");
 const bandb = require("../../Datenbank/bandb");
+const internal = require("stream");
 
 module.exports = {
     name: Events.ClientReady,
     async execute(client) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        console.log('✅ | Client | Verbunden mit Discord')
+        console.log('Verbunden mit Discord')
         // Wechsel Status
         setInterval(async () => {
             const guild = await client.guilds.fetch(config.server);
             if (!guild) {
-                console.log("❌ | Client | Server wurde nicht gefunden");
+                console.log("Server wurde nicht gefunden");
                 return;
             }
 
@@ -46,11 +47,9 @@ module.exports = {
 
             if (!messageData) return;
             const messages = messageData.messages
-            await channel.setTopic(`<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**
-
-    𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n<a:Information:1007267420316106903> **| __WICHTIGE INFORMATION__**
-    » Um eine freundliche Atmosphäre beizubehalten, denke bitte immer daran, dich an unsere **Server-Regeln** zu halten: <#815922286502346773>.\n\n:information_source: | __Du möchtest ein Mitglied melden?__\n» Benutze: **/report <user> <grund>**\n» **Das ausnutzen des Report Befehls wird bestraft!**\n\n:pushpin: » Solltest du **Fragen** haben, zögere nicht und Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`)
+            await channel.setTopic(`<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n<a:Information:1007267420316106903> **| __WICHTIGE INFORMATION__**\n» Um eine freundliche Atmosphäre beizubehalten, denke bitte immer daran, dich an unsere **Server-Regeln** zu halten: <#815922286502346773>.\n\n:information_source: | __Du möchtest ein Mitglied melden?__\n» Benutze: **/report <user> <grund>**\n» **Das ausnutzen des Report Befehls wird bestraft!**\n\n:pushpin: » Solltest du **Fragen** haben, zögere nicht und Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`)
         }, 1000 * 60 * 5)
+
         setInterval(async () => {
             console.log("🚓 | BanDB | Check wird durchgeführt")
             const currentTime = new Date();
@@ -71,8 +70,8 @@ module.exports = {
 
                     if (banneduser != null) {
                         const embed = new EmbedBuilder()
-                            .setTitle('`👮` » Wilkommen zurück')
-                            .setDescription(`» Du hast wurdest entbannt, und hast wieder Zugriff zu allen Channels\n> Wir wünschen dir vielSpaß auf dem .`)
+                            .setTitle('`👮` » WILLKOMMEN ZURÜCK!')
+                            .setDescription(`» Du hast wurdest entbannt, und hast wieder Zugriff zu allen Kanälen\n\n> Wir wünschen dir viel Spaß auf dem ${interaction.guild.name}.`)
                             .setFooter({ text: `©️ WOC | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
                             .setColor('Blurple')
                         banneduser.roles.remove(config.banRolle)
@@ -96,7 +95,7 @@ module.exports = {
                 rolemember.forEach(async member => {
                     try {
                         const banData = await bandb.findOne({ user: member.id })
-                        list.push(`${member} (${banData.reason})`)
+                        list.push(`${member} (\`${banData.reason}\`)`)
                     } catch (error) {
                     }
     
@@ -113,7 +112,7 @@ module.exports = {
             const message = await messages.first()
             const bannembed = new EmbedBuilder()
                 .setTitle('Information zu den Gebannten Nutzern')
-                .setDescription(`Hier ist eine Liste der gebannten Nutzer (\`${bans.length}👥\`)\n\n ${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
+                .setDescription(`Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`)\n\n ${bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden."}`)
                 .setColor('Red')
     
             await message.edit({ embeds: [bannembed] })
