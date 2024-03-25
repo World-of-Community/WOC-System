@@ -62,8 +62,8 @@ module.exports = {
                 if (serverData.verify.length > 0) {
                     updateEmbed.addFields(
                         {
-                            name: '> <a:yes_tick:1042831133303386122> - **WOC`✅`VERIFY (BOT)** - UPDATE',
-                            value: `${serverData.verify.join('\n')}`
+                            name: '> <a:yes_tick:1042831133303386122> - **SERVICE (BOT)** - UPDATE',
+                            value: `${serverData.service.join('\n')}`
                         }
                     )
                 }

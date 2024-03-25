@@ -139,8 +139,8 @@ cron.schedule('0 0 * * 1', async () => {
     if (serverData.verify.length > 0) {
         changelogEmbed.addFields(
             {
-                name: '> <a:yes_tick:1042831133303386122> - **WOC`✅`VERIFY (BOT)** - UPDATE',
-                value: `${serverData.verify.join('\n')}`
+                name: '> <a:yes_tick:1042831133303386122> - **SERVICE (BOT)** - UPDATE',
+                value: `${serverData.service.join('\n')}`
             }
         )
     }

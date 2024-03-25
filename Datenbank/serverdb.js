@@ -54,6 +54,10 @@ const serverSchema = new mongoose.Schema({
         type: Object,
         required: false,
     },
+    service: {
+        type: Object,
+        required: false,
+    },
 });
 
 module.exports = mongoose.model('server-data', serverSchema)
