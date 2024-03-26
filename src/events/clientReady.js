@@ -118,5 +118,37 @@ module.exports = {
             await message.edit({ embeds: [bannembed] })
         }, 30000);
 
+        // Rolle für 24 Stunden
+
+        const initialRoleId = '1222122625594294272'; // ID der ersten Rolle
+        const newRoleId = '815920703067914290'; // ID der zweiten Rolle
+        const interval = 24 * 60 * 60 * 1000; // 24 Stunden in Millisekunden
+
+        // Starte den Prozess zum Vergeben und Entfernen der Rollen
+        startRoleProcess();
+
+        async function startRoleProcess() {
+            const guild = client.guilds.cache.first(); // Hier wird der Bot dem ersten gefundenen Server (Guild) beigetreten
+            const initialRole = guild.roles.cache.get(initialRoleId);
+            const newRole = guild.roles.cache.get(newRoleId);
+          
+            if (!initialRole || !newRole) {
+              console.error('Rolle nicht gefunden.');
+              return;
+            }
+          
+            setInterval(async () => {
+              const membersWithInitialRole = initialRole.members; // Benutzer, die die erste Rolle haben
+              membersWithInitialRole.forEach(async (member) => {
+                // Erste Rolle entfernen
+                await member.roles.remove(initialRole);
+                console.log(`Rolle ${initialRole.name} wurde von ${member.user.username} entfernt.`);
+          
+                // Zweite Rolle hinzufügen
+                await member.roles.add(newRole);
+                console.log(`Rolle ${newRole.name} wurde ${member.user.username} zugewiesen.`);
+              });
+            }, interval);
+          }
     }
 }
