@@ -5,6 +5,7 @@ const func = require("../ressources/funktionen");
 const messagedb = require("../../Datenbank/messagedb");
 const bandb = require("../../Datenbank/bandb");
 const internal = require("stream");
+const cron = require('node-cron');
 
 module.exports = {
     name: Events.ClientReady,
@@ -117,6 +118,18 @@ module.exports = {
     
             await message.edit({ embeds: [bannembed] })
         }, 30000);
+*/
 
+    //Auto Delete | Spieler Suche
+        cron.schedule('0 0 */1 * *', async() => { // Dieser Cron-Job wird täglich um Mitternacht ausgeführt
+            const channel = await client.channels.fetch("896743941813207081");
+
+            const messages = await channel.messages.fetch({ limit: 100 });
+            const filteredMessages = messages.filter(message => !message.pinned);
+        
+            if (filteredMessages.size > 0) {
+                await channel.bulkDelete(filteredMessages);
+            }
+        });
     }
 }
