@@ -44,5 +44,45 @@ module.exports = {
         } catch (err) {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
+
+         // Rolle für 24 Stunden
+         const newRole = member.guild.roles.cache.get("1222122625594294272");
+         if (!newRole) return console.error('Rolle wurde nicht gefunden.');
+         const interval = 24 * 60 * 60 * 1000; // 24 Stunden in Millisekunden
+ 
+         try {
+             await member.roles.add(newRole);
+             console.log(`Rolle ${newRole.name} wurde ${member.user.username} zugewiesen.`);
+ 
+             startRoleProcess();
+         } catch (err) {
+             console.error('Fehler beim Zuweisen der Rolle:', err);
+         }
+ 
+         async function startRoleProcess() {
+              
+             const guild = client.guilds.cache.first(); // Hier wird der Bot dem ersten gefundenen Server (Guild) beigetreten
+             let initialRole = guild.roles.cache.get("1222122625594294272");
+             let newRole = guild.roles.cache.get("815920703067914290");
+ 
+           
+             if (!initialRole || !newRole) {
+               console.error('Rolle nicht gefunden.');
+               return;
+             }
+           
+             setInterval(async () => {
+               const membersWithInitialRole = initialRole.members; // Benutzer, die die erste Rolle haben
+               membersWithInitialRole.forEach(async (member) => {
+                 // Erste Rolle entfernen
+                 await member.roles.remove(initialRole);
+                 console.log(`Rolle ${initialRole.name} wurde von ${member.user.username} entfernt.`);
+           
+                 // Zweite Rolle hinzufügen
+                 await member.roles.add(newRole);
+                 console.log(`Rolle ${newRole.name} wurde ${member.user.username} zugewiesen.`);
+               });
+             }, interval);
+           }
     }
 }

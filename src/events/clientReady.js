@@ -50,7 +50,7 @@ module.exports = {
             await channel.setTopic(`<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n<a:Information:1007267420316106903> **| __WICHTIGE INFORMATION__**\n» Um eine freundliche Atmosphäre beizubehalten, denke bitte immer daran, dich an unsere **Server-Regeln** zu halten: <#815922286502346773>.\n\n:information_source: | __Du möchtest ein Mitglied melden?__\n» Benutze: **/report <user> <grund>**\n» **Das ausnutzen des Report Befehls wird bestraft!**\n\n:pushpin: » Solltest du **Fragen** haben, zögere nicht und Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`)
         }, 1000 * 60 * 5)
 
-        setInterval(async () => {
+       /**  setInterval(async () => {
             console.log("🚓 | BanDB | Check wird durchgeführt")
             const currentTime = new Date();
             const activeBans = await bandb.find({ endTime: null });
@@ -118,37 +118,5 @@ module.exports = {
             await message.edit({ embeds: [bannembed] })
         }, 30000);
 
-        // Rolle für 24 Stunden
-
-        const initialRoleId = '1222122625594294272'; // ID der ersten Rolle
-        const newRoleId = '815920703067914290'; // ID der zweiten Rolle
-        const interval = 24 * 60 * 60 * 1000; // 24 Stunden in Millisekunden
-
-        // Starte den Prozess zum Vergeben und Entfernen der Rollen
-        startRoleProcess();
-
-        async function startRoleProcess() {
-            const guild = client.guilds.cache.first(); // Hier wird der Bot dem ersten gefundenen Server (Guild) beigetreten
-            const initialRole = guild.roles.cache.get(initialRoleId);
-            const newRole = guild.roles.cache.get(newRoleId);
-          
-            if (!initialRole || !newRole) {
-              console.error('Rolle nicht gefunden.');
-              return;
-            }
-          
-            setInterval(async () => {
-              const membersWithInitialRole = initialRole.members; // Benutzer, die die erste Rolle haben
-              membersWithInitialRole.forEach(async (member) => {
-                // Erste Rolle entfernen
-                await member.roles.remove(initialRole);
-                console.log(`Rolle ${initialRole.name} wurde von ${member.user.username} entfernt.`);
-          
-                // Zweite Rolle hinzufügen
-                await member.roles.add(newRole);
-                console.log(`Rolle ${newRole.name} wurde ${member.user.username} zugewiesen.`);
-              });
-            }, interval);
-          }
     }
 }

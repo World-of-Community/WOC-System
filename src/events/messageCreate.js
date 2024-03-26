@@ -46,7 +46,11 @@ module.exports = {
         // Auto Delete
         if (message.channelId === config.autoDelete) {
             setTimeout(async () => {
-                await message.delete()
+                try {
+                    await message.delete()
+                } catch (error) {
+                    
+                }
             }, 30000);
         }
 

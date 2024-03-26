@@ -8,7 +8,7 @@ module.exports = {
         .setDescription('» Füge ein Update hinzu.')
         .addStringOption(option =>
             option.setName('kategorie').setDescription('Wähle eine Update-Kategorie').setRequired(true)
-                .addChoices({ name: 'WOC SUPPORT', value: 'support' }, { name: 'WOC SYSTEM', value: 'system' }, { name: 'WOC GIFT', value: 'gift' }, { name: 'WOC VERIFY', value: 'verify' }, { name: 'MINECRAFT', value: 'minecraft' }, { name: 'WEBSEITE', value: 'webseite' }, { name: 'DISCORD SERVER', value: 'dc' })
+                .addChoices({ name: 'WOC SUPPORT', value: 'support' }, { name: 'WOC SYSTEM', value: 'system' }, { name: 'WOC GIFT', value: 'gift' }, { name: 'SERVICE BOT', value: 'service' }, { name: 'MINECRAFT', value: 'minecraft' }, { name: 'WEBSEITE', value: 'webseite' }, { name: 'DISCORD SERVER', value: 'dc' })
         )
         .addStringOption(option =>
             option.setName('emoji').setDescription('Wähle ein Update-Emoji').setRequired(true)
@@ -35,8 +35,8 @@ module.exports = {
             await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { system: `${emoji} » ${update}` } })
         } else if (kategorie === 'gift') {
             await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { gift: `${emoji} » ${update}` } })
-        } else if (kategorie === 'verify') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { verify: `${emoji} » ${update}` } })
+        } else if (kategorie === 'service') {
+            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { service: `${emoji} » ${update}` } })
         } else if (kategorie === 'minecraft') {
             await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { minecraft: `${emoji} » ${update}` } })
         }
@@ -92,8 +92,8 @@ module.exports = {
                 if (serverData.verify.length > 0) {
                     updateEmbed.addFields(
                         {
-                            name: '> <a:yes_tick:1042831133303386122> - **WOC`✅`VERIFY (BOT)** - UPDATE',
-                            value: `${serverData.verify.join('\n')}`
+                            name: '> <a:yes_tick:1042831133303386122> - **SERVICE (BOT)** - UPDATE',
+                            value: `${serverData.service.join('\n')}`
                         }
                     )
                 }
