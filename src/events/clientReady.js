@@ -121,7 +121,7 @@ module.exports = {
 */
 
     //Auto Delete | Spieler Suche
-        cron.schedule('0 0 */1 * *', () => { // Dieser Cron-Job wird täglich um Mitternacht ausgeführt
+        cron.schedule('0 0 */1 * *', async() => { // Dieser Cron-Job wird täglich um Mitternacht ausgeführt
             const channel = await client.channels.fetch("896743941813207081");
 
             const messages = await channel.messages.fetch({ limit: 100 });
