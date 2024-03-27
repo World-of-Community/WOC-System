@@ -9,7 +9,8 @@ module.exports = {
         .setDescription('» Banne einen User. 🔒')
         .addUserOption(option => option.setName('user').setDescription('Welcher User soll Gebannt werden?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('Gebe ein Grund an').setRequired(true))
-        .addStringOption(option => option.setName('dauer').setDescription('Gebe eine Dauer an (5D 30m) (Keine = Perma)').setRequired(false)),
+        .addStringOption(option => option.setName('dauer').setDescription('Gebe eine Dauer an (5D 30m) (Keine = Perma)')
+        .addChoices({ name: '🕒 » 15 Minuten', value: '15 Minuten' }, { name: '🕒 » 30 Minuten', value: '30 Minuten' }, { name: '🕒 » 45 Minuten', value: '45 Minuten' }, { name: '🕒 » 1 Stunde', value: '1 Stunde'}, { name: '🕒 » 2 Stunden', value: '2 Stunden'}, { name: '🕒 » 3 Stunden', value: '3 Stunden'}, { name: '🕒 » 6 Stunden', value: '6 Stunden'}, { name: '🕒 » 12 Stunden', value: '12 Stunden'}, { name: '🕒 » 24 Stunden', value: '24 Stunden'}, { name: '🕒 » 48 Stunden', value: '48 Stunden'}, { name: '⛔ » PERMANENT', value: 'PERMANENT'}).setRequired(false)),
 
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -34,11 +35,7 @@ module.exports = {
 
             banLogEmbed = new EmbedBuilder()
                 .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
-                .setDescription(`${member} wurde von ${interaction.user} gebannt.\n
-            \n\`👤\` - **BENUTZER INFORMATIONEN**
-            \nBanngrund: \`${reason}\`
-            \nDauer: <t:${timestamp}:D>
-            \nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
+                .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` - **BENUTZER INFORMATIONEN**\nBanngrund: \`${reason}\`\nDauer: <t:${timestamp}:D>\nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
                 .setColor('#ff0000')
                 .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
             member.roles.add(config.banRolle)
