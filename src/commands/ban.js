@@ -19,7 +19,7 @@ module.exports = {
         var banLogEmbed
         const member = interaction.options.getMember('user')
         const reason = interaction.options.getString('grund')
-        const duration = interaction.options.getString('dauer')
+        const duration = interaction.options.getString('dauer') ?? null
         const banLog = await interaction.guild.channels.fetch(config.banLog)
         const banMember = await interaction.guild.members.fetch(member.id)
 
