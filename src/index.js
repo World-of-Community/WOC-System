@@ -169,6 +169,10 @@ cron.schedule('0 18 * * 0', async () => {
     );
     await serverData.save()
 });
+client.on('error', (error) => {
+	const errorMessage = error.stack || error;
+    console.log(errorMessage)
+});
 process.on('unhandledRejection', error => { 
     console.log(error)
   });
