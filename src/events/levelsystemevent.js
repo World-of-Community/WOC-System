@@ -37,7 +37,7 @@ module.exports = {
                     if (!newRankAchieved) {
                         for (const role of roles) {
                             if (level < role.level) {
-                                channel.send(`<a:bier:1196502621427601498>**LEVEL-UP!** ${mention} hat das Level **${level}** erreicht - noch **${role.level - level}** Level bis zu einem **neuen Rang** - Weiter so! <a:Chat1:976129450112593990>`);
+                                channel.send(`<a:bier:1196502621427601498> **LEVEL-UP!** ${mention} hat das Level **${level}** erreicht - noch **${role.level - level}** Level bis zu einem **neuen Rang** - Weiter so! <a:Chat1:976129450112593990>`);
                                 break;
                             }
                         }

@@ -191,6 +191,12 @@ cron.schedule('0 18 * * 0', async () => {
     );
     await serverData.save()
 });
-
+bot.on('error', (error) => {
+	const errorMessage = error.stack || error;
+    console.log(errorMessage)
+});
+process.on('unhandledRejection', error => { 
+    console.log(error)
+  });
 // Bot Start
 bot.login(config.token)
