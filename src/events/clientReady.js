@@ -6,12 +6,28 @@ const messagedb = require("../../Datenbank/messagedb");
 const bandb = require("../../Datenbank/bandb");
 const internal = require("stream");
 const cron = require('node-cron');
+const Parser = require('rss-parser');
+const parser = new Parser();
+const FeedManager = require('../FeedManager');
+const { Giga, Tagesschau } = FeedManager;
 module.exports = {
     name: Events.ClientReady,
     async execute(client) {
+    let lastEntries = {};
+        try {
+            const data = fs.readFileSync('src/json/lastEntries.json');
+            lastEntries = JSON.parse(data);
+        } catch (error) {
+            console.error('Error loading lastEntries:', error);
+        }
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
         console.log('Verbunden mit Discord')
+        //RSS Feed
+        setInterval(async () => {
+            Giga(client, lastEntries);
+            Tagesschau(client, lastEntries);
+        }, 60000);
         // Wechsel Status
         setInterval(async () => {
             const guild = await client.guilds.fetch(config.server);
@@ -51,41 +67,6 @@ module.exports = {
         }, 1000 * 60 * 5)
 
        setInterval(async () => {
-       //      console.log("🚓 | BanDB | Check wird durchgeführt")
-       //      const currentTime = new Date();
-       //      const activeBans = await bandb.find({ endTime: null });
-       //      if (!activeBans) return;
-       //      for (const bans of activeBans) {
-       //          const startTime = new Date(bans.startTime);
-       //          if (bans.duration === null || bans.duration === undefined) {
-       //              console.log(`⛔ | BanDB | ${bans.user} wurde ignoriert`)
-       //              continue;
-       //          }
-       //          if (startTime.getTime() + bans.duration <= currentTime.getTime()) {
-       //              if (bans.endTime) return;
-       //              bans.endTime = new Date();
-       //              await bans.save();
-
-       //              const banneduser = bot.users.cache.get(bans.user)
-
-       //              if (banneduser != null) {
-       //                  const embed = new EmbedBuilder()
-       //                      .setTitle('`👮` » WILLKOMMEN ZURÜCK!')
-       //                      .setDescription(`» Du hast wurdest entbannt, und hast wieder Zugriff zu allen Kanälen\n\n> Wir wünschen dir viel Spaß auf dem ${interaction.guild.name}.`)
-       //                      .setFooter({ text: `©️ WOC | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
-       //                      .setColor('Blurple')
-       //                  banneduser.roles.remove(config.banRolle)
-       //                  banneduser.roles.add(config.memberRolle)
-       //                  await banneduser.send({ embeds: [embed] }).catch(error => console.log(`🔒 | BanDB | ${bans.user} user konnte nicht Kontaktiert werden!`))
-       //                  console.log(`🕛 | BanDB | ${bans.user} wurde entbannt.`)
-       //                  await banSchema.deleteOne({ user: bans.user });
-       //                  console.log(`✅ | BanDB | Eintrag wurde gelöscht`)
-       //              } else {
-       //                  console.log(`🗑️ | BanDB | ${bans.user}'s Eintrag wurde gelöscht.`)
-       //                  await banSchema.deleteOne({ user: bans.user });
-       //              }
-       //          }
-       //      }
             const server = await client.guilds.fetch("815919809379172354")
             async function getMemberList(server, roleID) {
                 var list = [];
@@ -120,27 +101,17 @@ module.exports = {
 
 
     //Auto Delete | Spieler Suche
-        cron.schedule('0 0 * * *', async() => { // Dieser Cron-Job wird täglich um Mitternacht ausgeführt
+    cron.schedule('0 0 * * *', async () => {
             const channel = await client.channels.fetch("896743941813207081");
 
-            const messages = await channel.messages.fetch({ limit: 100 });
-            const filteredMessages = messages.filter(message => !message.pinned);
-        
-            if (filteredMessages.size > 0) {
-                await channel.bulkDelete(filteredMessages);
-            }
+            channel.messages.fetch({ limit: 100 }).then(messages => {
+                messages.forEach(message => {
+                    if (!message.pinned) {
+                        message.delete().catch(console.error);
+                    }
+                });
+            }).catch(console.error);
         });
-        //Werbung
-        cron.schedule('0 6 * * 1', async() => {
-            const channel = client.channels.cache.get(config.werbung);
-        
-            const werbungEmbed = new Discord.EmbedBuilder()
-            .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
-            .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `🤖` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n» Link: https://discord.gg/686M8Cxsaa')
-            .setColor('Blurple')
-            .setFooter({ text: 'World Of Community - Werbung'})
-        
-            await channel.send({ embeds: [werbungEmbed] })
-        })
+
     }
 }
