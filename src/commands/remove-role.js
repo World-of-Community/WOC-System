@@ -4,8 +4,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('remove-role')
         .setDescription('» Entferne eine Rolle eines Nutzers. ❌')
-        .addRoleOption(option => option.setName('rolle').setDescription('» Die Rolle, die entfernt werden soll.'))
-        .addUserOption(option => option.setName('user').setDescription('» Der Nutzer, von dem die Rolle entfernt werden soll.').setRequired(true)),
+        .addRoleOption(option => option.setName('user').setDescription('» Die Rolle, die entfernt werden soll.'))
+        .addUserOption(option => option.setName('role').setDescription('» Der Nutzer, von dem die Rolle entfernt werden soll.').setRequired(true)),
 
 async execute(interaction) {
     // Prüfe, ob der Benutzer Administrator ist
@@ -17,7 +17,7 @@ async execute(interaction) {
     const member = interaction.options.getMember('user') || interaction.member;
 
     // Hole die Rolle, die entfernt werden soll
-    const role = interaction.options.getRole('rolle');
+    const role = interaction.options.getRole('role');
 
     try {
         // Entferne die angegebene Rolle vom Mitglied
