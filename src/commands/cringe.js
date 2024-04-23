@@ -5,6 +5,7 @@ module.exports = {
         .setName('cringe')
         .setDescription('» Zeig jemanden, das er sich peinlich verhält. 😑')
         .addUserOption(option => option.setName('user').setDescription('Welcher User hat sich blamiert?').setRequired(true)),
+        
     async execute(interaction) {
         const cringegifs = [
             'https://tenor.com/de/view/homer-simpson-goodbye-bye-disappears-hide-in-the-bushes-gif-3394899.gif',
@@ -23,6 +24,5 @@ module.exports = {
                     .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: interaction.guild.iconURL({ dynamic: true }) })
             ]
         })
-
     }
 }

@@ -2,11 +2,10 @@ const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder } = require("disc
 const fs = require('fs');
 const bandb = require("../../Datenbank/bandb");
 
-
-
 // Folgende Punkte abarbeiten
 // Nutzer untereinander auflisten hinter den Namen in klammern also @User (Test) den banngrund wenn man bei /ban command ausführt
 // Embed aktualiseren (bearbeiten) sobald man jemanden bannt
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('banliste')
@@ -39,6 +38,7 @@ module.exports = {
 
         const bans = await getMemberList(gebannt.id)
         console.log(bans)
+        
         const bannembed = new EmbedBuilder()
             .setTitle('Information zu den Gebannten Nutzern')
             .setDescription(`Hier ist eine Liste der gebannten Nutzer (\`${bans.length}👥\`)\n\n ${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)

@@ -5,6 +5,7 @@ module.exports = {
         .setName('pat')
         .setDescription('» Streichelt ein braves Mitglied des Servers. 👋')
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du streicheln?').setRequired(true)),
+        
     async execute(interaction) {
         const patgifs = [
             'https://tenor.com/de/view/bunny-gif-4514864.gif',
@@ -23,6 +24,5 @@ module.exports = {
                     .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: interaction.guild.iconURL({ dynamic: true }) })
             ]
         })
-
     }
 }

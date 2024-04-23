@@ -6,6 +6,7 @@ module.exports = {
         .setDescription('» Melde einen User. ❗')
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du Melden?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('Gebe ein Grund an').setRequired(true)),
+        
     async execute(interaction) {
         const reportedUser = await interaction.options.getUser('user');
         const grund = await interaction.options.getString('grund');
@@ -33,6 +34,5 @@ module.exports = {
         } else {
             await interaction.reply({ content: "> `❌` » Es wurde kein Report-Kanal gefunden.", ephemeral: true });
         }
-
     }
 }

@@ -5,6 +5,7 @@ module.exports = {
         .setName('hug')
         .setDescription('» Umarme einen Freund von dir. 🤗')
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du umarmen?').setRequired(true)),
+        
     async execute(interaction) {
         const huggifs = [
             'https://tenor.com/de/view/so-cute-aww-gif-26434851.gif',
@@ -23,6 +24,5 @@ module.exports = {
                     .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: interaction.guild.iconURL({ dynamic: true }) })
             ]
         })
-
     }
 }

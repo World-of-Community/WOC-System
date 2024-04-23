@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('server')
         .setDescription('» Erhalte paar Informationen über den Server. ❓'),
+        
     async execute(interaction) {
         const serverEmbed = new EmbedBuilder()
             .setTitle('Unsere Server Information')
@@ -12,6 +13,5 @@ module.exports = {
             .setFooter({ text: `${interaction.guild.name} | Server Information`, iconURL: interaction.guild.iconURL({ dynamic: true }) });
 
         interaction.reply({ embeds: [serverEmbed], ephemeral: true });
-
     }
 }

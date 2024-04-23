@@ -96,6 +96,5 @@ module.exports = {
                 await msg.edit({ embeds: [updateEmbed] })
             }, 5000);
         })
-
     }
 }

@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('emoji-remove')
         .setDescription('» Entferne deine Ping-Reactions. 📌'),
+        
     async execute(interaction) {
         const userData = await userdb.findOne({ userID: interaction.user.id })
         if (!userData) return;

@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('uptime')
         .setDescription('» Zeigt dir ein paar nützliche Stats an. 🧮'),
+        
     async execute(interaction) {
         function formatUptime(uptime) {
             const minutes = Math.floor((uptime / 60) % 60);
@@ -21,6 +22,5 @@ module.exports = {
             .setColor('Orange')
             .setFooter({ text: `${client.user.displayName} - Bot`, iconURL: 'https://cdn.discordapp.com/attachments/1145779055644393592/1151073428099575858/WOC_Orange.png' });
         await interaction.reply({ embeds: [uptimeEmbed], ephemeral: true });
-
     }
 }

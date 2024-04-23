@@ -5,6 +5,7 @@ module.exports = {
         .setName('laugh')
         .setDescription('» Lache einen Freund aus. 😂')
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du auslachen?').setRequired(true)),
+        
     async execute(interaction) {
         const laughgifs = [
             'https://tenor.com/de/view/funny-laughing-hysterically-crying-gif-21624342.gif',
@@ -25,6 +26,5 @@ module.exports = {
                     .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: interaction.guild.iconURL({ dynamic: true }) })
             ]
         })
-
     }
 }

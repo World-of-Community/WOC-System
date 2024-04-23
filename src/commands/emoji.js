@@ -7,6 +7,7 @@ module.exports = {
         .setDescription('» Lege eine eigene Ping-Reaktion fest. 📌')
         .addStringOption(option => option.setName('emoji').setDescription('Wähle bis zu 3 Emojis').setRequired(true))
         .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
+
         async execute(interaction) {
         const emojisInput = await interaction.options.getString('emoji')
         const userData = await userdb.findOne({ userID: interaction.user.id })
@@ -20,6 +21,5 @@ module.exports = {
 
         await userdb.findOneAndUpdate({ userID: interaction.user.id }, { $set: { reactions: emojiArray } })
         await interaction.reply({ content: '> `✅` » Die Emojis wurden erfolgreich hinzugefügt.', ephemeral: true })
-
     }
 }

@@ -5,6 +5,7 @@ module.exports = {
         .setName('brofist')
         .setDescription('» Verbünde dich mit deinem Bro. 👊')
         .addUserOption(option => option.setName('user').setDescription('Verbünde dich offiziell mit deinem besten Freund.').setRequired(true)),
+        
     async execute(interaction) {
         const brofistgifs = [
             'https://tenor.com/de/view/ken-ryu-brofist-street-fighter-gif-9219109.gif',
@@ -24,6 +25,5 @@ module.exports = {
                     .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: interaction.guild.iconURL({ dynamic: true }) })
             ]
         })
-
     }
 }

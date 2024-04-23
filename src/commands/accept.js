@@ -40,13 +40,12 @@ module.exports = {
                     { name: '`✅` - **Status**', value: `» Dieser Vorschlag wurde vom Team angenommen.\n**Grund:** \`${grund}\` ` }
                 )
                 .setThumbnail('https://cdn.discordapp.com/attachments/1145779055644393592/1146793338251522048/akzeptiert.png')
-                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1145779363019751554/WOC_Server_Idee_Akzeptiert.png')
+                .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909598311616523/WOC_Banner_Server_Idee_Akzeptiert.jpg?ex=6628da38&is=662788b8&hm=b59b746c5bcf908183963e05ad8f6494ad53cd0fc7a953a37ddef36be4622de6&')
                 .setFooter(vorschlagEmbed.footer)
 
             await msg.edit({ embeds: [editEmbed] });
             await msg.reactions.removeAll()
             await interaction.reply({ content: '> `✅` » Du hast diesen Vorschlag akzeptiert.', ephemeral: true });
         });
-
     }
 }

@@ -12,8 +12,8 @@ module.exports = {
         .setName("afk")
         .setDescription("» Zeige allen das du gerade abwesend (AFK) bist. ⌛")
         .addStringOption(option => option.setName('grund').setDescription('Setze einen Grund dafür, dass du AFK bist!').setRequired(false)),
-    async execute(interaction) {
 
+    async execute(interaction) {
         const timestamp = Math.floor(interaction.createdTimestamp / 1000); // Zeitstempel im UNIX-Zeitformat
         const discordTimestamp = `<t:${timestamp}:R>`;
         const grund = await interaction.options.getString("grund") ?? afktexte[Math.floor(Math.random() * afktexte.length)];
@@ -27,7 +27,6 @@ module.exports = {
         await interaction.reply({
             content: `<:AFK:1021086267557023775> | ${interaction.user} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund.replace("*", "")}`
         })
-
         await interaction.member.setNickname(`AFK | ${interaction.member.displayName}`).catch((err) => { })
     }
 }

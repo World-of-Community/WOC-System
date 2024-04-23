@@ -7,6 +7,7 @@ module.exports = {
         .setDescription('» Entbanne einen User. 🔓')
         .addUserOption(option => option.setName('user').setDescription('Welcher User soll Entbannt werden?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('Gebe ein Grund an').setRequired(true)),
+        
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
@@ -29,6 +30,5 @@ module.exports = {
         member.roles.add(config.memberRolle)
         await banLog.send({ embeds: [unbanLogEmbed] })
         await interaction.reply({ content: `> \`✅\` » Du hast ${member} erfolgreich entbannt.`, ephemeral: true })
-
     }
 }

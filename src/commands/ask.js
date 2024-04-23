@@ -18,6 +18,5 @@ module.exports = {
         await interaction.reply({
             content: `${text}`
         })
-
     }
 }

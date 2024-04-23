@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('» Listet dir alle Befehle vom System-Bot auf. 🧡'),
+        
     async execute(interaction) {
 
         const helpEmbed = new EmbedBuilder()
