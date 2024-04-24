@@ -109,6 +109,62 @@ module.exports = {
             }
         }
 
+        const forbiddenWords = [
+            'bitch',
+            'b*tch',
+            'Bitch',
+            'B*tch',
+            'vergewaltiger',
+            'kinderschänder',
+            'arschloch',
+            'wixxer',
+            'wichser',
+            'wixer',
+            'schwuchtel',
+            'transe',
+            'vergewaltige',
+            'kinderficker',
+            'schlampe',
+            'nazi',
+            'neger',
+            'nigga',
+            'niga',
+            'pedo',
+            'fehlgeburt',
+            'arschfotze',
+            'suizid',
+            'pedophiler',
+            'porn',
+            'nudes',
+            'hund',
+            'huso',
+            'hrsn',
+            'huren sohn',
+            'hurensohn',
+            'hurentochter',
+            'hs',
+            'hzm'
+        ]
+    
+        if (forbiddenWords.some((word) => (message.content.toLowerCase()).includes(word)) && message.guild.id === "815919809379172354") {
+            setTimeout(async () => {
+                await message.delete()
+            }, 100)
+    
+        // Warn Embed
+        const WarnEmbed = new MessageEmbed()
+        .setTitle('Verbotenes Wort erkannt')
+        .setDescription(`${message.author}, Bitte unterlasse das Beleidigen an anderer Nutzer und halte dich an die **Server-Regeln!**`)
+        .setColor('Red')
+    
+        const embedMessage = await message.channel.send({ embeds: [WarnEmbed] });
+    
+        // Löscht das Embed nach 10 Sekunden
+        setTimeout(() => {
+            embedMessage.delete();
+        }, 10000);
+        }
+
         // Suggestion Channel
         if (message.channelId === config.vorschläge) {
             if (message.author.bot) return;
