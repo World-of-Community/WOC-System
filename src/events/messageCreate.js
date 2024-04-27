@@ -108,61 +108,77 @@ module.exports = {
                 }
             }
         }
+        
+const forbiddenWords = [
+        'Analphabet',
+        'opfer',
+        'pussy',
+        'hässlich',
+        'hässlichkeit',
+        'Eier',
+        'bitch',
+        'b*tch',
+        'Bitch',
+        'B*tch',
+        'vergewaltiger',
+        'kinderschänder',
+        'arschloch',
+        'wixxer',
+        'wichser',
+        'wixer',
+        'schwuchtel',
+        'transe',
+        'vergewaltige',
+        'kinderficker',
+        'schlampe',
+        'nazi',
+        'neger',
+        'nigga',
+        'niga',
+        'pedo',
+        'fehlgeburt',
+        'arschfotze',
+        'suizid',
+        'pedophiler',
+        'porn',
+        'nudes',
+        'hund',
+        'huso',
+        'hrsn',
+        'huren sohn',
+        'hurensohn',
+        'hurentochter',
+        'hs',
+        'hzm'
+    ]
 
-        const forbiddenWords = [
-            'bitch',
-            'b*tch',
-            'Bitch',
-            'B*tch',
-            'vergewaltiger',
-            'kinderschänder',
-            'arschloch',
-            'wixxer',
-            'wichser',
-            'wixer',
-            'schwuchtel',
-            'transe',
-            'vergewaltige',
-            'kinderficker',
-            'schlampe',
-            'nazi',
-            'neger',
-            'nigga',
-            'niga',
-            'pedo',
-            'fehlgeburt',
-            'arschfotze',
-            'suizid',
-            'pedophiler',
-            'porn',
-            'nudes',
-            'hund',
-            'huso',
-            'hrsn',
-            'huren sohn',
-            'hurensohn',
-            'hurentochter',
-            'hs',
-            'hzm'
-        ]
-    
-        if (forbiddenWords.some((word) => (message.content.toLowerCase()).includes(word)) && message.guild.id === "815919809379172354") {
-            setTimeout(async () => {
-                await message.delete()
-            }, 100)
-    
-        // Warn Embed
-        const WarnEmbed = new MessageEmbed()
-        .setTitle('Verbotenes Wort erkannt')
-        .setDescription(`${message.author}, Bitte unterlasse das Beleidigen an anderer Nutzer und halte dich an die **Server-Regeln!**`)
-        .setColor('Red')
-    
-        const embedMessage = await message.channel.send({ embeds: [WarnEmbed] });
-    
-        // Löscht das Embed nach 10 Sekunden
-        setTimeout(() => {
-            embedMessage.delete();
-        }, 10000);
+    if (forbiddenWords.some((word) => (message.content.toLowerCase()).includes(word)) && message.guild.id === "815919809379172354") {
+        setTimeout(async () => {
+            await message.delete()
+        }, 100)
+
+    // Warn Embed
+    const WarnEmbed = new EmbedBuilder()
+    .setTitle('Verbotenes Wort erkannt')
+    .setDescription(`${message.author}, Bitte unterlasse das Beleidigen an andere Nutzer und halte dich an die **Server-Regeln!**`)
+    .setColor('Red')
+
+    const embedMessage = await message.channel.send({ embeds: [WarnEmbed] });
+
+    // Löscht das Embed nach 10 Sekunden
+    setTimeout(() => {
+        embedMessage.delete();
+    }, 10000);
+    }
+        
+        // Überprüfe, ob die Nachricht im gewünschten Kanal ist
+        if (message.channel.id === '896743941813207081') {
+        try {
+            // Reagiere mit einem bestimmten Emoji
+            await message.react('🔍');
+        } catch (error) {
+            console.error('Fehler beim Hinzufügen der Reaktion:', error);
+            }
         }
 
         // Suggestion Channel
@@ -213,7 +229,7 @@ module.exports = {
                 })
             })
         }
-
+    /*
         // Spielersuche
         if (message.channelId === config.threads) {
             if (await serverdb.findOne({ guildID: message.guildId, deactivated: { $in: ['spielersuche'] } })) return message.reply({ content: '> `⛔` » Das Spielersuche System ist momentan deaktiviert.' })
@@ -231,18 +247,21 @@ module.exports = {
                 await channel.send({ content: '> `✅` » Ich habe für dich ein Thread erstellt: ' + channel.name })
             });
         }
+        */
 
         // Ränge Info
         if (message.content === '!ränge-info') {
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()
+            
+            const channel = message.guild.channels.cache.get("872063101640532008"); // Channel ID
+            const msg = await channel.messages.fetch("1181152581838450719"); // Nachricht ID
 
             const rängeEmbed = new EmbedBuilder()
-                .setTitle('🏆 𑁉 Erhalte neue Ränge & einzigartige Erfolge!')
-                .setDescription('» Hier findest du alle Informationen über die meisten Ränge auf unserem Server und dessen Vorteile, Anforderungen und/oder Aufgaben.\n\n`📌` » Klicke auf eine Kategorie, um dir die Listen anzusehen!\n`🚑` » Öffne ein Ticket im Support bei Fragen oder Problemen.')
-                .setColor('#ff8800')
-                .setThumbnail('https://cdn.discordapp.com/attachments/969637733033205851/1145774783708020777/levels.png')
-                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1145779168194351214/WOC_Banner_Range_Information.png')
+                .setTitle('`🏆` 𑁉 ERHALTE NEUE RÄNGE & VORTEILE!')
+                .setDescription('<:Pfeil:1119709908540076124> Jeder Rang hat seine eigenen Vorteile und seine eigene Art und Weise wie man diesen erhalten kann.\n\n`🏆` - **WELCHE VORTEILE GIBT ES?**\n<:Pfeil:1119709908540076124> Sie sind sehr **zahlreich:** von Discord-Nitro Basic, bis hin zu einem **Ping-Emoji für Nachrichten** auf unserem Discord-Server!\n\n- `⭐` **Server-Erfolge:** Diese sind nur für das Sammeln gedacht und bieten keine direkten Vorteile\n- `🏆` **Level-Rollen:** Sei ein aktives Mitglied und steige dadurch **neue Level auf** - dadurch erhältst du viele Vorteile!\n- `💎` **Exklusive Rollen:** Jeder Rang aus dieser Liste hat einen eigenen Weg um freigeschaltet zu werden!\n\n`❓` - **WELCHE ROLLEN BESITZT IHR?**\n<:Pfeil:1119709908540076124> `📌` » Klicke auf das **untere Menü** um alle Rollen zu sehen!\n<:Pfeil:1119709908540076124> `🚑` » Öffne ein Ticket im Support bei Fragen oder Problemen.')
+                .setColor('Orange')
+                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1181151183314898944/WOC_Banner_Rollen_Information.jpg?ex=662620c2&is=6613abc2&hm=e50bf7e18d53287338fa0f2db99b156eba265188edd269f026226ec091f192b0&')
                 .setFooter({ text: 'Klicke auf eine Kategorie, um dir die Rollen anzusehen!', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
 
             const rängeMenu = new ActionRowBuilder()
@@ -283,7 +302,7 @@ module.exports = {
                             },
                         )
                 )
-            await message.channel.send({ embeds: [rängeEmbed], components: [rängeMenu] })
+            await msg.edit({ embeds: [rängeEmbed], components: [rängeMenu] })
         }
 
         // Regelwerk
@@ -313,10 +332,14 @@ module.exports = {
         if (message.content === '!partner') {
             if (!message.member.permissions.has('Administrator')) return;
             message.delete()
+            
+            const channel = message.guild.channels.cache.get("1172819623935221810"); // Channel ID
+            const msg = await channel.messages.fetch("1187070677073801268"); // Nachricht ID
 
             const partnerEmbed = new EmbedBuilder()
-                .setDescription('# `👥` - **SO WIRST DU EIN PARTNER!**\nEin **Server-Partner** von uns zu sein ist eine **einmalige Möglichkeit**, um eine **riesige Auswahl an Usern** zu erreichen.\n\n# `🔥` ᕁ **WAS SIND DIE BEDINGUNGEN?**\n\n<:Pfeil:1119709908540076124> Um ein Partner zu werden, musst du die **unteren Voraussetzungen** erfüllen, damit du dich bewerben kannst.\n\n- `👥` » Mindestens **100 Server-Mitglieder** besitzen!\n- `💬` » Hält <#815922286502346773> und die **[Discord ToS](https://discord.com/terms)** ein!\n- `❤️` » Ist ein **vollständiger deutscher Discord-Server**!\n- `📢` » Muss unserem <#1177536720229650442> Kanal **folgen**!\n\n# `📡` ᕁ **WAS SIND DIE VORTEILE?**\n<:Pfeil:1119709908540076124> Wir veranstalten regelmäßig Events um die Server unserer Partner noch etwas bekannter zu machen.')
+                .setDescription('# `👥` - **SO WIRST DU EIN PARTNER!**\nEin **Server-Partner** von uns zu sein ist eine **einmalige Möglichkeit**, um eine **riesige Auswahl an Usern** zu erreichen.\n\n# `🔥` ᕁ **WAS SIND DIE BEDINGUNGEN?**\n\n<:Pfeil:1119709908540076124> Um ein Partner zu werden, musst du die **unteren Voraussetzungen** erfüllen, damit du dich bewerben kannst.\n\n- `👥` » Mindestens **100 Server-Mitglieder** besitzen!\n- `💬` » Hält <#815922286502346773> und die **[Discord ToS](https://discord.com/terms)** ein!\n- `💖` » Ist ein **vollständiger deutscher Discord-Server**!\n- `📢` » Muss unserem <#1177536720229650442> Kanal **folgen**!\n\n# `📡` ᕁ **WAS SIND DIE VORTEILE?**\n<:Pfeil:1119709908540076124> Wir veranstalten regelmäßig Events um die Server unserer Partner noch etwas bekannter zu machen.')
                 .setColor('Blurple')
+                .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1230394438497603624/WOC_Partner_werden_Banner.jpg?ex=6633291d&is=6620b41d&hm=6215f23decf0d736fa27dfd023943667d78792afbab6fe67ee44631bf62a430a&')
 
             const partnerButton = new ActionRowBuilder()
                 .addComponents(
@@ -325,8 +348,7 @@ module.exports = {
                         .setLabel('✅ » Als Partner bewerben')
                         .setStyle(ButtonStyle.Success)
                 )
-            await message.channel.send({ embeds: [partnerEmbed], components: [partnerButton] })
+            await msg.edit({ embeds: [partnerEmbed], components: [partnerButton] })
         }
-
     }
 }
