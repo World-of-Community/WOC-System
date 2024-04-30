@@ -239,6 +239,12 @@ module.exports = {
         }
         if (interaction.isButton()) {
 
+            switch (interaction.customId) {
+                case "example":
+                    await interaction.update({embeds: [embed]})
+                break;
+            }
+
             if (interaction.customId === 'partner') {
                 const partnerModal = new ModalBuilder()
                     .setTitle('🤝 - BEWERBEN ALS PARTNER')
