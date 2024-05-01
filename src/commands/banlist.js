@@ -45,6 +45,6 @@ module.exports = {
             .setColor('Red')
 
         await interaction.channel.send({ embeds: [bannembed] })
-        await interaction.reply({content: "Fertig", ephemeral: true})
+        await interaction.reply({content: "> `✅` » Das Embed wurde gesendet.", ephemeral: true})
     }
 }

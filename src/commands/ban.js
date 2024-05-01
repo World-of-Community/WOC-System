@@ -36,10 +36,12 @@ module.exports = {
             banLogEmbed = new EmbedBuilder()
                 .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
                 .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` - **BENUTZER INFORMATIONEN**\nBanngrund: \`${reason}\`\nDauer: \`${duration}\`\nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
-                .setColor('#ff0000')
-                .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
-            member.roles.add(config.banRolle)
-            member.roles.remove(config.memberRolle)
+                .setColor('Red')
+                .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` })
+            
+                member.roles.add(config.banRolle)
+                member.roles.remove(config.memberRolle)
+
             const newBan = new bandb({
                 creator: interaction.user,
                 user: member.id,
@@ -52,15 +54,13 @@ module.exports = {
         } else {
             banLogEmbed = new EmbedBuilder()
                 .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
-                .setDescription(`${member} wurde von ${interaction.user} gebannt.\n
-                    \n\`👤\` - **BENUTZER INFORMATIONEN**
-                    \nBanngrund: \`${reason}\`
-                    \nDauer: PERMANENT
-                    \nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
-                .setColor('#ff0000')
-                .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
-            member.roles.add(config.banRolle)
-            member.roles.remove(config.memberRolle)
+                .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` - **BENUTZER INFORMATIONEN**\nBanngrund: \`${reason}\`\nDauer: \`${duration}\`\nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
+                .setColor('Red')
+                .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` })
+            
+                member.roles.add(config.banRolle)
+                member.roles.remove(config.memberRolle)
+
             const newBan = new bandb({
                 creator: interaction.user,
                 user: member.id,
