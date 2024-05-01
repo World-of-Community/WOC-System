@@ -238,6 +238,18 @@ module.exports = {
             }
         }
         if (interaction.isButton()) {
+            let helpEmbed;
+            switch (interaction.customId) {
+                case "example":
+                helpEmbed = new EmbedBuilder()
+                .setTitle('Title')
+                break;
+                case "examle2":
+                    helpEmbed = new EmbedBuilder()
+                    .setTitle('Title')
+                break;
+            await interaction.update({embeds: [helpEmbed]})
+            }
 
             if (interaction.customId === 'partner') {
                 const partnerModal = new ModalBuilder()

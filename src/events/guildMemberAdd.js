@@ -8,6 +8,7 @@ module.exports = {
         const config = JSON.parse(file);
         const welcomeChannel = await member.client.channels.fetch(config.willkommen)
         const client = member.client
+        const guild = member.guild;
 
         const contents = [
             `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **ist gerade auf den Server geschlittert** <a:winken:1086560167442796544>`,
@@ -52,17 +53,17 @@ module.exports = {
         const interval = 24 * 60 * 60 * 1000; // 24 Stunden in Millisekunden
 
         try {
+            if(guild.members.cache.has(member.id)) {
             await member.roles.add(newRole);
-            console.log(`Rolle ${newRole.name} wurde ${member.user.username} zugewiesen.`);
 
             startRoleProcess();
+            }
         } catch (err) {
             console.error('Fehler beim Zuweisen der Rolle:', err);
         }
 
         async function startRoleProcess() {
              
-            const guild = client.guilds.cache.first(); 
             let initialRole = guild.roles.cache.get("1222122625594294272");
             let newRole = guild.roles.cache.get("815920703067914290");
 
@@ -75,13 +76,13 @@ module.exports = {
             setInterval(async () => {
               const membersWithInitialRole = initialRole.members; 
               membersWithInitialRole.forEach(async (member) => {
+                if (guild.members.cache.has(member.id)) {
                 // Erste Rolle entfernen
                 await member.roles.remove(initialRole);
-                console.log(`Rolle ${initialRole.name} wurde von ${member.user.username} entfernt.`);
           
                 // Zweite Rolle hinzufügen
                 await member.roles.add(newRole);
-                console.log(`Rolle ${newRole.name} wurde ${member.user.username} zugewiesen.`);
+                }
               });
             }, interval);
           }
