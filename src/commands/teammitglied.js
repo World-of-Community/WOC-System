@@ -1,11 +1,12 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('teammitglied')
         .setDescription('» Fügt ein neues Teammitglied hinzu. ➕')
         .addUserOption(option => option.setName('user').setDescription('Welcher User soll eine Team-Rolle bekommen?').setRequired(true))
-        .addRoleOption(option => option.setName('role').setDescription('» Welche Rolle soll der User bekommen?').setRequired(true)),
+        .addRoleOption(option => option.setName('role').setDescription('» Welche Rolle soll der User bekommen?').setRequired(true))
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
     async execute(interaction) {
         const member = interaction.options.getMember('user');
@@ -17,11 +18,6 @@ module.exports = {
             return interaction.reply('Fehler beim Verarbeiten des Befehls.');
         }
         
-            // Überprüfen, ob der Nutzer die Berechtigung hat, Rollen zu vergeben
-    if (!interaction.member.permissions.has('ADMINISTRATOR')) {
-        return interaction.reply({ content: '> `❌` » Du hast keine Berechtigung, Rollen zu vergeben.', ephemeral: true });
-    }
-
         try {
             await member.roles.add(role);
 
