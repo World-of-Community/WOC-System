@@ -1,4 +1,5 @@
-const { Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
+const config = require("../json/config.json")
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -63,7 +64,7 @@ module.exports = {
 
                     const spielerEmbed = new EmbedBuilder()
                         .setTitle('`👥` 𑁉 UNSERE MITGLIEDER-ROLLEN')
-                        .setDescription(`» Du kannst **Kostenlos** die Epische-Rolle nach **2 Wochen** Onlinezeit dir Freischalten oder andere höhere Mitglieder-Rollen durch eine Spende oder durch Gewinnspiele erhalten.\n\n> \`🌟\` 𑁉 <@&815921105407574056> (\`${roleCountsupreme}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&917826787977871441>\n<:PfeilBlau:1119711275014955080> Wir schenken dir einmal <a:basic:1186636165567229972> **DISCORD NITRO BASIC!** <a:basic:1186636165567229972>\n\n> \`⭐\` 𑁉 <@&917826787977871441> (\`${roleCountpremium}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&815920452337139733>\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`🔮\` 𑁉 <@&815920452337139733> (\`${roleCountlegende}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775556611997697>\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich **jemand erwähnt!**\n\n> \`👻\` 𑁉 <@&835775556611997697> (\`${roleCountemerald}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775627721179167>\n<:PfeilBlau:1119711275014955080> **Schreibrechte** erhalten in dem Kanal: <#1172920374892183592>\n\n> \`💎\` 𑁉 <@&835775627721179167> (\`${roleCountdiamond}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775597446955048>\n<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n> \`🟣\` 𑁉 <@&835775597446955048> (\`${roleCountepisch}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&815920703067914290>\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einbetten.\n\n> \`👥\` 𑁉 <@&815920703067914290> (\`${roleCountmitglied}👥\`)\n<:PfeilBlau:1119711275014955080> **Standard-Rolle** auf dem Server.`)
+                        .setDescription(`» Chatte mit **anderen Server-Mitgliedern** oder **unterhalte dich** in unseren Sprachkanälen um **die folgenden Ränge** freizuschalten.\n\n> \`🌟\` 𑁉 <@&815921105407574056> (\`${roleCountsupreme}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&917826787977871441>\n<:PfeilBlau:1119711275014955080> Wir schenken dir einmal <a:basic:1186636165567229972> **DISCORD NITRO BASIC!** <a:basic:1186636165567229972>\n\n> \`⭐\` 𑁉 <@&917826787977871441> (\`${roleCountpremium}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&815920452337139733>\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`🔮\` 𑁉 <@&815920452337139733> (\`${roleCountlegende}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775556611997697>\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich **jemand erwähnt!**\n\n> \`👻\` 𑁉 <@&835775556611997697> (\`${roleCountemerald}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775627721179167>\n<:PfeilBlau:1119711275014955080> **Schreibrechte** erhalten in dem Kanal: <#1172920374892183592>\n\n> \`💎\` 𑁉 <@&835775627721179167> (\`${roleCountdiamond}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775597446955048>\n<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n> \`🟣\` 𑁉 <@&835775597446955048> (\`${roleCountepisch}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&815920703067914290>\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einbetten.\n\n> \`👥\` 𑁉 <@&815920703067914290> (\`${roleCountmitglied}👥\`)\n<:PfeilBlau:1119711275014955080> **Standard-Rolle** auf dem Server.`)
                         .setColor('Grey')
                         .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1193944127633633471/WOC_Banner_Mitglieder_Rollen.jpg?ex=65ae8e1e&is=659c191e&hm=0ccf390ea989c63a96c2baae51e67162dcfbafc8fff0ed9b6e9b652efd4bd682&')
                         .setFooter({ text: 'Öffne ein Ticket im Support bei Fragen oder Problemen.', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
@@ -205,6 +206,130 @@ module.exports = {
             });
         }
         
+        // Bann Button
+         if (interaction.isButton()) {
+            if(interaction.customId === 'ticket_erledigt') {
+                const mention = interaction.message.content
+                const embed = new EmbedBuilder()
+                .setColor("Green")
+                .setDescription("Danke für deine Meldung, wir haben es erledigt oder in Bearbeitung genommen.")
+                
+                interaction.reply({ content: mention, embeds: [embed] })
+            }
+            else if(interaction.customId === 'ticket_close_deny') {
+                const embed = new EmbedBuilder()
+                .setColor("Red")
+                .setDescription(`${interaction.user} hat sich dazu entschieden nicht das Ticket zu schließen`)
+                
+                interaction.update({ embeds: [embed], components: [] })
+            }
+            else if(interaction.customId === 'ticket_close_accept') {
+                const embed = new EmbedBuilder()
+                .setColor("Red")
+                .setDescription(`Das Ticket wird in \`5 Sekunden\` geschlossen.`)
+                
+                interaction.update({ embeds: [embed], components: [] })
+                setTimeout(async () => {
+                    await interaction.channel.delete();
+                }, 5000);
+            }
+            else if(interaction.customId === 'ticket_schliessen') {
+                const mention = interaction.message.content
+                const embed = new EmbedBuilder()
+                .setColor("Blurple")
+                .setTitle("Schließ Anfrage")
+                .setDescription(`${interaction.user} hat das Schließen dieses Tickets angefordert.\n\nBitte akzeptiere oder verweigere mit den untenstehenden Schaltflächen.`)
+                
+                const buttons = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                        .setCustomId('ticket_close_accept')
+                        .setLabel('✅ » Akzeptieren & Schließen')
+                        .setStyle(ButtonStyle.Success),
+                        new ButtonBuilder()
+                        .setCustomId('ticket_close_deny')
+                        .setLabel('❌ » Ablehnen & Offen lassen')
+                        .setStyle(ButtonStyle.Secondary)
+                    )
+                
+                interaction.reply({ content: mention, embeds: [embed], components: [buttons] })
+            }
+            else if (interaction.customId === 'bann-ticket') {
+                const bannModal = new ModalBuilder()
+                .setTitle('⛔ - ENTBANNUNGSTICKET')
+                .setCustomId('bann-modal');
+
+                const BanngrundInput = new ActionRowBuilder().addComponents(
+                   new TextInputBuilder() 
+                    .setCustomId('banngrund')
+                    .setLabel('Gebe deinen Banngrund an')
+                    .setPlaceholder('Wieso wurdest du gebannt?')
+                    .setStyle(TextInputStyle.Short)
+                    .setRequired(true)
+                )
+
+                const EntbannungsbeschreibungInput = new ActionRowBuilder().addComponents(
+                    new TextInputBuilder()
+                    .setCustomId('entbannungsbeschreibung')
+                    .setLabel('Wieso möchtest du wieder Entbannt werden?')
+                    .setPlaceholder('Gebe hier deine Entbannungsbeschreibung an.')
+                    .setMinLength(5)
+                    .setMaxLength(4000)
+                    .setStyle(TextInputStyle.Paragraph)
+                    .setRequired(true)
+                )
+
+                bannModal.addComponents(BanngrundInput, EntbannungsbeschreibungInput);
+
+                await interaction.showModal(bannModal)
+            }
+        }
+        
+        if (interaction.isModalSubmit()) {
+            if(interaction.customId === "bann-modal") {
+                const bannInfo = await interaction.fields.getTextInputValue('banngrund');
+                const bannDescription = await interaction.fields.getTextInputValue('entbannungsbeschreibung');
+                
+                interaction.guild.channels.create({
+                    name: `unban-${interaction.user.username}`,
+                    type: ChannelType.GuildText,
+                    parent: "886985648714682439",
+                    
+                }).then(async channel => {
+                    const buttons = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                        .setCustomId('ticket_erledigt')
+                        .setLabel('Erledigt')
+                        .setStyle(ButtonStyle.Success),
+                        new ButtonBuilder()
+                        .setCustomId('ticket_schliessen')
+                        .setLabel('Schließen')
+                        .setStyle(ButtonStyle.Danger)
+                    )
+                    
+                    const bannsupport = await interaction.guild.roles.cache.get('1209101841015504916')
+                        
+                    const bannEmbed = new EmbedBuilder()
+                    .setTitle("Entbannungsantrag")
+                    .setDescription("Es wurde erfolgreich ein Ticket für einen Entbannungsantrag erstellt. Hier sind einige Infos:")
+                    .setColor("Red")
+                    .addFields(
+                        {
+                        	name: "Banngrund-Info",
+                            value: `\`${bannInfo}\``
+                    	},
+                        {
+                            name: "Entbannungs-Beschreibung",
+                            value: `\`${bannDescription}\``
+                        }
+                    )
+                    channel.send({ content: `${interaction.user} | <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
+                        interaction.reply({ content: `Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen **[hier](${msg.url})** finden.`, ephemeral: true })
+                    })
+                })
+            }}
+        
         if (interaction.isModalSubmit()) {
             if (interaction.customId === "partner-modal") {
                 const partnerName = await interaction.fields.getTextInputValue('partner-name');
@@ -238,18 +363,6 @@ module.exports = {
             }
         }
         if (interaction.isButton()) {
-            let helpEmbed;
-            switch (interaction.customId) {
-                case "example":
-                helpEmbed = new EmbedBuilder()
-                .setTitle('Title')
-                break;
-                case "examle2":
-                    helpEmbed = new EmbedBuilder()
-                    .setTitle('Title')
-                break;
-            await interaction.update({embeds: [helpEmbed]})
-            }
 
             if (interaction.customId === 'partner') {
                 const partnerModal = new ModalBuilder()
@@ -272,7 +385,7 @@ module.exports = {
                         .setPlaceholder('Wir sind ein allgemeiner Deutscher Discord Server mit Gaming, Community und vielem mehr!')
                         .setMinLength(25)
                         .setMaxLength(500)
-                        .setStyle(TextInputStyle.Short)
+                        .setStyle(TextInputStyle.Paragraph)
                         .setRequired(true)
                 )
     
