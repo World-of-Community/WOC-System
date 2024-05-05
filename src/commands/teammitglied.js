@@ -15,7 +15,7 @@ module.exports = {
         const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
         
         if (!member || !role || !targetChannel) {
-            return interaction.reply('Fehler beim Verarbeiten des Befehls.');
+            if (!vorschlagEmbed.fields) return interaction.reply({ content: '> `❌` » Fehler ist aufgetreten', ephemeral: true })
         }
         
         try {
