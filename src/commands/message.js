@@ -3,8 +3,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('message')
-        .setDescription('Sendet eine Nachricht und ein Embed an einen Benutzer per Direktnachricht')
-        .addUserOption(option => option.setName('user').setDescription('Der Benutzer, an den die Nachricht gesendet werden soll').setRequired(true))
+        .setDescription('» Sendet eine Nachricht an ein Nutzer per Direktnachricht')
+        .addUserOption(option => option.setName('user').setDescription('» Der Benutzer, an den die Nachricht gesendet werden soll').setRequired(true))
         .addStringOption(option => option.setName('nachricht').setDescription('» Die Nachricht, die gesendet werden soll').setRequired(true)),
 
     async execute(interaction) {
