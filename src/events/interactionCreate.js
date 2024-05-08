@@ -340,7 +340,7 @@ module.exports = {
                 await channel.send({
                     embeds: [
                         new EmbedBuilder()
-                            .setDescription(`${interaction.user} möchte sich als **Partner** bewerben!\n\n> **Server-Link**\n\`${partnerName}\`\n\n> **Server-Beschreibung**\n\`${partnerBeschreibung}\``)
+                            .setDescription(`${interaction.user} möchte sich als **Partner** bewerben!\n\n> \`🔗\` » **Server-Link**\n\`${partnerName}\`\n\n> \`💬\` » **Server-Beschreibung**\n\`${partnerBeschreibung}\``)
                             .setColor("Orange")
                     ],
                     components: [
