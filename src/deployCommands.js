@@ -9,7 +9,6 @@ const deployCommands = async function deploy() {
     const file = fs.readFileSync('src/json/config.json', 'utf-8');
     const config = JSON.parse(file);
 
-
     const commands = []
 
     const commandFiles = fs.readdirSync("./src/commands").filter(file => file.endsWith(".js"))
@@ -20,7 +19,6 @@ const deployCommands = async function deploy() {
             commands.push(command.data.toJSON())
         }
     })
-
 
     const restClient = new REST({ version: "10" }).setToken(config.token)
 

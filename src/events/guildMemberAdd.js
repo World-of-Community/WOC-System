@@ -1,4 +1,4 @@
-const { Events, ActivityType, EmbedBuilder, ChannelType } = require("discord.js");
+const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const client = require('../index');
 const fs = require('fs')
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
