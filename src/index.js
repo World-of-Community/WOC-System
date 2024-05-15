@@ -3,7 +3,7 @@ const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
-const bot = new Discord.Client({
+const client = new Discord.Client({
     intents: [
         Discord.GatewayIntentBits.GuildIntegrations, Discord.GatewayIntentBits.GuildMembers, Discord.GatewayIntentBits.GuildMessageTyping,
         Discord.GatewayIntentBits.GuildMessages, Discord.GatewayIntentBits.GuildPresences, Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.MessageContent, Discord.GatewayIntentBits.GuildMessageReactions,
@@ -24,10 +24,10 @@ const cron = require('node-cron');
 const serverdb = require('../Datenbank/serverdb');
 const userdb = require('../Datenbank/userdb');
 const { deployCommands } = require('./deployCommands');
-
+let invites = new Map();
 // Lade Commands
 deployCommands()
-bot.commands = new Discord.Collection()
+client.commands = new Discord.Collection()
 
 const commandFiles = fs.readdirSync("./src/commands").filter(file => file.endsWith(".js"))
 console.log('-------------------------------------------')
@@ -36,7 +36,7 @@ console.log('-------------------------------------------')
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     if (command.data) {
-        bot.commands.set(command.data.name, command);
+        client.commands.set(command.data.name, command);
         console.log(`|   ${(command.data.name).padEnd(17, ' ')}        |     ✅     |`)
     }
 }
@@ -50,9 +50,9 @@ for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const event = require(filePath);
     if (event.once) {
-        bot.once(event.name, (...args) => event.execute(...args));
+        client.once(event.name, (...args) => event.execute(...args));
     } else {
-        bot.on(event.name, (...args) => event.execute(...args));
+        client.on(event.name, (...args) => event.execute(...args));
     }
 }
 
@@ -155,7 +155,7 @@ cron.schedule('0 0 * * *', async () => {
 
 // Werbung
 setInterval(() => {
-    const guild = bot.guilds.cache.get("815919809379172354");
+    const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
       
     const bannerEmbed = new Discord.EmbedBuilder()
@@ -175,9 +175,29 @@ setInterval(() => {
     })
   }, 60000 * 360 ); // 6 Stunden in Millisekunden
 
+// Threads Checker
+cron.schedule('0 0 * * *', async () => {
+    const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
+    const threads = await threaddb.find();
+
+    for (const thread of threads) {
+        const threadCreatedAt = new Date(thread.createdAt);
+        const currentTime = new Date();
+
+        if (currentTime - threadCreatedAt >= sevenDaysInMilliseconds) {
+            const threadChannel = await client.channels.cache.get(thread.threadID)
+
+            if (threadChannel) {
+                await threadChannel.delete();
+                await threaddb.findOneAndDelete({ threadID: thread.threadID });
+            }
+        }
+    }
+});
+
 // Changelog Embed
 cron.schedule('0 0 * * 1', async () => {
-    const channel = bot.channels.cache.get(config.changelog);
+    const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
 
     if (!serverData) return;
@@ -248,7 +268,7 @@ cron.schedule('0 0 * * 1', async () => {
 
 // 18 Uhr Message
 cron.schedule('0 18 * * 0', async () => {
-    const channel = bot.channels.cache.get(config.changelog);
+    const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
 
     if (!serverData) return;
@@ -268,7 +288,7 @@ cron.schedule('0 18 * * 0', async () => {
     );
     await serverData.save()
 });
-bot.on('error', (error) => {
+client.on('error', (error) => {
 	const errorMessage = error.stack || error;
     console.log(errorMessage)
 });
@@ -276,4 +296,4 @@ process.on('unhandledRejection', error => {
     console.log(error)
   });
 // Bot Start
-bot.login(config.token)
+client.login(config.token)

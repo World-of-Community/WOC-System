@@ -1,14 +1,14 @@
-const { Events, ActivityType } = require("discord.js");
+const { Events, ActivityType, EmbedBuilder, ChannelType } = require("discord.js");
+const client = require('../index');
 const fs = require('fs')
-
+const file = fs.readFileSync('src/json/config.json', 'utf-8');
+const config = JSON.parse(file);
 module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        const welcomeChannel = await member.client.channels.fetch(config.willkommen)
-        const client = member.client
-        const guild = member.guild;
+        const welcomeChannel = await member.guild.channels.cache.get(config.willkommen)
 
         const contents = [
             `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **ist gerade auf den Server geschlittert** <a:winken:1086560167442796544>`,
@@ -47,44 +47,26 @@ module.exports = {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
         
-        // Rolle für 24 Stunden
-        const newRole = member.guild.roles.cache.get("1222122625594294272");
-        if (!newRole) return console.error('Rolle wurde nicht gefunden.');
-        const interval = 24 * 60 * 60 * 1000; // 24 Stunden in Millisekunden
+        const logChannelId = '886269505330896926';
 
-        try {
-            if(guild.members.cache.has(member.id)) {
-            await member.roles.add(newRole);
+        member.client.on('guildMemberAdd', (member) => {
+            const join = new EmbedBuilder()
+                .setTitle('NUTZER BEIGETRETEN')
+                .setColor('Green')
+                .setDescription(`${member.user.displayName} ist dem Server beigetreten.`);
 
-            startRoleProcess();
-            }
-        } catch (err) {
-            console.error('Fehler beim Zuweisen der Rolle:', err);
-        }
+            const logChannel = member.guild.channels.cache.get(logChannelId);
+            if (logChannel) logChannel.send({ embeds: [join] });
+        });
 
-        async function startRoleProcess() {
-             
-            let initialRole = guild.roles.cache.get("1222122625594294272");
-            let newRole = guild.roles.cache.get("815920703067914290");
+        member.client.on('guildMemberRemove', (member) => {
+            const leave = new EmbedBuilder()
+                .setTitle('NUTZER VERLASSEN')
+                .setColor('Red')
+                .setDescription(`${member.user.displayName} hat den Server verlassen.`);
 
-          
-            if (!initialRole || !newRole) {
-              console.error('Rolle nicht gefunden.');
-              return;
-            }
-          
-            setInterval(async () => {
-              const membersWithInitialRole = initialRole.members; 
-              membersWithInitialRole.forEach(async (member) => {
-                if (guild.members.cache.has(member.id)) {
-                // Erste Rolle entfernen
-                await member.roles.remove(initialRole);
-          
-                // Zweite Rolle hinzufügen
-                await member.roles.add(newRole);
-                }
-              });
-            }, interval);
-          }
+            const logChannel = member.guild.channels.cache.get(logChannelId);
+            if (logChannel) logChannel.send({ embeds: [leave] });
+        });
     }
 }

@@ -19,8 +19,6 @@ const deployCommands = async function deploy() {
         if (command.data) {
             commands.push(command.data.toJSON())
         }
-
-
     })
 
 
