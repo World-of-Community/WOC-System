@@ -56,24 +56,82 @@ for (const file of eventFiles) {
     }
 }
 
+client.on('inviteCreate', async (invite) => {
+    const inviter = invite.inviter;
+
+    invites.get(invite.guild.id).set(invite.code, invite.uses);
+
+    const embed = new MessageEmbed()
+        .setTitle('Einladung erstellt')
+        .setDescription(`${inviter.username} hat eine neue Einladung erstellt. Code: ${invite.code}, Max. Verwendungen: ${invite.maxUses || 'Unbegrenzt'}`)
+        .setColor('#0099ff')
+        .setTimestamp();
+
+    const channel = await client.channels.fetch("1240246786128613396");
+    channel.send({ embeds: [embed] });
+});
+client.on('inviteDelete', async (invite) => {
+    const inviter = invite.inviter;
+
+    invites.get(invite.guild.id).delete(invite.code);
+
+    const embed = new MessageEmbed()
+        .setTitle('Einladung gelöscht')
+        .setDescription(`${inviter.username} hat eine Einladung gelöscht. Code: ${invite.code}.`)
+        .setColor('#0099ff')
+        .setTimestamp();
+
+    const channel = await client.channels.fetch("1240246786128613396");
+    channel.send({ embeds: [embed] });
+});
+
+client.on('guildMemberAdd', async member => {
+    if (member.guild.id !== "815919809379172354") return; //
+
+    const newInvites = await member.guild.invites.fetch();
+    const oldInvites = invites.get(member.guild.id);
+
+    const invite = newInvites.find(i => i.uses > oldInvites.get(i.code));
+    if (invite) {
+        const inviter = invite.inviter;
+        const inviteUses = invite.uses;
+        const InviteEmbed = new Discord.EmbedBuilder()
+        .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.tag}**\n\n> ×Einladungs Code: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun ${inviteUses} Einladungen\n`)
+        .setColor('Blurple')
+        .setTimestamp();
+
+        const channel = member.guild.channels.cache.get("1240246786128613396");
+        if (channel) {
+            channel.send({ embeds: [InviteEmbed] });
+        }
+
+        // Update the invite map
+        invites.set(member.guild.id, new Map(newInvites.map((invite) => [invite.code, invite.uses])));
+    }
+});
+
+
 // Werbung
 setInterval(() => {
-  const guild = bot.guilds.cache.get("815919809379172354");
-  const channel = guild.channels.cache.get("1177536720229650442");
+    const guild = bot.guilds.cache.get("815919809379172354");
+    const channel = guild.channels.cache.get("1177536720229650442");
   
-  const werbeEmbed = new Discord.EmbedBuilder()
-       .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
-       .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `✨` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n» Link: https://discord.gg/686M8Cxsaa')
-       .setColor('Blurple')
-       .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
-       .setFooter({ text: 'World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=6624db23&is=662389a3&hm=5bccd1823f8042757910fb78c8cca1cb6ff34a2095e77c9b9aa22b31e9cd4046&'})
-
-  channel.send({ embeds: [werbeEmbed] })
-  // Wenn die Nachricht automatisch veröffentlicht werden soll:
-  .then(async msg => {
-    msg.crosspost()
-  })
-}, 60000 * 360 ); // 6 Stunden in Millisekunden
+    const bannerEmbed = new Discord.EmbedBuilder()
+         .setColor('Blurple')
+         .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
+    
+    const werbeEmbed = new Discord.EmbedBuilder()
+         .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
+         .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `🤖` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n> `🎮` | » Ein **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n> `📰` | » **Freie Werbung** senden können & Server-Partnerschaften möglich\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
+         .setColor('Blurple')
+         .setFooter({ text: 'World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=6624db23&is=662389a3&hm=5bccd1823f8042757910fb78c8cca1cb6ff34a2095e77c9b9aa22b31e9cd4046&'})
+  
+    channel.send({ embeds: [bannerEmbed, werbeEmbed] })
+    // Wenn die Nachricht automatisch veröffentlicht werden soll:
+    .then(async msg => {
+      msg.crosspost()
+    })
+  }, 60000 * 360 ); // 6 Stunden in Millisekunden
 
 // Threads Checker
 cron.schedule('0 0 * * *', async () => {
