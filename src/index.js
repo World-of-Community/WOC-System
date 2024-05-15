@@ -3,7 +3,7 @@ const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
-const bot = new Discord.Client({
+const client = new Discord.Client({
     intents: [
         Discord.GatewayIntentBits.GuildIntegrations, Discord.GatewayIntentBits.GuildMembers, Discord.GatewayIntentBits.GuildMessageTyping,
         Discord.GatewayIntentBits.GuildMessages, Discord.GatewayIntentBits.GuildPresences, Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.MessageContent, Discord.GatewayIntentBits.GuildMessageReactions,
@@ -24,10 +24,10 @@ const cron = require('node-cron');
 const serverdb = require('../Datenbank/serverdb');
 const userdb = require('../Datenbank/userdb');
 const { deployCommands } = require('./deployCommands');
-
+let invites = new Map();
 // Lade Commands
 deployCommands()
-bot.commands = new Discord.Collection()
+client.commands = new Discord.Collection()
 
 const commandFiles = fs.readdirSync("./src/commands").filter(file => file.endsWith(".js"))
 console.log('-------------------------------------------')
@@ -36,7 +36,7 @@ console.log('-------------------------------------------')
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     if (command.data) {
-        bot.commands.set(command.data.name, command);
+        client.commands.set(command.data.name, command);
         console.log(`|   ${(command.data.name).padEnd(17, ' ')}        |     ✅     |`)
     }
 }
@@ -50,15 +50,76 @@ for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const event = require(filePath);
     if (event.once) {
-        bot.once(event.name, (...args) => event.execute(...args));
+        client.once(event.name, (...args) => event.execute(...args));
     } else {
-        bot.on(event.name, (...args) => event.execute(...args));
+        client.on(event.name, (...args) => event.execute(...args));
     }
 }
 
+client.on('ready', async () => {
+    const guild = client.guilds.cache.get("815919809379172354");
+    if (guild) {
+        const firstInvites = await guild.invites.fetch();
+        invites.set(guild.id, new Map(firstInvites.map((invite) => [invite.code, invite.uses])));
+    }
+});
+client.on('inviteCreate', async (invite) => {
+    const inviter = invite.inviter;
+
+    invites.get(invite.guild.id).set(invite.code, invite.uses);
+
+    const embed = new MessageEmbed()
+        .setTitle('Einladung erstellt')
+        .setDescription(`${inviter.username} hat eine neue Einladung erstellt. Code: ${invite.code}, Max. Verwendungen: ${invite.maxUses || 'Unbegrenzt'}`)
+        .setColor('#0099ff')
+        .setTimestamp();
+
+    const channel = await invite.guild.channels.catch.get("1240246786128613396");
+    channel.send({ embeds: [embed] });
+});
+client.on('inviteDelete', async (invite) => {
+    const inviter = invite.inviter;
+
+    invites.get(invite.guild.id).delete(invite.code);
+
+    const embed = new MessageEmbed()
+        .setTitle('Einladung gelöscht')
+        .setDescription(`${inviter.username} hat eine Einladung gelöscht. Code: ${invite.code}.`)
+        .setColor('#0099ff')
+        .setTimestamp();
+
+    const channel = await invite.guild.channels.catch.get("1240246786128613396");
+    channel.send({ embeds: [embed] });
+});
+
+client.on('guildMemberAdd', async member => {
+    if (member.guild.id !== "815919809379172354") return; //
+
+    const newInvites = await member.guild.invites.fetch();
+    const oldInvites = invites.get(member.guild.id);
+
+    const invite = newInvites.find(i => i.uses > oldInvites.get(i.code));
+    if (invite) {
+        const inviter = invite.inviter;
+        const inviteUses = invite.uses;
+        const InviteEmbed = new Discord.EmbedBuilder()
+        .setDescription(`Willkommen ${member} bei **${member.guild.name}**!\n\nEingeladen von **${inviter.tag}**\n\nEinladungs Code: [${invite.code}](https://discord.gg/${invite.code})\nEr/Sie hat nun ${inviteUses} Einladungen\n`)
+        .setColor('#7289DA')
+        .setTimestamp();
+
+        const channel = member.guild.channels.cache.get("1240246786128613396");
+        if (channel) {
+            channel.send({ embeds: [InviteEmbed] });
+        }
+
+        // Update the invite map
+        invites.set(member.guild.id, new Map(newInvites.map((invite) => [invite.code, invite.uses])));
+    }
+});
+
 // Werbung
 setInterval(() => {
-  const guild = bot.guilds.cache.get("815919809379172354");
+  const guild = client.guilds.cache.get("815919809379172354");
   const channel = guild.channels.cache.get("1177536720229650442");
   
   const werbeEmbed = new Discord.EmbedBuilder()
@@ -85,7 +146,7 @@ cron.schedule('0 0 * * *', async () => {
         const currentTime = new Date();
 
         if (currentTime - threadCreatedAt >= sevenDaysInMilliseconds) {
-            const threadChannel = await bot.channels.cache.get(thread.threadID)
+            const threadChannel = await client.channels.cache.get(thread.threadID)
 
             if (threadChannel) {
                 await threadChannel.delete();
@@ -97,7 +158,7 @@ cron.schedule('0 0 * * *', async () => {
 
 // Werbung
 setInterval(() => {
-    const guild = bot.guilds.cache.get("815919809379172354");
+    const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
       
     const bannerEmbed = new Discord.EmbedBuilder()
@@ -119,7 +180,7 @@ setInterval(() => {
 
 // Changelog Embed
 cron.schedule('0 0 * * 1', async () => {
-    const channel = bot.channels.cache.get(config.changelog);
+    const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
 
     if (!serverData) return;
@@ -190,7 +251,7 @@ cron.schedule('0 0 * * 1', async () => {
 
 // 18 Uhr Message
 cron.schedule('0 18 * * 0', async () => {
-    const channel = bot.channels.cache.get(config.changelog);
+    const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
 
     if (!serverData) return;
@@ -210,7 +271,7 @@ cron.schedule('0 18 * * 0', async () => {
     );
     await serverData.save()
 });
-bot.on('error', (error) => {
+client.on('error', (error) => {
 	const errorMessage = error.stack || error;
     console.log(errorMessage)
 });
@@ -218,4 +279,4 @@ process.on('unhandledRejection', error => {
     console.log(error)
   });
 // Bot Start
-bot.login(config.token)
+client.login(config.token)
