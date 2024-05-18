@@ -96,7 +96,7 @@ client.on('guildMemberAdd', async member => {
         const inviter = invite.inviter;
         const inviteUses = invite.uses;
         const InviteEmbed = new Discord.EmbedBuilder()
-        .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.tag}**\n\n> ×Einladungs Code: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun ${inviteUses} Einladungen\n`)
+        .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName}**\n\n> ×Einladungs Code: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun ${inviteUses} Einladungen\n`)
         .setColor('Blurple')
         .setTimestamp();
 
