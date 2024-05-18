@@ -9,7 +9,7 @@ module.exports = {
 
         const helpEmbed = new EmbedBuilder()
             .setTitle('`📡` × Community - Hilfe')
-            .setDescription('» Hier findest du alle **Befehle**, erfahre mehr über World Of Community oder schau dir **nützliche Stats** an.\n\n`🚑` » Öffne bei Fragen oder Problemen ein Ticket im Support.')
+            .setDescription('» Hier findest du alle **Befehle**, erfahre mehr über\nWorld Of Community oder schau dir **nützliche Stats** an.\n\n`🚑` » Öffne bei Fragen oder Problemen ein Ticket im Support.')
             .setColor('Orange')
             .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1241282049151860736/WOC_Banner_Bot_Hilfe_Community_Bot.jpg?ex=6649a17e&is=66484ffe&hm=a720ba4c6ae8e4bb457d7a2623ff369ee4e533dd76fdde1ee0dc5982f170053f&')
             .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
