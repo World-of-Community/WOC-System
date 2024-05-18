@@ -31,7 +31,7 @@ module.exports = {
             await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
         } catch (error) {
             console.error('Fehler beim Herabstufen des Benutzers:', error);
-            interaction.reply('> `❌` » Es ist ein Fehler aufgetreten.');
+            interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
         }
     },
 };

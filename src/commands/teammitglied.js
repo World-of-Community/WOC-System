@@ -31,7 +31,7 @@ module.exports = {
             await interaction.reply({ content: `Red mach du die Nachricht :P ~ vxnsin`, ephemeral: true});
         } catch (error) {
             console.error('Fehler beim Hinzufügen der Rolle:', error);
-            interaction.reply('> `❌` » Es ist ein Fehler aufgetreten.');
+            interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
         }
     },
 };
