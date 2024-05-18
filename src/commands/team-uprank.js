@@ -1,11 +1,12 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('team-uprank')
         .setDescription('» Aktualisiere die Rolle eines Teammitgliedes. 🔁')
         .addUserOption(option => option.setName('user').setDescription('» Welcher Benutzer sollte aktualisiert werden?').setRequired(true))
-        .addRoleOption(option => option.setName('role').setDescription('» Auf welche Rolle soll der Benutzer befördert werden?').setRequired(true)),
+        .addRoleOption(option => option.setName('role').setDescription('» Auf welche Rolle soll der Benutzer befördert werden?').setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
         
     async execute(interaction) {
         const member = interaction.options.getMember('user');

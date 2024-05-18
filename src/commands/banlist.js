@@ -9,7 +9,8 @@ const bandb = require("../../Datenbank/bandb");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('banliste')
-        .setDescription('» Zeigt dir die Bannliste an.'),
+        .setDescription('» Zeigt dir die Bannliste an.')
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator) && interaction.user.id != "782893084400681001") return;

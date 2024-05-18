@@ -1,11 +1,12 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('team-downrank')
         .setDescription('Setzt einen Benutzer auf eine niedrigere Rolle.')
         .addUserOption(option => option.setName('user').setDescription('Der Benutzer, der herabgestuft werden soll.').setRequired(true))
-        .addRoleOption(option => option.setName('role').setDescription('Die Rolle, auf die der Benutzer herabgestuft werden soll.').setRequired(true)),
+        .addRoleOption(option => option.setName('role').setDescription('Die Rolle, auf die der Benutzer herabgestuft werden soll.').setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
         const member = interaction.options.getMember('user');

@@ -6,7 +6,8 @@ module.exports = {
         .setName('unban')
         .setDescription('» Entbanne einen User. 🔓')
         .addUserOption(option => option.setName('user').setDescription('Welcher User soll Entbannt werden?').setRequired(true))
-        .addStringOption(option => option.setName('grund').setDescription('Gebe ein Grund an').setRequired(true)),
+        .addStringOption(option => option.setName('grund').setDescription('Gebe ein Grund an').setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
         
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');

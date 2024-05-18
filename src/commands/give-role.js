@@ -18,7 +18,6 @@ async execute(interaction) {
     const user = interaction.options.getMember('user');
     const role = interaction.options.getRole('role');
 
-
     // Rollenvergabe
     try {
         const guild = interaction.guild;

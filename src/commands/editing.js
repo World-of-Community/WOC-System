@@ -6,7 +6,8 @@ module.exports = {
         .setName('editing')
         .setDescription('» Setze einen Vorschlag in Planung. 🚧')
         .addStringOption(option => option.setName('nachrichtenid').setDescription('Welche Nachricht ist es?').setRequired(true))
-        .addStringOption(option => option.setName('grund').setDescription('Gebe einen Grund an').setRequired(true)),
+        .addStringOption(option => option.setName('grund').setDescription('Gebe einen Grund an').setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
         
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');

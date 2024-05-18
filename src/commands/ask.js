@@ -5,6 +5,7 @@ module.exports = {
         .setName('ask')
         .setDescription('» Frage den magischen Bot etwas. ✨')
         .addStringOption(option => option.setName('frage').setDescription('Wie lautet deine Frage?').setRequired(true)),
+        
     async execute(interaction) {
         const texte = [
             'Also wenn das wahr ist dann bin ich weg...',

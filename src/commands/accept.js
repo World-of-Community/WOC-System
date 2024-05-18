@@ -7,6 +7,7 @@ module.exports = {
         .setDescription('» Akzeptiere einen Vorschlag. ✅')
         .addStringOption(option => option.setName('nachrichtenid').setDescription('Welche Nachricht ist es?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('Gebe einen Grund an').setRequired(true)),
+        
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);

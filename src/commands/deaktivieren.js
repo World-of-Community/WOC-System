@@ -6,7 +6,8 @@ module.exports = {
         .setName('deaktivieren')
         .setDescription('» Deaktiviere eine Funktion. 🔴')
         .addStringOption(option => option.setName('system').setDescription('Welches System soll deaktiviert werden?').setRequired(true)
-        .addChoices({ name: 'Changelog', value: 'changelog' }, { name: 'Spielersuche', value: 'spielersuche' }, { name: 'Vorschläge', value: 'vorschläge' }, { name: 'willkommensnachrichten', value: 'willkommensnachrichten' })),
+        .addChoices({ name: 'Changelog', value: 'changelog' }, { name: 'Spielersuche', value: 'spielersuche' }, { name: 'Vorschläge', value: 'vorschläge' }, { name: 'willkommensnachrichten', value: 'willkommensnachrichten' }))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
 
