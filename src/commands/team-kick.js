@@ -46,7 +46,7 @@ module.exports = {
             await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**', ephemeral: true });
         } catch (error) {
             console.error('Fehler beim Kicken des Benutzers:', error);
-            interaction.reply('> `❌` » Es ist ein Fehler aufgetreten.');
+            interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
         }
     },
 };

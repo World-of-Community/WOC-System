@@ -19,7 +19,7 @@ module.exports = {
             await interaction.reply(`> \`✅\` » Es wurden ${nachrichtenZuLöschen} Nachrichten gelöscht.`);
         } catch (error) {
             console.error('Fehler beim Löschen von Nachrichten:', error);
-            interaction.reply('> `❗` » Beim Versuch, Nachrichten zu löschen, ist ein Fehler aufgetreten.');
+            interaction.reply({ content: `> \`❌\` » Beim Versuch, Nachrichten zu löschen, ist ein Fehler aufgetreten.`, ephemeral: true });
         }
     },
 };
