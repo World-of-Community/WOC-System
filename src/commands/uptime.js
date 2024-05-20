@@ -16,7 +16,7 @@ module.exports = {
         const uptime = formatUptime(process.uptime());
         const ping = Date.now() - interaction.createdTimestamp;
         const uptimeEmbed = new EmbedBuilder()
-            .setTitle('`🤖` × Interessante Bot Statistiken')
+            .setTitle('🤖 × Interessante Bot Statistiken')
             .setDescription(`» Hier siehst du ein paar Interessante Infos, die in speziellen Fällen auch sehr nützlich sein könnten.\n\n\`🔋\` » **Online** seit \`${uptime}\`\n\`📡\` » Meine **Reaktionszeit** liegt bei: \`${ping}\`ms`)
             .setThumbnail('https://cdn.discordapp.com/attachments/1145779055644393592/1151073428099575858/WOC_Orange.png')
             .setColor('Orange')

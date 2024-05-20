@@ -5,13 +5,12 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('deaktivieren')
         .setDescription('» Deaktiviere eine Funktion. 🔴')
-        .addStringOption(option => option.setName('system').setDescription('Welches System soll deaktiviert werden?').setRequired(true)
+        .addStringOption(option => option.setName('system').setDescription('» Welches System soll deaktiviert werden?').setRequired(true)
         .addChoices({ name: 'Changelog', value: 'changelog' }, { name: 'Spielersuche', value: 'spielersuche' }, { name: 'Vorschläge', value: 'vorschläge' }, { name: 'willkommensnachrichten', value: 'willkommensnachrichten' }))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionsBitField.ManageRoles),
 
     async execute(interaction) {
 
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
         const system = await interaction.options.getString('system')
         const serverData = await serverdb.findOne({ guildID: interaction.guildId })
         if (!serverData) return;

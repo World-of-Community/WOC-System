@@ -5,7 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('aktivieren')
         .setDescription('» Aktiviere eine Funktion. 🟢')
-        .addStringOption(option => option.setName('system').setDescription('Welches System soll aktiviert werden?').setRequired(true)
+        .addStringOption(option => option.setName('system').setDescription('» Welches System soll aktiviert werden?').setRequired(true)
         .addChoices({ name: 'Changelog', value: 'changelog' }, { name: 'Spielersuche', value: 'spielersuche' }, { name: 'Vorschläge', value: 'vorschläge' }, { name: 'willkommensnachrichten', value: 'willkommensnachrichten' }))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 

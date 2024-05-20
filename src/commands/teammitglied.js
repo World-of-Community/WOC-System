@@ -4,7 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('teammitglied')
         .setDescription('» Fügt ein neues Teammitglied hinzu. ➕')
-        .addUserOption(option => option.setName('user').setDescription('Welcher User soll eine Team-Rolle bekommen?').setRequired(true))
+        .addUserOption(option => option.setName('user').setDescription('» Welcher User soll eine Team-Rolle bekommen?').setRequired(true))
         .addRoleOption(option => option.setName('role').setDescription('» Welche Rolle soll der User bekommen?').setRequired(true))
         .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
@@ -28,7 +28,7 @@ module.exports = {
                 .setDescription(`> » Wir begrüßen ${member} herzlichst im Team. Wir hoffen auf eine gemeinsame schöne Zeit!\n\n**__Rang__**\n${role}\n\n**__Im Team seit__**\n${formattedDate}`)
             
             targetChannel.send({ content: `${member}`, embeds: [TeammitgliedEmbed] });
-            await interaction.reply({ content: `Red mach du die Nachricht :P ~ vxnsin`, ephemeral: true});
+            await interaction.reply({ content: `> \`✅\` » Ein neues Teammitglied ist nun da.`, ephemeral: true});
         } catch (error) {
             console.error('Fehler beim Hinzufügen der Rolle:', error);
             interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });

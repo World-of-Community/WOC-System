@@ -5,7 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('emoji')
         .setDescription('» Lege eine eigene Ping-Reaktion fest. 📌')
-        .addStringOption(option => option.setName('emoji').setDescription('Wähle bis zu 3 Emojis').setRequired(true))
+        .addStringOption(option => option.setName('emoji').setDescription('» Wähle bis zu 3 Emojis').setRequired(true))
         .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
         async execute(interaction) {

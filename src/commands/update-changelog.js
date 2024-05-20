@@ -5,7 +5,7 @@ const serverdb = require("../../Datenbank/serverdb");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bot-news-refresh')
-        .setDescription('» Aktualisiere das Changelog.')
+        .setDescription('» Aktualisiere das Changelog. 🔁')
         .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
     async execute(interaction) {

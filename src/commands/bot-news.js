@@ -5,15 +5,15 @@ const serverdb = require("../../Datenbank/serverdb");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bot-news')
-        .setDescription('» Füge ein Update hinzu.')
+        .setDescription('» Füge ein Update hinzu. 🔧')
         
-        .addStringOption(option => option.setName('kategorie').setDescription('Wähle eine Update-Kategorie').setRequired(true)
+        .addStringOption(option => option.setName('kategorie').setDescription('» Wähle eine Update-Kategorie').setRequired(true)
         .addChoices({ name: 'WOC SUPPORT', value: 'support' }, { name: 'WOC SYSTEM', value: 'system' }, { name: 'WOC GIFT', value: 'gift' }, { name: 'SERVICE BOT', value: 'service' }, { name: 'MINECRAFT', value: 'minecraft' }, { name: 'WEBSEITE', value: 'webseite' }, { name: 'DISCORD SERVER', value: 'dc' }))
         
-        .addStringOption(option => option.setName('emoji').setDescription('Wähle ein Update-Emoji').setRequired(true)
+        .addStringOption(option => option.setName('emoji').setDescription('» Wähle ein Update-Emoji').setRequired(true)
         .addChoices({ name: '🔴 = Bug behoben', value: '<:PointRed:1123612255800524940>' }, { name: '🟠 = Änderung', value: '<:PointOrange:1123612277669630092>' }, { name: '🟢 = Neu hinzugefügt', value: '<:PointGreen:1123612318694117477>' }))
         
-        .addStringOption(option => option.setName('update').setDescription('Beschreibe was geändert wurde').setRequired(true)),
+        .addStringOption(option => option.setName('update').setDescription('» Beschreibe was geändert wurde').setRequired(true)),
 
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');

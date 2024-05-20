@@ -7,11 +7,11 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('ban')
         .setDescription('» Banne einen User. 🔒')
-        .addUserOption(option => option.setName('user').setDescription('Welcher User soll Gebannt werden?').setRequired(true))
-        .addStringOption(option => option.setName('grund').setDescription('Gebe ein Grund an').setRequired(true))
-        .addStringOption(option => option.setName('dauer').setDescription('Gebe eine Dauer an (5d 30m) (Keine = Perma)')
+        .addUserOption(option => option.setName('user').setDescription('» Welcher User soll Gebannt werden?').setRequired(true))
+        .addStringOption(option => option.setName('grund').setDescription('» Gebe ein Grund an').setRequired(true))
+        .addStringOption(option => option.setName('dauer').setDescription('» Gebe eine Dauer an (5d 30m) (Keine = Perma)')
         .addChoices({ name: '🕒 » 15 Minuten', value: '15 Minuten' }, { name: '🕒 » 30 Minuten', value: '30 Minuten' }, { name: '🕒 » 45 Minuten', value: '45 Minuten' }, { name: '🕒 » 1 Stunde', value: '1 Stunde'}, { name: '🕒 » 2 Stunden', value: '2 Stunden'}, { name: '🕒 » 3 Stunden', value: '3 Stunden'}, { name: '🕒 » 6 Stunden', value: '6 Stunden'}, { name: '🕒 » 12 Stunden', value: '12 Stunden'}, { name: '🕒 » 24 Stunden', value: '24 Stunden'}, { name: '🕒 » 48 Stunden', value: '48 Stunden'}, { name: '⛔ » PERMANENT', value: 'PERMANENT'}).setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionsBitField.ManageRoles),
 
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');

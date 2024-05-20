@@ -1,11 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('clear')
-        .setDescription('» Lösche eine bestimmte Anzahl von Nachrichten.')
+        .setDescription('» Lösche eine bestimmte Anzahl von Nachrichten. 🗑️')
         .addIntegerOption(option => option.setName('nachrichten').setDescription('» Wie viele Nachrichten möchtest du löschen?').setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionsBitField.ManageRoles),
 
     async execute(interaction) {
         const nachrichtenZuLöschen = interaction.options.getInteger('nachrichten');
