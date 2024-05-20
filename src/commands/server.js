@@ -18,9 +18,16 @@ module.exports = {
             m.presence?.status === 'dnd'
         ).filter(member => !member.user.bot).size.toLocaleString() || 0;
 
+        // Formatierung des Erstellungsdatums
+        const creationDate = guild.createdAt;
+        const day = String(creationDate.getDate()).padStart(2, '0');
+        const month = String(creationDate.getMonth() + 1).padStart(2, '0'); // Monate sind 0-indiziert
+        const year = creationDate.getFullYear();
+        const formattedDate = `${day}.${month}.${year}`;
+
         const serverEmbed = new EmbedBuilder()
             .setTitle('Unsere Server Information')
-            .setDescription(`> \`⏰\` » **Server Erstellt:** \`01.03.2021\`\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount}\`\n> \`👤\` » **User:** \`${userCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n\n> <a:nitro:1186636151335944283> » **Server Boosts:** \`${interaction.guild.premiumSubscriptionCount}\``)
+            .setDescription(`> \`⏰\` » **Server Erstellt:** \`${formattedDate}\`\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount}\`\n> \`👤\` » **User:** \`${userCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n\n> <a:nitro:1186636151335944283> » **Server Boosts:** \`${interaction.guild.premiumSubscriptionCount}\``)
             .setColor('Blurple')
             .setFooter({ text: `${interaction.guild.name} | Server Information`, iconURL: interaction.guild.iconURL({ dynamic: true }) });
 
