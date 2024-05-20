@@ -3,7 +3,7 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('disc
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('clear')
-        .setDescription('» Lösche eine bestimmte Anzahl von Nachrichten.')
+        .setDescription('» Lösche eine bestimmte Anzahl von Nachrichten. 🗑️')
         .addIntegerOption(option => option.setName('anzahl').setDescription('» Wie viele Nachrichten möchtest du löschen?').setRequired(true))
         .addChannelOption(option => option.setName('kanal').setDescription('» In welchen Kanal soll gelöscht werden?').setRequired(false))
         .addStringOption(option => option.setName('grund').setDescription('» Wie lautet die Begründung?').setRequired(false))
