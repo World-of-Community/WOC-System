@@ -47,26 +47,36 @@ module.exports = {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
         
-        const logChannelId = '886269505330896926';
+        // Nutzer Log
+
+        const logChannelId = '886269505330896926'; // Hier die korrekte ID des Kanals einfügen
 
         member.client.on('guildMemberAdd', (member) => {
-            const join = new EmbedBuilder()
-                .setTitle('NUTZER BEIGETRETEN')
-                .setColor('Green')
-                .setDescription(`${member.user.displayName} ist dem Server beigetreten.`);
-
+            const joinEmbed = new EmbedBuilder()
+              .setTitle('NUTZER BEIGETRETEN')
+              .setDescription(`**${member.user.tag}** ist dem Server beigetreten.`)
+              .setColor('Green');
+            
             const logChannel = member.guild.channels.cache.get(logChannelId);
-            if (logChannel) logChannel.send({ embeds: [join] });
-        });
+            if (logChannel) {
+              logChannel.send({ embeds: [joinEmbed] });
+            } else {
+              console.error(`Kanal mit der ID ${logChannelId} nicht gefunden.`);
+            }
+          });
 
         member.client.on('guildMemberRemove', (member) => {
-            const leave = new EmbedBuilder()
-                .setTitle('NUTZER VERLASSEN')
-                .setColor('Red')
-                .setDescription(`${member.user.displayName} hat den Server verlassen.`);
-
+            const leaveEmbed = new EmbedBuilder()
+              .setTitle('NUTZER VERLASSEN')
+              .setDescription(`**${member.user.tag}** hat den Server verlassen.`)
+              .setColor('Red');
+            
             const logChannel = member.guild.channels.cache.get(logChannelId);
-            if (logChannel) logChannel.send({ embeds: [leave] });
-        });
+            if (logChannel) {
+              logChannel.send({ embeds: [leaveEmbed] });
+            } else {
+              console.error(`Kanal mit der ID ${logChannelId} nicht gefunden.`);
+            }
+          });
     }
 }
