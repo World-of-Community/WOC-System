@@ -112,43 +112,43 @@ client.on('guildMemberAdd', async member => {
 
 // Kanal Log
 
-client.on('channelCreate', channel => {
+client.on('channelCreate', async(channel) => {
     const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
 
-    const embed = new MessageEmbed()
+    const CreateEmbed = new EmbedBuilder()
         .setTitle('`➕` | KANAL ERSTELLT')
         .setDescription(`> Name: ${channel.name}\n> ID: \`${channel.id}\``)
         .setColor('Green')
         .setTimestamp();
 
-    const logChannel = channel.guild.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) logChannel.send({ embeds: [embed] });
+    const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) await logChannel.send({ embeds: [CreateEmbed] });
 });
 
-client.on('channelUpdate', (oldChannel, newChannel) => {
+client.on('channelUpdate', async(oldChannel, newChannel) => {
     const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
 
-    const embed = new MessageEmbed()
+    const EditingEmbed = new EmbedBuilder()
         .setTitle('`🔁` | KANAL BEARBEITET')
         .setDescription(`> Alter Name: ${oldChannel.name}\n> Neuer Name: ${newChannel.name}\n> ID: \`${newChannel.id}\``)
         .setColor('Orange')
         .setTimestamp();
 
-    const logChannel = newChannel.guild.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) logChannel.send({ embeds: [embed] });
+    const logChannel = await newChannel.guild.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) await logChannel.send({ embeds: [EditingEmbed] });
 });
 
-client.on('channelDelete', channel => {
+client.on('channelDelete', async(channel) => {
     const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
 
-    const embed = new MessageEmbed()
+    const DeleteEmbed = new EmbedBuilder()
         .setTitle('`🗑️` | KANAL GELÖSCHT')
-        .setDescription(`> Name: ${channel.name}\n> ID: \`${channel.id}\``)
+        .setDescription(`> Name: ${channel.name}\nID: \`${channel.id}\``)
         .setColor('Red')
         .setTimestamp();
 
-    const logChannel = channel.guild.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) logChannel.send({ embeds: [embed] });
+    const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) await logChannel.send({ embeds: [DeleteEmbed] });
 });
 
 
