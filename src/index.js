@@ -117,7 +117,7 @@ client.on('channelCreate', async(channel) => {
 
     const CreateEmbed = new Discord.EmbedBuilder()
         .setTitle('`➕` | KANAL ERSTELLT')
-        .setDescription(`> Name: ${channel.name}\n> ID: \`${channel.id}\``)
+        .setDescription(`> Name: \`${channel.name}\` (<#${channel.id}>)\n> ID: \`${channel.id}\``)
         .setColor('Green')
         .setTimestamp();
 
