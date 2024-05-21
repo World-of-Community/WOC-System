@@ -110,6 +110,47 @@ client.on('guildMemberAdd', async member => {
     }
 });
 
+// Kanal Log
+
+client.on('channelCreate', channel => {
+    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
+
+    const embed = new MessageEmbed()
+        .setTitle('`➕` | KANAL ERSTELLT')
+        .setDescription(`> Name: ${channel.name}\n> ID: \`${channel.id}\``)
+        .setColor('Green')
+        .setTimestamp();
+
+    const logChannel = channel.guild.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) logChannel.send({ embeds: [embed] });
+});
+
+client.on('channelUpdate', (oldChannel, newChannel) => {
+    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
+
+    const embed = new MessageEmbed()
+        .setTitle('`🔁` | KANAL BEARBEITET')
+        .setDescription(`> Alter Name: ${oldChannel.name}\n> Neuer Name: ${newChannel.name}\n> ID: \`${newChannel.id}\``)
+        .setColor('Orange')
+        .setTimestamp();
+
+    const logChannel = newChannel.guild.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) logChannel.send({ embeds: [embed] });
+});
+
+client.on('channelDelete', channel => {
+    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
+
+    const embed = new MessageEmbed()
+        .setTitle('`🗑️` | KANAL GELÖSCHT')
+        .setDescription(`> Name: ${channel.name}\n> ID: \`${channel.id}\``)
+        .setColor('Red')
+        .setTimestamp();
+
+    const logChannel = channel.guild.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) logChannel.send({ embeds: [embed] });
+});
+
 
 // Werbung
 setInterval(() => {
