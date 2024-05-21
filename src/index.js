@@ -115,7 +115,7 @@ client.on('guildMemberAdd', async member => {
 client.on('channelCreate', async(channel) => {
     const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
 
-    const CreateEmbed = new MessageEmbed()
+    const CreateEmbed = new Discord.EmbedBuilder()
         .setTitle('`➕` | KANAL ERSTELLT')
         .setDescription(`> Name: ${channel.name}\n> ID: \`${channel.id}\``)
         .setColor('Green')
@@ -128,7 +128,7 @@ client.on('channelCreate', async(channel) => {
 client.on('channelUpdate', async(oldChannel, newChannel) => {
     const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
 
-    const EditingEmbed = new MessageEmbed()
+    const EditingEmbed = new Discord.EmbedBuilder()
         .setTitle('`🔁` | KANAL BEARBEITET')
         .setDescription(`> Alter Name: ${oldChannel.name}\n> Neuer Name: ${newChannel.name}\n> ID: \`${newChannel.id}\``)
         .setColor('Orange')
@@ -141,7 +141,7 @@ client.on('channelUpdate', async(oldChannel, newChannel) => {
 client.on('channelDelete', async(channel) => {
     const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
 
-    const DeleteEmbed = new MessageEmbed()
+    const DeleteEmbed = new Discord.EmbedBuilder()
         .setTitle('`🗑️` | KANAL GELÖSCHT')
         .setDescription(`> Name: ${channel.name}\nID: \`${channel.id}\``)
         .setColor('Red')
