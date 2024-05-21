@@ -151,6 +151,54 @@ client.on('channelDelete', async(channel) => {
     if (logChannel) await logChannel.send({ embeds: [DeleteEmbed] });
 });
 
+// Nachrichten Log
+
+client.on('messageCreate', async(message) => {
+    if (message.author.client) return;
+
+    const LOG_CHANNEL_ID = '886269505330896926';
+
+    const MessageSendEmbed = new Discord.EmbedBuilder()
+        .setTitle('`📨` | NACHRICHT GESENDET')
+        .setDescription(`**${message.author.displayName}** hat eine Nachricht gesendet in **${message.channel}**\n\n> Nachricht: \`${message.content || 'Kein Inhalt'}\``)
+        .addFields({ name: 'Content', value: message.content || 'No content' })
+        .setColor('Green')
+        .setTimestamp();
+
+    const logChannel = await client.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) await logChannel.send({ embeds: [MessageSendEmbed] });
+});
+
+client.on('messageDelete', async(message) => {
+    if (message.partial) return;
+
+    const LOG_CHANNEL_ID = '886269505330896926';
+
+    const MessageDeleteEmbed = new Discord.EmbedBuilder()
+        .setTitle('`🗑️` | NACHRICHT GELÖSCHT')
+        .setDescription(`Die Nachricht von **${message.author.displayName}** wurde gelöscht in **${message.channel}**\n\n> Inhalt: \`${message.content || 'Kein Inhalt'}\``)
+        .setColor('Red')
+        .setTimestamp();
+
+    const logChannel = await client.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) await logChannel.send({ embeds: [MessageDeleteEmbed] });
+});
+
+client.on('messageUpdate', async(oldMessage, newMessage) => {
+    if (oldMessage.author.client) return;
+
+    const LOG_CHANNEL_ID = '886269505330896926';
+
+    const MessageEditEmbed = new Discord.EmbedBuilder()
+        .setTitle('`🖊️` | NACHRICHT BEARBEITET')
+        .setDescription(`Die Nachricht von **${oldMessage.author.displayName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
+        .setColor('Orange')
+        .setTimestamp();
+
+    const logChannel = await client.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) await logChannel.send({ embeds: [MessageEditEmbed] });
+});
+
 
 // Werbung
 setInterval(() => {
