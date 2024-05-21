@@ -47,36 +47,14 @@ module.exports = {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
         
-        // Nutzer Log
+        // Join Log
 
-        const logChannelId = '886269505330896926'; // Hier die korrekte ID des Kanals einfügen
+        const join = new EmbedBuilder()
+                .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
+                .setColor('Green')
+                .setDescription(`**${member.user.displayName}** ist dem Server beigetreten.\n\nServer beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\nAccount erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
 
-        member.client.on('guildMemberAdd', (member) => {
-            const joinEmbed = new EmbedBuilder()
-              .setTitle('NUTZER BEIGETRETEN')
-              .setDescription(`**${member.user.tag}** ist dem Server beigetreten.`)
-              .setColor('Green');
-            
-            const logChannel = member.guild.channels.cache.get(logChannelId);
-            if (logChannel) {
-              logChannel.send({ embeds: [joinEmbed] });
-            } else {
-              console.error(`Kanal mit der ID ${logChannelId} nicht gefunden.`);
-            }
-          });
-
-        member.client.on('guildMemberRemove', (member) => {
-            const leaveEmbed = new EmbedBuilder()
-              .setTitle('NUTZER VERLASSEN')
-              .setDescription(`**${member.user.tag}** hat den Server verlassen.`)
-              .setColor('Red');
-            
-            const logChannel = member.guild.channels.cache.get(logChannelId);
-            if (logChannel) {
-              logChannel.send({ embeds: [leaveEmbed] });
-            } else {
-              console.error(`Kanal mit der ID ${logChannelId} nicht gefunden.`);
-            }
-          });
+            const logChannel = await member.guild.channels.cache.get("886269505330896926");
+            if (logChannel) await logChannel.send({ embeds: [join] });
     }
 }
