@@ -130,7 +130,7 @@ client.on('channelUpdate', async(oldChannel, newChannel) => {
 
     const EditingEmbed = new Discord.EmbedBuilder()
         .setTitle('`🔁` | KANAL BEARBEITET')
-        .setDescription(`> Alter Name: ${oldChannel.name}\n> Neuer Name: ${newChannel.name}\n> ID: \`${newChannel.id}\``)
+        .setDescription(`> Alter Name: \`${oldChannel.name}\`\n> Neuer Name: \`${newChannel.name}\`\n> ID: \`${newChannel.id}\``)
         .setColor('Orange')
         .setTimestamp();
 
