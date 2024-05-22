@@ -10,7 +10,8 @@ module.exports = {
         const cringegifs = [
             'https://tenor.com/de/view/homer-simpson-goodbye-bye-disappears-hide-in-the-bushes-gif-3394899.gif',
             'https://tenor.com/de/view/pedro-monkey-puppet-meme-awkward-gif-15268759.gif',
-            'https://tenor.com/de/view/awkward-silence-what-gif-13940581.gif'
+            'https://tenor.com/de/view/awkward-silence-what-gif-13940581.gif',
+            'https://tenor.com/de/view/yikes-howard-gayle-saturday-night-live-awkward-cringe-gif-19311772'
         ]
         const mitglied = await interaction.options.getUser('user')
         const gif = cringegifs[Math.floor(Math.random() * cringegifs.length)]

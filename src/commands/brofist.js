@@ -11,7 +11,8 @@ module.exports = {
             'https://tenor.com/de/view/ken-ryu-brofist-street-fighter-gif-9219109.gif',
             'https://tenor.com/de/view/bro-gif-26275846.gif',
             'https://tenor.com/de/view/free-anime-rin-matsuoka-sousuke-gif-18204553.gif',
-            'https://tenor.com/de/view/army-fist-bump-friendship-army-of-two-the-devils-cartel-gif-6195745.gif'
+            'https://tenor.com/de/view/army-fist-bump-friendship-army-of-two-the-devils-cartel-gif-6195745.gif',
+            'https://tenor.com/de/view/bh187-conair-fist-bump-bro-bros-gif-19216041',
         ]
         const mitglied = await interaction.options.getUser('user')
         const gif = brofistgifs[Math.floor(Math.random() * brofistgifs.length)]
