@@ -27,7 +27,8 @@ module.exports = {
             const dmEmbed = new EmbedBuilder()
                 .setTitle('`❗` | __DU WURDEST AUS DEM SERVER-TEAM ENTLASSEN__')
                 .setDescription(`Hallo ${member}, Du wurdest aus dem Server-Team entlassen.\n\nGrund: \`${reason}\``)
-                .setColor('Red');
+                .setColor('Red')
+                .setTimestamp();
 
             // Sende eine DM an den Benutzer
             try {
@@ -40,7 +41,8 @@ module.exports = {
             const kickEmbed = new EmbedBuilder()
                 .setTitle('`❌` | __TEAMMITGLIED ENTFERNT__')
                 .setDescription(`Der Nutzer ${member} wurde von ${interaction.user.displayName} aus dem Server-Team **Entfernt**.\n\nGrund: \`${reason}\``)
-                .setColor('Red');
+                .setColor('Red')
+                .setTimestamp();
 
             targetChannel.send({ embeds: [kickEmbed] });
             await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**', ephemeral: true });

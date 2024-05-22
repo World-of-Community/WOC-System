@@ -19,6 +19,7 @@ module.exports = {
             .setDescription(`» Hallo, ${member} du hast gerade eine neue Nachricht von \`${interaction.user.displayName}\` bekommen.\n\n> \`💬\` » Nachricht: \`${message}\`\n\n> \`🚑\` » Öffne ein Ticket im Support bei Fragen oder Problemen.`)
             .setColor('Blurple')
             .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+            .setTimestamp();
 
         // Nachricht und Embed an den Benutzer per DM senden
         try {

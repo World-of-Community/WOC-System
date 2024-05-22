@@ -24,6 +24,7 @@ module.exports = {
                 .setTitle('`🔼` | __TEAMMITGLIED RANGUPDATE__')
                 .setDescription(`> Herzlichen Glückwunsch, ${member}!\n> Du wurdest **befördert!**\n\n**__Rang__**\n${role}`)
                 .setColor('Blurple')
+                .setTimestamp();
             
             await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
             await interaction.reply({ content: `> \`✅\` » Das Teammitglied wurde **befördert.**`, ephemeral: true });

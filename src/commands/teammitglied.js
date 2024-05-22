@@ -26,6 +26,7 @@ module.exports = {
                 .setTitle('`➕` | __NEUES TEAMMITGLIED__')
                 .setColor('Blurple')
                 .setDescription(`> » Wir begrüßen ${member} herzlichst im Team. Wir hoffen auf eine gemeinsame schöne Zeit!\n\n**__Rang__**\n${role}\n\n**__Im Team seit__**\n${formattedDate}`)
+                .setTimestamp();
             
             targetChannel.send({ content: `${member}`, embeds: [TeammitgliedEmbed] });
             await interaction.reply({ content: `> \`✅\` » Ein neues Teammitglied ist nun da.`, ephemeral: true});

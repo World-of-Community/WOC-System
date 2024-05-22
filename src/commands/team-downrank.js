@@ -24,6 +24,7 @@ module.exports = {
                 .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
                 .setDescription(`Der Nutzer ${member} wurde auf die Rolle ${role} herabgestuft.`)
                 .setColor('Blurple')
+                .setTimestamp();
 
             const targetChannel = interaction.guild.channels.cache.get(targetChannel);
 

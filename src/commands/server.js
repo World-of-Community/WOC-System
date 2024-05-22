@@ -29,7 +29,8 @@ module.exports = {
             .setTitle('Unsere Server Information')
             .setDescription(`> \`⏰\` » **Server Erstellt:** \`${formattedDate}\`\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount}\`\n> \`👤\` » **User:** \`${userCount}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers}\`\n\n> <a:nitro:1186636151335944283> » **Server Boosts:** \`${interaction.guild.premiumSubscriptionCount}\``)
             .setColor('Blurple')
-            .setFooter({ text: `${interaction.guild.name} | Server Information`, iconURL: interaction.guild.iconURL({ dynamic: true }) });
+            .setFooter({ text: `${interaction.guild.name} | Server Information`, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+            .setTimestamp();
 
         interaction.reply({ embeds: [serverEmbed], ephemeral: true });
     }
