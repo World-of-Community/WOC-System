@@ -184,7 +184,7 @@ client.on('messageDelete', async(message) => {
 });
 
 client.on('messageUpdate', async(oldMessage, newMessage) => {
-    if (oldMessage.author.client) return;
+    if (oldMessage.author.member) return;
 
     const LOG_CHANNEL_ID = '886269505330896926';
 
