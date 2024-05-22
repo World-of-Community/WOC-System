@@ -129,8 +129,8 @@ client.on('channelCreate', async(channel) => {
 
     const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
     if (logChannel) await logChannel.send({ embeds: [CreateEmbed] });
-    }
-});
+    })
+})
 
 client.on('channelUpdate', async(oldChannel, newChannel) => {
     const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
