@@ -109,68 +109,6 @@ module.exports = {
             }
         }
 
-        const forbiddenWords = [
-            'Analphabet',
-            'opfer',
-            'pussy',
-            'hässlich',
-            'hässlichkeit',
-            'Eier',
-            'bitch',
-            'b*tch',
-            'Bitch',
-            'B*tch',
-            'vergewaltiger',
-            'kinderschänder',
-            'arschloch',
-            'wixxer',
-            'wichser',
-            'wixer',
-            'schwuchtel',
-            'transe',
-            'vergewaltige',
-            'kinderficker',
-            'schlampe',
-            'nazi',
-            'neger',
-            'nigga',
-            'niga',
-            'pedo',
-            'fehlgeburt',
-            'arschfotze',
-            'suizid',
-            'pedophiler',
-            'porn',
-            'nudes',
-            'hund',
-            'huso',
-            'hrsn',
-            'huren sohn',
-            'hurensohn',
-            'hurentochter',
-            'hs',
-            'hzm'
-        ]
-
-        if (forbiddenWords.some((word) => (message.content.toLowerCase()).includes(word)) && message.guild.id === "815919809379172354") {
-            setTimeout(async () => {
-                await message.delete()
-            }, 100)
-
-            // Warn Embed
-            const WarnEmbed = new EmbedBuilder()
-                .setTitle('Verbotenes Wort erkannt')
-                .setDescription(`${message.author}, Bitte unterlasse das Beleidigen an andere Nutzer und halte dich an die **Server-Regeln!**`)
-                .setColor('Red')
-
-            const embedMessage = await message.channel.send({ embeds: [WarnEmbed] });
-
-            // Löscht das Embed nach 10 Sekunden
-            setTimeout(() => {
-                embedMessage.delete();
-            }, 10000);
-        }
-
         // Überprüfe, ob die Nachricht im gewünschten Kanal ist
         if (message.channel.id === '896743941813207081') {
             try {
