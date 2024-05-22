@@ -20,7 +20,7 @@ module.exports = {
         var banLogEmbed
         const member = interaction.options.getMember('user')
         const reason = interaction.options.getString('grund')
-        const duration = interaction.options.getString('dauer') ?? null
+        const duration = interaction.options.getString('dauer') ?? 'Keine Zeit angegeben'
         const banLog = await interaction.guild.channels.fetch(config.banLog)
         const banMember = await interaction.guild.members.fetch(member.id)
 
@@ -36,7 +36,7 @@ module.exports = {
 
             banLogEmbed = new EmbedBuilder()
                 .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
-                .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` - **BENUTZER INFORMATIONEN**\nBanngrund: \`${reason}\`\nDauer: \`${duration || 'Keine Zeit angegeben'}\`\nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
+                .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n> \`👤\` - **BENUTZER INFORMATIONEN**\n> Banngrund: \`${reason}\`\n> Dauer: \`${duration}\`\n> Benutzername: **${member.user.username}** (\`${member.id}\`) (${member})\n> Account erstellt am: ${createdAt}\n> Beigetreten am: ${joinedAt}`)
                 .setColor('Red')
                 .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` })
             
