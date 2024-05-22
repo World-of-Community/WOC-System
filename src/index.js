@@ -132,7 +132,7 @@ client.on('channelCreate', async(channel) => {
 })
 
 client.on('channelUpdate', async(oldChannel, newChannel) => {
-    channel.guild.fetchAuditLogs({
+    newChannel.guild.fetchAuditLogs({
         type: Discord.AuditLogEvent.CHANNEL_UPDATE,
         limit: 1 
     }).then(async audit => {
