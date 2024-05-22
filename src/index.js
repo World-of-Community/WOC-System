@@ -111,7 +111,7 @@ client.on('guildMemberAdd', async member => {
 });
 
 // Kanal Log
-
+const LOG_CHANNEL_ID = "1242799344692887662";
 client.on('channelCreate', async(channel) => {
     channel.guild.fetchAuditLogs({
         type: Discord.AuditLogEvent.CHANNEL_CREATE,
@@ -119,7 +119,6 @@ client.on('channelCreate', async(channel) => {
     }).then(async audit => {
         const { executor } = audit.entries.first();
     if(executor.bot) return
-    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
 
     const CreateEmbed = new Discord.EmbedBuilder()
         .setTitle('`➕` | KANAL ERSTELLT')
@@ -133,8 +132,6 @@ client.on('channelCreate', async(channel) => {
 })
 
 client.on('channelUpdate', async(oldChannel, newChannel) => {
-    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
-
     const EditingEmbed = new Discord.EmbedBuilder()
         .setTitle('`🔁` | KANAL BEARBEITET')
         .setDescription(`> Alter Name: \`${oldChannel.name}\`\n> Neuer Name: \`${newChannel.name}\`\n> ID: \`${newChannel.id}\``)
@@ -146,8 +143,6 @@ client.on('channelUpdate', async(oldChannel, newChannel) => {
 });
 
 client.on('channelDelete', async(channel) => {
-    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
-
     const DeleteEmbed = new Discord.EmbedBuilder()
         .setTitle('`🗑️` | KANAL GELÖSCHT')
         .setDescription(`> Name: ${channel.name}\nID: \`${channel.id}\``)
@@ -163,8 +158,6 @@ client.on('channelDelete', async(channel) => {
 client.on('messageCreate', async(message) => {
     if (!message.author || message.author.bot) return;
 
-    const LOG_CHANNEL_ID = '886269505330896926';
-
     const MessageSendEmbed = new Discord.EmbedBuilder()
         .setTitle('`📨` | NACHRICHT GESENDET')
         .setDescription(`**\`${message.author.displayName}\`** hat eine Nachricht gesendet in **${message.channel}**\n\n> Nachricht: \`${message.content || 'Kein Inhalt'}\``)
@@ -178,8 +171,6 @@ client.on('messageCreate', async(message) => {
 client.on('messageDelete', async(message) => {
     if (!message.author || message.author.bot) return;
 
-    const LOG_CHANNEL_ID = '886269505330896926';
-
     const MessageDeleteEmbed = new Discord.EmbedBuilder()
         .setTitle('`🗑️` | NACHRICHT GELÖSCHT')
         .setDescription(`Die Nachricht von **${message.author.displayName}** wurde gelöscht in **${message.channel}**\n\n> Inhalt: \`${message.content || 'Kein Inhalt'}\``)
@@ -192,9 +183,7 @@ client.on('messageDelete', async(message) => {
 
 client.on('messageUpdate', async(oldMessage, newMessage) => {
     if (!newMessage.author || newMessage.author.bot) return;
-
-    const LOG_CHANNEL_ID = '886269505330896926';
-
+    
     const MessageEditEmbed = new Discord.EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')
         .setDescription(`Die Nachricht von **${oldMessage.member.user.globalName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
