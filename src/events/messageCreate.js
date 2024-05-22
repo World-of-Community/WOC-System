@@ -119,6 +119,16 @@ module.exports = {
             }
         }
 
+        // Werbung für alle
+        if (message.channel.id === '1172920281526960238') {
+            try {
+                // Reagiere mit einem bestimmten Emoji
+                await message.react('<:wocLink:1236203170695217172>');
+            } catch (error) {
+                console.error('Fehler beim Hinzufügen der Reaktion:', error);
+            }
+        }
+
         // Suggestion Channel
         if (message.channelId === config.vorschläge) {
             if (message.author.bot) return;
