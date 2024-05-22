@@ -19,7 +19,7 @@ module.exports = {
 
         const donateEmbed = new EmbedBuilder()
             .setTitle('`💖` × GESAMTSPENDEN')
-            .setDescription(`> \`✅\` » ${member} hat insgesamt \`${donateAmount}€\` gespendet!`)
+            .setDescription(`> \`✅\` » ${member} hat insgesamt \`${donateAmount}\` gespendet!`)
             .setColor('Green')
             .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
