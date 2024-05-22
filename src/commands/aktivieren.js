@@ -6,7 +6,7 @@ module.exports = {
         .setName('aktivieren')
         .setDescription('» Aktiviere eine Funktion. 🟢')
         .addStringOption(option => option.setName('system').setDescription('» Welches System soll aktiviert werden?').setRequired(true)
-        .addChoices({ name: 'Changelog', value: 'changelog' }, { name: 'Spielersuche', value: 'spielersuche' }, { name: 'Vorschläge', value: 'vorschläge' }, { name: 'willkommensnachrichten', value: 'willkommensnachrichten' }))
+        .addChoices({ name: 'Changelog', value: 'changelog' }, { name: 'Spielersuche', value: 'spielersuche' }, { name: 'Vorschläge', value: 'vorschläge' }, { name: 'Willkommensnachrichten', value: 'willkommensnachrichten' }))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
@@ -16,6 +16,6 @@ module.exports = {
         if (!serverData) return;
 
         await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $pull: { deactivated: `${system}` } })
-        await interaction.reply({ content: `> \`🟢\` » Das ${system} System wurde erfolgreich aktiviert.`, ephemeral: true })
+        await interaction.reply({ content: `> \`🟢\` » Das ${system} System wurde **erfolgreich** aktiviert.`, ephemeral: true })
     }
 }
