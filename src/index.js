@@ -118,7 +118,6 @@ client.on('channelCreate', async(channel) => {
         limit: 1 
     }).then(async audit => {
         const { executor } = audit.entries.first();
-    if(executor.bot) return
 
     const CreateEmbed = new Discord.EmbedBuilder()
         .setTitle('`➕` | KANAL ERSTELLT')
@@ -137,10 +136,27 @@ client.on('channelUpdate', async(oldChannel, newChannel) => {
         limit: 1 
     }).then(async audit => {
         const { executor } = audit.entries.first();
-    if(executor.bot) return
+
+        let description = `\`📂\` » **Informationen:**\n<:text3:1228332174911213638>**Name:** \`${newChannel.name}\` (<#${newChannel.id}>)\n<:text2:1228330539941888011>**Kanaltyp:** \`${type}\`\n`;
+
+        if (oldChannel.name !== newChannel.name) {
+            description += `\n\`✒️\` » **Namensänderung:**\n<:text3:1228332174911213638>**Alt:** \`${oldChannel.name}\`\n<:text2:1228330539941888011>**Neu:** \`${newChannel.name}\``;
+        }
+        if (oldChannel.nsfw !== newChannel.nsfw) {
+            description += `\n\`🔞\` » **Altersbegrenzung:**\n<:text2:1228330539941888011>${newChannel.nsfw ? "<:on:1228350947898687508>" : "<:off:1228350962205200475>"}`;
+        }
+        if (oldChannel.topic !== newChannel.topic) {
+            description += `\n\`🏝️\` » **Beschreibungsänderung:**\n<:text3:1228332174911213638>**Alt:** \`${oldChannel.topic || "❌"}\`\n<:text2:1228330539941888011>**Neu:** \`${newChannel.topic || "❌"}\``;
+        }
+        if (oldChannel.rateLimitPerUser !== newChannel.rateLimitPerUser) {
+            description += `\n\`🦥\` » **Slowmode:**\n<:text3:1228332174911213638>**Alt:** ${oldChannel.rateLimitPerUser || "<:off:1228350962205200475>"}\n<:text2:1228330539941888011>**Neu:** ${newChannel.rateLimitPerUser || "<:off:1228350962205200475>"}`;
+        }
+
+
     const EditingEmbed = new Discord.EmbedBuilder()
         .setTitle('`🔁` | KANAL BEARBEITET')
-        .setDescription(`> Alter Name: \`${oldChannel.name}\`\n> Neuer Name: \`${newChannel.name}\`\n> ID: \`${newChannel.id}\``)
+        .setAuthor({ name: `${executor.username} » ${executor.id}`, iconURL: executor.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 })})
+        .setDescription(description)
         .setColor('Orange')
         .setTimestamp();
 
