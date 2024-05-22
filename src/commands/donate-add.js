@@ -37,7 +37,7 @@ module.exports = {
         const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
         
         const response1 = await interaction.reply({
-            content: `**»** Text Red`,
+            content: `Text Red`,
             components: [row],
             ephemeral: true,
             
@@ -58,11 +58,11 @@ module.exports = {
         
                 await interaction.reply({ embeds: [donateEmbed], ephemeral: true });
         } else if (confirmation.customId === 'cancel') {
-            await confirmation.update({ content: utils.other.text.canceled(), ephemeral: true, components: [] });
+            await confirmation.update({ content:  "Text Red", ephemeral: true, components: [] });
         }
     } catch (e) {
         console.log(e)
-        await interaction.editReply({ content: utils.other.text.timeup(), ephemeral: true, components: [] });
+        await interaction.editReply({ content: "Text Red", ephemeral: true, components: [] });
         }
     }
 }
