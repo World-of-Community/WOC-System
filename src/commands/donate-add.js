@@ -24,7 +24,7 @@ module.exports = {
             })
         }
 
-        userData.donation = userData.donation += amount;
+        userData.donation = Number(userData.donation += amount);
         await userData.save();
 
         const donateEmbed = new EmbedBuilder()
