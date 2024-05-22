@@ -123,7 +123,7 @@ module.exports = {
         if (message.channel.id === '1172920281526960238') {
             try {
                 // Reagiere mit einem bestimmten Emoji
-                await message.react('<:wocLink:1236203170695217172>');
+                await message.react('<a:woclink:1236232439022616658>');
             } catch (error) {
                 console.error('Fehler beim Hinzufügen der Reaktion:', error);
             }
