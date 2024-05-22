@@ -154,14 +154,13 @@ client.on('channelDelete', async(channel) => {
 // Nachrichten Log
 
 client.on('messageCreate', async(message) => {
-    if (message.author.client) return;
+    if (message.author.member) return;
 
     const LOG_CHANNEL_ID = '886269505330896926';
 
     const MessageSendEmbed = new Discord.EmbedBuilder()
         .setTitle('`📨` | NACHRICHT GESENDET')
         .setDescription(`**${message.author.displayName}** hat eine Nachricht gesendet in **${message.channel}**\n\n> Nachricht: \`${message.content || 'Kein Inhalt'}\``)
-        .addFields({ name: 'Content', value: message.content || 'No content' })
         .setColor('Green')
         .setTimestamp();
 
