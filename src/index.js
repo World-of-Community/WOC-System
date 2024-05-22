@@ -121,6 +121,9 @@ const typeMap = {
     15: "FORUM"
 };
 client.on('channelCreate', async(channel) => {
+    if(channel.type === 4) {
+        return;
+    }
     channel.guild.fetchAuditLogs({
         type: AuditLogEvent.CHANNEL_CREATE,
         limit: 1 
@@ -139,6 +142,9 @@ client.on('channelCreate', async(channel) => {
 })
 
 client.on('channelUpdate', async(oldChannel, newChannel) => {
+    if(newChannel.type === 4) {
+        return;
+    }
     newChannel.guild.fetchAuditLogs({
         type: AuditLogEvent.CHANNEL_UPDATE,
         limit: 1 
@@ -176,6 +182,9 @@ client.on('channelUpdate', async(oldChannel, newChannel) => {
 });
 
 client.on('channelDelete', async(channel) => {
+    if(channel.type === 4) {
+        return;
+    }
     const DeleteEmbed = new EmbedBuilder()
         .setTitle('`🗑️` | KANAL GELÖSCHT')
         .setDescription(`> Name: ${channel.name}\nID: \`${channel.id}\``)
