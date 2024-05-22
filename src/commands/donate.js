@@ -1,25 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
-
-const donationsFilePath = path.resolve(__dirname, 'donations.json');
-
-// Funktion zum Lesen der JSON-Datei
-function readDonations() {
-    if (!fs.existsSync(donationsFilePath)) {
-        fs.writeFileSync(donationsFilePath, JSON.stringify({}));
-    }
-    const data = fs.readFileSync(donationsFilePath, 'utf-8');
-    return JSON.parse(data);
-}
-
-// Funktion zum Schreiben in die JSON-Datei
-function writeDonations(data) {
-    fs.writeFileSync(donationsFilePath, JSON.stringify(data, null, 2));
-}
-
-const donations = new Map(); // In-Memory-Speicher für Spenden
-
+const userDB = require("../../Datenbank/userDB")
 module.exports = {
      // /donate command
     data: new SlashCommandBuilder()
@@ -30,11 +10,13 @@ module.exports = {
 
     async execute(interaction) {
         const member = interaction.options.getUser('user');
-        const totalDonations = donations.get(user.id) || 0;
+        const userData = await userDB.findOne({userID: member.id})
+
+        if(!userData || !userData.donation) return await interaction.reply({content: `Red machen sie den Text lol`})
 
         const donateEmbed = new EmbedBuilder()
             .setTitle('`💖` × GESAMTSPENDEN')
-            .setDescription(`> \`✅\` » ${member} hat insgesamt \`${totalDonations}€\` gespendet!`)
+            .setDescription(`> \`✅\` » ${member} hat insgesamt \`${userData.donation}€\` gespendet!`)
             .setColor('Green')
             .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();

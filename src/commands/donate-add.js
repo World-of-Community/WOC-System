@@ -23,7 +23,7 @@ module.exports = {
                 reactions: {}
             })
         }
-
+        
         userData.donation = Number(userData.donation += amount);
         await userData.save();
 
