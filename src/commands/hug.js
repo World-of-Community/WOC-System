@@ -10,7 +10,10 @@ module.exports = {
         const huggifs = [
             'https://tenor.com/de/view/so-cute-aww-gif-26434851.gif',
             'https://tenor.com/de/view/hugs-cuddle-hug-gif-26074093.gif',
-            'https://tenor.com/de/view/love-hug-gif-25661526.gif'
+            'https://tenor.com/de/view/love-hug-gif-25661526.gif',
+            'https://tenor.com/de/view/moumik-hug-hug-taptap-gif-12415073493272629445',
+            'https://tenor.com/de/view/bear-huggin-gif-11575590786421661505',
+            'https://tenor.com/de/view/laverne-and-shirley-funny-cool-gif-27491810'
         ]
         const mitglied = await interaction.options.getUser('user')
         const gif = huggifs[Math.floor(Math.random() * huggifs.length)]
