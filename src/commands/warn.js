@@ -7,7 +7,7 @@ module.exports = {
         .addUserOption(option => option.setName('user').setDescription('» Welchen User möchtest du Warnen?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('» Der Grund der Warnung').setRequired(true)),
 async execute(interaction) {
-    if (!interaction.member.permissions.has(PermissionFlagsBits.ADMINISTRATOR)) {
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
         return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
     }
 
