@@ -132,6 +132,12 @@ client.on('channelCreate', async(channel) => {
 })
 
 client.on('channelUpdate', async(oldChannel, newChannel) => {
+    channel.guild.fetchAuditLogs({
+        type: Discord.AuditLogEvent.CHANNEL_UPDATE,
+        limit: 1 
+    }).then(async audit => {
+        const { executor } = audit.entries.first();
+    if(executor.bot) return
     const EditingEmbed = new Discord.EmbedBuilder()
         .setTitle('`🔁` | KANAL BEARBEITET')
         .setDescription(`> Alter Name: \`${oldChannel.name}\`\n> Neuer Name: \`${newChannel.name}\`\n> ID: \`${newChannel.id}\``)
@@ -140,6 +146,7 @@ client.on('channelUpdate', async(oldChannel, newChannel) => {
 
     const logChannel = await newChannel.guild.channels.cache.get(LOG_CHANNEL_ID);
     if (logChannel) await logChannel.send({ embeds: [EditingEmbed] });
+    })
 });
 
 client.on('channelDelete', async(channel) => {
@@ -183,7 +190,7 @@ client.on('messageDelete', async(message) => {
 
 client.on('messageUpdate', async(oldMessage, newMessage) => {
     if (!newMessage.author || newMessage.author.bot) return;
-    
+
     const MessageEditEmbed = new Discord.EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')
         .setDescription(`Die Nachricht von **${oldMessage.member.user.globalName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
