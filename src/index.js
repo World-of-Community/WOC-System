@@ -1,4 +1,4 @@
-const {  GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Client, Collection } = require('discord.js')
+const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -122,7 +122,7 @@ const typeMap = {
 };
 client.on('channelCreate', async(channel) => {
     channel.guild.fetchAuditLogs({
-        type: Discord.AuditLogEvent.CHANNEL_CREATE,
+        type: AuditLogEvent.CHANNEL_CREATE,
         limit: 1 
     }).then(async audit => {
         const { executor } = audit.entries.first();
@@ -140,7 +140,7 @@ client.on('channelCreate', async(channel) => {
 
 client.on('channelUpdate', async(oldChannel, newChannel) => {
     newChannel.guild.fetchAuditLogs({
-        type: Discord.AuditLogEvent.CHANNEL_UPDATE,
+        type: AuditLogEvent.CHANNEL_UPDATE,
         limit: 1 
     }).then(async audit => {
         const { executor } = audit.entries.first();
