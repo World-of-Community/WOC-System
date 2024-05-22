@@ -4,8 +4,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('remove-role')
         .setDescription('» Entferne eine Rolle eines Nutzers. ❌')
-        .addRoleOption(option => option.setName('user').setDescription('» Die Rolle, die entfernt werden soll.'))
         .addUserOption(option => option.setName('role').setDescription('» Der Nutzer, von dem die Rolle entfernt werden soll.').setRequired(true))
+        .addRoleOption(option => option.setName('user').setDescription('» Die Rolle, die entfernt werden soll.'))
         .setDefaultMemberPermissions(PermissionsBitField.Administrator),
 
 async execute(interaction) {

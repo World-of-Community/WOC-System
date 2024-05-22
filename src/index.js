@@ -184,13 +184,13 @@ client.on('messageDelete', async(message) => {
 });
 
 client.on('messageUpdate', async(oldMessage, newMessage) => {
-    if (oldMessage.author.member) return;
+    if (oldMessage.member) return;
 
     const LOG_CHANNEL_ID = '886269505330896926';
 
     const MessageEditEmbed = new Discord.EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')
-        .setDescription(`Die Nachricht von **${oldMessage.author.displayName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
+        .setDescription(`Die Nachricht von **${oldMessage.member.user.globalName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
         .setColor('Orange')
         .setTimestamp();
 
