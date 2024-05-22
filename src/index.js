@@ -113,6 +113,12 @@ client.on('guildMemberAdd', async member => {
 // Kanal Log
 
 client.on('channelCreate', async(channel) => {
+    channel.guild.fetchAuditLogs({
+        type: Discord.AuditLogEvent.CHANNEL_CREATE,
+        limit: 1 
+    }).then(async audit => {
+        const { executor } = audit.entries.first();
+    if(executor.bot) return
     const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
 
     const CreateEmbed = new Discord.EmbedBuilder()
@@ -123,6 +129,7 @@ client.on('channelCreate', async(channel) => {
 
     const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
     if (logChannel) await logChannel.send({ embeds: [CreateEmbed] });
+    }
 });
 
 client.on('channelUpdate', async(oldChannel, newChannel) => {
@@ -154,7 +161,7 @@ client.on('channelDelete', async(channel) => {
 // Nachrichten Log
 
 client.on('messageCreate', async(message) => {
-    if (message.author.member) return;
+    if (!message.author || message.author.bot) return;
 
     const LOG_CHANNEL_ID = '886269505330896926';
 
@@ -169,7 +176,7 @@ client.on('messageCreate', async(message) => {
 });
 
 client.on('messageDelete', async(message) => {
-    if (message.partial) return;
+    if (!message.author || message.author.bot) return;
 
     const LOG_CHANNEL_ID = '886269505330896926';
 
@@ -184,7 +191,7 @@ client.on('messageDelete', async(message) => {
 });
 
 client.on('messageUpdate', async(oldMessage, newMessage) => {
-    if (oldMessage.member) return;
+    if (!newMessage.author || newMessage.author.bot) return;
 
     const LOG_CHANNEL_ID = '886269505330896926';
 
