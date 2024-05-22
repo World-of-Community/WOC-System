@@ -56,7 +56,7 @@ module.exports = {
                     .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
                     .setTimestamp();
         
-                await interaction.reply({ embeds: [donateEmbed], ephemeral: true });
+                await confirmation.update({ embeds: [donateEmbed], ephemeral: true });
         } else if (confirmation.customId === 'cancel') {
             await confirmation.update({ content:  "Text Red", ephemeral: true, components: [] });
         }
