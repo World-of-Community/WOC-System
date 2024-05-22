@@ -15,7 +15,7 @@ module.exports = {
 
         if(!userData || !userData.donation) return await interaction.reply({content: `Red machen sie den Text lol`})
         
-        const donateAmount = userData.donation.toLocaleString('de-DE', {style: 'currency', currency: "EUR"}).replace(/,/g, "");
+        const donateAmount = userData.donation.toLocaleString('de-DE', {style: 'currency', currency: "EUR"}).replace(",\d+", "");
 
         const donateEmbed = new EmbedBuilder()
             .setTitle('`💖` × GESAMTSPENDEN')
