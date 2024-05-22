@@ -1,4 +1,4 @@
-const Discord = require('discord.js')
+const { Discord, ChannelType, EmbedBuilder } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -111,7 +111,15 @@ client.on('guildMemberAdd', async member => {
 });
 
 // Kanal Log
+
 const LOG_CHANNEL_ID = "1242799344692887662";
+const typeMap = {
+    0: "TEXT",
+    2: "VOICE",
+    5: "NEWS",
+    13: "STAGE",
+    15: "FORUM"
+};
 client.on('channelCreate', async(channel) => {
     channel.guild.fetchAuditLogs({
         type: Discord.AuditLogEvent.CHANNEL_CREATE,
@@ -136,6 +144,8 @@ client.on('channelUpdate', async(oldChannel, newChannel) => {
         limit: 1 
     }).then(async audit => {
         const { executor } = audit.entries.first();
+
+        let type = typeMap[newChannel.type] || newChannel.type;
 
         let description = `\`📂\` » **Informationen:**\n<:text3:1228332174911213638>**Name:** \`${newChannel.name}\` (<#${newChannel.id}>)\n<:text2:1228330539941888011>**Kanaltyp:** \`${type}\`\n`;
 
