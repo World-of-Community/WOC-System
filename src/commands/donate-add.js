@@ -14,13 +14,17 @@ module.exports = {
         const member = interaction.options.getUser('user');
         const amount = interaction.options.getInteger('amount');
 
-        const userData = await userDB.findOne({userID: member.id})
+        let userData = await userDB.findOne({userID: member.id})
 
         if(!userData) {
-            await userDB.create({userID: member.id, donation: 0})
+            userData = new userDB({
+                userID: member.id, 
+                donation: 0,
+                reactions: {}
+            })
         }
 
-        userData.donation = userData.donation + amount;
+        userData.donation = userData.donation += amount;
         await userData.save();
 
         const donateEmbed = new EmbedBuilder()
