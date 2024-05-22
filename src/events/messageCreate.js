@@ -7,7 +7,7 @@ const messagedb = require("../../Datenbank/messagedb");
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
-
+        if (message.author.bot) { return }
         // console.log(Math.floor((message.createdTimestamp) / 1000) + 86400)
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
@@ -49,7 +49,7 @@ module.exports = {
                 try {
                     await message.delete()
                 } catch (error) {
-                    
+
                 }
             }, 30000);
         }
@@ -108,76 +108,76 @@ module.exports = {
                 }
             }
         }
-        
-const forbiddenWords = [
-        'Analphabet',
-        'opfer',
-        'pussy',
-        'hässlich',
-        'hässlichkeit',
-        'Eier',
-        'bitch',
-        'b*tch',
-        'Bitch',
-        'B*tch',
-        'vergewaltiger',
-        'kinderschänder',
-        'arschloch',
-        'wixxer',
-        'wichser',
-        'wixer',
-        'schwuchtel',
-        'transe',
-        'vergewaltige',
-        'kinderficker',
-        'schlampe',
-        'nazi',
-        'neger',
-        'nigga',
-        'niga',
-        'pedo',
-        'fehlgeburt',
-        'arschfotze',
-        'suizid',
-        'pedophiler',
-        'porn',
-        'nudes',
-        'hund',
-        'huso',
-        'hrsn',
-        'huren sohn',
-        'hurensohn',
-        'hurentochter',
-        'hs',
-        'hzm'
-    ]
 
-    if (forbiddenWords.some((word) => (message.content.toLowerCase()).includes(word)) && message.guild.id === "815919809379172354") {
-        setTimeout(async () => {
-            await message.delete()
-        }, 100)
+        const forbiddenWords = [
+            'Analphabet',
+            'opfer',
+            'pussy',
+            'hässlich',
+            'hässlichkeit',
+            'Eier',
+            'bitch',
+            'b*tch',
+            'Bitch',
+            'B*tch',
+            'vergewaltiger',
+            'kinderschänder',
+            'arschloch',
+            'wixxer',
+            'wichser',
+            'wixer',
+            'schwuchtel',
+            'transe',
+            'vergewaltige',
+            'kinderficker',
+            'schlampe',
+            'nazi',
+            'neger',
+            'nigga',
+            'niga',
+            'pedo',
+            'fehlgeburt',
+            'arschfotze',
+            'suizid',
+            'pedophiler',
+            'porn',
+            'nudes',
+            'hund',
+            'huso',
+            'hrsn',
+            'huren sohn',
+            'hurensohn',
+            'hurentochter',
+            'hs',
+            'hzm'
+        ]
 
-    // Warn Embed
-    const WarnEmbed = new EmbedBuilder()
-    .setTitle('Verbotenes Wort erkannt')
-    .setDescription(`${message.author}, Bitte unterlasse das Beleidigen an andere Nutzer und halte dich an die **Server-Regeln!**`)
-    .setColor('Red')
+        if (forbiddenWords.some((word) => (message.content.toLowerCase()).includes(word)) && message.guild.id === "815919809379172354") {
+            setTimeout(async () => {
+                await message.delete()
+            }, 100)
 
-    const embedMessage = await message.channel.send({ embeds: [WarnEmbed] });
+            // Warn Embed
+            const WarnEmbed = new EmbedBuilder()
+                .setTitle('Verbotenes Wort erkannt')
+                .setDescription(`${message.author}, Bitte unterlasse das Beleidigen an andere Nutzer und halte dich an die **Server-Regeln!**`)
+                .setColor('Red')
 
-    // Löscht das Embed nach 10 Sekunden
-    setTimeout(() => {
-        embedMessage.delete();
-    }, 10000);
-    }
-        
+            const embedMessage = await message.channel.send({ embeds: [WarnEmbed] });
+
+            // Löscht das Embed nach 10 Sekunden
+            setTimeout(() => {
+                embedMessage.delete();
+            }, 10000);
+        }
+
         // Überprüfe, ob die Nachricht im gewünschten Kanal ist
         if (message.channel.id === '896743941813207081') {
-        try {
-            // Reagiere mit einem bestimmten Emoji
-            await message.react('🔍');
-        } catch (error) {
-            console.error('Fehler beim Hinzufügen der Reaktion:', error);
+            try {
+                // Reagiere mit einem bestimmten Emoji
+                await message.react('🔍');
+            } catch (error) {
+                console.error('Fehler beim Hinzufügen der Reaktion:', error);
             }
         }
 
@@ -229,31 +229,31 @@ const forbiddenWords = [
                 })
             })
         }
-    /*
-        // Spielersuche
-        if (message.channelId === config.threads) {
-            if (await serverdb.findOne({ guildID: message.guildId, deactivated: { $in: ['spielersuche'] } })) return message.reply({ content: '> `⛔` » Das Spielersuche System ist momentan deaktiviert.' })
-
-            await message.channel.threads.create({
-                name: message.content
-            }).then(async (channel) => {
-                const newThread = new threaddb({
-                    threadID: channel.id,
-                    creator: message.author.id,
-                    createdAt: new Date()
-                })
-                await newThread.save()
-
-                await channel.send({ content: '> `✅` » Ich habe für dich ein Thread erstellt: ' + channel.name })
-            });
-        }
-        */
+        /*
+            // Spielersuche
+            if (message.channelId === config.threads) {
+                if (await serverdb.findOne({ guildID: message.guildId, deactivated: { $in: ['spielersuche'] } })) return message.reply({ content: '> `⛔` » Das Spielersuche System ist momentan deaktiviert.' })
+    
+                await message.channel.threads.create({
+                    name: message.content
+                }).then(async (channel) => {
+                    const newThread = new threaddb({
+                        threadID: channel.id,
+                        creator: message.author.id,
+                        createdAt: new Date()
+                    })
+                    await newThread.save()
+    
+                    await channel.send({ content: '> `✅` » Ich habe für dich ein Thread erstellt: ' + channel.name })
+                });
+            }
+            */
 
         // Ränge Info
         if (message.content === '!ränge-info') {
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()
-            
+
             const channel = message.guild.channels.cache.get("872063101640532008"); // Channel ID
             const msg = await channel.messages.fetch("1181152581838450719"); // Nachricht ID
 
@@ -332,7 +332,7 @@ const forbiddenWords = [
         if (message.content === '!partner') {
             if (!message.member.permissions.has('Administrator')) return;
             message.delete()
-            
+
             const channel = message.guild.channels.cache.get("1172819623935221810"); // Channel ID
             const msg = await channel.messages.fetch("1187070677073801268"); // Nachricht ID
 

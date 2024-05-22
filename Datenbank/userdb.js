@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-
+    donation: Number,
     reactions: {
         type: Object,
         required: false,

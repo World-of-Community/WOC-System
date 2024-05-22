@@ -1,15 +1,15 @@
-const Discord = require('discord.js')
+const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
-const client = new Discord.Client({
+const client = new Client({
     intents: [
-        Discord.GatewayIntentBits.GuildIntegrations, Discord.GatewayIntentBits.GuildMembers, Discord.GatewayIntentBits.GuildMessageTyping,
-        Discord.GatewayIntentBits.GuildMessages, Discord.GatewayIntentBits.GuildPresences, Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.MessageContent, Discord.GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [
-        Discord.Partials.Channel, Discord.Partials.User, Discord.Partials.GuildMember, Discord.Partials.Message
+        Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message
     ],
 });
 
@@ -27,7 +27,7 @@ const { deployCommands } = require('./deployCommands');
 let invites = new Map();
 // Lade Commands
 deployCommands()
-client.commands = new Discord.Collection()
+client.commands = new Collection()
 
 const commandFiles = fs.readdirSync("./src/commands").filter(file => file.endsWith(".js"))
 console.log('-------------------------------------------')
@@ -61,7 +61,7 @@ client.on('inviteCreate', async (invite) => {
 
     invites.get(invite.guild.id).set(invite.code, invite.uses);
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle('Einladung erstellt')
         .setDescription(`${inviter.username} hat eine neue Einladung erstellt. Code: ${invite.code}, Max. Verwendungen: ${invite.maxUses || 'Unbegrenzt'}`)
         .setColor('#0099ff')
@@ -75,7 +75,7 @@ client.on('inviteDelete', async (invite) => {
 
     invites.get(invite.guild.id).delete(invite.code);
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setTitle('Einladung gelöscht')
         .setDescription(`${inviter.username} hat eine Einladung gelöscht. Code: ${invite.code}.`)
         .setColor('#0099ff')
@@ -95,7 +95,7 @@ client.on('guildMemberAdd', async member => {
     if (invite) {
         const inviter = invite.inviter;
         const inviteUses = invite.uses;
-        const InviteEmbed = new Discord.EmbedBuilder()
+        const InviteEmbed = new EmbedBuilder()
         .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName}**\n\n> ×Einladungs Code: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun ${inviteUses} Einladungen\n`)
         .setColor('Blurple')
         .setTimestamp();
@@ -112,10 +112,25 @@ client.on('guildMemberAdd', async member => {
 
 // Kanal Log
 
+const LOG_CHANNEL_ID = "1242799344692887662";
+const typeMap = {
+    0: "TEXT",
+    2: "VOICE",
+    5: "NEWS",
+    13: "STAGE",
+    15: "FORUM"
+};
 client.on('channelCreate', async(channel) => {
-    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
+    if(channel.type === 4) {
+        return;
+    }
+    channel.guild.fetchAuditLogs({
+        type: AuditLogEvent.CHANNEL_CREATE,
+        limit: 1 
+    }).then(async audit => {
+        const { executor } = audit.entries.first();
 
-    const CreateEmbed = new Discord.EmbedBuilder()
+    const CreateEmbed = new EmbedBuilder()
         .setTitle('`➕` | KANAL ERSTELLT')
         .setDescription(`> Name: \`${channel.name}\` (<#${channel.id}>)\n> ID: \`${channel.id}\``)
         .setColor('Green')
@@ -123,25 +138,54 @@ client.on('channelCreate', async(channel) => {
 
     const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
     if (logChannel) await logChannel.send({ embeds: [CreateEmbed] });
-});
+    })
+})
 
 client.on('channelUpdate', async(oldChannel, newChannel) => {
-    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
+    if(newChannel.type === 4) {
+        return;
+    }
+    newChannel.guild.fetchAuditLogs({
+        type: AuditLogEvent.CHANNEL_UPDATE,
+        limit: 1 
+    }).then(async audit => {
+        const { executor } = audit.entries.first();
 
-    const EditingEmbed = new Discord.EmbedBuilder()
+        let type = typeMap[newChannel.type] || newChannel.type;
+
+        let description = `\`📂\` » **Informationen:**\n<:text3:1228332174911213638>**Name:** \`${newChannel.name}\` (<#${newChannel.id}>)\n<:text2:1228330539941888011>**Kanaltyp:** \`${type}\`\n`;
+
+        if (oldChannel.name !== newChannel.name) {
+            description += `\n\`✒️\` » **Namensänderung:**\n<:text3:1228332174911213638>**Alt:** \`${oldChannel.name}\`\n<:text2:1228330539941888011>**Neu:** \`${newChannel.name}\``;
+        }
+        if (oldChannel.nsfw !== newChannel.nsfw) {
+            description += `\n\`🔞\` » **Altersbegrenzung:**\n<:text2:1228330539941888011>${newChannel.nsfw ? "<:on:1228350947898687508>" : "<:off:1228350962205200475>"}`;
+        }
+        if (oldChannel.topic !== newChannel.topic) {
+            description += `\n\`🏝️\` » **Beschreibungsänderung:**\n<:text3:1228332174911213638>**Alt:** \`${oldChannel.topic || "❌"}\`\n<:text2:1228330539941888011>**Neu:** \`${newChannel.topic || "❌"}\``;
+        }
+        if (oldChannel.rateLimitPerUser !== newChannel.rateLimitPerUser) {
+            description += `\n\`🦥\` » **Slowmode:**\n<:text3:1228332174911213638>**Alt:** ${oldChannel.rateLimitPerUser || "<:off:1228350962205200475>"}\n<:text2:1228330539941888011>**Neu:** ${newChannel.rateLimitPerUser || "<:off:1228350962205200475>"}`;
+        }
+
+
+    const EditingEmbed = new EmbedBuilder()
         .setTitle('`🔁` | KANAL BEARBEITET')
-        .setDescription(`> Alter Name: \`${oldChannel.name}\`\n> Neuer Name: \`${newChannel.name}\`\n> ID: \`${newChannel.id}\``)
+        .setAuthor({ name: `${executor.username} » ${executor.id}`, iconURL: executor.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 })})
+        .setDescription(description)
         .setColor('Orange')
         .setTimestamp();
 
     const logChannel = await newChannel.guild.channels.cache.get(LOG_CHANNEL_ID);
     if (logChannel) await logChannel.send({ embeds: [EditingEmbed] });
+    })
 });
 
 client.on('channelDelete', async(channel) => {
-    const LOG_CHANNEL_ID = '886269505330896926'; // Ersetzen Sie dies durch die ID Ihres Log-Kanals
-
-    const DeleteEmbed = new Discord.EmbedBuilder()
+    if(channel.type === 4) {
+        return;
+    }
+    const DeleteEmbed = new EmbedBuilder()
         .setTitle('`🗑️` | KANAL GELÖSCHT')
         .setDescription(`> Name: ${channel.name}\nID: \`${channel.id}\``)
         .setColor('Red')
@@ -154,11 +198,9 @@ client.on('channelDelete', async(channel) => {
 // Nachrichten Log
 
 client.on('messageCreate', async(message) => {
-    if (message.author.member) return;
+    if (!message.author || message.author.bot) return;
 
-    const LOG_CHANNEL_ID = '886269505330896926';
-
-    const MessageSendEmbed = new Discord.EmbedBuilder()
+    const MessageSendEmbed = new EmbedBuilder()
         .setTitle('`📨` | NACHRICHT GESENDET')
         .setDescription(`**\`${message.author.displayName}\`** hat eine Nachricht gesendet in **${message.channel}**\n\n> Nachricht: \`${message.content || 'Kein Inhalt'}\``)
         .setColor('Green')
@@ -169,11 +211,9 @@ client.on('messageCreate', async(message) => {
 });
 
 client.on('messageDelete', async(message) => {
-    if (message.partial) return;
+    if (!message.author || message.author.bot) return;
 
-    const LOG_CHANNEL_ID = '886269505330896926';
-
-    const MessageDeleteEmbed = new Discord.EmbedBuilder()
+    const MessageDeleteEmbed = new EmbedBuilder()
         .setTitle('`🗑️` | NACHRICHT GELÖSCHT')
         .setDescription(`Die Nachricht von **${message.author.displayName}** wurde gelöscht in **${message.channel}**\n\n> Inhalt: \`${message.content || 'Kein Inhalt'}\``)
         .setColor('Red')
@@ -184,13 +224,11 @@ client.on('messageDelete', async(message) => {
 });
 
 client.on('messageUpdate', async(oldMessage, newMessage) => {
-    if (oldMessage.author.member) return;
+    if (!newMessage.author || newMessage.author.bot) return;
 
-    const LOG_CHANNEL_ID = '886269505330896926';
-
-    const MessageEditEmbed = new Discord.EmbedBuilder()
+    const MessageEditEmbed = new EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')
-        .setDescription(`Die Nachricht von **${oldMessage.author.displayName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
+        .setDescription(`Die Nachricht von **${oldMessage.member.user.globalName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
         .setColor('Orange')
         .setTimestamp();
 
@@ -204,11 +242,11 @@ setInterval(() => {
     const guild = bot.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
   
-    const bannerEmbed = new Discord.EmbedBuilder()
+    const bannerEmbed = new EmbedBuilder()
          .setColor('Blurple')
          .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
     
-    const werbeEmbed = new Discord.EmbedBuilder()
+    const werbeEmbed = new EmbedBuilder()
          .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
          .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `🤖` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n> `🎮` | » Ein **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n> `📰` | » **Freie Werbung** senden können & Server-Partnerschaften möglich\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
          .setColor('Blurple')
@@ -246,11 +284,11 @@ setInterval(() => {
     const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
       
-    const bannerEmbed = new Discord.EmbedBuilder()
+    const bannerEmbed = new EmbedBuilder()
           .setColor('Blurple')
           .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
     
-    const werbeEmbed = new Discord.EmbedBuilder()
+    const werbeEmbed = new EmbedBuilder()
          .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
          .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `✨` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
          .setColor('Blurple')
@@ -299,7 +337,7 @@ cron.schedule('0 0 * * 1', async () => {
     const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
     const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
 
-    const changelogEmbed = new Discord.EmbedBuilder()
+    const changelogEmbed = new EmbedBuilder()
         .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${todayDate} - ${nextWeekDate}]`)
         .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n> In dieser Woche gab es keine Änderung.\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀')
         .setColor('#ff7b00')

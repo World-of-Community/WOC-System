@@ -11,7 +11,6 @@ module.exports = {
                 .setColor('Red')
                 .setDescription(`**${member.user.displayName}** hat den Server verlassen.\n\nServer beigetreten am: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\nAccount erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
                 .setTimestamp();
-
             const logChannel = await member.guild.channels.cache.get("886269505330896926");
             if (logChannel) await logChannel.send({ embeds: [leave] });
     }

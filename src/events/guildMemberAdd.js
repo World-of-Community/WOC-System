@@ -1,11 +1,17 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const client = require('../index');
-const fs = require('fs')
+const fs = require('fs');
+const serverdb = require("../../Datenbank/serverdb");
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
+
 module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
+        const serverData = await serverdb.findOne({ guildID: member.guild.id })
+
+        if (serverData.deactivated.includes("willkommensnachrichten")) { return };
+        
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
         const welcomeChannel = await member.guild.channels.cache.get(config.willkommen)
@@ -46,16 +52,16 @@ module.exports = {
         } catch (err) {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
-        
+
         // Join Log
 
         const join = new EmbedBuilder()
-                .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
-                .setColor('Green')
-                .setDescription(`**${member.user.displayName}** ist dem Server beigetreten.\n\nServer beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\nAccount erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
-                .setTimestamp();
+            .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
+            .setColor('Green')
+            .setDescription(`**${member.user.displayName}** ist dem Server beigetreten.\n\nServer beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\nAccount erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
+            .setTimestamp();
 
-            const logChannel = await member.guild.channels.cache.get("886269505330896926");
-            if (logChannel) await logChannel.send({ embeds: [join] });
+        const logChannel = await member.guild.channels.cache.get("886269505330896926");
+        if (logChannel) await logChannel.send({ embeds: [join] });
     }
 }
