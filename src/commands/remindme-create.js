@@ -11,7 +11,7 @@ module.exports = {
         .addStringOption(option => option.setName('reminder').setDescription('» Die Erinnerung').setRequired(true)),
 
     async execute(interaction) {
-        const user = interaction.options.getUser('user');
+        const member = interaction.options.getUser('user');
         const duration = interaction.options.getString('duration');
 
         var list = duration.split(" ");
@@ -46,7 +46,7 @@ module.exports = {
         schedule.scheduleJob(endDate, async () => {
             const dmEmbed = new EmbedBuilder()
                 .setTitle('Hey! Ich sollte dich an etwas erinnern!')
-                .setDescription(`Hallo, ${user.displayName}\n\n> Erinnerung: **${reminder}**\n\n*📨 Du erhältst diese Direktnachricht, weil du eine Erinnerung erstellt hast.*`)
+                .setDescription(`Hallo, ${member}\n\n> Erinnerung: **${reminder}**\n\n*📨 Du erhältst diese Direktnachricht, weil du eine Erinnerung erstellt hast.*`)
                 .setColor('Blurple')
                 .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
                 .setTimestamp();
