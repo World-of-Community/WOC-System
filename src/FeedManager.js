@@ -20,7 +20,7 @@ module.exports = {
 
                     embed.setColor('Green')
                         .setAuthor({ name: "» Giga", url: feed.link, iconURL: "https://th.bing.com/th/id/OIP.doSKK2VtIVmPin6orrFFkwHaHa?rs=1&pid=ImgDetMain" })
-                        .setDescription(`> ${description}\n\n**© Erstellt von [World of Community](https://discord.gg/zYk4GdSZSc)**`)
+                        .setDescription(`> ${description}\n\n**© Erstellt von [World Of Community](https://discord.gg/zYk4GdSZSc)**`)
                         .setImage(newestEntry.enclosure?.url)
                         .setTimestamp();
 
@@ -51,7 +51,7 @@ module.exports = {
                     if (newestEntry.link) embed.setURL(newestEntry.link);
 
                     if (newestEntry.contentSnippet) {
-                        embed.setDescription(`> ${newestEntry.contentSnippet}\n\n**© Erstellt von [World of Community](https://discord.gg/zYk4GdSZSc)**`);
+                        embed.setDescription(`> ${newestEntry.contentSnippet}\n\n**© Erstellt von [World Of Community](https://discord.gg/zYk4GdSZSc)**`);
                     }
 
                     embed.setColor('Blue')
