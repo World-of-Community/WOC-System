@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField } = require('discord.js');
+const ms = require('ms');
 const schedule = require('node-schedule');
 
 module.exports = {
@@ -12,26 +13,40 @@ module.exports = {
     async execute(interaction) {
         const user = interaction.options.getUser('user');
         const duration = interaction.options.getString('duration');
-        const reminder = interaction.options.getString('reminder');
 
-        const reminderTime = parseDuration(duration);
-
-        if (!reminderTime) {
-            return interaction.reply({ content: 'Ungültiges Dauerformat. Bitte verwende "m" für Minuten oder "h" für Stunden (z. B. 10m, 1h)', ephemeral: true });
+        var list = duration.split(" ");
+        var durationDauer = 0;
+        list.forEach(async element => {
+            try {
+                durationDauer += ms(element)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        });
+        if (durationDauer !== durationDauer) {
+            return await interaction.reply("Dauer konnte nicht verarbeitet werden!")
         }
 
+        var endDate = new Date(new Date().getTime() + durationDauer); // Berechne das Enddatum
+
+        const timestamp = Math.floor(endDate / 1000); // Generiere Timestamp für Discord
+
+        const reminder = interaction.options.getString('reminder');
+
         const remindEmbed = new EmbedBuilder()
-            .setDescription(`Ich werde dich in ${duration} an \`${reminder}\` erinnern.`)
+            .setTitle('Du hast eine Erinnerung erstellt')
+            .setDescription(`\`⏰\` » Ich werde dich in <t:${timestamp}:R> an \`${reminder}\` erinnern.`)
             .setColor('Blurple')
             .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
 
         await interaction.reply({ embeds: [remindEmbed], ephemeral: true });
 
-        schedule.scheduleJob(Date.now() + reminderTime, async () => {
+        schedule.scheduleJob(endDate, async () => {
             const dmEmbed = new EmbedBuilder()
                 .setTitle('Hey! Ich sollte dich an etwas erinnern!')
-                .setDescription(`Hallo, ${user.displayName}\n\n> Erinnerung: ${reminder}\n\n*📨 Du erhältst diese Direktnachricht, weil du eine Erinnerung erstellt hast.*`)
+                .setDescription(`Hallo, ${user.displayName}\n\n> Erinnerung: **${reminder}**\n\n*📨 Du erhältst diese Direktnachricht, weil du eine Erinnerung erstellt hast.*`)
                 .setColor('Blurple')
                 .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
                 .setTimestamp();
@@ -44,23 +59,3 @@ module.exports = {
         });
     },
 };
-
-function parseDuration(duration) {
-    const match = duration.match(/^(\d+)(m|h)$/);
-    if (!match) return null;
-
-    const value = parseInt(match[1], 10);
-    const unit = match[2];
-
-    if (unit === 'm') {
-        return value * 60 * 1000; // minutes to milliseconds
-    } else if (unit === 'h') {
-        return value * 60 * 60 * 1000; // hours to milliseconds
-    } else if (unit === 'd') {
-        return value * 60 * 60 * 60 * 1000; // days to milliseconds
-    } else if (unit === 'mo') {
-        return value * 60 * 60 * 60 * 60 * 1000; // months to milliseconds
-    }
-
-    return null;
-}
