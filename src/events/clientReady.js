@@ -14,6 +14,11 @@ const { Giga, Tagesschau } = FeedManager;
 module.exports = {
     name: Events.ClientReady,
     async execute(client) {
+    const guild = await client.guilds.fetch(config.server);
+    if (!guild) {
+        console.log("Server wurde nicht gefunden");
+        return;
+    }
     let lastEntries = {};
         try {
             const data = fs.readFileSync('src/json/lastEntries.json');
@@ -101,12 +106,6 @@ module.exports = {
 
         // Wechsel Status
         setInterval(async () => {
-            const guild = await client.guilds.fetch(config.server);
-            if (!guild) {
-                console.log("Server wurde nicht gefunden");
-                return;
-            }
-
             await guild.members.fetch().then(async (members) => {
                 const onlineMembers = await members.filter((member) => !member.user.bot);
                 if (onlineMembers.size === 0) return;
