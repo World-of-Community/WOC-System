@@ -14,11 +14,6 @@ const { Giga, Tagesschau } = FeedManager;
 module.exports = {
     name: Events.ClientReady,
     async execute(client) {
-    const guild = await client.guilds.fetch(config.server);
-    if (!guild) {
-        console.log("Server wurde nicht gefunden");
-        return;
-    }
     let lastEntries = {};
         try {
             const data = fs.readFileSync('src/json/lastEntries.json');
@@ -28,6 +23,11 @@ module.exports = {
         }
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
+        const guild = await client.guilds.fetch(config.server);
+        if (!guild) {
+            console.log("Server wurde nicht gefunden");
+            return;
+        }
         console.log('Verbunden mit Discord')
         //RSS Feed
         setInterval(async () => {
