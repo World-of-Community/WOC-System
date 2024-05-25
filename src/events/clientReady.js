@@ -39,7 +39,7 @@ module.exports = {
         const currentYear = today.getFullYear();
     
         try {
-            const birthdayUsers = await userDB.find({ 'birthday.tag': 5, 'birthday.monat': 11 });
+            const birthdayUsers = await userDB.find({ 'birthday.tag': 3, 'birthday.monat': 11 });
     
             if (birthdayUsers.length > 0) {
                 const birthdayChannel = client.channels.cache.get('1243964646449483788');
