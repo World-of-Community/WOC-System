@@ -209,78 +209,84 @@ client.on('messageUpdate', async(oldMessage, newMessage) => {
 });
 
 
-// Beispielhafte Altersrollen
 const ageRoles = {
-    '-18': '1199786765666500710',
-    '18': '1199786814051979344',
+    "-18": "1199786765666500710",
+    "18": "1199786814051979344",
 };
 cron.schedule('0 0 * * *', async () => {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.getMonth() + 1;
-    const currentYear = today.getFullYear();
-
-    try {
-        const birthdayUsers = await userDB.find({ 'birthday.tag': day, 'birthday.monat': month });
-
+      const today = new Date();
+      const day = today.getDate();
+      const month = today.getMonth() + 1;
+      const currentYear = today.getFullYear();
+  
+      try {
+        const birthdayUsers = await userDB.find({
+          "birthday.tag": day,
+          "birthday.monat": month,
+        });
+  
         if (birthdayUsers.length > 0) {
-            const birthdayChannel = client.channels.cache.get('1243964646449483788');
-            const birthdayUsersList = [];
-            
-            for (const user of birthdayUsers) {
-                const member = await guild.members.fetch(user.userID);
-                if (user.birthday.jahr) {
-                    let age = '';
-                    age = ` (${currentYear - user.birthday.jahr})`;
-                let roleId; ageRoles[(currentYear - user.birthday.jahr).toString()];
-
-                if(currentYear - user.birthday.jahr <= "18") ageRoles["18"];
-                else if(currentYear - user.birthday.jahr >= "18") ageRoles["18"];
-
-                if (roleId) {
-                    const role = guild.roles.cache.get(roleId);
-                    await member.roles.add(role);
-                }
-                birthdayUsersList.push(`${member} (**${age}**)`);
-                } else {
-                    birthdayUsersList.push(`${member}`);
-                }
-            }
-
-            let birthdayMessage = '';
-
-            if (birthdayUsersList.length === 1) {
-                birthdayMessage = `${birthdayUsersList[0]} hat **heute Geburtstag**`;
+          const birthdayChannel = client.channels.cache.get("1243964646449483788"); //<- Channel ID
+          const birthdayUsersList = [];
+  
+          for (const user of birthdayUsers) {
+            const member = await guild.members.fetch(user.userID);
+            if (user.birthday.jahr) {
+              let age = "";
+              age = `${currentYear - user.birthday.jahr}`;
+              let roleId;
+  
+              if (currentYear - user.birthday.jahr <= "18") roleId = ageRoles["-18"];
+              else if (currentYear - user.birthday.jahr >= "18") roleId = ageRoles["18"];
+  
+              if (roleId) {
+                const role = guild.roles.cache.get(roleId);
+                await member.roles.add(role);
+              }
+              birthdayUsersList.push(`${member} (**${age}**)`);
             } else {
-                const lastUser = birthdayUsersList.pop(); 
-                birthdayMessage = `${birthdayUsersList.join(', ')} und ${lastUser} haben **heute Geburtstag**`;
+              birthdayUsersList.push(`${member}`);
             }
-
-            const birthdayword = [
-                'Genieße die kleinen Dinge. Sie machen das Leben großartig!',
-                'Durch dich wird die Welt ein besserer Ort, bleib wie du bist!',
-                'Heute sollst Du Dich einfach entspannen und alle Deine Sorgen verbannen.',
-                'Lass dich drücken, knuddeln und umarmen. Sollen alle deine Ziele, Wünsche und Träume in Erfüllung gehen. Du hast es verdient.'
-            ];
-            const randomIndex = Math.floor(Math.random() * birthdayword.length);
-            const selectedBirthdayWord = birthdayword[randomIndex];
-
-            const birthdayEmbed = new EmbedBuilder()
-                .setDescription(`🎂 𑁉 ${birthdayMessage}\nWünscht den **${birthdayUsersList.length === 1 ? 'Mitglied' : 'Mitgliedern'}** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`)
-                .setColor('Blurple');
-
-            birthdayChannel.send({ embeds: [birthdayEmbed] });
+          }
+  
+          let birthdayMessage = "";
+  
+          if (birthdayUsersList.length === 1) {
+            birthdayMessage = `${birthdayUsersList[0]} hat **heute Geburtstag!** - <a:bier:1196502621427601498>`;
+          } else {
+            const lastUser = birthdayUsersList.pop();
+            birthdayMessage = `${birthdayUsersList.join(
+              ", "
+            )} und ${lastUser} haben **heute Geburtstag!** - <a:bier:1196502621427601498>`;
+          }
+  
+          const birthdayword = [
+            "Genieße die kleinen Dinge. Sie machen das Leben großartig!",
+            "Durch dich wird die Welt ein besserer Ort, bleib wie du bist!",
+            "Heute sollst Du Dich einfach entspannen und alle Deine Sorgen verbannen.",
+            "Lass dich drücken, knuddeln und umarmen. Sollen alle deine Ziele, Wünsche und Träume in Erfüllung gehen. Du hast es verdient.",
+          ];
+          const randomIndex = Math.floor(Math.random() * birthdayword.length);
+          const selectedBirthdayWord = birthdayword[randomIndex];
+  
+          await birthdayChannel.send({
+            content: `🎂 𑁉 ${birthdayMessage}\nWünscht den **${
+              birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
+            }** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
+          });
         } else {
-            const birthdayChannel = client.channels.cache.get('1243964646449483788');
-            const noBirthdayEmbed = new EmbedBuilder()
-                .setDescription('<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*')
-                .setColor('Blurple');
-            birthdayChannel.send({ embeds: [noBirthdayEmbed] });
+          const birthdayChannel = client.channels.cache.get(
+            "1243964646449483788"
+          );
+          await birthdayChannel.send({
+            content:
+              "<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*",
+          });
         }
-    } catch (error) {
-        console.error('Fehler beim Verarbeiten der Geburtstage:', error);
-    }
-});
+      } catch (error) {
+        console.error("Fehler beim Verarbeiten der Geburtstage:", error);
+      }
+})
 
 
 
