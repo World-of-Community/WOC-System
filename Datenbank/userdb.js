@@ -6,6 +6,20 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     donation: Number,
+    birthday: {
+        tag: {
+            type: Number,
+            required: true,
+        },
+        monat: {
+            type: Number,
+            required: true,
+        },
+        jahr: {
+            type: Number,
+            required: false,
+        },
+    },
     reactions: {
         type: Object,
         required: false,
