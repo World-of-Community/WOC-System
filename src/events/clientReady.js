@@ -39,7 +39,7 @@ module.exports = {
         const currentYear = today.getFullYear();
     
         try {
-            const birthdayUsers = await userDB.find({ 'birthday.tag': day, 'birthday.monat': month });
+            const birthdayUsers = await userDB.find({ 'birthday.tag': 5, 'birthday.monat': 11 });
     
             if (birthdayUsers.length > 0) {
                 const birthdayChannel = client.channels.cache.get('1243964646449483788');
@@ -59,7 +59,7 @@ module.exports = {
                         const role = guild.roles.cache.get(roleId);
                         await member.roles.add(role);
                     }
-                    birthdayUsersList.push(`${member} (**${age}**)`);
+                        birthdayUsersList.push(`${member} (**${age}**)`);
                     } else {
                         birthdayUsersList.push(`${member}`);
                     }
