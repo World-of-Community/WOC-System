@@ -57,7 +57,7 @@ module.exports = {
                         age = ` (${currentYear - user.birthday.jahr})`;
                     let roleId; ageRoles[(currentYear - user.birthday.jahr).toString()];
     
-                    if(currentYear - user.birthday.jahr <= "18") ageRoles["18"];
+                    if(currentYear - user.birthday.jahr <= "18") ageRoles["-18"];
                     else if(currentYear - user.birthday.jahr >= "18") ageRoles["18"];
     
                     if (roleId) {
