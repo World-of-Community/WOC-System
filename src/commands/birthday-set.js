@@ -17,7 +17,7 @@ module.exports = {
 
         // Validierung des Geburtsdatums
         if (!isValidDate(tag, monat, jahr)) {
-            return interaction.reply({ content: '`❌` » Bitte gib ein gültiges Datum ein.', ephemeral: true });
+            return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum ein.', ephemeral: true });
         }
 
         // Geburtstag speichern
