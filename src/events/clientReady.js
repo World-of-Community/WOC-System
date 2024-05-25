@@ -61,10 +61,9 @@ module.exports = {
             let age = "";
             age = `${currentYear - user.birthday.jahr}`;
             let roleId;
-            ageRoles[(currentYear - user.birthday.jahr).toString()];
 
-            if (currentYear - user.birthday.jahr <= "18") ageRoles["-18"];
-            else if (currentYear - user.birthday.jahr >= "18") ageRoles["18"];
+            if (currentYear - user.birthday.jahr <= "18") roleId = ageRoles["-18"];
+            else if (currentYear - user.birthday.jahr >= "18") roleId = ageRoles["18"];
 
             if (roleId) {
               const role = guild.roles.cache.get(roleId);
