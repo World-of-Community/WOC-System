@@ -82,18 +82,18 @@ module.exports = {
                 ];
                 const randomIndex = Math.floor(Math.random() * birthdayword.length);
                 const selectedBirthdayWord = birthdayword[randomIndex];
-    
-                const birthdayEmbed = new EmbedBuilder()
-                    .setDescription(`🎂 𑁉 ${birthdayMessage}\nWünscht den **${birthdayUsersList.length === 1 ? 'Mitglied' : 'Mitgliedern'}** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`)
-                    .setColor('Blurple');
-    
-                birthdayChannel.send({ embeds: [birthdayEmbed] });
+
+                await birthdayChannel.send({ content: 
+                    `🎂 𑁉 ${birthdayMessage}\nWünscht den **${birthdayUsersList.length === 1 ? 'Mitglied' : 'Mitgliedern'}** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`
+                });
             } else {
                 const birthdayChannel = client.channels.cache.get('1243964646449483788');
                 const noBirthdayEmbed = new EmbedBuilder()
                     .setDescription('<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*')
                     .setColor('Blurple');
-                birthdayChannel.send({ embeds: [noBirthdayEmbed] });
+                await birthdayChannel.send({ content: 
+                '<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*'
+                });
             }
         } catch (error) {
             console.error('Fehler beim Verarbeiten der Geburtstage:', error);
