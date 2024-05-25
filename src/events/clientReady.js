@@ -98,7 +98,7 @@ module.exports = {
 
         await birthdayChannel.send({
           content: `🎂 𑁉 ${birthdayMessage}\nWünscht den **${
-            birthdayUsersList.length === 1 ? "Mitglied" : "Mitgliedern"
+            birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
           }** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
         });
       } else {
