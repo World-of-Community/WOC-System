@@ -251,6 +251,8 @@ cron.schedule('0 0 * * *', async () => {
     const month = today.getMonth() + 1;
     const currentYear = today.getFullYear();
 
+    const birthdayChannel = client.channels.cache.get('1243964646449483788');
+
     const birthdays = JSON.parse(fs.readFileSync('./birthdays.json', 'utf8'));
 
     for (const [userId, { tag, monat, jahr }] of Object.entries(birthdays)) {
@@ -279,6 +281,9 @@ cron.schedule('0 0 * * *', async () => {
                         .setColor('Blurple')
 
                     await member.send({ content: `${member.displayName}`, embeds: [birthdayEmbed] });
+
+                    birthdayChannel.send({ embeds: [birthdayEmbed] });
+
                 }
             } catch (error) {
                 console.error(`Fehler beim Zuweisen der Rolle für ${userId}:`, error);
@@ -317,7 +322,7 @@ cron.schedule('0 0 * * *', async () => {
 
         await user1 && user2.send({ content: `${user1.displayName} und ${user2.displayName}!`, embeds: [twobirthdayEmbed] });
 
-        notificationChannel.send({ embeds: [twobirthdayEmbed] });
+        birthdayChannel.send({ embeds: [twobirthdayEmbed] });
     }
 })
 
