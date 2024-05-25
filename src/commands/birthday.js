@@ -5,7 +5,7 @@ const userDB = require("../../Datenbank/userdb")
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('birthday')
-        .setDescription('description')
+        .setDescription('Geburstag System')
         .addSubcommand((command) =>
             command
                 .setName('set')
@@ -39,6 +39,7 @@ module.exports = {
                 tag = interaction.options.getInteger('tag');
                 monat = interaction.options.getInteger('monat');
                 jahr = interaction.options.getInteger('jahr');
+                
                 
                 if (!isValidDate(tag, monat, jahr)) {
                     return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum ein.', ephemeral: true });

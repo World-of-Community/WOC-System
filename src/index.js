@@ -211,8 +211,8 @@ client.on('messageUpdate', async(oldMessage, newMessage) => {
 
 // Beispielhafte Altersrollen
 const ageRoles = {
-    'Jünger als 18': '1199786765666500710',
-    'Älter als 18': '1199786814051979344',
+    '-18': '1199786765666500710',
+    '18': '1199786814051979344',
 };
 cron.schedule('0 0 * * *', async () => {
     const today = new Date();
@@ -225,32 +225,35 @@ cron.schedule('0 0 * * *', async () => {
 
         if (birthdayUsers.length > 0) {
             const birthdayChannel = client.channels.cache.get('1243964646449483788');
-            const birthdayMessages = [];
+            const birthdayUsersList = [];
             
             for (const user of birthdayUsers) {
                 const member = await guild.members.fetch(user.userID);
                 if (user.birthday.jahr) {
                     let age = '';
                     age = ` (${currentYear - user.birthday.jahr})`;
-                const roleId = ageRoles[(currentYear - user.birthday.jahr).toString()];
+                let roleId; ageRoles[(currentYear - user.birthday.jahr).toString()];
+
+                if(currentYear - user.birthday.jahr <= "18") ageRoles["18"];
+                else if(currentYear - user.birthday.jahr >= "18") ageRoles["18"];
 
                 if (roleId) {
                     const role = guild.roles.cache.get(roleId);
                     await member.roles.add(role);
                 }
-                birthdayMessages.push(`${member.displayName} (**${age}**)`);
+                birthdayUsersList.push(`${member} (**${age}**)`);
                 } else {
-                birthdayMessages.push(`${member.displayName}`);
+                    birthdayUsersList.push(`${member}`);
                 }
             }
 
             let birthdayMessage = '';
 
-            if (birthdayMessages.length === 1) {
-                birthdayMessage = `${birthdayMessages[0]} hat **heute Geburtstag**`;
+            if (birthdayUsersList.length === 1) {
+                birthdayMessage = `${birthdayUsersList[0]} hat **heute Geburtstag**`;
             } else {
-                const lastUser = birthdayMessages.pop(); 
-                birthdayMessage = `${birthdayMessages.join(', ')} und ${lastUser} haben **heute Geburtstag**`;
+                const lastUser = birthdayUsersList.pop(); 
+                birthdayMessage = `${birthdayUsersList.join(', ')} und ${lastUser} haben **heute Geburtstag**`;
             }
 
             const birthdayword = [
@@ -263,7 +266,7 @@ cron.schedule('0 0 * * *', async () => {
             const selectedBirthdayWord = birthdayword[randomIndex];
 
             const birthdayEmbed = new EmbedBuilder()
-                .setDescription(`🎂 𑁉 ${birthdayMessage}\nWünscht den **${birthdayMessages.length === 1 ? 'Mitglied' : 'Mitgliedern'}** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`)
+                .setDescription(`🎂 𑁉 ${birthdayMessage}\nWünscht den **${birthdayUsersList.length === 1 ? 'Mitglied' : 'Mitgliedern'}** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`)
                 .setColor('Blurple');
 
             birthdayChannel.send({ embeds: [birthdayEmbed] });
