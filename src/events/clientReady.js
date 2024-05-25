@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const func = require("../ressources/funktionen");
 const messagedb = require("../../Datenbank/messagedb");
-const userdb = require("../../Datenbank/userdb");
+const userDB = require("../../Datenbank/userdb");
 const bandb = require("../../Datenbank/bandb");
 const internal = require("stream");
 const cron = require('node-cron');
@@ -29,7 +29,10 @@ module.exports = {
             Giga(client, lastEntries);
             Tagesschau(client, lastEntries);
         }, 60000);
-
+        const ageRoles = {
+            '-18': '1199786765666500710',
+            '18': '1199786814051979344',
+        };
         const today = new Date();
         const day = today.getDate();
         const month = today.getMonth() + 1;
