@@ -36,20 +36,23 @@ module.exports = {
         async autocomplete(interaction) {
             const focusedOption = interaction.options.getFocused(true);
             if (focusedOption.name === 'partner') {
-                const guilds = await interaction.client.guilds.fetch();
+                try {
+                    const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
+                    if (!serverData || !serverData.partner || !serverData.partner.partners) {
+                        await interaction.respond({name: "> ❌ - Kein Partner gefunden", value: "error"});
+                        console.log('Keine Partner gefunden.');
+                        return;
+                    }
         
-                let choices = [];
-                await guilds.forEach(async guild => {
-                    choices.push({ name: guild.name, value: guild.id });
-                });
+                    const partners = serverData.partner.partners;
         
-                const filtered = choices.filter(choice => choice.name.toLowerCase().includes(focusedOption.value.toLowerCase())).slice(0, 25);
-        
-                if (!interaction) return;
-        
-                await interaction.respond(
-                    filtered.map(choice => ({ name: choice.name, value: choice.value }))
-                );
+                    const filtered = partners.filter(partner => partner.name.toLowerCase().includes(focusedOption.value.toLowerCase())).slice(0, 25);
+                    
+                    // Antwort senden
+                    await interaction.respond(filtered.map(partner => ({ name: partner.name, value: partner.name })));
+                } catch (error) {
+                    console.error('Fehler beim Abrufen der Partner aus der Datenbank:', error);
+                }
             }
         },
     async execute(interaction) {
