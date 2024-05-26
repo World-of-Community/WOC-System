@@ -39,8 +39,7 @@ module.exports = {
         switch (sub) {
             case 'add':
                 const name = interaction.options.getString('name');
-                const kategorieValue = interaction.options.getString('kategorie');
-                const kategorieName = interaction.options.get('kategorie').name;
+                const kategorie = interaction.options.getString('kategorie');
                 const owner = interaction.options.getString('owner');
                 const invite = interaction.options.getString('invite');
 
