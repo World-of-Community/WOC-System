@@ -6,7 +6,6 @@ const serverSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-
     deactivated: {
         type: Object,
         required: false,
