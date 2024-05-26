@@ -66,9 +66,10 @@ module.exports = {
                 } else {
                     let channel, sentMessage;
                     try {
-                        channel = interaction.guild.channels.cache.get(serverData.partner.channel);
-                        sentMessage = await channel.messages.fetch(serverData.partner.msg);
+                        channel = interaction.guild.channels.cache.get(serverData.partner.channelId);
+                        sentMessage = await channel.messages.fetch(serverData.partner.msgId);
                     } catch (error) {
+                        console.error('Fehler beim Abrufen des Kanals oder der Nachricht:', error);
                         const newEmbed = new EmbedBuilder()
                             .setColor('#0099ff')
                             .setTitle('Partnerliste')
