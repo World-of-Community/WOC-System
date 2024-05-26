@@ -40,17 +40,17 @@ module.exports = {
             case 'add':
                 const name = interaction.options.getString('name');
                 const kategorieValue = interaction.options.getString('kategorie');
-                const kategorieName = interaction.options.get('kategorie').name; 
+                const kategorieName = interaction.options.get('kategorie').name;
                 const owner = interaction.options.getString('owner');
                 const invite = interaction.options.getString('invite');
 
                 let serverData = await serverDB.findOneAndUpdate(
                     { guildID: interaction.guild.id },
-                    { $setOnInsert: { guildID: interaction.guild.id, partner: null } },
+                    { $setOnInsert: { guildID: interaction.guild.id, partner: { msgId: null, channelId: null } } },
                     { upsert: true, new: true }
                 );
 
-                if (!serverData.partner || !serverData.partner.msg) {
+                if (!serverData.partner.msgId || !serverData.partner.channelId) {
                     const newEmbed = new EmbedBuilder()
                         .setColor('#0099ff')
                         .setTitle('Partnerliste')
@@ -61,10 +61,8 @@ module.exports = {
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
 
                     serverData.partner = {
-                        msg: {
-                            id: sentMessage.id,
-                            channel: channel.id
-                        }
+                        msgId: sentMessage.id,
+                        channelId: channel.id
                     };
                     await serverData.save();
 
@@ -72,8 +70,8 @@ module.exports = {
                 } else {
                     let channel, sentMessage;
                     try {
-                        channel = interaction.guild.channels.cache.get(serverData.partner.msg.channel);
-                        sentMessage = await channel.messages.fetch(serverData.partner.msg.id);
+                        channel = interaction.guild.channels.cache.get(serverData.partner.channelId);
+                        sentMessage = await channel.messages.fetch(serverData.partner.msgId);
                     } catch (error) {
                         const newEmbed = new EmbedBuilder()
                             .setColor('#0099ff')
@@ -83,10 +81,9 @@ module.exports = {
 
                         channel = interaction.channel;
                         sentMessage = await channel.send({ embeds: [newEmbed] });
-                        serverData.partner.msg = {
-                            id: sentMessage.id,
-                            channel: channel.id
-                        };
+
+                        serverData.partner.msgId = sentMessage.id;
+                        serverData.partner.channelId = channel.id;
                         await serverData.save();
 
                         await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
@@ -109,6 +106,8 @@ module.exports = {
                     await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
                 }
                 break;
+
+          
 
             case 'delete':
                 break;
