@@ -58,11 +58,10 @@ module.exports = {
                     .addFields({ name: kategorieValue, value: `1. [${name}](${invite}) (@${owner})` });
     
 
-                    const channel = interaction.channel;
-                    channel.send(newEmbed);
+                    await interaction.channel.send(newEmbed);
                     serverData.partner = {
                         msg: newEmbed,
-                        channel: channel.id,
+                        channel: interaction.channelID,
                     };
                     await serverData.save();
     
