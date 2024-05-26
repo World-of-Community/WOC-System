@@ -198,7 +198,6 @@ module.exports = {
                             return;
                         }
                     
-                        // Finde den Index des Partners im partners-Array
                         const partnerIndex = serverData.partner.partners.findIndex(partner => partner.name.toLowerCase() === partnerNameToDelete.toLowerCase());
                     
                         if (partnerIndex === -1) {
@@ -208,7 +207,9 @@ module.exports = {
                     
                         const deletedPartner = serverData.partner.partners.splice(partnerIndex, 1)[0];
                     
-                        // Überprüfen, ob das Feld nur einen Eintrag hat
+                        await serverData.save();
+                    
+
                         const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
                         const sentMessage = await channel.messages.fetch(serverData.partner.msg);
                         const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
@@ -216,17 +217,12 @@ module.exports = {
                         
                         if (existingFieldIndex !== -1) {
                             const partnersInSameCategory = serverData.partner.partners.filter(partner => partner.category.toLowerCase() === deletedPartner.category.toLowerCase());
+                            existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (@${partner.owner})`).join('\n');
+                            
                             if (partnersInSameCategory.length === 0) {
-                                // Wenn kein weiterer Eintrag in dieser Kategorie vorhanden ist, füge "Kein Eintrag" hinzu
-                                existingEmbed.data.fields.splice(existingFieldIndex, 1, { name: deletedPartner.category, value: '> \`❌\` » Kein Eintrag' });
-                            } else {
-                                // Andernfalls aktualisiere die Liste der Partner in dieser Kategorie
-                                existingEmbed.data.fields.splice(existingFieldIndex, 1, { 
-                                    name: deletedPartner.category,
-                                    value: partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (@${partner.owner})`).join('\n') 
-                                });
+                                existingEmbed.data.fields[existingFieldIndex].value = '> \`❌\` » Kein Eintrag';
                             }
-                
+                    
                             await sentMessage.edit({ embeds: [existingEmbed] });
                         }
                     
@@ -236,6 +232,7 @@ module.exports = {
                         await interaction.reply('Fehler beim Löschen des Partners.');
                     }
                     break;
+                
                 
             case 'change':
                 break;
