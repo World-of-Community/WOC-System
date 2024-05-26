@@ -19,7 +19,7 @@ module.exports = {
             { name: 'Großer Partner', value: 'Großer Partner' }, 
             { name: 'Normaler Partner', value: 'Normaler Partner' }, 
             ).setDescription('» Wähle die Kategorie des Partners aus.').setRequired(true))
-            .addStringOption(option => option.setName('owner').setDescription('» Besitzer des Partners').setRequired(true))
+            .addUserOption(option => option.setName('owner').setDescription('» Besitzer des Partners').setRequired(true))
             .addStringOption(option => option.setName('invite').setDescription('» Einladungslink des Partners').setRequired(true)))
         .addSubcommand((command) =>
             command
@@ -67,7 +67,7 @@ module.exports = {
             case 'add':
                 const name = interaction.options.getString('name');
                 const kategorie = interaction.options.getString('kategorie');
-                const owner = interaction.options.getString('owner');
+                const owner = interaction.options.getUser('owner');
                 const invite = interaction.options.getString('invite');
 
                 let serverData = await serverDB.findOneAndUpdate(
@@ -82,22 +82,22 @@ module.exports = {
 
                         
                         if(kategorie === "Kooperation") {
-                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
                             } else {
                                 newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                             }
                             if(kategorie === "Mega Partner") {
-                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
                                 } else {
                                     newEmbed.addFields({ name: "Mega Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
                                 if(kategorie === "Großer Partner") {
-                                    newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                                    newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
                                     } else {
                                         newEmbed.addFields({ name: "Großer Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                     }
                                     if(kategorie === "Normaler Partner") {
-                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
                                         } else {
                                             newEmbed.addFields({ name: "Normaler Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                         }
@@ -124,22 +124,22 @@ module.exports = {
                             .setDescription('Hier sind unsere Partner:')
 
                             if(kategorie === "Kooperation") {
-                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
                                 } else {
                                     newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
                                 if(kategorie === "Mega Partner") {
-                                    newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                                    newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
                                     } else {
                                         newEmbed.addFields({ name: "Mega Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                     }
                                     if(kategorie === "Großer Partner") {
-                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
                                         } else {
                                             newEmbed.addFields({ name: "Großer Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                         }
                                         if(kategorie === "Normaler Partner") {
-                                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
                                             } else {
                                                 newEmbed.addFields({ name: "Normaler Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                             }
@@ -148,7 +148,7 @@ module.exports = {
                         sentMessage = await channel.send({ embeds: [newEmbed] });
 
 
-                        const newPartner = { name, category: kategorie };
+                        const newPartner = { name, category: kategorie, ownerID: owner.id, invite };
                         serverData.partner.partners.push(newPartner);
                         serverData.partner.msg = sentMessage.id;
                         serverData.partner.channel = channel.id;
@@ -174,7 +174,7 @@ module.exports = {
                         }
                     } 
                     
-                    const newPartner = { name, category: kategorie };
+                    const newPartner = { name, category: kategorie, ownerID: owner.id, invite };
                     serverData.partner.partners.push(newPartner);
                     await sentMessage.edit({ embeds: [existingEmbed] });
                     try {

@@ -17,7 +17,10 @@ const serverSchema = new mongoose.Schema({
         },
         partners: [{
             name: String,
-            category: String
+            category: String,
+            ownerID: String,
+            invite: String
+
         }]
     },
     deactivated: {
