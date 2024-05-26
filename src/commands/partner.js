@@ -42,48 +42,52 @@ module.exports = {
                 const kategorieValue = interaction.options.getString('kategorie');
                 const owner = interaction.options.getString('owner');
                 const invite = interaction.options.getString('invite');
-    
-                // Finde das Dokument für den aktuellen Server, oder erstelle ein neues, falls nicht vorhanden
+
                 let serverData = await serverDB.findOneAndUpdate(
-                    { guildID: interaction.guildID },
-                    { $setOnInsert: { guildID: interaction.guildID, partner: null } }, 
-                    { upsert: true, new: true } 
+                    { guildID: interaction.guild.id },
+                    { $setOnInsert: { guildID: interaction.guild.id, partner: null } },
+                    { upsert: true, new: true }
                 );
-    
+
                 if (!serverData.partner || !serverData.partner.msg) {
                     const newEmbed = new EmbedBuilder()
-                    .setColor('#0099ff')
-                    .setTitle('Partnerliste')
-                    .setDescription('Hier sind unsere Partner:')
-                    .addFields({ name: kategorieValue, value: `1. [${name}](${invite}) (@${owner})` });
-    
+                        .setColor('#0099ff')
+                        .setTitle('Partnerliste')
+                        .setDescription('Hier sind unsere Partner:')
+                        .addFields({ name: kategorieValue, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
 
-                    await interaction.channel.send(newEmbed);
+                    const channel = interaction.channel;
+                    const sentMessage = await channel.send({ embeds: [newEmbed] });
+
+                    // Partnerdaten aktualisieren
                     serverData.partner = {
-                        msg: newEmbed,
-                        channel: interaction.channelID,
+                        msg: {
+                            id: sentMessage.id,
+                            channel: channel.id
+                        }
                     };
                     await serverData.save();
-    
-                    await interaction.reply('Partner erfolgreich hinzugefügt!'); 
+
+                    await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
                 } else {
-                    const existingEmbed = serverData.partner.msg;
-    
-                    // Neue Zeile für den Partner hinzufügen
+                    // Embed aktualisieren, wenn bereits ein Partner vorhanden ist
+                    const channel = interaction.guild.channels.cache.get(serverData.partner.msg.channel);
+                    const sentMessage = await channel.messages.fetch(serverData.partner.msg.id);
+                    const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
+
                     const fieldIndex = existingEmbed.fields.findIndex(field => field.name === kategorieValue);
                     if (fieldIndex !== -1) {
                         const fieldValue = existingEmbed.fields[fieldIndex].value;
-                        const newFieldValue = fieldValue + `\n${existingEmbed.fields[fieldIndex].value.split('\n').length}. [${name}](${invite}) (@${owner})`;
+                        const newFieldValue = `${fieldValue}\n${fieldValue.split('\n').length + 1}. [${name}](${invite}) (@${owner})`;
                         existingEmbed.fields[fieldIndex].value = newFieldValue;
                     } else {
-                        existingEmbed.addField(kategorieValue, `1. [${name}](${invite}) (@${owner})`);
+                        existingEmbed.addFields({ name: kategorieValue, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
                     }
-    
-                    const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
-                    const sentMessage = await channel.messages.fetch(serverData.partner.msg.id);
-                    await sentMessage.edit(existingEmbed);
-    
-                    await interaction.reply('Partner erfolgreich hinzugefügt!');
+
+                    // Embed aktualisieren
+                    await sentMessage.edit({ embeds: [existingEmbed] });
+
+                    await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
                 }
                 break;
 
