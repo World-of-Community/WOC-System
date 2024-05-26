@@ -110,7 +110,7 @@ module.exports = {
                     serverData.partner.channel = channel.id;
                     await serverData.save();
 
-                    await interaction.reply('> `✅` » Partner erfolgreich hinzugefügt!', true);
+                    await interaction.reply({content: '> `✅` » Partner erfolgreich hinzugefügt!', ephemeral: true});
                 } else {
                     let channel, sentMessage;
                     try {
@@ -154,7 +154,7 @@ module.exports = {
                         serverData.partner.channel = channel.id;
                         try {
                             await serverData.save();
-                            await interaction.reply('> `✅` » Partner erfolgreich hinzugefügt!', true);
+                            await interaction.reply({content: '> `✅` » Partner erfolgreich hinzugefügt!', ephemeral: true});
                         } catch (error) {
                             await interaction.reply('> `❌` » Fehler!');
                             await interaction.reply('Fehler beim Speichern der Partnerdaten.');
@@ -179,7 +179,7 @@ module.exports = {
                     await sentMessage.edit({ embeds: [existingEmbed] });
                     try {
                         await serverData.save();
-                        await interaction.reply('> `✅` » Partner erfolgreich hinzugefügt!', true);
+                        await interaction.reply({content: '> `✅` » Partner erfolgreich hinzugefügt!', ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Speichern der Partnerdaten:', error);
                         await interaction.reply('> `❌` » Fehler!');
@@ -194,14 +194,14 @@ module.exports = {
                         const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
                     
                         if (!serverData || !serverData.partner || !serverData.partner.partners || serverData.partner.partners.length === 0) {
-                            await interaction.reply('> `❌` » Keine Partner zum Löschen gefunden.', true);
+                            await interaction.reply({content: '> `❌` » Keine Partner zum Löschen gefunden.', ephemeral: true});
                             return;
                         }
                     
                         const partnerIndex = serverData.partner.partners.findIndex(partner => partner.name.toLowerCase() === partnerNameToDelete.toLowerCase());
                     
                         if (partnerIndex === -1) {
-                            await interaction.reply('> `❌` » Der angegebene Partner wurde nicht gefunden.', true);
+                            await interaction.reply({content: '> `❌` » Der angegebene Partner wurde nicht gefunden.', ephemeral: true});
                             return;
                         }
                     
@@ -226,7 +226,7 @@ module.exports = {
                             await sentMessage.edit({ embeds: [existingEmbed] });
                         }
                     
-                        await interaction.reply(`> \`✅\` » Partner "${partnerNameToDelete}" erfolgreich gelöscht.`);
+                        await interaction.reply({content: `> \`✅\` » Partner "${partnerNameToDelete}" erfolgreich gelöscht.`, ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Löschen des Partners:', error);
                         await interaction.reply('Fehler beim Löschen des Partners.');
