@@ -65,8 +65,8 @@ module.exports = {
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
 
-                    serverData.msg = sentMessage.id;
-                    serverData.channel = channel.id;
+                    serverData.partner.msg = sentMessage.id;
+                    serverData.partner.channel = channel.id;
                     await serverData.save();
 
                     await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
