@@ -15,6 +15,10 @@ const serverSchema = new mongoose.Schema({
             type: String,
             required: false,
         },
+        partners: [{
+            name: String,
+            category: String
+        }]
     },
     deactivated: {
         type: Object,

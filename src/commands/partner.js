@@ -14,7 +14,7 @@ module.exports = {
             .addStringOption(option => option.setName('name').setDescription('» Name des Partners').setRequired(true))
             .addStringOption(option => option.setName('kategorie').setDescription('» Kategorie des Partners')
             .addChoices(
-            { name: 'Kooperation Partner', value: 'Kooperation Partner' },    
+            { name: 'Kooperation Partner', value: 'Kooperation' },    
             { name: 'Mega Partner', value: 'Mega Partner' }, 
             { name: 'Großer Partner', value: 'Großer Partner' }, 
             { name: 'Normaler Partner', value: 'Normaler Partner' }, 
@@ -25,15 +25,33 @@ module.exports = {
             command
                 .setName('edit')
                 .setDescription('» LBearbeite einen Partner 🤝')
-                .addUserOption(option => option.setName('partner').setDescription('» Wähle ein Partner aus').setRequired(true)),
+                .addUserOption(option => option.setName('partner').setDescription('» Wähle ein Partner aus').setAutocomplete(true).setRequired(true)),
         )
         .addSubcommand((command) =>
             command
                 .setName('delete')
                 .setDescription('» Lösche einen Partner. 🤝')
-                .addIntegerOption((option) => option.setName('partner').setDescription('» Wähle ein Parnter aus').setRequired(true))
+                .addIntegerOption((option) => option.setName('partner').setDescription('» Wähle ein Parnter aus').setAutocomplete(true).setRequired(true))
         ),
-
+        async autocomplete(interaction) {
+            const focusedOption = interaction.options.getFocused(true);
+            if (focusedOption.name === 'partner') {
+                const guilds = await interaction.client.guilds.fetch();
+        
+                let choices = [];
+                await guilds.forEach(async guild => {
+                    choices.push({ name: guild.name, value: guild.id });
+                });
+        
+                const filtered = choices.filter(choice => choice.name.toLowerCase().includes(focusedOption.value.toLowerCase())).slice(0, 25);
+        
+                if (!interaction) return;
+        
+                await interaction.respond(
+                    filtered.map(choice => ({ name: choice.name, value: choice.value }))
+                );
+            }
+        },
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
 
@@ -54,6 +72,7 @@ module.exports = {
                         .setTitle('Partnerliste')
                         .setDescription('Hier sind unsere Partner:')
 
+                        
                         if(kategorie === "Kooperation") {
                             newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
                             } else {
@@ -77,6 +96,8 @@ module.exports = {
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
 
+                    const newPartner = { name, category: kategorie };
+                    serverData.partner.partners.push(newPartner);
                     serverData.partner.msg = sentMessage.id;
                     serverData.partner.channel = channel.id;
                     await serverData.save();
@@ -118,6 +139,9 @@ module.exports = {
                         channel = interaction.channel;
                         sentMessage = await channel.send({ embeds: [newEmbed] });
 
+
+                        const newPartner = { name, category: kategorie };
+                        serverData.partner.partners.push(newPartner);
                         serverData.partner.msg = sentMessage.id;
                         serverData.partner.channel = channel.id;
                         await serverData.save();
@@ -138,6 +162,8 @@ module.exports = {
                         }
                     } 
                     
+                    const newPartner = { name, category: kategorie };
+                    serverData.partner.partners.push(newPartner);
                     await sentMessage.edit({ embeds: [existingEmbed] });
                     await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
                 }
