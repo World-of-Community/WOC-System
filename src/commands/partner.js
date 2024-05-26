@@ -52,7 +52,7 @@ module.exports = {
                         .setColor('#0099ff')
                         .setTitle('Partnerliste')
                         .setDescription('Hier sind unsere Partner:')
-                        .addFields({ name: kategorieName, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                        .addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
 
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
@@ -73,7 +73,7 @@ module.exports = {
                             .setColor('#0099ff')
                             .setTitle('Partnerliste')
                             .setDescription('Hier sind unsere Partner:')
-                            .addFields({ name: kategorieName, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                            .addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
 
                         channel = interaction.channel;
                         sentMessage = await channel.send({ embeds: [newEmbed] });
@@ -88,13 +88,13 @@ module.exports = {
 
                     const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
 
-                    const fieldIndex = existingEmbed.data.fields.findIndex(field => field.name === kategorieName);
+                    const fieldIndex = existingEmbed.data.fields.findIndex(field => field.name === kategorie);
                     if (fieldIndex !== -1) {
                         const fieldValue = existingEmbed.data.fields[fieldIndex].value;
                         const newFieldValue = `${fieldValue}\n${fieldValue.split('\n').length + 1}. [${name}](${invite}) (@${owner})`;
                         existingEmbed.data.fields[fieldIndex].value = newFieldValue;
                     } else {
-                        existingEmbed.addFields({ name: kategorieName, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                        existingEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
                     }
 
                     await sentMessage.edit({ embeds: [existingEmbed] });
