@@ -69,7 +69,7 @@ module.exports = {
                     await interaction.reply({ content: '> `✅` » Dein Geburtstag wurde gespeichert!', ephemeral: true });
                 } catch (error) {
                     console.error(error);
-                    await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Speichern deines Geburtstags.', ephemeral: true });
+                    await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Speichern deines Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
                 }
                 break;
 
@@ -91,7 +91,7 @@ module.exports = {
                     await interaction.reply({ content: '`✅` » Der Geburtstag wurde gelöscht.', ephemeral: true });
                 } catch (error) {
                     console.error(error);
-                    await interaction.reply({ content: '`❌` » Es gab einen Fehler beim Löschen des Geburtstags.', ephemeral: true });
+                    await interaction.reply({ content: '`❌` » Es gab einen Fehler beim Löschen des Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
                 }
                 break;
 
@@ -137,7 +137,7 @@ module.exports = {
                     await interaction.reply({ content: '`✅` » Der Geburtstag wurde geändert.', ephemeral: true });
                 } catch (error) {
                     console.error(error);
-                    await interaction.reply({ content: '`❌` » Es gab einen Fehler beim Ändern des Geburtstags.', ephemeral: true });
+                    await interaction.reply({ content: '`❌` » Es gab einen Fehler beim Ändern des Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
                 }
                 break;
         }

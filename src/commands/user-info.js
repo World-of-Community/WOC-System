@@ -15,7 +15,7 @@ module.exports = {
 
         const userEmbed = new EmbedBuilder()
             .setTitle(`\`👤\` | Informationen über \`${member.displayName}\``)
-            .setDescription(`> - Benutzername: ${user.username} (\`${user.id}\`)\n> - Anzeigename: ${member.displayName}\n> - » Account erstellt am: ${createdAt}\n> - » Beigetreten am: ${joinedAt}`)
+            .setDescription(`> - » Benutzername: ${user.username} (\`${user.id}\`)\n> - » Anzeigename: ${member.displayName}\n> - » Account erstellt am: ${createdAt}\n> - » Beigetreten am: ${joinedAt}`)
             .setColor('Blurple')
             .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
             .setFooter({ text: `${interaction.guild.name} | User Information`, iconURL: `${interaction.guild.iconURL()}` })

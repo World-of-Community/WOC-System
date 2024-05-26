@@ -18,10 +18,11 @@ module.exports = {
         const donateAmount = userData.donation.toLocaleString('de-DE', {style: 'currency', currency: "EUR"}).replace(/,\d+/g, "");
 
         const donateEmbed = new EmbedBuilder()
-            .setTitle('`💖` × GESAMTSPENDEN')
-            .setDescription(`> \`✅\` » ${member} hat insgesamt \`${donateAmount}\` gespendet!`)
-            .setColor('Green')
-            .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+            .setTitle(`\`💸\` × ${member.user.displayName}'s Gesamtspenden`)
+            .setDescription(`> \`💖\` » ${member} hat insgesamt \`${donateAmount}\` für ${interaction.guild.name} gespendet!`)
+            .setColor('Blurple')
+            .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
+            .setFooter({ text: `${interaction.guild.name} dankt dir für alle Spenden`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
 
         await interaction.reply({ embeds: [donateEmbed], ephemeral: true });
