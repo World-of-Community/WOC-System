@@ -2,7 +2,7 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('disc
 const userDB = require("../../Datenbank/userdb")
 
 module.exports = {
-     // /donate command
+     // /donated command
     data: new SlashCommandBuilder()
         .setName('donated')
         .setDescription('» Zeigt die Gesamtspenden eines Benutzers an. 💖')
