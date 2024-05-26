@@ -50,7 +50,7 @@ module.exports = {
                     const filtered = partners.filter(partner => partner.name.toLowerCase().includes(focusedOption.value.toLowerCase())).slice(0, 25);
 
                     if (filtered.length === 0) {
-                        choices.push({ name: '❌ » Kein Eintrag', value: 'Kein Eintrag' });
+                        filtered.push({ name: '❌ » Kein Eintrag', value: 'Kein Eintrag' });
                     }
                     
                     // Antwort senden
