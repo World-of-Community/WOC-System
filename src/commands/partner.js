@@ -128,19 +128,15 @@ module.exports = {
 
                     const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
 
-                    const fieldIndex = existingEmbed.data.fields.findIndex(field => field.name === kategorie);
-                    if (fieldIndex !== -1) {
-                        const noEntry = existingEmbed.data.fields.findIndex(field => field.value === "> \`❌\` - Kein Eintrag")
-
-                        if(noEntry !== -1) {
-                            existingEmbed.data.fields[fieldIndex].value = `${fieldValue}\n1. [${name}](${invite}) (@${owner})`;
-                            existingEmbed.data.fields.splice(noEntry, 1);
+                    const existingFieldIndex = existingEmbed.data.fields.findIndex(field => field.name === kategorie);
+                    if (existingFieldIndex !== -1) {
+                        const fieldValue = existingEmbed.data.fields[existingFieldIndex].value;
+                        if (fieldValue.includes("> \`❌\` - Kein Eintrag")) {
+                            existingEmbed.data.fields.splice(existingFieldIndex, 1);
                         }
-                        const fieldValue = existingEmbed.data.fields[fieldIndex].value;
-                        existingEmbed.data.fields[fieldIndex].value = `${fieldValue}\n${fieldValue.split('\n').length + 1}. [${name}](${invite}) (@${owner})`;
-                    } else {
-                        existingEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                        existingEmbed.data.fields[existingFieldIndex].value += `\n${fieldValue.split('\n').length}. [${name}](${invite}) (@${owner})`;
                     }
+                    
 
                     await sentMessage.edit({ embeds: [existingEmbed] });
 
