@@ -39,7 +39,7 @@ module.exports = {
         switch (sub) {
             case 'add':
                 const name = interaction.options.getString('name');
-                const kategorieValue = interaction.options.getString('kategorie');
+                const kategorie = interaction.options.getString('kategorie').name;
                 const owner = interaction.options.getString('owner');
                 const invite = interaction.options.getString('invite');
 
@@ -54,7 +54,7 @@ module.exports = {
                         .setColor('#0099ff')
                         .setTitle('Partnerliste')
                         .setDescription('Hier sind unsere Partner:')
-                        .addFields({ name: kategorieValue, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                        .addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
 
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
@@ -70,16 +70,15 @@ module.exports = {
 
                     await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
                 } else {
-                    // Embed aktualisieren, wenn bereits ein Partner vorhanden ist
                     const channel = interaction.guild.channels.cache.get(serverData.partner.msg.channel);
                     const sentMessage = await channel.messages.fetch(serverData.partner.msg.id);
                     const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
 
-                    const fieldIndex = existingEmbed.fields.findIndex(field => field.name === kategorieValue);
+                    const fieldIndex = existingEmbed.data.fields.findIndex(field => field.name === kategorieValue);
                     if (fieldIndex !== -1) {
-                        const fieldValue = existingEmbed.fields[fieldIndex].value;
+                        const fieldValue = existingEmbed.data.fields[fieldIndex].value;
                         const newFieldValue = `${fieldValue}\n${fieldValue.split('\n').length + 1}. [${name}](${invite}) (@${owner})`;
-                        existingEmbed.fields[fieldIndex].value = newFieldValue;
+                        existingEmbed.data.fields[fieldIndex].value = newFieldValue;
                     } else {
                         existingEmbed.addFields({ name: kategorieValue, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
                     }
