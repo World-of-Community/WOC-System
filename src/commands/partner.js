@@ -147,9 +147,13 @@ module.exports = {
                         serverData.partner.partners.push(newPartner);
                         serverData.partner.msg = sentMessage.id;
                         serverData.partner.channel = channel.id;
-                        await serverData.save();
-
-                        await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
+                        try {
+                            await serverData.save();
+                            await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
+                        } catch (error) {
+                            console.error('Fehler beim Speichern der Partnerdaten:', error);
+                            await interaction.reply('Fehler beim Speichern der Partnerdaten.');
+                        }
                         return;
                     }
 
@@ -168,7 +172,13 @@ module.exports = {
                     const newPartner = { name, category: kategorie };
                     serverData.partner.partners.push(newPartner);
                     await sentMessage.edit({ embeds: [existingEmbed] });
-                    await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
+                    try {
+                        await serverData.save();
+                        await interaction.reply('Partner erfolgreich hinzugefügt!');
+                    } catch (error) {
+                        console.error('Fehler beim Speichern der Partnerdaten:', error);
+                        await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
+                    }
                 }
                 break;
 
