@@ -429,7 +429,7 @@ module.exports = {
             }
         }
 
-        if (!interaction.isCommand()) return
+        if(interaction.isChatInputCommand()) {
 
         const command = client.commands.get(interaction.commandName)
 
@@ -446,6 +446,17 @@ module.exports = {
                     interaction.reply("Es ist ein Fehler beim ausführen aufgetreten!")
                 }
             }
+        }
+        } else if (interaction.isAutocomplete()) {
+                const command = interaction.client.commands.get(interaction.commandName);
+              
+                if(!command) return;
+              
+                try {
+                  await command.autocomplete(interaction);
+                } catch (error) {
+                  console.error(error);
+                }
         }
     }
 }
