@@ -217,7 +217,7 @@ module.exports = {
                         
                         if (existingFieldIndex !== -1) {
                             const partnersInSameCategory = serverData.partner.partners.filter(partner => partner.category.toLowerCase() === deletedPartner.category.toLowerCase());
-                            existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (@${partner.owner})`).join('\n');
+                            existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (@${partner.ownerID})`).join('\n');
                             
                             if (partnersInSameCategory.length === 0) {
                                 existingEmbed.data.fields[existingFieldIndex].value = '> \`❌\` » Kein Eintrag';
