@@ -46,11 +46,11 @@ module.exports = {
 
                 let serverData = await serverDB.findOneAndUpdate(
                     { guildID: interaction.guild.id },
-                    { $setOnInsert: { guildID: interaction.guild.id, partner: { msgId: null, channelId: null } } },
+                    { $setOnInsert: { guildID: interaction.guild.id, partner: { msgId: '', channelId: '' } } },
                     { upsert: true, new: true }
                 );
 
-                if (!serverData.partner.msgId || !serverData.partner.channelId) {
+                if (!serverData.partner || !serverData.partner.msgId || !serverData.partner.channelId) {
                     const newEmbed = new EmbedBuilder()
                         .setColor('#0099ff')
                         .setTitle('Partnerliste')
