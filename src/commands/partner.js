@@ -48,7 +48,7 @@ module.exports = {
                     { guildID: interaction.guild.id}
                 );
 
-                if (!serverData.partner || !serverData.partner.msgId || !serverData.partner.channelId) {
+                if (!serverData.partner || !serverData.partner.msgId || !serverData.partner.channel) {
                     const newEmbed = new EmbedBuilder()
                         .setColor('#0099ff')
                         .setTitle('Partnerliste')
