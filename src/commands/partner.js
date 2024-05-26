@@ -217,8 +217,6 @@ module.exports = {
                         
                         if (existingFieldIndex !== -1) {
                             const partnersInSameCategory = serverData.partner.partners.filter(partner => partner.category.toLowerCase() === deletedPartner.category.toLowerCase());
-                            const ownerUser = await interaction.guild.members.cache.get(partner.ownerID);
-                            const ownerTag = ownerUser ? ownerUser : 'N/A';
                             existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n');
                             
                             if (partnersInSameCategory.length === 0) {
