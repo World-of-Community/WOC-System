@@ -6,11 +6,11 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('remindme-create')
         .setDescription('» Erstellt eine Erinnerung. ⏰')
-        .addStringOption(option => option.setName('duration').setDescription('» Die Zeit (z.B. 10m, 1h)').setRequired(true))
-        .addStringOption(option => option.setName('reminder').setDescription('» Die Erinnerung').setRequired(true)),
+        .addStringOption(option => option.setName('zeit').setDescription('» Die Zeit (z.B. 10m, 1h)').setRequired(true))
+        .addStringOption(option => option.setName('erinnerung').setDescription('» Die Erinnerung').setRequired(true)),
 
     async execute(interaction) {
-        const duration = interaction.options.getString('duration');
+        const duration = interaction.options.getString('zeit');
 
         var list = duration.split(" ");
         var durationDauer = 0;
@@ -23,14 +23,14 @@ module.exports = {
             }
         });
         if (durationDauer !== durationDauer) {
-            return await interaction.reply("Dauer konnte nicht verarbeitet werden!")
+            return await interaction.reply({content: `> \`❌\` » Die Dauer konnte nicht verarbeitet werden!`, ephemeral: true})
         }
 
         var endDate = new Date(new Date().getTime() + durationDauer); 
 
         const timestamp = Math.floor(endDate / 1000); 
 
-        const reminder = interaction.options.getString('reminder');
+        const reminder = interaction.options.getString('erinnerung');
 
         const remindEmbed = new EmbedBuilder()
             .setTitle('Du hast eine Erinnerung erstellt')
