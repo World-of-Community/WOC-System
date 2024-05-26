@@ -189,52 +189,54 @@ module.exports = {
 
                 case 'delete':
                     const partnerNameToDelete = interaction.options.getString('partner');
-                
+                    
                     try {
                         const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
-                
+                    
                         if (!serverData || !serverData.partner || !serverData.partner.partners || serverData.partner.partners.length === 0) {
                             await interaction.reply('> `❌` » Keine Partner zum Löschen gefunden.', true);
                             return;
                         }
-                
+                    
                         // Finde den Index des Partners im partners-Array
                         const partnerIndex = serverData.partner.partners.findIndex(partner => partner.name.toLowerCase() === partnerNameToDelete.toLowerCase());
-                
+                    
                         if (partnerIndex === -1) {
                             await interaction.reply('> `❌` » Der angegebene Partner wurde nicht gefunden.', true);
                             return;
                         }
-                
+                    
                         const deletedPartner = serverData.partner.partners.splice(partnerIndex, 1)[0];
-                
-                        // Speichere die Änderungen in der Datenbank
-                        await serverData.save();
-                
+                    
+                        // Überprüfen, ob das Feld nur einen Eintrag hat
                         const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
                         const sentMessage = await channel.messages.fetch(serverData.partner.msg);
                         const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
                         const existingFieldIndex = existingEmbed.data.fields.findIndex(field => field.name.toLowerCase() === deletedPartner.category.toLowerCase());
                         
                         if (existingFieldIndex !== -1) {
-                            existingEmbed.data.fields.splice(existingFieldIndex, 1);
-
                             const partnersInSameCategory = serverData.partner.partners.filter(partner => partner.category.toLowerCase() === deletedPartner.category.toLowerCase());
-                            existingEmbed.data.fields.forEach(field => {
-                                if (field.name.toLowerCase() === deletedPartner.category.toLowerCase()) {
-                                    field.value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (@${partner.owner})`).join('\n');
-                                }
-                            });
+                            if (partnersInSameCategory.length === 0) {
+                                // Wenn kein weiterer Eintrag in dieser Kategorie vorhanden ist, füge "Kein Eintrag" hinzu
+                                existingEmbed.data.fields.splice(existingFieldIndex, 1, { name: deletedPartner.category, value: '> \`❌\` » Kein Eintrag' });
+                            } else {
+                                // Andernfalls aktualisiere die Liste der Partner in dieser Kategorie
+                                existingEmbed.data.fields.splice(existingFieldIndex, 1, { 
+                                    name: deletedPartner.category,
+                                    value: partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (@${partner.owner})`).join('\n') 
+                                });
+                            }
                 
                             await sentMessage.edit({ embeds: [existingEmbed] });
                         }
-                
+                    
                         await interaction.reply(`> \`✅\` » Partner "${partnerNameToDelete}" erfolgreich gelöscht.`);
                     } catch (error) {
                         console.error('Fehler beim Löschen des Partners:', error);
                         await interaction.reply('Fehler beim Löschen des Partners.');
                     }
                     break;
+                
             case 'change':
                 break;
         }
