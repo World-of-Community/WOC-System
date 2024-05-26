@@ -60,10 +60,8 @@ module.exports = {
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
 
-                    serverData.partner = {
-                        msgId: sentMessage.id,
-                        channelId: channel.id
-                    };
+                    serverData.msg = sentMessage.id;
+                    serverData.channel = channel.id;
                     await serverData.save();
 
                     await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
@@ -82,8 +80,8 @@ module.exports = {
                         channel = interaction.channel;
                         sentMessage = await channel.send({ embeds: [newEmbed] });
 
-                        serverData.partner.msgId = sentMessage.id;
-                        serverData.partner.channelId = channel.id;
+                        serverData.partner.msg = sentMessage.id;
+                        serverData.partner.channel = channel.id;
                         await serverData.save();
 
                         await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
