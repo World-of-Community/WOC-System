@@ -45,8 +45,13 @@ module.exports = {
                 const invite = interaction.options.getString('invite');
 
                 let serverData = await serverDB.findOneAndUpdate(
-                    { guildID: interaction.guild.id },
-                    { $setOnInsert: { guildID: interaction.guild.id, partner: { msgId: '', channelId: '' } } },
+                    { guildID: interaction.guild.id, 'partner': { $exists: false } }, // Check if 'partner' field doesn't exist
+                    {
+                        $setOnInsert: {
+                            guildID: interaction.guild.id,
+                            partner: { msgId: '', channelId: '' } // Initialize partner field here
+                        }
+                    },
                     { upsert: true, new: true }
                 );
 
