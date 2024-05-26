@@ -25,13 +25,13 @@ module.exports = {
             command
                 .setName('edit')
                 .setDescription('» LBearbeite einen Partner 🤝')
-                .addUserOption(option => option.setName('partner').setDescription('» Wähle ein Partner aus').setAutocomplete(true).setRequired(true)),
+                .addStringOption(option => option.setName('partner').setDescription('» Wähle ein Partner aus').setAutocomplete(true).setRequired(true)),
         )
         .addSubcommand((command) =>
             command
                 .setName('delete')
                 .setDescription('» Lösche einen Partner. 🤝')
-                .addIntegerOption((option) => option.setName('partner').setDescription('» Wähle ein Parnter aus').setAutocomplete(true).setRequired(true))
+                .addStringOption((option) => option.setName('partner').setDescription('» Wähle ein Parnter aus').setAutocomplete(true).setRequired(true))
         ),
         async autocomplete(interaction) {
             const focusedOption = interaction.options.getFocused(true);
