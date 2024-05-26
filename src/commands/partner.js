@@ -66,8 +66,8 @@ module.exports = {
                 } else {
                     let channel, sentMessage;
                     try {
-                        channel = interaction.guild.channels.cache.get(serverData.partner.channelId);
-                        sentMessage = await channel.messages.fetch(serverData.partner.msgId);
+                        channel = interaction.guild.channels.cache.get(serverData.partner.channel);
+                        sentMessage = await channel.messages.fetch(serverData.partner.msg);
                     } catch (error) {
                         const newEmbed = new EmbedBuilder()
                             .setColor('#0099ff')
