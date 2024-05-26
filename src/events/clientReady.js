@@ -50,8 +50,8 @@ module.exports = {
                 m.presence?.status === 'online' ||
                 m.presence?.status === 'idle' ||
                 m.presence?.status === 'dnd'
-            ).filter(member => !member.user.bot).size.toLocaleString() || 0
-            const memberCount = await guild.members.cache.size.toLocaleString()
+            ).filter(member => !member.user.bot).size.toLocaleString('de-DE') || 0;  // 'de-DE' verwendet Punkt als Tausendertrennzeichen
+            const memberCount = await guild.members.cache.size.toLocaleString('de-DE'); // 'de-DE' verwendet Punkt als Tausendertrennzeichen
 
             await guild.channels.cache.get(config.category1).setName(`(🌍) - [INFOS] - (USER: ${memberCount})`)
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
