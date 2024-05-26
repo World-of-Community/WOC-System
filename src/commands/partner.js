@@ -54,7 +54,7 @@ module.exports = {
                     }
                     
                     // Antwort senden
-                    await interaction.respond(filtered.map(partner => ({ name: partner.name + ` (${partner.category})`, value: partner.name })));
+                    await interaction.respond(filtered.map(partner => ({ name: partner.name + ` (${undefined ?  partner.category : "N/A"})`, value: partner.name })));
                 } catch (error) {
                     console.error('Fehler beim Abrufen der Partner aus der Datenbank:', error);
                 }
