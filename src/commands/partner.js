@@ -49,7 +49,7 @@ module.exports = {
                     const filtered = partners.filter(partner => partner.name.toLowerCase().includes(focusedOption.value.toLowerCase())).slice(0, 25);
                     
                     // Antwort senden
-                    await interaction.respond(filtered.map(partner => ({ name: partner.name, value: partner.name })));
+                    await interaction.respond(filtered.map(partner => ({ name: partner.name + `${partner.category}`, value: partner.name })));
                 } catch (error) {
                     console.error('Fehler beim Abrufen der Partner aus der Datenbank:', error);
                 }
