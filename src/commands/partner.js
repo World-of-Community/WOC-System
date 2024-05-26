@@ -39,7 +39,8 @@ module.exports = {
         switch (sub) {
             case 'add':
                 const name = interaction.options.getString('name');
-                const kategorie = interaction.options.getString('kategorie').name;
+                const kategorieValue = interaction.options.getString('kategorie');
+                const kategorieName = interaction.options.get('kategorie').name; 
                 const owner = interaction.options.getString('owner');
                 const invite = interaction.options.getString('invite');
 
@@ -54,12 +55,11 @@ module.exports = {
                         .setColor('#0099ff')
                         .setTitle('Partnerliste')
                         .setDescription('Hier sind unsere Partner:')
-                        .addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                        .addFields({ name: kategorieName, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
 
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
 
-                    // Partnerdaten aktualisieren
                     serverData.partner = {
                         msg: {
                             id: sentMessage.id,
@@ -70,20 +70,40 @@ module.exports = {
 
                     await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
                 } else {
-                    const channel = interaction.guild.channels.cache.get(serverData.partner.msg.channel);
-                    const sentMessage = await channel.messages.fetch(serverData.partner.msg.id);
+                    let channel, sentMessage;
+                    try {
+                        channel = interaction.guild.channels.cache.get(serverData.partner.msg.channel);
+                        sentMessage = await channel.messages.fetch(serverData.partner.msg.id);
+                    } catch (error) {
+                        const newEmbed = new EmbedBuilder()
+                            .setColor('#0099ff')
+                            .setTitle('Partnerliste')
+                            .setDescription('Hier sind unsere Partner:')
+                            .addFields({ name: kategorieName, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+
+                        channel = interaction.channel;
+                        sentMessage = await channel.send({ embeds: [newEmbed] });
+                        serverData.partner.msg = {
+                            id: sentMessage.id,
+                            channel: channel.id
+                        };
+                        await serverData.save();
+
+                        await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
+                        return;
+                    }
+
                     const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
 
-                    const fieldIndex = existingEmbed.data.fields.findIndex(field => field.name === kategorieValue);
+                    const fieldIndex = existingEmbed.data.fields.findIndex(field => field.name === kategorieName);
                     if (fieldIndex !== -1) {
                         const fieldValue = existingEmbed.data.fields[fieldIndex].value;
                         const newFieldValue = `${fieldValue}\n${fieldValue.split('\n').length + 1}. [${name}](${invite}) (@${owner})`;
                         existingEmbed.data.fields[fieldIndex].value = newFieldValue;
                     } else {
-                        existingEmbed.addFields({ name: kategorieValue, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
+                        existingEmbed.addFields({ name: kategorieName, value: `1. [${name}](${invite}) (@${owner})`, inline: false });
                     }
 
-                    // Embed aktualisieren
                     await sentMessage.edit({ embeds: [existingEmbed] });
 
                     await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
