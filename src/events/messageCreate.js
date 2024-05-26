@@ -129,6 +129,17 @@ module.exports = {
             }
         }
 
+        // Geburtstags-System
+        if (message.channel.id === '1243964646449483788') {
+            try {
+                // Reagiere mit einem bestimmten Emoji
+                await message.react('<a:herzen:974633994840854608>');
+                await message.react('<a:Cool:915211628755169301>');
+            } catch (error) {
+                console.error('Fehler beim Hinzufügen der Reaktion:', error);
+            }
+        }
+
         // Suggestion Channel
         if (message.channelId === config.vorschläge) {
             if (message.author.bot) return;
