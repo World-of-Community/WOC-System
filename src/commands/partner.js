@@ -46,16 +46,16 @@ module.exports = {
                 // Finde das Dokument für den aktuellen Server, oder erstelle ein neues, falls nicht vorhanden
                 let serverData = await serverDB.findOneAndUpdate(
                     { guildID: interaction.guildID },
-                    { $setOnInsert: { guildID: interaction.guildID, partner: null } }, // Setze partner auf null, wenn das Dokument neu eingefügt wird
-                    { upsert: true, new: true } // Erstelle ein neues Dokument, falls nicht vorhanden und gib das aktualisierte Dokument zurück
+                    { $setOnInsert: { guildID: interaction.guildID, partner: null } }, 
+                    { upsert: true, new: true } 
                 );
     
                 if (!serverData.partner || !serverData.partner.msg) {
-                    const newEmbed = new Discord.MessageEmbed()
-                        .setColor('#0099ff')
-                        .setTitle('Partnerliste')
-                        .setDescription('Hier sind unsere Partner:')
-                        .addField(kategorieValue, `1. [${name}](${invite}) (@${owner})`);
+                    const newEmbed = new EmbedBuilder()
+                    .setColor('#0099ff')
+                    .setTitle('Partnerliste')
+                    .setDescription('Hier sind unsere Partner:')
+                    .addFields({ name: kategorieValue, value: `1. [${name}](${invite}) (@${owner})` });
     
 
                     const channel = interaction.channel;
