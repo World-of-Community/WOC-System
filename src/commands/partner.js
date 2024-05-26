@@ -74,8 +74,6 @@ module.exports = {
                                     } else {
                                     embed.addFields({ name: kategorie, value: `> \`❌\` - Kein Eintrag`, inline: false });   
                                     }
-
-                        if(kategorie === "")
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
 
