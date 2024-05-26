@@ -4,7 +4,7 @@ const userDB = require("../../Datenbank/userdb")
 module.exports = {
      // /donate command
     data: new SlashCommandBuilder()
-        .setName('donate')
+        .setName('donated')
         .setDescription('» Zeigt die Gesamtspenden eines Benutzers an. 💖')
         .addUserOption(option => option.setName('user').setDescription('» Wähle einen Benutzer aus, um die Gesamtspenden zu sehen.').setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
