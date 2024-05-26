@@ -9,7 +9,7 @@ const serverSchema = new mongoose.Schema({
     partner: {
         msg: {
             type: String,
-            required: true,
+            required: false,
         },
         channel: {
             type: String,
