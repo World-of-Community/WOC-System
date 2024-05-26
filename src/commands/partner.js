@@ -23,14 +23,14 @@ module.exports = {
         .addSubcommand((command) =>
             command
                 .setName('edit')
-                .setDescription('» Lösche den Geburtstag eines Nutzers. 🤝')
-                .addUserOption(option => option.setName('user').setDescription('» Welchen Nutzer möchtest du löschen?').setRequired(true)),
+                .setDescription('» LBearbeite einen Partner 🤝')
+                .addUserOption(option => option.setName('partner').setDescription('» Wähle ein Partner aus').setRequired(true)),
         )
         .addSubcommand((command) =>
             command
                 .setName('delete')
                 .setDescription('» Lösche einen Partner. 🤝')
-                .addIntegerOption((option) => option.setName('server').setDescription('» Wähle ein Parnter aus').setRequired(true))
+                .addIntegerOption((option) => option.setName('partner').setDescription('» Wähle ein Parnter aus').setRequired(true))
         ),
 
     async execute(interaction) {
@@ -43,41 +43,41 @@ module.exports = {
                 const owner = interaction.options.getString('owner');
                 const invite = interaction.options.getString('invite');
     
-                const kategorie = {
-                    name: interaction.options.get('kategorie').value,
-                    value: kategorieValue
-                };
-    
-                let serverData = await serverDB.findOne({ guildID: interaction.guildID });
+                // Finde das Dokument für den aktuellen Server, oder erstelle ein neues, falls nicht vorhanden
+                let serverData = await serverDB.findOneAndUpdate(
+                    { guildID: interaction.guildID },
+                    { $setOnInsert: { guildID: interaction.guildID, partner: null } }, // Setze partner auf null, wenn das Dokument neu eingefügt wird
+                    { upsert: true, new: true } // Erstelle ein neues Dokument, falls nicht vorhanden und gib das aktualisierte Dokument zurück
+                );
     
                 if (!serverData.partner || !serverData.partner.msg) {
                     const newEmbed = new Discord.MessageEmbed()
                         .setColor('#0099ff')
                         .setTitle('Partnerliste')
                         .setDescription('Hier sind unsere Partner:')
-                        .addField(kategorie.name, `1. [${name}](${invite}) (@${owner})`);
+                        .addField(kategorieValue, `1. [${name}](${invite}) (@${owner})`);
     
+
                     const channel = interaction.channel;
                     channel.send(newEmbed);
-    
                     serverData.partner = {
                         msg: newEmbed,
                         channel: channel.id,
                     };
                     await serverData.save();
     
-                    await interaction.reply('Partner erfolgreich hinzugefügt!');
+                    await interaction.reply('Partner erfolgreich hinzugefügt!'); 
                 } else {
                     const existingEmbed = serverData.partner.msg;
     
                     // Neue Zeile für den Partner hinzufügen
-                    const fieldIndex = existingEmbed.fields.findIndex(field => field.name === kategorie.name);
+                    const fieldIndex = existingEmbed.fields.findIndex(field => field.name === kategorieValue);
                     if (fieldIndex !== -1) {
                         const fieldValue = existingEmbed.fields[fieldIndex].value;
                         const newFieldValue = fieldValue + `\n${existingEmbed.fields[fieldIndex].value.split('\n').length}. [${name}](${invite}) (@${owner})`;
                         existingEmbed.fields[fieldIndex].value = newFieldValue;
                     } else {
-                        existingEmbed.addField(kategorie.name, `1. [${name}](${invite}) (@${owner})`);
+                        existingEmbed.addField(kategorieValue, `1. [${name}](${invite}) (@${owner})`);
                     }
     
                     const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
