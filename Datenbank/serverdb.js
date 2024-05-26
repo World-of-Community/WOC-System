@@ -6,6 +6,16 @@ const serverSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    partner: {
+        msg: {
+            type: String,
+            required: true,
+        },
+        channel: {
+            type: String,
+            required: true,
+        },
+    },
     deactivated: {
         type: Object,
         required: false,
