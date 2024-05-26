@@ -151,7 +151,7 @@ module.exports = {
                             await serverData.save();
                             await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
                         } catch (error) {
-                            console.error('Fehler beim Speichern der Partnerdaten:', error);
+                            await interaction.reply('> `❌` - Fehler!');
                             await interaction.reply('Fehler beim Speichern der Partnerdaten.');
                         }
                         return;
@@ -174,10 +174,10 @@ module.exports = {
                     await sentMessage.edit({ embeds: [existingEmbed] });
                     try {
                         await serverData.save();
-                        await interaction.reply('Partner erfolgreich hinzugefügt!');
+                        await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
                     } catch (error) {
                         console.error('Fehler beim Speichern der Partnerdaten:', error);
-                        await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
+                        await interaction.reply('> `❌` - Fehler!');
                     }
                 }
                 break;
