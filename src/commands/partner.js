@@ -82,22 +82,22 @@ module.exports = {
 
                         
                         if(kategorie === "Kooperation") {
-                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
+                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                             } else {
                                 newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                             }
                             if(kategorie === "Mega Partner") {
-                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
+                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                 } else {
                                     newEmbed.addFields({ name: "Mega Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
                                 if(kategorie === "Großer Partner") {
-                                    newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
+                                    newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                     } else {
                                         newEmbed.addFields({ name: "Großer Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                     }
                                     if(kategorie === "Normaler Partner") {
-                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
+                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                         } else {
                                             newEmbed.addFields({ name: "Normaler Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                         }
@@ -124,22 +124,22 @@ module.exports = {
                             .setDescription('Hier sind unsere Partner:')
 
                             if(kategorie === "Kooperation") {
-                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
+                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                 } else {
                                     newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
                                 if(kategorie === "Mega Partner") {
-                                    newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
+                                    newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                     } else {
                                         newEmbed.addFields({ name: "Mega Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                     }
                                     if(kategorie === "Großer Partner") {
-                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
+                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                         } else {
                                             newEmbed.addFields({ name: "Großer Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                         }
                                         if(kategorie === "Normaler Partner") {
-                                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (@${owner.id})`, inline: false });
+                                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                             } else {
                                                 newEmbed.addFields({ name: "Normaler Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                             }
@@ -217,7 +217,9 @@ module.exports = {
                         
                         if (existingFieldIndex !== -1) {
                             const partnersInSameCategory = serverData.partner.partners.filter(partner => partner.category.toLowerCase() === deletedPartner.category.toLowerCase());
-                            existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (@${partner.ownerID})`).join('\n');
+                            const owner = await interaction.guild.members.cache.get(partner.ownerID);
+                            const owner = owner ? owner: 'N/A';
+                            existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${owner})`).join('\n');
                             
                             if (partnersInSameCategory.length === 0) {
                                 existingEmbed.data.fields[existingFieldIndex].value = '> \`❌\` » Kein Eintrag';
