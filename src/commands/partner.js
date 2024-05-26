@@ -132,12 +132,10 @@ module.exports = {
                     if (existingFieldIndex !== -1) {
                         const fieldValue = existingEmbed.data.fields[existingFieldIndex].value;
                         if (fieldValue.includes("> \`❌\` - Kein Eintrag")) {
+                            existingEmbed.data.fields[existingFieldIndex].value += `\n${fieldValue.split('\n').length}. [${name}](${invite}) (@${owner})`;
                             existingEmbed.data.fields.splice(existingFieldIndex, 1);
-                        }
-                        existingEmbed.data.fields[existingFieldIndex].value += `\n${fieldValue.split('\n').length}. [${name}](${invite}) (@${owner})`;
+                        } else  existingEmbed.data.fields[existingFieldIndex].value += `\n${fieldValue.split('\n').length}. [${name}](${invite}) (@${owner})`;
                     }
-                    
-
                     await sentMessage.edit({ embeds: [existingEmbed] });
 
                     await interaction.reply('> `✅` - Partner erfolgreich hinzugefügt!');
