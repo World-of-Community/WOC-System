@@ -13,7 +13,7 @@ const serverSchema = new mongoose.Schema({
         },
         channel: {
             type: String,
-            required: true,
+            required: false,
         },
     },
     deactivated: {
