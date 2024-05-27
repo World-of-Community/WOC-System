@@ -220,7 +220,7 @@ cron.schedule('0 0 * * *', async () => {
       const currentYear = today.getFullYear();
   
       try {
-        const birthdayUsers = await userDB.find({
+        const birthdayUsers = await userdb.find({
           "birthday.tag": day,
           "birthday.monat": month,
         });

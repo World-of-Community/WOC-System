@@ -55,7 +55,7 @@ module.exports = {
                     updateEmbed.addFields(
                         {
                             name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
-                            value: `${serverData.gift.join('\n')}\n${emoji} » ${update}\n** **`
+                            value: `${serverData.gift.join('\n')}`
                         }
                     )
                 }

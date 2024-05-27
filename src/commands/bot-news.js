@@ -13,12 +13,13 @@ module.exports = {
         .addStringOption(option => option.setName('emoji').setDescription('» Wähle ein Update-Emoji').setRequired(true)
         .addChoices({ name: '🔴 = Bug behoben', value: '<:PointRed:1123612255800524940>' }, { name: '🟠 = Änderung', value: '<:PointOrange:1123612277669630092>' }, { name: '🟢 = Neu hinzugefügt', value: '<:PointGreen:1123612318694117477>' }))
         
-        .addStringOption(option => option.setName('update').setDescription('» Beschreibe was geändert wurde').setRequired(true)),
+        .addStringOption(option => option.setName('update').setDescription('» Beschreibe was geändert wurde').setRequired(true))
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
     async execute(interaction) {
+        console.log("Alles Ok")
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
 
         if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
         const kategorie = await interaction.options.getString('kategorie')
