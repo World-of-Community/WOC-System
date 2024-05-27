@@ -288,8 +288,6 @@ cron.schedule('0 0 * * *', async () => {
       }
 })
 
-
-
 // Werbung
 setInterval(() => {
     const guild = bot.guilds.cache.get("815919809379172354");
