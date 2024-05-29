@@ -19,8 +19,8 @@ module.exports = {
         }
 
         const formatDate = (dateStr) => {
-            const [day, month, year] = dateStr.split('-');
-            return `${day}.${month}.${year}`;
+            const [day, month] = dateStr.split('-');
+            return `${day}.${month}.`;
         };
 
         const formattedVon = formatDate(von);
