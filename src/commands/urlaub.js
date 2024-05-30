@@ -19,16 +19,16 @@ module.exports = {
         }
 
         const formatDate = (dateStr) => {
-            const [day, month] = dateStr.split('-');
-            return `${day}.${month}.`;
+            const [day, month, year] = dateStr.split('-');
+            return `${day}.${month}.${year}`;
         };
 
         const formattedVon = formatDate(von);
         const formattedBis = formatDate(bis);
 
         const urlaubEmbed = new EmbedBuilder()
-            .setTitle('`🌴` | URLAUBSMELDUNG')
-            .setDescription(`\`📅\` » ${member} hat nun Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.`)
+            .setTitle('🌴 Urlaubsmeldung')
+            .setDescription(`\`📅\` » ${member} hat Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.`)
             .setColor('Green')
             .setFooter({ text: `${interaction.user.displayName}'s - Urlaub`, iconURL: `${member.displayAvatarURL()}` })
             .setTimestamp();
