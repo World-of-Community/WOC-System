@@ -16,10 +16,7 @@ const client = new Client({
 // Modules and Files
 const mongoose = require('mongoose');
 const threaddb = require('../Datenbank/threaddb');
-mongoose.connect(config.mongodb, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-}).then(console.log('Datenbank ist verbunden'));
+mongoose.connect(config.mongodb).then(console.log('Datenbank ist verbunden'));
 const cron = require('node-cron');
 const serverdb = require('../Datenbank/serverdb');
 const userdb = require('../Datenbank/userdb');
@@ -68,9 +65,9 @@ client.on('guildMemberAdd', async member => {
         const inviter = invite.inviter;
         const inviteUses = invite.uses;
         const InviteEmbed = new EmbedBuilder()
-        .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName}**\n\n> ×Einladungs Code: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun ${inviteUses} Einladungen\n`)
-        .setColor('Blurple')
-        .setTimestamp();
+            .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName}**\n\n> ×Einladungs Code: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun ${inviteUses} Einladungen\n`)
+            .setColor('Blurple')
+            .setTimestamp();
 
         const channel = member.guild.channels.cache.get("1240246786128613396");
         if (channel) {
@@ -92,34 +89,34 @@ const typeMap = {
     13: "STAGE",
     15: "FORUM"
 };
-client.on('channelCreate', async(channel) => {
-    if(channel.type === 4) {
+client.on('channelCreate', async (channel) => {
+    if (channel.type === 4) {
         return;
     }
     channel.guild.fetchAuditLogs({
         type: AuditLogEvent.CHANNEL_CREATE,
-        limit: 1 
+        limit: 1
     }).then(async audit => {
         const { executor } = audit.entries.first();
 
-    const CreateEmbed = new EmbedBuilder()
-        .setTitle('`➕` | KANAL ERSTELLT')
-        .setDescription(`> Name: \`${channel.name}\` (<#${channel.id}>)\n> ID: \`${channel.id}\``)
-        .setColor('Green')
-        .setTimestamp();
+        const CreateEmbed = new EmbedBuilder()
+            .setTitle('`➕` | KANAL ERSTELLT')
+            .setDescription(`> Name: \`${channel.name}\` (<#${channel.id}>)\n> ID: \`${channel.id}\``)
+            .setColor('Green')
+            .setTimestamp();
 
-    const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) await logChannel.send({ embeds: [CreateEmbed] });
+        const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
+        if (logChannel) await logChannel.send({ embeds: [CreateEmbed] });
     })
 })
 
-client.on('channelUpdate', async(oldChannel, newChannel) => {
-    if(newChannel.type === 4) {
+client.on('channelUpdate', async (oldChannel, newChannel) => {
+    if (newChannel.type === 4) {
         return;
     }
     newChannel.guild.fetchAuditLogs({
         type: AuditLogEvent.CHANNEL_UPDATE,
-        limit: 1 
+        limit: 1
     }).then(async audit => {
         const { executor } = audit.entries.first();
 
@@ -141,20 +138,20 @@ client.on('channelUpdate', async(oldChannel, newChannel) => {
         }
 
 
-    const EditingEmbed = new EmbedBuilder()
-        .setTitle('`🔁` | KANAL BEARBEITET')
-        .setAuthor({ name: `${executor.username} » ${executor.id}`, iconURL: executor.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 })})
-        .setDescription(description)
-        .setColor('Orange')
-        .setTimestamp();
+        const EditingEmbed = new EmbedBuilder()
+            .setTitle('`🔁` | KANAL BEARBEITET')
+            .setAuthor({ name: `${executor.username} » ${executor.id}`, iconURL: executor.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 }) })
+            .setDescription(description)
+            .setColor('Orange')
+            .setTimestamp();
 
-    const logChannel = await newChannel.guild.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) await logChannel.send({ embeds: [EditingEmbed] });
+        const logChannel = await newChannel.guild.channels.cache.get(LOG_CHANNEL_ID);
+        if (logChannel) await logChannel.send({ embeds: [EditingEmbed] });
     })
 });
 
-client.on('channelDelete', async(channel) => {
-    if(channel.type === 4) {
+client.on('channelDelete', async (channel) => {
+    if (channel.type === 4) {
         return;
     }
     const DeleteEmbed = new EmbedBuilder()
@@ -169,7 +166,7 @@ client.on('channelDelete', async(channel) => {
 
 // Nachrichten Log
 
-client.on('messageCreate', async(message) => {
+client.on('messageCreate', async (message) => {
     if (!message.author || message.author.bot) return;
 
     const MessageSendEmbed = new EmbedBuilder()
@@ -182,7 +179,7 @@ client.on('messageCreate', async(message) => {
     if (logChannel) await logChannel.send({ embeds: [MessageSendEmbed] });
 });
 
-client.on('messageDelete', async(message) => {
+client.on('messageDelete', async (message) => {
     if (!message.author || message.author.bot) return;
 
     const MessageDeleteEmbed = new EmbedBuilder()
@@ -195,7 +192,7 @@ client.on('messageDelete', async(message) => {
     if (logChannel) await logChannel.send({ embeds: [MessageDeleteEmbed] });
 });
 
-client.on('messageUpdate', async(oldMessage, newMessage) => {
+client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (!newMessage.author || newMessage.author.bot) return;
 
     const MessageEditEmbed = new EmbedBuilder()
@@ -214,104 +211,104 @@ const ageRoles = {
     "18": "1199786814051979344",
 };
 cron.schedule('0 0 * * *', async () => {
-      const today = new Date();
-      const day = today.getDate();
-      const month = today.getMonth() + 1;
-      const currentYear = today.getFullYear();
-  
-      try {
-        const birthdayUsers = await userdb.find({
-          "birthday.tag": day,
-          "birthday.monat": month,
-        });
-  
-        if (birthdayUsers.length > 0) {
-          const birthdayChannel = client.channels.cache.get("1243964646449483788"); //<- Channel ID
-          const birthdayUsersList = [];
-  
-          for (const user of birthdayUsers) {
-            const member = await guild.members.fetch(user.userID);
-            if (user.birthday.jahr) {
-              let age = "";
-              age = `${currentYear - user.birthday.jahr}`;
-              let roleId;
-  
-              if (currentYear - user.birthday.jahr <= "18") roleId = ageRoles["-18"];
-              else if (currentYear - user.birthday.jahr >= "18") roleId = ageRoles["18"];
-  
-              if (roleId) {
-                const role = guild.roles.cache.get(roleId);
-                await member.roles.add(role);
-              }
-              birthdayUsersList.push(`${member} (**${age}**)`);
-            } else {
-              birthdayUsersList.push(`${member}`);
-            }
-          }
-  
-          let birthdayMessage = "";
-  
-          if (birthdayUsersList.length === 1) {
-            birthdayMessage = `${birthdayUsersList[0]} hat **heute Geburtstag!** - <a:bier:1196502621427601498>`;
-          } else {
-            const lastUser = birthdayUsersList.pop();
-            birthdayMessage = `${birthdayUsersList.join(
-              ", "
-            )} und ${lastUser} haben **heute Geburtstag!** - <a:bier:1196502621427601498>`;
-          }
-  
-          const birthdayword = [
-            "Genieße die kleinen Dinge. Sie machen das Leben großartig!",
-            "Durch dich wird die Welt ein besserer Ort, bleib wie du bist!",
-            "Heute sollst Du Dich einfach entspannen und alle Deine Sorgen verbannen.",
-            "Lass dich drücken, knuddeln und umarmen. Sollen alle deine Ziele, Wünsche und Träume in Erfüllung gehen. Du hast es verdient.",
-          ];
-          const randomIndex = Math.floor(Math.random() * birthdayword.length);
-          const selectedBirthdayWord = birthdayword[randomIndex];
-  
-          await birthdayChannel.send({
-            content: `🎂 𑁉 ${birthdayMessage}\nWünscht den **${
-              birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
-            }** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
-          });
-        } else {
-          const birthdayChannel = client.channels.cache.get(
-            "1243964646449483788"
-          );
-          const m = await birthdayChannel.send({
-            content:
-              "<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*",
-          });
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.getMonth() + 1;
+    const currentYear = today.getFullYear();
 
-          await m.react("<a:herzen:974633994840854608>")
-          await m.react("<a:Cool:915211628755169301>")
+    try {
+        const birthdayUsers = await userdb.find({
+            "birthday.tag": day,
+            "birthday.monat": month,
+        });
+
+        if (birthdayUsers.length > 0) {
+            const birthdayChannel = client.channels.cache.get("1243964646449483788"); //<- Channel ID
+            const birthdayUsersList = [];
+
+            for (const user of birthdayUsers) {
+                const member = await guild.members.fetch(user.userID);
+                if (user.birthday.jahr) {
+                    let age = "";
+                    age = `${currentYear - user.birthday.jahr}`;
+                    let roleId;
+
+                    if (currentYear - user.birthday.jahr <= "18") roleId = ageRoles["-18"];
+                    else if (currentYear - user.birthday.jahr >= "18") roleId = ageRoles["18"];
+
+                    if (roleId) {
+                        const role = guild.roles.cache.get(roleId);
+                        await member.roles.add(role);
+                    }
+                    birthdayUsersList.push(`${member} (**${age}**)`);
+                } else {
+                    birthdayUsersList.push(`${member}`);
+                }
+                await member.roles.add("1244945910262399046")
+            }
+
+            let birthdayMessage = "";
+
+            if (birthdayUsersList.length === 1) {
+                birthdayMessage = `${birthdayUsersList[0]} hat **heute Geburtstag!** - <a:bier:1196502621427601498>`;
+            } else {
+                const lastUser = birthdayUsersList.pop();
+                birthdayMessage = `${birthdayUsersList.join(
+                    ", "
+                )} und ${lastUser} haben **heute Geburtstag!** - <a:bier:1196502621427601498>`;
+            }
+
+            const birthdayword = [
+                "Genieße die kleinen Dinge. Sie machen das Leben großartig!",
+                "Durch dich wird die Welt ein besserer Ort, bleib wie du bist!",
+                "Heute sollst Du Dich einfach entspannen und alle Deine Sorgen verbannen.",
+                "Lass dich drücken, knuddeln und umarmen. Sollen alle deine Ziele, Wünsche und Träume in Erfüllung gehen. Du hast es verdient.",
+            ];
+            const randomIndex = Math.floor(Math.random() * birthdayword.length);
+            const selectedBirthdayWord = birthdayword[randomIndex];
+
+            await birthdayChannel.send({
+                content: `🎂 𑁉 ${birthdayMessage}\nWünscht den **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
+                    }** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
+            });
+        } else {
+            const birthdayChannel = client.channels.cache.get(
+                "1243964646449483788"
+            );
+            const m = await birthdayChannel.send({
+                content:
+                    "<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*",
+            });
+
+            await m.react("<a:herzen:974633994840854608>")
+            await m.react("<a:Cool:915211628755169301>")
         }
-      } catch (error) {
+    } catch (error) {
         console.error("Fehler beim Verarbeiten der Geburtstage:", error);
-      }
+    }
 })
 
 // Werbung
 setInterval(() => {
     const guild = bot.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
-  
+
     const bannerEmbed = new EmbedBuilder()
-         .setColor('Blurple')
-         .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
-    
+        .setColor('Blurple')
+        .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
+
     const werbeEmbed = new EmbedBuilder()
-         .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
-         .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `🤖` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n> `🎮` | » Ein **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n> `📰` | » **Freie Werbung** senden können & Server-Partnerschaften möglich\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
-         .setColor('Blurple')
-         .setFooter({ text: 'World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=6624db23&is=662389a3&hm=5bccd1823f8042757910fb78c8cca1cb6ff34a2095e77c9b9aa22b31e9cd4046&'})
-  
+        .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
+        .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `🤖` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n> `🎮` | » Ein **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n> `📰` | » **Freie Werbung** senden können & Server-Partnerschaften möglich\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
+        .setColor('Blurple')
+        .setFooter({ text: 'World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=6624db23&is=662389a3&hm=5bccd1823f8042757910fb78c8cca1cb6ff34a2095e77c9b9aa22b31e9cd4046&' })
+
     channel.send({ embeds: [bannerEmbed, werbeEmbed] })
-    // Wenn die Nachricht automatisch veröffentlicht werden soll:
-    .then(async msg => {
-      msg.crosspost()
-    })
-  }, 60000 * 360 ); // 6 Stunden in Millisekunden
+        // Wenn die Nachricht automatisch veröffentlicht werden soll:
+        .then(async msg => {
+            msg.crosspost()
+        })
+}, 60000 * 360); // 6 Stunden in Millisekunden
 
 // Threads Checker
 cron.schedule('0 0 * * *', async () => {
@@ -337,23 +334,23 @@ cron.schedule('0 0 * * *', async () => {
 setInterval(() => {
     const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
-      
+
     const bannerEmbed = new EmbedBuilder()
-          .setColor('Blurple')
-          .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
-    
+        .setColor('Blurple')
+        .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
+
     const werbeEmbed = new EmbedBuilder()
-         .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
-         .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `✨` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
-         .setColor('Blurple')
-         .setFooter({ text: 'World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=6624db23&is=662389a3&hm=5bccd1823f8042757910fb78c8cca1cb6ff34a2095e77c9b9aa22b31e9cd4046&'})
-  
+        .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
+        .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `✨` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
+        .setColor('Blurple')
+        .setFooter({ text: 'World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=6624db23&is=662389a3&hm=5bccd1823f8042757910fb78c8cca1cb6ff34a2095e77c9b9aa22b31e9cd4046&' })
+
     channel.send({ embeds: [bannerEmbed, werbeEmbed] })
-    // Wenn die Nachricht automatisch veröffentlicht werden soll:
-    .then(async msg => {
-      msg.crosspost()
-    })
-  }, 60000 * 360 ); // 6 Stunden in Millisekunden
+        // Wenn die Nachricht automatisch veröffentlicht werden soll:
+        .then(async msg => {
+            msg.crosspost()
+        })
+}, 60000 * 360); // 6 Stunden in Millisekunden
 
 // Threads Checker
 cron.schedule('0 0 * * *', async () => {
@@ -469,11 +466,11 @@ cron.schedule('0 18 * * 0', async () => {
     await serverData.save()
 });
 client.on('error', (error) => {
-	const errorMessage = error.stack || error;
+    const errorMessage = error.stack || error;
     console.log(errorMessage)
 });
-process.on('unhandledRejection', error => { 
+process.on('unhandledRejection', error => {
     console.log(error)
-  });
+});
 // Bot Start
 client.login(config.token)
