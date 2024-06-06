@@ -271,6 +271,10 @@ cron.schedule('0 0 * * *', async () => {
                 content: `🎂 𑁉 ${birthdayMessage}\nWünscht den **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
                     }** alles gute!\nTragt auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
             });
+
+            await m.react("<a:herzen:974633994840854608>")
+            await m.react("<a:Cool:915211628755169301>")
+            
         } else {
             const birthdayChannel = client.channels.cache.get(
                 "1243964646449483788"
