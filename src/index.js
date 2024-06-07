@@ -215,6 +215,7 @@ cron.schedule('0 0 * * *', async () => {
     const day = today.getDate();
     const month = today.getMonth() + 1;
     const currentYear = today.getFullYear();
+    const roleId = '1244945910262399046';
 
     try {
         const birthdayUsers = await userdb.find({
@@ -235,6 +236,10 @@ cron.schedule('0 0 * * *', async () => {
 
                     if (currentYear - user.birthday.jahr <= "18") roleId = ageRoles["-18"];
                     else if (currentYear - user.birthday.jahr >= "18") roleId = ageRoles["18"];
+
+                    const birthdaykindRole = await guild.roles.fetch(roleId);
+
+                    await member.roles.add(birthdaykindRole);
 
                     if (roleId) {
                         const role = guild.roles.cache.get(roleId);
