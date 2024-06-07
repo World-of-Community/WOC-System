@@ -7,6 +7,7 @@ module.exports = {
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du auslachen?').setRequired(true)),
         
     async execute(interaction) {
+
         const laughgifs = [
             'https://tenor.com/de/view/funny-laughing-hysterically-crying-gif-21624342.gif',
             'https://tenor.com/de/view/el-risitas-juan-joya-borja-ratones-coloraos-laugh-meme-laughing-man-gif-24899295.gif',
@@ -14,8 +15,10 @@ module.exports = {
             'https://tenor.com/de/view/smile-laughing-laugh-gif-26377590.gif',
             'https://tenor.com/de/view/laughing-laugh-haha-happy-lol-gif-17298893.gif'
         ]
+
         const mitglied = await interaction.options.getUser('user')
         const laughgif = laughgifs[Math.floor(Math.random() * laughgifs.length)]
+        
         await interaction.reply({
             content: `${mitglied}`,
             embeds: [

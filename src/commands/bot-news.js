@@ -17,7 +17,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
     async execute(interaction) {
-        console.log("Alles Ok")
+        console.log("Alles Ok beim Changelog - hinzugefügt")
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 

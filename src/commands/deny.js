@@ -10,6 +10,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionsBitField.ManageRoles),
         
     async execute(interaction) {
+        
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 

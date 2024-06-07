@@ -10,6 +10,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages), // Korrigierte Berechtigung
 
     async execute(interaction) {
+        
         const messagedelete = interaction.options.getInteger('anzahl');
         const kanal = interaction.options.getChannel('kanal') || interaction.channel; // Verwendet aktuellen Kanal, wenn keiner angegeben ist
         const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';

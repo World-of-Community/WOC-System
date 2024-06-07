@@ -5,7 +5,9 @@ const parser = new Parser();
 const { EmbedBuilder } = require("discord.js")
 
 module.exports = {
-    //Free Games
+    
+    // Free Games
+
     Giga: async (client, lastEntries) => {
         try {
             const feed = await parser.parseURL("https://www.giga.de/rss/games.rss"); 

@@ -10,7 +10,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
+        
         const system = await interaction.options.getString('system')
         const serverData = await serverdb.findOne({ guildID: interaction.guildId })
         if (!serverData) return;

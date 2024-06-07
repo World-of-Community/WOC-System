@@ -24,18 +24,22 @@ module.exports = {
     const file = fs.readFileSync("src/json/config.json", "utf-8");
     const config = JSON.parse(file);
     const guild = await client.guilds.fetch(config.server);
+    
     if (!guild) {
       console.log("Server wurde nicht gefunden");
       return;
     }
     console.log("Verbunden mit Discord");
-    //RSS Feed
+
+    // RSS Feed
+
     setInterval(async () => {
       Giga(client, lastEntries);
       Tagesschau(client, lastEntries);
     }, 60000);
 
     // Wechsel Status
+
     setInterval(async () => {
       await guild.members.fetch().then(async (members) => {
         const onlineMembers = await members.filter(
@@ -98,21 +102,13 @@ module.exports = {
       const message = await messages.first();
       const bannembed = new EmbedBuilder()
         .setTitle("Information zu den Gebannten Nutzern")
-        .setDescription(
-          `Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${
-            bans.length
-          }👥\`)\n\n ${
-            bans.length > 0
-              ? bans.join("\n")
-              : "> Aktuell sind keine Bann-Einträge vorhanden."
-          }`
-        )
+        .setDescription(`Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`)\n\n ${bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden."}`)
         .setColor("Red");
 
       await message.edit({ embeds: [bannembed] });
     }, 30000);
 
-    //Auto Delete | Spieler Suche
+    // Auto Delete | Spielersuche
     cron.schedule("0 0 * * *", async () => {
       const channel = await client.channels.fetch("896743941813207081");
 

@@ -10,10 +10,12 @@ module.exports = {
         .addStringOption(option => option.setName('erinnerung').setDescription('» Die Erinnerung').setRequired(true)),
 
     async execute(interaction) {
+
         const duration = interaction.options.getString('zeit');
 
         var list = duration.split(" ");
         var durationDauer = 0;
+        
         list.forEach(async element => {
             try {
                 durationDauer += ms(element)
@@ -43,6 +45,7 @@ module.exports = {
 
         schedule.scheduleJob(endDate, async () => {
             const user = interaction.user; // Benutzer festlegen
+
                 const dmEmbed = new EmbedBuilder()
                 .setTitle('Hey! Ich sollte dich an etwas erinnern!')
                 .setDescription(`Hallo, ${user}\n\n> Erinnerung: **${reminder}**\n\n*📨 Du erhältst diese Direktnachricht, weil du eine Erinnerung erstellt hast.*`)

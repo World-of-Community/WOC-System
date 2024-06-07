@@ -20,6 +20,7 @@ module.exports = {
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
             await interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
             setTimeout(async () => {
+                
                 // Week Date
                 const today = new Date();
                 const nextWeek = new Date(today);

@@ -16,7 +16,6 @@ module.exports = {
         if (uD) {
             if (uD.afk) {
 
-
                 const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: ${uD.afkStamp})*`)
                 uD.afk = false
                 uD.afkReason = ""
@@ -30,9 +29,7 @@ module.exports = {
                     }
                 }, 5000)
 
-
                 await message.member.setNickname(`${message.member.displayName.replace("AFK | ", "")}`).catch((err) => { })
-
             }
         }
 
@@ -44,6 +41,7 @@ module.exports = {
 
 
         // Auto Delete
+
         if (message.channelId === config.autoDelete) {
             setTimeout(async () => {
                 try {
@@ -57,6 +55,7 @@ module.exports = {
         if (message.author.bot) return;
 
         // Server Database
+
         const serverData = await serverdb.findOne({ guildID: message.guildId })
         if (!serverData) {
             const newServer = new serverdb({
@@ -74,6 +73,7 @@ module.exports = {
         }
 
         // User Database
+
         const userData = await userdb.findOne({ userID: message.author.id })
         if (!userData) {
             const newUser = new userdb({
@@ -84,6 +84,7 @@ module.exports = {
         }
 
         // Ping Reaction
+
         if (message.mentions.users.size > 0) {
             if (message.author.bot) return;
             for (const [_, mentionedUser] of message.mentions.users) {
@@ -109,7 +110,8 @@ module.exports = {
             }
         }
 
-        // Überprüfe, ob die Nachricht im gewünschten Kanal ist
+        // Spielersuche System
+
         if (message.channel.id === '896743941813207081') {
             try {
                 // Reagiere mit einem bestimmten Emoji
@@ -120,6 +122,7 @@ module.exports = {
         }
 
         // Werbung für alle
+
         if (message.channel.id === '1172920281526960238') {
             try {
                 // Reagiere mit einem bestimmten Emoji
@@ -130,6 +133,7 @@ module.exports = {
         }
 
         // Geburtstags-System
+
         if (message.channel.id === '1243964646449483788') {
             try {
                 // Reagiere mit einem bestimmten Emoji
@@ -188,27 +192,9 @@ module.exports = {
                 })
             })
         }
-        /*
-            // Spielersuche
-            if (message.channelId === config.threads) {
-                if (await serverdb.findOne({ guildID: message.guildId, deactivated: { $in: ['spielersuche'] } })) return message.reply({ content: '> `⛔` » Das Spielersuche System ist momentan deaktiviert.' })
-    
-                await message.channel.threads.create({
-                    name: message.content
-                }).then(async (channel) => {
-                    const newThread = new threaddb({
-                        threadID: channel.id,
-                        creator: message.author.id,
-                        createdAt: new Date()
-                    })
-                    await newThread.save()
-    
-                    await channel.send({ content: '> `✅` » Ich habe für dich ein Thread erstellt: ' + channel.name })
-                });
-            }
-            */
 
         // Ränge Info
+
         if (message.content === '!ränge-info') {
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()
@@ -265,6 +251,7 @@ module.exports = {
         }
 
         // Regelwerk
+
         if (message.content === '!regelwerk') {
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()

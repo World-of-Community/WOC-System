@@ -10,6 +10,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
         
     async execute(interaction) {
+        
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;

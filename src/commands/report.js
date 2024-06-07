@@ -28,7 +28,9 @@ module.exports = {
             .setColor('Red')
             .setFooter({ text: `©️ ${interaction.guild.name} - Report System`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
+
         const modChannel = await interaction.guild.channels.fetch(reportchannel);
+        
         if (modChannel) {
             await modChannel.send({ embeds: [reportEmbed] });
             await interaction.reply({ content: "> `✅` » Der Report wurde gesendet. Vielen Dank!", ephemeral: true });

@@ -9,11 +9,15 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
 
         async execute(interaction) {
-        const emojisInput = await interaction.options.getString('emoji')
+        
+            const emojisInput = await interaction.options.getString('emoji')
         const userData = await userdb.findOne({ userID: interaction.user.id })
+        
         if (!userData) return;
+        
         const emojiRegex = /<a?:[a-zA-Z0-9_]+:[0-9]+>/g;
         const emojis = await emojisInput.match(emojiRegex);
+        
         if (!emojis) return interaction.reply({ content: '> `❗` » Bitte füge min. 1 Emoji hinzu.', ephemeral: true })
         if (emojis.length > 3) return interaction.reply({ content: '> `❌` » Du kannst nicht mehr als **3 Emojis** auswählen.', ephemeral: true })
 

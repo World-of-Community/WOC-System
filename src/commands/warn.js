@@ -6,6 +6,7 @@ module.exports = {
         .setDescription('» Warne einen User. ❗')
         .addUserOption(option => option.setName('user').setDescription('» Welchen User möchtest du Warnen?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('» Der Grund der Warnung').setRequired(true)),
+        
 async execute(interaction) {
     if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
         return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
@@ -24,6 +25,7 @@ async execute(interaction) {
     .setTimestamp();    
 
     // Benutzer über DM warnen
+
     try {
         await member.send({ embeds: [WarnEmbed] });
         await interaction.reply({ content: `> \`✅\` » ${member} wurde **erfolgreich** gewarnt.`, ephemeral: true });
@@ -31,5 +33,5 @@ async execute(interaction) {
         console.error(`Konnte keine DM an ${member} senden:`, error);
         await interaction.reply({ content: `> \`❌\` » Es konnte **keine** DM an ${member} gesendet werden.`, ephemeral: true });
     } 
-},
+  },
 };

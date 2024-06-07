@@ -14,6 +14,7 @@ module.exports = {
         .addStringOption(option => option.setName('grund').setDescription('Setze einen Grund dafür, dass du AFK bist!').setRequired(false)),
 
     async execute(interaction) {
+        
         const timestamp = Math.floor(interaction.createdTimestamp / 1000); // Zeitstempel im UNIX-Zeitformat
         const discordTimestamp = `<t:${timestamp}:R>`;
         const grund = await interaction.options.getString("grund") ?? afktexte[Math.floor(Math.random() * afktexte.length)];

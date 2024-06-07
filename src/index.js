@@ -22,6 +22,7 @@ const serverdb = require('../Datenbank/serverdb');
 const userdb = require('../Datenbank/userdb');
 const { deployCommands } = require('./deployCommands');
 let invites = new Map();
+
 // Lade Commands
 deployCommands()
 client.commands = new Collection()
@@ -55,7 +56,7 @@ for (const file of eventFiles) {
 
 
 client.on('guildMemberAdd', async member => {
-    if (member.guild.id !== "815919809379172354") return; //
+    if (member.guild.id !== "815919809379172354") return;
 
     const newInvites = await member.guild.invites.fetch();
     const oldInvites = invites.get(member.guild.id);
@@ -89,6 +90,7 @@ const typeMap = {
     13: "STAGE",
     15: "FORUM"
 };
+
 client.on('channelCreate', async (channel) => {
     if (channel.type === 4) {
         return;
@@ -210,6 +212,7 @@ const ageRoles = {
     "-18": "1199786765666500710",
     "18": "1199786814051979344",
 };
+
 cron.schedule('0 0 * * *', async () => {
     const today = new Date();
     const day = today.getDate();
@@ -298,6 +301,7 @@ cron.schedule('0 0 * * *', async () => {
 })
 
 // Werbung
+
 setInterval(() => {
     const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
@@ -320,6 +324,7 @@ setInterval(() => {
 }, 60000 * 240); // 4 Stunden in Millisekunden
 
 // Threads Checker
+
 cron.schedule('0 0 * * *', async () => {
     const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
     const threads = await threaddb.find();
@@ -340,6 +345,7 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Changelog Embed
+
 cron.schedule('0 0 * * 1', async () => {
     const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
@@ -411,6 +417,7 @@ cron.schedule('0 0 * * 1', async () => {
 });
 
 // 18 Uhr Message
+
 cron.schedule('0 18 * * 0', async () => {
     const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
@@ -432,12 +439,16 @@ cron.schedule('0 18 * * 0', async () => {
     );
     await serverData.save()
 });
+
 client.on('error', (error) => {
     const errorMessage = error.stack || error;
     console.log(errorMessage)
 });
+
 process.on('unhandledRejection', error => {
     console.log(error)
 });
+
 // Bot Start
+
 client.login(config.token)

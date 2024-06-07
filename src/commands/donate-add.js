@@ -11,6 +11,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
+        
         const member = interaction.options.getUser('user');
         const amount = interaction.options.getInteger('amount');
 
@@ -43,6 +44,7 @@ module.exports = {
             
         });
         const collectorFilter1 = i => i.user.id === interaction.user.id;
+    
     try {
         const confirmation = await response1.awaitMessageComponent({ filter: collectorFilter1, time: 30_000 });
             if (confirmation.customId === 'confirm') {     

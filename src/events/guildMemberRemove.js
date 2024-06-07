@@ -3,6 +3,7 @@ const client = require('../index');
 const fs = require('fs')
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
+
 module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {

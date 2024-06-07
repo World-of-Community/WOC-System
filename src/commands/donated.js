@@ -2,7 +2,8 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('disc
 const userDB = require("../../Datenbank/userdb")
 
 module.exports = {
-     // /donated command
+     
+    // /donated command
     data: new SlashCommandBuilder()
         .setName('donated')
         .setDescription('» Zeigt die Gesamtspenden eines Benutzers an. 💖')
@@ -10,6 +11,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
+        
         const member = interaction.options.getUser('user');
         const userData = await userDB.findOne({userID: member.id})
 

@@ -1,8 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const serverDB = require("../../Datenbank/serverdb")
 
-
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('partner')
@@ -76,8 +74,8 @@ module.exports = {
 
                 if (!serverData.partner || !serverData.partner.msg || !serverData.partner.channel) {
                     const newEmbed = new EmbedBuilder()
-                        .setColor('#0099ff')
                         .setTitle('Partnerliste')
+                        .setColor('#0099ff')
                         .setDescription('Hier sind unsere Partner:')
 
                         
@@ -208,7 +206,6 @@ module.exports = {
                         const deletedPartner = serverData.partner.partners.splice(partnerIndex, 1)[0];
                     
                         await serverData.save();
-                    
 
                         const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
                         const sentMessage = await channel.messages.fetch(serverData.partner.msg);
@@ -231,8 +228,7 @@ module.exports = {
                         console.error('Fehler beim Löschen des Partners:', error);
                         await interaction.reply('Fehler beim Löschen des Partners.');
                     }
-                    break;
-                
+                    break;  
                 
             case 'change':
                 break;

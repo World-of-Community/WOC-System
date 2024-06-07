@@ -24,5 +24,5 @@ async execute(interaction) {
         console.error('Fehler beim Hinzufügen der Rolle:', error);
         interaction.reply({ content: '> `❌` » Ein Fehler ist aufgetreten.', ephemeral: true });
     }
-},
+  },
 };

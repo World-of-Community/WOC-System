@@ -7,13 +7,16 @@ module.exports = {
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du streicheln?').setRequired(true)),
         
     async execute(interaction) {
+        
         const patgifs = [
             'https://tenor.com/de/view/bunny-gif-4514864.gif',
             'https://tenor.com/de/view/good-boy-pat-on-head-stitch-gif-14742401.gif',
             'https://tenor.com/de/view/big-hero6-baymax-there-there-patting-head-pat-head-gif-4086973.gif'
         ]
+        
         const mitglied = await interaction.options.getUser('user')
         const gif = patgifs[Math.floor(Math.random() * patgifs.length)]
+        
         await interaction.reply({
             content: `${mitglied}`,
             embeds: [
