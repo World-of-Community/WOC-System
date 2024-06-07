@@ -299,48 +299,6 @@ cron.schedule('0 0 * * *', async () => {
 
 // Werbung
 setInterval(() => {
-    const guild = bot.guilds.cache.get("815919809379172354");
-    const channel = guild.channels.cache.get("1177536720229650442");
-
-    const bannerEmbed = new EmbedBuilder()
-        .setColor('Blurple')
-        .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1143165949864849419/World_Of_Community.png?ex=662f9841&is=661d2341&hm=94cca3673a9731afbc0210dc4525df02ae7ffc006f41bd7aee57b8f50b9b470b&')
-
-    const werbeEmbed = new EmbedBuilder()
-        .setTitle('`🌍` WORLD OF COMMUNITY - GAMING, COMMUNITY & CHILL')
-        .setDescription('Du suchst ein Discord Server mit Gaming, Community & Chill?\n\n> Dann bist du bei uns genau richtig!\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `🤖` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n> `🎮` | » Ein **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n> `📰` | » **Freie Werbung** senden können & Server-Partnerschaften möglich\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
-        .setColor('Blurple')
-        .setFooter({ text: 'World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=6624db23&is=662389a3&hm=5bccd1823f8042757910fb78c8cca1cb6ff34a2095e77c9b9aa22b31e9cd4046&' })
-
-    channel.send({ embeds: [bannerEmbed, werbeEmbed] })
-        // Wenn die Nachricht automatisch veröffentlicht werden soll:
-        .then(async msg => {
-            msg.crosspost()
-        })
-}, 60000 * 360); // 6 Stunden in Millisekunden
-
-// Threads Checker
-cron.schedule('0 0 * * *', async () => {
-    const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
-    const threads = await threaddb.find();
-
-    for (const thread of threads) {
-        const threadCreatedAt = new Date(thread.createdAt);
-        const currentTime = new Date();
-
-        if (currentTime - threadCreatedAt >= sevenDaysInMilliseconds) {
-            const threadChannel = await bot.channels.cache.get(thread.threadID)
-
-            if (threadChannel) {
-                await threadChannel.delete();
-                await threaddb.findOneAndDelete({ threadID: thread.threadID });
-            }
-        }
-    }
-});
-
-// Werbung
-setInterval(() => {
     const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
 
