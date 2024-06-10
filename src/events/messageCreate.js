@@ -8,7 +8,6 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         if (message.author.bot) { return }
-        // console.log(Math.floor((message.createdTimestamp) / 1000) + 86400)
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
@@ -38,7 +37,6 @@ module.exports = {
             messageData.messages = parseInt(messageData.messages) + 1
             await messageData.save()
         }
-
 
         // Auto Delete
 
