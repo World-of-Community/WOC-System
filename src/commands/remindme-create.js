@@ -60,6 +60,9 @@ module.exports = {
             } catch (error) {
                 console.error(`DM konnte nicht an ${user.username} gesendet werden:`, error);
             }
+
+            const userReminders = reminders.get(userId).filter(r => r.timestamp !== timestamp);
+            reminders.set(userId, userReminders);
         });
     },
 };
