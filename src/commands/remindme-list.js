@@ -10,7 +10,7 @@ module.exports = {
     async execute(interaction) {
         const userId = interaction.user.id;
 
-        if (!reminders.has(userId) || reminders.get(userId).length === 0) {
+        if (!reminders.get(userId) || reminders.get(userId).length === 0) {
             return await interaction.reply({ content: '> `❌` » Du hast keine Erinnerungen gesetzt.', ephemeral: true });
         }
 
