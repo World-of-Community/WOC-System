@@ -38,7 +38,7 @@ module.exports = {
         const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
         
         const response1 = await interaction.reply({
-            content: `Text Red`,
+            content: `> \`❗\` » Möchtest du wirklich den Betrag in Höhe von \`${amount}\` hinzufügen?`,
             components: [row],
             ephemeral: true,
             
@@ -60,11 +60,11 @@ module.exports = {
         
                 await confirmation.update({ content: null, embeds: [donateEmbed], ephemeral: true, components: [] });
         } else if (confirmation.customId === 'cancel') {
-            await confirmation.update({ content:  "Text Red", ephemeral: true, components: [] });
+            await confirmation.update({ content:  `> \`❌\` » Du hast die Spende in Höhe von \`${amount}\` **nicht hinzugefügt**`, ephemeral: true, components: [] });
         }
     } catch (e) {
         console.log(e)
-        await interaction.editReply({ content: "Text Red", ephemeral: true, components: [] });
+        await interaction.editReply({ content: "> `⏰` » Zeit ist abgelaufen", ephemeral: true, components: [] });
         }
     }
 }
