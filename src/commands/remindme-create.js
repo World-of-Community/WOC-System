@@ -2,6 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField } = require('disc
 const ms = require('ms');
 const schedule = require('node-schedule');
 
+const reminders = new Map(); // Store reminders in memory
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('remindme-create')
