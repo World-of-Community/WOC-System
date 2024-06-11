@@ -220,7 +220,7 @@ cron.schedule('44 0 * * *', async () => {
     const month = today.getMonth() + 1;
     const currentYear = today.getFullYear();
     const roleId = '1244945910262399046';
-    const guild = '815919809379172354';
+    const guild = await client.guilds.cache.get('815919809379172354');
 
     try {
         const birthdayUsers = await userdb.find({
@@ -233,7 +233,7 @@ cron.schedule('44 0 * * *', async () => {
             const birthdayUsersList = [];
 
             for (const user of birthdayUsers) {
-                const member = await guild.members.fetch(user.userID);
+                const member = await guild.members.get(user.userID);
                 if (user.birthday.jahr) {
                     let age = "";
                     age = `${currentYear - user.birthday.jahr}`;
