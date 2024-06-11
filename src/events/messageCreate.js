@@ -138,6 +138,17 @@ module.exports = {
             }
         }
 
+        // Vorstellung
+
+        if (message.channel.id === '1250047970116636756') {
+            try {
+                // Reagiere mit einem bestimmten Emoji
+                await message.react('<a:wocheartbeat:1250054562912538724>');
+            } catch (error) {
+                console.error('Fehler beim Hinzufügen der Reaktion:', error);
+            }
+        }
+
         // Geburtstags-System
 
         if (message.channel.id === '1243964646449483788') {
