@@ -3,6 +3,7 @@ const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
+const fetch = require('node-fetch');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageTyping,
