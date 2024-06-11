@@ -13,7 +13,7 @@ module.exports = {
         const role = interaction.options.getRole('role');
         const targetChannel = interaction.guild.channels.cache.get('1173986308641804338'); // Kanal-ID einfügen
         
-        if (!user || !role || !targetChannel) {
+        if (!member || !role || !targetChannel) {
             return interaction.reply('Fehler beim Verarbeiten des Befehls.');
         }
         
