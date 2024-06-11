@@ -43,14 +43,22 @@ module.exports = {
         if (message.channelId === config.autoDelete) {
             setTimeout(async () => {
                 try {
-                    await message.delete()
+                    await message.delete();
                 } catch (error) {
-
+                    console.error('Fehler beim Löschen der Nachricht:', error);
                 }
             }, 30000);
         }
 
-        if (message.author.bot) return;
+        // Löschen der Bot Nachricht
+        if (message.author.bot) {
+            try {
+                await message.delete();
+            } catch (error) {
+                console.error('Fehler beim Löschen der Bot Nachricht:', error);
+            }
+            return;
+        }
 
         // Server Database
 
