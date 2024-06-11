@@ -26,7 +26,7 @@ module.exports = {
                 .setColor('Blurple')
                 .setTimestamp();
 
-            const targetChannel = interaction.guild.channels.cache.get(targetChannel);
+            const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
 
             targetChannel.send({ embeds: [RangUpdateembed] });
             await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
