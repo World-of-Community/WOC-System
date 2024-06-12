@@ -214,13 +214,13 @@ const ageRoles = {
     "18": "1199786814051979344",
 };
 
-cron.schedule('47 11 * * *', async () => {
+cron.schedule('52 11 * * *', async () => {
     const today = new Date();
     const day = today.getDate();
     const month = today.getMonth() + 1;
     const currentYear = today.getFullYear();
     const roleId = '1244945910262399046';
-    const guildId = '815919809379172354';
+    const guild = client.guilds.cache.get("815919809379172354")
 
     try {
         const birthdayUsers = await userdb.find({
