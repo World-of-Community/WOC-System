@@ -214,7 +214,7 @@ const ageRoles = {
     "18": "1199786814051979344",
 };
 
-cron.schedule('5 11 * * *', async () => {
+cron.schedule('7 11 * * *', async () => {
     const today = new Date();
     const day = today.getDate();
     const month = today.getMonth() + 1;
@@ -233,7 +233,7 @@ cron.schedule('5 11 * * *', async () => {
 
             for (const user of birthdayUsers) {
                 const guild = '815919809379172354';
-                const member = await guild.members.get(user.userID);
+                const member = await guild.members.fetch(user.userID);
                 if (user.birthday.jahr) {
                     let age = "";
                     age = `${currentYear - user.birthday.jahr}`;
