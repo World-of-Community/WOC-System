@@ -206,6 +206,8 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (logChannel) await logChannel.send({ embeds: [MessageEditEmbed] });
 });
 
+// Birthday System
+
 const ageRoles = {
     "-18": "1199786765666500710",
     "18": "1199786814051979344",
@@ -230,6 +232,7 @@ cron.schedule('0 0 * * *', async () => {
             const birthdayUsersList = [];
 
             for (const user of birthdayUsers) {
+                const fetch = require('node-fetch');
                 const member = await guild.members.fetch(user.userID);
                 if (user.birthday.jahr) {
                     let age = "";
