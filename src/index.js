@@ -279,7 +279,7 @@ cron.schedule('0 0 * * *', async () => {
 
             const birthdaymessage = await birthdayChannel.send({
                 content: `🎂 𑁉 ${birthdayMessage}\nWünscht dem **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
-                    }** alles gute! <a:2herzen:1196502635465932984>\nTrage auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
+                    }** alles gute! <a:2herzen:1196502635465932984>\nTrage auch deinen Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
             });
 
             await birthdaymessage.react("<a:herzen:974633994840854608>")
