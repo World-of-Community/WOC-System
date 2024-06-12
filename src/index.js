@@ -211,7 +211,7 @@ const ageRoles = {
     "18": "1199786814051979344",
 };
 
-cron.schedule('5 12 * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
     const today = new Date();
     const day = today.getDate();
     const month = today.getMonth() + 1;
