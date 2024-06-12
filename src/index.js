@@ -213,7 +213,7 @@ const ageRoles = {
     "18": "1199786814051979344",
 };
 
-cron.schedule('45 16 * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
     const today = new Date();
     const day = today.getDate();
     const month = today.getMonth() + 1;
@@ -277,13 +277,13 @@ cron.schedule('45 16 * * *', async () => {
             const randomIndex = Math.floor(Math.random() * birthdayword.length);
             const selectedBirthdayWord = birthdayword[randomIndex];
 
-            await birthdayChannel.send({
-                content: `🎂 𑁉 ${birthdayMessage}\nWünscht den **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
-                    }** alles gute!\nTrage auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
+            const birthdaymessage = await birthdayChannel.send({
+                content: `🎂 𑁉 ${birthdayMessage}\nWünscht dem **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
+                    }** alles gute! <a:2herzen:1196502635465932984>\nTrage auch euren Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
             });
 
-            await message.react("<a:herzen:974633994840854608>")
-            await message.react("<a:Cool:915211628755169301>")
+            await birthdaymessage.react("<a:herzen:974633994840854608>")
+            await birthdaymessage.react("<a:Cool:915211628755169301>")
             
         } else {
             const birthdayChannel = client.channels.cache.get(
