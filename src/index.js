@@ -55,7 +55,6 @@ for (const file of eventFiles) {
     }
 }
 
-
 client.on('guildMemberAdd', async member => {
     if (member.guild.id !== "815919809379172354") return;
 
@@ -140,7 +139,6 @@ client.on('channelUpdate', async (oldChannel, newChannel) => {
             description += `\n\`🦥\` » **Slowmode:**\n<:text3:1228332174911213638>**Alt:** ${oldChannel.rateLimitPerUser || "<:off:1228350962205200475>"}\n<:text2:1228330539941888011>**Neu:** ${newChannel.rateLimitPerUser || "<:off:1228350962205200475>"}`;
         }
 
-
         const EditingEmbed = new EmbedBuilder()
             .setTitle('`🔁` | KANAL BEARBEITET')
             .setAuthor({ name: `${executor.username} » ${executor.id}`, iconURL: executor.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 }) })
@@ -207,7 +205,6 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     const logChannel = await client.channels.cache.get(LOG_CHANNEL_ID);
     if (logChannel) await logChannel.send({ embeds: [MessageEditEmbed] });
 });
-
 
 const ageRoles = {
     "-18": "1199786765666500710",
