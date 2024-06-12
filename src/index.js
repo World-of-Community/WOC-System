@@ -233,7 +233,7 @@ cron.schedule('5 12 * * *', async () => {
             const birthdayUsersList = [];
 
             for (const user of birthdayUsers) {
-                const member = await guild.users.fetch(user.userID);
+                const member = await guild.members.fetch(user.userID);
                 if (user.birthday.jahr) {
                     let age = "";
                     age = `${currentYear - user.birthday.jahr}`;
