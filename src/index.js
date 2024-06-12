@@ -220,7 +220,7 @@ cron.schedule('52 11 * * *', async () => {
     const month = today.getMonth() + 1;
     const currentYear = today.getFullYear();
     const roleId = '1244945910262399046';
-    const guild = client.guilds.cache.get("815919809379172354")
+    const guild = client.guilds.cache.get("815919809379172354");
 
     try {
         const birthdayUsers = await userdb.find({
