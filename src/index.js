@@ -10,7 +10,7 @@ const client = new Client({
         GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [
-        Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message, ['CHANNEL'] // Diese Zeile stellt sicher, dass der Bot auf DM-Nachrichten reagiert
+        Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message, ['DM'] // Diese Zeile stellt sicher, dass der Bot auf DM-Nachrichten reagiert
     ],
 });
 
