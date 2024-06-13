@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageTyping,
-        GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [
         Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message, ['DM'] // Diese Zeile stellt sicher, dass der Bot auf DM-Nachrichten reagiert
