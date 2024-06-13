@@ -6,6 +6,20 @@ module.exports = {
     async execute(interaction) {
         client = interaction.client
 
+        if (!interaction.isCommand()) return;
+
+        // Überprüfen, ob die Interaktion im richtigen Kanal stattfindet
+        if (interaction.channelId !== config.autoDeleteChannelId) return;
+
+        // Beispiel: Direkt Nachricht löschen nach 30 Sekunden
+        setTimeout(async () => {
+            try {
+                await interaction.deleteReply();
+            }  catch (error) {
+                console.error('Fehler beim Löschen der Nachricht:', error);
+            }
+        }, 30000); // 30 Sekunden in Millisekunden umgerechnet
+
         // Ränge Menu
         if (interaction.customId === 'ränge-menu') {
             switch (interaction.values[0]) {
