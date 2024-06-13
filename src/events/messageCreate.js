@@ -126,7 +126,7 @@ module.exports = {
             'Grüße dich! <a:winken:1086560167442796544>',
         ];
 
-        if (message.mentions.has(client.user) && !message.author.bot) {
+        if (message.mentions.has(bot.user) && !message.author.bot) {
             const randomPingMessage = pingmessage[Math.floor(Math.random() * pingmessage.length)];
             message.channel.send(randomPingMessage).then(sentMessage => {
                 setTimeout(() => {
