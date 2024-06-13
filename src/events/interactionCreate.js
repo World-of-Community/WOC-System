@@ -6,6 +6,7 @@ module.exports = {
     async execute(interaction) {
         client = interaction.client
 
+        // Slash commands löschen (geht nicht)
         if (!interaction.isCommand()) return;
 
         // Überprüfen, ob die Interaktion im richtigen Kanal stattfindet
