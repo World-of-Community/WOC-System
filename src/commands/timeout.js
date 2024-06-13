@@ -22,7 +22,7 @@ module.exports = {
         const duration = interaction.options.getString('dauer');
         const timeoutRole = '843515552546684949'; // Add the ID of the timeout role in your config.json
         const memberRole = '815920703067914290'; // Add the ID of the member role in your config.json
-        const logChannel = '1250954769598775308';
+        const logChannelId = '1250954769598775308';
 
         const durationMs = ms(duration);
 
