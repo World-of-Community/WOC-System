@@ -3,15 +3,6 @@ const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
-const client = new client({
-    intents: [
-        GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageTyping,
-        GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions,
-    ],
-    partials: [
-        Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message
-    ],
-});
 
 module.exports = {
     name: Events.MessageCreate,
