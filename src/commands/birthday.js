@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const userDB = require("../../Datenbank/userdb")
 
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('birthday')

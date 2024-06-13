@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder } = require("discord.js");
 const fs = require('fs')
 const ms = require("ms");
+const timeoutdb = require("../../Datenbank/timeoutdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -41,7 +42,7 @@ module.exports = {
             .then(() => {
                 member.roles.remove(memberRole);
 
-                const newTimeout = new bandb({
+                const newTimeout = new timeoutdb({
                     creator: interaction.user.id,
                     user: member.id,
                     reason: reason,
