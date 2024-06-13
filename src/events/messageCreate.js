@@ -50,7 +50,7 @@ module.exports = {
         }
 
         // Löschen der Bot Nachricht
-        if (message.author.bot) {
+        if (message.author.bot === config.autoDelete) {
             try {
                 await message.delete();
             } catch (error) {
