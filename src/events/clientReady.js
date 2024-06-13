@@ -11,6 +11,7 @@ const Parser = require("rss-parser");
 const parser = new Parser();
 const FeedManager = require("../FeedManager");
 const { Giga, Tagesschau } = FeedManager;
+
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
@@ -32,14 +33,12 @@ module.exports = {
     console.log("Verbunden mit Discord");
 
     // RSS Feed
-
     setInterval(async () => {
       Giga(client, lastEntries);
       Tagesschau(client, lastEntries);
     }, 60000);
 
     // Wechsel Status
-
     setInterval(async () => {
       await guild.members.fetch().then(async (members) => {
         const onlineMembers = await members.filter(
@@ -64,6 +63,7 @@ module.exports = {
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
         }, 30000);
 
+    // hauptchat Beschreibung
     setInterval(async () => {
       const channel = await client.channels.fetch(config.willkommen);
       const messageData = await messagedb.findOne({ guildID: config.server });

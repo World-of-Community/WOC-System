@@ -39,7 +39,6 @@ module.exports = {
         }
 
         // Auto Delete
-
         if (message.channelId === config.autoDelete) {
             setTimeout(async () => {
                 try {
@@ -61,7 +60,6 @@ module.exports = {
         }
 
         // Server Database
-
         const serverData = await serverdb.findOne({ guildID: message.guildId })
         if (!serverData) {
             const newServer = new serverdb({
@@ -79,7 +77,6 @@ module.exports = {
         }
 
         // User Database
-
         const userData = await userdb.findOne({ userID: message.author.id })
         if (!userData) {
             const newUser = new userdb({
@@ -90,7 +87,6 @@ module.exports = {
         }
 
         // Ping Reaction
-
         if (message.mentions.users.size > 0) {
             if (message.author.bot) return;
             for (const [_, mentionedUser] of message.mentions.users) {
@@ -117,7 +113,6 @@ module.exports = {
         }
 
         // Spielersuche System
-
         if (message.channel.id === '896743941813207081') {
             try {
                 // Reagiere mit einem bestimmten Emoji
@@ -128,7 +123,6 @@ module.exports = {
         }
 
         // Werbung für alle
-
         if (message.channel.id === '1172920281526960238') {
             try {
                 // Reagiere mit einem bestimmten Emoji
@@ -139,7 +133,6 @@ module.exports = {
         }
 
         // Vorstellung
-
         if (message.channel.id === '1250047970116636756') {
             try {
                 // Reagiere mit einem bestimmten Emoji
@@ -150,7 +143,6 @@ module.exports = {
         }
 
         // Geburtstags-System
-
         if (message.channel.id === '1243964646449483788') {
             try {
                 // Reagiere mit einem bestimmten Emoji
@@ -211,7 +203,6 @@ module.exports = {
         }
 
         // Ränge Info
-
         if (message.content === '!ränge-info') {
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()
@@ -268,7 +259,6 @@ module.exports = {
         }
 
         // Regelwerk
-
         if (message.content === '!regelwerk') {
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()
@@ -291,7 +281,6 @@ module.exports = {
         }
 
         // Partner bewerben
-
         if (message.content === '!partner') {
             if (!message.member.permissions.has('Administrator')) return;
             message.delete()

@@ -66,7 +66,6 @@ for (const file of eventFiles) {
 }
 
 // Bot Ping / Erwähnung
-
 const pingMessages = [
     'Wenn du Hilfe brauchst öffne ein Ticket im Support <:pepeheart:974642478055555082>',
     'Ein Admin hat mir verboten dir zu antworten <a:warnung:1066110628705615914>',
@@ -88,7 +87,6 @@ client.on('messageCreate', message => {
 });
 
 // Bot schreibt user per DM wenn der bot angeschrieben wird
-
 client.on('messageCreate', async message => {
     // Überprüfen, ob die Nachricht in einer DM gesendet wurde
     if (message.channel.type === 'DM' && !message.author.bot) {
@@ -127,7 +125,6 @@ client.on('guildMemberAdd', async member => {
 });
 
 // Kanal Log
-
 const LOG_CHANNEL_ID = "1242799344692887662";
 const typeMap = {
     0: "TEXT",
@@ -212,7 +209,6 @@ client.on('channelDelete', async (channel) => {
 });
 
 // Nachrichten Log
-
 client.on('messageCreate', async (message) => {
     if (!message.author || message.author.bot) return;
 
@@ -253,7 +249,6 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 });
 
 // Birthday System
-
 const ageRoles = {
     "-18": "1199786765666500710",
     "18": "1199786814051979344",
@@ -349,7 +344,6 @@ cron.schedule('0 0 * * *', async () => {
 })
 
 // Werbung
-
 setInterval(() => {
     const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
@@ -372,7 +366,6 @@ setInterval(() => {
 }, 60000 * 240); // 4 Stunden in Millisekunden
 
 // Threads Checker
-
 cron.schedule('0 0 * * *', async () => {
     const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
     const threads = await threaddb.find();
@@ -393,7 +386,6 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Changelog Embed
-
 cron.schedule('0 0 * * 1', async () => {
     const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
@@ -465,7 +457,6 @@ cron.schedule('0 0 * * 1', async () => {
 });
 
 // 18 Uhr Message
-
 cron.schedule('0 18 * * 0', async () => {
     const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
@@ -498,5 +489,4 @@ process.on('unhandledRejection', error => {
 });
 
 // Bot Start
-
 client.login(config.token)

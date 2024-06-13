@@ -7,7 +7,6 @@ const { EmbedBuilder } = require("discord.js")
 module.exports = {
     
     // Free Games
-
     Giga: async (client, lastEntries) => {
         try {
             const feed = await parser.parseURL("https://www.giga.de/rss/games.rss"); 
@@ -39,7 +38,7 @@ module.exports = {
             console.error('Error fetching RSS feed:', error);
         }
     },
-
+    // Welt News
     Tagesschau: async (client, lastEntries) => {
         try {
             const feed = await parser.parseURL("https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml");

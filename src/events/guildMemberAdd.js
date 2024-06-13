@@ -39,7 +39,6 @@ module.exports = {
         await welcomeChannel.send({ content: `${contents[rndContent]}` })
 
         // Server-Regeln Erwähnung neue Mitglieder
-
         const channel = member.guild.channels.cache.get('815922286502346773');
         if (!channel) return console.error('Kanal wurde nicht gefunden.');
 
@@ -54,7 +53,6 @@ module.exports = {
         }
 
         // Join Log
-
         const join = new EmbedBuilder()
             .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
             .setColor('Green')

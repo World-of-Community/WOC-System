@@ -7,7 +7,6 @@ module.exports = {
         client = interaction.client
 
         // Ränge Menu
-
         if (interaction.customId === 'ränge-menu') {
             switch (interaction.values[0]) {
                 case 'server': {
@@ -157,7 +156,6 @@ module.exports = {
         }
 
         // Seite 2
-
         if (interaction.customId === 'seite-2') {
             const seite2Embed = new EmbedBuilder()
                 .setTitle('`🚨` » World Of Community - Server-Regeln (Seite 2)')
@@ -176,7 +174,6 @@ module.exports = {
         }
 
         // Verifizierung
-
         if (interaction.customId === 'verifizieren') {
             const rndNumber = Math.floor(Math.random() * 999) + 1000
             let verifyNumber = rndNumber.toString()
@@ -211,7 +208,6 @@ module.exports = {
         }
         
         // Bann Button
-
          if (interaction.isButton()) {
             if(interaction.customId === 'ticket_erledigt') {
                 const mention = interaction.message.content
@@ -364,13 +360,10 @@ module.exports = {
                     ]
                 })
                 await interaction.reply({ content: "> `✅` » Deine Anfrage wurde abgesendet, Bitte habe etwas Geduld!", ephemeral: true })
-
-
             }
         }
         
         if (interaction.isButton()) {
-
             if (interaction.customId === 'partner') {
                 const partnerModal = new ModalBuilder()
                     .setTitle('🤝 - BEWERBEN ALS PARTNER')
@@ -431,8 +424,6 @@ module.exports = {
                 })
                 await interaction.message.edit({ components: [] })
                 await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von **${user.displayName}** abgelehnt.`)
-
-
             }
         }
 
