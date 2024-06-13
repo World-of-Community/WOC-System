@@ -65,6 +65,48 @@ for (const file of eventFiles) {
     }
 }
 
+// Starte die Überwachung der Nachrichten im Auto-Delete-Kanal
+startMessageMonitoring();
+
+async function startMessageMonitoring() {
+    try {
+        const channel = await client.channels.fetch(config.autoDelete);
+        if (!channel.isText()) {
+            console.error('Der angegebene Kanal ist kein Textkanal.');
+            return;
+        }
+
+        console.log(`Überwache Nachrichten im Kanal ${channel.name} für Auto-Delete.`);
+
+        // Überwache Nachrichten im Kanal
+        client.on('messageCreate', async (message) => {
+            if (message.channelId === config.autoDelete) {
+                scheduleMessageDeletion(message);
+            }
+        });
+
+        // Überwache Slash-Befehle
+        client.on('interactionCreate', async (interaction) => {
+            if (interaction.isCommand() && interaction.channelId === config.autoDelete) {
+                scheduleMessageDeletion(interaction);
+            }
+        });
+
+    } catch (error) {
+        console.error('Fehler beim Starten der Nachrichtenüberwachung:', error);
+    }
+}
+
+async function scheduleMessageDeletion(message) {
+    setTimeout(async () => {
+        try {
+            await message.delete();
+        } catch (error) {
+            console.error('Fehler beim Löschen der Nachricht:', error);
+        }
+    }, 30000); // Zeit in Millisekunden (30 Sekunden)
+} 
+
 // Bot Ping / Erwähnung
 const pingMessages = [
     'Wenn du Hilfe brauchst öffne ein Ticket im Support <:pepeheart:974642478055555082>',
