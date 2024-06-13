@@ -101,11 +101,12 @@ async function scheduleMessageDeletion(message) {
     setTimeout(async () => {
         try {
             await message.delete();
+            console.log(`Nachricht von ${message.author.tag} im Kanal ${message.channel.name} gelöscht.`);
         } catch (error) {
             console.error('Fehler beim Löschen der Nachricht:', error);
         }
     }, 30000); // Zeit in Millisekunden (30 Sekunden)
-} 
+}
 
 // Bot Ping / Erwähnung
 const pingMessages = [
