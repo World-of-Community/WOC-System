@@ -72,7 +72,7 @@ client.on('messageCreate', message => {
             setTimeout(() => {
                 sentMessage.delete()
                     .catch(err => console.error('Fehler beim Löschen der Nachricht:', err));
-            }, 3000); // 3000 Millisekunden = 3 Sekunden
+            }, 5000); // 5000 Millisekunden = 5 Sekunden
         }).catch(err => console.error('Fehler beim Senden der Nachricht:', err));
     }
 });
