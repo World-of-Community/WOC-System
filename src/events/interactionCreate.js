@@ -9,7 +9,7 @@ module.exports = {
         if (!interaction.isCommand()) return;
 
         // Überprüfen, ob die Interaktion im richtigen Kanal stattfindet
-        if (interaction.channelId !== config.autoDeleteChannelId) return;
+        if (interaction.channelId !== config.autoDelete) return;
 
         // Beispiel: Direkt Nachricht löschen nach 30 Sekunden
         setTimeout(async () => {
