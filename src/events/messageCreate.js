@@ -38,6 +38,17 @@ module.exports = {
             await messageData.save()
         }
 
+        // Auto Delete
+        if (message.channelId === config.autoDelete) {
+            setTimeout(async () => {
+                try {
+                    await message.delete();
+                } catch (error) {
+                    console.error('Fehler beim Löschen der Nachricht:', error);
+                }
+            }, 30000);
+        }
+
         // Löschen der Bot Nachricht
         if (message.author.bot) {
             try {
