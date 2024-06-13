@@ -3,7 +3,6 @@ const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 module.exports = {
     name: Events.MessageCreate,
