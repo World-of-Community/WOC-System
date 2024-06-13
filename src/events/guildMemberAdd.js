@@ -9,7 +9,7 @@ module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
-
+        if (member.user.bot) return; // Keine Bots begrüßen
         if (serverData.deactivated.includes("willkommensnachrichten")) { return };
         
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -47,7 +47,7 @@ module.exports = {
 
             setTimeout(() => {
                 message.delete();
-            }, 1 * 60 * 60 * 1000); // 1 Stunde in Millisekunden
+            }, 5 * 60 * 1000); // 5 Minuten in Millisekunden
         } catch (err) {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
