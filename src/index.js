@@ -10,7 +10,7 @@ const client = new Client({
         GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [
-        Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message
+        Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message, ['CHANNEL'] // Diese Zeile stellt sicher, dass der Bot auf DM-Nachrichten reagiert
     ],
 });
 
@@ -74,6 +74,20 @@ client.on('messageCreate', message => {
                     .catch(err => console.error('Fehler beim Löschen der Nachricht:', err));
             }, 5000); // 5000 Millisekunden = 5 Sekunden
         }).catch(err => console.error('Fehler beim Senden der Nachricht:', err));
+    }
+});
+
+// Bot schreibt user per DM wenn der bot angeschrieben wird
+
+client.on('messageCreate', async message => {
+    // Überprüfen, ob die Nachricht in einer DM gesendet wurde
+    if (message.channel.type === 'DM' && !message.author.bot) {
+        try {
+            // Antwort auf die DM
+            await message.channel.send(`hey ${user.displayName}!\nLeider bin ich der falsche Ansprechpartner, falls du Hilfe suchst...\nÖffne ein Support Ticket in <#819555839362072606> damit sich unser Support-Team um dein Problem so schnell es geht kümmern kann. <:pepeheart:974642478055555082>`);
+        } catch (error) {
+            console.error('Fehler beim Senden der Antwort:', error);
+        }
     }
 });
 
