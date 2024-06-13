@@ -6,11 +6,21 @@ const config = JSON.parse(file);
 const fetch = require('node-fetch');
 const client = new Client({
     intents: [
-        GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageTyping,
-        GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildIntegrations, 
+        GatewayIntentBits.GuildMembers, 
+        GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.DirectMessages, 
+        GatewayIntentBits.GuildPresences, 
+        GatewayIntentBits.Guilds, 
+        GatewayIntentBits.MessageContent, 
+        GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [
-        Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message, [Partials.Channel] // Diese Zeile stellt sicher, dass der Bot auf DM-Nachrichten reagiert
+        Partials.Channel, 
+        Partials.User, 
+        Partials.GuildMember, 
+        Partials.Message
     ],
 });
 
