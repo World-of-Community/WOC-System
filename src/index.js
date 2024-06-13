@@ -55,6 +55,28 @@ for (const file of eventFiles) {
     }
 }
 
+// Bot Ping / Erwähnung
+
+const pingMessages = [
+    'Wenn du Hilfe brauchst öffne ein Ticket im Support <:pepeheart:974642478055555082>',
+    'Ein Admin hat mir verboten dir zu antworten <a:warnung:1066110628705615914>',
+    'Ja? <:Moin:915211924164210738>',
+    'Was gibt es? <a:what:1119708325962055720>',
+    'Grüße dich! <a:winken:1086560167442796544>',
+];
+
+client.on('messageCreate', message => {
+    if (message.mentions.has(client.user) && !message.author.bot) {
+        const randomPingMessage = pingMessages[Math.floor(Math.random() * pingMessages.length)];
+        message.channel.send(randomPingMessage).then(sentMessage => {
+            setTimeout(() => {
+                sentMessage.delete()
+                    .catch(err => console.error('Fehler beim Löschen der Nachricht:', err));
+            }, 3000); // 3000 Millisekunden = 3 Sekunden
+        }).catch(err => console.error('Fehler beim Senden der Nachricht:', err));
+    }
+});
+
 client.on('guildMemberAdd', async member => {
     if (member.guild.id !== "815919809379172354") return;
 

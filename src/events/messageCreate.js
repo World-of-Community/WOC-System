@@ -116,26 +116,6 @@ module.exports = {
             }
         }
 
-        // Bot Ping / Erwähnung
-
-        const pingmessage = [
-            'Wenn du Hilfe brauchst öffne ein Ticket im Support <:pepeheart:974642478055555082>',
-            'Ein Admin hat mir verboten dir zu antworten <a:warnung:1066110628705615914>',
-            'Ja? <:Moin:915211924164210738>',
-            'Was gibt es? <a:what:1119708325962055720>',
-            'Grüße dich! <a:winken:1086560167442796544>',
-        ];
-
-        if (message.mentions.has(client.user) && !message.author.bot) {
-            const randomPingMessage = pingmessage[Math.floor(Math.random() * pingmessage.length)];
-            message.channel.send(randomPingMessage).then(sentMessage => {
-                setTimeout(() => {
-                    sentMessage.delete()
-                        .catch(err => console.error('Fehler beim Löschen der Nachricht:', err));
-                }, 3000); // 3000 Millisekunden = 3 Sekunden
-            }).catch(err => console.error('Fehler beim Senden der Nachricht:', err));
-        }
-
         // Spielersuche System
 
         if (message.channel.id === '896743941813207081') {
