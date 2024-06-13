@@ -3,6 +3,15 @@ const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
+const client = new Client({
+    intents: [
+        GatewayIntentBits.GuildIntegrations, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions,
+    ],
+    partials: [
+        Partials.Channel, Partials.User, Partials.GuildMember, Partials.Message
+    ],
+});
 
 module.exports = {
     name: Events.MessageCreate,
@@ -126,7 +135,7 @@ module.exports = {
             'Grüße dich! <a:winken:1086560167442796544>',
         ];
 
-        if (message.mentions.has(bot.user) && !message.author.bot) {
+        if (message.mentions.has(client.user) && !message.author.bot) {
             const randomPingMessage = pingmessage[Math.floor(Math.random() * pingmessage.length)];
             message.channel.send(randomPingMessage).then(sentMessage => {
                 setTimeout(() => {
