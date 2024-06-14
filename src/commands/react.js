@@ -10,7 +10,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
-        const messageId = interaction.options.getString('messageid');
+        const messageId = interaction.options.getString('nachrichtid');
         const emoji1 = interaction.options.getString('emoji1');
         const emoji2 = interaction.options.getString('emoji2');
 
