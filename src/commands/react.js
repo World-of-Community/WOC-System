@@ -4,9 +4,9 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('react')
         .setDescription('» Reagiere auf eine Nachricht mit Emojis.')
-        .addStringOption(option => option.setName('messageid').setDescription('» Die ID der Nachricht.').setRequired(true))
+        .addStringOption(option => option.setName('nachrichtid').setDescription('» Die ID der Nachricht.').setRequired(true))
         .addStringOption(option => option.setName('emoji1').setDescription('» Das erste Emoji.').setRequired(true))
-        .addStringOption(option => option.setName('emoji2').setDescription('» Das zweite Emoji.').setRequired(true))
+        .addStringOption(option => option.setName('emoji2').setDescription('» Das zweite Emoji.').setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
