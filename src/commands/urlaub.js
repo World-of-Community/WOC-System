@@ -35,7 +35,7 @@ module.exports = {
 
         const urlaubEmbed = new EmbedBuilder()
             .setTitle('🌴 Urlaubsmeldung')
-            .setDescription(`\`📅\` » ${member} hat Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.\n\`📋\` » Grund: ${grund}`)
+            .setDescription(`\`📅\` » ${member} hat Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.\n\n\`📋\` » Grund: \`${grund}\``)
             .setColor('Green')
             .setFooter({ text: `${member.username}'s - Urlaub`, iconURL: `${member.displayAvatarURL()}` })
             .setTimestamp();
