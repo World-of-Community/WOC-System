@@ -37,7 +37,7 @@ module.exports = {
             .setTitle('🌴 Urlaubsmeldung')
             .setDescription(`\`📅\` » ${member} hat Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.\n\n\`📋\` » Grund: \`${grund}\``)
             .setColor('Green')
-            .setFooter({ text: `${member.username}'s - Urlaub`, iconURL: `${member.displayAvatarURL()}` })
+            .setFooter({ text: `${member.username}'s Urlaub`, iconURL: `${member.displayAvatarURL()}` })
             .setTimestamp();
 
         await channel.send({ embeds: [urlaubEmbed] });
