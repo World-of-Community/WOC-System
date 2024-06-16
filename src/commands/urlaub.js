@@ -4,8 +4,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('urlaub')
         .setDescription('» Teile deinen Urlaub mit. 🌴')
-        .addStringOption(option => option.setName('von').setDescription('Startdatum des Urlaubs (DD-MM-YYYY)').setRequired(true))
-        .addStringOption(option => option.setName('bis').setDescription('Enddatum des Urlaubs (DD-MM-YYYY)').setRequired(true)),
+        .addStringOption(option => option.setName('von').setDescription('Startdatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
+        .addStringOption(option => option.setName('bis').setDescription('Enddatum des Urlaubs (DD.MM.YYYY)').setRequired(true)),
 
     async execute(interaction) {
         const von = interaction.options.getString('von');
@@ -19,7 +19,7 @@ module.exports = {
         }
 
         const formatDate = (dateStr) => {
-            const [day, month, year] = dateStr.split('-');
+            const [day, month, year] = dateStr.split('.');
             if (!day || !month || !year) return undefined;
             return `${day}.${month}.${year}`;
         };
@@ -35,7 +35,7 @@ module.exports = {
             .setTitle('🌴 Urlaubsmeldung')
             .setDescription(`\`📅\` » ${member} hat Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.`)
             .setColor('Green')
-            .setFooter({ text: `${member.username}'s - Urlaub`, iconURL: `${member.displayAvatarURL()}` }) // Fixed member.displayName to member.username
+            .setFooter({ text: `${member.username}'s - Urlaub`, iconURL: `${member.displayAvatarURL()}` })
             .setTimestamp();
 
         await channel.send({ embeds: [urlaubEmbed] });
