@@ -5,11 +5,13 @@ module.exports = {
         .setName('urlaub')
         .setDescription('» Teile deinen Urlaub mit. 🌴')
         .addStringOption(option => option.setName('von').setDescription('Startdatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
-        .addStringOption(option => option.setName('bis').setDescription('Enddatum des Urlaubs (DD.MM.YYYY)').setRequired(true)),
+        .addStringOption(option => option.setName('bis').setDescription('Enddatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
+        .addStringOption(option => option.setName('grund').setDescription('Grund des Urlaubs').setRequired(false)),
 
     async execute(interaction) {
         const von = interaction.options.getString('von');
         const bis = interaction.options.getString('bis');
+        const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
         const member = interaction.user;
         const channelId = '877446081036836884'; 
         const channel = interaction.guild.channels.cache.get(channelId);
@@ -33,7 +35,7 @@ module.exports = {
 
         const urlaubEmbed = new EmbedBuilder()
             .setTitle('🌴 Urlaubsmeldung')
-            .setDescription(`\`📅\` » ${member} hat Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.`)
+            .setDescription(`\`📅\` » ${member} hat Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.\n\`📋\` » Grund: ${grund}`)
             .setColor('Green')
             .setFooter({ text: `${member.username}'s - Urlaub`, iconURL: `${member.displayAvatarURL()}` })
             .setTimestamp();
