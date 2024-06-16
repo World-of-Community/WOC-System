@@ -11,7 +11,7 @@ module.exports = {
         const von = interaction.options.getString('von');
         const bis = interaction.options.getString('bis');
         const member = interaction.user;
-        const channelId = '877446081036836884'; // Ersetze 'DEIN_KANAL_ID' mit der ID des gewünschten Kanals
+        const channelId = '877446081036836884'; 
         const channel = interaction.guild.channels.cache.get(channelId);
 
         if (!channel || channel.type !== ChannelType.GuildText) {
@@ -20,20 +20,25 @@ module.exports = {
 
         const formatDate = (dateStr) => {
             const [day, month, year] = dateStr.split('-');
+            if (!day || !month || !year) return undefined;
             return `${day}.${month}.${year}`;
         };
 
         const formattedVon = formatDate(von);
         const formattedBis = formatDate(bis);
 
+        if (!formattedVon || !formattedBis) {
+            return interaction.reply({ content: '> `❌` » Bitte gib gültige Daten im Format `DD-MM-YYYY` ein.', ephemeral: true });
+        }
+
         const urlaubEmbed = new EmbedBuilder()
             .setTitle('🌴 Urlaubsmeldung')
             .setDescription(`\`📅\` » ${member} hat Urlaub von \`${formattedVon}\` bis \`${formattedBis}\`.`)
             .setColor('Green')
-            .setFooter({ text: `${interaction.user.displayName}'s - Urlaub`, iconURL: `${member.displayAvatarURL()}` })
+            .setFooter({ text: `${member.username}'s - Urlaub`, iconURL: `${member.displayAvatarURL()}` }) // Fixed member.displayName to member.username
             .setTimestamp();
 
         await channel.send({ embeds: [urlaubEmbed] });
         await interaction.reply({ content: '> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.', ephemeral: true });
     }
-}
+};

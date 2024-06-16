@@ -72,6 +72,16 @@ module.exports = {
                     { guildID: interaction.guild.id}
                 );
 
+                if (!isValidInviteLink(invite)) {
+                    await interaction.reply({ content: '> ❌ » Der angegebene Einladungslink ist ungültig.', ephemeral: true });
+                    return;
+                }
+
+                if (!user) {
+                    await interaction.reply({ content: '> ❌ » -Nutzer wurde nicht gefunden.', ephemeral: true });
+                    return;
+                }
+
                 if (!serverData.partner || !serverData.partner.msg || !serverData.partner.channel) {
                     const newEmbed = new EmbedBuilder()
                         .setTitle('Partnerliste')
@@ -235,3 +245,7 @@ module.exports = {
         }
     },
 };
+function isValidInviteLink(link) {
+    const inviteRegex = /^(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|plus)\/|discordapp\.com\/invite\/)([a-zA-Z0-9]{2,32})\/?$/;
+    return inviteRegex.test(link);
+}

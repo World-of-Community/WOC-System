@@ -105,7 +105,15 @@ client.on('guildMemberAdd', async member => {
     const newInvites = await member.guild.invites.fetch();
     const oldInvites = invites.get(member.guild.id);
 
-    const invite = newInvites.find(i => i.uses > oldInvites.get(i.code));
+    // Check if oldInvites is defined
+    if (!oldInvites) {
+        invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
+        return;
+    }
+
+    // Find the invite that was used
+    const invite = newInvites.find(i => oldInvites.has(i.code) && i.uses > oldInvites.get(i.code));
+
     if (invite) {
         const inviter = invite.inviter;
         const inviteUses = invite.uses;
@@ -120,10 +128,9 @@ client.on('guildMemberAdd', async member => {
         }
 
         // Update the invite map
-        invites.set(member.guild.id, new Map(newInvites.map((invite) => [invite.code, invite.uses])));
+        invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
     }
 });
-
 // Kanal Log
 const LOG_CHANNEL_ID = "1242799344692887662";
 const typeMap = {
@@ -269,33 +276,33 @@ cron.schedule('0 0 * * *', async () => {
         });
 
         if (birthdayUsers.length > 0) {
-            const birthdayChannel = client.channels.cache.get("1243964646449483788"); //<- Channel ID
+            const birthdayChannel = client.channels.cache.get("1243964646449483788");
             const birthdayUsersList = [];
 
             for (const user of birthdayUsers) {
-                const fetch = require('node-fetch');
-                const member = await guild.members.fetch(user.userID);
-                if (user.birthday.jahr) {
-                    let age = "";
-                    age = `${currentYear - user.birthday.jahr}`;
-                    let roleId;
+                try {
+                    const member = await guild.members.fetch(user.userID);
 
-                    if (currentYear - user.birthday.jahr <= "18") roleId = ageRoles["-18"];
-                    else if (currentYear - user.birthday.jahr >= "18") roleId = ageRoles["18"];
+                    if (user.birthday.jahr) {
+                        const age = currentYear - user.birthday.jahr;
+                        let roleId;
 
-                    const birthdaykindRole = await guild.roles.fetch(roleId);
+                        if (age <= 18) roleId = '1199786765666500710'; 
+                        else if (age > 18) roleId = '1199786814051979344'; 
+                        const birthdayRole = await guild.roles.fetch(roleId);
 
-                    await member.roles.add(birthdaykindRole);
-
-                    if (roleId) {
-                        const role = guild.roles.cache.get(roleId);
-                        await member.roles.add(role);
+                        if (birthdayRole) {
+                            await member.roles.add(birthdayRole);
+                        }
+                        birthdayUsersList.push(`${member} (**${age}**)`);
+                    } else {
+                        birthdayUsersList.push(`${member}`);
                     }
-                    birthdayUsersList.push(`${member} (**${age}**)`);
-                } else {
-                    birthdayUsersList.push(`${member}`);
+                    await member.roles.add(roleId);
+                } catch (fetchError) {
+                    console.error(`Fehler beim Verarbeiten des Mitglieds mit ID ${user.userID}:`, fetchError);
+                    continue; 
                 }
-                await member.roles.add("1244945910262399046")
             }
 
             let birthdayMessage = "";
@@ -304,44 +311,38 @@ cron.schedule('0 0 * * *', async () => {
                 birthdayMessage = `${birthdayUsersList[0]} hat **heute Geburtstag!** - <a:bier:1196502621427601498>`;
             } else {
                 const lastUser = birthdayUsersList.pop();
-                birthdayMessage = `${birthdayUsersList.join(
-                    ", "
-                )} und ${lastUser} haben **heute Geburtstag!** - <a:bier:1196502621427601498>`;
+                birthdayMessage = `${birthdayUsersList.join(", ")} und ${lastUser} haben **heute Geburtstag!** - <a:bier:1196502621427601498>`;
             }
 
-            const birthdayword = [
+            const birthdayWords = [
                 "Genieße die kleinen Dinge. Sie machen das Leben großartig!",
                 "Durch dich wird die Welt ein besserer Ort, bleib wie du bist!",
                 "Heute sollst Du Dich einfach entspannen und alle Deine Sorgen verbannen.",
                 "Lass dich drücken, knuddeln und umarmen. Sollen alle deine Ziele, Wünsche und Träume in Erfüllung gehen. Du hast es verdient.",
             ];
-            const randomIndex = Math.floor(Math.random() * birthdayword.length);
-            const selectedBirthdayWord = birthdayword[randomIndex];
+            const randomIndex = Math.floor(Math.random() * birthdayWords.length);
+            const selectedBirthdayWord = birthdayWords[randomIndex];
 
             const birthdaymessage = await birthdayChannel.send({
-                content: `🎂 𑁉 ${birthdayMessage}\nWünscht dem **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"
-                    }** alles gute! <a:2herzen:1196502635465932984>\nTrage auch deinen Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
+                content: `🎂 𑁉 ${birthdayMessage}\nWünscht dem **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"}** alles Gute! <a:2herzen:1196502635465932984>\nTrage auch deinen Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
             });
 
-            await birthdaymessage.react("<a:herzen:974633994840854608>")
-            await birthdaymessage.react("<a:Cool:915211628755169301>")
+            await birthdaymessage.react("<a:herzen:974633994840854608>");
+            await birthdaymessage.react("<a:Cool:915211628755169301>");
             
         } else {
-            const birthdayChannel = client.channels.cache.get(
-                "1243964646449483788"
-            );
+            const birthdayChannel = client.channels.cache.get("1243964646449483788");
             const message = await birthdayChannel.send({
-                content:
-                    "<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*",
+                content: "<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*",
             });
 
-            await message.react("<a:herzen:974633994840854608>")
-            await message.react("<a:Cool:915211628755169301>")
+            await message.react("<a:herzen:974633994840854608>");
+            await message.react("<a:Cool:915211628755169301>");
         }
     } catch (error) {
         console.error("Fehler beim Verarbeiten der Geburtstage:", error);
     }
-})
+});
 
 // Werbung
 setInterval(() => {
