@@ -125,8 +125,18 @@ module.exports = {
         // Werbung für alle
         if (message.channel.id === '1172920281526960238') {
             try {
-                // Reagiere mit einem bestimmten Emoji
-                await message.react('<a:woclink:1236232439022616658>');
+                // ID des animierten Emojis
+                const emojiId = '1236232439022616658';
+
+                // Emoji aus dem Cache abrufen
+                const customEmoji = message.guild.emojis.cache.get(emojiId);
+
+                if (customEmoji) {
+                    // Reagiere mit dem benutzerdefinierten Emoji
+                    await message.react(customEmoji);
+                } else {
+                    console.error('Emoji nicht gefunden');
+                }
             } catch (error) {
                 console.error('Fehler beim Hinzufügen der Reaktion:', error);
             }
