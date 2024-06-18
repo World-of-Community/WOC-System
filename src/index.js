@@ -317,7 +317,7 @@ cron.schedule('0 0 * * *', async () => {
             const birthdayWords = [
                 "Genieße die kleinen Dinge. Sie machen das Leben großartig!",
                 "Durch dich wird die Welt ein besserer Ort, bleib wie du bist!",
-                "Heute sollst Du Dich einfach entspannen und alle Deine Sorgen verbannen.",
+                "Heute sollst Du dich einfach entspannen und alle deine Sorgen verbannen.",
                 "Lass dich drücken, knuddeln und umarmen. Sollen alle deine Ziele, Wünsche und Träume in Erfüllung gehen. Du hast es verdient.",
             ];
             const randomIndex = Math.floor(Math.random() * birthdayWords.length);
