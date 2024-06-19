@@ -38,6 +38,43 @@ module.exports = {
             console.error('Error fetching RSS feed:', error);
         }
     },
+
+    // Film News
+    Filmstarts: async (client, lastEntries) => {
+        try {
+            const feed = await parser.parseURL("https://www.filmstarts.de/rss/nachrichten.xml");
+
+            if (feed.items && feed.items.length > 0) {
+                const newestEntry = feed.items[0];
+
+                if (!await module.exports.isEntrySent("https://www.filmstarts.de/rss/nachrichten.xml", newestEntry.guid, lastEntries)) {
+                    const embed = new EmbedBuilder();
+                    if (newestEntry.title) embed.setTitle(newestEntry.title);
+                    if (newestEntry.link) embed.setURL(newestEntry.link);
+
+                    if (newestEntry.contentSnippet) {
+                        embed.setDescription(`> ${newestEntry.contentSnippet}\n\n**© Erstellt von [World Of Community](https://discord.gg/zYk4GdSZSc)**`);
+                    }
+
+                    embed.setColor('Blue')
+                    .setAuthor({ name: "» Filmstarts", url: feed.link, iconURL: "https://www.appgefahren.de/wp-content/uploads/2016/06/Filmstarts-icon.jpg" })
+                    .setImage(await module.exports.getImageFromContent(newestEntry['content:encoded']))
+                    .setTimestamp();
+
+                    const channel = client.channels.cache.get('1230540761708105728')
+                    if (channel) {
+                        channel.send({ content: '`📺` » Es gibt was neues von **Filmstarts**, <@&1231257532844998666>!', embeds: [embed] })
+                        .catch(error => console.error('Error sending embed message:', error));
+                    }
+
+                    module.exports.markEntryAsSent("https://www.filmstarts.de/rss/nachrichten.xml", newestEntry.guid, lastEntries);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching RSS feed:', error);
+        }
+    },
+
     // Welt News
     Tagesschau: async (client, lastEntries) => {
         try {
