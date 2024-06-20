@@ -132,13 +132,14 @@ module.exports = {
                 const customEmoji = message.guild.emojis.cache.get(emojiId);
 
                 if (customEmoji) {
-                    // Reagiere mit dem benutzerdefinierten Emoji
-                    await message.react(customEmoji);
+                // Reagiere mit dem benutzerdefinierten Emoji
+                await message.react(customEmoji);
+                console.log('Emoji erfolgreich hinzugefügt zu der Nachricht.');
                 } else {
-                    console.error('Emoji nicht gefunden');
+                console.error('Emoji nicht gefunden');
                 }
             } catch (error) {
-                console.error('Fehler beim Hinzufügen der Reaktion:', error);
+            console.error('Fehler bei hinzufügen der reaktion:', error);
             }
         }
 
