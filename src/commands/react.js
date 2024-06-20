@@ -7,7 +7,7 @@ module.exports = {
         .addStringOption(option => option.setName('nachrichtid').setDescription('» Die ID der Nachricht.').setRequired(true))
         .addStringOption(option => option.setName('emoji1').setDescription('» Das erste Emoji.').setRequired(true))
         .addStringOption(option => option.setName('emoji2').setDescription('» Das zweite Emoji.').setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages), // Updated permission
 
     async execute(interaction) {
         const messageId = interaction.options.getString('nachrichtid');
@@ -17,11 +17,23 @@ module.exports = {
         try {
             const targetMessage = await interaction.channel.messages.fetch(messageId);
             await targetMessage.react(emoji1);
-            await targetMessage.react(emoji2);
+
+            if (emoji2) {
+                await targetMessage.react(emoji2);
+            }
+
             interaction.reply({ content: '> `✅` » Reaktion erfolgreich hinzugefügt.', ephemeral: true });
         } catch (error) {
-            console.error('Fehler Reaktion zu der Nachricht:', error);
-            interaction.reply({ content: '> `❗` » Beim Versuch, auf die Nachricht zu reagieren, ist ein Fehler aufgetreten.', ephemeral: true });
+            console.error('Fehler beim Reagieren auf die Nachricht:', error);
+
+            let errorMessage = '> `❗` » Beim Versuch, auf die Nachricht zu reagieren, ist ein Fehler aufgetreten.';
+            if (error.code === 10008) { // Unknown Message
+                errorMessage = '> `❗` » Die Nachricht mit der angegebenen ID wurde nicht gefunden.';
+            } else if (error.code === 50013) { // Missing Permissions
+                errorMessage = '> `❗` » Mir fehlen die Berechtigungen, um auf diese Nachricht zu reagieren.';
+            }
+
+            interaction.reply({ content: errorMessage, ephemeral: true });
         }
     },
 };
