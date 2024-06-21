@@ -65,6 +65,7 @@ for (const file of eventFiles) {
     }
 }
 
+
 // Bot Ping / Erwähnung
 const pingMessages = [
     'Wenn du Hilfe brauchst öffne ein Ticket im Support <:pepeheart:974642478055555082>',
