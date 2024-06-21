@@ -58,7 +58,7 @@ module.exports = {
                     const imageUrl = await module.exports.getImageFromContent(newestEntry['content:encoded']);
                     embed.setColor('Blue')
                     .setAuthor({ name: "» Filmstarts", url: feed.link, iconURL: "https://www.appgefahren.de/wp-content/uploads/2016/06/Filmstarts-icon.jpg" })
-                    .setImage(newestEntry.image.url)
+                    .setImage(feed.image.url)
                     .setTimestamp();
 
                     const channel = client.channels.cache.get('1230540761708105728')

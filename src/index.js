@@ -271,10 +271,10 @@ cron.schedule('0 0 * * *', async () => {
     const guild = client.guilds.cache.get("815919809379172354");
 
     try {
-        const birthdayUsers = await userdb.find({
-            "birthday.tag": day,
-            "birthday.monat": month,
-        });
+        const birthdayUsers = await userdb.find([
+            { "birthday.tag": { $exists: true, $eq: day } }, 
+            { "birthday.monat": { $exists: true, $eq: month } }, 
+        ]);
 
         if (birthdayUsers.length > 0) {
             const birthdayChannel = client.channels.cache.get("1243964646449483788");
