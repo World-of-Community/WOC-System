@@ -55,10 +55,15 @@ module.exports = {
                     if (newestEntry.contentSnippet) {
                         embed.setDescription(`> ${newestEntry.contentSnippet}\n\n**© Erstellt von [World Of Community](https://discord.gg/zYk4GdSZSc)**`);
                     }
+
+                    if (newestEntry.enclosure && newestEntry.enclosure.url) {
+                        embed.setImage(newestEntry.enclosure.url);
+                    } else if (newestEntry['media:thumbnail'] && newestEntry['media:thumbnail'].url) {
+                        embed.setImage(newestEntry['media:thumbnail'].url);
+                    }    
                     const imageUrl = await module.exports.getImageFromContent(newestEntry['content:encoded']);
                     embed.setColor('Blue')
                     .setAuthor({ name: "» Filmstarts", url: feed.link, iconURL: "https://www.appgefahren.de/wp-content/uploads/2016/06/Filmstarts-icon.jpg" })
-                    .setImage(feed.image.url)
                     .setTimestamp();
 
                     const channel = client.channels.cache.get('1230540761708105728')
