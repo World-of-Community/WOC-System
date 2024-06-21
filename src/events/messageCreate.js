@@ -164,14 +164,22 @@ module.exports = {
             }
         }
 
-        // Suggestion Channel
         if (message.channelId === config.vorschläge) {
             if (message.author.bot) return;
-            if (await serverdb.findOne({ guildID: message.guildId, deactivated: { $in: ['vorschläge'] } })) return message.reply({ content: '> `⛔` » Das Vorschläge System ist momentan deaktiviert.' })
-
-            let content = message.content
-
-            await message.delete().catch((err) => { }).then(async msg => {
+    
+            const isDeactivated = await serverdb.findOne({
+                guildID: message.guildId,
+                deactivated: { $in: ['vorschläge'] }
+            });
+    
+            if (isDeactivated) {
+                return message.reply({ content: '> `⛔` » Das Vorschläge System ist momentan **deaktiviert**.' });
+            }
+    
+            let content = message.content;
+    
+            try {
+                await message.delete();
                 const buttons = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
@@ -179,39 +187,52 @@ module.exports = {
                             .setLabel('Einreichen')
                             .setEmoji('✅')
                             .setStyle(ButtonStyle.Success),
-
                         new ButtonBuilder()
                             .setCustomId('abbrechen')
                             .setLabel('Abbrechen')
                             .setEmoji('❌')
-                            .setStyle(ButtonStyle.Secondary),
-                    )
-
-                await msg.channel.send({ content: `> Möchtest du den Vorschlag wirklich einreichen?\n\n> Dein Vorschlag:\n> **${content}**\n\n> Klicke auf die unteren Buttons`, components: [buttons] }).then(async interaction => {
-                    await message.client.on('interactionCreate', async (inter) => {
-                        if (inter.customId === 'einreichen') {
-                            await interaction.delete().catch(error => console.log(error))
-                            const vorschlagEmbed = new EmbedBuilder()
-                                .setAuthor({ name: `Eingereicht von ${inter.user.displayName}` })
-                                .setTitle('» `🔎` - NEUER VORSCHLAG!')
-                                .setDescription(`> ${content}\n\n─────────────────────────\n\n`)
-                                .addFields({ name: '`💡` - Vorschläge', value: '» Schreibe eigene Vorschläge in diesem Kanal\num sie für den WOC-Discord einzureichen.' })
-                                .setColor('#515558')
-                                .setThumbnail('https://images-ext-1.discordapp.net/external/5IVIzj8wJ6S4-jJ13JsBzKChdJeU0_Mg541jcWFomlo/https/i.imgur.com/emyqXev.png')
-                                .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1190736182661882006/WOC_Banner_Server_Idee_Eingereicht.jpg?ex=65a2e27c&is=65906d7c&hm=b601ecc960883375ce6460df9f427fe42129698c8dd7e66f3f47bd01ee43cf44&')
-                                .setFooter({ text: `» Eingereicht von ${inter.user.displayName} - ${inter.user.id}`, iconURL: inter.user.displayAvatarURL({ dynamic: true }) })
-                            await inter.channel.send({ embeds: [vorschlagEmbed] }).then(int => {
-                                int.react('<a:upvote:1033452503309758525>')
-                                int.react('<a:downvote:1033452526340673596>')
-                            })
-                        } else if (inter.customId === 'abbrechen') {
-                            await interaction.delete().catch((err) => { })
-                            await inter.reply({ content: '> `❗` » Du hast den Vorschlag nicht eingereicht.', ephemeral: true })
-                        }
-                    });
-                })
-            })
-        }
+                            .setStyle(ButtonStyle.Secondary)
+                    );
+    
+                const confirmationMessage = await message.channel.send({
+                    content: `> Möchtest du den Vorschlag wirklich einreichen?\n\n> Dein Vorschlag:\n> **${content}**\n\n> Klicke auf die unteren Buttons`,
+                    components: [buttons],
+                    ephemeral: true
+                });
+    
+                const filter = (interaction) => ['einreichen', 'abbrechen'].includes(interaction.customId) && interaction.user.id === message.author.id;
+                const collector = confirmationMessage.createMessageComponentCollector({ filter, time: 60000 });
+    
+                collector.on('collect', async (interaction) => {
+                    if (interaction.customId === 'einreichen') {
+                        await interaction.deferUpdate();
+                        const vorschlagEmbed = new EmbedBuilder()
+                            .setAuthor({ name: `Eingereicht von ${interaction.user.username}` })
+                            .setTitle('» `🔎` - NEUER VORSCHLAG!')
+                            .setDescription(`> ${content}\n\n─────────────────────────\n\n`)
+                            .addFields({ name: '`💡` - Vorschläge', value: '» Schreibe eigene Vorschläge in diesem Kanal um sie für den WOC-Discord einzureichen.' })
+                            .setColor('#515558')
+                            .setThumbnail('https://images-ext-1.discordapp.net/external/5IVIzj8wJ6S4-jJ13JsBzKChdJeU0_Mg541jcWFomlo/https/i.imgur.com/emyqXev.png')
+                            .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1190736182661882006/WOC_Banner_Server_Idee_Eingereicht.jpg?ex=65a2e27c&is=65906d7c&hm=b601ecc960883375ce6460df9f427fe42129698c8dd7e66f3f47bd01ee43cf44&')
+                            .setFooter({ text: `» Eingereicht von ${interaction.user.username} - ${interaction.user.id}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
+    
+                        const suggestionMessage = await interaction.channel.send({ embeds: [vorschlagEmbed] });
+                        await suggestionMessage.react('<a:upvote:1033452503309758525>');
+                        await suggestionMessage.react('<a:downvote:1033452526340673596>');
+                    } else if (interaction.customId === 'abbrechen') {
+                        await interaction.deferUpdate();
+                        await interaction.followUp({ content: '> `❗` » Du hast den Vorschlag nicht eingereicht.', ephemeral: true });
+                    }
+                });
+    
+                collector.on('end', () => {
+                    confirmationMessage.edit({ components: [] });
+                });
+    
+            } catch (err) {
+                console.error('Error handling suggestion:', err);
+            }
+        };
 
         // Ränge Info
         if (message.content === '!ränge-info') {
