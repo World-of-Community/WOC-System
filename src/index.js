@@ -90,7 +90,7 @@ client.on('messageCreate', message => {
 // Bot schreibt user per DM wenn der bot angeschrieben wird
 client.on('messageCreate', async message => {
     // Überprüfen, ob die Nachricht in einer DM gesendet wurde
-    if (message.channel.type === 'DM' && !message.author.bot) {
+    if (message.channel.type === ChannelType.DM && !message.author.bot) {
         try {
             // Antwort auf die DM
             await message.channel.send(`hey ${message.author.displayName}!\nLeider bin ich der falsche Ansprechpartner, falls du Hilfe suchst...\nÖffne ein Support Ticket in <#819555839362072606> damit sich unser Support-Team um dein Problem so schnell es geht kümmern kann. <:pepeheart:974642478055555082>`);
