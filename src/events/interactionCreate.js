@@ -627,7 +627,7 @@ module.exports = {
 
             if(interaction.customId === "vorstellung_delete") {
                 if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "`❌` Du hast dich noch nicht Vorgestellt!", ephemeral: true });
-
+                const channel = interaction.guild.channels.cache.get('1250047970116636756');
                 const message = await channel.messages.fetch(userData.vorstellungID);
                 await message.delete()
                 await interaction.reply({ content: "`✅` Vorstellung wurde gelöscht.", ephemeral: true });
