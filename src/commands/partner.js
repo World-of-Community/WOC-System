@@ -77,8 +77,8 @@ module.exports = {
                     return;
                 }
 
-                if (!user) {
-                    await interaction.reply({ content: '> ❌ » -Nutzer wurde nicht gefunden.', ephemeral: true });
+                if (!owner) {
+                    await interaction.reply({ content: '> ❌ » Nutzer wurde nicht gefunden.', ephemeral: true });
                     return;
                 }
 
