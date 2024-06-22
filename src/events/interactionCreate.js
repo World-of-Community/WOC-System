@@ -459,7 +459,7 @@ module.exports = {
 
             const vorstellungInput = new TextInputBuilder()
                 .setCustomId('vorstellung_input')
-                .setLabel(`Hier kannst du dich Vorstellen oder so lol red mach nachricht`)
+                .setLabel(`Red mach nachricht`)
                 .setMinLength(50)
                 .setMaxLength(1000)
                 .setStyle(TextInputStyle.Paragraph)
@@ -479,7 +479,7 @@ module.exports = {
                             username: inter.user.displayName,
                             avatarURL: inter.user.displayAvatarURL,
                         });
-                        await inter.reply("`✅` Vorstellung wurde eingereicht")
+                        await inter.reply({content: "`✅` Vorstellung wurde eingereicht", ephemeral: true})
                     }
                 });
             });
