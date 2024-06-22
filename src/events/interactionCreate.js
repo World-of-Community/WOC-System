@@ -1,9 +1,11 @@
 const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
+const userdb = require("../../Datenbank/userdb");
 const config = require("../json/config.json")
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+        const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
 
         // Ränge Menu
@@ -453,6 +455,7 @@ module.exports = {
             }
 
             if (interaction.customId === 'vorstellung_create') {
+                if (userData && userData.vorstellungID) return await interaction.reply({ content: "`❌` Du hast dich bereits Vorgestellt!", ephemeral: true });
                 const vorstellungModal = new ModalBuilder()
                 .setTitle('Vorstellung')
                 .setCustomId('vorstellung-modal');
@@ -484,12 +487,15 @@ module.exports = {
                             .setDescription(input)
                             .setTimestamp()
 
-                            await webhookClient.send({
+
+                            const webhookMessage = await webhookClient.send({
                                 username: interaction.user.displayName, 
                                 avatarURL: interaction.user.displayAvatarURL({ dynamic: true }),
                                 embeds: [vorstellEmbed]
                             });
-                
+        
+                            await userdb.updateOne({ userID: interaction.user.id }, { $set: { vorstellungID: webhookMessage.id } }, { upsert: true });
+        
                             await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", fetchReply: true, ephemeral: true });
 
                             const messageEmbedVorstellung = new EmbedBuilder()
@@ -529,6 +535,10 @@ module.exports = {
             }
 
             if(interaction.customId === "vorstellung_edit") {
+                if (!userData || !userData.vorstellungID) {
+                    await interaction.reply({ content: "`❌` Keine Vorstellung gefunden zum Bearbeiten", ephemeral: true });
+                    return;
+                }
             }
         }
 

@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema({
     afkStamp: {
         type: String,
         required: false,
+    },
+    vorstellungID: {
+        type: String,
+        required: false,
     }
 });
 
