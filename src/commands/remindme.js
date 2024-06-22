@@ -28,7 +28,7 @@ module.exports = {
     ),
 
 async execute(interaction, client) {
-    const userId = interaciton.user.id;
+    const userId = interaction.user.id;
     const sub = interaction.options.getSubcommand();
 
     switch (sub) {
