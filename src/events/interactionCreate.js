@@ -537,6 +537,20 @@ module.exports = {
             if(interaction.customId === "vorstellung_edit") {
                 if (!userData || !userData.vorstellungID) {
                     await interaction.reply({ content: "`❌` Keine Vorstellung gefunden zum Bearbeiten", ephemeral: true });
+
+                    const message = await channel.messages.fetch(messageId);
+                    if (!message) throw new Error('Message not found.');
+                
+                    // Das Embed aus der Nachricht abrufen
+                    const embeds = message.embeds;
+                    if (!embeds || embeds.length === 0) {
+                        throw new Error('Message does not contain any embeds.');
+                    }
+                
+                    const editEmbed = embeds[0];
+                
+                    const description = editEmbed.description;
+                    console.log(description)
                     return;
                 }
             }
