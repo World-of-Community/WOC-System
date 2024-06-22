@@ -509,7 +509,7 @@ module.exports = {
 
                             
                             const vorstellEmbed = new EmbedBuilder()
-                            .setAuthor({ name: `${interaction.user.username} - ${roleName}`, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
+                            .setAuthor({ name: `${interaction.user.username} - ${highestRole.name}`, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
                             .setDescription(input)
                             .setTimestamp()
 
