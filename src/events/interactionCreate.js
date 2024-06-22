@@ -467,29 +467,31 @@ module.exports = {
                 const vorstellungModal = new ModalBuilder()
                 .setTitle('Vorstellung')
                 .setCustomId('vorstellung-modal');
-                
-            const row = new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
+
+            const vorstellungInput = new TextInputBuilder()
                 .setCustomId('vorstellung_input')
                 .setLabel(`Red mach nachricht`)
                 .setMinLength(50)
                 .setMaxLength(1000)
                 .setStyle(TextInputStyle.Paragraph)
-                .setRequired(true),
+                .setRequired(true);
 
-                new TextInputBuilder()
+                const colorInput = new TextInputBuilder()
                 .setCustomId('vorstellung_color')
                 .setLabel(`Red mach nachricht`)
                 .setStyle(TextInputStyle.Short)
-                .setRequired(false),
+                .setRequired(false);
 
-                new TextInputBuilder()
+                const bannerInput = new TextInputBuilder()
                 .setCustomId('vorstellung_banner')
                 .setLabel(`Banner`)
                 .setStyle(TextInputStyle.Short)
-                .setRequired(false)
-            );
-            vorstellungModal.addComponents(row);
+                .setRequired(false);
+
+            const row = new ActionRowBuilder().addComponents(vorstellungInput);
+            const row2 = new ActionRowBuilder().addComponents(colorInput);
+            const row3 = new ActionRowBuilder().addComponents(bannerInput);
+            vorstellungModal.addComponents(row, row2, row3);
             await interaction.showModal(vorstellungModal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
                     if (inter.customId === 'vorstellung-modal') {
