@@ -474,12 +474,18 @@ module.exports = {
                         
                         const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
-                        webhookClient.send({
-                            content: input,
-                            username: inter.user.displayName,
-                            avatarURL: inter.user.displayAvatarURL({dynamic: true}),
-                        });
-                        await inter.reply({content: "`✅` Vorstellung wurde eingereicht", ephemeral: true})
+                        try {
+                            await webhookClient.send({
+                                content: input,
+                                username: interaction.user.displayName, 
+                                avatarURL: interaction.user.displayAvatarURL({ dynamic: true }),
+                            });
+                
+                            await interaction.reply({ content: "`✅` Vorstellung wurde eingereicht", ephemeral: true });
+                        } catch (error) {
+                            console.error('Error sending webhook message:', error);
+                            await interaction.reply({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
+                        }
                     }
                 });
             });
