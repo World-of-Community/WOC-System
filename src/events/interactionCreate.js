@@ -453,6 +453,14 @@ module.exports = {
             });
 
             }
+            const roleList = {
+                "Admin": "959869691529154631", 
+                "Team-Leitung": "893423428558782465",
+                "Developer": "929349039433056276",
+                "Sr-Moderator": "816985466230145044",
+                "Moderator": "815920052385480754",
+                "Supporter": "815920170371383366",
+            };
 
             if (interaction.customId === 'vorstellung_create') {
                 if (userData && userData.vorstellungID) return await interaction.reply({ content: "`❌` Du hast dich bereits Vorgestellt!", ephemeral: true });
@@ -478,12 +486,29 @@ module.exports = {
                         const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
                         try {
+
+                            const userRoles = inter.member.roles.cache;
+                            let highestRole = null;
+
+                            for (const roleName in roleList) {
+                                const roleID = roleList[roleName];
+
+                                if(userRoles.has(roleID)) {
+                                    const role = inter.guild.roles.cache.get(roleID);
+                                    if(!highestRole || role.position > highestRole.position) {
+                                        highestRole = role;
+                                    }
+                            }
+
+
                             const channel = interaction.guild.channels.cache.get('1250047970116636756');
 
                             await channel.bulkDelete(1)
                             
+
+                            
                             const vorstellEmbed = new EmbedBuilder()
-                            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
+                            .setAuthor({ name: `${interaction.user.username} - ${roleName}`, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
                             .setDescription(input)
                             .setTimestamp()
 
