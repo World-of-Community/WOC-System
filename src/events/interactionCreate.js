@@ -526,8 +526,8 @@ module.exports = {
                             .setDescription(input)
                             .setTimestamp()
 
-                            if(colorInput) embed.setColor(colorInput)
-                            if(bannerInput) embed.setImage(bannerInput)
+                            if(colorInput) vorstellEmbed.setColor(colorInput)
+                            if(bannerInput) vorstellEmbed.setImage(bannerInput)
 
                             const webhookMessage = await webhookClient.send({
                                 username: interaction.user.displayName, 
