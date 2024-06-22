@@ -563,6 +563,57 @@ module.exports = {
                     await interaction.reply({embeds: [editEmbedCopy], components: [buttonEdit], ephemeral: true})
                     return;
             }
+            if(interaction.customId === "vorstellung_edit_") {
+
+                const vorstellungEditModal = new ModalBuilder()
+                .setTitle('Nachricht Bearbeiten')
+                .setCustomId('vorstellung-edit-modal');
+
+            const vorstellungEditInput = new TextInputBuilder()
+                .setCustomId('vorstellung_edit_input')
+                .setLabel(`Red mach nachricht`)
+                .setMinLength(50)
+                .setMaxLength(1000)
+                .setStyle(TextInputStyle.Paragraph)
+                .setRequired(true);
+
+            const row = new ActionRowBuilder().addComponents(vorstellungInput);
+            vorstellungEditModal.addComponents(row);
+            await interaction.showModal(vorstellungEditModal).then(async msg => {
+                await interaction.client.once('interactionCreate', async (inter) => {
+                    if (inter.customId === 'vorstellung-edit-modal') {
+                        const input = await inter.fields.getTextInputValue('vorstellung_edit_input')
+                                
+                            const vorstellEmbed = new EmbedBuilder()
+                            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
+                            .setDescription(input)
+                            .setTimestamp()
+
+                            const buttonEdit = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('vorstellung_edit_')
+                                    .setLabel('Senden')
+                                    .setEmoji('✅')
+                                    .setStyle(ButtonStyle.Success),
+                                    new ButtonBuilder()
+                                    .setCustomId('vorstellung_edit_')
+                                    .setLabel('Bearbeiten')
+                                    .setEmoji('⚙️')
+                                    .setStyle(ButtonStyle.Secondary),
+                                    new ButtonBuilder()
+                                    .setCustomId('vorstellung_edit_delice')
+                                    .setLabel('Abbrechen')
+                                    .setEmoji('❌')
+                                    .setStyle(ButtonStyle.Danger),
+                            );
+                            await inter.reply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], components: [vorstellEmbed], ephemeral: true})
+                    }
+                });
+            });
+
+
+            }
         }
 
         if(interaction.isChatInputCommand()) {
