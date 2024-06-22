@@ -557,10 +557,10 @@ module.exports = {
                         new ButtonBuilder()
                             .setCustomId('vorstellung_edit_')
                             .setLabel('Bearbeiten')
-                            .setEmoji('👋')
+                            .setEmoji('✍️')
                             .setStyle(ButtonStyle.Primary),
                     );
-                    await interaction.reply({embeds: [EmbedBuilder], components: [buttonEdit], ephemeral: true})
+                    await interaction.reply({embeds: [editEmbedCopy], components: [buttonEdit], ephemeral: true})
                     return;
             }
         }
