@@ -597,9 +597,9 @@ module.exports = {
                                     .setEmoji('✅')
                                     .setStyle(ButtonStyle.Success),
                             );
-                            await inter.reply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
+                            await inter.reply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], fetchReply: true ephemeral: true})
 
-                            await interaction.client.once('interactionCreate', async (inter) => {
+                            await interaction.client.once('interactionCreate', async (intere) => {
                                 if (inter.customId === 'vorstellung_edit_accept') {
                                     const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
@@ -609,12 +609,14 @@ module.exports = {
                                         await webhookClient.editMessage(userData.vorstellungID, {
                                             embeds: [embedToSend]
                                         });
-                                        await interaction.editReply({content: "`⚙️` Nachricht wird bearbeitet", embeds: [], components: [], ephemeral: true})
-                                        await inter.editReply({ content: "`✅` Vorstellung wurde bearbeitet.", components: [], ephemeral: true });
+                                        await interaction.deleteReply()
+                                        await inter.editReply({ components: [], ephemeral: true });
+                                        await intere.reply("`✅` Vorstellung wurde bearbeitet.")
                             
                                     } catch (error) {
                                         console.error('Error sending webhook message:', error);
-                                        await inter.reply({ content: "`❌` Fehler beim Einreichen der Bearbeitung!", ephemeral: true });
+                                        await inter.editReply({ components: [], ephemeral: true });
+                                        await intere.reply({ content: "`❌` Fehler beim Einreichen der Bearbeitung!", ephemeral: true });
                                     }
                                 }
                             });
