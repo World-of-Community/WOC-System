@@ -498,6 +498,7 @@ module.exports = {
                                     if(!highestRole || role.position > highestRole.position) {
                                         highestRole = role;
                                     }
+                                }
                             }
 
 
