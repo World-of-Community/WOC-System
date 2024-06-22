@@ -12,6 +12,26 @@ module.exports = {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
+
+        if(message.content === "!vorstellung") {
+            const channel = client.channels.cache.get('1250047970116636756');
+
+            const messageEmbedVorstellung = new EmbedBuilder()
+            .setTitle("`👋`〡 Vorstellen")
+            .setDescription("> Stelle dich vor ")
+            .setColor("Orange")
+            .setTimestamp()
+
+            const buttons = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('vorstellung')
+                    .setLabel('Vorstellen')
+                    .setEmoji('👋')
+                    .setStyle(ButtonStyle.Secondary)
+            );
+        await channel.send({embeds: [messageEmbedVorstellung], components: [buttons]})
+        }
         const uD = await userdb.findOne({ userID: message.author.id });
         if (uD) {
             if (uD.afk) {
@@ -62,7 +82,7 @@ module.exports = {
 
         // Server Database
         const serverData = await serverdb.findOne({ guildID: message.guildId })
-        if (!serverData) {
+        /*if (!serverData) {
             const newServer = new serverdb({
                 guildID: message.guildId,
                 deactivated: [],
@@ -75,17 +95,18 @@ module.exports = {
                 minecraft: [],
             });
             await newServer.save()
-        }
+        } */
 
         // User Database
         const userData = await userdb.findOne({ userID: message.author.id })
-        if (!userData) {
+      /*  if (!userData) {
             const newUser = new userdb({
                 userID: message.author.id,
+                donation: 0,
                 reactions: [],
             });
             await newUser.save()
-        }
+        } */
 
         // Ping Reaction
         if (message.mentions.users.size > 0) {

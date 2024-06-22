@@ -1,7 +1,8 @@
-const { Events, ActivityType, EmbedBuilder } = require("discord.js");
+const { Events, ActivityType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 const client = require('../index');
 const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
+const userdb = require("../../Datenbank/userdb");
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
 
@@ -52,6 +53,44 @@ module.exports = {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
 
+        const userData = await userdb.findOne({ userID: member.id })
+        if (!userData) {
+            const newUser = new userdb({
+                userID: member.id,
+                donation: 0,
+                reactions: [],
+                'birthday.tag': 0, 
+                'birthday.monat': 0,
+                
+            });
+            await newUser.save()
+        }
+        
+
+      /*  if (user.dmChannel) {
+            const userdm = new EmbedBuilder()
+                .setAuthor({name: '» ' + interaction.guild.name, iconURL: interaction.guild.iconURL() })
+                .setTitle("`👋`〡 Willkommen auf WOC")
+                .setDescription("> `❤️`-lich Willkommen auf WOC, ")
+                .setColor("Orange")
+                .setTimestamp()
+
+                const buttons = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('birthday')
+                        .setLabel('Geburtsdatum')
+                        .setEmoji('🎂')
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
+                        .setCustomId('vorstellung')
+                        .setLabel('Vorstellen')
+                        .setEmoji('👋')
+                        .setStyle(ButtonStyle.Secondary)
+                );
+            await user.send({embeds: [userdm], components: [buttons]})
+            }
+        */
         // Join Log
         const join = new EmbedBuilder()
             .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')

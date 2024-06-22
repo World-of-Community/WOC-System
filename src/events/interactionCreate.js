@@ -1,4 +1,4 @@
-const { Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
+const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
 const config = require("../json/config.json")
 
 module.exports = {
@@ -424,6 +424,66 @@ module.exports = {
                 })
                 await interaction.message.edit({ components: [] })
                 await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von **${user.displayName}** abgelehnt.`)
+            }
+
+            if (interaction.customId === 'birthday') {
+                const birthdayModal = new ModalBuilder()
+                .setTitle('Geburtsdatum')
+                .setCustomId('birthday-modal');
+
+            const dmy = new TextInputBuilder()
+                .setCustomId('day_month_year')
+                .setLabel(`Gebe dein Geburtsdatum an (TT.MM.(YYYY))`)
+                .setMinLength(5)
+                .setMaxLength(10)
+                .setStyle(TextInputStyle.Short)
+                .setRequired(true);
+
+            const row = new ActionRowBuilder().addComponents(dmy);
+            birthdayModal.addComponents(row);
+            await interaction.showModal(birthdayModal).then(async msg => {
+                await interaction.client.on('interactionCreate', async (inter) => {
+                    if (inter.customId === 'birthday-modal') {
+                        const input = await inter.fields.getTextInputValue('day_month_year')
+                    
+                    }
+                });
+            });
+
+            }
+
+            if (interaction.customId === 'vorstellung') {
+                const vorstellungModal = new ModalBuilder()
+                .setTitle('Vorstellung')
+                .setCustomId('vorstellung-modal');
+
+            const vorstellungInput = new TextInputBuilder()
+                .setCustomId('vorstellung_input')
+                .setLabel(`Gebe dein Geburtsdatum an (TT.MM.(YYYY))`)
+                .setMinLength(50)
+                .setMaxLength(1000)
+                .setStyle(TextInputStyle.Paragraph)
+                .setRequired(true);
+
+            const row = new ActionRowBuilder().addComponents(vorstellungInput);
+            vorstellungModal.addComponents(row);
+            await interaction.showModal(vorstellungModal).then(async msg => {
+                await interaction.client.on('interactionCreate', async (inter) => {
+                    if (inter.customId === 'vorstellung-modal') {
+                        const input = await inter.fields.getTextInputValue('vorstellung_input')
+                        
+                        const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
+                        
+                        webhookClient.send({
+                            conten: input,
+                            username: inter.user.displayName,
+                            avatarURL: inter.user.displayAvatarURL,
+                        });
+                        await inter.reply("`✅` Vorstellung wurde eingereicht")
+                    }
+                });
+            });
+
             }
         }
 

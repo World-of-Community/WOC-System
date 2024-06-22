@@ -3,6 +3,7 @@ const client = require('../index');
 const fs = require('fs')
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
+const userdb = require("../../Datenbank/userdb");
 
 module.exports = {
     name: Events.GuildMemberRemove,
@@ -14,5 +15,8 @@ module.exports = {
                 .setTimestamp();
             const logChannel = await member.guild.channels.cache.get("886269505330896926");
             if (logChannel) await logChannel.send({ embeds: [leave] });
+
+        const userData = await userdb.findOne({ userID: message.author.id })  
+        await userData.deleteOne()
     }
 }
