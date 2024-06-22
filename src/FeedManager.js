@@ -90,8 +90,13 @@ module.exports = {
                     console.error('Error parsing XML:', err);
                     resolve(null);
                 } else {
-                    const thumbnailUrl = result['item']['media:thumbnail'][0]['$']['url'];
-                    resolve(thumbnailUrl);
+                    try {
+                        const thumbnailUrl = result['rss']['channel'][0]['item'][0]['media:content'][0]['$']['url'];
+                        resolve(thumbnailUrl);
+                    } catch (error) {
+                        console.error('Error extracting media thumbnail:', error);
+                        resolve(null);
+                    }
                 }
             });
         });
