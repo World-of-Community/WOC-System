@@ -481,10 +481,10 @@ module.exports = {
                                 avatarURL: interaction.user.displayAvatarURL({ dynamic: true }),
                             });
                 
-                            await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", ephemeral: true });
+                            return await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", ephemeral: true });
                         } catch (error) {
                             console.error('Error sending webhook message:', error);
-                            await inter.reply({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
+                            return awaitinter.reply({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
                         }
                     }
                 });
