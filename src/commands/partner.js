@@ -22,7 +22,7 @@ module.exports = {
         .addSubcommand((command) =>
             command
                 .setName('edit')
-                .setDescription('» LBearbeite einen Partner 🤝')
+                .setDescription('» Bearbeite einen Partner 🤝')
                 .addStringOption(option => option.setName('partner').setDescription('» Wähle ein Partner aus').setAutocomplete(true).setRequired(true)),
         )
         .addSubcommand((command) =>

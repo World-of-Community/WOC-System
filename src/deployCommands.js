@@ -18,10 +18,15 @@ const deployCommands = async function deploy() {
 
     const restClient = new REST({ version: "10" }).setToken(config.token)
 
-    restClient.put(Routes.applicationCommands(config.application),
+    /*restClient.put(Routes.applicationCommands(config.application),
         { body: commands })
         .then(() => console.log("Successfully registered Commands!"))
         .catch(console.error)
+        */
+
+        restClient.put(Routes.applicationCommands(config.application), { body: [] })
+        .then(() => console.log('Successfully deleted all application commands.'))
+        .catch(console.error);
 }
 
 module.exports = { deployCommands }
