@@ -488,7 +488,10 @@ module.exports = {
                 .setStyle(TextInputStyle.Short)
                 .setRequired(false);
 
-            const row = new ActionRowBuilder().addComponents(vorstellungInput, colorInput, bannerInput);
+                const row = new ActionRowBuilder()
+                .addComponent(vorstellungInput)
+                .addComponent(colorInput)
+                .addComponent(bannerInput);
             vorstellungModal.addComponents(row);
             await interaction.showModal(vorstellungModal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
