@@ -604,14 +604,14 @@ module.exports = {
                                     const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
                                     try {
-                                        const embedToSend = inter.message.embeds[0]
+                                        const embedToSend = intere.message.embeds[0]
             
                                         await webhookClient.editMessage(userData.vorstellungID, {
                                             embeds: [embedToSend]
                                         });
                                         await interaction.deleteReply()
                                         await inter.editReply({ components: [], ephemeral: true });
-                                        await intere.reply("`✅` Vorstellung wurde bearbeitet.")
+                                        await intere.reply({content: "`✅` Vorstellung wurde bearbeitet.", ephemeral: true })
                             
                                     } catch (error) {
                                         console.error('Error sending webhook message:', error);
