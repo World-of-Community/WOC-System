@@ -478,11 +478,16 @@ module.exports = {
                             const channel = interaction.guild.channels.cache.get('1250047970116636756');
 
                             await channel.bulkDelete(1)
+                            
+                            const vorstellEmbed = new EmbedBuilder()
+                            .setAuthor({ name: interaction.user.username, iconURL: '', url: `https://discord.com/users/${interaction.user.id}` })
+                            .setDescription(input)
+                            .setTimestamp()
 
                             await webhookClient.send({
-                                content: input,
                                 username: interaction.user.displayName, 
                                 avatarURL: interaction.user.displayAvatarURL({ dynamic: true }),
+                                embeds: [vorstellEmbed]
                             });
                 
                             await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", fetchReply: true, ephemeral: true });
