@@ -597,7 +597,7 @@ module.exports = {
                                     .setEmoji('✅')
                                     .setStyle(ButtonStyle.Success),
                             );
-                            await inter.reply({content: "`⚙️` - Warte auf eingabe", ephemeral: true)
+                            await inter.reply({content: "`⚙️` - Warte auf eingabe", ephemeral: true})
                             await inter.editReply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
                     }
                 });
