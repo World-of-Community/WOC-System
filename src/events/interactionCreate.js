@@ -494,7 +494,7 @@ module.exports = {
 
                             const messageEmbedVorstellung = new EmbedBuilder()
                             .setTitle("`👋`〡 Vorstellen")
-                            .setDescription("> Stelle dich vor")
+                            .setDescription("Hier ist ein Beispiel für eine Vorstellung als Vorlage was sie alles beinhaltet.\n\n> Name:\n> Alter:\n> Geschlecht:\n> Beziehungsstatus:\n> Hobby:\n> Lieblingstier:\n> Lieblingsessen:\n> Lieblingsspiel:\n> Nationalität:")
                             .setColor("Orange")
                             .setTimestamp()
                 
