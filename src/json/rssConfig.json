@@ -8,7 +8,7 @@
             "message": {
                 "channelId": "1230540230470144073",
                 "content": "🎮 » Es gibt neue **Gaming News**, <@&1231257421016469596>!",
-                "color": "GREEN"
+                "color": "Green"
             }
         },
 
@@ -19,7 +19,7 @@
             "message": {
                 "channelId": "1230540900439031929",
                 "content": "`🌍` » Es gibt eine neue **Welt News**, <@&1231257309313765396>",
-                "color": "BLUE"
+                "color": "Blue"
             }
         },
 
@@ -31,7 +31,7 @@
             "message": {
                 "channelId": "1230540761708105728",
                 "content": "`📺` » Es gibt was neues von **Filmstarts**, <@&1231257532844998666>!",
-                "color": "BLUE"
+                "color": "Red"
             }
         }
     ]

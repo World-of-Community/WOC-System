@@ -29,7 +29,7 @@ module.exports = {
                             embed.setImage(newestEntry['media:thumbnail'].url);
                         }
 
-                        embed.setColor(feedConfig.message.color.toUpperCase())
+                        embed.setColor(feedConfig.message.color)
                             .setAuthor({ name: `» ${feedConfig.name}`, url: feed.link, iconURL: feedConfig.iconURL })
                             .setTimestamp();
 
