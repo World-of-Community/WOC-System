@@ -605,7 +605,7 @@ module.exports = {
                                     const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
                                     try {
-                                        const embedToSend = interaction.message.embeds[0]
+                                        const embedToSend = inter.message.embeds[0]
             
                                         await webhookClient.editMessage(userData.vorstellungID, {
                                             embeds: [embedToSend]
