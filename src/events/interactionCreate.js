@@ -560,7 +560,7 @@ module.exports = {
                             .setEmoji('✍️')
                             .setStyle(ButtonStyle.Primary),
                     );
-                    await interaction.reply({embeds: [editEmbedCopy], components: [buttonEdit], ephemeral: true})
+                    await interaction.reply({embeds: [editEmbedCopy], components: [buttonEdit], ephemeral: true, fetchReply: true})
                     return;
             }
             if(interaction.customId === "vorstellung_edit_") {
@@ -607,7 +607,7 @@ module.exports = {
                                     .setEmoji('❌')
                                     .setStyle(ButtonStyle.Danger),
                             );
-                            await inter.reply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
+                            await inter.editReply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
                     }
                 });
             });
