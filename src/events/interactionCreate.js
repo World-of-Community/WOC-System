@@ -538,10 +538,9 @@ module.exports = {
                 if (!userData || !userData.vorstellungID) {
                     await interaction.reply({ content: "`❌` Keine Vorstellung gefunden zum Bearbeiten", ephemeral: true });
                     const channel = interaction.guild.channels.cache.get('1250047970116636756');
-                    const message = await channel.messages.fetch(messageId);
+                    const message = await channel.messages.fetch(userData.vorstellungID);
                     if (!message) throw new Error('Message not found.');
                 
-                    // Das Embed aus der Nachricht abrufen
                     const embeds = message.embeds;
                     if (!embeds || embeds.length === 0) {
                         throw new Error('Message does not contain any embeds.');
