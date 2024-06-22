@@ -467,31 +467,28 @@ module.exports = {
                 const vorstellungModal = new ModalBuilder()
                 .setTitle('Vorstellung')
                 .setCustomId('vorstellung-modal');
-
-            const vorstellungInput = new TextInputBuilder()
+                
+            const row = new ActionRowBuilder().addComponents(
+                new TextInputBuilder()
                 .setCustomId('vorstellung_input')
                 .setLabel(`Red mach nachricht`)
                 .setMinLength(50)
                 .setMaxLength(1000)
                 .setStyle(TextInputStyle.Paragraph)
-                .setRequired(true);
+                .setRequired(true),
 
-                const colorInput = new TextInputBuilder()
+                new TextInputBuilder()
                 .setCustomId('vorstellung_color')
                 .setLabel(`Red mach nachricht`)
                 .setStyle(TextInputStyle.Short)
-                .setRequired(false);
+                .setRequired(false),
 
-                const bannerInput = new TextInputBuilder()
+                new TextInputBuilder()
                 .setCustomId('vorstellung_banner')
                 .setLabel(`Banner`)
                 .setStyle(TextInputStyle.Short)
-                .setRequired(false);
-
-                const row = new ActionRowBuilder()
-                .addComponent(vorstellungInput)
-                .addComponent(colorInput)
-                .addComponent(bannerInput);
+                .setRequired(false)
+            );
             vorstellungModal.addComponents(row);
             await interaction.showModal(vorstellungModal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
