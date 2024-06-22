@@ -28,6 +28,7 @@ module.exports = {
     ),
 
 async execute(interaction, client) {
+    const userId = interaciton.user.id;
     const sub = interaction.options.getSubcommand();
 
     switch (sub) {
@@ -86,8 +87,6 @@ async execute(interaction, client) {
             break;
 
         case "list":
-            const userId = interaction.user.id;
-
             if (!reminders.has(userId) || reminders.get(userId).length === 0) {
                 return await interaction.reply({ content: '> `❌` » Du hast keine Erinnerungen gesetzt.', ephemeral: true });
             }
@@ -108,7 +107,6 @@ async execute(interaction, client) {
             break;
 
         case "remove":
-            const userId = interaction.user.id;
             const index = interaction.options.getInteger('reminder') - 1;
     
             if (!reminders.has(userId) || reminders.get(userId).length === 0) {
