@@ -438,10 +438,10 @@ module.exports = {
                 console.error(error)
 
                 if (interaction.deferred || interaction.replied) {
-                    interaction.editReply("Es ist ein Fehler beim ausführen aufgetreten!")
+                    interaction.editReply({content: "Es ist ein Fehler beim ausführen aufgetreten!"})
                 }
                 else {
-                    interaction.reply("Es ist ein Fehler beim ausführen aufgetreten!")
+                    interaction.reply({content: "Es ist ein Fehler beim ausführen aufgetreten!", ephemeral: true})
                 }
             }
         }

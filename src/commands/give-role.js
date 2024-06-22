@@ -16,8 +16,7 @@ async execute(interaction) {
 
     // Rollenvergabe
     try {
-        const guild = interaction.guild;
-        const member = await guild.members.fetch(user);
+        const member = await interaction.guild.members.fetch(user);
         await member.roles.add(role);
         interaction.reply({ content: `> \`✅\` » Die <@&${role.id}>-Rolle wurde an ${member} **vergeben**.`, ephemeral: true });
     } catch (error) {
