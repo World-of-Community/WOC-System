@@ -526,26 +526,22 @@ module.exports = {
                             .setDescription(input)
                             .setTimestamp()
 
-                            if (colorInput) {
-                                if (/^#[0-9A-F]{6}$/i.test(colorInput)) {
-                                    vorstellEmbed.setColor(colorInput);
-                                } else {
-                                    const colorNames = {
-                                        'white': '#ffffff',
-                                        'black': '#000000',
-                                        'red': '#ff0000',
-                                        'green': '#00ff00',
-                                        'blue': '#0000ff',
-                                    };
-                                    
-                                    if (colorNames[colorInput.toLowerCase()]) {
-                                        vorstellEmbed.setColor(colorNames[colorInput.toLowerCase()]);
-                                    } else {
+                            if (typeof colorInput === 'string') {
 
+                                const normalizedColorInput = colorInput.toLowerCase();
+                        
+                                if (/^#[0-9A-F]{6}$/i.test(normalizedColorInput)) {
+                                    vorstellEmbed.setColor(normalizedColorInput);
+                                } else {
+                                    if (colorNames[normalizedColorInput]) {
+                                        vorstellEmbed.setColor(colorNames[normalizedColorInput]);
+                                    } else {
                                         console.log('Ungültige Farbe: ' + colorInput);
-                                        vorstellEmbed.setColor('#7289da');
+                                        vorstellEmbed.setColor('#7289da'); 
                                     }
                                 }
+                            } else {
+                                console.log('Ungültige Farbe: ' + colorInput);
                             }
                             if(bannerInput) vorstellEmbed.setImage(bannerInput)
 
