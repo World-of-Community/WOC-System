@@ -70,16 +70,6 @@ module.exports = {
             }, 30000);
         }
 
-        // Löschen der Bot Nachricht
-        if (message.author.bot === config.autoDelete) {
-            try {
-                await message.delete();
-            } catch (error) {
-                console.error('Fehler beim Löschen der Bot Nachricht:', error);
-            }
-            return;
-        }
-
         // Server Database
         const serverData = await serverdb.findOne({ guildID: message.guildId })
         /*if (!serverData) {
