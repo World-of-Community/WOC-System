@@ -91,8 +91,7 @@ async execute(interaction, client) {
                 return await interaction.reply({ content: '> `❌` » Du hast keine Erinnerungen gesetzt.', ephemeral: true });
             }
     
-            const userReminders = reminders.get(userId);
-            const reminderList = userReminders.map((reminder, index) => 
+            const reminderList = reminders.get(userId).map((reminder, index) => 
                 `${index + 1}. **${reminder.reminder}** - <t:${reminder.timestamp}:R>`
             ).join('\n');
     
