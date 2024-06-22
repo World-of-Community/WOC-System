@@ -475,6 +475,10 @@ module.exports = {
                         const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
                         try {
+                            const channel = message.guild.channels.cache.get('1250047970116636756');
+
+                            await channel.bulkDelete(1)
+
                             await webhookClient.send({
                                 content: input,
                                 username: interaction.user.displayName, 
@@ -482,6 +486,32 @@ module.exports = {
                             });
                 
                             await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", fetchReply: true, ephemeral: true });
+
+                            const messageEmbedVorstellung = new EmbedBuilder()
+                            .setTitle("`👋`〡 Vorstellen")
+                            .setDescription("> Stelle dich vor")
+                            .setColor("Orange")
+                            .setTimestamp()
+                
+                            const buttons = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId('vorstellung_create')
+                                    .setLabel('Vorstellen')
+                                    .setEmoji('👋')
+                                    .setStyle(ButtonStyle.Primary),
+                                    new ButtonBuilder()
+                                    .setCustomId('vorstellung_edit')
+                                    .setLabel('Bearbeiten')
+                                    .setEmoji('✍️')
+                                    .setStyle(ButtonStyle.Secondary),
+                                    new ButtonBuilder()
+                                    .setCustomId('vorstellung_delete')
+                                    .setLabel('Löschen')
+                                    .setEmoji('🗑️')
+                                    .setStyle(ButtonStyle.Danger)
+                            );
+                        await channel.send({embeds: [messageEmbedVorstellung], components: [buttons]})
                         } catch (error) {
                             console.error('Error sending webhook message:', error);
                             await inter.reply({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
