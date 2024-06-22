@@ -535,7 +535,7 @@ module.exports = {
             }
 
             if(interaction.customId === "vorstellung_edit") {
-                if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "`❌` Keine Vorstellung gefunden zum Bearbeiten", ephemeral: true });
+                if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "`❌` Du hast dich noch nicht Vorgestellt!", ephemeral: true });
                     const channel = interaction.guild.channels.cache.get('1250047970116636756');
                     const message = await channel.messages.fetch(userData.vorstellungID);
                     if (!message) throw new Error('Message not found.');
@@ -624,6 +624,18 @@ module.exports = {
                     });
                 });
             }
+
+            if(interaction.customId === "vorstellung_delete") {
+                if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "`❌` Du hast dich noch nicht Vorgestellt!", ephemeral: true });
+
+                const message = await channel.messages.fetch(userData.vorstellungID);
+                await message.delete()
+                await interaction.reply({ content: "`✅` Vorstellung wurde gelöscht.", ephemeral: true });
+                
+                userData.vorstellungID = undefined;
+                await userData.save();
+            }
+
         }
 
         if(interaction.isChatInputCommand()) {
