@@ -1,4 +1,4 @@
-const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType, Util } = require("discord.js");
+const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
 const userdb = require("../../Datenbank/userdb");
 const config = require("../json/config.json")
 
@@ -526,15 +526,26 @@ module.exports = {
                             .setDescription(input)
                             .setTimestamp()
 
-                            let colorInput_color = "ffffff";
-                            if(colorInput) {
-                                try {
-                                    colorInput_color = Util.resolveColor(colorInput); 
-                                } catch (error) {
-                                    console.error('Fehler beim Auflösen der Farbe:', error);
-                                    colorInput_color = "#FF0000"; 
+                            if (colorInput) {
+                                if (/^#[0-9A-F]{6}$/i.test(colorInput)) {
+                                    vorstellEmbed.setColor(colorInput);
+                                } else {
+                                    const colorNames = {
+                                        'white': '#ffffff',
+                                        'black': '#000000',
+                                        'red': '#ff0000',
+                                        'green': '#00ff00',
+                                        'blue': '#0000ff',
+                                    };
+                                    
+                                    if (colorNames[colorInput.toLowerCase()]) {
+                                        vorstellEmbed.setColor(colorNames[colorInput.toLowerCase()]);
+                                    } else {
+
+                                        console.log('Ungültige Farbe: ' + colorInput);
+                                        vorstellEmbed.setColor('#7289da');
+                                    }
                                 }
-                                vorstellEmbed.setColor(colorInput_color)
                             }
                             if(bannerInput) vorstellEmbed.setImage(bannerInput)
 
