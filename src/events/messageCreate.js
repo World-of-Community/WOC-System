@@ -25,7 +25,7 @@ module.exports = {
             const buttons = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId('vorstellung')
+                    .setCustomId('vorstellung_create')
                     .setLabel('Vorstellen')
                     .setEmoji('👋')
                     .setStyle(ButtonStyle.Secondary)
