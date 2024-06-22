@@ -478,7 +478,7 @@ module.exports = {
 
                 const colorInput = new TextInputBuilder()
                 .setCustomId('vorstellung_color')
-                .setLabel(`Red mach nachricht`)
+                .setLabel(`Color`)
                 .setStyle(TextInputStyle.Short)
                 .setRequired(false);
 
