@@ -468,7 +468,7 @@ module.exports = {
             const row = new ActionRowBuilder().addComponents(vorstellungInput);
             vorstellungModal.addComponents(row);
             await interaction.showModal(vorstellungModal).then(async msg => {
-                await interaction.client.on('interactionCreate', async (inter) => {
+                await interaction.client.once('interactionCreate', async (inter) => {
                     if (inter.customId === 'vorstellung-modal') {
                         const input = await inter.fields.getTextInputValue('vorstellung_input')
                         
@@ -481,10 +481,10 @@ module.exports = {
                                 avatarURL: interaction.user.displayAvatarURL({ dynamic: true }),
                             });
                 
-                            return await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", fetchReply: true, ephemeral: true });
+                            await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", fetchReply: true, ephemeral: true });
                         } catch (error) {
                             console.error('Error sending webhook message:', error);
-                            return await inter.reply({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
+                            await inter.reply({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
                         }
                     }
                 });
