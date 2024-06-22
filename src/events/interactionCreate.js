@@ -560,7 +560,7 @@ module.exports = {
                             .setEmoji('👋')
                             .setStyle(ButtonStyle.Primary),
                     );
-                    await interaction.reply({content: description, components: [buttonEdit], ephemeral: true})
+                    await interaction.reply({embeds: [EmbedBuilder], components: [buttonEdit], ephemeral: true})
                     return;
             }
         }
