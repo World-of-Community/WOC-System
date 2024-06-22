@@ -5,6 +5,7 @@ const parser = new Parser();
 const { EmbedBuilder } = require("discord.js");
 
 const rssConfig = require('./json/rssConfig.json');
+const { parseString } = require('xml2js');
 
 module.exports = {
     processRSSFeed: async (client, lastEntries) => {
@@ -21,7 +22,7 @@ module.exports = {
                         if (newestEntry.title) embed.setTitle(newestEntry.title);
                         if (newestEntry.link) embed.setURL(newestEntry.link);
                         if (newestEntry.contentSnippet) {
-                            embed.setDescription(`> ${newestEntry.contentSnippet}\n\n"**© Erstellt von [World Of Community](https://discord.gg/zYk4GdSZSc)**`);
+                            embed.setDescription(`> ${newestEntry.contentSnippet}\n\n**© Erstellt von [World Of Community](https://discord.gg/zYk4GdSZSc)**`);
                         }
                         if (newestEntry.enclosure && newestEntry.enclosure.url) {
                             embed.setImage(newestEntry.enclosure.url);
@@ -66,9 +67,34 @@ module.exports = {
     },
 
     getImageFromContent: async (content) => {
+        let imageUrl = null;
+
+        imageUrl = await module.exports.extractImageFromContentEncoded(content);
+
+        if (!imageUrl) {
+            imageUrl = await module.exports.extractImageFromMediaThumbnail(content);
+        }
+        return imageUrl;
+    },
+
+    extractImageFromContentEncoded: async (content) => {
         const regex = /<img\s+.*?src=(['"])(.*?)\1.*?>/i;
         const match = content.match(regex);
         return match ? match[2] : null;
+    },
+
+    extractImageFromMediaThumbnail: async (content) => {
+        return new Promise((resolve, reject) => {
+            parseString(content, (err, result) => {
+                if (err) {
+                    console.error('Error parsing XML:', err);
+                    resolve(null);
+                } else {
+                    const thumbnailUrl = result['item']['media:thumbnail'][0]['$']['url'];
+                    resolve(thumbnailUrl);
+                }
+            });
+        });
     },
 
     shortenContent: async (content, maxLength) => {
