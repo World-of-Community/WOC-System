@@ -10,7 +10,7 @@ const cron = require("node-cron");
 const Parser = require("rss-parser");
 const parser = new Parser();
 const FeedManager = require("../FeedManager");
-const { Giga, Tagesschau, Filmstarts} = FeedManager;
+const { processRSSFeed } = FeedManager;
 
 module.exports = {
   name: Events.ClientReady,
@@ -34,9 +34,7 @@ module.exports = {
 
     // RSS Feed
     setInterval(async () => {
-      Giga(client, lastEntries);
-      Tagesschau(client, lastEntries);
-      Filmstarts(client, lastEntries);
+      processRSSFeed(client, lastEntries);
     }, 60000);
 
     // Wechsel Status
