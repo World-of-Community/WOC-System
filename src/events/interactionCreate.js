@@ -484,7 +484,7 @@ module.exports = {
                             await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", ephemeral: true });
                         } catch (error) {
                             console.error('Error sending webhook message:', error);
-                            await interaction.followUp({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
+                            await inter.reply({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
                         }
                     }
                 });
