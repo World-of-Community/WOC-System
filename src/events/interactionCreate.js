@@ -526,7 +526,16 @@ module.exports = {
                             .setDescription(input)
                             .setTimestamp()
 
-                            if(colorInput) vorstellEmbed.setColor(colorInput)
+                            let colorInput_color = "ffffff";
+                            if(colorInput) {
+                                try {
+                                    colorInput_color = Util.resolveColor(colorInput); 
+                                } catch (error) {
+                                    console.error('Fehler beim Auflösen der Farbe:', error);
+                                    colorInput_color = "#FF0000"; 
+                                }
+                                vorstellEmbed.setColor(colorInput_color)
+                            }
                             if(bannerInput) vorstellEmbed.setImage(bannerInput)
 
                             const webhookMessage = await webhookClient.send({
