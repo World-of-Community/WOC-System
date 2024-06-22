@@ -607,6 +607,7 @@ module.exports = {
                                     .setEmoji('❌')
                                     .setStyle(ButtonStyle.Danger),
                             );
+                            await inter.reply("...")
                             await inter.editReply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
                     }
                 });
