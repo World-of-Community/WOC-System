@@ -577,7 +577,7 @@ module.exports = {
                 .setStyle(TextInputStyle.Paragraph)
                 .setRequired(true);
 
-            const row = new ActionRowBuilder().addComponents(vorstellungInput);
+            const row = new ActionRowBuilder().addComponents(vorstellungEditInput);
             vorstellungEditModal.addComponents(row);
             await interaction.showModal(vorstellungEditModal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
