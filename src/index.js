@@ -93,7 +93,7 @@ client.on('messageCreate', async message => {
     if (message.channel.type === ChannelType.DM && !message.author.bot) {
         try {
             // Antwort auf die DM
-            await message.channel.send(`hey ${message.author.displayName}!\nLeider bin ich der falsche Ansprechpartner, falls du Hilfe suchst...\nÖffne ein Support Ticket in <#819555839362072606> damit sich unser Support-Team um dein Problem so schnell es geht kümmern kann. <:pepeheart:974642478055555082>`);
+            await message.channel.send(`Hey ${message.author.displayName}!\nLeider bin ich der falsche Ansprechpartner, falls du Hilfe suchst...\nÖffne ein Support Ticket in <#819555839362072606> damit sich unser Support-Team um dein Problem so schnell es geht kümmern kann. <:pepeheart:974642478055555082>`);
         } catch (error) {
             console.error('Fehler beim Senden der Antwort:', error);
         }

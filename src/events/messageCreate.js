@@ -7,6 +7,7 @@ const messagedb = require("../../Datenbank/messagedb");
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
+        if(!message.guild) return
         if (message.author.bot) { return }
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
