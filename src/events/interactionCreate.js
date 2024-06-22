@@ -535,8 +535,7 @@ module.exports = {
             }
 
             if(interaction.customId === "vorstellung_edit") {
-                if (!userData || !userData.vorstellungID) {
-                    await interaction.reply({ content: "`❌` Keine Vorstellung gefunden zum Bearbeiten", ephemeral: true });
+                if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "`❌` Keine Vorstellung gefunden zum Bearbeiten", ephemeral: true });
                     const channel = interaction.guild.channels.cache.get('1250047970116636756');
                     const message = await channel.messages.fetch(userData.vorstellungID);
                     if (!message) throw new Error('Message not found.');
@@ -550,8 +549,8 @@ module.exports = {
                 
                     const description = editEmbed.description;
                     console.log(description)
+                    await interaction.reply({content: description, ephemeral: true})
                     return;
-                }
             }
         }
 
