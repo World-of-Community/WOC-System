@@ -537,7 +537,7 @@ module.exports = {
             if(interaction.customId === "vorstellung_edit") {
                 if (!userData || !userData.vorstellungID) {
                     await interaction.reply({ content: "`❌` Keine Vorstellung gefunden zum Bearbeiten", ephemeral: true });
-
+                    const channel = interaction.guild.channels.cache.get('1250047970116636756');
                     const message = await channel.messages.fetch(messageId);
                     if (!message) throw new Error('Message not found.');
                 
