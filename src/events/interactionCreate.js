@@ -608,7 +608,7 @@ module.exports = {
                                         const embedToSend = interaction.message.embeds[0]
             
                                         await webhookClient.editMessage(userData.vorstellungID, {
-                                            embeds: [embed]
+                                            embeds: [embedToSend]
                                         });
 
                                         await inter.reply({ content: "`✅` Vorstellung wurde bearbeitet.", fetchReply: true, ephemeral: true });
