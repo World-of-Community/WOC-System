@@ -477,7 +477,7 @@ module.exports = {
                         webhookClient.send({
                             content: input,
                             username: inter.user.displayName,
-                            avatarURL: inter.user.displayAvatarURL({dynamic: true}),
+                            avatarURL: inter.user.avatarURL,
                         });
                         await inter.reply({content: "`✅` Vorstellung wurde eingereicht", ephemeral: true})
                     }
