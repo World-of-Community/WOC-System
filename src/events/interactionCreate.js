@@ -459,7 +459,7 @@ module.exports = {
 
             const vorstellungInput = new TextInputBuilder()
                 .setCustomId('vorstellung_input')
-                .setLabel(`Gebe dein Geburtsdatum an (TT.MM.(YYYY))`)
+                .setLabel(`Hier kannst du dich Vorstellen oder so lol red mach nachricht`)
                 .setMinLength(50)
                 .setMaxLength(1000)
                 .setStyle(TextInputStyle.Paragraph)
@@ -475,7 +475,7 @@ module.exports = {
                         const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
                         webhookClient.send({
-                            conten: input,
+                            content: input,
                             username: inter.user.displayName,
                             avatarURL: inter.user.displayAvatarURL,
                         });
