@@ -66,7 +66,7 @@ async execute(interaction, client) {
             await interaction.reply({ embeds: [remindEmbed], ephemeral: true });
     
             schedule.scheduleJob(endDate, async () => {
-                const user = interaction.user; // Benutzer festlegen
+                    const user = interaction.user; 
     
                     const dmEmbed = new EmbedBuilder()
                     .setTitle('Hey! Ich sollte dich an etwas erinnern!')
