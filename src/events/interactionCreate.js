@@ -600,7 +600,7 @@ module.exports = {
                             await inter.reply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
 
                             await interaction.client.once('interactionCreate', async (intere) => {
-                                if (inter.customId === 'vorstellung_edit_accept') {
+                                if (intere.customId === 'vorstellung_edit_accept') {
                                     const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
                                     try {
