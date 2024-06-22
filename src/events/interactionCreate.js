@@ -452,7 +452,7 @@ module.exports = {
 
             }
 
-            if (interaction.customId === 'vorstellung') {
+            if (interaction.customId === 'vorstellung_create') {
                 const vorstellungModal = new ModalBuilder()
                 .setTitle('Vorstellung')
                 .setCustomId('vorstellung-modal');
