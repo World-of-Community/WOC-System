@@ -14,7 +14,7 @@ module.exports = {
 
 
         if(message.content === "!vorstellung") {
-            const channel = client.channels.cache.get('1250047970116636756');
+            const channel = message.guild.channels.cache.get('1250047970116636756');
 
             const messageEmbedVorstellung = new EmbedBuilder()
             .setTitle("`👋`〡 Vorstellen")
