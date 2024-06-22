@@ -476,12 +476,26 @@ module.exports = {
                 .setStyle(TextInputStyle.Paragraph)
                 .setRequired(true);
 
-            const row = new ActionRowBuilder().addComponents(vorstellungInput);
+                const colorInput = new TextInputBuilder()
+                .setCustomId('vorstellung_color')
+                .setLabel(`Red mach nachricht`)
+                .setStyle(TextInputStyle.Short)
+                .setRequired(false);
+
+                const bannerInput = new TextInputBuilder()
+                .setCustomId('vorstellung_banner')
+                .setLabel(`Banner`)
+                .setStyle(TextInputStyle.Short)
+                .setRequired(false);
+
+            const row = new ActionRowBuilder().addComponents(vorstellungInput, colorInput, bannerInput);
             vorstellungModal.addComponents(row);
             await interaction.showModal(vorstellungModal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
                     if (inter.customId === 'vorstellung-modal') {
                         const input = await inter.fields.getTextInputValue('vorstellung_input')
+                        const color_input = await inter.fields.getTextInputValue('vorstellung_color')
+                        const banner_input = await inter.fields.getTextInputValue('vorstellung_banner')
                         
                         const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
                         
@@ -510,6 +524,8 @@ module.exports = {
                             .setDescription(input)
                             .setTimestamp()
 
+                            if(colorInput) embed.setColor(colorInput)
+                            if(bannerInput) embed.setImage(bannerInput)
 
                             const webhookMessage = await webhookClient.send({
                                 username: interaction.user.displayName, 
@@ -526,7 +542,6 @@ module.exports = {
                             .setDescription("Hier ist ein Beispiel für eine Vorstellung als Vorlage was sie alles beinhaltet.\n\n> Name:\n> Alter:\n> Geschlecht:\n> Beziehungsstatus:\n> Hobby:\n> Lieblingstier:\n> Lieblingsessen:\n> Lieblingsspiel:\n> Nationalität:")
                             .setColor("Orange")
                             .setFooter({ text: `🚑 » Öffne ein Ticket bei Fragen oder Problemen.`, iconURL: client.user.displayAvatarURL({dynamic: true}) })
-                            .setTimestamp()
                 
                             const buttons = new ActionRowBuilder()
                             .addComponents(
