@@ -495,8 +495,7 @@ module.exports = {
                               
                                 if (userRoles.has(roleID)) {
                                     const role = inter.guild.roles.cache.get(roleID);
-                                    if (!highestRoleID || role.position > inter.guild.roles.cache.get(highestRoleID).position) {
-                                        highestRoleID = roleID;
+                                    if (!highestRoleName || (role && role.position > inter.guild.roles.cache.get(roleList[highestRoleName]).position)) {
                                         highestRoleName = roleName;
                                     }
                                 }
@@ -507,7 +506,7 @@ module.exports = {
                             await channel.bulkDelete(1)
                             
                             const vorstellEmbed = new EmbedBuilder()
-                            .setAuthor({ name: `${interaction.user.username} - ${highestRole.name}`, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
+                            .setAuthor({ name: `${interaction.user.username} - ${highestRoleName}`, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
                             .setDescription(input)
                             .setTimestamp()
 
