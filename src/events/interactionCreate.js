@@ -526,24 +526,8 @@ module.exports = {
                             .setDescription(input)
                             .setTimestamp()
 
-                            if (typeof colorInput === 'string') {
-
-                                const normalizedColorInput = colorInput.toLowerCase();
-                        
-                                if (/^#[0-9A-F]{6}$/i.test(normalizedColorInput)) {
-                                    vorstellEmbed.setColor(normalizedColorInput);
-                                } else {
-                                    if (colorNames[normalizedColorInput]) {
-                                        vorstellEmbed.setColor(colorNames[normalizedColorInput]);
-                                    } else {
-                                        console.log('Ungültige Farbe: ' + colorInput);
-                                        vorstellEmbed.setColor('#7289da'); 
-                                    }
-                                }
-                            } else {
-                                console.log('Ungültige Farbe: ' + colorInput);
-                            }
-                            if(bannerInput) vorstellEmbed.setImage(bannerInput)
+                            if(colorInput) vorstellEmbed.setColor(color_input)
+                            if(bannerInput) vorstellEmbed.setImage(banner_input)
 
                             const webhookMessage = await webhookClient.send({
                                 username: interaction.user.displayName, 
