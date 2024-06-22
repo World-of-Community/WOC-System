@@ -599,11 +599,29 @@ module.exports = {
                             );
                             await inter.reply({content: "`⚙️` - Warte auf eingabe", ephemeral: true})
                             await inter.editReply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
-                    }
+
+                            await interaction.client.once('interactionCreate', async (inter) => {
+                                if (inter.customId === 'vorstellung_edit_accept') {
+                                    const webhookClient = new WebhookClient({ url: 'https://discord.com/api/webhooks/1250049408322768906/UGDQb6YaALkbGmGNdo8BeIvh_FOnbgA15fRIUITmlUjxp8D2b5AoLPEMukjq5BCVqnHo' });
+                        
+                                    try {
+                                        const embedToSend = interaction.message.embeds[0]
+            
+                                        await webhookClient.editMessage(userData.vorstellungID, {
+                                            embeds: [embed]
+                                        });
+
+                                        await inter.reply({ content: "`✅` Vorstellung wurde bearbeitet.", fetchReply: true, ephemeral: true });
+                            
+                                    } catch (error) {
+                                        console.error('Error sending webhook message:', error);
+                                        await inter.reply({ content: "`❌` Fehler beim Einreichen der Bearbeitung!", ephemeral: true });
+                                    }
+                                }
+                            });
+                        }
+                    });
                 });
-            });
-
-
             }
         }
 
