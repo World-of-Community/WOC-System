@@ -488,7 +488,7 @@ module.exports = {
                         try {
 
                             const userRoles = inter.member.roles.cache;
-                            let highestRole = null;
+                            let highestRoleName = null;
 
                             for (const roleName in roleList) {
                                 const roleID = roleList[roleName];
