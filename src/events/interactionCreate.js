@@ -494,8 +494,8 @@ module.exports = {
                                 const roleID = roleList[roleName];
                               
                                 if (userRoles.has(roleID)) {
-                                    const role = guild.roles.cache.get(roleID);
-                                    if (!highestRoleID || role.position > guild.roles.cache.get(highestRoleID).position) {
+                                    const role = inter.guild.roles.cache.get(roleID);
+                                    if (!highestRoleID || role.position > inter.guild.roles.cache.get(highestRoleID).position) {
                                         highestRoleID = roleID;
                                         highestRoleName = roleName;
                                     }
