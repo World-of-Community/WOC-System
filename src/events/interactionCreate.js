@@ -496,6 +496,7 @@ module.exports = {
                             .setTitle("`👋`〡 Vorstellen")
                             .setDescription("Hier ist ein Beispiel für eine Vorstellung als Vorlage was sie alles beinhaltet.\n\n> Name:\n> Alter:\n> Geschlecht:\n> Beziehungsstatus:\n> Hobby:\n> Lieblingstier:\n> Lieblingsessen:\n> Lieblingsspiel:\n> Nationalität:")
                             .setColor("Orange")
+                            .setFooter({ text: `🚑 » Öffne ein Ticket bei Fragen oder Problemen.`, iconURL: client.displayAvatarURL({dynamic: true}) })
                             .setTimestamp()
                 
                             const buttons = new ActionRowBuilder()
