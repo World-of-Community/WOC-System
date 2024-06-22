@@ -610,8 +610,8 @@ module.exports = {
                                         await webhookClient.editMessage(userData.vorstellungID, {
                                             embeds: [embedToSend]
                                         });
-                                        await interaction.editReply({content: "`⚙️` Nachricht wird bearbeitet", ephemeral: true})
-                                        await inter.editReply({ content: "`✅` Vorstellung wurde bearbeitet.", ephemeral: true });
+                                        await interaction.editReply({content: "`⚙️` Nachricht wird bearbeitet", embeds: [], components: [], ephemeral: true})
+                                        await inter.editReply({ content: "`✅` Vorstellung wurde bearbeitet.", components: [], ephemeral: true });
                             
                                     } catch (error) {
                                         console.error('Error sending webhook message:', error);
