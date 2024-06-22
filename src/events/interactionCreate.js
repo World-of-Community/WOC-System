@@ -592,22 +592,12 @@ module.exports = {
                             const buttonEdit = new ActionRowBuilder()
                             .addComponents(
                                 new ButtonBuilder()
-                                    .setCustomId('vorstellung_edit_')
+                                    .setCustomId('vorstellung_edit_accept')
                                     .setLabel('Senden')
                                     .setEmoji('✅')
                                     .setStyle(ButtonStyle.Success),
-                                    new ButtonBuilder()
-                                    .setCustomId('vorstellung_edit_')
-                                    .setLabel('Bearbeiten')
-                                    .setEmoji('⚙️')
-                                    .setStyle(ButtonStyle.Secondary),
-                                    new ButtonBuilder()
-                                    .setCustomId('vorstellung_edit_delice')
-                                    .setLabel('Abbrechen')
-                                    .setEmoji('❌')
-                                    .setStyle(ButtonStyle.Danger),
                             );
-                            await inter.reply("...")
+                            await inter.reply({content: "`⚙️` - Warte auf eingabe", ephemeral: true)
                             await inter.editReply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
                     }
                 });
