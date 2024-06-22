@@ -492,21 +492,19 @@ module.exports = {
 
                             for (const roleName in roleList) {
                                 const roleID = roleList[roleName];
-
-                                if(userRoles.has(roleID)) {
-                                    const role = inter.guild.roles.cache.get(roleID);
-                                    if(!highestRole || role.position > highestRole.position) {
-                                        highestRole = role;
+                              
+                                if (userRoles.has(roleID)) {
+                                    const role = guild.roles.cache.get(roleID);
+                                    if (!highestRoleID || role.position > guild.roles.cache.get(highestRoleID).position) {
+                                        highestRoleID = roleID;
+                                        highestRoleName = roleName;
                                     }
                                 }
                             }
 
-
                             const channel = interaction.guild.channels.cache.get('1250047970116636756');
 
                             await channel.bulkDelete(1)
-                            
-
                             
                             const vorstellEmbed = new EmbedBuilder()
                             .setAuthor({ name: `${interaction.user.username} - ${highestRole.name}`, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
