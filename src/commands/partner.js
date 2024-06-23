@@ -4,32 +4,32 @@ const serverDB = require("../../Datenbank/serverdb")
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('partner')
-        .setDescription('Parnter System')
+        .setDescription('Partner System')
         .addSubcommand((command) =>
             command
             .setName('add')
-            .setDescription('» Füge einen Partner hinzu. 🤝')
-            .addStringOption(option => option.setName('name').setDescription('» Name des Partners').setRequired(true))
-            .addStringOption(option => option.setName('kategorie').setDescription('» Kategorie des Partners')
+            .setDescription('» Füge einen Server-Partner hinzu. 🤝')
+            .addStringOption(option => option.setName('name').setDescription('» Name des Server-Partners').setRequired(true))
+            .addStringOption(option => option.setName('kategorie').setDescription('» Kategorie des Server-Partners')
             .addChoices(
             { name: 'Kooperation Partner', value: 'Kooperation' },    
             { name: 'Mega Partner', value: 'Mega Partner' }, 
             { name: 'Großer Partner', value: 'Großer Partner' }, 
             { name: 'Normaler Partner', value: 'Normaler Partner' }, 
             ).setDescription('» Wähle die Kategorie des Partners aus.').setRequired(true))
-            .addUserOption(option => option.setName('owner').setDescription('» Besitzer des Partners').setRequired(true))
-            .addStringOption(option => option.setName('invite').setDescription('» Einladungslink des Partners').setRequired(true)))
+            .addUserOption(option => option.setName('owner').setDescription('» Besitzer des Server-Partners').setRequired(true))
+            .addStringOption(option => option.setName('invite').setDescription('» Einladungslink des Server-Partners').setRequired(true)))
         .addSubcommand((command) =>
             command
                 .setName('edit')
                 .setDescription('» Bearbeite einen Partner 🤝')
-                .addStringOption(option => option.setName('partner').setDescription('» Wähle ein Partner aus').setAutocomplete(true).setRequired(true)),
+                .addStringOption(option => option.setName('partner').setDescription('» Wähle ein Server-Partner aus').setAutocomplete(true).setRequired(true)),
         )
         .addSubcommand((command) =>
             command
                 .setName('delete')
                 .setDescription('» Lösche einen Partner. 🤝')
-                .addStringOption((option) => option.setName('partner').setDescription('» Wähle ein Parnter aus').setAutocomplete(true).setRequired(true))
+                .addStringOption((option) => option.setName('partner').setDescription('» Wähle ein Server-Partner aus').setAutocomplete(true).setRequired(true))
         ),
         async autocomplete(interaction) {
             const focusedOption = interaction.options.getFocused(true);
@@ -54,7 +54,7 @@ module.exports = {
                     // Antwort senden
                     await interaction.respond(filtered.map(partner => ({ name: partner.name + ` (${undefined ?  "N/A" : partner.category})`, value: partner.name })));
                 } catch (error) {
-                    console.error('Fehler beim Abrufen der Partner aus der Datenbank:', error);
+                    console.error('Fehler beim Abrufen der Server-Partner aus der Datenbank:', error);
                 }
             }
         },
@@ -73,7 +73,7 @@ module.exports = {
                 );
 
                 if (!isValidInviteLink(invite)) {
-                    await interaction.reply({ content: '> ❌ » Der angegebene Einladungslink ist ungültig.', ephemeral: true });
+                    await interaction.reply({ content: '> `❌` » Der angegebene Einladungslink ist ungültig.', ephemeral: true });
                     return;
                 }
 
@@ -127,9 +127,9 @@ module.exports = {
                     } catch (error) {
                         console.error('Fehler beim Abrufen des Kanals oder der Nachricht:', error);
                         const newEmbed = new EmbedBuilder()
-                            .setColor('#0099ff')
-                            .setTitle('Partnerliste')
-                            .setDescription('Hier sind unsere Partner:')
+                            .setTitle('Unsere Partnerliste')
+                            .setColor('Blurple')
+                            .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein Server-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
                             if(kategorie === "Kooperation") {
                                 newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
@@ -162,7 +162,7 @@ module.exports = {
                         serverData.partner.channel = channel.id;
                         try {
                             await serverData.save();
-                            await interaction.reply({content: '> `✅` » Partner erfolgreich hinzugefügt!', ephemeral: true});
+                            await interaction.reply({content: '> `✅` » Server-Partner erfolgreich hinzugefügt!', ephemeral: true});
                         } catch (error) {
                             await interaction.reply('> `❌` » Fehler!');
                             await interaction.reply('Fehler beim Speichern der Partnerdaten.');
@@ -187,7 +187,7 @@ module.exports = {
                     await sentMessage.edit({ embeds: [existingEmbed] });
                     try {
                         await serverData.save();
-                        await interaction.reply({content: '> `✅` » Partner erfolgreich hinzugefügt!', ephemeral: true});
+                        await interaction.reply({content: '> `✅` » Server-Partner erfolgreich hinzugefügt!', ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Speichern der Partnerdaten:', error);
                         await interaction.reply('> `❌` » Fehler!');
@@ -202,14 +202,14 @@ module.exports = {
                         const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
                     
                         if (!serverData || !serverData.partner || !serverData.partner.partners || serverData.partner.partners.length === 0) {
-                            await interaction.reply({content: '> `❌` » Keine Partner zum Löschen gefunden.', ephemeral: true});
+                            await interaction.reply({content: '> `❌` » Keine Server-Partner zum Löschen gefunden.', ephemeral: true});
                             return;
                         }
                     
                         const partnerIndex = serverData.partner.partners.findIndex(partner => partner.name.toLowerCase() === partnerNameToDelete.toLowerCase());
                     
                         if (partnerIndex === -1) {
-                            await interaction.reply({content: '> `❌` » Der angegebene Partner wurde nicht gefunden.', ephemeral: true});
+                            await interaction.reply({content: '> `❌` » Der angegebene Server-Partner wurde nicht gefunden.', ephemeral: true});
                             return;
                         }
                     
@@ -233,7 +233,7 @@ module.exports = {
                             await sentMessage.edit({ embeds: [existingEmbed] });
                         }
                     
-                        await interaction.reply({content: `> \`✅\` » Partner "${partnerNameToDelete}" erfolgreich gelöscht.`, ephemeral: true});
+                        await interaction.reply({content: `> \`✅\` » Server-Partner "${partnerNameToDelete}" erfolgreich gelöscht.`, ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Löschen des Partners:', error);
                         await interaction.reply('Fehler beim Löschen des Partners.');
