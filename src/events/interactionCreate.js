@@ -463,7 +463,7 @@ module.exports = {
             };
 
             if (interaction.customId === 'vorstellung_create') {
-                if (userData && userData.vorstellungID) return await interaction.reply({ content: "`❌` Du hast dich bereits Vorgestellt!", ephemeral: true });
+                if (userData && userData.vorstellungID) return await interaction.reply({ content: "> `❌` » Du hast dich bereits Vorgestellt!", ephemeral: true });
                 const vorstellungModal = new ModalBuilder()
                 .setTitle('Vorstellung')
                 .setCustomId('vorstellung-modal');
@@ -537,7 +537,7 @@ module.exports = {
         
                             await userdb.updateOne({ userID: interaction.user.id }, { $set: { vorstellungID: webhookMessage.id } }, { upsert: true });
         
-                            await inter.reply({ content: "`✅` Vorstellung wurde eingereicht", fetchReply: true, ephemeral: true });
+                            await inter.reply({ content: "> `✅` » Vorstellung wurde eingereicht", fetchReply: true, ephemeral: true });
 
                             const messageEmbedVorstellung = new EmbedBuilder()
                             .setTitle("`👋`〡 Vorstellen")
@@ -566,7 +566,7 @@ module.exports = {
                         await channel.send({embeds: [messageEmbedVorstellung], components: [buttons]})
                         } catch (error) {
                             console.error('Error sending webhook message:', error);
-                            await inter.reply({ content: "`❌` Fehler beim Einreichen der Vorstellung", ephemeral: true });
+                            await inter.reply({ content: "> `❌` » Fehler beim Einreichen der Vorstellung", ephemeral: true });
                         }
                     }
                 });
@@ -575,7 +575,7 @@ module.exports = {
             }
 
             if(interaction.customId === "vorstellung_edit") {
-                if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "`❌` Du hast dich noch nicht Vorgestellt!", ephemeral: true });
+                if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "> `❌` » Du hast dich noch nicht Vorgestellt!", ephemeral: true });
                     const channel = interaction.guild.channels.cache.get('1250047970116636756');
                     const message = await channel.messages.fetch(userData.vorstellungID);
                     if (!message) throw new Error('Message not found.');
@@ -586,11 +586,13 @@ module.exports = {
                     }
                 
                     const editEmbed = embeds[0];
+
+                    const color = editEmbed.color ? `#${editEmbed.color.toString(16)}` : '`❌`';
+                    const banner = editEmbed.image ? editEmbed.image.url : '`❌`';
                 
-                    const description = editEmbed.description;
                     const editEmbedCopy = new EmbedBuilder()
                     .setTitle("Nachricht Kopieren")
-                    .setDescription("```" + description +  "```")
+                    .setDescription("```" + editEmbed.description +  "```\n\n> Farbe: " + color + "\n> Banner: `" + banner + "`")
                     const buttonEdit = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
@@ -669,7 +671,7 @@ module.exports = {
                                     .setEmoji('✅')
                                     .setStyle(ButtonStyle.Success),
                             );
-                            await inter.reply({content: `\`⚙️\` Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
+                            await inter.reply({content: `> \`⚙️\` » Vorschau`, components: [buttonEdit], embeds: [vorstellEmbed], ephemeral: true})
 
                             await interaction.client.once('interactionCreate', async (intere) => {
                                 if (intere.customId === 'vorstellung_edit_accept') {
@@ -683,12 +685,12 @@ module.exports = {
                                         });
                                         await interaction.deleteReply()
                                         await inter.editReply({ components: [], ephemeral: true });
-                                        await intere.reply({content: "`✅` Vorstellung wurde bearbeitet.", ephemeral: true })
+                                        await intere.reply({content: "> `✅` » Vorstellung wurde bearbeitet.", ephemeral: true })
                             
                                     } catch (error) {
                                         console.error('Error sending webhook message:', error);
                                         await inter.editReply({ components: [], ephemeral: true });
-                                        await intere.reply({ content: "`❌` Fehler beim Einreichen der Bearbeitung!", ephemeral: true });
+                                        await intere.reply({ content: "> `❌` » Fehler beim Einreichen der Bearbeitung!", ephemeral: true });
                                     }
                                 }
                             });
@@ -698,11 +700,11 @@ module.exports = {
             }
 
             if(interaction.customId === "vorstellung_delete") {
-                if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "`❌` Du hast dich noch nicht Vorgestellt!", ephemeral: true });
+                if (!userData || !userData.vorstellungID) return await interaction.reply({ content: "> `❌` » Du hast dich noch nicht Vorgestellt!", ephemeral: true });
                 const channel = interaction.guild.channels.cache.get('1250047970116636756');
                 const message = await channel.messages.fetch(userData.vorstellungID);
                 await message.delete()
-                await interaction.reply({ content: "`✅` Vorstellung wurde gelöscht.", ephemeral: true });
+                await interaction.reply({ content: "> `✅` » Vorstellung wurde gelöscht.", ephemeral: true });
                 
                 userData.vorstellungID = undefined;
                 await userData.save();
