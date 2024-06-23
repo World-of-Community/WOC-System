@@ -6,8 +6,16 @@ const messagedb = require("../../Datenbank/messagedb");
 
 module.exports = {
     name: Events.MessageCreate,
-    async execute(message) {
+    async execute(message) {        
         if(!message.guild) return
+        if (message.channel.id === '1250047970116636756' && !message.user.id === "1020023299448786955") {
+            try {
+                await message.react('<a:wocheartbeat:1250054562912538724>');
+            } catch (error) {
+                console.error('Fehler beim Hinzufügen der Reaktion:', error);
+            }
+        }
+
         if (message.author.bot) { return }
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
@@ -152,16 +160,6 @@ module.exports = {
                 }
             } catch (error) {
             console.error('Fehler bei hinzufügen der reaktion:', error);
-            }
-        }
-
-        // Vorstellung
-        if (message.channel.id === '1250047970116636756') {
-            try {
-                // Reagiere mit einem bestimmten Emoji
-                await message.react('<a:wocheartbeat:1250054562912538724>');
-            } catch (error) {
-                console.error('Fehler beim Hinzufügen der Reaktion:', error);
             }
         }
 
