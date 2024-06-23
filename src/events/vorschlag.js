@@ -3,10 +3,13 @@ module.exports = {
     name: "threadCreate",
     async execute(client, thread) {
         if (thread.ownerId === client.user.id) return;
-        const channel = client.channels.cache.get("1254340245772701747");
+
+        const guild = client.guilds.cache.get("815919809379172354");
+
+        const channel = guild.channels.cache.get("1254340245772701747");
         if (channel) {
             const ownerid = thread.ownerId
-            const ownerfrompost = await client.users.fetch(ownerid);
+            const member = await guild.members.fetch(ownerid);
             const message = await thread.fetchStarterMessage();
         
             const tags = thread.appliedTags;
@@ -25,9 +28,9 @@ module.exports = {
               .setFooter({
                 text:
                   "Eingereicht von "+
-                  ownerfrompost.tag +
+                  member.tag +
                   " » " +
-                  ownerfrompost.id
+                  member.id
               });
         
             const message2 = await thread2.fetchStarterMessage();
