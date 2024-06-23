@@ -609,25 +609,50 @@ module.exports = {
                 .setTitle('Nachricht Bearbeiten')
                 .setCustomId('vorstellung-edit-modal');
 
-            const vorstellungEditInput = new TextInputBuilder()
-                .setCustomId('vorstellung_edit_input')
-                .setLabel(`Red mach nachricht`)
-                .setMinLength(50)
-                .setMaxLength(1000)
-                .setStyle(TextInputStyle.Paragraph)
-                .setRequired(true);
+                const colorInput = new TextInputBuilder()
+                .setCustomId('vorstellung_color')
+                .setLabel(`Color`)
+                .setStyle(TextInputStyle.Short)
+                .setRequired(false);
+
+                const bannerInput = new TextInputBuilder()
+                .setCustomId('vorstellung_banner')
+                .setLabel(`Banner`)
+                .setStyle(TextInputStyle.Short)
+                .setRequired(false);
 
             const row = new ActionRowBuilder().addComponents(vorstellungEditInput);
-            vorstellungEditModal.addComponents(row);
+            const row2 = new ActionRowBuilder().addComponents(colorInput);
+            const row3 = new ActionRowBuilder().addComponents(bannerInput);
+            vorstellungEditModal.addComponents(row, row2, row3);
             await interaction.showModal(vorstellungEditModal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
                     if (inter.customId === 'vorstellung-edit-modal') {
                         const input = await inter.fields.getTextInputValue('vorstellung_edit_input')
+                        const color_input = await inter.fields.getTextInputValue('vorstellung_color')
+                        const banner_input = await inter.fields.getTextInputValue('vorstellung_banner')
                                 
+                        const userRoles = inter.member.roles.cache;
+                        let highestRoleName = null;
+
+                        for (const roleName in roleList) {
+                            const roleID = roleList[roleName];
+                          
+                            if (userRoles.has(roleID)) {
+                                const role = inter.guild.roles.cache.get(roleID);
+                                if (!highestRoleName || (role && role.position > inter.guild.roles.cache.get(roleList[highestRoleName]).position)) {
+                                    highestRoleName = roleName;
+                                }
+                            }
+                        }
+
                             const vorstellEmbed = new EmbedBuilder()
-                            .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
+                            .setAuthor({ name: `${interaction.user.username} - ${highestRoleName}`, iconURL: interaction.user.displayAvatarURL({dynamic: true}), url: `https://discord.com/users/${interaction.user.id}` })
                             .setDescription(input)
                             .setTimestamp()
+
+                            if(colorInput) vorstellEmbed.setColor(color_input)
+                            if(bannerInput) vorstellEmbed.setImage(banner_input)
 
                             const buttonEdit = new ActionRowBuilder()
                             .addComponents(
