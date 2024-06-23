@@ -621,6 +621,7 @@ module.exports = {
                 const colorInput = new TextInputBuilder()
                 .setCustomId('vorstellung_color')
                 .setLabel(`Color`)
+                .setPlaceholder("z.B White or Hex")
                 .setStyle(TextInputStyle.Short)
                 .setRequired(false);
 
@@ -686,7 +687,7 @@ module.exports = {
                                         await interaction.deleteReply()
                                         await inter.editReply({ components: [], ephemeral: true });
                                         await intere.reply({content: "> `✅` » Vorstellung wurde bearbeitet.", ephemeral: true })
-                            
+                                        
                                     } catch (error) {
                                         console.error('Error sending webhook message:', error);
                                         await inter.editReply({ components: [], ephemeral: true });
