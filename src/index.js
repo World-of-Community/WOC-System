@@ -272,8 +272,8 @@ cron.schedule('0 0 * * *', async () => {
 
     try {
         const birthdayUsers = await userdb.find([
-            { "birthday.tag": { $exists: true, $eq: day } }, 
-            { "birthday.monat": { $exists: true, $eq: month } }, 
+            { "birthday.tag": { day } }, 
+            { "birthday.monat": { month } }, 
         ]);
 
         if (birthdayUsers.length > 0) {
