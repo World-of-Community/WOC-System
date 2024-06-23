@@ -16,7 +16,7 @@ module.exports = {
             const logChannel = await member.guild.channels.cache.get("886269505330896926");
             if (logChannel) await logChannel.send({ embeds: [leave] });
 
-        const userData = await userdb.findOne({ userID: message.author.id })  
+        const userData = await userdb.findOne({ userID: member.user.id })  
         await userData.deleteOne()
     }
 }
