@@ -588,7 +588,6 @@ module.exports = {
                     const editEmbed = embeds[0];
                 
                     const description = editEmbed.description;
-                    console.log(description)
                     const editEmbedCopy = new EmbedBuilder()
                     .setTitle("Nachricht Kopieren")
                     .setDescription("```" + description +  "```")
@@ -608,6 +607,14 @@ module.exports = {
                 const vorstellungEditModal = new ModalBuilder()
                 .setTitle('Nachricht Bearbeiten')
                 .setCustomId('vorstellung-edit-modal');
+
+                const vorstellungEditInput = new TextInputBuilder()
+                .setCustomId('vorstellung_edit_input')
+                .setLabel(`Red mach nachricht`)
+                .setMinLength(50)
+                .setMaxLength(1000)
+                .setStyle(TextInputStyle.Paragraph)
+                .setRequired(true);
 
                 const colorInput = new TextInputBuilder()
                 .setCustomId('vorstellung_color')
