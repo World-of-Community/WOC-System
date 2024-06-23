@@ -4,7 +4,7 @@ module.exports = {
     async execute(client, thread) {
         if (thread.ownerId === "1020023299448786955") return;
 
-        const guild = await thread.guild;
+        const guild = thread.guild;
         console.log(guild)
 
         const channel = await guild.channels.cache.get("1254340245772701747");
