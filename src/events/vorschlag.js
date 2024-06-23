@@ -1,7 +1,7 @@
 
 module.exports = {
     name: "threadCreate",
-    async execute(thread) {
+    async execute(client ,thread) {
         if (thread.ownerId === client.user.id) return;
         const channel = client.channels.cache.get("1254340245772701747");
         if (channel) {
