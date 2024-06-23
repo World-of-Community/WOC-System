@@ -102,7 +102,7 @@ client.on("threadCreate", async (thread) => {
         const message2 = await thread2.fetchStarterMessage();
         await message2.react("👍");
         await message2.react("👎");
-        await message2.edit({ content: `\`👋\` » ${ownerfrompost}, Ich habe dein Vorschlag eingereicht.`, embeds: [embed]})
+        await message2.edit({ content: `\`👋\` » ${member}, Ich habe dein Vorschlag eingereicht.`, embeds: [embed]})
         await thread.delete()
     }
 });
