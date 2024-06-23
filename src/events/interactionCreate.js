@@ -711,6 +711,156 @@ module.exports = {
                 await userData.save();
             }
 
+            if(interaction.customId === "vorschlag_accept") {
+                const modal = new ModalBuilder()
+                .setCustomId("acceptreason")
+                .setTitle("✅〡Aktzeptieren");
+          
+              const textInputAccept = new TextInputBuilder()
+                .setCustomId("grund")
+                .setLabel("» Grund")
+                .setPlaceholder("Wir haben uns dein Vorschlag...")
+                .setMaxLength(60)
+                .setRequired(true)
+                .setStyle(TextInputStyle.Short);
+          
+          
+              modal.addComponents(new ActionRowBuilder().addComponents(textInputAccept));
+          
+              await interaction.showModal(modal).then(async msg => {
+                await interaction.client.once('interactionCreate', async (inter) => {
+                    if (inter.customId === 'acceptreason') {
+                        const channel = interaction.channel
+                                const message = await interaction.channel.fetchStarterMessage();
+                                const grund = interaction.fields.getTextInputValue("grund")
+                                const vorschlagsembed = message.embeds[0];
+
+                                const embed = new EmbedBuilder()
+                                embed.setColor("Green")
+                                embed.setTitle(vorschlagsembed.title)
+                                embed.setDescription(vorschlagsembed.description)
+                                embed.setAuthor({ name: `» Aktzeptiert von ${interaction.member.user.tag}`, iconURL: interaction.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${interaction.member.user.id}` })
+                                embed.addFields([
+                                    {
+                                        name: "`🚪` » **Status**",
+                                        value: "› Dieser Vorschlag wurde vom Team akzeptiert.\n**Grund:** `" + grund +"`"
+                                    }
+                                ]
+                                )
+                                await message.edit({ embeds: [embed], components: [] });
+                            
+                                channel.setLocked(true)
+
+                                await interaction.reply({
+                                    content: "`✅` » Der Vorschlag wurde angenommen",
+                                    ephemeral: true,
+                                });
+                            }
+                        })
+                })
+            }
+            if(interaction.customId === "vorschlag_edit") {
+                const modal = new ModalBuilder()
+                .setCustomId("editreason")
+                .setTitle("⚙️〡In Planung");
+          
+              const textInputAccept = new TextInputBuilder()
+                .setCustomId("grund")
+                .setLabel("» Grund")
+                .setMaxLength(60)
+                .setRequired(true)
+                .setStyle(TextInputStyle.Short);
+          
+          
+              modal.addComponents(new ActionRowBuilder().addComponents(textInputAccept));
+    
+              await interaction.showModal(modal).then(async msg => {
+                await interaction.client.once('interactionCreate', async (inter) => {
+                    if (inter.customId === 'editreason') {
+                        const channel = interaction.channel
+                                const message = await interaction.channel.fetchStarterMessage();
+                                const grund = interaction.fields.getTextInputValue("grund")
+                                const vorschlagsembed = message.embeds[0];
+
+                                const embed = new EmbedBuilder()
+                                embed.setColor("Green")
+                                embed.setTitle(vorschlagsembed.title)
+                                embed.setDescription(vorschlagsembed.description)
+                                embed.setAuthor({ name: `» Aktzeptiert von ${interaction.member.user.tag}`, iconURL: interaction.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${interaction.member.user.id}` })
+                                embed.addFields([
+                                    {
+                                        name: "`🚪` » **Status**",
+                                        value: "› Dieser Vorschlag wurde vom Team akzeptiert.\n**Grund:** `" + grund +"`"
+                                    }
+                                ]
+                                )
+                                await message.edit({ embeds: [embed], components: [] });
+                            
+                                channel.setLocked(true)
+
+                                await interaction.reply({
+                                    content: "`✅` » Der Vorschlag wurde angenommen",
+                                    ephemeral: true,
+                                });
+                            }
+                        })
+                })
+            }
+            if(interaction.customId === "vorschlag_delice") {
+                const modal = new ModalBuilder()
+                .setCustomId("delicereason")
+                .setTitle("❌〡Ablehnen");
+          
+              const textInputAccept = new TextInputBuilder()
+                .setCustomId("grund")
+                .setLabel("» Grund")
+                .setPlaceholder("Existiert schon")
+                .setMaxLength(60)
+                .setRequired(true)
+                .setStyle(TextInputStyle.Short);
+          
+          
+              modal.addComponents(new ActionRowBuilder().addComponents(textInputAccept));
+          
+              await interaction.showModal(modal).then(async msg => {
+                await interaction.client.once('interactionCreate', async (inter) => {
+                    if (inter.customId === 'delicereason') {
+                    const channel = interaction.channel
+                    const message = await interaction.channel.fetchStarterMessage();
+                    const grund = interaction.fields.getTextInputValue("grund")
+                    const vorschlagsembed = message.embeds[0];
+                
+                    const embed = new EmbedBuilder()
+                    .setColor("Red")
+                    .setTitle(vorschlagsembed.title)
+                    .setDescription(vorschlagsembed.description)
+                    .setAuthor({
+                      name: `» Abgelehnt von ${interaction.member.user.tag}`,
+                      iconURL: interaction.member.user.displayAvatarURL(),
+                      url: `https://discordapp.com/users/${interaction.member.user.id}`,
+                    })
+                    .addFields([
+                      {
+                          name: "`🚪` » **Status**",
+                          value: "» Dieser Vorschlag wurde vom Team abgelehnt.\n**Grund:** `" + grund +"`"
+                      }
+                  ]
+                  )
+            
+                    await message.edit({ embeds: [embed], components: [] });
+                
+                    channel.setLocked(true)
+            
+                    await interaction.reply({
+                        content: "`✅` »  Der Vorschlag wurde abgelehnt",
+                        ephemeral: true,
+                      });
+                    }
+                })
+                })
+
+            }
+
         }
 
         if(interaction.isChatInputCommand()) {
