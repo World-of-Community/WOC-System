@@ -17,6 +17,7 @@ module.exports = {
             if (logChannel) await logChannel.send({ embeds: [leave] });
 
         const userData = await userdb.findOne({ userID: member.user.id })  
+        if(!userData) return
         await userData.deleteOne()
     }
 }
