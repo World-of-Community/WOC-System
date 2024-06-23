@@ -70,7 +70,6 @@ client.on("threadCreate", async (thread) => {
     if (thread.ownerId === "1020023299448786955") return;
 
     const guild = client.guilds.cache.get("815919809379172354");
-    console.log(guild)
 
     const channel = await guild.channels.cache.get("1254340245772701747");
     if (channel) {
@@ -100,8 +99,8 @@ client.on("threadCreate", async (thread) => {
           });
     
         const message2 = await thread2.fetchStarterMessage();
-        await message2.react("👍");
-        await message2.react("👎");
+        await message2.react("1008781495055429672");
+        await message2.react("1008781575644782622");
         await message2.edit({ content: `\`👋\` » ${member}, Ich habe dein Vorschlag eingereicht.`, embeds: [embed]})
         await thread.delete()
     }
