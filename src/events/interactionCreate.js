@@ -687,7 +687,7 @@ module.exports = {
                                         await interaction.deleteReply()
                                         await inter.editReply({ components: [], ephemeral: true });
                                         await intere.reply({content: "> `✅` » Vorstellung wurde bearbeitet.", ephemeral: true })
-                                        
+
                                     } catch (error) {
                                         console.error('Error sending webhook message:', error);
                                         await inter.editReply({ components: [], ephemeral: true });
@@ -724,10 +724,10 @@ module.exports = {
                 console.error(error)
 
                 if (interaction.deferred || interaction.replied) {
-                    interaction.editReply({content: "Es ist ein Fehler beim ausführen aufgetreten!"})
+                    interaction.editReply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!"})
                 }
                 else {
-                    interaction.reply({content: "Es ist ein Fehler beim ausführen aufgetreten!", ephemeral: true})
+                    interaction.reply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!", ephemeral: true})
                 }
             }
         }

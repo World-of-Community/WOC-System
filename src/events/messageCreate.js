@@ -19,27 +19,7 @@ module.exports = {
         if (message.author.bot) { return }
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-
-
-        if(message.content === "!vorstellung") {
-            const channel = message.guild.channels.cache.get('1250047970116636756');
-
-            const messageEmbedVorstellung = new EmbedBuilder()
-            .setTitle("`👋`〡 Vorstellen")
-            .setDescription("> Stelle dich vor ")
-            .setColor("Orange")
-            .setTimestamp()
-
-            const buttons = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('vorstellung_create')
-                    .setLabel('Vorstellen')
-                    .setEmoji('👋')
-                    .setStyle(ButtonStyle.Secondary)
-            );
-        await channel.send({embeds: [messageEmbedVorstellung], components: [buttons]})
-        }
+        
         const uD = await userdb.findOne({ userID: message.author.id });
         if (uD) {
             if (uD.afk) {
