@@ -93,7 +93,7 @@ client.on("threadCreate", async (thread) => {
           .setFooter({
             text:
               "Eingereicht von "+
-              member.user.name +
+              member.user +
               " » " +
               member.id
           });

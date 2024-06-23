@@ -730,16 +730,16 @@ module.exports = {
               await interaction.showModal(modal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
                     if (inter.customId === 'acceptreason') {
-                        const channel = interaction.channel
-                                const message = await interaction.channel.fetchStarterMessage();
-                                const grund = interaction.fields.getTextInputValue("grund")
+                        const channel = inter.channel
+                                const message = await inter.channel.fetchStarterMessage();
+                                const grund = inter.fields.getTextInputValue("grund")
                                 const vorschlagsembed = message.embeds[0];
 
                                 const embed = new EmbedBuilder()
                                 embed.setColor("Green")
                                 embed.setTitle(vorschlagsembed.title)
                                 embed.setDescription(vorschlagsembed.description)
-                                embed.setAuthor({ name: `» Aktzeptiert von ${interaction.member.user.tag}`, iconURL: interaction.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${interaction.member.user.id}` })
+                                embed.setAuthor({ name: `» Aktzeptiert von ${inter.member.user.tag}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
                                 embed.addFields([
                                     {
                                         name: "`🚪` » **Status**",
@@ -751,7 +751,7 @@ module.exports = {
                             
                                 channel.setLocked(true)
 
-                                await interaction.reply({
+                                await inter.reply({
                                     content: "`✅` » Der Vorschlag wurde angenommen",
                                     ephemeral: true,
                                 });
@@ -777,16 +777,16 @@ module.exports = {
               await interaction.showModal(modal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
                     if (inter.customId === 'editreason') {
-                        const channel = interaction.channel
-                                const message = await interaction.channel.fetchStarterMessage();
-                                const grund = interaction.fields.getTextInputValue("grund")
+                        const channel = inter.channel
+                                const message = await inter.channel.fetchStarterMessage();
+                                const grund = inter.fields.getTextInputValue("grund")
                                 const vorschlagsembed = message.embeds[0];
 
                                 const embed = new EmbedBuilder()
                                 embed.setColor("Green")
                                 embed.setTitle(vorschlagsembed.title)
                                 embed.setDescription(vorschlagsembed.description)
-                                embed.setAuthor({ name: `» Aktzeptiert von ${interaction.member.user.tag}`, iconURL: interaction.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${interaction.member.user.id}` })
+                                embed.setAuthor({ name: `» Aktzeptiert von ${inter.member.user.tag}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
                                 embed.addFields([
                                     {
                                         name: "`🚪` » **Status**",
@@ -798,7 +798,7 @@ module.exports = {
                             
                                 channel.setLocked(true)
 
-                                await interaction.reply({
+                                await inter.reply({
                                     content: "`✅` » Der Vorschlag wurde angenommen",
                                     ephemeral: true,
                                 });
@@ -825,9 +825,9 @@ module.exports = {
               await interaction.showModal(modal).then(async msg => {
                 await interaction.client.once('interactionCreate', async (inter) => {
                     if (inter.customId === 'delicereason') {
-                    const channel = interaction.channel
-                    const message = await interaction.channel.fetchStarterMessage();
-                    const grund = interaction.fields.getTextInputValue("grund")
+                    const channel = inter.channel
+                    const message = await inter.channel.fetchStarterMessage();
+                    const grund = inter.fields.getTextInputValue("grund")
                     const vorschlagsembed = message.embeds[0];
                 
                     const embed = new EmbedBuilder()
@@ -835,9 +835,9 @@ module.exports = {
                     .setTitle(vorschlagsembed.title)
                     .setDescription(vorschlagsembed.description)
                     .setAuthor({
-                      name: `» Abgelehnt von ${interaction.member.user.tag}`,
-                      iconURL: interaction.member.user.displayAvatarURL(),
-                      url: `https://discordapp.com/users/${interaction.member.user.id}`,
+                      name: `» Abgelehnt von ${inter.member.user.tag}`,
+                      iconURL: inter.member.user.displayAvatarURL(),
+                      url: `https://discordapp.com/users/${inter.member.user.id}`,
                     })
                     .addFields([
                       {
@@ -851,7 +851,7 @@ module.exports = {
                 
                     channel.setLocked(true)
             
-                    await interaction.reply({
+                    await inter.reply({
                         content: "`✅` »  Der Vorschlag wurde abgelehnt",
                         ephemeral: true,
                       });
