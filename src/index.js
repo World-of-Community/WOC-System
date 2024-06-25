@@ -287,7 +287,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 
     const MessageEditEmbed = new EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')
-        .setDescription(`Die Nachricht von **${oldMessage.member.globalName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
+        .setDescription(`Die Nachricht von **${oldMessage.author.globalName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
         .setColor('Orange')
         .setTimestamp();
 
