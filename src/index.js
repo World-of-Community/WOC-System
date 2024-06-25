@@ -64,7 +64,7 @@ for (const file of eventFiles) {
     }
 }
 
-//Vorschlag
+// Vorschlag
 client.on("threadCreate", async (thread) => {
     if (thread.ownerId === "1020023299448786955") return;
 
@@ -158,7 +158,7 @@ client.on('guildMemberAdd', async member => {
         const inviter = invite.inviter;
         const inviteUses = invite.uses;
         const InviteEmbed = new EmbedBuilder()
-            .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName}**\n\n> ×Einladungs Code: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun ${inviteUses} Einladungen\n`)
+            .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName}**\n\n> × Einladungscode: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun **${inviteUses}** Einladungen\n`)
             .setColor('Blurple')
             .setTimestamp();
 
@@ -171,6 +171,7 @@ client.on('guildMemberAdd', async member => {
         invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
     }
 });
+
 // Kanal Log
 const LOG_CHANNEL_ID = "1242799344692887662";
 const typeMap = {
