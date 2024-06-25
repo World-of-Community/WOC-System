@@ -3,23 +3,22 @@ const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
-const fetch = require('node-fetch');
 const client = new Client({
     intents: [
-        GatewayIntentBits.GuildIntegrations, 
-        GatewayIntentBits.GuildMembers, 
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessageTyping,
-        GatewayIntentBits.GuildMessages, 
-        GatewayIntentBits.DirectMessages, 
-        GatewayIntentBits.GuildPresences, 
-        GatewayIntentBits.Guilds, 
-        GatewayIntentBits.MessageContent, 
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [
-        Partials.Channel, 
-        Partials.User, 
-        Partials.GuildMember, 
+        Partials.Channel,
+        Partials.User,
+        Partials.GuildMember,
         Partials.Message
     ],
 });
@@ -76,32 +75,32 @@ client.on("threadCreate", async (thread) => {
         const ownerid = thread.ownerId
         const member = await guild.members.fetch(ownerid);
         const message = await thread.fetchStarterMessage();
-    
+
         const tags = thread.appliedTags;
         const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: tags });
-    
+
         const embed = new EmbedBuilder()
-          .setColor("Orange")
-          .setTitle(`\`🔎\` **- ${thread.name}**`)
-          .setDescription(`⠀\n> ${message}\n⠀\n**─────────────────────────**`)
-          .addFields([
-            {
-              name: `\`💡\` **- Vorschläge**`,
-              value: `> Erstelle einen Post um deine eigenen Vorschlag einzureichen`,
-            },
-          ])
-          .setFooter({
-            text:
-              "Eingereicht von "+
-              member.user +
-              " » " +
-              member.id
-          });
-    
+            .setColor("Orange")
+            .setTitle(`\`🔎\` **- ${thread.name}**`)
+            .setDescription(`⠀\n> ${message}\n⠀\n**─────────────────────────**`)
+            .addFields([
+                {
+                    name: `\`💡\` **- Vorschläge**`,
+                    value: `> Erstelle einen Post um deine eigenen Vorschlag einzureichen`,
+                },
+            ])
+            .setFooter({
+                text:
+                    "Eingereicht von " +
+                    member.user +
+                    " » " +
+                    member.id
+            });
+
         const message2 = await thread2.fetchStarterMessage();
         await message2.react("1008781495055429672");
         await message2.react("1008781575644782622");
-        await message2.edit({ content: `\`👋\` » ${member}, Ich habe dein Vorschlag eingereicht.`, embeds: [embed]})
+        await message2.edit({ content: `\`👋\` » ${member}, Ich habe dein Vorschlag eingereicht.`, embeds: [embed] })
         await thread.delete()
     }
 });
@@ -311,10 +310,7 @@ cron.schedule('0 0 * * *', async () => {
     const guild = client.guilds.cache.get("815919809379172354");
 
     try {
-        const birthdayUsers = await userdb.find([
-            { "birthday.tag": { day } }, 
-            { "birthday.monat": { month } }, 
-        ]);
+        const birthdayUsers = await userdb.find({ "birthday.tag": day, "birthday.monat": month });
 
         if (birthdayUsers.length > 0) {
             const birthdayChannel = client.channels.cache.get("1243964646449483788");
@@ -328,8 +324,8 @@ cron.schedule('0 0 * * *', async () => {
                         const age = currentYear - user.birthday.jahr;
                         let roleId;
 
-                        if (age <= 18) roleId = '1199786765666500710'; 
-                        else if (age > 18) roleId = '1199786814051979344'; 
+                        if (age <= 18) roleId = '1199786765666500710';
+                        else if (age > 18) roleId = '1199786814051979344';
                         const birthdayRole = await guild.roles.fetch(roleId);
 
                         if (birthdayRole) {
@@ -342,7 +338,7 @@ cron.schedule('0 0 * * *', async () => {
                     await member.roles.add(roleId);
                 } catch (fetchError) {
                     console.error(`Fehler beim Verarbeiten des Mitglieds mit ID ${user.userID}:`, fetchError);
-                    continue; 
+                    continue;
                 }
             }
 
@@ -370,7 +366,7 @@ cron.schedule('0 0 * * *', async () => {
 
             await birthdaymessage.react("<a:herzen:974633994840854608>");
             await birthdaymessage.react("<a:Cool:915211628755169301>");
-            
+
         } else {
             const birthdayChannel = client.channels.cache.get("1243964646449483788");
             const message = await birthdayChannel.send({
