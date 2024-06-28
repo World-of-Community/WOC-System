@@ -14,8 +14,8 @@ module.exports = {
             .addChoices(
             { name: 'Kooperation Partner', value: 'Kooperation' },    
             { name: 'Mega Partner', value: 'Mega Partner' }, 
-            { name: 'Großer Partner', value: 'Großer Partner' }, 
-            { name: 'Normaler Partner', value: 'Normaler Partner' }, 
+            { name: 'Große Partner', value: 'Große Partner' }, 
+            { name: 'Normale Partner', value: 'Normale Partner' }, 
             ).setDescription('» Wähle die Kategorie des Partners aus.').setRequired(true))
             .addUserOption(option => option.setName('owner').setDescription('» Besitzer des Server-Partners').setRequired(true))
             .addStringOption(option => option.setName('invite').setDescription('» Einladungslink des Server-Partners').setRequired(true)))
@@ -85,8 +85,8 @@ module.exports = {
                 if (!serverData.partner || !serverData.partner.msg || !serverData.partner.channel) {
                     const newEmbed = new EmbedBuilder()
                         .setTitle('Partnerliste')
-                        .setColor('#0099ff')
-                        .setDescription('Hier sind unsere Partner:')
+                        .setColor('Blurple')
+                        .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein Server-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
                         
                         if(kategorie === "Kooperation") {
@@ -99,15 +99,15 @@ module.exports = {
                                 } else {
                                     newEmbed.addFields({ name: "Mega Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
-                                if(kategorie === "Großer Partner") {
+                                if(kategorie === "Große Partner") {
                                     newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                     } else {
-                                        newEmbed.addFields({ name: "Großer Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
+                                        newEmbed.addFields({ name: "Große Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                     }
-                                    if(kategorie === "Normaler Partner") {
+                                    if(kategorie === "Normale Partner") {
                                         newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                         } else {
-                                            newEmbed.addFields({ name: "Normaler Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
+                                            newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                         }
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
@@ -141,15 +141,15 @@ module.exports = {
                                     } else {
                                         newEmbed.addFields({ name: "Mega Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                     }
-                                    if(kategorie === "Großer Partner") {
+                                    if(kategorie === "Große Partner") {
                                         newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                         } else {
-                                            newEmbed.addFields({ name: "Großer Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
+                                            newEmbed.addFields({ name: "Große Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                         }
-                                        if(kategorie === "Normaler Partner") {
+                                        if(kategorie === "Normale Partner") {
                                             newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                                             } else {
-                                                newEmbed.addFields({ name: "Normaler Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
+                                                newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                             }
 
                         channel = interaction.channel;
@@ -162,7 +162,7 @@ module.exports = {
                         serverData.partner.channel = channel.id;
                         try {
                             await serverData.save();
-                            await interaction.reply({content: '> `✅` » Server-Partner erfolgreich hinzugefügt!', ephemeral: true});
+                            await interaction.reply({content: `> \`✅\` » Der Server-Partner **${name}** wurde erfolgreich hinzugefügt!`, ephemeral: true});
                         } catch (error) {
                             await interaction.reply('> `❌` » Fehler!');
                             await interaction.reply('Fehler beim Speichern der Partnerdaten.');
@@ -187,7 +187,7 @@ module.exports = {
                     await sentMessage.edit({ embeds: [existingEmbed] });
                     try {
                         await serverData.save();
-                        await interaction.reply({content: '> `✅` » Server-Partner erfolgreich hinzugefügt!', ephemeral: true});
+                        await interaction.reply({content: `> \`✅\` » Der Server-Partner **${name}** wurde erfolgreich hinzugefügt!`, ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Speichern der Partnerdaten:', error);
                         await interaction.reply('> `❌` » Fehler!');
@@ -233,7 +233,7 @@ module.exports = {
                             await sentMessage.edit({ embeds: [existingEmbed] });
                         }
                     
-                        await interaction.reply({content: `> \`✅\` » Server-Partner "${partnerNameToDelete}" erfolgreich gelöscht.`, ephemeral: true});
+                        await interaction.reply({content: `> \`✅\` » Server-Partner **${partnerNameToDelete}** erfolgreich gelöscht.`, ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Löschen des Partners:', error);
                         await interaction.reply('Fehler beim Löschen des Partners.');
