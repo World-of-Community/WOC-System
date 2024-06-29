@@ -71,7 +71,7 @@ client.on("threadCreate", async (thread) => {
     const guild = client.guilds.cache.get("815919809379172354");
 
     const channel = await guild.channels.cache.get("1254340245772701747");
-    if (channel) {
+    if (channel && channel.id === thread.parentId) {
         const ownerid = thread.ownerId
         const member = await guild.members.fetch(ownerid);
         const message = await thread.fetchStarterMessage();
