@@ -783,14 +783,14 @@ module.exports = {
                                 const vorschlagsembed = message.embeds[0];
 
                                 const embed = new EmbedBuilder()
-                                embed.setColor("Green")
+                                embed.setColor("Grey")
                                 embed.setTitle(vorschlagsembed.title)
                                 embed.setDescription(vorschlagsembed.description)
-                                embed.setAuthor({ name: `» Aktzeptiert von ${inter.member.user.tag}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
+                                embed.setAuthor({ name: `» Bearbeitet von ${inter.member.user.tag}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
                                 embed.addFields([
                                     {
                                         name: "`🚪` » **Status**",
-                                        value: "› Dieser Vorschlag wurde vom Team akzeptiert.\n**Grund:** `" + grund +"`"
+                                        value: "› Dieser Vorschlag wurde vom Team in Bearbeitung gesetzt.\n**Grund:** `" + grund +"`"
                                     }
                                 ]
                                 )
@@ -799,7 +799,7 @@ module.exports = {
                                 channel.setLocked(true)
 
                                 await inter.reply({
-                                    content: "`✅` » Der Vorschlag wurde angenommen",
+                                    content: "`✅` » Der Vorschlag wurde in Bearbeitung gesetzt.",
                                     ephemeral: true,
                                 });
                             }
