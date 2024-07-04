@@ -140,7 +140,7 @@ module.exports = {
                         serverData.partner.channel = channel.id;
                         try {
                             await serverData.save();
-                            await interaction.reply({content: `> \`✅\` » Der Server-Partner \`${name}\` wurde in \`${kategorie}\` erfolgreich hinzugefügt!`, ephemeral: true});
+                            await interaction.reply({content: `> \`✅\` » Der Server-Partner \`${name}\` (${owner}) wurde im Bereich \`${kategorie}\` erfolgreich hinzugefügt!`, ephemeral: true});
                         } catch (error) {
                             await interaction.reply('> `❌` » Fehler!');
                             await interaction.reply('Fehler beim Speichern der Partnerdaten.');
@@ -165,7 +165,7 @@ module.exports = {
                     await sentMessage.edit({ embeds: [existingEmbed] });
                     try {
                         await serverData.save();
-                        await interaction.reply({content: `> \`✅\` » Der Server-Partner **${name}** wurde erfolgreich hinzugefügt!`, ephemeral: true});
+                        await interaction.reply({content: `> \`✅\` » Der Server-Partner \`${name}\` (${owner}) wurde im Bereich \`${kategorie}\` erfolgreich hinzugefügt!`, ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Speichern der Partnerdaten:', error);
                         await interaction.reply('> `❌` » Fehler!');
