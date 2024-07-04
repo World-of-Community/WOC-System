@@ -67,7 +67,7 @@ module.exports = {
 
             await guild.channels.cache.get(config.category1).setName(`(🌍) - [INFOS] - (USER: ${memberCount})`)
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
-            await guild.channels.cache.get(config.category1).setName(`(⚡) - [ADS] - (PARTNER: ${count})`)
+            await guild.channels.cache.get(config.category3).setName(`(⚡) - [ADS] - (PARTNER: ${count})`)
         }, 30000);
 
     // hauptchat Beschreibung
