@@ -4,6 +4,7 @@ const fs = require("fs");
 const func = require("../ressources/funktionen");
 const messagedb = require("../../Datenbank/messagedb");
 const userDB = require("../../Datenbank/userdb");
+const serverDB = require("../../Datenbank/serverdb")
 const bandb = require("../../Datenbank/bandb");
 const internal = require("stream");
 const cron = require("node-cron");
@@ -57,9 +58,16 @@ module.exports = {
                 m.presence?.status === 'dnd'
             ).filter(member => !member.user.bot).size.toLocaleString('de-DE') || 0;  // 'de-DE' verwendet Punkt als Tausendertrennzeichen
             const memberCount = await guild.members.cache.size.toLocaleString('de-DE'); // 'de-DE' verwendet Punkt als Tausendertrennzeichen
+            const serverData = await serverDB.findOne({ guildID: "815919809379172354" });
+            if (!serverData || !serverData.partner || !serverData.partner.partners) {
+              console.log(`Keine Partner gefunden`);
+            }
+            const count = serverData.partner.partners.length;
+
 
             await guild.channels.cache.get(config.category1).setName(`(🌍) - [INFOS] - (USER: ${memberCount})`)
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
+            await guild.channels.cache.get(config.category1).setName(`(⚡) - [ADS] - (PARTNER: ${count})`)
         }, 30000);
 
     // hauptchat Beschreibung

@@ -49,7 +49,6 @@ module.exports = {
                         filtered.push({ name: '❌ » Kein Eintrag', value: 'Kein Eintrag' });
                     }
                     
-                    // Antwort senden
                     await interaction.respond(filtered.map(partner => ({ name: partner.name + ` (${undefined ?  "N/A" : partner.category})`, value: partner.name })));
                 } catch (error) {
                     console.error('Fehler beim Abrufen der Server-Partner aus der Datenbank:', error);
@@ -86,7 +85,6 @@ module.exports = {
                         .setColor('Blurple')
                         .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
-                        
                         if(kategorie === "Kooperation") {
                             newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
                             } else {
