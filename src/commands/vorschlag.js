@@ -13,6 +13,7 @@ async execute(interaction, client) {
         const vorschlagsembed = message.embeds[0];
 
         if (vorschlagsembed.color === "Green") return await interaction.reply({ content: `\`❌\` » Der Vorschlag wurde bereits akzeptiert.`, ephemeral: true });
+        if (vorschlagsembed.color === "Grey") return await interaction.reply({ content: `\`❌\` » Der Vorschlag wurde bereits in Planung gesetzt.`, ephemeral: true });
         if (vorschlagsembed.color === "Red") return await interaction.reply({ content: `\`❌\` » Der Vorschlag wurde bereits abgelehnt.`, ephemeral: true });
         
 
