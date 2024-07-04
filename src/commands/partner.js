@@ -84,7 +84,7 @@ module.exports = {
                     const newEmbed = new EmbedBuilder()
                         .setTitle('Partnerliste')
                         .setColor('Blurple')
-                        .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein Server-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
+                        .setDescription('» Hier findest du alles über unsere Server-Partner\nWenn du selbst ein Server-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
                         
                         if(kategorie === "Kooperation") {
@@ -117,7 +117,7 @@ module.exports = {
                         const newEmbed = new EmbedBuilder()
                             .setTitle('Unsere Partnerliste')
                             .setColor('Blurple')
-                            .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein Server-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
+                            .setDescription('» Hier findest du alles über unsere Server-Partner\nWenn du selbst ein Server-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
                             if(kategorie === "Kooperation") {
                                 newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
@@ -140,7 +140,7 @@ module.exports = {
                         serverData.partner.channel = channel.id;
                         try {
                             await serverData.save();
-                            await interaction.reply({content: `> \`✅\` » Der Server-Partner **${name}** wurde erfolgreich hinzugefügt!`, ephemeral: true});
+                            await interaction.reply({content: `> \`✅\` » Der Server-Partner \`${name}\` wurde in \`${kategorie}\` erfolgreich hinzugefügt!`, ephemeral: true});
                         } catch (error) {
                             await interaction.reply('> `❌` » Fehler!');
                             await interaction.reply('Fehler beim Speichern der Partnerdaten.');
