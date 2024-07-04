@@ -790,7 +790,7 @@ module.exports = {
                                 embed.addFields([
                                     {
                                         name: "`🚪` » **Status**",
-                                        value: "› Dieser Vorschlag wurde vom Team in Bearbeitung gesetzt.\n**Grund:** `" + grund +"`"
+                                        value: "› Dieser Vorschlag ist bereits in Planung und wird bald umgesetzt.\n**Grund:** `" + grund +"`"
                                     }
                                 ]
                                 )
@@ -799,7 +799,7 @@ module.exports = {
                                 channel.setLocked(true)
 
                                 await inter.reply({
-                                    content: "`✅` » Der Vorschlag wurde in Bearbeitung gesetzt.",
+                                    content: "`✅` » Der Vorschlag wurde in Planung gesetzt.",
                                     ephemeral: true,
                                 });
                             }
