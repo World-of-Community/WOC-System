@@ -211,7 +211,7 @@ module.exports = {
                             await sentMessage.edit({ embeds: [existingEmbed] });
                         }
                     
-                        await interaction.reply({content: `> \`✅\` » Server-Partner **${partnerNameToDelete}** erfolgreich gelöscht.`, ephemeral: true});
+                        await interaction.reply({content: `> \`✅\` » Server-Partner \`${partnerNameToDelete}\` (${owner}) erfolgreich gelöscht.`, ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Löschen des Partners:', error);
                         await interaction.reply('Fehler beim Löschen des Partners.');
