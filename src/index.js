@@ -262,7 +262,7 @@ client.on('messageCreate', async (message) => {
 
     const MessageSendEmbed = new EmbedBuilder()
         .setTitle('`📨` | NACHRICHT GESENDET')
-        .setDescription(`**\`${message.author.displayName}\`** hat eine Nachricht gesendet in **${message.channel}**\n\n> Nachricht: \`${message.content || 'Kein Inhalt'}\``)
+        .setDescription(`**${message.author.displayName}** hat eine Nachricht gesendet in **${message.channel}**\n\n> Nachricht: \`${message.content || 'Kein Inhalt'}\``)
         .setColor('Green')
         .setTimestamp();
 
