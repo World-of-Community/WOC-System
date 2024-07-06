@@ -1,7 +1,5 @@
 const { Events } = require("discord.js");
 
-// Definiere die Rollen und ihre entsprechenden Level und IDs
-
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
