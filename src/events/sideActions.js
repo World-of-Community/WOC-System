@@ -8,6 +8,7 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         try {
+            if(!message.guild) return
             if (message.author.bot) return;
 
 
