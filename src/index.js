@@ -178,7 +178,7 @@ client.on('interactionCreate', async (interaction) => {
 
     const CommandEmbed = new EmbedBuilder()
         .setTitle('`/` | SLASH COMMAND BENUTZT')
-        .setDescription(`> Nutzer: \`${interaction.user.tag}\`\n> Befehl: \`/${interaction.commandName}\`\n> Kanal: <#${interaction.channel.id}>`)
+        .setDescription(`> Nutzer: \`${interaction.user.displayName}\`\n> Befehl: \`/${interaction.commandName}\`\n> Kanal: <#${interaction.channel.id}>`)
         .setColor('Blurple')
         .setTimestamp();
 
