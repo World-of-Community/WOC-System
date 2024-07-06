@@ -131,7 +131,7 @@ module.exports = {
         .catch(console.error);
     });
 
-    cron.schedule.scheduleJob({ hour: 0, minute: 0 }, async () => { 
+    cron.schedule("0 0 * * *", async () => {
       const guild = client.guilds.cache.get(config.server); 
       if (!guild) return console.error('Guild wurde nicht gefunden.');
   
