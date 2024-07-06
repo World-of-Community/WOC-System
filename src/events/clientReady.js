@@ -132,7 +132,7 @@ module.exports = {
     });
 
     cron.schedule("0 0 * * *", async () => {
-      const guild = client.guilds.cache.get(config.server); 
+      const guild = await client.guilds.fetch("815919809379172354");
       if (!guild) return console.error('Guild wurde nicht gefunden.');
   
       const roleRemove = guild.roles.cache.find(role => role.id === "1222122625594294272");
