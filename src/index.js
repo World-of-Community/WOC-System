@@ -275,7 +275,7 @@ client.on('messageDelete', async (message) => {
 
     const MessageDeleteEmbed = new EmbedBuilder()
         .setTitle('`🗑️` | NACHRICHT GELÖSCHT')
-        .setDescription(`Die Nachricht von **${message.member.username}** wurde gelöscht in **${message.channel}**\n\n> Inhalt: \`${message.content || 'Kein Inhalt'}\``)
+        .setDescription(`Die Nachricht von **${message.author.displayName}** wurde gelöscht in **${message.channel}**\n\n> Inhalt: \`${message.content || 'Kein Inhalt'}\``)
         .setColor('Red')
         .setTimestamp();
 
@@ -288,7 +288,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 
     const MessageEditEmbed = new EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')
-        .setDescription(`Die Nachricht von **${oldMessage.member.displayName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
+        .setDescription(`Die Nachricht von **${newMessage.author.displayName}** wurde bearbeitet in **${oldMessage.channel}**\n\n> Alte Nachricht: \`${oldMessage.content || 'Kein Inhalt'}\`\n> Neue Nachricht: \`${newMessage.content || 'Kein Inhalt'}\``)
         .setColor('Orange')
         .setTimestamp();
 
