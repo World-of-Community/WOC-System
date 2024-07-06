@@ -138,7 +138,7 @@ module.exports = {
       const roleRemove = guild.roles.cache.find(role => role.id === "1222122625594294272");
       if (!roleRemove) return console.error('Rolle "1222122625594294272" wurde nicht gefunden.');
   
-      guild.members.cache.forEach(async (member) => {
+      await guild.members.cache.forEach(async (member) => {
           if (member.roles.cache.has(roleRemove.id)) {
               try {
                   await member.roles.remove(roleRemove);
