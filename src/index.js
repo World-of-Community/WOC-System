@@ -172,6 +172,20 @@ client.on('guildMemberAdd', async member => {
     }
 });
 
+// Log slash command usage
+client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isCommand()) return;
+
+    const CommandEmbed = new EmbedBuilder()
+        .setTitle('`/` | SLASH COMMAND BENUTZT')
+        .setDescription(`> Nutzer: \`${interaction.user.tag}\`\n> Befehl: \`/${interaction.commandName}\`\n> Kanal: <#${interaction.channel.id}>`)
+        .setColor('Blurple')
+        .setTimestamp();
+
+    const logChannel = await interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
+    if (logChannel) await logChannel.send({ embeds: [CommandEmbed] });
+});
+
 // Kanal Log
 const LOG_CHANNEL_ID = "1242799344692887662";
 const typeMap = {
