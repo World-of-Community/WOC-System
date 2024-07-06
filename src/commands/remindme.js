@@ -111,32 +111,37 @@ module.exports = {
                 await interaction.reply({ embeds: [listEmbed], ephemeral: true });
                 break;
 
-            case "remove":
-                const index = interaction.options.getInteger('reminder') - 1;
-
-                if (!reminders.has(userId) || reminders.get(userId).length === 0) {
-                    return await interaction.reply({ content: '> `❌` » Du hast keine Erinnerungen gesetzt.', ephemeral: true });
-                }
-
-                const userReminders = reminders.get(userId);
-
-                if (index < 0 || index >= userReminders.length) {
-                    return await interaction.reply({ content: 'Ungültiger Index. Bitte überprüfe die Liste deiner Erinnerungen.', ephemeral: true });
-                }
-
-                const removedReminder = userReminders.splice(index, 1)[0];
-
-                reminders.set(userId, userReminders);
-
-                const removeEmbed = new EmbedBuilder()
-                    .setTitle('Erinnerung entfernt')
-                    .setDescription(`\`🗑️\` » Die Erinnerung **${removedReminder.reminder}** wurde **entfernt**.`)
-                    .setColor('Red')
-                    .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
-                    .setTimestamp();
-
-                await interaction.reply({ embeds: [removeEmbed], ephemeral: true });
-                break;
+                case "remove":
+                    const index = interaction.options.getInteger('reminder') - 1;
+                
+                    if (!reminders.has(userId) || reminders.get(userId).length === 0) {
+                        return await interaction.reply({ content: '> `❌` » Du hast keine Erinnerungen gesetzt.', ephemeral: true });
+                    }
+                
+                    const userReminders = reminders.get(userId);
+                
+                    if (index < 0 || index >= userReminders.length) {
+                        return await interaction.reply({ content: '> `❌` » Ungültiger Index. Bitte überprüfe die Liste deiner Erinnerungen.', ephemeral: true });
+                    }
+                
+                    const removedReminder = userReminders.splice(index, 1)[0];
+                
+                    const jobToRemove = schedule.scheduledJobs[new Date(removedReminder.timestamp)];
+                    if (jobToRemove) {
+                        jobToRemove.cancel();
+                    }
+                
+                    reminders.set(userId, userReminders);
+                
+                    const removeEmbed = new EmbedBuilder()
+                        .setTitle('Erinnerung entfernt')
+                        .setDescription(`\`🗑️\` » Die Erinnerung **${removedReminder.reminder}** wurde **entfernt**.`)
+                        .setColor('Red')
+                        .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+                        .setTimestamp();
+                
+                    await interaction.reply({ embeds: [removeEmbed], ephemeral: true });
+                    break;                
         }
     },
 };

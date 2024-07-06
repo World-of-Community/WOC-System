@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField, EmbedBuilder } = require('discord.js');
 const serverDB = require("../../Datenbank/serverdb")
 
 module.exports = {
@@ -28,7 +28,8 @@ module.exports = {
                 .setName('delete')
                 .setDescription('» Lösche einen Partner. 🤝')
                 .addStringOption((option) => option.setName('partner').setDescription('» Wähle ein Server-Partner aus').setAutocomplete(true).setRequired(true))
-        ),
+        )
+        .setDefaultMemberPermissions(PermissionsBitField.Administrator),
         async autocomplete(interaction) {
             const focusedOption = interaction.options.getFocused(true);
             if (focusedOption.name === 'partner') {
