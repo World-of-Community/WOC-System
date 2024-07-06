@@ -9,11 +9,10 @@ module.exports = {
     async execute(message) {
         try {
             if(!message.guild) return
-            if (message.author.bot) return;
 
             const file = fs.readFileSync('src/json/config.json', 'utf-8');
             const config = JSON.parse(file);
-            
+
             if (message.channelId === config.autoDelete) {
                 setTimeout(async () => {
                     try {
