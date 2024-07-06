@@ -19,7 +19,8 @@ module.exports = {
                     const level = parseInt(match[1]);
                     let messageText;
                     let newRankAchieved = false
-                    const roles = [
+                    const levelList = [
+                        { level: 5 },
                         { level: 10 },
                         { level: 20 },
                         { level: 40 },
@@ -28,8 +29,8 @@ module.exports = {
                         { level: 100 }
                     ];
                     
-                    for (const role of roles) {
-                        if (level == role.level) {
+                    for (const levelL of levelList) {
+                        if (level == levelL.level) {
                             const member = mention.member;
                                     channel.send(`<a:trophe1:1221802325056950303> **LEVEL-UP!** ${mention} hat das Level **${level}** erreicht - und einen **neuen Rang** erhalten! <a:Cool:1033461188299858001>`);
                                     newRankAchieved = true;
@@ -37,9 +38,9 @@ module.exports = {
                         }
                     }
                     if (!newRankAchieved) {
-                        for (const role of roles) {
-                            if (level < role.level) {
-                                channel.send(`<a:bier:1196502621427601498> **LEVEL-UP!** ${mention} hat das Level **${level}** erreicht - noch **${role.level - level}** Level bis zu einem **neuen Rang** - Weiter so! <a:Chat1:976129450112593990>`);
+                        for (const levelL of levelList) {
+                            if (level < levelL.level) {
+                                channel.send(`<a:bier:1196502621427601498> **LEVEL-UP!** ${mention} hat das Level **${level}** erreicht - noch **${levelL.level - level}** Level bis zu einem **neuen Rang** - Weiter so! <a:Chat1:976129450112593990>`);
                                 break;
                             }
                         }
