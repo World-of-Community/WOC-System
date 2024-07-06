@@ -2,7 +2,7 @@ const { Events } = require("discord.js");
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
-const config = require("../../config.json"); 
+const fs = require('fs');
 
 module.exports = {
     name: Events.MessageCreate,
@@ -11,7 +11,9 @@ module.exports = {
             if(!message.guild) return
             if (message.author.bot) return;
 
-
+            const file = fs.readFileSync('src/json/config.json', 'utf-8');
+            const config = JSON.parse(file);
+            
             if (message.channelId === config.autoDelete) {
                 setTimeout(async () => {
                     try {
