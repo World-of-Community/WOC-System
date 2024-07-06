@@ -20,7 +20,7 @@ module.exports = {
         const donateAmount = userData.donation.toLocaleString('de-DE', {style: 'currency', currency: "EUR"}).replace(/,\d+/g, "");
 
         const donateEmbed = new EmbedBuilder()
-            .setTitle(`\`💸\` × ${member}'s Gesamtspenden`)
+            .setTitle(`\`💸\` × ${member.displayName}'s Gesamtspenden`)
             .setDescription(`> \`💖\` » ${member} hat insgesamt \`${donateAmount}\` für ${interaction.guild.name} gespendet!`)
             .setColor('Blurple')
             .setThumbnail(member.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
