@@ -10,7 +10,7 @@ module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
-        if (member.user.bot) return; // Keine Bots begrüßen
+        if (member.user.bot) return; 
         if (serverData.deactivated.includes("willkommensnachrichten")) { return };
         
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -39,16 +39,25 @@ module.exports = {
 
         await welcomeChannel.send({ content: `${contents[rndContent]}` })
 
-        // Server-Regeln Erwähnung neue Mitglieder
         const channel = member.guild.channels.cache.get('815922286502346773');
         if (!channel) return console.error('Kanal wurde nicht gefunden.');
+
+        const neuesMitglied = await member.guild.roles.cache.get('1222122625594294272'); 
+        const mitglied = await member.guild.roles.cache.get('815920703067914290'); 
+
+        try {
+            await member.roles.add(neuesMitglied);
+            await member.roles.add(mitglied);
+        } catch (error) {
+            console.error('Fehler beim Hinzufügen der Rolle:', error);
+        }
 
         try {
             const message = await channel.send(`Willkommen auf unserem Discord-Server, ${member}! Bitte Verifiziere dich bei den Server-Regeln`);
 
             setTimeout(() => {
                 message.delete();
-            }, 5 * 60 * 1000); // 5 Minuten in Millisekunden
+            }, 5 * 60 * 1000); 
         } catch (err) {
             console.error('Fehler beim Senden der Nachricht:', err);
         }

@@ -130,5 +130,23 @@ module.exports = {
         })
         .catch(console.error);
     });
+
+    cron.schedule.scheduleJob({ hour: 0, minute: 0 }, async () => { 
+      const guild = client.guilds.cache.get(config.server); 
+      if (!guild) return console.error('Guild wurde nicht gefunden.');
+  
+      const roleRemove = guild.roles.cache.find(role => role.id === "1222122625594294272");
+      if (!roleRemove) return console.error('Rolle "1222122625594294272" wurde nicht gefunden.');
+  
+      guild.members.cache.forEach(async (member) => {
+          if (member.roles.cache.has(roleRemove.id)) {
+              try {
+                  await member.roles.remove(roleRemove);
+              } catch (err) {
+                  console.error('Fehler beim Entfernen der Rolle:', err);
+              }
+          }
+      });
+  });
   },
 };
