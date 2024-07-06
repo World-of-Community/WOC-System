@@ -66,31 +66,6 @@ module.exports = {
             await newUser.save()
         }
         
-
-      /*  if (user.dmChannel) {
-            const userdm = new EmbedBuilder()
-                .setAuthor({name: '» ' + interaction.guild.name, iconURL: interaction.guild.iconURL() })
-                .setTitle("`👋`〡 Willkommen auf WOC")
-                .setDescription("> `❤️`-lich Willkommen auf WOC, ")
-                .setColor("Orange")
-                .setTimestamp()
-
-                const buttons = new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId('birthday')
-                        .setLabel('Geburtsdatum')
-                        .setEmoji('🎂')
-                        .setStyle(ButtonStyle.Primary),
-                    new ButtonBuilder()
-                        .setCustomId('vorstellung')
-                        .setLabel('Vorstellen')
-                        .setEmoji('👋')
-                        .setStyle(ButtonStyle.Secondary)
-                );
-            await user.send({embeds: [userdm], components: [buttons]})
-            }
-        */
         // Join Log
         const join = new EmbedBuilder()
             .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')

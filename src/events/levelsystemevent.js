@@ -21,6 +21,7 @@ module.exports = {
                         { level: 5 },
                         { level: 10 },
                         { level: 20 },
+                        { level: 30 },
                         { level: 40 },
                         { level: 50 },
                         { level: 75 },
