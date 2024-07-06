@@ -7,12 +7,12 @@ module.exports = {
         .addIntegerOption(option => option.setName('anzahl').setDescription('» Wie viele Nachrichten möchtest du löschen?').setRequired(true))
         .addChannelOption(option => option.setName('kanal').setDescription('» In welchen Kanal soll gelöscht werden?').setRequired(false))
         .addStringOption(option => option.setName('grund').setDescription('» Wie lautet die Begründung?').setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages), // Korrigierte Berechtigung
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages), 
 
     async execute(interaction) {
         
         const messagedelete = interaction.options.getInteger('anzahl');
-        const kanal = interaction.options.getChannel('kanal') || interaction.channel; // Verwendet aktuellen Kanal, wenn keiner angegeben ist
+        const kanal = interaction.options.getChannel('kanal') || interaction.channel;
         const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
 
         if (messagedelete < 1 || messagedelete > 100) {

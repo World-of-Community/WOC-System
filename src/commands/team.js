@@ -20,7 +20,7 @@ module.exports = {
         )
         .addSubcommand((command) =>
             command
-                .setName('neu')
+                .setName('add')
                 .setDescription('» Fügt ein neues Teammitglied hinzu. ➕')
                 .addUserOption(option => option.setName('user').setDescription('» Welcher User soll eine Team-Rolle bekommen?').setRequired(true))
                 .addRoleOption(option => option.setName('role').setDescription('» Welche Rolle soll der User bekommen?').setRequired(true))
@@ -43,7 +43,7 @@ module.exports = {
         const sub = interaction.options.getSubcommand();
 
         if (!member || !role || !targetChannel) {
-            return interaction.reply('Fehler beim Verarbeiten des Befehls.');
+            return interaction.reply('> `❌` » Fehler beim Verarbeiten des Befehls.');
         }
     
         switch (sub) {
