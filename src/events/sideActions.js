@@ -24,6 +24,7 @@ module.exports = {
             }
 
             if (message.mentions.users.size > 0) {
+                if(message.author.bot) return
                 for (const mentionedUser of message.mentions.users.values()) {
                     const mentionData = await userdb.findOne({ userID: mentionedUser.id });
 
