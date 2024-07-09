@@ -53,7 +53,7 @@ module.exports = {
             await message.delete()
 
             const channel = message.guild.channels.cache.get("872063101640532008"); // Channel ID
-            const msg = await channel.messages.fetch("1181152581838450719"); // Nachricht ID
+            const msg = await channel.messages.fetch("1260234136665194567"); // Nachricht ID
 
             const rängeEmbed = new EmbedBuilder()
                 .setTitle('`🏆` 𑁉 ERHALTE NEUE RÄNGE & VORTEILE!')
