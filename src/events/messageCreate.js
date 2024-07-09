@@ -76,12 +76,12 @@ module.exports = {
                             {
                                 label: '× MINECRAFT - RÄNGE',
                                 description: '» Erhalte einzigartige Ränge. 🌍',
-                                emoji: '<a:minecraft:1112823561992818860>',
+                                emoji: '<a:MinecraftGrassBlock:872034424181637171>',
                                 value: 'minecraft',
                             },
                             {
                                 label: '× LEVEL - ROLLEN',
-                                description: '» Hier sind Alle Mitglieder-Rollen aufgelistet. 👥',
+                                description: '» Hier sind Alle Level-Rollen aufgelistet. 👥',
                                 emoji: '<:members:1055964826960154625>',
                                 value: 'level',
                             },
