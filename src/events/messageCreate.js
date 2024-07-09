@@ -52,8 +52,7 @@ module.exports = {
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()
 
-            const channel = message.guild.channels.cache.get("872063101640532008"); // Channel ID
-            const msg = await channel.messages.fetch("1181152581838450719"); // Nachricht ID
+
 
             const rängeEmbed = new EmbedBuilder()
                 .setTitle('`🏆` 𑁉 ERHALTE NEUE RÄNGE & VORTEILE!')
@@ -106,7 +105,7 @@ module.exports = {
                             },
                         )
                 )
-            await msg.edit({ embeds: [rängeEmbed], components: [rängeMenu] })
+            await message.channel.send({ embeds: [rängeEmbed], components: [rängeMenu] })
         }
 
         // Regelwerk
