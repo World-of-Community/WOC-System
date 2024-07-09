@@ -75,16 +75,22 @@ module.exports = {
                                 value: 'server',
                             },
                             {
-                                label: '× MITGLIEDER - ROLLEN',
+                                label: '× MINECRAFT - RÄNGE',
+                                description: '» Erhalte einzigartige Ränge. 🌍',
+                                emoji: '<a:minecraft:1112823561992818860>',
+                                value: 'minecraft',
+                            },
+                            {
+                                label: '× LEVEL - ROLLEN',
                                 description: '» Hier sind Alle Mitglieder-Rollen aufgelistet. 👥',
                                 emoji: '<:members:1055964826960154625>',
-                                value: 'spieler',
+                                value: 'level',
                             },
                             {
                                 label: '× EXKLUSIVE - ROLLEN',
                                 description: '» Besondere Rollen mit besonderen Vorteilen. 👑',
                                 emoji: '<a:krone:1112823594649665607>',
-                                value: 'exklusive',
+                                value: 'exklusiv',
                             },
                             {
                                 label: '× TEAM - ROLLEN',

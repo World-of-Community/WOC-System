@@ -43,7 +43,7 @@ module.exports = {
                     await interaction.reply({ embeds: [serverEmbed], ephemeral: true })
                 } break;
 
-                case 'spieler': {
+                case 'minecraft': {
                     const supreme = await interaction.guild.roles.cache.get('815921105407574056')
                     const roleCountsupreme = supreme.members.size
 
@@ -63,7 +63,7 @@ module.exports = {
                     const roleCountepisch = episch.members.size
 
                     const spielerEmbed = new EmbedBuilder()
-                        .setTitle('`👥` 𑁉 UNSERE MITGLIEDER-ROLLEN')
+                        .setTitle('`🌍` 𑁉 UNSERE MINECRAFT-RÄNGE')
                         .setDescription(`» Chatte mit **anderen Server-Mitgliedern** oder **unterhalte dich** in unseren Sprachkanälen um **die folgenden Ränge** freizuschalten.\n\n> \`🌟\` 𑁉 <@&815921105407574056> (\`${roleCountsupreme}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&917826787977871441>\n<:PfeilBlau:1119711275014955080> Wir schenken dir einmal <a:basic:1186636165567229972> **DISCORD NITRO BASIC!** <a:basic:1186636165567229972>\n\n> \`⭐\` 𑁉 <@&917826787977871441> (\`${roleCountpremium}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&815920452337139733>\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`🔮\` 𑁉 <@&815920452337139733> (\`${roleCountlegende}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775556611997697>\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich **jemand erwähnt!**\n\n> \`👻\` 𑁉 <@&835775556611997697> (\`${roleCountemerald}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775627721179167>\n<:PfeilBlau:1119711275014955080> **Schreibrechte** erhalten in den Kanälen: <#1172920374892183592> & <#1243964646449483788>\n\n> \`💎\` 𑁉 <@&835775627721179167> (\`${roleCountdiamond}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&835775597446955048>\n<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n> \`🟣\` 𑁉 <@&835775597446955048> (\`${roleCountepisch}👥\`)\n<:PfeilBlau:1119711275014955080> **Alle Features** von <@&815920703067914290>\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.`)
                         .setColor('Grey')
                         .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1193944127633633471/WOC_Banner_Mitglieder_Rollen.jpg?ex=65ae8e1e&is=659c191e&hm=0ccf390ea989c63a96c2baae51e67162dcfbafc8fff0ed9b6e9b652efd4bd682&')
@@ -72,7 +72,42 @@ module.exports = {
                     await interaction.reply({ embeds: [spielerEmbed], ephemeral: true })
                 } break;
 
-                case 'exklusive': {
+                case 'level': {
+                    const hyperaktiv = await interaction.guild.roles.cache.get('1258825307239219371')
+                    const roleCounthyperaktiv = hyperaktiv.members.size
+
+                    const ultraaktiv = await interaction.guild.roles.cache.get('1258794321533075526')
+                    const roleCountultraaktiv = ultraaktiv.members.size
+
+                    const extremaktiv = await interaction.guild.roles.cache.get('1258825144697360485')
+                    const roleCountextremaktiv = extremaktiv.members.size
+
+                    const megaaktiv = await interaction.guild.roles.cache.get('1258794405507240038')
+                    const roleCountmegaaktiv = megaaktiv.members.size
+
+                    const starkaktiv = await interaction.guild.roles.cache.get('1258827956634128467')
+                    const roleCountstarkaktiv = starkaktiv.members.size
+
+                    const sehraktiv = await interaction.guild.roles.cache.get('1258794479570124920')
+                    const roleCountsehraktiv = sehraktiv.members.size
+
+                    const aktiv = await interaction.guild.roles.cache.get('1258794944953319534')
+                    const roleCountaktiv = aktiv.members.size
+
+                    const inaktiv = await interaction.guild.roles.cache.get('1258827226846199808')
+                    const roleCountinaktiv = inaktiv.members.size
+
+                    const levelEmbed = new EmbedBuilder()
+                        .setTitle('`👥` 𑁉 UNSERE LEVEL-ROLLEN')
+                        .setDescription(`» Chatte mit **anderen Server-Mitgliedern** oder **unterhalte dich** in unseren Sprachkanälen um **die folgenden Ränge** freizuschalten.\n\n> \`☢️\` 𑁉 <@&1258825307239219371> (\`${roleCounthyperaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> Wir schenken dir einmal <a:basic:1186636165567229972> **DISCORD NITRO BASIC!** <a:basic:1186636165567229972>\n\n> \`🤩\` 𑁉 <@&917826787977871441> (\`${roleCountultraaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`⚡️\` 𑁉 <@&1258825144697360485> (\`${roleCountextremaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich **jemand erwähnt!**\n\n> \`🥊\` 𑁉 <@&1258794405507240038> (\`${roleCountmegaaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Schreibrechte** erhalten in den Kanälen: <#1172920374892183592> & <#1243964646449483788>\n\n> \`💪\` 𑁉 <@&1258827956634128467> (\`${roleCountstarkaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n> \`👀\` 𑁉 <@&1258794479570124920> (\`${roleCountsehraktiv}👥\`)\n<:PfeilBlau:1119711275014955080> coming soon...\n\n> \`🏃\` 𑁉 <@&1258794944953319534> (\`${roleCountaktiv}👥\`\n<:PfeilBlau:1119711275014955080> coming soon...\n\n> \`💤\` 𑁉 <@&1258827226846199808> (\`${roleCountinaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> coming soon...`)
+                        .setColor('Blurple')
+                        .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1193944127633633471/WOC_Banner_Mitglieder_Rollen.jpg?ex=65ae8e1e&is=659c191e&hm=0ccf390ea989c63a96c2baae51e67162dcfbafc8fff0ed9b6e9b652efd4bd682&')
+                        .setFooter({ text: 'Öffne ein Ticket im Support bei Fragen oder Problemen.', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
+                        .setTimestamp()
+                    await interaction.reply({ embeds: [levelEmbed], ephemeral: true })
+                } break;
+
+                case 'exklusiv': {
                     const vip = await interaction.guild.roles.cache.get('862708375698538507')
                     const roleCountvip = vip.members.size
 
