@@ -52,7 +52,8 @@ module.exports = {
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             await message.delete()
 
-
+            const channel = message.guild.channels.cache.get("872063101640532008"); // Channel ID
+            const msg = await channel.messages.fetch("1181152581838450719"); // Nachricht ID
 
             const rängeEmbed = new EmbedBuilder()
                 .setTitle('`🏆` 𑁉 ERHALTE NEUE RÄNGE & VORTEILE!')
@@ -69,8 +70,8 @@ module.exports = {
                         .addOptions(
                             {
                                 label: '× SERVER - ERFOLGE',
-                                description: '» Erhalte einzigartige Erfolge. 🏆',
-                                emoji: '<a:trophe:1112823561992818859>',
+                                description: '» Erhalte einzigartige Erfolge. ⭐',
+                                emoji: '<a:wocstar:1260236276758478950>',
                                 value: 'server',
                             },
                             {
@@ -81,8 +82,8 @@ module.exports = {
                             },
                             {
                                 label: '× LEVEL - ROLLEN',
-                                description: '» Hier sind Alle Level-Rollen aufgelistet. 👥',
-                                emoji: '<:members:1055964826960154625>',
+                                description: '» Hier sind Alle Level-Rollen aufgelistet. 🏆',
+                                emoji: '<a:trophe:1112823561992818859>',
                                 value: 'level',
                             },
                             {
@@ -105,7 +106,7 @@ module.exports = {
                             },
                         )
                 )
-            await message.channel.send({ embeds: [rängeEmbed], components: [rängeMenu] })
+            await msg.edit({ embeds: [rängeEmbed], components: [rängeMenu] })
         }
 
         // Regelwerk
