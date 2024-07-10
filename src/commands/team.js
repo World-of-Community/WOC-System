@@ -56,6 +56,8 @@ module.exports = {
                         .setDescription(`> Herzlichen Glückwunsch, ${member}!\n> Du wurdest **befördert!**\n\n**__Rang__**\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
+
+                    const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
                     
                     await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
                     await interaction.reply({ content: `> \`✅\` » Das Teammitglied wurde **befördert.**`, ephemeral: true });
@@ -93,6 +95,8 @@ module.exports = {
                             .setColor('Blurple')
                             .setDescription(`> » Wir begrüßen ${member} herzlichst im Team.\n>Wir hoffen auf eine gemeinsame schöne Zeit!\n\n**__Rang__**\n${role}\n\n**__Im Team seit__**\n${formattedDate}`)
                             .setTimestamp();
+
+                        const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
                         
                         targetChannel.send({ content: `${member}`, embeds: [TeammitgliedEmbed] });
                         await interaction.reply({ content: `> \`✅\` » Ein neues Teammitglied ist nun da.`, ephemeral: true});
@@ -121,6 +125,8 @@ module.exports = {
                             .setDescription(`Der Nutzer ${member} wurde von ${interaction.user.displayName} aus dem Server-Team **Entfernt**.\n\nGrund: \`${reason}\``)
                             .setColor('Red')
                             .setTimestamp();
+
+                        const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
             
                         targetChannel.send({ embeds: [kickEmbed] });
                         await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**', ephemeral: true });
