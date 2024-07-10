@@ -434,7 +434,7 @@ module.exports = {
                 const list = await interaction.customId.split("_")
                 const id = list[2]
                 const user = await interaction.client.users.fetch(id)
-                const partnermanager = await interaction.guild.roles.cache.get('1175879013688954980')
+                const partnermanager = await interaction.user.cache.get('1175879013688954980')
                 await user.send({
                     embeds: [
                         new EmbedBuilder()
