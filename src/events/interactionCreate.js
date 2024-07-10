@@ -378,7 +378,7 @@ module.exports = {
                 await channel.send({
                     embeds: [
                         new EmbedBuilder()
-                            .setTitle('NEUE SERVER PARTNER ANFRAGE')
+                            .setTitle('`🤝` » NEUE SERVER PARTNER ANFRAGE')
                             .setDescription(`${interaction.user} möchte sich als **Server-Partner** bewerben!\n\n> \`🔗\` » **Server-Link**\n\`${partnerName}\`\n\n> \`💬\` » **Server-Beschreibung**\n\`${partnerBeschreibung}\``)
                             .setColor("Orange")
                     ],
@@ -434,16 +434,17 @@ module.exports = {
                 const list = await interaction.customId.split("_")
                 const id = list[2]
                 const user = await interaction.client.users.fetch(id)
+                const partnermanager = await interaction.guild.roles.cache.get('1175879013688954980')
                 await user.send({
                     embeds: [
                         new EmbedBuilder()
-                            .setTitle("`✅` ANFRAGE ANGENOMMEN")
+                            .setTitle("`✅` » ANFRAGE ANGENOMMEN")
                             .setDescription(`> » Deine Server-Partner Bewerbung auf **[${interaction.guild.name}](https://discord.gg/686M8Cxsaa)** wurde angenommen.\n\n> Bitte Öffne noch ein Ticket und wähle \`Normaler Support\` aus.`)
                             .setColor("Green")
                     ]
                 })
                 await interaction.message.edit({ components: [] })
-                await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von ${member} angenommen.`)
+                await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von ${partnermanager} angenommen.`)
 
             }
 
@@ -454,13 +455,13 @@ module.exports = {
                 await user.send({
                     embeds: [
                         new EmbedBuilder()
-                            .setTitle("`❌` ANFRAGE ABGELEHNT")
+                            .setTitle("`❌` » ANFRAGE ABGELEHNT")
                             .setDescription(`> » Deine Server-Partner Bewerbung auf **${interaction.guild.name}** wurde abgelehnt.`)
                             .setColor("Red")
                     ]
                 })
                 await interaction.message.edit({ components: [] })
-                await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von **${member}** abgelehnt.`)
+                await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von **${partnermanager}** abgelehnt.`)
             }
 
             if(interaction.customId === "vorschlag_accept") {
