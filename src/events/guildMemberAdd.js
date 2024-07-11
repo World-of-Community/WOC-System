@@ -74,15 +74,21 @@ module.exports = {
             });
             await newUser.save()
         }
-        
-        // Join Log
-        const join = new EmbedBuilder()
-            .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
-            .setColor('Green')
-            .setDescription(`**${member.user.displayName}** ist dem Server beigetreten.\n\nServer beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\nAccount erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
-            .setTimestamp();
 
-        const logChannel = await member.guild.channels.cache.get("886269505330896926");
-        if (logChannel) await logChannel.send({ embeds: [join] });
+        // Join Log
+        const LOG_CHANNEL_ID = '1242799344692887662';
+
+        const joinEmbed = new EmbedBuilder()
+        .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
+        .setColor('Green')
+        .setDescription(`**${member.user.username}** ist dem Server beigetreten.\n\nServer beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\nAccount erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
+        .setTimestamp();
+
+        const logChannel = await member.guild.channels.cache.get(LOG_CHANNEL_ID);
+        if (logChannel) {
+            await logChannel.send({ embeds: [joinEmbed] });
+        } else {
+        console.log('Log Kanal nicht gefunden');
+        }
     }
 }
