@@ -80,8 +80,8 @@ module.exports = {
 
         const joinEmbed = new EmbedBuilder()
         .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
-        .setColor('Green')
         .setDescription(`**${member.user.username}** ist dem Server beigetreten.\n\nServer beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\nAccount erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
+        .setColor('Green')
         .setTimestamp();
 
         const logChannel = await member.guild.channels.cache.get(LOG_CHANNEL_ID);
