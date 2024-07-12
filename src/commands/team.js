@@ -85,7 +85,7 @@ module.exports = {
                     interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                 }
                 break;
-                case "neu":
+                case "add":
                     try {
                         await member.roles.add(role);
             
