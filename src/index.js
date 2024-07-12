@@ -95,7 +95,7 @@ client.on("threadCreate", async (thread) => {
         const message2 = await thread2.fetchStarterMessage();
         await message2.react("1008781495055429672");
         await message2.react("1008781575644782622");
-        await message2.edit({ content: `\`👋\` » Hey ${member}, Ich habe die Idee ${thread.name} für dich eingereicht.`, embeds: [embed] })
+        await message2.edit({ content: `\`👋\` » Hey ${member}, Ich habe die Idee (${thread.name}) für dich eingereicht.`, embeds: [embed] })
         await thread.delete()
     }
 });
