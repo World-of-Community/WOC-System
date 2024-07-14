@@ -29,15 +29,15 @@ module.exports = {
         const member = interaction.member;
 
         const createdAt = `<t:${Math.round(server.createdTimestamp / 1000)}:F>`;
-        const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}:F>`;
+        const joinedAt = `<t:${Math.round(interaction.member.joinedTimestamp / 1000)}:F>`;
 
         const gebannt = await interaction.guild.roles.cache.get('886989738244964362')
-        const roleCountg = gebannt.members.size
+        const roleCountg = gebannt ? gebannt.members.size : 0;
 
         const emojiCount = message.guild.emojis.cache.size;
 
-        const boosters = message.guild.members.cache.filter(member => member.premiumSince);
-
+        const boosters = guild.members.cache.filter(member => member.premiumSince);
+        let boosterMentions = '**Kein Booster**';
         if (boosters.size > 0) {
             const boosterMentions = boosters.map(member => member.toString()).join(', ');
         }
