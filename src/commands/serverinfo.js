@@ -25,6 +25,8 @@ module.exports = {
         //const year = creationDate.getFullYear();
         //const formattedDate = `${day}.${month}.${year}`;
 
+        const server = interaction.guild;
+
         const createdAt = `<t:${Math.round(server.create.createdTimestamp / 1000)}>`;
         const joinedAt = `<t:${Math.round(server.join.joinedTimestamp / 1000)}>`;
 
