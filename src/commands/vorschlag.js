@@ -3,7 +3,7 @@ const { SlashCommandBuilder, PermissionsBitField, ButtonBuilder, ButtonStyle, Ac
 module.exports = {
    data: new SlashCommandBuilder()
       .setName('vorschlag')
-      .setDescription('💡 | Verwalte ein Vorschlag')
+      .setDescription('» Verwalte ein Vorschlag. 💡')
       .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageChannels),
 
 async execute(interaction, client) {
