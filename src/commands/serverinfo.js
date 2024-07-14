@@ -20,18 +20,30 @@ module.exports = {
 
         // Formatierung des Erstellungsdatums
         const creationDate = guild.createdAt;
-        const day = String(creationDate.getDate()).padStart(2, '0');
-        const month = String(creationDate.getMonth() + 1).padStart(2, '0'); // Monate sind 0-indiziert
-        const year = creationDate.getFullYear();
+        //const day = String(creationDate.getDate()).padStart(2, '0');
+        //const month = String(creationDate.getMonth() + 1).padStart(2, '0'); // Monate sind 0-indiziert
+        //const year = creationDate.getFullYear();
         const formattedDate = `${day}.${month}.${year}`;
+
+        const createdAt = `<t:${Math.round(server.create.createdTimestamp / 1000)}>`;
+        const joinedAt = `<t:${Math.round(server.join.joinedTimestamp / 1000)}>`;
 
         const gebannt = await interaction.guild.roles.cache.get('886989738244964362')
         const roleCountg = gebannt.members.size
 
+        const emojiCount = message.guild.emojis.cache.size;
+
+        const boosters = message.guild.members.cache.filter(member => member.premiumSince);
+
+        if (boosters.size > 0) {
+            const boosterMentions = boosters.map(member => member.toString()).join(', ');
+        }
+
         const serverEmbed = new EmbedBuilder()
-            .setTitle('Unsere Server Information')
-            .setDescription(`> \`⏰\` » **Server Erstellt:** \`${formattedDate}\`\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount}\`\n> \`👤\` » **User:** \`${userCount}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers}\`\n> \`⛔\` » **im Bann Bereich:** \`${roleCountg}\`\n\n> <a:nitro:1186636151335944283> » **Server Boosts:** \`${interaction.guild.premiumSubscriptionCount}\``)
+            .setTitle(`${interaction.guild.name} Server Information`)
+            .setDescription(`> \`⏰\` » **Server Erstellt:** ${createdAt} (${joinedAt})\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount}\`\n> \`👤\` » **User:** \`${userCount}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers}\`\n> \`⛔\` » **im Bann Bereich:** \`${roleCountg}\`\n\n> <a:nitro:1186636151335944283> » **Server Boosts:** \`${interaction.guild.premiumSubscriptionCount}\`\n\`💖\` » Server Booster: ${boosterMentions}\n\n> \`🎭\` » Wir haben aktuell **${emojiCount}** Emotes.`)
             .setColor('Blurple')
+            .setThumbnail(guild.iconURL({ dynamic: true }))
             .setFooter({ text: `${interaction.guild.name} | Server Information`, iconURL: `${interaction.guild.iconURL()}` });
 
         interaction.reply({ embeds: [serverEmbed], ephemeral: true });
