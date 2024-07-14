@@ -34,7 +34,7 @@ module.exports = {
         const gebannt = await interaction.guild.roles.cache.get('886989738244964362')
         const roleCountg = gebannt ? gebannt.members.size : 0;
 
-        const emojiCount = message.guild.emojis.cache.size;
+        const emojiCount = guild.emojis.cache.size;
 
         const boosters = guild.members.cache.filter(member => member.premiumSince);
         let boosterMentions = '**Kein Booster**';
