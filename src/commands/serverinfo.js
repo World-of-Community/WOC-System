@@ -48,7 +48,7 @@ module.exports = {
 
         const serverEmbed = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} - Server Information`)
-            .setDescription(`> \`⏰\` » **Server Erstellt:** ${createdAt} (${joinedAt})\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount}\`\n> \`👤\` » **User:** \`${userCount}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers}\`\n> \`⛔\` » **im Bann Bereich:** \`${roleCountg}\`\n\n> <a:nitro:1186636151335944283> » **Server Boosts:** (\`${interaction.guild.premiumSubscriptionCount}\`)\n> \`💖\` » Server Booster: ${boosterMentions}\n\n> \`🎭\` » Wir haben aktuell **${emojiCount}** Emotes.`)
+            .setDescription(`> \`⏰\` » **Server Erstellt:** ${createdAt} (${joinedAt})\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount}\`\n> \`👤\` » **User:** \`${userCount}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers}\`\n> \`⛔\` » **im Bann Bereich:** \`${roleCountg}\`\n\n> <a:nitro:1186636151335944283> » **Server Boost Level:** **${guild.premiumTier}** (**${interaction.guild.premiumSubscriptionCount}** Boosts)\n> \`💖\` » **Server Booster:** ${boosterMentions}\n\n> \`🎭\` » Wir haben aktuell **${emojiCount}** Emotes.`)
             .setColor('Blurple')
             .setThumbnail(guild.iconURL({ dynamic: true }))
             .setFooter({ text: `${interaction.guild.name} | Server Information`, iconURL: `${interaction.guild.iconURL()}` });
