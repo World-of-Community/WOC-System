@@ -117,7 +117,7 @@ module.exports = {
             const regelwerkEmbed = new EmbedBuilder()
                 .setTitle('`🚨` » World Of Community - Server-Regeln')
                 .setDescription('» An diesen Regeln musst du dich jederzeit halten, damit wir eine friedliche Atmosphäre wahren können. Solltest du dies nicht tun, können Sanktionen gegen deinem Account folgen.\n\n <:Pfeil:1119709908540076124> **Bei der Nutzung dieses Discord Servers bist du automatisch mit den Regeln einverstanden.**\n\n─────────────────────────\n\n1️⃣ 𑁉 Behandle alle Mitglieder stets respektvoll. Wir tolerieren keine Streitigkeiten oder andere toxischen Inhalte im Chat!\n\n2️⃣ 𑁉 NSFW-Inhalte (Nacktheit, Gewalt & mehr) können verstörend auf Mitglieder wirken und sind daher untersagt.\n\n3️⃣ 𑁉 Übersteuerte Geräusche & flackernde Emojis sind verboten, da sie das Wohlempfinden beeinträchtigen können.\n\n4️⃣ 𑁉 Werbung ist nur in den dazugehörigen Textkanälen gestattet, um unsere Mitglieder nicht unnötig zu nerven.\n\n5️⃣ 𑁉 Spam jeglicher Art (Doppelte Nachrichten, Channelhopping & u.ä.) ist aufgrund von Levelvorteilen verboten.\n\n6️⃣ 𑁉 Das Ausgeben von andere Nutzer, Mitglieder oder Teammitglieder ist untersagt und führt zur Sperrung.\n\n7️⃣ 𑁉 Postet auf keinen Fall irgendwelche privaten Adressen oder Telefonnummern in den Öffentlichen Chat, egal ob von euch oder jemand anderen.\n\n8️⃣ 𑁉 Unwissenheit schützt nicht vor einer Strafe. Allerdings hast du das Recht, einen Antrag auf Entsperrung bei uns einzureichen.\n\n9️⃣ 𑁉 Das Betteln um Ränge oder Berechtigungen ist ebenfalls untersagt.\n\n🔟 𑁉 Stimmverzerrer oder Soundboards sind nur gestattet, wenn dies ein Teammitglied erlaubt.')
-                .setColor('#c53a2b')
+                .setColor('Red')
                 .setImage('https://cdn.discordapp.com/attachments/943859953318371359/1045406350903095357/WOC_Server_Regeln.png')
                 .setFooter({ text: 'Du erklärst dich mit diesen Regeln bei der Nutzung unseres Discord-Servers einverstanden.', iconURL: 'https://media.discordapp.net/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
 
@@ -129,6 +129,59 @@ module.exports = {
                         .setStyle(ButtonStyle.Danger)
                 )
             await message.channel.send({ embeds: [regelwerkEmbed], components: [regelButton] })
+        }
+
+        if (message.content === '/bump') {
+            const roleId = '1242417592530894848'; // Die ID der Rolle, die du vergeben möchtest
+            const duration = 2 * 60 * 60 * 1000; // 3 Stunden in Millisekunden
+            const logChannelId = '1242799344692887662'; // Die ID des Kanals für die Protokollierung
+    
+            try {
+                // Rolle finden
+                const role = message.guild.roles.cache.get(roleId);
+                if (!role) {
+                    console.error('Rolle nicht gefunden');
+                    return;
+                }
+    
+                // Benutzerrolle hinzufügen
+                await message.member.roles.add(roleId);
+    
+                // Embed an den Benutzer senden
+                const BumpEmbed = new EmbedBuilder()
+                    .setTitle('Rolle erhalten')
+                    .setDescription(`Du hast die Rolle ${role.name} für **2 Stunden** erhalten.`)
+                    .setColor('Blurple');
+    
+                await message.channel.send({ embeds: [BumpEmbed] });
+
+                // Embed nach 10 Sekunden löschen
+                setTimeout(async () => {
+                    await sentMessage.delete();
+                }, 10000); // 10000 Millisekunden = 10 Sekunden
+    
+                // Zeitgesteuerte Rollenentfernung
+                setTimeout(async () => {
+                    await message.member.roles.remove(roleId);
+    
+                    // Embed für die Protokollierung erstellen
+                    const logChannel = message.guild.channels.cache.get(logChannelId);
+                    if (logChannel && logChannel.isText()) {
+                        const BumpEmbedLog = new EmbedBuilder()
+                            .setTitle('Rolle Entfernt')
+                            .setDescription(`Die Rolle ${role.name} wurde von ${message.author.displayName} nach 2 Stunden entfernt.`)
+                            .setColor('Red')
+                            .setTimestamp();
+    
+                        await logChannel.send({ embeds: [BumpEmbedLog] });
+                    } else {
+                        console.error('Log-Kanal nicht gefunden oder ungültig');
+                    }
+                }, duration);
+    
+            } catch (error) {
+                console.error('Fehler beim Vergeben der Rolle:', error);
+            }
         }
 
         // Partner bewerben
