@@ -23,7 +23,7 @@ module.exports = {
         //const day = String(creationDate.getDate()).padStart(2, '0');
         //const month = String(creationDate.getMonth() + 1).padStart(2, '0'); // Monate sind 0-indiziert
         //const year = creationDate.getFullYear();
-        const formattedDate = `${day}.${month}.${year}`;
+        //const formattedDate = `${day}.${month}.${year}`;
 
         const createdAt = `<t:${Math.round(server.create.createdTimestamp / 1000)}>`;
         const joinedAt = `<t:${Math.round(server.join.joinedTimestamp / 1000)}>`;
