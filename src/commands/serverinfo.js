@@ -28,8 +28,8 @@ module.exports = {
         const server = interaction.guild;
         const member = interaction.member;
 
-        const createdAt = `<t:${Math.round(server.create.createdTimestamp / 1000)}:F>`;
-        const joinedAt = `<t:${Math.round(member.join.joinedTimestamp / 1000)}:F>`;
+        const createdAt = `<t:${Math.round(server.createdTimestamp / 1000)}:F>`;
+        const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}:F>`;
 
         const gebannt = await interaction.guild.roles.cache.get('886989738244964362')
         const roleCountg = gebannt.members.size
