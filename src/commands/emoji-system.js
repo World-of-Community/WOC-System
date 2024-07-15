@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Dateipfad zur JSON-Datei
-const filePath = path.join(__dirname, '../../json/config.json');
+const filePath = path.join(__dirname, '../../json/emoji.json');
 
 // Funktion zum Laden der JSON-Daten
 function loadConfig() {
@@ -15,8 +15,8 @@ function loadConfig() {
 }
 
 // Funktion zum Speichern der JSON-Daten
-function saveConfig(config) {
-    fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
+function saveConfig(emoji) {
+    fs.writeFileSync(filePath, JSON.stringify(emoji, null, 2));
 }
 
 module.exports = {
