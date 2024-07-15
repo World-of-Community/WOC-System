@@ -21,7 +21,7 @@ function saveConfig(config) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('emoji')
+        .setName('emoji-system')
         .setDescription('» Verwaltung der Emoji-Rechte für bestimmte Rollen. 🎭')
         .addSubcommand(subcommand => 
             subcommand.setName('add')
