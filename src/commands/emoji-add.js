@@ -1,5 +1,23 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const serverdb = require('../../Datenbank/serverdb');
+const fs = require('fs');
+const path = require('path');
+
+// Dateipfad zur JSON-Datei
+const filePath = path.join(__dirname, '../../json/config.json');
+
+// Funktion zum Laden der JSON-Daten
+function loadConfig() {
+    if (fs.existsSync(filePath)) {
+        const rawData = fs.readFileSync(filePath, 'utf-8');
+        return JSON.parse(rawData);
+    }
+    return {};
+}
+
+// Funktion zum Speichern der JSON-Daten
+function saveConfig(config) {
+    fs.writeFileSync(filePath, JSON.stringify(config, null, 2));
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -24,37 +42,46 @@ module.exports = {
                 .setDescription('» Zeige alle Rollen an, die Emojis verwenden dürfen.')),
 
     async execute(interaction) {
+        const config = loadConfig();
+
         if (!interaction.member.permissions.has('Administrator')) {
             return interaction.reply({ content: '> `❌` » Du hast keine Rechte, diesen Befehl zu benutzen.', ephemeral: true });
         }
 
+        const guildID = interaction.guild.id;
+
         if (interaction.options.getSubcommand() === 'add') {
             const role = interaction.options.getRole('role');
-            const data = await serverdb.findOne({ guildID: interaction.guild.id, emojiRoles: { $in: [role.id] } });
 
-            if (data) {
+            if (config[guildID] && config[guildID].includes(role.id)) {
                 return interaction.reply({ content: `> ⚠️ » Die Rolle ${role} ist bereits hinzugefügt.`, ephemeral: true });
             }
 
-            await serverdb.findOneAndUpdate({ guildID: interaction.guild.id }, { $push: { emojiRoles: role.id } }, { upsert: true });
+            if (!config[guildID]) {
+                config[guildID] = [];
+            }
+
+            config[guildID].push(role.id);
+            saveConfig(config);
+
             return interaction.reply({ content: `> \`✅\` » Du hast die Rolle ${role} erfolgreich hinzugefügt.`, ephemeral: true });
         }
 
         if (interaction.options.getSubcommand() === 'remove') {
             const role = interaction.options.getRole('role');
-            const data = await serverdb.findOne({ guildID: interaction.guild.id, emojiRoles: { $in: [role.id] } });
 
-            if (!data) {
+            if (!config[guildID] || !config[guildID].includes(role.id)) {
                 return interaction.reply({ content: '> ⚠️ » Diese Rolle ist nicht in der Liste.', ephemeral: true });
             }
 
-            await serverdb.findOneAndUpdate({ guildID: interaction.guild.id }, { $pull: { emojiRoles: role.id } });
+            config[guildID] = config[guildID].filter(id => id !== role.id);
+            saveConfig(config);
+
             return interaction.reply({ content: `> \`✅\` » Du hast die Rolle ${role} erfolgreich entfernt.`, ephemeral: true });
         }
 
         if (interaction.options.getSubcommand() === 'list') {
-            const serverData = await serverdb.findOne({ guildID: interaction.guild.id });
-            const roleListe = serverData?.emojiRoles?.map(roleId => `<@&${roleId}>`).join('\n') || 'Keine Rollen als Emoji-Bypass aufgelistet.';
+            const roleListe = config[guildID]?.map(roleId => `<@&${roleId}>`).join('\n') || 'Keine Rollen als Emoji-Bypass aufgelistet.';
 
             const embed = new EmbedBuilder()
                 .setTitle('ROLLENINFO `/emoji`')
