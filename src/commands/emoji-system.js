@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Dateipfad zur JSON-Datei
-const filePath = path.join(__dirname, '../.src/json/emoji.json');
+const filePath = path.join(__dirname, '../.src/json/config.json');
 
 // Funktion zum Laden der JSON-Daten
 function loadConfig() {
