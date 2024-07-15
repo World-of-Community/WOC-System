@@ -74,6 +74,10 @@ const serverSchema = new mongoose.Schema({
         type: Object,
         required: false,
     },
+    EmojiroleBypass: {
+        type: Object,
+        required: false,
+    },
 });
 
 module.exports = mongoose.model('server-data', serverSchema)
