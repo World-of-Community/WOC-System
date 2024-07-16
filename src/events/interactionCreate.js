@@ -443,7 +443,7 @@ module.exports = {
                     ]
                 })
                 await interaction.message.edit({ components: [] })
-                await interaction.reply(`> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** angenommen.`)
+                await interaction.reply(`> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** angenommen. \`✅\``)
 
             }
 
@@ -455,7 +455,7 @@ module.exports = {
                     embeds: [
                         new EmbedBuilder()
                             .setTitle("`❌` » ANFRAGE ABGELEHNT")
-                            .setDescription(`> » Deine Server-Partner Bewerbung auf **${interaction.guild.name}** wurde abgelehnt.`)
+                            .setDescription(`> » Deine Server-Partner Bewerbung auf **${interaction.guild.name}** wurde abgelehnt. \`❌\``)
                             .setColor("Red")
                     ]
                 })
