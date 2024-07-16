@@ -443,7 +443,7 @@ module.exports = {
                     ]
                 })
                 await interaction.message.edit({ components: [] })
-                await interaction.reply(`> » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** angenommen.`)
+                await interaction.reply(`> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** angenommen.`)
 
             }
 
@@ -460,7 +460,7 @@ module.exports = {
                     ]
                 })
                 await interaction.message.edit({ components: [] })
-                await interaction.reply(`> » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** abgelehnt.`)
+                await interaction.reply(`> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** abgelehnt.`)
             }
 
             if(interaction.customId === "vorschlag_accept") {
