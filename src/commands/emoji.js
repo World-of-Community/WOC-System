@@ -1,16 +1,22 @@
 const { SlashCommandBuilder, PermissionsBitField } = require("discord.js");
 const userdb = require("../../Datenbank/userdb");
+const fs = require("fs")
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('emoji')
         .setDescription('» Lege eine eigene Ping-Reaktion fest. 📌')
-        .addStringOption(option => option.setName('emoji').setDescription('» Wähle bis zu 3 Emojis').setRequired(true))
-        .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
+        .addStringOption(option => option.setName('emoji').setDescription('» Wähle bis zu 3 Emojis').setRequired(true)),
 
         async execute(interaction) {
-        
-            const emojisInput = await interaction.options.getString('emoji')
+
+        const config = JSON.parse(fs.readFileSync("config.json", 'utf8'));
+
+        let hasRole = config.emojiroles.some(roleId => member.roles.cache.has(roleId));
+
+        if(!hasRole) return interaction.reply({ content: '> `❌` » Test', ephemeral: true })
+
+        const emojisInput = await interaction.options.getString('emoji')
         const userData = await userdb.findOne({ userID: interaction.user.id })
         
         if (!userData) return;
