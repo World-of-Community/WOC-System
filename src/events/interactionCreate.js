@@ -612,10 +612,7 @@ module.exports = {
                     }
                 })
                 })
-
-            }
-
-        }
+            }}
 
         if(interaction.isChatInputCommand()) {
 
