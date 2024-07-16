@@ -14,7 +14,7 @@ module.exports = {
 
         let hasRole = config.emojiroles.some(roleId => interaction.member.roles.cache.has(roleId));
 
-        if(!hasRole) return interaction.reply({ content: '> `❌` » Test', ephemeral: true })
+        if(!hasRole) return interaction.reply({ content: '> `❌` » Du hast keine Berechtigte Rolle um diesen Befehl zu benutzen.', ephemeral: true })
 
         const emojisInput = await interaction.options.getString('emoji')
         const userData = await userdb.findOne({ userID: interaction.user.id })
