@@ -243,6 +243,33 @@ module.exports = {
                 });
             });
         }
+
+        const roleId = '1242417592530894848';
+
+        if (!interaction.isCommand()) return;
+
+        const { commandName } = interaction;
+        
+        if (commandName === 'bump') {
+            const role = interaction.guild.roles.cache.get(roleId); // Rolle anhand der ID finden
+            if (!role) return interaction.reply({ text: `> \`❗\` »  Die Rolle existiert nicht.`, ephemeral: true });
+
+            const member = interaction.member;
+
+            try {
+                await member.roles.add(role);
+                await interaction.reply(`> \`✅\` » Du hast die Rolle ${role} für **2 Stunden** erhalten!`);
+
+                // Entferne die Rolle nach 2 Stunden (7200000 ms)
+                setTimeout(async () => {
+                    await member.roles.remove(role);
+                    member.send({ text: `> \`❗\` » Deine Rolle ${role} ist gerade abgelaufen (Du hattest die Rolle für: \`2 Stunden\`)`, ephemeral: true })
+                }, 7200000);
+            } catch (error) {
+                console.error(error);
+                interaction.reply({ text: '> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.', ephemeral: true });
+            }
+        }
         
         // Bann Button
          if (interaction.isButton()) {

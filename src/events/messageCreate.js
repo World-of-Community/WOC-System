@@ -131,59 +131,6 @@ module.exports = {
             await message.channel.send({ embeds: [regelwerkEmbed], components: [regelButton] })
         }
 
-        if (message.content === '/bump') {
-            const roleId = '1242417592530894848'; // Die ID der Rolle, die du vergeben möchtest
-            const duration = 2 * 60 * 60 * 1000; // 3 Stunden in Millisekunden
-            const logChannelId = '1242799344692887662'; // Die ID des Kanals für die Protokollierung
-    
-            try {
-                // Rolle finden
-                const role = message.guild.roles.cache.get(roleId);
-                if (!role) {
-                    console.error('Rolle nicht gefunden');
-                    return;
-                }
-    
-                // Benutzerrolle hinzufügen
-                await message.member.roles.add(roleId);
-    
-                // Embed an den Benutzer senden
-                const BumpEmbed = new EmbedBuilder()
-                    .setTitle('Rolle erhalten')
-                    .setDescription(`Du hast die Rolle ${role.name} für **2 Stunden** erhalten.`)
-                    .setColor('Blurple');
-    
-                await message.channel.send({ embeds: [BumpEmbed] });
-
-                // Embed nach 10 Sekunden löschen
-                setTimeout(async () => {
-                    await sentMessage.delete();
-                }, 10000); // 10000 Millisekunden = 10 Sekunden
-    
-                // Zeitgesteuerte Rollenentfernung
-                setTimeout(async () => {
-                    await message.member.roles.remove(roleId);
-    
-                    // Embed für die Protokollierung erstellen
-                    const logChannel = message.guild.channels.cache.get(logChannelId);
-                    if (logChannel && logChannel.isText()) {
-                        const BumpEmbedLog = new EmbedBuilder()
-                            .setTitle('Rolle Entfernt')
-                            .setDescription(`Die Rolle ${role.name} wurde von ${message.author.displayName} nach 2 Stunden entfernt.`)
-                            .setColor('Red')
-                            .setTimestamp();
-    
-                        await logChannel.send({ embeds: [BumpEmbedLog] });
-                    } else {
-                        console.error('Log-Kanal nicht gefunden oder ungültig');
-                    }
-                }, duration);
-    
-            } catch (error) {
-                console.error('Fehler beim Vergeben der Rolle:', error);
-            }
-        }
-
         // Partner bewerben
         if (message.content === '!partner') {
             if (!message.member.permissions.has('Administrator')) return;
