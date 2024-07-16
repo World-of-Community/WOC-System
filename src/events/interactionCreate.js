@@ -651,10 +651,10 @@ module.exports = {
                 console.error(error)
 
                 if (interaction.deferred || interaction.replied) {
-                    interaction.editReply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!"})
+                    interaction.editReply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten! Bitte gebe einem Teammitglied bescheid.", ephemeral: true })
                 }
                 else {
-                    interaction.reply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!", ephemeral: true})
+                    interaction.reply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten! Bitte gebe einem Teammitglied bescheid.", ephemeral: true })
                 }
             }
         }
