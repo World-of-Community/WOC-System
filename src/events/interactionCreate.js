@@ -500,6 +500,7 @@ module.exports = {
                                     }
                                 ]
                                 )
+                                embed.setFooter(vorschlagsembed.footer);
                                 await message.edit({ embeds: [embed], components: [] });
                             
                                 channel.setLocked(true)
@@ -547,6 +548,7 @@ module.exports = {
                                     }
                                 ]
                                 )
+                                embed.setFooter(vorschlagsembed.footer);
                                 await message.edit({ embeds: [embed], components: [] });
                             
                                 channel.setLocked(true)
@@ -597,9 +599,8 @@ module.exports = {
                           name: "`🚪` » **Status**",
                           value: "» Dieser Vorschlag wurde vom Team abgelehnt.\n**Grund:** `" + grund +"`"
                       }
-                  ]
-                  )
-            
+                    ])
+                    embed.setFooter(vorschlagsembed.footer);
                     await message.edit({ embeds: [embed], components: [] });
                 
                     channel.setLocked(true)
