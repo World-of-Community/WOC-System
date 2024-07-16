@@ -10,7 +10,7 @@ module.exports = {
 
         async execute(interaction) {
 
-        const config = JSON.parse(fs.readFileSync("config.json", 'utf8'));
+        const config = JSON.parse(fs.readFileSync("../json/config.json", 'utf8'));
 
         let hasRole = config.emojiroles.some(roleId => member.roles.cache.has(roleId));
 
