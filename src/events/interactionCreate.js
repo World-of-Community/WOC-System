@@ -434,7 +434,6 @@ module.exports = {
                 const list = await interaction.customId.split("_")
                 const id = list[2]
                 const user = await interaction.client.users.fetch(id)
-                const partnermanager = await interaction.user.cache.get('1175879013688954980')
                 await user.send({
                     embeds: [
                         new EmbedBuilder()
@@ -444,7 +443,7 @@ module.exports = {
                     ]
                 })
                 await interaction.message.edit({ components: [] })
-                await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von ${partnermanager} angenommen.`)
+                await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von ${interaction.user.displayName} angenommen.`)
 
             }
 
@@ -461,7 +460,7 @@ module.exports = {
                     ]
                 })
                 await interaction.message.edit({ components: [] })
-                await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von **${partnermanager}** abgelehnt.`)
+                await interaction.reply(`> » Die **Server-Partner Anfrage** wurde von **${interaction.user.displayName}** abgelehnt.`)
             }
 
             if(interaction.customId === "vorschlag_accept") {
