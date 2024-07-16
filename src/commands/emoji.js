@@ -12,7 +12,7 @@ module.exports = {
 
         const config = JSON.parse(fs.readFileSync("src/json/config.json", 'utf8'));
 
-        let hasRole = config.emojiroles.some(roleId => member.roles.cache.has(roleId));
+        let hasRole = config.emojiroles.some(roleId => interaction.member.roles.cache.has(roleId));
 
         if(!hasRole) return interaction.reply({ content: '> `❌` » Test', ephemeral: true })
 
