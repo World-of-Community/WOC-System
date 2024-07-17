@@ -536,7 +536,7 @@ module.exports = {
             if(interaction.customId === "vorschlag_edit") {
                 const modal = new ModalBuilder()
                 .setCustomId("editreason")
-                .setTitle("⚙️〡In Planung");
+                .setTitle("⚙️ | In Planung");
           
               const textInputAccept = new TextInputBuilder()
                 .setCustomId("grund")
