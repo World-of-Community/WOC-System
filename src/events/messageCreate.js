@@ -132,23 +132,29 @@ module.exports = {
         }
 
         // Erste Nachricht vom Nutzer
-        let member = message.guild.members.cache.get(message.author.id);
+        if (!message.guild || message.author.bot) return;
 
-        const welcomeKanal = member.guild.channels.cache.find(channel => channel.id === '815922756918181898'); // Change 'welcome' to the id of your channel
-        if (!welcomeKanal) return;
+        const member = message.member;
+        const welcomeChannelId = '815922756918181898';
+        const welcomeKanal = message.guild.channels.cache.get(welcomeChannelId);
 
-        const button = new ButtonBuilder()
-        .setCustomId('claim_reward')
-        .setLabel('» Belohnung abholen')
-        .setStyle(ButtonStyle.Success)
-        .setEmoji('<a:Gewinnspiel:968876390982234202>')
+        const messages = await message.channel.messages.fetch({ limit: 10 });
+        const userMessages = messages.filter(msg => msg.author.id === member.id);
+
+        if (userMessages.size === 1) {
+            const button = new ButtonBuilder()
+            .setCustomId('claim_reward')
+            .setLabel('» Belohnung abholen')
+            .setStyle(ButtonStyle.Success)
+            .setEmoji('<a:Gewinnspiel:968876390982234202>');
 
         const row = new ActionRowBuilder().addComponents(button);
 
         await welcomeKanal.send({
-            content: `Hey ${member},\n\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!\n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. 🎁`,
+            content: `\`🎁\` | Hey ${member},\n\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!\n\nKlicke unten auf den Button, um dir eine kleine Belohnung abzuholen. <a:Gift:1263043283555319941>`,
             components: [row]
-        });
+           });
+        }
 
         // Partner bewerben
         if (message.content === '!partner') {
