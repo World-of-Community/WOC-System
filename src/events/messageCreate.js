@@ -131,6 +131,24 @@ module.exports = {
             await message.channel.send({ embeds: [regelwerkEmbed], components: [regelButton] })
         }
 
+        // Erste Nachricht vom Nutzer
+
+        const welcomeKanal = member.guild.channels.cache.find(channel => channel.id === '815922756918181898'); // Change 'welcome' to the id of your channel
+        if (!welcomeKanal) return;
+
+        const button = new ButtonBuilder()
+        .setCustomId('claim_reward')
+        .setLabel('» Belohnung abholen')
+        .setStyle(ButtonStyle.Success)
+        .setEmoji('<a:Gewinnspiel:968876390982234202>');
+
+        const row = new ActionRowBuilder().addComponents(button);
+
+        await welcomeKanal.send({
+            content: `Hey ${member},\n\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!\n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. 🎁`,
+            components: [row]
+        });
+
         // Partner bewerben
         if (message.content === '!partner') {
             if (!message.member.permissions.has('Administrator')) return;
