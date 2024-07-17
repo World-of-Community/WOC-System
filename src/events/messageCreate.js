@@ -143,7 +143,7 @@ module.exports = {
         .setCustomId('claim_reward')
         .setLabel('» Belohnung abholen')
         .setStyle(ButtonStyle.Success)
-        .setEmoji('<a:Gewinnspiel:968876390982234202>');
+        .setEmoji('<a:Gewinnspiel:968876390982234202>')
 
         const row = new ActionRowBuilder().addComponents(button);
 
