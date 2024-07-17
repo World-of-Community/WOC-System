@@ -132,8 +132,6 @@ module.exports = {
         }
 
         // Erste Nachricht vom Nutzer
-
-        // Correctly defining `member`
         let member = message.guild.members.cache.get(message.author.id);
 
         const welcomeKanal = member.guild.channels.cache.find(channel => channel.id === '815922756918181898'); // Change 'welcome' to the id of your channel

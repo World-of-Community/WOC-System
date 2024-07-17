@@ -90,23 +90,5 @@ module.exports = {
         } else {
         console.log('Log Kanal nicht gefunden');
         }
-
-        //const welcomeKanal = member.guild.channels.cache.find(channel => channel.id === '815922756918181898'); // Change 'welcome' to the id of your channel
-        //if (!welcomeKanal) return;
-
-        const welcomeEmbed = new EmbedBuilder()
-        .setTitle('<a:discordbloblove:855482395325890570> | Herzlich Willkommen')
-        .setDescription(`Hey ${member},\n\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!\n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. 🎁`)
-        .setColor('Blurple');
-
-        const button = new ButtonBuilder()
-        .setCustomId('claim_reward')
-        .setLabel('» Belohnung abholen')
-        .setStyle(ButtonStyle.Success)
-        .setEmoji('<a:Gewinnspiel:968876390982234202>');
-
-        const row = new ActionRowBuilder().addComponents(button);
-
-        await welcomeKanal.send({ embeds: [welcomeEmbed], components: [row] });
     }
 }

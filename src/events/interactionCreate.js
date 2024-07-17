@@ -192,7 +192,7 @@ module.exports = {
             }
         }
 
-        // Seite 2
+        // Server-Regeln Seite 2
         if (interaction.customId === 'seite-2') {
             const seite2Embed = new EmbedBuilder()
                 .setTitle('`🚨` » World Of Community - Server-Regeln (Seite 2)')
@@ -244,6 +244,7 @@ module.exports = {
             });
         }
 
+        // Bump System
         const roleId = '1242417592530894848';
 
         if (!interaction.isCommand()) return;
@@ -251,7 +252,7 @@ module.exports = {
         const { commandName } = interaction;
         
         if (commandName === 'bump') {
-            const role = interaction.guild.roles.cache.get(roleId); // Rolle anhand der ID finden
+            const role = interaction.guild.roles.cache.get(roleId);
             if (!role) return interaction.reply({ text: `> \`❗\` »  Die Rolle existiert nicht.`, ephemeral: true });
 
             const member = interaction.member;
@@ -279,7 +280,6 @@ module.exports = {
             { text: '5 Level', probability: 0.05 },
         ];
 
-        // Function to select a reward based on probabilities
         function selectReward() {
             const rand = Math.random();
             let sum = 0;
@@ -288,7 +288,7 @@ module.exports = {
                 if (rand < sum) {
                     return reward;
             }
-            return rewards[0]; // Fallback in case of rounding errors
+            return rewards[0];
             }
         }
 
@@ -518,6 +518,7 @@ module.exports = {
                 await interaction.reply(`> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** abgelehnt.`)
             }
 
+            // Server Ideen / Vorschlag
             if(interaction.customId === "vorschlag_accept") {
                 const modal = new ModalBuilder()
                 .setCustomId("acceptreason")
