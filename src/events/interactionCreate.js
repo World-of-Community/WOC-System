@@ -271,33 +271,6 @@ module.exports = {
                 interaction.reply({ text: '> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.', ephemeral: true });
             }
         }
-
-        const rewards = [
-            { text: '1 Level', probability: 0.40 },
-            { text: '2 Level', probability: 0.35 },
-            { text: '3 Level', probability: 0.20 },
-            { text: '4 Level', probability: 0.10 },
-            { text: '5 Level', probability: 0.05 },
-        ];
-
-        function selectReward() {
-            const rand = Math.random();
-            let sum = 0;
-            for (const reward of rewards) {
-                sum += reward.probability;
-                if (rand < sum) {
-                    return reward;
-            }
-            return rewards[0];
-            }
-        }
-
-        if (!interaction.isButton()) return;
-
-        if (interaction.customId === 'claim_reward') {
-        const reward = rewards[Math.floor(Math.random() * rewards.length)];
-        await interaction.reply({ content: `<a:Gift:1263043283555319941> | ${member} du bekommst **${reward}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${(reward.probability * 100).toFixed(2)}%\`.` });
-        }
         
         // Bann Button
          if (interaction.isButton()) {
@@ -522,12 +495,12 @@ module.exports = {
             if(interaction.customId === "vorschlag_accept") {
                 const modal = new ModalBuilder()
                 .setCustomId("acceptreason")
-                .setTitle("✅〡Aktzeptieren");
+                .setTitle("✅ | Akzeptieren");
           
               const textInputAccept = new TextInputBuilder()
                 .setCustomId("grund")
                 .setLabel("» Grund")
-                .setPlaceholder("Wir haben uns dein Vorschlag...")
+                .setPlaceholder("Beispiel: Wir haben uns dein Vorschlag...")
                 .setMaxLength(60)
                 .setRequired(true)
                 .setStyle(TextInputStyle.Short);
@@ -544,26 +517,18 @@ module.exports = {
                                 const vorschlagsembed = message.embeds[0];
 
                                 const embed = new EmbedBuilder()
-                                embed.setColor("Green")
+                                embed.setAuthor({ name: `» Aktzeptiert von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
                                 embed.setTitle(vorschlagsembed.title)
                                 embed.setDescription(vorschlagsembed.description)
-                                embed.setAuthor({ name: `» Aktzeptiert von ${inter.member.user.tag}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
-                                embed.addFields([
-                                    {
-                                        name: "`🚪` » **Status**",
-                                        value: "› Dieser Vorschlag wurde vom Team akzeptiert.\n**Grund:** `" + grund +"`"
-                                    }
-                                ]
-                                )
+                                embed.addFields({ name: "`✅` » **Status**", value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` })
+                                embed.setColor("Green")
+                                embed.setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909598311616523/WOC_Banner_Server_Idee_Akzeptiert.jpg?ex=6698e9b8&is=66979838&hm=23974e4bb3171d7bd0367898d8c7bddfac270a1610395fd5ea9b524c223f1e06&')
                                 embed.setFooter(vorschlagsembed.footer);
                                 await message.edit({ embeds: [embed], components: [] });
                             
                                 channel.setLocked(true)
 
-                                await inter.reply({
-                                    content: "`✅` » Der Vorschlag wurde angenommen",
-                                    ephemeral: true,
-                                });
+                                await inter.reply({ content: "`✅` » Der Vorschlag wurde angenommen", ephemeral: true });
                             }
                         })
                 })
@@ -592,26 +557,18 @@ module.exports = {
                                 const vorschlagsembed = message.embeds[0];
 
                                 const embed = new EmbedBuilder()
-                                embed.setColor("Grey")
                                 embed.setTitle(vorschlagsembed.title)
                                 embed.setDescription(vorschlagsembed.description)
-                                embed.setAuthor({ name: `» Bearbeitet von ${inter.member.user.tag}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
-                                embed.addFields([
-                                    {
-                                        name: "`🚪` » **Status**",
-                                        value: "› Dieser Vorschlag ist bereits in Planung und wird bald umgesetzt.\n**Grund:** `" + grund +"`"
-                                    }
-                                ]
-                                )
+                                embed.setAuthor({ name: `» Bearbeitet von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
+                                embed.addFields({ name: "`🚧` » **Status**", value: `» Dieser Vorschlag ist bereits in Planung und wird bald umgesetzt.\nGrund: \`${grund}\``})
+                                embed.setColor("Orange")
+                                embed.setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909673905688618/WOC_Banner_Server_Idee_in_Planung.jpg?ex=6698e9ca&is=6697984a&hm=230bbba748a97a21eed858e66addea033043b4d3ad7beaeda06c19917f5e75c5&')
                                 embed.setFooter(vorschlagsembed.footer);
                                 await message.edit({ embeds: [embed], components: [] });
                             
                                 channel.setLocked(true)
 
-                                await inter.reply({
-                                    content: "`✅` » Der Vorschlag wurde in Planung gesetzt.",
-                                    ephemeral: true,
-                                });
+                                await inter.reply({ content: "`✅` » Der Vorschlag wurde in Planung gesetzt.", ephemeral: true });
                             }
                         })
                 })
@@ -619,12 +576,12 @@ module.exports = {
             if(interaction.customId === "vorschlag_delice") {
                 const modal = new ModalBuilder()
                 .setCustomId("delicereason")
-                .setTitle("❌〡Ablehnen");
+                .setTitle("❌ | Ablehnen");
           
               const textInputAccept = new TextInputBuilder()
                 .setCustomId("grund")
                 .setLabel("» Grund")
-                .setPlaceholder("Existiert schon")
+                .setPlaceholder("Beispiel: Existiert schon")
                 .setMaxLength(60)
                 .setRequired(true)
                 .setStyle(TextInputStyle.Short);
@@ -641,29 +598,18 @@ module.exports = {
                     const vorschlagsembed = message.embeds[0];
                 
                     const embed = new EmbedBuilder()
-                    .setColor("Red")
+                    .setAuthor({ name: `» Abgelehnt von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}`})
                     .setTitle(vorschlagsembed.title)
                     .setDescription(vorschlagsembed.description)
-                    .setAuthor({
-                      name: `» Abgelehnt von ${inter.member.user.tag}`,
-                      iconURL: inter.member.user.displayAvatarURL(),
-                      url: `https://discordapp.com/users/${inter.member.user.id}`,
-                    })
-                    .addFields([
-                      {
-                          name: "`🚪` » **Status**",
-                          value: "» Dieser Vorschlag wurde vom Team abgelehnt.\n**Grund:** `" + grund +"`"
-                      }
-                    ])
+                    .addFields({ name: "`❌` » **Status**", value: `» Dieser Vorschlag wurde vom Team abgelehnt.\nGrund: \`${grund}\`` })
+                    .setColor("Red")
+                    .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909574089641984/WOC_Banner_Server_Idee_Abgelehnt.jpg?ex=6698e9b2&is=66979832&hm=fa930b40b3a36a9bc40da453d0d5e7ad94ea977d95420e06d8b5ceddb222cf31&')
                     embed.setFooter(vorschlagsembed.footer);
                     await message.edit({ embeds: [embed], components: [] });
                 
                     channel.setLocked(true)
             
-                    await inter.reply({
-                        content: "`✅` »  Der Vorschlag wurde abgelehnt",
-                        ephemeral: true,
-                      });
+                    await inter.reply({ content: "`✅` »  Der Vorschlag wurde abgelehnt", ephemeral: true });
                     }
                 })
                 })

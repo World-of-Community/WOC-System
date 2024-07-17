@@ -131,31 +131,6 @@ module.exports = {
             await message.channel.send({ embeds: [regelwerkEmbed], components: [regelButton] })
         }
 
-        // Erste Nachricht vom Nutzer
-        if (!message.guild || message.author.bot) return;
-
-        const member = message.member;
-        const welcomeChannelId = '815922756918181898';
-        const welcomeKanal = message.guild.channels.cache.get(welcomeChannelId);
-
-        const messages = await message.channel.messages.fetch({ limit: 10 });
-        const userMessages = messages.filter(msg => msg.author.id === member.id);
-
-        if (userMessages.size === 1) {
-            const button = new ButtonBuilder()
-            .setCustomId('claim_reward')
-            .setLabel('» Belohnung abholen')
-            .setStyle(ButtonStyle.Success)
-            .setEmoji('<a:Gewinnspiel:968876390982234202>');
-
-        const row = new ActionRowBuilder().addComponents(button);
-
-        await welcomeKanal.send({
-            content: `\`🎁\` | Hey ${member},\n\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!\n\nKlicke unten auf den Button, um dir eine kleine Belohnung abzuholen. <a:Gift:1263043283555319941>`,
-            components: [row]
-           });
-        }
-
         // Partner bewerben
         if (message.content === '!partner') {
             if (!message.member.permissions.has('Administrator')) return;
