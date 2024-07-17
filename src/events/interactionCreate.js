@@ -270,6 +270,34 @@ module.exports = {
                 interaction.reply({ text: '> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.', ephemeral: true });
             }
         }
+
+        const rewards = [
+            { text: '1 Level', probability: 0.40 },
+            { text: '2 Level', probability: 0.35 },
+            { text: '3 Level', probability: 0.20 },
+            { text: '4 Level', probability: 0.10 },
+            { text: '5 Level', probability: 0.05 },
+        ];
+
+        // Function to select a reward based on probabilities
+        function selectReward() {
+            const rand = Math.random();
+            let sum = 0;
+            for (const reward of rewards) {
+                sum += reward.probability;
+                if (rand < sum) {
+                    return reward;
+            }
+            return rewards[0]; // Fallback in case of rounding errors
+            }
+        }
+
+        if (!interaction.isButton()) return;
+
+        if (interaction.customId === 'claim_reward') {
+        const reward = rewards[Math.floor(Math.random() * rewards.length)];
+        await interaction.reply({ content: `<a:Gift:1263043283555319941> | ${member} du bekommst **${reward}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${(reward.probability * 100).toFixed(2)}%\`.` });
+        }
         
         // Bann Button
          if (interaction.isButton()) {
