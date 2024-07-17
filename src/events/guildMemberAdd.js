@@ -91,8 +91,8 @@ module.exports = {
         console.log('Log Kanal nicht gefunden');
         }
 
-        const welcomeKanal = member.guild.channels.cache.find(channel => channel.id === '815922756918181898'); // Change 'welcome' to the id of your channel
-        if (!welcomeKanal) return;
+        //const welcomeKanal = member.guild.channels.cache.find(channel => channel.id === '815922756918181898'); // Change 'welcome' to the id of your channel
+        //if (!welcomeKanal) return;
 
         const welcomeEmbed = new EmbedBuilder()
         .setTitle('<a:discordbloblove:855482395325890570> | Herzlich Willkommen')
