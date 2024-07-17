@@ -24,8 +24,8 @@ const deployCommands = async function deploy() {
     //    .catch(console.error)
 
     // for global commands
-restClient.delete(Routes.applicationCommands(config.application, config.server))
-.then(() => console.log('Successfully deleted application command'))
+rest.put(Routes.applicationCommands(config.application), { body: [] })
+.then(() => console.log('Successfully deleted all application commands.'))
 .catch(console.error);
 }
 
