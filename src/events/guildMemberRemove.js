@@ -14,6 +14,7 @@ module.exports = {
                 .setTitle('<:user_leave:1228329456079343731> | NUTZER VERLASSEN')
                 .setDescription(`**${member.user.displayName}** hat den Server verlassen.\n\n> Server beigetreten am: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
                 .setColor('Red')
+                .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
                 .setTimestamp();
             const logChannel = await member.guild.channels.cache.get(LOG_CHANNEL_ID);
             if (logChannel) await logChannel.send({ embeds: [leave] });
