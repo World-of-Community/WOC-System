@@ -9,6 +9,10 @@ module.exports = {
         const fragen = [
             "Was ist dein lieblings fast food Restaurant?",
             "Was ist dein Lieblingsfilm?",
+            "Was ist dein Lieblingsbuch?",
+            "Was ist dein Lieblingsessen?",
+            "Was ist dein Lieblingsspiel?",
+            "Was ist deine Lieblingsmusik?",
             "Wenn du überall auf der Welt reisen könntest, wohin würdest du gehen?",
             "Was ist dein Lieblingsbuch oder deine Lieblingsfernsehsendung?",
         ];
