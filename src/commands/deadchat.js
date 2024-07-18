@@ -19,10 +19,10 @@ module.exports = {
             .setTitle('💬 | __ZUFÄLLIGES THEMA__')
             .setDescription(`Beantworte doch gerne dieses Thema, damit ihr ein Gesprächsthema habt.\n\n> ${randomfragen}`)
             .setColor('Blurple')
-            .setFooter({ text: `» Thema gestartet von ${interaction.user.displayname}`, iconURL: `${interaction.user.displayAvatarURL()}`})
+            .setFooter({ text: `» Thema gestartet von ${interaction.user.displayName}`, iconURL: `${interaction.user.displayAvatarURL()}`})
             .setTimestamp();
 
         await interaction.reply({ embeds: [fragenEmbed] });
-        await interaction.followUp('<@&1246190426646642698>, der Chat ist inaktiv, kommt doch her und schreibt bisschen!');
+        await interaction.reply('<@&1246190426646642698>, der Chat ist inaktiv, kommt doch her und schreibt bisschen!');
     }
 }
