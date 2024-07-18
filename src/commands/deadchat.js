@@ -17,7 +17,7 @@ module.exports = {
 
         const fragenEmbed = new EmbedBuilder()
             .setTitle('💬 | __ZUFÄLLIGES THEMA__')
-            .setDescription(`Beantworte doch gerne dieses Thema, damit ihr ein Gesprächsthema habt.\n\n> ${randomfragen}\n`)
+            .setDescription(`Beantworte doch gerne dieses Thema, damit ihr ein Gesprächsthema habt.\n\n> ${randomfragen}\n⠀ ⠀⠀`)
             .setColor('Blurple')
             .setFooter({ text: `» Thema gestartet von ${interaction.user.displayName}`, iconURL: `${interaction.user.displayAvatarURL()}`})
             .setTimestamp();
