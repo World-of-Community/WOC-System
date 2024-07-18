@@ -22,7 +22,6 @@ module.exports = {
             .setFooter({ text: `» Thema gestartet von ${interaction.user.displayName}`, iconURL: `${interaction.user.displayAvatarURL()}`})
             .setTimestamp();
 
-        await interaction.reply({ embeds: [fragenEmbed] });
-        await interaction.reply('<@&1246190426646642698>, der Chat ist inaktiv, kommt doch her und schreibt bisschen!');
+        await interaction.reply({ content: `<@&1246190426646642698>, der Chat ist inaktiv, kommt doch her und schreibt bisschen!`, embeds: [fragenEmbed] });
     }
 }
