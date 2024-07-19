@@ -167,7 +167,7 @@ module.exports = {
             }, 1000);
 
             // Embed erstellen
-            const embed = new MessageEmbed()
+            const WarnEmbed = new EmbedBuilder()
                 .setTitle('⚠️ | WARNUNG')
                 .setDescription('> Das Teilen von (Discord)-Server-Links ist in diesem Kanal (<#815922756918181898>) nicht erlaubt.\n> Bitte nutze die erlaubten Kanäle wie z.b. <#1172920281526960238>')
                 .setColor('Red')
@@ -175,7 +175,7 @@ module.exports = {
 
             // Benutzer per DM warnen
             try {
-                await message.author.send({ embeds: [embed] });
+                await message.author.send({ embeds: [WarnEmbed] });
             } catch (error) {
                 console.error(`Konnte DM nicht senden: ${error}`);
             }
