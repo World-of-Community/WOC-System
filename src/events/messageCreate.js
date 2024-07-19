@@ -157,7 +157,7 @@ module.exports = {
         // Discord Server Links im Haupt Chat löschen
         const CHANNEL_IDS = ['815922756918181898', '896743941813207081', '1250047970116636756', '886140608039747614', '1051072824875425822', '1243964646449483788'];
 
-        if (message.channel.id === CHANNEL_ID && !message.author.bot) {
+        if (message.channel.id === CHANNEL_IDS && !message.author.bot) {
             const discordLinkPattern = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
             if (discordLinkPattern.test(message.content)) {
                 try {
