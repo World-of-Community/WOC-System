@@ -154,7 +154,7 @@ module.exports = {
             await msg.edit({ embeds: [partnerEmbed], components: [partnerButton] })
         }
 
-        // Discord Server Links im Haupt Chat löschen
+        // Discord Server Links im Haupt Chat & andere Chats löschen
         const CHANNEL_IDS = ['815922756918181898', '896743941813207081', '1250047970116636756', '886140608039747614', '1051072824875425822', '1243964646449483788']; // Nicht erlaubte Kanäle
         const ALLOWED_CHANNEL_IDS = ['1172920281526960238']; // Liste der erlaubten Kanäle
 
