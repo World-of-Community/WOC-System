@@ -153,5 +153,33 @@ module.exports = {
                 )
             await msg.edit({ embeds: [partnerEmbed], components: [partnerButton] })
         }
+
+        // Discord Server Links im Haupt Chat löschen
+        const CHANNEL_ID = '815922756918181898';
+
+        // Überprüfen, ob die Nachricht im Zielkanal ist und nicht von einem Bot stammt
+        if (message.channel.id === CHANNEL_ID && !message.author.bot) {
+        const discordLinkPattern = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
+        if (discordLinkPattern.test(message.content)) {
+            // Nachricht löschen
+            setTimeout(() => {
+                message.delete().catch(console.error);
+            }, 1000);
+
+            // Embed erstellen
+            const embed = new MessageEmbed()
+                .setTitle('⚠️ | WARNUNG')
+                .setDescription('> Das Teilen von (Discord)-Server-Links ist in diesem Kanal (<#815922756918181898>) nicht erlaubt.\n> Bitte nutze die erlaubten Kanäle wie z.b. <#1172920281526960238>')
+                .setColor('Red')
+                .setTimestamp();
+
+            // Benutzer per DM warnen
+            try {
+                await message.author.send({ embeds: [embed] });
+            } catch (error) {
+                console.error(`Konnte DM nicht senden: ${error}`);
+            }
+          }
+        }
     }
 }
