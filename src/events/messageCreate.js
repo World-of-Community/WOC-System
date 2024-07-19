@@ -165,7 +165,7 @@ module.exports = {
 
                     const WarnEmbed = new EmbedBuilder()
                     .setTitle('⚠️ | WARNUNG')
-                    .setDescription('> Das Teilen von (Discord)-Server-Links ist in diesem Kanal (<#815922756918181898>) nicht erlaubt.\n> Bitte nutze die erlaubten Kanäle wie z.b. <#1172920281526960238>')
+                    .setDescription('> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n> (<#815922756918181898>) nicht erlaubt.\n\n> Bitte nutze die erlaubten Kanäle wie z.b.\n> <#1172920281526960238>')
                     .setColor('Red')
                     .setTimestamp();
 
