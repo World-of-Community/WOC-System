@@ -155,17 +155,21 @@ module.exports = {
         }
 
         // Discord Server Links im Haupt Chat löschen
-        const CHANNEL_IDS = ['815922756918181898', '896743941813207081', '1250047970116636756', '886140608039747614', '1051072824875425822', '1243964646449483788'];
+        const CHANNEL_IDS = ['815922756918181898', '896743941813207081', '1250047970116636756', '886140608039747614', '1051072824875425822', '1243964646449483788']; // Nicht erlaubte Kanäle
+        const ALLOWED_CHANNEL_IDS = ['1172920281526960238']; // Liste der erlaubten Kanäle
 
-        if (message.channel.id === CHANNEL_IDS && !message.author.bot) {
+
+        if (CHANNEL_IDS.includes(message.channel.id) && !message.author.bot) {
             const discordLinkPattern = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
             if (discordLinkPattern.test(message.content)) {
                 try {
                     await message.delete();
 
+                    const allowedChannelsMention = ALLOWED_CHANNEL_IDS.map(id => `<#${id}>`).join(', ');
+
                     const WarnEmbed = new EmbedBuilder()
                     .setTitle('⚠️ | WARNUNG')
-                    .setDescription('> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n> (<#815922756918181898>) nicht erlaubt.\n\n> Bitte nutze die erlaubten Kanäle wie z.b.\n> <#1172920281526960238>')
+                    .setDescription(`> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n> (<#${message.channel.id}>) nicht erlaubt.\n\n> Bitte nutze die erlaubten Kanäle wie z.b.\n> ${allowedChannelsMention}`)
                     .setColor('Red')
                     .setTimestamp();
 
