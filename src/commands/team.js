@@ -33,7 +33,7 @@ module.exports = {
                 .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, die entfernt werden soll.').setRequired(true))
                 .addStringOption(option => option.setName('reason').setDescription('» Der Grund für das Entfernen aus dem Team.').setRequired(false))
         )
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     async execute(interaction, client) {
         const member = interaction.options.getMember('user');
         const role = interaction.options.getRole('role');
@@ -93,7 +93,7 @@ module.exports = {
                         const TeammitgliedEmbed = new EmbedBuilder()
                             .setTitle('`➕` | __NEUES TEAMMITGLIED__')
                             .setColor('Blurple')
-                            .setDescription(`> » Wir begrüßen ${member} herzlichst im Team.\n>Wir hoffen auf eine gemeinsame schöne Zeit!\n\n**__Rang__**\n${role}\n\n**__Im Team seit__**\n${formattedDate}`)
+                            .setDescription(`> » Wir begrüßen ${member} herzlichst im Team.\n> Wir hoffen auf eine gemeinsame schöne Zeit!\n\n**__Rang__**\n${role}\n\n**__Im Team seit__**\n${formattedDate}`)
                             .setTimestamp();
 
                         const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
