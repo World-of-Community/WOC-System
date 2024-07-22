@@ -123,14 +123,14 @@ module.exports = {
                             .setColor('Red')
                             .setTimestamp();
 
-                            const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
+                            const TeamRolle2 = interaction.guild.roles.cache.get('820658664536145940');
 
-                            if (TeamRolle) {
+                            if (TeamRolle2) {
                                 const member = interaction.member;
 
-                                if (member.roles.cache.has(TeamRolle.id)) {
-                                    member.roles.remove(TeamRolle)
-                                    .then(() => console.log(`Die Rolle ${TeamRolle.name} wurde von ${member.user.displayName} entfernt`))
+                                if (member.roles.cache.has(TeamRolle2.id)) {
+                                    member.roles.remove(TeamRolle2)
+                                    .then(() => console.log(`Die Rolle ${TeamRolle2.name} wurde von ${member.user.displayName} entfernt`))
                                     .catch(console.error);
                                 }
                             }
