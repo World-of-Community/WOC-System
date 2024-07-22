@@ -72,7 +72,7 @@ module.exports = {
         
                     const RangUpdateembed = new EmbedBuilder()
                         .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
-                        .setDescription(`Der Nutzer ${member} wurde auf die Rolle ${role} herabgestuft.`)
+                        .setDescription(`Der Nutzer ${member} wurde **herabgestuft.**\n\n**__Rang__**:\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
         
@@ -97,6 +97,14 @@ module.exports = {
                             .setTimestamp();
 
                         const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
+                        const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
+
+                        if (TeamRolle) {
+                            const member = interaction.member;
+                            member.roles.add(TeamRolle)
+                              .then(() => console.log(`Die Rolle ${TeamRolle.name} wurde an ${member.user.displayName} hinzugefügt`))
+                              .catch(console.error);
+                          }
                         
                         targetChannel.send({ content: `${member}`, embeds: [TeammitgliedEmbed] });
                         await interaction.reply({ content: `> \`✅\` » Ein neues Teammitglied ist nun da.`, ephemeral: true});
@@ -114,6 +122,18 @@ module.exports = {
                             .setDescription(`Hallo ${member}, Du wurdest aus dem Server-Team entlassen.\n\nGrund: \`${reason}\``)
                             .setColor('Red')
                             .setTimestamp();
+
+                            const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
+
+                            if (TeamRolle) {
+                                const member = interaction.member;
+
+                                if (member.roles.cache.has(TeamRolle.id)) {
+                                    member.roles.remove(TeamRolle)
+                                    .then(() => console.log(`Die Rolle ${TeamRolle.name} wurde von ${member.user.displayName} entfernt`))
+                                    .catch(console.error);
+                                }
+                            }
             
                         try {
                             await member.send({ embeds: [dmEmbed] });
@@ -126,7 +146,10 @@ module.exports = {
                             .setColor('Red')
                             .setTimestamp();
 
+                        const TeamRolle = interaction.guild.roles.cache.remove('820658664536145940');
                         const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
+
+                        const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
             
                         targetChannel.send({ embeds: [kickEmbed] });
                         await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**', ephemeral: true });
