@@ -37,10 +37,23 @@ module.exports = {
     async execute(interaction, client) {
         const member = interaction.options.getMember('user');
         const role = interaction.options.getRole('role');
+        const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
         const reason = interaction.options.getString('reason') || 'Kein Grund angegeben';
         const targetChannel = interaction.guild.channels.cache.get('1173986308641804338'); 
         const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
         const sub = interaction.options.getSubcommand();
+
+        const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
+
+                            if (TeamRolle) {
+                                const member = interaction.member;
+
+                                if (member.roles.cache.has(TeamRolle.id)) {
+                                    member.roles.remove(TeamRolle)
+                                    .then(() => console.log(`Die Rolle ${TeamRolle.name} wurde von ${member.user.displayName} entfernt`))
+                                    .catch(console.error);
+                                }
+                            }
 
         if (!member || !role || !targetChannel) {
             return interaction.reply('> `❌` » Fehler beim Verarbeiten des Befehls.');
