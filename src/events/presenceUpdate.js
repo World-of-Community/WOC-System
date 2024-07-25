@@ -33,7 +33,7 @@ module.exports = {
             return;
         }
 
-        const isStreaming = newPresence.activities.some(activity => Activity.type === 'STREAMING');
+        const isStreaming = newPresence.activities.some(activity => ActivityType === 'STREAMING');
 
         if (isStreaming) {
             if (!steamMember.roles.cache.has(ROLE_ID)) {
