@@ -22,7 +22,7 @@ module.exports = {
             }
         }
 
-        // Stream Rolle System
+        // Streamer Rolle System
         const streamMember = newPresence.streamMember;
         const Streamer = newPresence.guild.roles.cache.get('1266095218239995968');
 
@@ -31,15 +31,15 @@ module.exports = {
             return;
         }
 
-        const isStreaming = newPresence.activities.some(activity => ActivityType === 'STREAMING');
+        const isStreaming = newPresence.activities.some(activity => ActivityType === ActivityType.Streaming);
 
         if (isStreaming) {
-            if (!steamMember.roles.cache.has(Streamer.id)) {
+            if (!steamMember.guild.roles.cache.has(Streamer.id)) {
                 await streamMember.roles.add(Streamer.id);
                 console.log(`Rolle hinzugefügt zu ${streamMember.user.displayName}`);
             }
         } else {
-            if (streamMember.roles.cache.has(Streamer.id)) {
+            if (streamMember.guild.roles.cache.has(Streamer.id)) {
                 await streamMember.roles.remove(Streamer.id);
                 console.log(`Rolle entfernt von ${streamMember.user.displayName}`);
             }
