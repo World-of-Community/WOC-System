@@ -22,7 +22,7 @@ module.exports = {
             }
         }
 
-        // Streamer Rolle System
+        // Streamer Rolle System // Wartung keine ahnung ob das system funktioniert
         const streamMember = newPresence.member;
         const Streamer = newPresence.guild.roles.cache.get('1266095218239995968');
 
