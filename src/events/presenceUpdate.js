@@ -21,5 +21,30 @@ module.exports = {
                 }
             }
         }
+
+        // Stream Rolle System
+        const ROLE_ID = '1266095218239995968'; // Die ID der Rolle, die zugewiesen werden soll
+
+        const member = newPresence.member;
+        const streamingRole = newPresence.guild.roles.cache.get(ROLE_ID);
+
+        if (!streamingRole) {
+            console.log('Streaming Rolle nicht gefunden.');
+            return;
+        }
+
+        const isStreaming = newPresence.activities.some(activity => Activity.type === 'STREAMING');
+
+        if (isStreaming) {
+            if (!member.roles.cache.has(ROLE_ID)) {
+                await member.roles.add(ROLE_ID);
+                console.log(`Rolle hinzugefügt zu ${member.user.displayName}`);
+            }
+        } else {
+            if (member.roles.cache.has(ROLE_ID)) {
+                await member.roles.remove(ROLE_ID);
+                console.log(`Rolle entfernt von ${member.user.displayName}`);
+            }
+        }
     }
 }
