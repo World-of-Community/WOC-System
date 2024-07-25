@@ -23,12 +23,10 @@ module.exports = {
         }
 
         // Stream Rolle System
-        const ROLE_ID = '1266095218239995968'; // Die ID der Rolle, die zugewiesen werden soll
-
         const streamMember = newPresence.streamMember;
-        const streamingRole = newPresence.guild.roles.cache.get(ROLE_ID);
+        const Streamer = newPresence.guild.roles.cache.get('815920170371383366');
 
-        if (!streamingRole) {
+        if (!Streamer) {
             console.log('Streaming Rolle nicht gefunden.');
             return;
         }
