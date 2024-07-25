@@ -24,7 +24,7 @@ module.exports = {
 
         // Stream Rolle System
         const streamMember = newPresence.streamMember;
-        const Streamer = newPresence.guild.roles.cache.get('815920170371383366');
+        const Streamer = newPresence.guild.roles.cache.get('1266095218239995968');
 
         if (Streamer) {
             console.log('Streaming Rolle nicht gefunden.');
