@@ -26,7 +26,7 @@ module.exports = {
         const streamMember = newPresence.streamMember;
         const Streamer = newPresence.guild.roles.cache.get('815920170371383366');
 
-        if (!Streamer) {
+        if (Streamer) {
             console.log('Streaming Rolle nicht gefunden.');
             return;
         }
@@ -34,13 +34,13 @@ module.exports = {
         const isStreaming = newPresence.activities.some(activity => ActivityType === 'STREAMING');
 
         if (isStreaming) {
-            if (!steamMember.roles.cache.has(ROLE_ID)) {
-                await streamMember.roles.add(ROLE_ID);
+            if (!steamMember.roles.cache.has(Streamer.id)) {
+                await streamMember.roles.add(Streamer.id);
                 console.log(`Rolle hinzugefügt zu ${streamMember.user.displayName}`);
             }
         } else {
-            if (streamMember.roles.cache.has(ROLE_ID)) {
-                await streamMember.roles.remove(ROLE_ID);
+            if (streamMember.roles.cache.has(Streamer.id)) {
+                await streamMember.roles.remove(Streamer.id);
                 console.log(`Rolle entfernt von ${streamMember.user.displayName}`);
             }
         }
