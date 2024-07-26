@@ -89,11 +89,11 @@ client.on("threadCreate", async (thread) => {
         const message = await thread.fetchStarterMessage();
 
         const tagIDs = {
-            '<a:discordbloblove:855482395325890570> `DC-Server`': '855482395325890570',
-            '<:Supporter:953359782847332362> `Support-Bot`': '953359782847332362',
-            '<a:System:915211580805881876> `System-Bot`': '915211580805881876',
-            '<a:Gift:1263043283555319941> `Gift-Bot`': '1263043283555319941',
-            '<a:MinecraftGrassBlock:872034424181637171> `MC-Server`': '872034424181637171'
+            'DC-Server': '855482395325890570',
+            'Support-Bot': '953359782847332362',
+            'System-Bot': '915211580805881876',
+            'Gift-Bot': '1263043283555319941',
+            'MC-Server': '872034424181637171'
         };
 
         const threadTags = Object.keys(tagIDs); // Get the tag keys
