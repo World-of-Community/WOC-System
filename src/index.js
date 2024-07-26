@@ -105,7 +105,7 @@ client.on("threadCreate", async (thread) => {
 
         const embed = new EmbedBuilder()
             .setTitle(`\`🔎\` **- ${thread.name}**`)
-            .setDescription(`⠀\n> ${message}\n⠀\n**─────────────────────────**`)
+            .setDescription(`⠀\n> ${message}\n⠀\n**────────────────────────────**`)
             .addFields({ name: `\`📚\` - **Kategorie**`, value: `» \`${thread.appliedTags}\``, inline: true })
             .addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: \`${0}\` <a:upvote:1008781495055429672>`, inline: true })
             .addFields({ name: `\`💡\` - **Vorschläge**`, value: `> Erstelle einen Post um deine eigenen Vorschlag einzureichen` })
