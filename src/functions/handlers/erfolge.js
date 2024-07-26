@@ -20,8 +20,9 @@ module.exports = (client) => {
 
                     const button = new ButtonBuilder()
                         .setCustomId('first_messag_' + message.author.id)
-                        .setLabel('Belohnung abholen')
-                        .setStyle(ButtonStyle.Success);
+                        .setLabel('» Belohnung abholen')
+                        .setStyle(ButtonStyle.Success)
+                        .setEmoji('968876390982234202');
                 
                     const actionRow = new ActionRowBuilder().addComponents(button);
                     await message.reply({ content: 
