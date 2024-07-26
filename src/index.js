@@ -106,7 +106,7 @@ client.on("threadCreate", async (thread) => {
         const embed = new EmbedBuilder()
             .setTitle(`\`🔎\` **- ${thread.name}**`)
             .setDescription(`⠀\n> ${message}\n⠀\n**─────────────────────────**`)
-            .addFields({ name: `\`📚\` - **Kategorie**`, value: `» ${thread.appliedTags}`, inline: true })
+            .addFields({ name: `\`📚\` - **Kategorie**`, value: `» \`${thread.appliedTags}\``, inline: true })
             .addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: \`${thread.react}\` <a:upvote:1008781495055429672>`, inline: true })
             .addFields({ name: `\`💡\` - **Vorschläge**`, value: `> Erstelle einen Post um deine eigenen Vorschlag einzureichen` })
             .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1261416102228004944/Idee.png?ex=6692e0ca&is=66918f4a&hm=253aca5718a07aba974d34a6430b06fcff86ecc43932cb449cf59700258482dc&')
