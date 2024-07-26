@@ -8,7 +8,7 @@ module.exports = (client) => {
             if (!message.guild || message.author.bot) return;
 
             try {
-                let userAchievements = await Erfolge.findOne({ userID: message.author.id });
+                let userAchievements = await erfolgDB.findOne({ userID: message.author.id });
 
                 if (!userAchievements || !userAchievements.firstMessage) {
                     await Erfolge.findOneAndUpdate(
