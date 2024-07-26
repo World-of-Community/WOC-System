@@ -68,9 +68,7 @@ module.exports = {
                     reminders.set(userId, []);
                 }
 
-                reminders.get(userId).push({ reminder, timestamp });
-
-                schedule.scheduleJob(endDate, async () => {
+                const reminderJob = schedule.scheduleJob(endDate, async () => {
                     const user = interaction.user; 
 
                     const dmEmbed = new EmbedBuilder()
@@ -89,6 +87,8 @@ module.exports = {
                     const userReminders = reminders.get(userId).filter(r => r.timestamp !== timestamp);
                     reminders.set(userId, userReminders);
                 });
+
+                reminders.get(userId).push({ reminder: reminder, timestamp, job: reminderJob });
                 break;
 
             case "list":
