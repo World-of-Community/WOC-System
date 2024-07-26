@@ -64,7 +64,6 @@ module.exports = {
 
                 await interaction.reply({ embeds: [remindEmbed], ephemeral: true });
 
-                // Save the reminder
                 if (!reminders.has(userId)) {
                     reminders.set(userId, []);
                 }
@@ -125,12 +124,13 @@ module.exports = {
                     }
                 
                     const removedReminder = userReminders.splice(index, 1)[0];
-                
-                    const jobToRemove = schedule.scheduledJobs[new Date(removedReminder.timestamp)];
-                    if (jobToRemove) {
-                        jobToRemove.cancel();
+
+
+                    if(removedReminder.job) {
+                        removedReminder.job.cancel();
                     }
-                
+
+
                     reminders.set(userId, userReminders);
                 
                     const removeEmbed = new EmbedBuilder()
