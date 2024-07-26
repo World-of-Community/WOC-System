@@ -1,4 +1,4 @@
-const { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder, Permissions } = require('discord.js');
+const { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder, Permissions, interaction } = require('discord.js');
 const erfolgDB = require("../../../Datenbank/erfolgdb")
 
 module.exports = (client) => {
@@ -45,13 +45,6 @@ module.exports = (client) => {
                 
                     const actionRow = new ActionRowBuilder().addComponents(button);
                     await message.reply({ content: `Du hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!`, components: [actionRow] });
-
-
-                    if (!interaction.isButton()) return;
-                    if (interaction.customId === 'first_message_reward') {
-                        const reward = selectReward();
-                        await interaction.reply(`@${interaction.user.displayName}, du bekommst **${reward.text}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${(reward.probability * 100).toFixed(2)}%\`.`);
-                    }
                 }
             } catch (err) {
                 console.error('Fehler bei der Verarbeitung der ersten Nachricht:', err);
