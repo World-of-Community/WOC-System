@@ -23,7 +23,7 @@ module.exports = (client) => {
                         .setLabel('Belohnung abholen')
                         .setStyle(ButtonStyle.Success);
                     
-                    const actionRow = new ActionRowBuilder.addComponents(button)
+                    const actionRow = new ActionRowBuilder().addComponents(button)
                     await message.reply({ content: 
                         `Du hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!\n> Du hast eine Belohung verdient :D`,
 
