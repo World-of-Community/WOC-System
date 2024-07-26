@@ -1,5 +1,5 @@
 const { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder, Permissions } = require('discord.js');
-const erfolgDB = require("../../Datenbank/erfolgdb")
+const erfolgDB = require("../../../Datenbank/erfolgdb")
 
 module.exports = (client) => {
     client.handleErfolg = async () => {
