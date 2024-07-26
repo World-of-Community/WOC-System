@@ -11,7 +11,7 @@ module.exports = (client) => {
                 let userAchievements = await erfolgDB.findOne({ userID: message.author.id });
 
                 if (!userAchievements || !userAchievements.firstMessage) {
-                    await Erfolge.findOneAndUpdate(
+                    await erfolgDB.findOneAndUpdate(
                         { userID: message.author.id },
                         { firstMessage: true },
                         { upsert: true }
