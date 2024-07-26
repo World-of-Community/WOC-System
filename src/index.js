@@ -88,7 +88,7 @@ client.on("threadCreate", async (thread) => {
         const member = await guild.members.fetch(ownerid);
         const message = await thread.fetchStarterMessage();
 
-        const tags = thead.appliedTags;
+        const tags = threads.appliedTags;
         const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: tags });
 
         const embed = new EmbedBuilder()
