@@ -228,7 +228,7 @@ module.exports = {
             const row = new ActionRowBuilder().addComponents(verifyInput);
             verifyModal.addComponents(row);
             await interaction.showModal(verifyModal).then(async msg => {
-                await interaction.client.on('interactionCreate', async (inter) => {
+                await interaction.client.once('interactionCreate', async (inter) => {
                     if (inter.customId === 'verify-modal') {
                         const input = await inter.fields.getTextInputValue('verifyInput')
 

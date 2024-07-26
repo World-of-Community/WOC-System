@@ -18,7 +18,6 @@ module.exports = {
                     try {
                         await message.delete();
                     } catch (error) {
-                        console.error('Fehler beim Löschen der Nachricht:', error);
                     }
                 }, 30000);
             }
