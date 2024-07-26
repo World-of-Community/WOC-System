@@ -88,21 +88,21 @@ client.on("threadCreate", async (thread) => {
         const member = await guild.members.fetch(ownerid);
         const message = await thread.fetchStarterMessage();
 
-        const tags = thread.appliedTags = {
-            'DC-Server': '<a:discordbloblove:855482395325890570> `DC-Server`',
-            'Support': '<:Supporter:953359782847332362> `Support-Bot`',
-            'System': '<a:System:915211580805881876> `System-Bot`',
-            'Gift': '<a:Gift:1263043283555319941> `Gift-Bot`',
-            'MC-Server': '<a:MinecraftGrassBlock:872034424181637171> `MC-Server`'
+        const tagIDs = {
+            '<a:discordbloblove:855482395325890570> `DC-Server`': '855482395325890570',
+            '<:Supporter:953359782847332362> `Support-Bot`': '953359782847332362',
+            '<a:System:915211580805881876> `System-Bot`': '915211580805881876',
+            '<a:Gift:1263043283555319941> `Gift-Bot`': '1263043283555319941',
+            '<a:MinecraftGrassBlock:872034424181637171> `MC-Server`': '872034424181637171'
         };
 
-        const threadTags = Object.keys(tags); // Get the tag keys
+        const threadTags = Object.keys(tagIDs); // Get the tag keys
         const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: tags });
 
         const embed = new EmbedBuilder()
             .setTitle(`\`🔎\` **- ${thread.name}**`)
             .setDescription(`⠀\n> ${message}\n⠀\n**─────────────────────────**`)
-            .addFields({ name: `\`📚\` - **Kategorie**`, value: `» ${threadTags.map(tag => tags[tag]).join(' ')}`, inline: true })
+            .addFields({ name: `\`📚\` - **Kategorie**`, value: `» ${Object.keys(tagIDs).map(tag => `<a:${tag}:${tagIDs[tag]}> \`${tag}\``).join(' ')}`, inline: true })
             .addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: \`${thread.react}\` <a:upvote:1008781495055429672>`, inline: true })
             .addFields({ name: `\`💡\` - **Vorschläge**`, value: `> Erstelle einen Post um deine eigenen Vorschlag einzureichen` })
             .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1261416102228004944/Idee.png?ex=6692e0ca&is=66918f4a&hm=253aca5718a07aba974d34a6430b06fcff86ecc43932cb449cf59700258482dc&')
