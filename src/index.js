@@ -93,7 +93,7 @@ client.on("threadCreate", async (thread) => {
 
         const embed = new EmbedBuilder()
             .setTitle(`\`🔎\` **- ${thread.name}**`)
-            .setDescription(`⠀\n> ${message}\n⠀\n**─────────────────────────**\n\`📚\` - **Kategorie**\n» \`${tags}\`\n\n\`📊\` - Nützlich?\n${thread.react}`)
+            .setDescription(`⠀\n> ${message}\n⠀\n**─────────────────────────**\n\`📚\` - **Kategorie**\n» \`${tags}\`\n\n\`📊\` - Nützlich?\n\`${thread.react}\` <a:upvote:1008781495055429672>`)
             .addFields([
                 {
                     name: `\`💡\` **- Vorschläge**`,
