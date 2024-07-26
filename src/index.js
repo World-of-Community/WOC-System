@@ -64,6 +64,18 @@ for (const file of eventFiles) {
     }
 }
 
+const functionFolder = fs.readdirSync(`./src/functions`);
+for (const folder of functionFolder) {
+  const functionFiles = fs
+    .readdirSync(`./src/functions/${folder}`)
+    .filter((file) => file.endsWith(".js"));
+  for (const file of functionFiles)
+    require(`./functions/${folder}/${file}`)(client);
+}
+
+client.handleErfolg(); //Erfolge
+
+
 // Vorschlag
 client.on("threadCreate", async (thread) => {
     if (thread.ownerId === "1020023299448786955") return;
