@@ -100,6 +100,7 @@ client.on("threadCreate", async (thread) => {
         //const threadTagKeys = ['DC-Server', 'Support-Bot', 'System-Bot', 'Gift-Bot', 'MC-Server'];
         //const threadTags = threadTagKeys.map(tag => tagIDs[tag]);
 
+        const tags = thread.appliedTags;
         const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: tags });
 
         const embed = new EmbedBuilder()
