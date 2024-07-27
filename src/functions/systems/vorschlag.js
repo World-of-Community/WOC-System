@@ -191,7 +191,7 @@ module.exports = (client) => {
                                         ...updatedFields,
                                         { 
                                             name: "`✅` » **Status**", 
-                                            value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` 
+                                            value: `» Dieser Vorschlag wurde vom Server-Team akzeptiert.\nGrund: \`${grund}\`` 
                                         }
                                     )
                                     .setColor("Green")
@@ -305,7 +305,7 @@ module.exports = (client) => {
                             ...updatedFields,
                             { 
                                 name: "`❌` » **Status**", 
-                                value: `» Dieser Vorschlag wurde vom Team abgelehnt.\nGrund: \`${grund}\`` 
+                                value: `» Dieser Vorschlag wurde vom Server-Team abgelehnt.\nGrund: \`${grund}\`` 
                             }
                         )
                         .setColor("Red")
