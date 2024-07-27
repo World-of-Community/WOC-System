@@ -95,7 +95,52 @@ module.exports = (client) => {
         
                 try {
                     await message.edit({ embeds: [updatedEmbed] });
-                    console.log("Nachricht erfolgreich aktualisiert");
+                } catch (error) {
+                    console.error("Fehler beim Bearbeiten der Nachricht:", error);
+                }
+            } else {
+            }
+        });
+        client.on(Events.MessageReactionRemove, async (reaction, user) => {
+            if (user.bot) return;
+            if (reaction.message.channel.type !== ChannelType.PublicThread) return;
+            if (reaction.message.channel.parentId !== "1254340245772701747") return;
+        
+            const emojiId = reaction.emoji.id;
+            if (reaction.emoji.id !== "1008781495055429672") return
+        
+            const message = reaction.message;
+            const embed = message.embeds[0];
+            if (!embed) return
+        
+            const reactionEmoji = message.reactions.cache.find(r => r.emoji.id === "1008781495055429672");
+            if (!reactionEmoji) return
+        
+            const upvoteCount = reactionEmoji.count - 1;
+        
+            const existingEmbed = EmbedBuilder.from(embed);
+            const existingFieldIndex = existingEmbed.data.fields.findIndex(field => field.name === '`📊` - **Nützlich?**');
+            
+            if (existingFieldIndex !== -1) {
+                const fieldValue = existingEmbed.data.fields[existingFieldIndex].value;
+                const updatedFieldValue = `» Votes: ${upvoteCount} <a:upvote:1008781495055429672>`;
+        
+                existingEmbed.data.fields[existingFieldIndex].value = updatedFieldValue;
+
+                const updatedEmbed = new EmbedBuilder()
+                    .setTitle(existingEmbed.data.title || '')
+                    .setDescription(existingEmbed.data.description || '') 
+                    .addFields(existingEmbed.data.fields) 
+                    .setThumbnail(existingEmbed.data.thumbnail?.url || '') 
+                    .setImage(existingEmbed.data.image?.url || '') 
+                    .setColor(existingEmbed.data.color || 'DEFAULT')
+                    .setFooter({
+                        text: existingEmbed.data.footer.text,
+                        iconURL: existingEmbed.data.footer.iconURL
+                    });
+        
+                try {
+                    await message.edit({ embeds: [updatedEmbed] });
                 } catch (error) {
                     console.error("Fehler beim Bearbeiten der Nachricht:", error);
                 }
