@@ -101,10 +101,9 @@ client.on("threadCreate", async (thread) => {
         const tagIDMap = tags.map(id => tagMap[id]);
 
                let matchedTagText = '`❌` - **Tag wurde nicht gefunden**'; 
-
                for (const id of tags) {
-                   if (tagIDMap[id]) {
-                       matchedTagText = tagIDMap[id];
+                   if (tagMap[id]) {
+                       matchedTagText = tagMap[id];
                        break; 
                    }
                }
