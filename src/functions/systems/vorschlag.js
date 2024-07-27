@@ -173,6 +173,8 @@ module.exports = (client) => {
                                     const message = await inter.channel.fetchStarterMessage();
                                     const grund = inter.fields.getTextInputValue("grund")
                                     const vorschlagsembed = message.embeds[0];
+                                    
+                                    inter.channel.setAppliedTags("1262860945785622731")
     
                                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
                                     
@@ -276,6 +278,8 @@ module.exports = (client) => {
                         const grund = inter.fields.getTextInputValue("grund")
                         const vorschlagsembed = message.embeds[0];
                     
+                        inter.channel.setAppliedTags("1262860469836710018")
+
                         const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
 
                         const embed = new EmbedBuilder()
