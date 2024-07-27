@@ -412,7 +412,7 @@ module.exports = (client) => {
                       console.error("Fehler bei der Verarbeitung des UserIDs:", err);
                       return;
                     }
-                    const user = await inter.client.users.fetch(userID);
+                    const user = await interaction.client.users.fetch(userID);
                     if (user) {
                       user.send(
                         `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
