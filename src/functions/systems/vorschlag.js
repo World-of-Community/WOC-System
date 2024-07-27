@@ -93,7 +93,6 @@ module.exports = (client) => {
                                             value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` 
                                         }
                                     )
-                                    .addFields({ name: "`✅` » **Status**", value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` })
                                     .setColor("Green")
                                     .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909598311616523/WOC_Banner_Server_Idee_Akzeptiert.jpg?ex=6698e9b8&is=66979838&hm=23974e4bb3171d7bd0367898d8c7bddfac270a1610395fd5ea9b524c223f1e06&')
                                     .setFooter(vorschlagsembed.footer);

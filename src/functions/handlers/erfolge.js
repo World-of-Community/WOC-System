@@ -42,9 +42,9 @@ module.exports = (client) => {
             const regex = /»\s[^\d]*\s(\d+)\s/;
             const userIDMatch = footerText.match(regex); 
             const userID = userIDMatch ? userIDMatch[1] : null;
-        
+            console.log(userIDMatch)
             if (!userID) {
-                await inter.reply({ content: "`❌` » User ID konnte nicht gefunden werden", ephemeral: true });
+                console.error('Fehler bei der Verarbeitung des UserIDs:', err);
                 return;
             }
 
