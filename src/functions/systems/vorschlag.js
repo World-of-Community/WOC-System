@@ -1,11 +1,26 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { Events, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const vorschlagEmitter = require('../../custom_events/vorschlag');
 
 module.exports = (client) => {
     client.vorschlag = async () => {
 
-        client.on('messageReactionAdd', (messageReaction, user) => {
-                console.log(messageReaction, user);
+        client.on(Events.MessageReactionAdd, async (reaction, user) => {
+            // When a reaction is received, check if the structure is partial
+            if (reaction.partial) {
+                // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
+                try {
+                    await reaction.fetch();
+                } catch (error) {
+                    console.error('Something went wrong when fetching the message:', error);
+                    // Return as `reaction.message.author` may be undefined/null
+                    return;
+                }
+            }
+        
+            // Now the message has been cached and is fully available
+            console.log(`${reaction.message.author}'s message "${reaction.message.content}" gained a reaction!`);
+            // The reaction is now also fully available and the properties will be reflected accurately:
+            console.log(`${reaction.count} user(s) have given the same reaction to this message!`);
         });
 
         client.on("threadCreate", async (thread) => {
@@ -102,6 +117,7 @@ module.exports = (client) => {
                                     .setFooter(vorschlagsembed.footer);
                                     await message.edit({ embeds: [embed], components: [] });
                                 
+                                    message.reactions.removeAll();
                                     channel.setLocked(true)
                                     vorschlagEmitter.emit('accept', inter);
                                     await inter.reply({ content: "`✅` » Der Vorschlag wurde angenommen", ephemeral: true });
@@ -148,8 +164,8 @@ module.exports = (client) => {
                                     .setFooter(vorschlagsembed.footer);
                                     await message.edit({ embeds: [embed], components: [] });
                                 
+                                    message.reactions.removeAll();
                                     channel.setLocked(true)
-    
                                     await inter.reply({ content: "`✅` » Der Vorschlag wurde in Planung gesetzt.", ephemeral: true });
                                 }
                             })
@@ -195,6 +211,7 @@ module.exports = (client) => {
                         .setFooter(vorschlagsembed.footer);
                         await message.edit({ embeds: [embed], components: [] });
                     
+                        message.reactions.removeAll();
                         channel.setLocked(true)
                 
                         await inter.reply({ content: "`✅` »  Der Vorschlag wurde abgelehnt", ephemeral: true });

@@ -19,7 +19,8 @@ const client = new Client({
         Partials.Channel,
         Partials.User,
         Partials.GuildMember,
-        Partials.Message
+        Partials.Message,
+        Partials.Reaction
     ],
 });
 
