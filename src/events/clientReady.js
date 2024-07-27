@@ -42,6 +42,19 @@ module.exports = {
     const file = fs.readFileSync("src/json/config.json", "utf-8");
     const config = JSON.parse(file);
     const guild = await client.guilds.fetch(config.server);
+
+    const members = await guild.members.fetch();
+
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    members.forEach(member => {
+        if (member.joinedAt <= oneYearAgo && !member.roles.cache.has(972193356333604874)) {
+            member.roles.add(972193356333604874).then(() => {
+                console.log(`Added role to ${member.user.tag}`);
+            }).catch(console.error);
+        }
+    });
     
     if (!guild) {
       console.log("Server wurde nicht gefunden");

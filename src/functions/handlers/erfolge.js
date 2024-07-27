@@ -46,23 +46,6 @@ module.exports = (client) => {
     });
 
 
-    client.once('ready', async () => {
-      console.log(`Logged in as ${client.user.tag}!`);
-  
-      const guild = await client.guilds.fetch(815919809379172354);
-      const members = await guild.members.fetch();
-  
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-  
-      members.forEach(member => {
-          if (member.joinedAt <= oneYearAgo && !member.roles.cache.has(972193356333604874)) {
-              member.roles.add(972193356333604874).then(() => {
-                  console.log(`Added role to ${member.user.tag}`);
-              }).catch(console.error);
-          }
-      });
-  });
   
     /*
     //1 Jahr Server mitglied
