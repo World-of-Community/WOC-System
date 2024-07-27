@@ -49,7 +49,7 @@ module.exports = (client) => {
     client.once('ready', async () => {
       console.log(`Logged in as ${client.user.tag}!`);
   
-      const guild = await client.guilds.fetch(guildId);
+      const guild = await client.guilds.fetch(815919809379172354);
       const members = await guild.members.fetch();
   
       const oneYearAgo = new Date();
