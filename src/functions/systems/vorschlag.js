@@ -83,15 +83,20 @@ module.exports = (client) => {
                                     const vorschlagsembed = message.embeds[0];
     
                                     const embed = new EmbedBuilder()
-                                    embed.setAuthor({ name: `» Aktzeptiert von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
-                                    embed.setTitle(vorschlagsembed.title)
-                                    embed.setDescription(vorschlagsembed.description)
-                                    embed.addFields({ name: `\`📚\` - **Kategorie**`, value: `» \`${tags}\``, inline: true })
-                                    embed.addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: \`${thread.react}\` <a:upvote:1008781495055429672>`, inline: true })
-                                    embed.addFields({ name: "`✅` » **Status**", value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` })
-                                    embed.setColor("Green")
-                                    embed.setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909598311616523/WOC_Banner_Server_Idee_Akzeptiert.jpg?ex=6698e9b8&is=66979838&hm=23974e4bb3171d7bd0367898d8c7bddfac270a1610395fd5ea9b524c223f1e06&')
-                                    embed.setFooter(vorschlagsembed.footer);
+                                    .setAuthor({ name: `» Aktzeptiert von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
+                                    .setTitle(vorschlagsembed.title)
+                                    .setDescription(vorschlagsembed.description)
+                                    .addFields(
+                                        ...vorschlagsembed.fields,
+                                        { 
+                                            name: "`✅` » **Status**", 
+                                            value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` 
+                                        }
+                                    )
+                                    .addFields({ name: "`✅` » **Status**", value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` })
+                                    .setColor("Green")
+                                    .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909598311616523/WOC_Banner_Server_Idee_Akzeptiert.jpg?ex=6698e9b8&is=66979838&hm=23974e4bb3171d7bd0367898d8c7bddfac270a1610395fd5ea9b524c223f1e06&')
+                                    .setFooter(vorschlagsembed.footer);
                                     await message.edit({ embeds: [embed], components: [] });
                                 
                                     channel.setLocked(true)
@@ -125,15 +130,15 @@ module.exports = (client) => {
                                     const vorschlagsembed = message.embeds[0];
     
                                     const embed = new EmbedBuilder()
-                                    embed.setAuthor({ name: `» Bearbeitet von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
-                                    embed.setTitle(vorschlagsembed.title)
-                                    embed.setDescription(vorschlagsembed.description)
-                                    embed.addFields({ name: `\`📚\` - **Kategorie**`, value: `» \`${tags}\``, inline: true })
-                                    embed.addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: \`${thread.react}\` <a:upvote:1008781495055429672>`, inline: true })
-                                    embed.addFields({ name: "`🚧` » **Status**", value: `» Dieser Vorschlag ist bereits in Planung und wird bald umgesetzt.\nGrund: \`${grund}\``})
-                                    embed.setColor("Orange")
-                                    embed.setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909673905688618/WOC_Banner_Server_Idee_in_Planung.jpg?ex=6698e9ca&is=6697984a&hm=230bbba748a97a21eed858e66addea033043b4d3ad7beaeda06c19917f5e75c5&')
-                                    embed.setFooter(vorschlagsembed.footer);
+                                    .setAuthor({ name: `» Bearbeitet von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
+                                    .setTitle(vorschlagsembed.title)
+                                    .setDescription(vorschlagsembed.description)
+                                    .addFields({ name: `\`📚\` - **Kategorie**`, value: `» \`${tags}\``, inline: true })
+                                    .addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: \`${thread.react}\` <a:upvote:1008781495055429672>`, inline: true })
+                                    .addFields({ name: "`🚧` » **Status**", value: `» Dieser Vorschlag ist bereits in Planung und wird bald umgesetzt.\nGrund: \`${grund}\``})
+                                    .setColor("Orange")
+                                    .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909673905688618/WOC_Banner_Server_Idee_in_Planung.jpg?ex=6698e9ca&is=6697984a&hm=230bbba748a97a21eed858e66addea033043b4d3ad7beaeda06c19917f5e75c5&')
+                                    .setFooter(vorschlagsembed.footer);
                                     await message.edit({ embeds: [embed], components: [] });
                                 
                                     channel.setLocked(true)
