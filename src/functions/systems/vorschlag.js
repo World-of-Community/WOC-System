@@ -195,6 +195,7 @@ module.exports = (client) => {
                                         }
                                     )
                                     .setColor("Green")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1266797786519834815/akzeptiert.png?ex=66a674e0&is=66a52360&hm=c3d4fbd4e80070d4a858eee6d938117126b1eb6a516e43de61921b11d5068c1b&')
                                     .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909598311616523/WOC_Banner_Server_Idee_Akzeptiert.jpg?ex=6698e9b8&is=66979838&hm=23974e4bb3171d7bd0367898d8c7bddfac270a1610395fd5ea9b524c223f1e06&')
                                     .setFooter(vorschlagsembed.footer);
 
@@ -247,6 +248,7 @@ module.exports = (client) => {
                                         }
                                     )
                                     .setColor("Orange")
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1266798100521947186/bearbeitung.png?ex=66a6752b&is=66a523ab&hm=82c961bae0798cdc88b878c80913c9ee536d882f2105df9dd7b613d7c8d20c4f&')
                                     .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909673905688618/WOC_Banner_Server_Idee_in_Planung.jpg?ex=6698e9ca&is=6697984a&hm=230bbba748a97a21eed858e66addea033043b4d3ad7beaeda06c19917f5e75c5&')
                                     .setFooter(vorschlagsembed.footer);
                                     await message.edit({ embeds: [embed], components: [] });
@@ -307,6 +309,7 @@ module.exports = (client) => {
                             }
                         )
                         .setColor("Red")
+                        .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1266798151205916823/abgelehnt.png?ex=66a67537&is=66a523b7&hm=0865929b95ab2108a36a74b83941b319b9606da537cff4aa27caca412b986513&')
                         .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909574089641984/WOC_Banner_Server_Idee_Abgelehnt.jpg?ex=6698e9b2&is=66979832&hm=fa930b40b3a36a9bc40da453d0d5e7ad94ea977d95420e06d8b5ceddb222cf31&')
                         .setFooter(vorschlagsembed.footer);
                         await message.edit({ embeds: [embed], components: [] });
