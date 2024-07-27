@@ -56,16 +56,12 @@ module.exports = (client) => {
             }
         });
         client.on(Events.MessageReactionAdd, async (reaction, user) => {
-            console.log("Event MessageReactionAdd ausgelöst");
-        
+            if (user.bot) return;
             if (reaction.message.channel.type !== ChannelType.PublicThread) return;
-        
-        
             if (reaction.message.channel.parentId !== "1254340245772701747") return;
         
-            if (user.bot) return;
             const emojiId = reaction.emoji.id;
-            if (emojiId !== "1008781495055429672") return
+            if (reaction.emoji.id !== "1008781495055429672") return
         
             const message = reaction.message;
             const embed = message.embeds[0];
@@ -81,7 +77,7 @@ module.exports = (client) => {
             
             if (existingFieldIndex !== -1) {
                 const fieldValue = existingEmbed.data.fields[existingFieldIndex].value;
-                const updatedFieldValue = `» Votes: ${upvoteCount} <a:upvote:${emojiId}>`;
+                const updatedFieldValue = `» Votes: ${upvoteCount} <a:upvote:1008781495055429672>`;
         
                 existingEmbed.data.fields[existingFieldIndex].value = updatedFieldValue;
 
@@ -92,7 +88,10 @@ module.exports = (client) => {
                     .setThumbnail(existingEmbed.data.thumbnail?.url || '') 
                     .setImage(existingEmbed.data.image?.url || '') 
                     .setColor(existingEmbed.data.color || 'DEFAULT')
-                    .setFooter(existingEmbed.data.footer.text || '', existingEmbed.data.footer.iconURL || ''); 
+                    .setFooter({
+                        text: existingEmbed.data.footer.text || '',
+                        iconURL: existingEmbed.data.footer.iconURL || ''
+                    }); 
         
                 try {
                     await message.edit({ embeds: [updatedEmbed] });
