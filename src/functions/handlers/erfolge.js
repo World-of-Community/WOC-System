@@ -47,24 +47,27 @@ module.exports = (client) => {
 
 
   
-    /*
     //1 Jahr Server mitglied
     cron.schedule("0 0 * * *", async () => {
       const guild = await client.guilds.fetch("815919809379172354");
       if (!guild) return console.error('Guild wurde nicht gefunden.');
   
-      await guild.members.cache.forEach(async (member) => {
-          if (!member.roles.cache.has(972193356333604874)) {
-              try {
-                  if(member.joinedAt)
-                  await member.roles.add(972193356333604874);
-              } catch (err) {
-                  console.error('Fehler beim Entfernen der Rolle:', err);
-              }
-          }
+
+        const members = await guild.members.fetch();
+
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        const roletoAdd = await guild.roles.cache.find(role => role.id === "972193356333604874");
+
+            await members.forEach(member => {
+                if (member.joinedAt <= oneYearAgo) {
+                  if (!member.roles.cache.has(roletoAdd)) {
+                    member.roles.add(roletoAdd).then(() => {
+                        console.log(`Added role to ${member.user.tag}`);
+                    }).catch(console.error);
+                }}
+            });
       });
-      */
- // });
 
     //10 Vorschläge (Accepted)
     vorschlagEmitter.on("accept", async (inter) => {
