@@ -1,5 +1,6 @@
 const { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder, Permissions, interaction } = require('discord.js');
 const erfolgDB = require("../../../Datenbank/erfolgdb")
+const vorschlagEmitter = require('../events/vorschlag');
 
 module.exports = (client) => {
     client.handleErfolg = async () => {
@@ -17,26 +18,7 @@ module.exports = (client) => {
                         { upsert: true }
                     );
 
-                    const rewards = [
-                        { text: '1 Level', probability: 0.40 },
-                        { text: '2 Level', probability: 0.25 },
-                        { text: '3 Level', probability: 0.20 },
-                        { text: '4 Level', probability: 0.10 },
-                        { text: '5 Level', probability: 0.05 },
-                    ];
-
-                    function selectReward() {
-                        const rand = Math.random();
-                        let sum = 0;
-                        for (const reward of rewards) {
-                            sum += reward.probability;
-                            if (rand < sum) {
-                                return reward;
-                            }
-                        }
-                        return rewards[0]; // Fallback in case of rounding errors
-                    }
-
+                    //Todo: Economy System einbinden. ~ @vxnsin
                     const button = new ButtonBuilder()
                         .setCustomId('first_message_reward' + message.author.id)
                         .setLabel('» Belohnung abholen')
@@ -50,5 +32,34 @@ module.exports = (client) => {
                 console.error('Fehler bei der Verarbeitung der ersten Nachricht:', err);
             }
         });
+
+        vorschlagEmitter.on('accept', async (inter) => {
+            const channel = inter.channel;
+            const message = await inter.channel.fetchStarterMessage();
+            const vorschlagsembed = message.embeds[0];
+            
+            const footerText = vorschlagsembed.footer.text;
+            const regex = /»\s[^\d]*\s(\d+)\s/;
+            const userIDMatch = footerText.match(regex); 
+            const userID = userIDMatch ? userIDMatch[1] : null;
+        
+            if (!userID) {
+                await inter.reply({ content: "`❌` » User ID konnte nicht gefunden werden", ephemeral: true });
+                return;
+            }
+
+            let userErfolge = await erfolgDB.findOne({ userID: userID });
+        
+            userErfolge.idee += 1;
+            await userErfolge.save();
+
+            if (userErfolge.idee === 10) {
+                const user = await inter.client.users.fetch(userID);
+                if (user) {
+                    user.send('> `✅` Glückwunsch! Du hast 10 akzeptierte Vorschläge erreicht!');
+                }
+            }
+        })        
+
     }
 }

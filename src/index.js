@@ -88,19 +88,9 @@ client.on("threadCreate", async (thread) => {
         const member = await guild.members.fetch(ownerid);
         const message = await thread.fetchStarterMessage();
 
-        //const tagIDs = {
-        //    'DC-Server': '855482395325890570',
-        //    'Support-Bot': '953359782847332362',
-        //    'System-Bot': '915211580805881876',
-        //    'Gift-Bot': '1263043283555319941',
-        //    'MC-Server': '872034424181637171'
-        //};
-
-        // Assuming thread.appliedTags contains the keys of tags to be applied
-        //const threadTagKeys = ['DC-Server', 'Support-Bot', 'System-Bot', 'Gift-Bot', 'MC-Server'];
-        //const threadTags = threadTagKeys.map(tag => tagIDs[tag]);
-
         const tags = thread.appliedTags;
+
+        console.log(thread.appliedTags)
         const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: tags });
 
         const embed = new EmbedBuilder()

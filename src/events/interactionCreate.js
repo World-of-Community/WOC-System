@@ -1,6 +1,7 @@
 const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
 const userdb = require("../../Datenbank/userdb");
 const config = require("../json/config.json")
+const vorschlagEmitter = require('../functions/events/vorschlag');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -529,7 +530,7 @@ module.exports = {
                                 await message.edit({ embeds: [embed], components: [] });
                             
                                 channel.setLocked(true)
-
+                                vorschlagEmitter.emit('accept', inter);
                                 await inter.reply({ content: "`✅` » Der Vorschlag wurde angenommen", ephemeral: true });
                             }
                         })
