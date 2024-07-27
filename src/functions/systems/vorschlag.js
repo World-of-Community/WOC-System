@@ -90,7 +90,7 @@ module.exports = (client) => {
                     .setColor(existingEmbed.data.color || 'DEFAULT')
                     .setFooter({
                         text: existingEmbed.data.footer.text,
-                        iconURL: existingEmbed.data.footer.iconURL
+                        iconURL: existingEmbed.data.footer.icon_url
                     });
         
                 try {
