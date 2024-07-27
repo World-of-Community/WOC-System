@@ -406,7 +406,6 @@ module.exports = (client) => {
                 
                     message.reactions.removeAll();
                     channel.setLocked(true)
-                    vorschlagEmitter.emit('accept', inter);
                     const userIDMatch = vorschlagsembed.footer.match(/»\s+(\d{17,19})$/);
                     const userID = userIDMatch ? userIDMatch[1] : null;
                     if (!userID) {
