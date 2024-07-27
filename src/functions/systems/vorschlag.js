@@ -157,9 +157,8 @@ module.exports = (client) => {
 
                     const currentTags = channel.appliedTags || [];
 
-
-                    if (!currentTags.includes("")) {
-                        currentTags.push("");
+                    if (!currentTags.includes("1266798846256746721")) {
+                        currentTags.push("1266798846256746721");
                     }
         
                     await channel.setAppliedTags(currentTags);
@@ -301,7 +300,16 @@ module.exports = (client) => {
                                     const grund = inter.fields.getTextInputValue("grund")
                                     const vorschlagsembed = message.embeds[0];
     
+                                        const currentTags = channel.appliedTags || [];
+
+                                        if (!currentTags.includes("1266798963076501585")) {
+                                            currentTags.push("1266798963076501585");
+                                        }
+                                        await channel.setAppliedTags(currentTags);
+
                                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
+
+
 
                                     const embed = new EmbedBuilder()
                                     .setAuthor({ name: `» Bearbeitet von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
