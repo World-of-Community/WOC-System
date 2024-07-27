@@ -1,27 +1,51 @@
-const { Events, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { Events, EmbedBuilder, ChannelType, ButtonBuilder, ButtonStyle, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const vorschlagEmitter = require('../../custom_events/vorschlag');
 
 module.exports = (client) => {
     client.vorschlag = async () => {
 
         client.on(Events.MessageReactionAdd, async (reaction, user) => {
-            // When a reaction is received, check if the structure is partial
-            if (reaction.partial) {
-                // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
-                try {
-                    await reaction.fetch();
-                } catch (error) {
-                    console.error('Something went wrong when fetching the message:', error);
-                    // Return as `reaction.message.author` may be undefined/null
-                    return;
+            if (reaction.channel.type !== ChannelType.PublicThread) return;
+            if (reaction.channel.parentId !== "1254340245772701747") return;
+            if (user.bot) return;
+
+            const message = reaction.message;
+            const emoji = reaction.emoji.name;
+
+            const embed = message.embeds[0];
+
+            const reaction = message.reactions.cache.find(r => r.emoji.id === "1008781495055429672");
+            const upvoteCount = reaction ? reaction.count - 1 : 0;
+    
+            if (reaction) {
+                const embed = message.embeds[0];
+    
+                if (embed) {
+                    const updatedFields = embed.fields.map(field => {
+                        if (field.name === '`📊` - **Nützlich?**') {
+                            return { 
+                                name: '`📊` - **Nützlich?**', 
+                                value: `» Votes: ${upvoteCount} <a:upvote:${1008781495055429672}>`, 
+                                inline: true 
+                            };
+                        }
+                        return field;
+                    });
+    
+                    const updatedEmbed = new EmbedBuilder()
+                        .setTitle(embed.title)
+                        .setDescription(embed.description) 
+                        .addFields(updatedFields) 
+                        .setThumbnail(embed.thumbnail?.url || '') 
+                        .setImage(embed.image?.url || '') 
+                        .setColor(embed.color)
+                        .setFooter(embed.footer.text, embed.footer.iconURL); 
+    
+                    // Aktualisiere die Nachricht mit dem neuen Embed
+                    await message.edit({ embeds: [updatedEmbed] });
                 }
-            }
-        
-            // Now the message has been cached and is fully available
-            console.log(`${reaction.message.author}'s message "${reaction.message.content}" gained a reaction!`);
-            // The reaction is now also fully available and the properties will be reflected accurately:
-            console.log(`${reaction.count} user(s) have given the same reaction to this message!`);
-        });
+        }
+    });
 
         client.on("threadCreate", async (thread) => {
             if (thread.ownerId === "1020023299448786955") return;
