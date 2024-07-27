@@ -4,49 +4,6 @@ const vorschlagEmitter = require('../../custom_events/vorschlag');
 module.exports = (client) => {
     client.vorschlag = async () => {
 
-        client.on(Events.MessageReactionAdd, async (reaction, user) => {
-            if (reaction.channel.type !== ChannelType.PublicThread) return;
-            if (reaction.channel.parentId !== "1254340245772701747") return;
-            if (user.bot) return;
-
-            const message = reaction.message;
-            const emoji = reaction.emoji.name;
-
-            const embed = message.embeds[0];
-
-            const reaction = message.reactions.cache.find(r => r.emoji.id === "1008781495055429672");
-            const upvoteCount = reaction ? reaction.count - 1 : 0;
-    
-            if (reaction) {
-                const embed = message.embeds[0];
-    
-                if (embed) {
-                    const updatedFields = embed.fields.map(field => {
-                        if (field.name === '`📊` - **Nützlich?**') {
-                            return { 
-                                name: '`📊` - **Nützlich?**', 
-                                value: `» Votes: ${upvoteCount} <a:upvote:${1008781495055429672}>`, 
-                                inline: true 
-                            };
-                        }
-                        return field;
-                    });
-    
-                    const updatedEmbed = new EmbedBuilder()
-                        .setTitle(embed.title)
-                        .setDescription(embed.description) 
-                        .addFields(updatedFields) 
-                        .setThumbnail(embed.thumbnail?.url || '') 
-                        .setImage(embed.image?.url || '') 
-                        .setColor(embed.color)
-                        .setFooter(embed.footer.text, embed.footer.iconURL); 
-    
-                    // Aktualisiere die Nachricht mit dem neuen Embed
-                    await message.edit({ embeds: [updatedEmbed] });
-                }
-        }
-    });
-
         client.on("threadCreate", async (thread) => {
             if (thread.ownerId === "1020023299448786955") return;
         
@@ -98,6 +55,48 @@ module.exports = (client) => {
                 await thread.delete()
             }
         });
+        client.on(Events.MessageReactionAdd, async (reaction, user) => {
+            if (reaction.channel.type !== ChannelType.PublicThread) return;
+            if (reaction.channel.parentId !== "1254340245772701747") return;
+            if (user.bot) return;
+
+            const message = reaction.message;
+            const emoji = reaction.emoji.name;
+
+            const embed = message.embeds[0];
+
+            const reactionEmoji = message.reactions.cache.find(r => r.emoji.id === "1008781495055429672");
+            const upvoteCount = reaction ? reaction.count - 1 : 0;
+    
+            if (reactionEmoji) {
+                const embed = message.embeds[0];
+    
+                if (embed) {
+                    const updatedFields = embed.fields.map(field => {
+                        if (field.name === '`📊` - **Nützlich?**') {
+                            return { 
+                                name: '`📊` - **Nützlich?**', 
+                                value: `» Votes: ${upvoteCount} <a:upvote:${1008781495055429672}>`, 
+                                inline: true 
+                            };
+                        }
+                        return field;
+                    });
+    
+                    const updatedEmbed = new EmbedBuilder()
+                        .setTitle(embed.title)
+                        .setDescription(embed.description) 
+                        .addFields(updatedFields) 
+                        .setThumbnail(embed.thumbnail?.url || '') 
+                        .setImage(embed.image?.url || '') 
+                        .setColor(embed.color)
+                        .setFooter(embed.footer.text, embed.footer.iconURL); 
+    
+                    // Aktualisiere die Nachricht mit dem neuen Embed
+                    await message.edit({ embeds: [updatedEmbed] });
+                }
+        }
+    });
 
         client.on("interactionCreate", async (interaction) => {
             if(interaction.isButton()) {
