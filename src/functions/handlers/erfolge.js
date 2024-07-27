@@ -44,7 +44,7 @@ module.exports = (client) => {
                         .setEmoji('968876390982234202');
                 
                     const actionRow = new ActionRowBuilder().addComponents(button);
-                    await message.reply({ content: `Du hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!`, components: [actionRow] });
+                    //await message.reply({ content: `Du hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!`, components: [actionRow] });
                 }
             } catch (err) {
                 console.error('Fehler bei der Verarbeitung der ersten Nachricht:', err);
