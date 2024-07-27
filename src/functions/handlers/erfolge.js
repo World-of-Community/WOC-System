@@ -53,7 +53,6 @@ module.exports = (client) => {
       const guild = await client.guilds.fetch("815919809379172354");
       if (!guild) return console.error('Guild wurde nicht gefunden.');
   
-
         const members = await guild.members.fetch();
 
         const oneYearAgo = new Date();

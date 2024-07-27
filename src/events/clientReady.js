@@ -41,6 +41,8 @@ module.exports = {
     }
     const file = fs.readFileSync("src/json/config.json", "utf-8");
     const config = JSON.parse(file);
+
+    const guild = await client.guilds.fetch("815919809379172354");
   
     
     if (!guild) {
