@@ -173,7 +173,13 @@ module.exports = (client) => {
                                     const grund = inter.fields.getTextInputValue("grund")
                                     const vorschlagsembed = message.embeds[0];
 
-                                    await channel.setAppliedTags(["1262860945785622731"]); 
+                                    const currentTags = channel.appliedTags || [];
+
+                                    if (!currentTags.includes("1262860469836710018")) {
+                                        currentTags.push("1262860469836710018");
+                                    }
+                        
+                                    await channel.setAppliedTags(currentTags);
     
                                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
                                     
@@ -277,7 +283,15 @@ module.exports = (client) => {
                         const grund = inter.fields.getTextInputValue("grund")
                         const vorschlagsembed = message.embeds[0];
                     
-                        await channel.setAppliedTags(["1262860469836710018"]); 
+
+                        const currentTags = channel.appliedTags || [];
+
+                        if (!currentTags.includes("1262860469836710018")) {
+                            currentTags.push("1262860469836710018");
+                        }
+            
+                        await channel.setAppliedTags(currentTags);
+                        await channel.setAppliedTags(["1262860945785622731"]); 
 
                         const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
 
