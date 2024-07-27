@@ -56,16 +56,56 @@ module.exports = (client) => {
             }
         });
         client.on(Events.MessageReactionAdd, async (reaction, user) => {
+<<<<<<< HEAD
+            console.log("Event MessageReactionAdd ausgelöst");
+        
+=======
+>>>>>>> 749207ce936033fb99eee158806c2d97f5244dd8
             if (reaction.message.channel.type !== ChannelType.PublicThread) return;
+<<<<<<< HEAD
+        
+        
+=======
+>>>>>>> 749207ce936033fb99eee158806c2d97f5244dd8
             if (reaction.message.channel.parentId !== "1254340245772701747") return;
+<<<<<<< HEAD
+        
+=======
+>>>>>>> 749207ce936033fb99eee158806c2d97f5244dd8
             if (user.bot) return;
-
+            const emojiId = reaction.emoji.id;
+            if (emojiId !== "1008781495055429672") return
+        
             const message = reaction.message;
-            const emoji = reaction.emoji.name;
-
             const embed = message.embeds[0];
-
+            if (!embed) return
+        
             const reactionEmoji = message.reactions.cache.find(r => r.emoji.id === "1008781495055429672");
+<<<<<<< HEAD
+            if (!reactionEmoji) return
+        
+            const upvoteCount = reactionEmoji.count - 1;
+        
+            const existingEmbed = EmbedBuilder.from(embed);
+            const existingFieldIndex = existingEmbed.data.fields.findIndex(field => field.name === '`📊` - **Nützlich?**');
+            
+            if (existingFieldIndex !== -1) {
+                const fieldValue = existingEmbed.data.fields[existingFieldIndex].value;
+                const updatedFieldValue = `» Votes: ${upvoteCount} <a:upvote:${emojiId}>`;
+        
+                existingEmbed.data.fields[existingFieldIndex].value = updatedFieldValue;
+
+                const updatedEmbed = new EmbedBuilder()
+                    .setTitle(existingEmbed.data.title || '')
+                    .setDescription(existingEmbed.data.description || '') 
+                    .addFields(existingEmbed.data.fields) 
+                    .setThumbnail(existingEmbed.data.thumbnail?.url || '') 
+                    .setImage(existingEmbed.data.image?.url || '') 
+                    .setColor(existingEmbed.data.color || 'DEFAULT')
+                    .setFooter(existingEmbed.data.footer.text || '', existingEmbed.data.footer.iconURL || ''); 
+        
+                try {
+=======
     
             if (reactionEmoji) {
                 console.log("ausgelöst 1")
@@ -94,11 +134,15 @@ module.exports = (client) => {
                         .setFooter(embed.footer.text, embed.footer.iconURL); 
     
                     // Aktualisiere die Nachricht mit dem neuen Embed
+>>>>>>> 749207ce936033fb99eee158806c2d97f5244dd8
                     await message.edit({ embeds: [updatedEmbed] });
+                    console.log("Nachricht erfolgreich aktualisiert");
+                } catch (error) {
+                    console.error("Fehler beim Bearbeiten der Nachricht:", error);
                 }
-        }
-    });
-
+            } else {
+            }
+        });
         client.on("interactionCreate", async (interaction) => {
             if(interaction.isButton()) {
                 if(interaction.customId === "vorschlag_accept") {
