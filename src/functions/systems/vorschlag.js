@@ -180,7 +180,7 @@ module.exports = (client) => {
                                     .setTitle(vorschlagsembed.title)
                                     .setDescription(vorschlagsembed.description)
                                     .addFields(
-                                        ...updatedFields
+                                        ...updatedFields,
                                         { 
                                             name: "`✅` » **Status**", 
                                             value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` 
@@ -224,12 +224,14 @@ module.exports = (client) => {
                                     const grund = inter.fields.getTextInputValue("grund")
                                     const vorschlagsembed = message.embeds[0];
     
+                                    const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
+
                                     const embed = new EmbedBuilder()
                                     .setAuthor({ name: `» Bearbeitet von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
                                     .setTitle(vorschlagsembed.title)
                                     .setDescription(vorschlagsembed.description)
                                     .addFields(
-                                        ...vorschlagsembed.fields,
+                                        ...updatedFields,
                                         { 
                                             name: "`🚧` » **Status**", 
                                             value: `» Dieser Vorschlag ist bereits in Planung und wird bald umgesetzt.\nGrund: \`${grund}\`` 
@@ -271,12 +273,14 @@ module.exports = (client) => {
                         const grund = inter.fields.getTextInputValue("grund")
                         const vorschlagsembed = message.embeds[0];
                     
+                        const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
+
                         const embed = new EmbedBuilder()
                         .setAuthor({ name: `» Abgelehnt von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}`})
                         .setTitle(vorschlagsembed.title)
                         .setDescription(vorschlagsembed.description)
                         .addFields(
-                            ...vorschlagsembed.fields,
+                            ...updatedFields,
                             { 
                                 name: "`❌` » **Status**", 
                                 value: `» Dieser Vorschlag wurde vom Team abgelehnt.\nGrund: \`${grund}\`` 
