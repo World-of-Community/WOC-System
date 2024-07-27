@@ -66,10 +66,10 @@ module.exports = (client) => {
             const embed = message.embeds[0];
 
             const reactionEmoji = message.reactions.cache.find(r => r.emoji.id === "1008781495055429672");
-            const upvoteCount = reaction ? reaction.count - 1 : 0;
     
             if (reactionEmoji) {
                 const embed = message.embeds[0];
+                const upvoteCount = reactionEmoji.count - 1;
     
                 if (embed) {
                     const updatedFields = embed.fields.map(field => {
