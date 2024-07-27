@@ -56,22 +56,13 @@ module.exports = (client) => {
             }
         });
         client.on(Events.MessageReactionAdd, async (reaction, user) => {
-<<<<<<< HEAD
             console.log("Event MessageReactionAdd ausgelöst");
         
-=======
->>>>>>> 749207ce936033fb99eee158806c2d97f5244dd8
             if (reaction.message.channel.type !== ChannelType.PublicThread) return;
-<<<<<<< HEAD
         
         
-=======
->>>>>>> 749207ce936033fb99eee158806c2d97f5244dd8
             if (reaction.message.channel.parentId !== "1254340245772701747") return;
-<<<<<<< HEAD
         
-=======
->>>>>>> 749207ce936033fb99eee158806c2d97f5244dd8
             if (user.bot) return;
             const emojiId = reaction.emoji.id;
             if (emojiId !== "1008781495055429672") return
@@ -81,7 +72,6 @@ module.exports = (client) => {
             if (!embed) return
         
             const reactionEmoji = message.reactions.cache.find(r => r.emoji.id === "1008781495055429672");
-<<<<<<< HEAD
             if (!reactionEmoji) return
         
             const upvoteCount = reactionEmoji.count - 1;
@@ -105,36 +95,6 @@ module.exports = (client) => {
                     .setFooter(existingEmbed.data.footer.text || '', existingEmbed.data.footer.iconURL || ''); 
         
                 try {
-=======
-    
-            if (reactionEmoji) {
-                console.log("ausgelöst 1")
-                const embed = message.embeds[0];
-                const upvoteCount = reactionEmoji.count - 1;
-    
-                if (embed) {
-                    const updatedFields = embed.fields.map(field => {
-                        if (field.name === '`📊` - **Nützlich?**') {
-                            return { 
-                                name: '`📊` - **Nützlich?**', 
-                                value: `» Votes: ${upvoteCount} <a:upvote:${1008781495055429672}>`, 
-                                inline: true 
-                            };
-                        }
-                        return field;
-                    });
-    
-                    const updatedEmbed = new EmbedBuilder()
-                        .setTitle(embed.title)
-                        .setDescription(embed.description) 
-                        .addFields(updatedFields) 
-                        .setThumbnail(embed.thumbnail?.url || '') 
-                        .setImage(embed.image?.url || '') 
-                        .setColor(embed.color)
-                        .setFooter(embed.footer.text, embed.footer.iconURL); 
-    
-                    // Aktualisiere die Nachricht mit dem neuen Embed
->>>>>>> 749207ce936033fb99eee158806c2d97f5244dd8
                     await message.edit({ embeds: [updatedEmbed] });
                     console.log("Nachricht erfolgreich aktualisiert");
                 } catch (error) {
