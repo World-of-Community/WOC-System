@@ -90,9 +90,7 @@ client.on("threadCreate", async (thread) => {
 
         const tagMap = {
             '1262860849673142367': 'DC-Server',
-            '1262758801119907920': 'Website',
-            '1262759071937859705': '1262759071937859705',
-            '1262758617279369246': '1262758617279369246',
+            '1262860327440089158': 'Website',
         };
         const tags = thread.appliedTags;
 
@@ -101,7 +99,7 @@ client.on("threadCreate", async (thread) => {
         console.log(thread.appliedTags);
         console.log(tagTexts); 
     
-        const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: tags });
+        const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: thread.appliedTags });
 
         const embed = new EmbedBuilder()
             .setTitle(`\`🔎\` **- ${thread.name}**`)
