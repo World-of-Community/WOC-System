@@ -173,12 +173,14 @@ module.exports = (client) => {
                                     const grund = inter.fields.getTextInputValue("grund")
                                     const vorschlagsembed = message.embeds[0];
     
+                                    const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
+                                    
                                     const embed = new EmbedBuilder()
                                     .setAuthor({ name: `» Aktzeptiert von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
                                     .setTitle(vorschlagsembed.title)
                                     .setDescription(vorschlagsembed.description)
                                     .addFields(
-                                        ...vorschlagsembed.fields,
+                                        ...updatedFields
                                         { 
                                             name: "`✅` » **Status**", 
                                             value: `» Dieser Vorschlag wurde vom Team akzeptiert.\nGrund: \`${grund}\`` 
@@ -187,6 +189,8 @@ module.exports = (client) => {
                                     .setColor("Green")
                                     .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909598311616523/WOC_Banner_Server_Idee_Akzeptiert.jpg?ex=6698e9b8&is=66979838&hm=23974e4bb3171d7bd0367898d8c7bddfac270a1610395fd5ea9b524c223f1e06&')
                                     .setFooter(vorschlagsembed.footer);
+
+                                    
                                     await message.edit({ embeds: [embed], components: [] });
                                 
                                     message.reactions.removeAll();

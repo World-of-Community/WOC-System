@@ -42,7 +42,6 @@ module.exports = (client) => {
             const regex = /»\s+(\d{17,19})$/;
             const userIDMatch = footerText.match(regex);
             const userID = userIDMatch ? userIDMatch[1] : null;
-            console.log(userIDMatch)
             if (!userID) {
                 console.error('Fehler bei der Verarbeitung des UserIDs:', err);
                 return;
