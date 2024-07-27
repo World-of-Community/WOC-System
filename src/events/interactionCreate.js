@@ -494,6 +494,7 @@ module.exports = {
 
             // Server Ideen / Vorschlag
             if(interaction.customId === "vorschlag_accept") {
+                console.log("ausgeführt")
                 const modal = new ModalBuilder()
                 .setCustomId("acceptreason")
                 .setTitle("✅ | Akzeptieren");
