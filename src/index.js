@@ -73,61 +73,13 @@ for (const folder of functionFolder) {
     require(`./functions/${folder}/${file}`)(client);
 }
 
+
+//Systems
+client.vorschlag();
+
+//Handlers
 client.handleErfolg(); //Erfolge
 
-
-// Vorschlag
-client.on("threadCreate", async (thread) => {
-    if (thread.ownerId === "1020023299448786955") return;
-
-    const guild = client.guilds.cache.get("815919809379172354");
-
-    const channel = await guild.channels.cache.get("1254340245772701747");
-    if (channel && channel.id === thread.parentId) {
-        const ownerid = thread.ownerId
-        const member = await guild.members.fetch(ownerid);
-        const message = await thread.fetchStarterMessage();
-
-        const tagMap = {
-            '1262860849673142367': '<a:discordbloblove:855482395325890570> `DC-Server`',
-            '1262860327440089158': '<a:wocbook:1178664700469317692> `Website`',
-            '1262758801119907920': '<:Supporter:953359782847332362> `Support-Bot`',
-            '1262758617279369246': '<a:System:915211580805881876> `System-Bot`',
-            '1262759071937859705': '<a:Gift:1263043283555319941> `Gift-Bot`',
-            '1266724906930929709': '<a:MinecraftGrassBlock:872034424181637171> `MC-Server`'
-        };
-        const tags = thread.appliedTags;
-
-        const tagIDMap = tags.map(id => tagMap[id]);
-
-               let matchedTagText = '`❌` - **Tag wurde nicht gefunden**'; 
-               for (const id of tags) {
-                   if (tagMap[id]) {
-                       matchedTagText = tagMap[id];
-                       break; 
-                   }
-               }
-
-        const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: thread.appliedTags });
-
-        const embed = new EmbedBuilder()
-            .setTitle(`\`🔎\` **- ${thread.name}**`)
-            .setDescription(`⠀\n> ${message}\n⠀\n**────────────────────────────**`)
-            .addFields({ name: `\`📚\` - **Kategorie**`, value: `» ${matchedTagText}`, inline: true })
-            .addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: 0 <a:upvote:1008781495055429672>`, inline: true })
-            .addFields({ name: `\`💡\` - **Vorschläge**`, value: `> Erstelle einen Post um deine eigenen Vorschlag einzureichen` })
-            .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1261416102228004944/Idee.png?ex=6692e0ca&is=66918f4a&hm=253aca5718a07aba974d34a6430b06fcff86ecc43932cb449cf59700258482dc&')
-            .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909633417936947/WOC_Banner_Server_Idee_Eingereicht.jpg?ex=66925240&is=669100c0&hm=7dcfdfba7b0dffef2fcced49cee11a8c924a5754870a84d8e4ea6438b1fd3550&')
-            .setColor("Orange")
-            .setFooter({ text: "» Eingereicht von " + member.user.username + " » " + member.id, iconURL: member.displayAvatarURL({ dynamic: true })});
-
-        const message2 = await thread2.fetchStarterMessage();
-        await message2.react("1008781495055429672");
-        await message2.react("1008781575644782622");
-        await message2.edit({ content: `\`👋\` » Hey ${member}, Ich habe die Idee (**${thread.name}**) für dich eingereicht.`, embeds: [embed] })
-        await thread.delete()
-    }
-});
 
 // Bot Ping / Erwähnung
 const pingMessages = [
