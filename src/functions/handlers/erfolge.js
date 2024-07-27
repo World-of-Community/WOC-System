@@ -39,8 +39,8 @@ module.exports = (client) => {
             const vorschlagsembed = message.embeds[0];
             
             const footerText = vorschlagsembed.footer.text;
-            const regex = /»\s[^\d]*\s(\d+)\s/;
-            const userIDMatch = footerText.match(regex); 
+            const regex = /»\s+(\d{17,19})$/;
+            const userIDMatch = footerText.match(regex);
             const userID = userIDMatch ? userIDMatch[1] : null;
             console.log(userIDMatch)
             if (!userID) {
