@@ -36,7 +36,7 @@ async execute(interaction, client) {
         .setCustomId("vorschlag_duplicate")
         .setEmoji("🗑️")
         .setLabel("Duplikat")
-        .setStyle(ButtonStyle.Danger)
+        .setStyle(ButtonStyle.Secondary)
   
         const row = new ActionRowBuilder().addComponents(accept, edit, delice, duplicate)
 
