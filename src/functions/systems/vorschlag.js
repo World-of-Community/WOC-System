@@ -46,7 +46,7 @@ module.exports = (client) => {
                     .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1261416102228004944/Idee.png?ex=6692e0ca&is=66918f4a&hm=253aca5718a07aba974d34a6430b06fcff86ecc43932cb449cf59700258482dc&')
                     .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909633417936947/WOC_Banner_Server_Idee_Eingereicht.jpg?ex=66925240&is=669100c0&hm=7dcfdfba7b0dffef2fcced49cee11a8c924a5754870a84d8e4ea6438b1fd3550&')
                     .setColor("Orange")
-                    .setFooter({ text: "» Eingereicht von " + member.user.username + " » " + member.id, iconURL: member.avatarURL()});
+                    .setFooter({ text: "» Eingereicht von " + member.user.username + " » " + member.id, iconURL: member.avatarURL({ dynamic: true })});
         
                 const message2 = await thread2.fetchStarterMessage();
                 await message2.react("1008781495055429672");
