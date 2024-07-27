@@ -56,8 +56,8 @@ module.exports = (client) => {
             }
         });
         client.on(Events.MessageReactionAdd, async (reaction, user) => {
-            if (reaction.channel.type !== ChannelType.PublicThread) return;
-            if (reaction.channel.parentId !== "1254340245772701747") return;
+            if (reaction.message.channel.type !== ChannelType.PublicThread) return;
+            if (reaction.message.channel.parentId !== "1254340245772701747") return;
             if (user.bot) return;
 
             const message = reaction.message;
