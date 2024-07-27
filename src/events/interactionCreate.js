@@ -1,7 +1,7 @@
 const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
 const userdb = require("../../Datenbank/userdb");
 const config = require("../json/config.json")
-const vorschlagEmitter = require('../functions/events/vorschlag');
+const vorschlagEmitter = require('../custom_events/vorschlag');
 
 module.exports = {
     name: Events.InteractionCreate,
