@@ -196,6 +196,7 @@ module.exports = (client) => {
                                     message.reactions.removeAll();
                                     channel.setLocked(true)
                                     vorschlagEmitter.emit('accept', inter);
+                                    vorschlagEmitter.emit('action', inter);
                                     await inter.reply({ content: "`✅` » Der Vorschlag wurde angenommen", ephemeral: true });
                                 }
                             })
@@ -244,6 +245,7 @@ module.exports = (client) => {
                                 
                                     message.reactions.removeAll();
                                     channel.setLocked(true)
+                                    vorschlagEmitter.emit('action', inter);
                                     await inter.reply({ content: "`✅` » Der Vorschlag wurde in Planung gesetzt.", ephemeral: true });
                                 }
                             })
@@ -293,7 +295,7 @@ module.exports = (client) => {
                     
                         message.reactions.removeAll();
                         channel.setLocked(true)
-                
+                        vorschlagEmitter.emit('action', inter);
                         await inter.reply({ content: "`✅` »  Der Vorschlag wurde abgelehnt", ephemeral: true });
                         }
                     })

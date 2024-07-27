@@ -33,6 +33,26 @@ module.exports = (client) => {
             }
         });
 
+        vorschlagEmitter.on('acton', async (inter) => {
+            const channel = inter.channel;
+            const message = await inter.channel.fetchStarterMessage();
+            const vorschlagsembed = message.embeds[0];
+            
+            const footerText = vorschlagsembed.footer.text;
+            const regex = /»\s+(\d{17,19})$/;
+            const userIDMatch = footerText.match(regex);
+            const userID = userIDMatch ? userIDMatch[1] : null;
+            if (!userID) {
+                console.error('Fehler bei der Verarbeitung des UserIDs:', err);
+                return;
+            }
+                const user = await inter.client.users.fetch(userID);
+            if (user) {
+                    user.send(`Hey, ${user} » **Dein Vorschlag auf World Of Community** wurde gerade bearbeitet!\n> Zum Vorschlag: ${message.url}`);
+            }
+        })        
+
+
         vorschlagEmitter.on('accept', async (inter) => {
             const channel = inter.channel;
             const message = await inter.channel.fetchStarterMessage();
@@ -63,6 +83,8 @@ module.exports = (client) => {
                 }
             }
         })        
+
+        
 
     }
 }
