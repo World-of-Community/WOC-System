@@ -24,7 +24,6 @@ module.exports = (client) => {
                     '1266724906930929709': '<a:MinecraftGrassBlock:872034424181637171> `MC-Server`'
                 };
                 const tags = thread.appliedTags;
-                console.log(tags)
         
                 const tagIDMap = tags.map(id => tagMap[id]);
         
@@ -173,8 +172,8 @@ module.exports = (client) => {
                                     const message = await inter.channel.fetchStarterMessage();
                                     const grund = inter.fields.getTextInputValue("grund")
                                     const vorschlagsembed = message.embeds[0];
-                                    
-                                    inter.channel.setAppliedTags("1262860945785622731")
+
+                                    await channel.setAppliedTags(["1262860945785622731"]); 
     
                                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
                                     
@@ -278,7 +277,7 @@ module.exports = (client) => {
                         const grund = inter.fields.getTextInputValue("grund")
                         const vorschlagsembed = message.embeds[0];
                     
-                        inter.channel.setAppliedTags("1262860469836710018")
+                        await channel.setAppliedTags(["1262860469836710018"]); 
 
                         const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
 
