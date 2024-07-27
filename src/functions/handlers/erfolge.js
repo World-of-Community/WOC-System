@@ -48,7 +48,7 @@ module.exports = (client) => {
 
 
   
-    //1 Jahr Server mitglied
+    // 1 Jahr Server mitglied
     cron.schedule("0 0 * * *", async () => {
       const guild = await client.guilds.fetch("815919809379172354");
       if (!guild) return console.error('Guild wurde nicht gefunden.');
@@ -69,7 +69,7 @@ module.exports = (client) => {
             });
       });
 
-    //10 Vorschläge (Accepted)
+    // 10 Vorschläge (Accepted)
     vorschlagEmitter.on("accept", async (inter) => {
       const channel = inter.channel;
       const message = await inter.channel.fetchStarterMessage();
@@ -96,9 +96,13 @@ module.exports = (client) => {
       if (userErfolge.idee === 10) {
         const user = await inter.client.users.fetch(userID);
         if (user) {
-          user.send(
-            "> `✅` Glückwunsch! Du hast 10 akzeptierte Vorschläge erreicht!"
-          );
+          const embed = new EmbedBuilder()
+              .setTitle('<a:checkgreen:1154702583202578472> 𑁉 ERFOLG ERHALTEN')
+              .setDescription('» `💕`**-lichen Glückwunsch zu diesem Erfolg!**\n\n<:Pfeil:1119709908540076124>  **Erfolg freigeschaltet:** `💡〢 Informant (10 Server-Ideen)`\n<:PfeilBlau:1119711275014955080> Vielen Dank dass du den Server und uns dabei unterstützt mit deinen Kreativen Ideen!\n\n<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: https://discord.com/channels/815919809379172354/872063101640532008')
+              .setColor('Green')
+              .setFooter({ text: `» Erfolg freigeschaltet auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+              .setTimestamp();
+          user.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] });
         }
       }
     });
