@@ -491,10 +491,9 @@ module.exports = {
                 await interaction.message.edit({ components: [] })
                 await interaction.reply(`> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** abgelehnt.`)
             }
-
+        }
             // Server Ideen / Vorschlag
             if(interaction.customId === "vorschlag_accept") {
-                console.log("ausgeführt")
                 const modal = new ModalBuilder()
                 .setCustomId("acceptreason")
                 .setTitle("✅ | Akzeptieren");
@@ -621,7 +620,8 @@ module.exports = {
                     }
                 })
                 })
-            }}
+            }
+        
 
         if(interaction.isChatInputCommand()) {
 
