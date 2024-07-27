@@ -386,7 +386,7 @@ module.exports = (client) => {
                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
                                     
                     const embed = new EmbedBuilder()
-                    .setAuthor({ name: `» Aktzeptiert von ${interaction.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
+                    .setAuthor({ name: `» Aktzeptiert von ${interaction.member.user.displayName}`, iconURL: interaction.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${interaction.member.user.id}` })
                     .setTitle(vorschlagsembed.title)
                     .setDescription(vorschlagsembed.description)
                     .addFields(
