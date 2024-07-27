@@ -16,7 +16,7 @@ const { processRSSFeed } = FeedManager;
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
-    const embed1 = new EmbedBuilder()
+   /* const embed1 = new EmbedBuilder()
   
 
     const channel = client.channels.cache.get(1254340245772701747)
@@ -30,7 +30,7 @@ module.exports = {
     })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
-
+  */
 
     let lastEntries = {};
     try {
