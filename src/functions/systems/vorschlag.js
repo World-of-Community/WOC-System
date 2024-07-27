@@ -17,8 +17,8 @@ module.exports = (client) => {
         
                 const tagMap = {
                     '1262860849673142367': '<a:discordbloblove:855482395325890570> `DC-Server`',
-                    '1262860327440089158': '<a:wocbook:1178664700469317692> `Website`',
-                    '1262758801119907920': '<:Supporter:953359782847332362> `Support-Bot`',
+                    '1262860327440089158': '<a:wocbook:1178664700469317692> `Website`', 
+                    '1262758801119907920': '<:Supporter:953359782847332362> `Support-Bot`', 
                     '1262758617279369246': '<a:System:915211580805881876> `System-Bot`',
                     '1262759071937859705': '<a:Gift:1263043283555319941> `Gift-Bot`',
                     '1266724906930929709': '<a:MinecraftGrassBlock:872034424181637171> `MC-Server`'
@@ -151,8 +151,8 @@ module.exports = (client) => {
         client.on("interactionCreate", async (interaction) => {
             if(interaction.isButton()) {
                 if(interaction.customId === "vorschlag_duplicate") {
-                    const channel = inter.channel
-                    const message = await inter.channel.fetchStarterMessage();
+                    const channel = interaction.channel
+                    const message = await interaction.channel.fetchStarterMessage();
                     const vorschlagsembed = message.embeds[0];
 
                     const currentTags = channel.appliedTags || [];
@@ -167,7 +167,7 @@ module.exports = (client) => {
                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
                                     
                     const embed = new EmbedBuilder()
-                    .setAuthor({ name: `» Aktzeptiert von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
+                    .setAuthor({ name: `» Aktzeptiert von ${interaction.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
                     .setTitle(vorschlagsembed.title)
                     .setDescription(vorschlagsembed.description)
                     .addFields(
@@ -200,7 +200,7 @@ module.exports = (client) => {
                         `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
                       );
                     }
-                    await inter.reply({ content: "`✅` » Der Vorschlag wurde angenommen", ephemeral: true });
+                    await interaction.reply({ content: "`✅` » Der Vorschlag wurde angenommen", ephemeral: true });
 
                 }
 
@@ -305,6 +305,8 @@ module.exports = (client) => {
                                         if (!currentTags.includes("1266798963076501585")) {
                                             currentTags.push("1266798963076501585");
                                         }
+
+                     
                                         await channel.setAppliedTags(currentTags);
 
                                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
