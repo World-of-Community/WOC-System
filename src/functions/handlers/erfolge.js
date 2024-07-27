@@ -33,7 +33,7 @@ module.exports = (client) => {
             }
         });
 
-        vorschlagEmitter.on('acton', async (inter) => {
+        vorschlagEmitter.on('action', async (inter) => {
             const channel = inter.channel;
             const message = await inter.channel.fetchStarterMessage();
             const vorschlagsembed = message.embeds[0];
@@ -47,7 +47,7 @@ module.exports = (client) => {
                 return;
             }
                 const user = await inter.client.users.fetch(userID);
-            if (user) {
+                if (user) {
                     user.send(`Hey, ${user} » **Dein Vorschlag auf World Of Community** wurde gerade bearbeitet!\n> Zum Vorschlag: ${message.url}`);
             }
         })        
