@@ -89,17 +89,13 @@ client.on("threadCreate", async (thread) => {
         const message = await thread.fetchStarterMessage();
 
         const tagMap = {
-            '1262860327440089158': 'DC-Server',
+            '1262860849673142367': 'DC-Server',
             '1262758801119907920': 'Website',
             '1262759071937859705': '1262759071937859705',
             '1262758617279369246': '1262758617279369246',
-            '1262860849673142367': '1262860849673142367'
         };
-
-        // Tags abrufen
         const tags = thread.appliedTags;
 
-        // Tags durch IDs ersetzen
         const tagTexts = tags.map(id => tagMap[id]);
 
         console.log(thread.appliedTags);
