@@ -185,14 +185,14 @@ module.exports = (client) => {
                                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
                                     
                                     const embed = new EmbedBuilder()
-                                    .setAuthor({ name: `» Aktzeptiert von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
+                                    .setAuthor({ name: `» Akzeptiert von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
                                     .setTitle(vorschlagsembed.title)
                                     .setDescription(vorschlagsembed.description)
                                     .addFields(
                                         ...updatedFields,
                                         { 
                                             name: "`✅` » **Status**", 
-                                            value: `» Dieser Vorschlag wurde vom Server-Team akzeptiert.\nGrund: \`${grund}\`` 
+                                            value: `» Dieser Vorschlag wurde von unserem Server-Team akzeptiert.\nGrund: \`${grund}\`` 
                                         }
                                     )
                                     .setColor("Green")
@@ -290,7 +290,7 @@ module.exports = (client) => {
                                         `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
                                       );
                                     }
-                                    await inter.reply({ content: "`✅` » Der Vorschlag wurde als in planung markiert.", ephemeral: true });
+                                    await inter.reply({ content: "`✅` » Der Vorschlag wurde als in Planung markiert.", ephemeral: true });
                                 }
                             })
                     })
@@ -339,7 +339,7 @@ module.exports = (client) => {
                             ...updatedFields,
                             { 
                                 name: "`❌` » **Status**", 
-                                value: `» Dieser Vorschlag wurde vom Server-Team abgelehnt.\nGrund: \`${grund}\`` 
+                                value: `» Dieser Vorschlag wurde von unserem Server-Team abgelehnt.\nGrund: \`${grund}\`` 
                             }
                         )
                         .setColor("Red")
@@ -364,7 +364,7 @@ module.exports = (client) => {
                           );
                         }
 
-                        await inter.reply({ content: "`✅` »  Der Vorschlag wurde abgelehnt markiert.", ephemeral: true });
+                        await inter.reply({ content: "`✅` »  Der Vorschlag wurde als Abgelehnt markiert.", ephemeral: true });
                         }
                     })
                     })
@@ -386,19 +386,19 @@ module.exports = (client) => {
                     const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
                                     
                     const embed = new EmbedBuilder()
-                    .setAuthor({ name: `» Aktzeptiert von ${interaction.member.user.displayName}`, iconURL: interaction.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${interaction.member.user.id}` })
+                    .setAuthor({ name: `» Bearbeitet von ${interaction.member.user.displayName}`, iconURL: interaction.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${interaction.member.user.id}` })
                     .setTitle(vorschlagsembed.title)
                     .setDescription(vorschlagsembed.description)
                     .addFields(
                         ...updatedFields,
                         { 
-                            name: "`❌` » **Status**", 
-                            value: `» Dieser Vorschlag ist ein Duplikat. vom Server-Team akzeptiert.\nGrund: \`Doppelter Vorschlag. Bitte nutze die Suche!\`` 
+                            name: "`🔗` » **Status**", 
+                            value: `» Dieser Vorschlag ist Doppelt und wurde bereits bearbeitet.\nGrund: \`Doppelter Vorschlag. Bitte nutze die Suche!\`` 
                         }
                     )
-                    .setColor("Red")
-                    //.setThumbnail('')
-                    //.setImage('')
+                    .setColor("Yellow")
+                    .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1266798125348294850/link.png?ex=66a67531&is=66a523b1&hm=baf103511bbc0bdce38ad867f2e5788d71422302a427917a33ed43bca3c36dcc&')
+                    .setImage('https://cdn.discordapp.com/attachments/967522063944392704/1266802824151564339/WOC_Banner_Server_Idee_Doppelt.jpg?ex=66a67991&is=66a52811&hm=df4bbf126d07e3ed0e6defcbaf650ccaad10aa4b6d9e7b6d282b0831c29be6ea&')
                     .setFooter(vorschlagsembed.footer);
 
                     
@@ -418,7 +418,7 @@ module.exports = (client) => {
                         `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
                       );
                     }
-                    await interaction.reply({ content: "`✅` » Der Vorschlag wurde als Duplikat markiert.", ephemeral: true });
+                    await interaction.reply({ content: "`✅` » Der Vorschlag wurde als Doppelt markiert.", ephemeral: true });
 
                 }
             }
