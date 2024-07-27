@@ -89,9 +89,9 @@ module.exports = (client) => {
                     .setImage(existingEmbed.data.image?.url || '') 
                     .setColor(existingEmbed.data.color || 'DEFAULT')
                     .setFooter({
-                        text: existingEmbed.data.footer.text || '',
-                        iconURL: existingEmbed.data.footer.iconURL || ''
-                    }); 
+                        text: existingEmbed.data.footer.text,
+                        iconURL: existingEmbed.data.footer.iconURL
+                    });
         
                 try {
                     await message.edit({ embeds: [updatedEmbed] });
