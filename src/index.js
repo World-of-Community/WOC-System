@@ -96,7 +96,7 @@ client.on("threadCreate", async (thread) => {
             { 1262758617279369246: '1262758617279369246' },
             { 1262860849673142367: '1262860849673142367' }
           ];
-          const tagTexts = tags.map(id => tagMap[id]);
+          const tagTexts = tags.map(id => tagIDs[id]);
         console.log(thread.appliedTags)
         console.log(tagTexts)
         const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: tags });
