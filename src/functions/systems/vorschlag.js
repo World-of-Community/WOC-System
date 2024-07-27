@@ -24,6 +24,7 @@ module.exports = (client) => {
                     '1266724906930929709': '<a:MinecraftGrassBlock:872034424181637171> `MC-Server`'
                 };
                 const tags = thread.appliedTags;
+                console.log(tags)
         
                 const tagIDMap = tags.map(id => tagMap[id]);
         
