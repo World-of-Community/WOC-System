@@ -77,7 +77,7 @@ module.exports = (client) => {
             
             if (existingFieldIndex !== -1) {
                 const fieldValue = existingEmbed.data.fields[existingFieldIndex].value;
-                const updatedFieldValue = `» Votes: \´${upvoteCount}\` <a:upvote:1008781495055429672>`;
+                const updatedFieldValue = `» Votes: \`${upvoteCount}\` <a:upvote:1008781495055429672>`;
         
                 existingEmbed.data.fields[existingFieldIndex].value = updatedFieldValue;
 
@@ -136,7 +136,7 @@ module.exports = (client) => {
                     .setColor(existingEmbed.data.color)
                     .setFooter({
                         text: existingEmbed.data.footer.text,
-                        iconURL: existingEmbed.data.footer.iconURL
+                        iconURL: existingEmbed.data.footer.icon_url
                     });
         
                 try {
