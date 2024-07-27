@@ -50,6 +50,10 @@ module.exports = (client) => {
 
             let userErfolge = await erfolgDB.findOne({ userID: userID });
         
+            if (userErfolge.idee >= 10) {
+                return; 
+            }
+
             userErfolge.idee += 1;
             await userErfolge.save();
 
