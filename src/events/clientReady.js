@@ -16,6 +16,22 @@ const { processRSSFeed } = FeedManager;
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
+    const embed1 = new EmbedBuilder()
+  
+
+    const channel = client.channels.cache.get(1254340245772701747)
+    await channel.threads
+    .create({
+      name: '👋 - Einführung & Informationen (FAQ)',
+      message: {
+       embeds: [embed1],
+      },
+      reason: 'Vorschlag System',
+    })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+
     let lastEntries = {};
     try {
       const data = fs.readFileSync("src/json/lastEntries.json");
