@@ -91,6 +91,9 @@ client.on("threadCreate", async (thread) => {
         const tagMap = {
             '1262860849673142367': 'DC-Server',
             '1262860327440089158': 'Website',
+            '1262758801119907920': 'Support-Bot',
+            '1262758617279369246': 'System-Bot',
+            '1262759071937859705': 'Gift-Bot'
         };
         const tags = thread.appliedTags;
 
