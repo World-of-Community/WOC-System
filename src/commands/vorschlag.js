@@ -32,8 +32,13 @@ async execute(interaction, client) {
         .setEmoji("❌")
         .setLabel("Ablehnen")
         .setStyle(ButtonStyle.Danger)
+        const duplicate = new ButtonBuilder()
+        .setCustomId("vorschlag_duplicate")
+        .setEmoji("🗑️")
+        .setLabel("Duplikat")
+        .setStyle(ButtonStyle.Danger)
   
-        const row = new ActionRowBuilder().addComponents(accept, edit, delice)
+        const row = new ActionRowBuilder().addComponents(accept, edit, delice, duplicate)
 
         await interaction.reply({content: `\`💡\` » Wähle eine Aktion aus.`, components: [row], ephemeral: true})
     }

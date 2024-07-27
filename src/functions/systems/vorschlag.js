@@ -24,6 +24,7 @@ module.exports = (client) => {
                     '1266724906930929709': '<a:MinecraftGrassBlock:872034424181637171> `MC-Server`'
                 };
                 const tags = thread.appliedTags;
+                console.log(tags)
         
                 const tagIDMap = tags.map(id => tagMap[id]);
         
@@ -149,6 +150,61 @@ module.exports = (client) => {
         });
         client.on("interactionCreate", async (interaction) => {
             if(interaction.isButton()) {
+                if(interaction.customId === "vorschlag_duplicate") {
+                    const channel = inter.channel
+                    const message = await inter.channel.fetchStarterMessage();
+                    const vorschlagsembed = message.embeds[0];
+
+                    const currentTags = channel.appliedTags || [];
+
+
+                    if (!currentTags.includes("")) {
+                        currentTags.push("");
+                    }
+        
+                    await channel.setAppliedTags(currentTags);
+
+
+                    const updatedFields = vorschlagsembed.fields.filter(field => field.name !== '`💡` - **Vorschläge**');
+                                    
+                    const embed = new EmbedBuilder()
+                    .setAuthor({ name: `» Aktzeptiert von ${inter.member.user.displayName}`, iconURL: inter.member.user.displayAvatarURL(), url: `https://discordapp.com/users/${inter.member.user.id}` })
+                    .setTitle(vorschlagsembed.title)
+                    .setDescription(vorschlagsembed.description)
+                    .addFields(
+                        ...updatedFields,
+                        { 
+                            name: "`❌` » **Status**", 
+                            value: `» Dieser Vorschlag ist ein Duplikat. vom Server-Team akzeptiert.\nGrund: \`Doppelter Vorschlag. Bitte nutze die Suche!\`` 
+                        }
+                    )
+                    .setColor("Red")
+                    //.setThumbnail('')
+                    //.setImage('')
+                    .setFooter(vorschlagsembed.footer);
+
+                    
+                    await message.edit({ embeds: [embed], components: [] });
+                
+                    message.reactions.removeAll();
+                    channel.setLocked(true)
+                    vorschlagEmitter.emit('accept', inter);
+                    const userIDMatch = vorschlagsembed.footer.match(/»\s+(\d{17,19})$/);
+                    const userID = userIDMatch ? userIDMatch[1] : null;
+                    if (!userID) {
+                      console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+                      return;
+                    }
+                    const user = await inter.client.users.fetch(userID);
+                    if (user) {
+                      user.send(
+                        `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
+                      );
+                    }
+                    await inter.reply({ content: "`✅` » Der Vorschlag wurde angenommen", ephemeral: true });
+
+                }
+
                 if(interaction.customId === "vorschlag_accept") {
                     const modal = new ModalBuilder()
                     .setCustomId("acceptreason")
@@ -205,7 +261,18 @@ module.exports = (client) => {
                                     message.reactions.removeAll();
                                     channel.setLocked(true)
                                     vorschlagEmitter.emit('accept', inter);
-                                    vorschlagEmitter.emit('action', inter);
+                                    const userIDMatch = vorschlagsembed.footer.match(/»\s+(\d{17,19})$/);
+                                    const userID = userIDMatch ? userIDMatch[1] : null;
+                                    if (!userID) {
+                                      console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+                                      return;
+                                    }
+                                    const user = await inter.client.users.fetch(userID);
+                                    if (user) {
+                                      user.send(
+                                        `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
+                                      );
+                                    }
                                     await inter.reply({ content: "`✅` » Der Vorschlag wurde angenommen", ephemeral: true });
                                 }
                             })
@@ -255,7 +322,18 @@ module.exports = (client) => {
                                 
                                     message.reactions.removeAll();
                                     channel.setLocked(true)
-                                    vorschlagEmitter.emit('action', inter);
+                                    const userIDMatch = vorschlagsembed.footer.match(/»\s+(\d{17,19})$/);
+                                    const userID = userIDMatch ? userIDMatch[1] : null;
+                                    if (!userID) {
+                                      console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+                                      return;
+                                    }
+                                    const user = await inter.client.users.fetch(userID);
+                                    if (user) {
+                                      user.send(
+                                        `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
+                                      );
+                                    }
                                     await inter.reply({ content: "`✅` » Der Vorschlag wurde in Planung gesetzt.", ephemeral: true });
                                 }
                             })
@@ -316,7 +394,20 @@ module.exports = (client) => {
                     
                         message.reactions.removeAll();
                         channel.setLocked(true)
-                        vorschlagEmitter.emit('action', inter);
+
+                        const userIDMatch = vorschlagsembed.footer.match(/»\s+(\d{17,19})$/);
+                        const userID = userIDMatch ? userIDMatch[1] : null;
+                        if (!userID) {
+                          console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+                          return;
+                        }
+                        const user = await inter.client.users.fetch(userID);
+                        if (user) {
+                          user.send(
+                            `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
+                          );
+                        }
+
                         await inter.reply({ content: "`✅` »  Der Vorschlag wurde abgelehnt", ephemeral: true });
                         }
                     })
