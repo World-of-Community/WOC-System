@@ -47,10 +47,11 @@ module.exports = {
 
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    const roletoAdd = guild.roles.cache.find(role => role.id === "972193356333604874");
 
     members.forEach(member => {
-        if (member.joinedAt <= oneYearAgo && !member.roles.cache.has(972193356333604874)) {
-            member.roles.add(972193356333604874).then(() => {
+        if (member.joinedAt <= oneYearAgo && !member.roles.cache.has(roletoAdd)) {
+            member.roles.add(roletoAdd).then(() => {
                 console.log(`Added role to ${member.user.tag}`);
             }).catch(console.error);
         }
