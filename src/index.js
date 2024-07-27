@@ -88,17 +88,23 @@ client.on("threadCreate", async (thread) => {
         const member = await guild.members.fetch(ownerid);
         const message = await thread.fetchStarterMessage();
 
+        const tagMap = {
+            '1262860327440089158': 'DC-Server',
+            '1262758801119907920': 'Website',
+            '1262759071937859705': '1262759071937859705',
+            '1262758617279369246': '1262758617279369246',
+            '1262860849673142367': '1262860849673142367'
+        };
+
+        // Tags abrufen
         const tags = thread.appliedTags;
-        const tagIDs = [
-            { 1262860327440089158: 'DC-Server' },
-            { 1262758801119907920: 'Website' },
-            { 1262759071937859705: '1262759071937859705' },
-            { 1262758617279369246: '1262758617279369246' },
-            { 1262860849673142367: '1262860849673142367' }
-          ];
-          const tagTexts = tags.map(id => tagIDs[id]);
-        console.log(thread.appliedTags)
-        console.log(tagTexts)
+
+        // Tags durch IDs ersetzen
+        const tagTexts = tags.map(id => tagMap[id]);
+
+        console.log(thread.appliedTags);
+        console.log(tagTexts); 
+    
         const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: tags });
 
         const embed = new EmbedBuilder()
