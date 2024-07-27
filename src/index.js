@@ -89,25 +89,23 @@ client.on("threadCreate", async (thread) => {
         const message = await thread.fetchStarterMessage();
 
         const tagMap = {
-            '1262860849673142367': 'DC-Server',
-            '1262860327440089158': 'Website',
-            '1262758801119907920': 'Support-Bot',
-            '1262758617279369246': 'System-Bot',
-            '1262759071937859705': 'Gift-Bot'
+            '1262860849673142367': '<a:discordbloblove:855482395325890570> DC-Server',
+            '1262860327440089158': '<a:wocbook:1178664700469317692> Website',
+            '1262758801119907920': '<:Supporter:953359782847332362> Support-Bot',
+            '1262758617279369246': '<a:System:915211580805881876> System-Bot',
+            '1262759071937859705': '<a:Gift:1263043283555319941> Gift-Bot',
+            '1266724906930929709': '<a:MinecraftGrassBlock:872034424181637171> MC-Server'
         };
         const tags = thread.appliedTags;
 
         const tagTexts = tags.map(id => tagMap[id]);
 
-        console.log(thread.appliedTags);
-        console.log(tagTexts); 
-    
         const thread2 = await channel.threads.create({ name: thread.name, message: { content: `\`⚙️\` - Bitte warten, Ich erfasse die Daten.` }, appliedTags: thread.appliedTags });
 
         const embed = new EmbedBuilder()
             .setTitle(`\`🔎\` **- ${thread.name}**`)
             .setDescription(`⠀\n> ${message}\n⠀\n**────────────────────────────**`)
-            .addFields({ name: `\`📚\` - **Kategorie**`, value: `» \`${thread.appliedTags}\``, inline: true })
+            .addFields({ name: `\`📚\` - **Kategorie**`, value: `» \`${tagTexts}\``, inline: true })
             .addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: \`${0}\` <a:upvote:1008781495055429672>`, inline: true })
             .addFields({ name: `\`💡\` - **Vorschläge**`, value: `> Erstelle einen Post um deine eigenen Vorschlag einzureichen` })
             .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1261416102228004944/Idee.png?ex=6692e0ca&is=66918f4a&hm=253aca5718a07aba974d34a6430b06fcff86ecc43932cb449cf59700258482dc&')
