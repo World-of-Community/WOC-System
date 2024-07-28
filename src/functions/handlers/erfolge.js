@@ -100,6 +100,7 @@ module.exports = (client) => {
               .setTitle('<a:checkgreen:1154702583202578472> 𑁉 ERFOLG ERHALTEN')
               .setDescription('» `💕`**-lichen Glückwunsch zu diesem Erfolg!**\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💡〢 Informant (10 Server-Ideen)`\n<:PfeilBlau:1119711275014955080> Vielen Dank dass du den Server und uns dabei unterstützt mit deinen Kreativen Ideen!\n\n<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: https://discord.com/channels/815919809379172354/872063101640532008')
               .setColor('Green')
+              .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1267143249248649297/WOC_Banner_Server_Erfolg_Erhalten.jpg?ex=66a7b69d&is=66a6651d&hm=c96a175b36c826801303d40d10c22d1f7f25136616574a8f66edfc42d8d520f0&')
               .setFooter({ text: `» Erfolg freigeschaltet auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
               .setTimestamp();
           user.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] });
