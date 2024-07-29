@@ -392,7 +392,7 @@ module.exports = (client) => {
                     .addFields(
                         ...updatedFields,
                         { 
-                            name: "`🔗` » **Status**", 
+                            name: "`🔗` » **Status**",
                             value: `» Dieser Vorschlag ist Doppelt und wurde bereits bearbeitet.\nGrund: \`Doppelter Vorschlag. Bitte nutze die Suche!\`` 
                         }
                     )
