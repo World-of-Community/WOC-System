@@ -74,13 +74,11 @@ for (const folder of functionFolder) {
     require(`./functions/${folder}/${file}`)(client);
 }
 
-
-//Systems
+// Systems
 client.vorschlag();
 
-//Handlers
-client.handleErfolg(); //Erfolge
-
+// Handlers
+client.handleErfolg(); // Erfolge
 
 // Bot Ping / Erwähnung
 const pingMessages = [
@@ -122,7 +120,7 @@ client.on('guildMemberAdd', async member => {
     const newInvites = await member.guild.invites.fetch();
     const oldInvites = invites.get(member.guild.id);
 
-    // Check if oldInvites is defined
+    // Check if old Invites is defined
     if (!oldInvites) {
         invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
         return;

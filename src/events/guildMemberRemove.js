@@ -23,6 +23,7 @@ module.exports = {
         if(!userData) return
         await userData.deleteOne()
 
+        // Automatisches Löschen wenn ein Nutzer verlässt
         const CHANNEL_ID = '1172920281526960238'; // Ersetze durch die ID des Kanals, in dem die Werbung gepostet wird.
 
         const channel = member.guild.channels.cache.get(CHANNEL_ID);
