@@ -40,6 +40,6 @@ async execute(interaction, client) {
   
         const row = new ActionRowBuilder().addComponents(accept, edit, duplicate, delice)
 
-        await interaction.reply({content: `\`💡\` » Wähle eine Aktion aus.`, components: [row], ephemeral: true})
+        await interaction.reply({ content: `\`💡\` » Wähle eine Aktion aus.`, components: [row], ephemeral: true })
     }
 };
