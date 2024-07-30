@@ -58,10 +58,9 @@ module.exports = (client) => {
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         const roletoAdd = await guild.roles.cache.find(role => role.id === "972193356333604874");
-
             await members.forEach(member => {
+              if (!member.roles.cache.has(roletoAdd)) {
                 if (member.joinedAt <= oneYearAgo) {
-                  if (!member.roles.cache.has(roletoAdd)) {
                     member.roles.add(roletoAdd).then(() => {
                         console.log(`Added role to ${member.user.tag}`);
                     }).catch(console.error);
