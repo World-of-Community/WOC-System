@@ -442,7 +442,7 @@ module.exports = (client) => {
 
     const channel = client.channels.cache.get("1254340245772701747")
     await channel.threads.create({
-      name: '👋 - Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Vorschlag System' })
+      name: 'Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Vorschlag System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
     */
