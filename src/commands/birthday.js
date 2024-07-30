@@ -11,15 +11,13 @@ module.exports = {
         .addIntegerOption(option => option.setName('jahr').setDescription('» In welchen Jahr wurdest du geboren?').setRequired(false)),
         )
         .addSubcommand((command) => command.setName('delete').setDescription('» Lösche den Geburtstag eines Nutzers. 🎂')
-        .addUserOption(option => option.setName('user').setDescription('» Welchen Nutzer möchtest du löschen?').setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .addUserOption(option => option.setName('user').setDescription('» Welchen Nutzer möchtest du löschen?').setRequired(true)),
         )
         .addSubcommand((command) => command.setName('change').setDescription('» Ändere den Geburtstag eines Nutzers. 🎂')
         .addUserOption(option => option.setName('user').setDescription('» Welchen Nutzer möchtest du ändern?').setRequired(true))
         .addIntegerOption(option => option.setName('tag').setDescription('» An welchem Tag wurde der Nutzer geboren?').setRequired(true))
         .addIntegerOption(option => option.setName('monat').setDescription('» In welchem Monat wurde der Nutzer geboren?').setRequired(true))
-        .addIntegerOption(option => option.setName('jahr').setDescription('» In welchem Jahr wurde der Nutzer geboren?').setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .addIntegerOption(option => option.setName('jahr').setDescription('» In welchem Jahr wurde der Nutzer geboren?').setRequired(false)),
         ),
 
     async execute(interaction) {
