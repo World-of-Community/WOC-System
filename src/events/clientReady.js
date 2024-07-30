@@ -29,7 +29,7 @@ module.exports = {
     .setFooter({ text: '» Wir danken jedem für seine einzigartige Idee!', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=66a8b123&is=66a75fa3&hm=c1153e75f4971748e8ff2acb4d7f4e86572a2c976bc4661723af16163c0984a6&' })
     .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=66a8b123&is=66a75fa3&hm=c1153e75f4971748e8ff2acb4d7f4e86572a2c976bc4661723af16163c0984a6&');
 
-    const channel = client.channels.cache.get(1254340245772701747)
+    const channel = client.channels.cache.get("1254340245772701747")
     await channel.threads.create({
       name: '👋 - Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Vorschlag System' })
     .then(threadChannel => console.log(threadChannel))
