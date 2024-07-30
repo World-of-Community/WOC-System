@@ -298,7 +298,7 @@ module.exports = (client) => {
                 if(interaction.customId === "vorschlag_delice") {
                     const modal = new ModalBuilder()
                     .setCustomId("delicereason")
-                    .setTitle("❌ | Ablehnen");
+                    .setTitle("🔗 | Ablehnen");
               
                   const textInputAccept = new TextInputBuilder()
                     .setCustomId("grund")
