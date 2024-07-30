@@ -426,7 +426,7 @@ module.exports = (client) => {
 
     }
 }
-
+    /*
     const embed1 = new EmbedBuilder()
     .setTitle('`❤️`-LICH WILLKOMMEN IM SERVER-IDEEN SYSTEM!')
     .setColor("Orange")
@@ -444,4 +444,4 @@ module.exports = (client) => {
       name: 'Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Vorschlag System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
-    
+    /* /*/
