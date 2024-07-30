@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 const fs = require('fs')
 const ms = require("ms");
 const timeoutdb = require("../../Datenbank/timeoutdb");
@@ -10,13 +10,13 @@ module.exports = {
         .addUserOption(option => option.setName('user').setDescription('» Welcher User soll in Timeout?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('» Gebe ein Grund an').setRequired(true))
         .addStringOption(option => option.setName('dauer').setDescription('» Gebe eine Dauer an (5d 30m)').setRequired(true))
-        .setDefaultMemberPermissions(PermissionsBitField.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
         
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageRoles)) return;
+        if (!interaction.member.permissions.has(PermissionFlagsBits.Flags.ManageRoles)) return;
 
         const member = interaction.options.getMember('user');
         const reason = interaction.options.getString('grund');

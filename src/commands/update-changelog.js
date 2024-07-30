@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 
@@ -6,7 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('bot-news-refresh')
         .setDescription('» Aktualisiere das Changelog. 🔁')
-        .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Flags.Administrator),
 
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');

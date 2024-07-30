@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 const fs = require('fs')
 
 module.exports = {
@@ -7,12 +7,12 @@ module.exports = {
         .setDescription('» Entbanne einen User. 🔓')
         .addUserOption(option => option.setName('user').setDescription('» Welcher User soll Entbannt werden?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('» Gebe ein Grund an').setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
         
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) return;
+        if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) return;
 
         const member = interaction.options.getMember('user')
         const reason = interaction.options.getString('grund')

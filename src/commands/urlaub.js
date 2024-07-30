@@ -1,4 +1,4 @@
-const { Client, SlashCommandBuilder, EmbedBuilder, ChannelType } = require("discord.js");
+const { Client, SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } = require("discord.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,7 +6,8 @@ module.exports = {
         .setDescription('» Teile deinen Urlaub mit. 🌴')
         .addStringOption(option => option.setName('von').setDescription('Startdatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
         .addStringOption(option => option.setName('bis').setDescription('Enddatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
-        .addStringOption(option => option.setName('grund').setDescription('Grund des Urlaubs').setRequired(false)),
+        .addStringOption(option => option.setName('grund').setDescription('Grund des Urlaubs').setRequired(false))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
         const von = interaction.options.getString('von');

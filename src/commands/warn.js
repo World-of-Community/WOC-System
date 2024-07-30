@@ -5,10 +5,11 @@ module.exports = {
         .setName('warn')
         .setDescription('» Warne einen User. ❗')
         .addUserOption(option => option.setName('user').setDescription('» Welchen User möchtest du Warnen?').setRequired(true))
-        .addStringOption(option => option.setName('grund').setDescription('» Der Grund der Warnung').setRequired(true)),
+        .addStringOption(option => option.setName('grund').setDescription('» Der Grund der Warnung').setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
         
 async execute(interaction) {
-    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+    if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
         return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
     }
 

@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, PermissionsBitField, ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType } = require('discord.js');
 
 module.exports = {
    data: new SlashCommandBuilder()
       .setName('vorschlag')
       .setDescription('» Verwalte ein Vorschlag. 💡')
-      .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageChannels),
+      .setDefaultMemberPermissions(PermissionFlagsBits.Flags.ManageChannels),
 
 async execute(interaction, client) {
     if (interaction.channel.type !== ChannelType.PublicThread) return await interaction.reply({content: `\`❌\` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.`, ephemeral: true})

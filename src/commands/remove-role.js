@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,7 +6,7 @@ module.exports = {
         .setDescription('» Entferne eine Rolle eines Nutzers. ❌')
         .addUserOption(option => option.setName('user').setDescription('» Der Nutzer, von dem die Rolle entfernt werden soll.').setRequired(true))
         .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, die entfernt werden soll.').setRequired(true))
-        .setDefaultMemberPermissions(PermissionsBitField.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
 async execute(interaction) {
 
