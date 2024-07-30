@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs')
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
         .setDescription('» Gebe einem Nutzer eine Rolle. 🎭')
         .addUserOption(option => option.setName('user').setDescription('» Welcher User soll es sein?').setRequired(true))
         .addRoleOption(option => option.setName('role').setDescription('» Welche Rolle soll der User bekommen?').setRequired(true))
-        .setDefaultMemberPermissions(PermissionsBitField.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
 async execute(interaction) {
     
