@@ -6,12 +6,12 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('bot-news-refresh')
         .setDescription('» Aktualisiere das Changelog. 🔁')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Flags.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
+        if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) return;
 
         if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
         var serverData = await serverdb.findOne({ guildID: interaction.guildId })
