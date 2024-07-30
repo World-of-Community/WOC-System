@@ -14,7 +14,7 @@ module.exports = {
         .addChoices({ name: '🔴 = Bug behoben', value: '<:PointRed:1123612255800524940>' }, { name: '🟠 = Änderung', value: '<:PointOrange:1123612277669630092>' }, { name: '🟢 = Neu hinzugefügt', value: '<:PointGreen:1123612318694117477>' }))
         
         .addStringOption(option => option.setName('update').setDescription('» Beschreibe was geändert wurde').setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.Flags.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
         console.log("Alles Ok beim Changelog - hinzugefügt")
