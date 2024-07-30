@@ -426,3 +426,23 @@ module.exports = (client) => {
 
     }
 }
+
+
+    /*const embed1 = new EmbedBuilder()
+    .setTitle('`💕`-LICH WILLKOMMEN IM SERVER-IDEEN SYSTEM!')
+    .setColor("Orange")
+    .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1267143224351391834/WOC_Banner_Information_Server_Ideen.jpg?ex=66a85f57&is=66a70dd7&hm=cf7ada30ad821db52bcdacd6dd8db274c328ec9ea4a44002a7b7e8c66f9ebce0');
+
+    const embed2 = new EmbedBuilder()
+    .setTitle('<a:pin:1119708768326914100> - INFORMATIONEN (FAQ)')
+    .setColor("Orange")
+    .setDescription('» In diesem Kanal kannst du eigene **Posts (Threads)** für **deine kreative Idee** erstellen, um World Of Community zu unterstützen. Wir bedanken uns bei jeder Idee - ihr helft uns damit enorm! `❤️`\n\n> ❓ - **WIE REICHE ICH EINE SERVER-IDEE EIN?**\n» Wichtig ist es zu aller Erst, **nach deiner Idee zu suchen** - um zu überprüfen, ob jemand bereits diese Idee eingereicht hat. Tippe oben bei der Suche **deine Idee** ein. Wenn du nichts finden konntest, dann füge eine **Beschreibung** hinzu und drücke anschließend auf "Post".\n\n> ❓ - **WELCHE TAGS MUSS ICH WÄHLEN?**\n» Abhängig von deiner Idee oder deinem Vorschlag musst du **einen Tag wählen**. Wähle den Tag, der deine Idee am besten beschreibt. Hier sind ein paar Anwendungsbeispiele:\n\n𑁉 **Problem:** `Schreibfehler` | **Tag:** <a:discordbloblove:855482395325890570> `Discord-Server`\n𑁉 **Problem:** `DC-Link veraltet` | **Tag:** <a:wocbook:1178664700469317692> `Webseite`\n𑁉 **Problem:** `Bug gefunden` | **Tag:** <a:System:915211580805881876> `WOC-System Bot`\n\n> :pushpin: - **SONST NOCH FRAGEN?**\n» Solltest du noch **Fragen** haben, zögere nicht und Öffne ein Ticket \nin <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.')
+    .setFooter({ text: '» Wir danken jedem für seine einzigartige Idee!', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=66a8b123&is=66a75fa3&hm=c1153e75f4971748e8ff2acb4d7f4e86572a2c976bc4661723af16163c0984a6&' })
+    .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=66a8b123&is=66a75fa3&hm=c1153e75f4971748e8ff2acb4d7f4e86572a2c976bc4661723af16163c0984a6&');
+
+    const channel = client.channels.cache.get("1254340245772701747")
+    await channel.threads.create({
+      name: '👋 - Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Vorschlag System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+    */
