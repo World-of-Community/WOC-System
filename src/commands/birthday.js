@@ -64,7 +64,7 @@ module.exports = {
                 break;
 
             case 'delete':
-                if (!interaction.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
+                if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
                     return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
                 }
 
@@ -86,7 +86,7 @@ module.exports = {
                 break;
 
             case 'change':
-                if (!interaction.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
+                if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
                     return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
                 }
 

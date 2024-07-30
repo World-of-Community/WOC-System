@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 
@@ -14,7 +14,7 @@ module.exports = {
         .addChoices({ name: '🔴 = Bug behoben', value: '<:PointRed:1123612255800524940>' }, { name: '🟠 = Änderung', value: '<:PointOrange:1123612277669630092>' }, { name: '🟢 = Neu hinzugefügt', value: '<:PointGreen:1123612318694117477>' }))
         
         .addStringOption(option => option.setName('update').setDescription('» Beschreibe was geändert wurde').setRequired(true))
-        .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Flags.Administrator),
 
     async execute(interaction) {
         console.log("Alles Ok beim Changelog - hinzugefügt")

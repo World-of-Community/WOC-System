@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionsBitField, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 const fs = require('fs');
 const bandb = require("../../Datenbank/bandb");
 
@@ -13,7 +13,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator) && interaction.user.id != "782893084400681001") return;
+        if (!interaction.member.permissions.has(PermissionFlagsBits.Flags.Administrator) && interaction.user.id != "782893084400681001") return;
 
         async function getMemberList(roleID) {
             var list = [];
