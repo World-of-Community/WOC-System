@@ -4,7 +4,7 @@ module.exports = {
    data: new SlashCommandBuilder()
       .setName('vorschlag')
       .setDescription('» Verwalte ein Vorschlag. 💡')
-      .setDefaultMemberPermissions(PermissionFlagsBits.Flags.ManageChannels),
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 
 async execute(interaction, client) {
     if (interaction.channel.type !== ChannelType.PublicThread) return await interaction.reply({content: `\`❌\` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.`, ephemeral: true})
