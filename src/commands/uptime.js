@@ -6,6 +6,7 @@ module.exports = {
         .setDescription('» Zeigt dir ein paar nützliche Stats an. 🧮'),
         
     async execute(interaction) {
+        
         function formatUptime(uptime) {
             const minutes = Math.floor((uptime / 60) % 60);
             const hours = Math.floor((uptime / 3600) % 24);
@@ -13,8 +14,10 @@ module.exports = {
 
             return `${days}d ${hours}h ${minutes}m`;
         }
+
         const uptime = formatUptime(process.uptime());
         const ping = Date.now() - interaction.createdTimestamp;
+
         const uptimeEmbed = new EmbedBuilder()
             .setTitle('🤖 × Interessante Bot Statistiken')
             .setDescription(`» Hier siehst du ein paar Interessante Infos, die in speziellen Fällen auch sehr nützlich sein könnten.\n\n\`🔋\` » **Online** seit \`${uptime}\`\n\`📡\` » Meine **Reaktionszeit** liegt bei: \`${ping}\`ms`)
