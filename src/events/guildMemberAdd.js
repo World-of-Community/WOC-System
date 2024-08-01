@@ -82,7 +82,7 @@ module.exports = {
 
         const joinEmbed = new EmbedBuilder()
         .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
-        .setDescription(`**${member.user.displayName}** ist dem Server beigetreten.\n\n> \`📌\` | Informationen\n> Username: ${member.user.username}\nAnzeigename: ${member.user.displayName}\n> Server beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
+        .setDescription(`**${member.user.displayName}** ist dem Server beigetreten.\n\n> \`📌\` | Informationen\n> Username: ${member.user.username}\n> Anzeigename: ${member.user.displayName}\n> Server beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
         .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
         .setColor('Green')
         .setTimestamp();
