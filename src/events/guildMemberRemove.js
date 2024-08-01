@@ -12,7 +12,7 @@ module.exports = {
 
             const leave = new EmbedBuilder()
                 .setTitle('<:user_leave:1228329456079343731> | NUTZER VERLASSEN')
-                .setDescription(`**${member.user.displayName}** hat den Server verlassen.\n\n> \`📌\` | **INFORMATIONEN** \n\n> Username: ${member.user.username}\n> Anzeigename: ${member.user.displayName}\n> Server beigetreten am: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
+                .setDescription(`**${member.user.displayName}** hat den Server verlassen.\n\n\`📌\` | **INFORMATIONEN** \n\n> Username: ${member.user.username}\n> Anzeigename: ${member.user.displayName}\n> Server beigetreten am: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
                 .setColor('Red')
                 .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
                 .setTimestamp();
