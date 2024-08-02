@@ -392,7 +392,7 @@ module.exports = {
                         }
                     )
                     channel.send({ content: `${interaction.user} | <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
-                        interaction.reply({ content: `Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen **[hier](${msg.url})** finden.`, ephemeral: true })
+                        interaction.reply({ content: `Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen **[hier](${channel})** finden.`, ephemeral: true })
                     })
                 })
             }}
