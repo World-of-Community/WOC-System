@@ -61,7 +61,7 @@ module.exports = {
                             'urlaub.beginn': formattedVon,
                             'urlaub.ende': formattedBis,
                             'urlaub.grund': grund,
-                            'urlaub.messageId': null
+                            'urlaub.messageID': null
                         },
                         $inc: { 'counter.urlaub': 1 } 
                     },
@@ -76,7 +76,7 @@ module.exports = {
                     .setTimestamp();
 
                 const message = await targetChannel.send({ embeds: [urlaubEmbed] });
-                teamData.urlaub.messageId = message.id;
+                teamData.urlaub.messageID = message.id;
                 await teamData.save();
 
                 await interaction.reply({ content: '> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.', ephemeral: true });
