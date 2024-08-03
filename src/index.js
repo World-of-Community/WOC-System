@@ -498,12 +498,14 @@ cron.schedule('0 18 * * 0', async () => {
     })
 
     serverData.updateMessage = ''
-    await serverdb.findOneAndUpdate(
-        { guildID: config.server },
-        { $set: { support: [], system: [], gift: [], verify: [], minecraft: [] } },
-        { new: true }
-    );
-    await serverData.save()
+    serverData.support = [];
+    serverData.system = [];
+    serverData.gift = [];
+    serverData.verify = [];
+    serverData.minecraft = [];
+
+    await serverData.save();
+
 });
 
 client.on('error', (error) => {
