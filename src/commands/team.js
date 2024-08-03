@@ -82,9 +82,31 @@ module.exports = {
                 await interaction.reply({ content: '> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.', ephemeral: true });
                 break;
 
-            case "meeting":
-                await interaction.reply({ content: '> `❌` » Derzeit ist keine Team-Besprechung geplant.', ephemeral: true });
-                break;        
+                case 'meeting': {
+                    const serverData = await serverdb.findOne({ guildID: "815919809379172354" });
+    
+                    if (!serverData || !serverData.meetings || serverData.meetings.length === 0) {
+                        return interaction.reply({ content: '> `❌` » Derzeit ist keine Team-Besprechung geplant.', ephemeral: true });
+                    }
+    
+                    const embed = new EmbedBuilder()
+                        .setTitle('📅 Geplante Team-Besprechungen')
+                        .setColor('Blue')
+                        .setTimestamp();
+    
+                        serverData.meetings.forEach(meeting => {
+                        const timestamp = Math.floor(meeting.date.getTime() / 1000);
+                        embed.addFields({
+                            name: `> Besprechung am: <t:${timestamp}:F>`,
+                            value: meeting.description,
+                            inline: false
+                        });
+                    });
+    
+                    await interaction.reply({ embeds: [embed], ephemeral: true });
+                    break;  
+                }
+            
         }
     },
 };

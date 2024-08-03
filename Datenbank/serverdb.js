@@ -74,6 +74,16 @@ const serverSchema = new mongoose.Schema({
         type: Object,
         required: false,
     },
+    meetings: [{
+        date: {
+            type: Date,
+            required: true
+        },
+        description: {
+            type: String,
+            default: "Keine Beschreibung"
+        },
+    }]
 });
 
 module.exports = mongoose.model('server-data', serverSchema)

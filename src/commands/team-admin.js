@@ -1,4 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const teamdb = require("../../Datenbank/teamdb");
+const serverdb = require("../../Datenbank/serverdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -32,6 +34,13 @@ module.exports = {
                 .addUserOption(option => option.setName('user').setDescription('» Der Benutzer, der entfernt werden soll.').setRequired(true))
                 .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, die entfernt werden soll.').setRequired(true))
                 .addStringOption(option => option.setName('reason').setDescription('» Der Grund für das Entfernen aus dem Team.').setRequired(false))
+        )
+        .addSubcommand((command) =>
+            command
+                .setName('plan')
+                .setDescription('» Plane ein Meeting 📅')
+                .addStringOption(option => option.setName('datum').setDescription('» Datum und Uhrzeit des Meetings (DD.MM.YYYY HH:MM)').setRequired(true))
+                .addStringOption(option => option.setName('beschreibung').setDescription('» Beschreibung des Meetings').setRequired(false))
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     async execute(interaction, client) {
@@ -129,7 +138,35 @@ module.exports = {
                         console.error('Fehler beim Kicken des Benutzers:', error);
                         interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                     }
-                    break;                
+                    break;      
+            case "plan":
+                const dateStr = interaction.options.getString('datum');
+                const description = interaction.options.getString('beschreibung') || 'Keine Beschreibung angegeben';
+
+                const [day, month, year, time] = dateStr.split(/[\s.:-]+/);
+                const [hour, minute] = time ? time.split(':') : [0, 0];
+
+                const meetingDate = new Date(year, month - 1, day, hour, minute);
+
+                if (isNaN(meetingDate.getTime())) {
+                    return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum im Format `DD.MM.YYYY HH:MM` ein.', ephemeral: true });
+                }
+
+                const teamData = await serverDB.findOneAndUpdate(
+                    { userID: interaction.user.id },
+                    {
+                        $push: {
+                            meetings: {
+                                date: meetingDate,
+                                description
+                            }
+                        }
+                    },
+                    { new: true, upsert: true }
+                );
+
+                await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
+                break;          
         }
     },
 };
