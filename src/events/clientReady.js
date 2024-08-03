@@ -38,19 +38,11 @@ module.exports = {
     }
     console.log("Verbunden mit Discord");
 
-    const monitor_job = await cronitor.Monitor.put({
-      type: 'job',
-      key: 'System > News Feed',
-      schedule: '* * * * *',
-  });
-
 
     // RSS Feed
     setInterval(async () => {
       monitor.ping({message: 'Alive'});
-      monitor_job.ping({state: 'run'});
       processRSSFeed(client, lastEntries);
-      monitor_job.ping({state: "complete"});
     }, 60000);
 
     // Wechsel Status

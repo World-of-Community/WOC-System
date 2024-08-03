@@ -79,7 +79,6 @@ client.vorschlag();
 
 // Handlers
 client.handleErfolg(); // Erfolge
-client.handleStatus(); // Status Check
 // Bot Ping / Erwähnung
 const pingMessages = [
     'Wenn du Hilfe brauchst öffne ein Ticket im Support <:pepeheart:974642478055555082>',
@@ -373,6 +372,13 @@ cron.schedule('0 0 * * *', async () => {
 
 // Werbung
 setInterval(() => {
+    const monitor = await cronitor.Monitor.put({
+        type: 'job',
+        key: 'Werbung',
+    });
+
+    monitor.ping({state: 'run'});
+    try {
     const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
 
@@ -391,6 +397,10 @@ setInterval(() => {
         .then(async msg => {
             msg.crosspost()
         })
+        monitor.ping({state: 'complete'});    
+    } catch (error) {
+        monitor.ping({state: 'fail'});    
+    }
 }, 60000 * 240); // 4 Stunden in Millisekunden
 
 // Threads Checker
