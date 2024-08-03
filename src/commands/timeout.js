@@ -1,8 +1,7 @@
 //Code von @vxnsin
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require("discord.js")
 const ms = require('ms');
-const utils = require("../../utils/utils");
-const { LogType } = require("../../utils/LogType");
+
 module.exports = {
     data: new SlashCommandBuilder()
     .setName("timeout")
