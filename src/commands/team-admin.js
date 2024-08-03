@@ -152,21 +152,26 @@ module.exports = {
                     return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum im Format `DD.MM.YYYY HH:MM` ein.', ephemeral: true });
                 }
 
-                const teamData = await serverDB.findOneAndUpdate(
-                    { guildID: "815919809379172354"},
-                    {
-                        $push: {
-                            meetings: {
-                                date: meetingDate,
-                                description
+                try {
+                    await serverDB.findOneAndUpdate(
+                        { guildID: "815919809379172354" },
+                        {
+                            $push: {
+                                meetings: {
+                                    date: meetingDate,
+                                    description: description
+                                }
                             }
-                        }
-                    },
-                    { new: true, upsert: true }
-                );
+                        },
+                        { new: true, upsert: true }
+                    );
 
-                await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
-                break;          
+                    await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
+                } catch (error) {
+                    console.error('Fehler beim Speichern des Meetings:', error);
+                    await interaction.reply({ content: '> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.', ephemeral: true });
+                }
+                break;      
         }
     },
 };
