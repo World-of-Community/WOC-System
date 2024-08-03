@@ -78,7 +78,8 @@ for (const folder of functionFolder) {
 client.vorschlag();
 
 // Handlers
-client.handleErfolg(); // Erfolge
+client.handleErfolg(); 
+
 // Bot Ping / Erwähnung
 const pingMessages = [
     'Wenn du Hilfe brauchst öffne ein Ticket im Support <:pepeheart:974642478055555082>',
@@ -87,6 +88,7 @@ const pingMessages = [
     'Was gibt es? <a:what:1119708325962055720>',
     'Grüße dich! <a:winken:1086560167442796544>',
 ];
+
 
 client.on('messageCreate', message => {
     if (message.mentions.has(client.user) && !message.author.bot) {
@@ -113,6 +115,18 @@ client.on('messageCreate', async message => {
     }
 });
 
+//==================LOGS=====================
+
+const ThreadIDs = {
+    CHANNEL: "1269294362869633135",
+    MESSAGE: "1269294582366212168",
+    JOIN: "1269294005254881412",
+    ROLES: "1269294740172705853",
+    SERVER: "1269295029122367549",
+    MODERATION: "1269295450721222740",
+    INVITE: "1269295619483373588"
+};
+
 client.on('guildMemberAdd', async member => {
     if (member.guild.id !== "815919809379172354") return;
 
@@ -136,32 +150,12 @@ client.on('guildMemberAdd', async member => {
             .setColor('Blurple')
             .setTimestamp();
 
-        const channel = member.guild.channels.cache.get("1240246786128613396");
-        if (channel) {
-            channel.send({ embeds: [InviteEmbed] });
-        }
+            await sendLog(ThreadIDs.INVITE, InviteEmbed)
 
         // Update the invite map
         invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
     }
 });
-
-// Log slash command usage
-client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isCommand()) return;
-
-    const CommandEmbed = new EmbedBuilder()
-        .setTitle('`/` | SLASH COMMAND BENUTZT')
-        .setDescription(`> Nutzer: **${interaction.user.displayName}**\n> Befehl: \`/${interaction.commandName}\`\n> Kanal: <#${interaction.channel.id}>`)
-        .setColor('Blurple')
-        .setTimestamp();
-
-    const logChannel = await interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) await logChannel.send({ embeds: [CommandEmbed] });
-});
-
-// Kanal Log
-const LOG_CHANNEL_ID = "1242799344692887662";
 const typeMap = {
     0: "TEXT",
     2: "VOICE",
@@ -186,8 +180,7 @@ client.on('channelCreate', async (channel) => {
             .setColor('Green')
             .setTimestamp();
 
-        const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
-        if (logChannel) await logChannel.send({ embeds: [CreateEmbed] });
+            await sendLog(ThreadIDs.CHANNEL, CreateEmbed)
     })
 })
 
@@ -225,8 +218,7 @@ client.on('channelUpdate', async (oldChannel, newChannel) => {
             .setColor('Orange')
             .setTimestamp();
 
-        const logChannel = await newChannel.guild.channels.cache.get(LOG_CHANNEL_ID);
-        if (logChannel) await logChannel.send({ embeds: [EditingEmbed] });
+            await sendLog(ThreadIDs.CHANNEL, EditingEmbed)
     })
 });
 
@@ -240,8 +232,7 @@ client.on('channelDelete', async (channel) => {
         .setColor('Red')
         .setTimestamp();
 
-    const logChannel = await channel.guild.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) await logChannel.send({ embeds: [DeleteEmbed] });
+        await sendLog(ThreadIDs.CHANNEL, DeleteEmbed)
 });
 
 // Nachrichten Log
@@ -254,8 +245,7 @@ client.on('messageCreate', async (message) => {
         .setColor('Green')
         .setTimestamp();
 
-    const logChannel = await client.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) await logChannel.send({ embeds: [MessageSendEmbed] });
+        await sendLog(ThreadIDs.MESSAGE, MessageSendEmbed)
 });
 
 client.on('messageDelete', async (message) => {
@@ -267,8 +257,8 @@ client.on('messageDelete', async (message) => {
         .setColor('Red')
         .setTimestamp();
 
-    const logChannel = await client.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) await logChannel.send({ embeds: [MessageDeleteEmbed] });
+
+        await sendLog(ThreadIDs.MESSAGE, MessageDeleteEmbed)
 });
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
@@ -280,8 +270,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         .setColor('Orange')
         .setTimestamp();
 
-    const logChannel = await client.channels.cache.get(LOG_CHANNEL_ID);
-    if (logChannel) await logChannel.send({ embeds: [MessageEditEmbed] });
+        await sendLog(ThreadIDs.MESSAGE, messageUpdate)
 });
 
 // Birthday System
@@ -525,6 +514,15 @@ client.on('error', (error) => {
 process.on('unhandledRejection', error => {
     console.log(error)
 });
+
+
+async function sendLog(threadID, embed) {
+    const logchannel = channel.guild.channels.cache.get("1263436406655680513");
+
+    await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
+}
+/*
+*/
 
 // Bot Start
 client.login(config.token)
