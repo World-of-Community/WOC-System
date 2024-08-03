@@ -97,9 +97,11 @@ module.exports = {
                         .setTimestamp();
             
                     sortedMeetings.forEach(meeting => {
+                        const meetingDate = new Date(meeting.date); // Beispiel-Datum
+                        console.log(meetingDate)
+                        console.log(meetingDate.getTime())
+                        console.log(meetingDate.getTime() / 1000)
                         const timestamp = Math.floor(meeting.date.getTime() / 1000); // Unix-Zeitstempel in Sekunden
-                        console.log(meeting.date.getTime())
-
                         embed.addFields({
                             name: `> Besprechung am: <t:${timestamp}:F>`,
                             value: meeting.description,
