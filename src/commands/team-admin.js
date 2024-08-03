@@ -142,13 +142,13 @@ module.exports = {
                 const [day, month, year, time] = dateStr.split(/[\s.:-]+/);
                 const [hour, minute] = time ? time.split(':') : [0, 0];
 
-                const meetingDateLocal = new Date(year, month - 1, day, hour, minute);
+                const meetingDate = new Date(year, month - 1, day, hour, minute);
 
-                const meetingDateUTC = new Date(meetingDateLocal.getTime() - meetingDateLocal.getTimezoneOffset() * 60000);
-
-                if (isNaN(meetingDateUTC.getTime())) {
+                if (isNaN(meetingDate.getTime())) {
                     return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum im Format `DD.MM.YYYY HH:MM` ein.', ephemeral: true });
                 }
+
+                const meetingDateUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
 
                 try {
                     await serverdb.findOneAndUpdate(
