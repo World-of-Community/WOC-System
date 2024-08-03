@@ -24,7 +24,7 @@ module.exports = (client) => {
 
                         try {
                             await message.reply({
-                                content: `> \`${user.username}\` ist derzeit im Urlaub und daher nicht erreichbar. ${urlaubMessageUrl}`
+                                content: `> \`❗\` » \`${user.displayName}\` ist derzeit im Urlaub und daher nicht erreichbar. ${urlaubMessageUrl}`
                             });
                         } catch (error) {
                             console.error('Fehler beim Senden der Antwort:', error);

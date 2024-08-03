@@ -93,7 +93,7 @@ module.exports = {
 
                     const embed = new EmbedBuilder()
                         .setTitle('📅 Geplante Team-Besprechungen')
-                        .setColor('Blue')
+                        .setColor('Blurple')
                         .setTimestamp();
             
                     sortedMeetings.forEach(meeting => {
