@@ -517,7 +517,8 @@ process.on('unhandledRejection', error => {
 
 
 async function sendLog(threadID, embed) {
-    const logchannel = channel.guild.channels.cache.get("1263436406655680513");
+    const serverCatch = client.guilds.cache.get("815919809379172354")
+    const logchannel = await serverCatch.channels.cache.get("1263436406655680513");
 
     await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
 }
