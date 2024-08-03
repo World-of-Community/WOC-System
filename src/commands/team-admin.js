@@ -51,10 +51,6 @@ module.exports = {
         const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
         const sub = interaction.options.getSubcommand();
         const teamrole = interaction.guild.roles.cache.get('820658664536145940');
-
-        if (!member || !role || !targetChannel) {
-            return interaction.reply('> `❌` » Fehler beim Verarbeiten des Befehls.');
-        }
     
         switch (sub) {
             case "uprank":
