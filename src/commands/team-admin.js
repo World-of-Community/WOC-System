@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('disc
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('team')
+        .setName('team-admin')
         .setDescription('Team')
         .addSubcommand((command) =>
             command
