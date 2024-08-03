@@ -142,7 +142,10 @@ module.exports = {
                 const [day, month, year, time] = dateStr.split(/[\s.:-]+/);
                 const [hour, minute] = time ? time.split(':') : [0, 0];
 
-                const meetingDate = new Date(year, month - 1, day, hour, minute);
+                const meetingDateUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
+
+                const timezoneOffset = meetingDateUTC.getTimezoneOffset();
+                const meetingDate = new Date(meetingDateUTC.getTime() + timezoneOffset * 60 * 1000);
 
                 if (isNaN(meetingDate.getTime())) {
                     return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum im Format `DD.MM.YYYY HH:MM` ein.', ephemeral: true });

@@ -89,12 +89,14 @@ module.exports = {
                         return interaction.reply({ content: '> `❌` » Derzeit ist keine Team-Besprechung geplant.', ephemeral: true });
                     }
     
+                    const sortedMeetings = serverData.meetings.sort((a, b) => a.date - b.date);
+
                     const embed = new EmbedBuilder()
                         .setTitle('📅 Geplante Team-Besprechungen')
                         .setColor('Blue')
                         .setTimestamp();
-    
-                        serverData.meetings.forEach(meeting => {
+            
+                    sortedMeetings.forEach(meeting => {
                         const timestamp = Math.floor(meeting.date.getTime() / 1000);
                         embed.addFields({
                             name: `> Besprechung am: <t:${timestamp}:F>`,

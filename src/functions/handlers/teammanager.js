@@ -1,5 +1,6 @@
 const { EmbedBuilder, Permissions } = require('discord.js');
 const teamDB = require('../../../Datenbank/teamdb');
+const serverDB = require('../../../Datenbank/serverdb');
 const cron = require('node-cron');
 
 module.exports = (client) => {
@@ -62,6 +63,17 @@ module.exports = (client) => {
                     { userID: data.userID },
                     { $unset: { urlaub: '' } }
                 );
+
+                //Besprechung Check
+                try {
+                    await serverDB.updateMany(
+                        { guildID: "815919809379172354" },
+                        { $pull: { meetings: { date: { $lt: now } } } }
+                    );
+                    console.log('Abgelaufene Meetings erfolgreich gelöscht.');
+                } catch (error) {
+                    console.error('Fehler beim Löschen abgelaufener Meetings:', error);
+                }
             }
         });
 
