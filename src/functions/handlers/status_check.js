@@ -1,5 +1,5 @@
 const cronitor = require('cronitor')('bbfc3034eaee49229dc7d1cfb4b65935');
-  
+const { Events } = require("discord.js")  
   module.exports = (client) => {
     client.handleStatus = async () => {
         const monitor = new cronitor.Monitor('System Bot');
