@@ -47,7 +47,6 @@ module.exports = {
             .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png'}))
             .setDescription(`\`📂\` » **Informationen:**\n<:text3:1228332174911213638>**Name:** \`${user.tag}\` (\`${user.id}\`)\n<:text3:1228332174911213638>**Acc. Erstellt:** <t:${parseInt(user.createdAt / 1000)}:D>\n<:text2:1228330539941888011>**Server beigetreten:** <t:${parseInt(member.joinedAt / 1000)}:D>\n\n<:text1:1228329935995670660>**Getimeoutet von:** \`${interaction.user.username}\` (\`${interaction.user.id}\`)\n<:text3:1228332174911213638>**Dauer:**  <t:${Math.floor(timeoutTime.getTime() / 1000)}:t> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n<:text2:1228330539941888011>**Grund:** \`${grund || "Nicht angegeben."}\``)
             .setTimestamp()
-            utils.other.log.send(interaction, interaction.guild.id, LogType.MODERATION, embed)
             await member.timeout(zeitInMilliseconds, grund).catch(console.log);
 
             const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
