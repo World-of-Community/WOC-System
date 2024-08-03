@@ -149,7 +149,7 @@ module.exports = {
                 }
 
                 try {
-                    await serverDB.findOneAndUpdate(
+                    await serverdb.findOneAndUpdate(
                         { guildID: "815919809379172354" },
                         {
                             $push: {
