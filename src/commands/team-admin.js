@@ -142,12 +142,11 @@ module.exports = {
                 const [day, month, year, time] = dateStr.split(/[\s.:-]+/);
                 const [hour, minute] = time ? time.split(':') : [0, 0];
 
-                const meetingDateUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
+                const meetingDateLocal = new Date(year, month - 1, day, hour, minute);
 
-                const timezoneOffset = meetingDateUTC.getTimezoneOffset();
-                const meetingDate = new Date(meetingDateUTC.getTime() + timezoneOffset * 60 * 1000);
+                const meetingDateUTC = new Date(meetingDateLocal.getTime() - meetingDateLocal.getTimezoneOffset() * 60000);
 
-                if (isNaN(meetingDate.getTime())) {
+                if (isNaN(meetingDateUTC.getTime())) {
                     return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum im Format `DD.MM.YYYY HH:MM` ein.', ephemeral: true });
                 }
 
@@ -157,7 +156,7 @@ module.exports = {
                         {
                             $push: {
                                 meetings: {
-                                    date: meetingDate,
+                                    date: meetingDateUTC,
                                     description: description
                                 }
                             }
