@@ -248,8 +248,6 @@ module.exports = {
         // Bump System
         const roleId = '1242417592530894848';
 
-        if (!interaction.isCommand()) return;
-
         const { commandName } = interaction;
         
         if (commandName === 'bump') {
