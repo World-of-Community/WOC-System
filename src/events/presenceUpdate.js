@@ -29,14 +29,14 @@ module.exports = {
         const isStreaming = newPresence.activities.some(activity => ActivityType === ActivityType.Streaming);
 
         if (isStreaming) {
-            if (!stream_member.roles.cache.has(streamer_role)) {
+            if (!member.roles.cache.has(streamer_role)) {
                 await member.roles.add(streamer_role);
-                console.log(`Rolle hinzugefügt zu ${streamMember.user.displayName}`);
+                console.log(`Rolle hinzugefügt zu ${member.user.displayName}`);
             }
         } else {
-            if (stream_member.roles.cache.has(streamer_role)) {
+            if (member.roles.cache.has(streamer_role)) {
                 await member.roles.remove(streamer_role);
-                console.log(`Rolle entfernt von ${streamMember.user.displayName}`);
+                console.log(`Rolle entfernt von ${member.user.displayName}`);
             }
         }
     }
