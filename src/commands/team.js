@@ -97,10 +97,12 @@ module.exports = {
                         .setTimestamp();
             
                     sortedMeetings.forEach(meeting => {
-                        const localDate = new Date(meeting.date.getTime() - (meeting.date.getTimezoneOffset() * 60 * 1000));
-                        const localTimestamp = Math.floor(localDate.getTime() / 1000);
+                        const timestamp = Math.floor(meeting.date.getTime() / 1000); // Unix-Zeitstempel in Sekunden
+                        console.log(`Gespeicherte Zeit (UTC): ${meeting.date.toISOString()}`);
+                        console.log(`Angezeigte Zeit: ${new Date(meeting.date).toLocaleString()}`);
+                        console.log(`Lokale Zeit: ${localTime}`);
                         embed.addFields({
-                            name: `> Besprechung am: <t:${localTimestamp}:F>`,
+                            name: `> Besprechung am: <t:${timestamp}:F>`,
                             value: meeting.description,
                             inline: false
                         });

@@ -150,7 +150,9 @@ module.exports = {
                     
                         // Erstelle das Meeting-Datum in UTC
                         const meetingDateUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
-                    
+                        const localTime = meetingDateUTC.toLocaleString('de-DE', { timeZone: 'Europe/Berlin' }); // Beispiel für Berlin
+                        console.log(`Lokale Zeit: ${localTime}`);
+                                        
                         // Überprüfe die Gültigkeit des Datums
                         if (isNaN(meetingDateUTC.getTime())) {
                             return interaction.reply({ content: '> `❌` » Das Datum scheint ungültig zu sein. Bitte überprüfe deine Eingabe.', ephemeral: true });
