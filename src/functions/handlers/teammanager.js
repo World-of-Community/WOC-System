@@ -26,7 +26,7 @@ module.exports = (client) => {
                     console.log("Urlaub end:", urlaubEnde);
 
                     if (now >= urlaubBeginn && now <= urlaubEnde) {
-                        const urlaubMessageUrl = `https://discord.com/channels/${message.guild.id}/877446081036836884/${teamData.urlaub.messageId}`;
+                        const urlaubMessageUrl = `https://discord.com/channels/${message.guild.id}/877446081036836884/${teamData.urlaub.messageID}`;
 
                         try {
                             await message.reply({
@@ -59,9 +59,9 @@ module.exports = (client) => {
 
             for (const data of expiredUrlaubs) {
                 const channel = client.channels.cache.get('877446081036836884');
-                if (data.urlaub.messageId) {
+                if (data.urlaub.messageID) {
                     try {
-                        const message = await channel.messages.fetch(data.urlaub.messageId);
+                        const message = await channel.messages.fetch(data.urlaub.messageID);
                         if (message) {
                             await message.delete();
                         }
