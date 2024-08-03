@@ -38,6 +38,13 @@ module.exports = {
     }
     console.log("Verbunden mit Discord");
 
+    const monitor = await cronitor.Monitor.put({
+      type: 'job',
+      key: 'important-background-job',
+      schedule: '* * * * *',
+  });
+
+
     // RSS Feed
     setInterval(async () => {
       monitor.ping({message: 'Alive'});
