@@ -47,7 +47,6 @@ module.exports = {
                     return interaction.reply({ content: '> `❌` » Bitte gib gültige Daten im Format `DD.MM.YYYY` ein.', ephemeral: true });
                 }
 
-                // Umwandlung der Daten in Date-Objekte für Vergleiche
                 const vonDate = new Date(formattedVon);
                 const bisDate = new Date(formattedBis);
 

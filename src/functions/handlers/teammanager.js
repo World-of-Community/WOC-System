@@ -1,6 +1,6 @@
-const { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder, Permissions } = require("discord.js");
-const teamDB = require("../../../Datenbank/teamdb");
-const cron = require("node-cron");
+const { EmbedBuilder, Permissions } = require('discord.js');
+const teamDB = require('../../../Datenbank/teamdb');
+const cron = require('node-cron');
 
 module.exports = (client) => {
     client.manageTeam = async () => {
@@ -28,7 +28,7 @@ module.exports = (client) => {
         });
 
         function parseDate(dateStr) {
-            const [day, month, year] = dateStr.split('.').map(Number);
+            const [year, month, day] = dateStr.split('-').map(Number);
             return new Date(year, month - 1, day);
         }
 
@@ -41,7 +41,7 @@ module.exports = (client) => {
             });
 
             for (const data of expiredUrlaubs) {
-                const channel = client.channels.cache.get('877446081036836884'); 
+                const channel = client.channels.cache.get('877446081036836884');
                 if (data.urlaub.messageId) {
                     try {
                         const message = await channel.messages.fetch(data.urlaub.messageId);
@@ -64,7 +64,7 @@ module.exports = (client) => {
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
-            return `${day}.${month}.${year}`;
+            return `${year}-${month}-${day}`;
         }
-    }
+    };
 };
