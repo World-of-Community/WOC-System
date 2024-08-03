@@ -97,8 +97,13 @@ module.exports = {
                         .setTimestamp();
             
                     sortedMeetings.forEach(meeting => {
+
+                        const utcDate = new Date(meeting.date.toISOString());
+                        const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' };
+                        const formattedDate = utcDate.toLocaleString('de-DE', options);
+
                         embed.addFields({
-                            name: `> Besprechung am: ${meeting.date.toLocaleString('de-DE')}`,
+                            name: `> Besprechung am: \`${forma}\``,
                             value: `➥ ${meeting.description}`,
                             inline: false
                         });
