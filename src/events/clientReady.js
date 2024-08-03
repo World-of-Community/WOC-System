@@ -38,7 +38,7 @@ module.exports = {
     }
     console.log("Verbunden mit Discord");
 
-    const monitor = await cronitor.Monitor.put({
+    const monitor_job = await cronitor.Monitor.put({
       type: 'job',
       key: 'important-background-job',
       schedule: '* * * * *',
