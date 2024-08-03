@@ -79,6 +79,7 @@ client.vorschlag();
 
 // Handlers
 client.handleErfolg(); 
+client.manageTeam();
 
 // Bot Ping / Erwähnung
 const pingMessages = [
