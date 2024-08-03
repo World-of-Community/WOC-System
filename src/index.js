@@ -371,7 +371,7 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Werbung
-setInterval(() => {
+setInterval( async () => {
     const monitor = await cronitor.Monitor.put({
         type: 'job',
         key: 'Werbung',
