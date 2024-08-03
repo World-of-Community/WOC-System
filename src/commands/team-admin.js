@@ -153,7 +153,7 @@ module.exports = {
                 }
 
                 const teamData = await serverDB.findOneAndUpdate(
-                    { userID: interaction.user.id },
+                    { guildID: "815919809379172354"},
                     {
                         $push: {
                             meetings: {
