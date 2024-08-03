@@ -36,7 +36,9 @@ module.exports = {
             .setColor('Orange')
             .setFooter({ text: `©️ ${interaction.guild.name} | Timeout-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` });
 
-            const logChannel = await interaction.guild.channels.fetch(logChannelId);
+            const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
+
+            await logchannel.threads.cache.get("1269295450721222740").send({embeds: [timeoutEmbed]});
         
         member.roles.add(timeoutRole)
             .then(() => {

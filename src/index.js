@@ -522,8 +522,5 @@ async function sendLog(threadID, embed) {
 
     await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
 }
-/*
-*/
-
 // Bot Start
 client.login(config.token)

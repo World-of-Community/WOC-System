@@ -22,7 +22,6 @@ module.exports = {
         const member = interaction.options.getMember('user')
         const reason = interaction.options.getString('grund')
         const duration = interaction.options.getString('dauer') ?? 'Keine Zeit angegeben'
-        const banLog = await interaction.guild.channels.fetch(config.banLog)
         const banMember = await interaction.guild.members.fetch(member.id)
 
         const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
@@ -71,7 +70,9 @@ module.exports = {
             await newBan.save()
         }
 
-        await banLog.send({ embeds: [banLogEmbed] })
+        const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
+
+        await logchannel.threads.cache.get("1269295450721222740").send({embeds: [banLogEmbed]});
         await interaction.reply({ content: `> \`✅\` » Du hast ${member} erfolgreich gebannt, er ist nun im **Bann-Bereich.**`, ephemeral: true })
     }
 }
