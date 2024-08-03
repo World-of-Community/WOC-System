@@ -97,13 +97,9 @@ module.exports = {
                         .setTimestamp();
             
                     sortedMeetings.forEach(meeting => {
-                        const meetingDate = new Date('2024-08-08T19:30:00Z'); // ISO-Format
-                        const timestampInSeconds = Math.floor(meetingDate.getTime() / 1000);
-                        console.log("Unix-Zeitstempel in Sekunden:", timestampInSeconds);
-                        const timestamp = Math.floor(meeting.date.getTime() / 1000); // Unix-Zeitstempel in Sekunden
                         embed.addFields({
-                            name: `> Besprechung am: <t:${timestamp}:F>`,
-                            value: meeting.description,
+                            name: `> Besprechung am: ${meeting.date.toLocaleString('de-DE')}`,
+                            value: `➥ ${meeting.description}`,
                             inline: false
                         });
                     });
