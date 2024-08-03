@@ -103,7 +103,7 @@ module.exports = {
                         const formattedDate = utcDate.toLocaleString('de-DE', options);
 
                         embed.addFields({
-                            name: `> Besprechung am: \`${forma}\``,
+                            name: `> Besprechung am: \`${formattedDate}\``,
                             value: `➥ ${meeting.description}`,
                             inline: false
                         });
