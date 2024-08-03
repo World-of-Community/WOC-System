@@ -16,11 +16,9 @@ module.exports = {
 
         const member = interaction.options.getMember('user')
         const reason = interaction.options.getString('grund')
-        const banLog = await interaction.client.channels.fetch(config.banLog)
-        const banMember = await interaction.guild.members.fetch(member.id)
 
         const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
-        const joinedAt = `<t:${Math.round(banMember.joinedTimestamp / 1000)}>`;
+        const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
 
         const unbanLogEmbed = new EmbedBuilder()
             .setTitle(`\`✅\` - ${member.displayName} wurde Entbannt.`)

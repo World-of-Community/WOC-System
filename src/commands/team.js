@@ -1,135 +1,81 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-
+const teamdb = require("../../Datenbank/teamdb");
+const serverdb = require("../../Datenbank/serverdb");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('team')
         .setDescription('Team')
         .addSubcommand((command) =>
             command
-                .setName('uprank')
-                .setDescription('» Aktualisiere die Rolle eines Teammitgliedes. 🔁')
-                .addUserOption(option => option.setName('user').setDescription('» Welcher Benutzer sollte aktualisiert werden?').setRequired(true))
-                .addRoleOption(option => option.setName('role').setDescription('» Auf welche Rolle soll der Benutzer befördert werden?').setRequired(true))
+                .setName('urlaub')
+                .setDescription('» Teile deinen Urlaub mit. 🌴')
+                .addStringOption(option => option.setName('von').setDescription('Startdatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
+                .addStringOption(option => option.setName('bis').setDescription('Enddatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
+                .addStringOption(option => option.setName('grund').setDescription('Grund des Urlaubs').setRequired(false))
         )
         .addSubcommand((command) =>
             command
-                .setName('downrank')
-                .setDescription('» Setzt einen Benutzer auf eine niedrigere Rolle. 🔽')
-                .addUserOption(option => option.setName('user').setDescription('» Der Benutzer, der herabgestuft werden soll.').setRequired(true))
-                .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, auf die der Benutzer herabgestuft werden soll.').setRequired(true))
-        )
-        .addSubcommand((command) =>
-            command
-                .setName('add')
-                .setDescription('» Fügt ein neues Teammitglied hinzu. ➕')
-                .addUserOption(option => option.setName('user').setDescription('» Welcher User soll eine Team-Rolle bekommen?').setRequired(true))
-                .addRoleOption(option => option.setName('role').setDescription('» Welche Rolle soll der User bekommen?').setRequired(true))
-        )
-        .addSubcommand((command) =>
-            command
-                .setName('kick')
-                .setDescription('» Entfernt einen Benutzer aus dem Server-Team. ❌')
-                .addUserOption(option => option.setName('user').setDescription('» Der Benutzer, der entfernt werden soll.').setRequired(true))
-                .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, die entfernt werden soll.').setRequired(true))
-                .addStringOption(option => option.setName('reason').setDescription('» Der Grund für das Entfernen aus dem Team.').setRequired(false))
+                .setName('meeting')
+                .setDescription('» Schau nach wann die Nächste Team-Besprechung statt findet. 📣')
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     async execute(interaction, client) {
-        const member = interaction.options.getMember('user');
-        const role = interaction.options.getRole('role');
-        const reason = interaction.options.getString('reason') || 'Kein Grund angegeben';
         const targetChannel = interaction.guild.channels.cache.get('1173986308641804338'); 
-        const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
         const sub = interaction.options.getSubcommand();
-        const teamrole = interaction.guild.roles.cache.get('820658664536145940');
-
-        if (!member || !role || !targetChannel) {
+        const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
+        
+        if (!targetChannel) {
             return interaction.reply('> `❌` » Fehler beim Verarbeiten des Befehls.');
         }
-    
+
         switch (sub) {
-            case "uprank":
-                try {
-                    await member.roles.add(role);
+            case "urlaub":
+                const vonStr = interaction.options.getString('von');
+                const bisStr = interaction.options.getString('bis');
+
+                const parseDate = (dateStr) => {
+                    const [day, month, year] = dateStr.split('.').map(Number);
+                    return new Date(year, month - 1, day);
+                };
+                
+                const now = new Date();
+                const urlaubBeginn = parseDate(vonStr);
+                const urlaubEnde = parseDate(bisStr);
         
-                    const Uprankembed = new EmbedBuilder()
-                        .setTitle('`🔼` | __TEAMMITGLIED RANGUPDATE__')
-                        .setDescription(`> Herzlichen Glückwunsch, ${member}!\n> Du wurdest **befördert!**\n\n**__Rang__**\n${role}`)
-                        .setColor('Blurple')
-                        .setTimestamp();
-                    
-                    await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
-                    await interaction.reply({ content: `> \`✅\` » Das Teammitglied wurde **befördert.**`, ephemeral: true });
-                } catch (error) {
-                    console.error('Fehler beim Hinzufügen der Rolle:', error);
-                    interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
+                if (now < urlaubBeginn || now > urlaubEnde) {
+                    return interaction.reply({ content: '> `❌` » Bitte gib gültige Daten im Format `DD-MM-YYYY` ein.', ephemeral: true });
                 }
-                break;
-            case "downrank":
-                try {
-                    await member.roles.remove(role);
+
+                const teamData = await TeamData.findOneAndUpdate(
+                    { userID: member.id },
+                    {
+                        $set: {
+                            'urlaub.beginn': vonStr,
+                            'urlaub.ende': bisStr,
+                            'urlaub.grund': grund,
+                            'urlaub.messageId': null
+                        },
+                        $inc: { 'counter.urlaub': 1 } 
+                    },
+                    { new: true, upsert: true }
+                );
         
-                    const RangUpdateembed = new EmbedBuilder()
-                        .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
-                        .setDescription(`Der Nutzer ${member} wurde **herabgestuft.**\n\n**__Rang__**:\n${role}`)
-                        .setColor('Blurple')
-                        .setTimestamp();
+                const urlaubEmbed = new EmbedBuilder()
+                .setTitle('🌴 Urlaubsmeldung')
+                .setDescription(`\`📅\` ${member} hat Urlaub von \`${vonStr}\` bis \`${bisStr}\`.\n\n\`📋\` Grund: \`${grund}\``)
+                .setColor('Green')
+                .setFooter({ text: `${member.username}'s Urlaub`, iconURL: member.displayAvatarURL() })
+                .setTimestamp();
+    
         
-                    targetChannel.send({ embeds: [RangUpdateembed] });
-                    await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
-                } catch (error) {
-                    console.error('Fehler beim Herabstufen des Benutzers:', error);
-                    interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
-                }
+                const messageID = await channel.send({ embeds: [urlaubEmbed] });
+                teamData.urlaub.messageId = message.id;
+                await teamData.save();
+                await interaction.reply({ content: '> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.', ephemeral: true });
                 break;
-                case "add":
-                    try {
-                        await member.roles.add(role);
-                        await member.roles.add(teamrole)
-
-                        const { EmbedBuilder } = require('discord.js');
-                        const TeammitgliedEmbed = new EmbedBuilder()
-                            .setTitle('`➕` | __NEUES TEAMMITGLIED__')
-                            .setColor('Blurple')
-                            .setDescription(`> » Wir begrüßen ${member} herzlichst im Team.\n> Wir hoffen auf eine gemeinsame schöne Zeit!\n\n**__Rang__**\n${role}\n\n**__Im Team seit__**\n${formattedDate}`)
-                            .setTimestamp();
-
-                        targetChannel.send({ content: `${member}`, embeds: [TeammitgliedEmbed] });
-                        await interaction.reply({ content: `> \`✅\` » Ein neues Teammitglied ist nun da.`, ephemeral: true});
-                    } catch (error) {
-                        console.error('Fehler beim Hinzufügen der Rolle:', error);
-                        interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
-                    }
-                break;
-                case "kick":
-                    try {
-                        await member.roles.remove(role);
-                        await member.roles.remove(teamrole)
-
-                        const dmEmbed = new EmbedBuilder()
-                            .setTitle('`❗` | __DU WURDEST AUS DEM SERVER-TEAM ENTLASSEN__')
-                            .setDescription(`Hallo ${member}, Du wurdest aus dem Server-Team entlassen.\n\nGrund: \`${reason}\``)
-                            .setColor('Red')
-                            .setTimestamp();
-            
-                        try {
-                            await member.send({ embeds: [dmEmbed] });
-                        } catch (dmError) {
-                            console.error('Fehler beim Senden der DM:', dmError);
-                        }
-                        const kickEmbed = new EmbedBuilder()
-                            .setTitle('`❌` | __TEAMMITGLIED ENTFERNT__')
-                            .setDescription(`Der Nutzer ${member} wurde von ${interaction.user.displayName} aus dem Server-Team **Entfernt**.\n\nGrund: \`${reason}\``)
-                            .setColor('Red')
-                            .setTimestamp();
-
-                        targetChannel.send({ embeds: [kickEmbed] });
-                        await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**', ephemeral: true });
-                    } catch (error) {
-                        console.error('Fehler beim Kicken des Benutzers:', error);
-                        interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
-                    }
-                    break;                
+            case "meeting":
+                await interaction.reply({ content: '> `❌` » Derzeit ist keine Team-Besprechung geplant.', ephemeral: true });
+                break;        
         }
     },
 };
