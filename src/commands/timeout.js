@@ -1,71 +1,62 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
-const fs = require('fs')
-const ms = require("ms");
-const timeoutdb = require("../../Datenbank/timeoutdb");
-
+//Code von @vxnsin
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require("discord.js")
+const ms = require('ms');
+const utils = require("../../utils/utils");
+const { LogType } = require("../../utils/LogType");
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('timeout')
-        .setDescription('» Gebe einem User einen Timeout für eine bestimmte Dauer. 🕒')
-        .addUserOption(option => option.setName('user').setDescription('» Welcher User soll in Timeout?').setRequired(true))
-        .addStringOption(option => option.setName('grund').setDescription('» Gebe ein Grund an').setRequired(true))
-        .addStringOption(option => option.setName('dauer').setDescription('» Gebe eine Dauer an (5d 30m)').setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
-
-    async execute(interaction) {
+    .setName("timeout")
+    .setDescription("🕛 | Timeout einen User vom Server.")
+    .addUserOption((option) => option.setName("user").setDescription("» Welcher User soll einen Timeout bekommen?").setRequired(true))
+    .addStringOption((option) => option.setName("grund").setDescription("» Gebe einen Grund an.").setRequired(true))
+    .addStringOption(option => option.setName("dauer").setDescription("» Gebe eine Dauer an. (z.B. 30s 10m)").setRequired(true))
+    .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+    .setDMPermission(false),
+    async execute(interaction, client) {
+        const user = interaction.options.getUser('user');
+        const zeitString = interaction.options.getString('dauer');
+        const grund = interaction.options.getString('grund');
+        const member = await interaction.guild.members.fetch({ user, force: true }).catch(() => null);
+        if(!member) return await interaction.reply({ content: utils.other.text.userFound(), ephemeral: true });    
+        if (interaction.user.id === user.id) return interaction.reply({ content: '`❌` » Du kannst dir selbst keinen Timeout geben.', ephemeral: true });
+        if(!member.kickable) return interaction.reply({ content: '`❌` » Dieser Benutzer kann nicht getimeoutet werden.', ephemeral: true });
+        if (member.isCommunicationDisabled()) return interaction.reply({ content: '`❌` » Dieser Benutzer hat bereits ein Timeout.', ephemeral: true });
+        if (member.permissions.has(PermissionFlagsBits.Administrator)) return interaction.reply({ content: '`❌` » Dieser Benutzer hat `Administrator` Berechtigungen und kann nicht timeoutet werden.', ephemeral: true });
+        if (member.permissions.has(PermissionFlagsBits.KickMembers)) return interaction.reply({ content: '`❌` » Du darfst Nutzer, die dieselben Berechtigungen haben, nicht timeouten.', ephemeral: true });
         
-        const file = fs.readFileSync('src/json/config.json', 'utf-8');
-        const config = JSON.parse(file);
-        if (!interaction.member.permissions.has(PermissionFlagsBits.Flags.ManageRoles)) return;
-
-        const member = interaction.options.getMember('user');
-        const reason = interaction.options.getString('grund');
-        const duration = interaction.options.getString('dauer');
-        const timeoutRole = '843515552546684949'; // Add the ID of the timeout role in your config.json
-        const memberRole = '815920703067914290'; // Add the ID of the member role in your config.json
-        const logChannelId = '1250954769598775308';
-
-        const durationMs = ms(duration);
-
-        const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
-        const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
-
-        const timeoutEmbed = new EmbedBuilder()
-            .setTitle(`\`⏳\` - ${member.displayName} wurde in Timeout gesetzt.`)
-            .setDescription(`${member} wurde von ${interaction.user} in Timeout gesetzt.\n\n> \`👤\` - **BENUTZER INFORMATIONEN**\n> Grund: \`${reason}\`\n> Dauer: \`${duration}\`\n> Benutzername: **${member.user.username}** (\`${member.id}\`) (${member})\n> Account erstellt am: ${createdAt}\n> Beigetreten am: ${joinedAt}`)
-            .setColor('Orange')
-            .setFooter({ text: `©️ ${interaction.guild.name} | Timeout-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` });
+        
+        let zeitInMilliseconds = 0;
+        if (zeitString !== null) {
+            zeitInMilliseconds = ms(zeitString);
+            if (zeitInMilliseconds === undefined) {
+                return interaction.reply({ content: '`❌` » Ungültiges Zeitformat.', ephemeral: true });
+            }
+        }
+        const timeoutTime = new Date(Date.now() + zeitInMilliseconds);
+        const userdm = new EmbedBuilder()
+            .setAuthor({name: '» ' + interaction.guild.name, iconURL: interaction.guild.iconURL() })
+            .setTitle("`👮`〡Es gibt Nachrichten für dich")
+            .setDescription("**»** Du wurdest getimeoutet!\n» **Grund:** `" + grund + "`\n**» Dauer:** <t:" + Math.floor(timeoutTime.getTime() / 1000) + ":R>")
+            .setColor("Red")
+            .setTimestamp()
+            .setFooter({ text: utils.other.text.footerAD(), iconURL: client.user.displayAvatarURL() });
+        await user.send({embeds: [userdm]})
+       
+            const embed = new EmbedBuilder()
+            .setColor('Red')
+            .setAuthor({ name: `${interaction.user.username} » ${interaction.user.id}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 })})
+            .setTitle(`\`📛\`〡\`${user.tag}\` wurde getimeoutet!`)
+            .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png'}))
+            .setDescription(`\`📂\` » **Informationen:**\n<:text3:1228332174911213638>**Name:** \`${user.tag}\` (\`${user.id}\`)\n<:text3:1228332174911213638>**Acc. Erstellt:** <t:${parseInt(user.createdAt / 1000)}:D>\n<:text2:1228330539941888011>**Server beigetreten:** <t:${parseInt(member.joinedAt / 1000)}:D>\n\n<:text1:1228329935995670660>**Getimeoutet von:** \`${interaction.user.username}\` (\`${interaction.user.id}\`)\n<:text3:1228332174911213638>**Dauer:**  <t:${Math.floor(timeoutTime.getTime() / 1000)}:t> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n<:text2:1228330539941888011>**Grund:** \`${grund || "Nicht angegeben."}\``)
+            .setTimestamp()
+            utils.other.log.send(interaction, interaction.guild.id, LogType.MODERATION, embed)
+            await member.timeout(zeitInMilliseconds, grund).catch(console.log);
 
             const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
 
-            await logchannel.threads.cache.get("1269295450721222740").send({embeds: [timeoutEmbed]});
-        
-        member.roles.add(timeoutRole)
-            .then(() => {
-                member.roles.remove(memberRole);
+            await logchannel.threads.cache.get("1269295450721222740").send({embeds: [embed]});
 
-                const newTimeout = new timeoutdb({
-                    creator: interaction.user.id,
-                    user: member.id,
-                    reason: reason,
-                    duration: durationMs,
-                    startTime: new Date(),
-                    endTime: new Date(Date.now() + durationMs),
-                });
+        await interaction.reply({ content: `\`✅\` » ${user} hat nun einen **Timeout**.\n» **Grund:** \`${grund}\`\n» **Dauer:** <t:${Math.floor(timeoutTime.getTime() / 1000)}:t> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true})
 
-                newTimeout.save();
-
-                setTimeout(async () => {
-                    await member.roles.remove(timeoutRole);
-                    await member.roles.add(memberRole);
-                    // You can send a message to the user or log the removal here if needed
-                }, durationMs);
-
-                interaction.reply({ content: `> \`✅\` » Du hast ${member} erfolgreich in Timeout gesetzt für **${duration}**.`, ephemeral: true });
-            })
-            .catch(err => {
-                console.error(err);
-                interaction.reply({ content: `> \`❌\` » Ein Fehler ist aufgetreten.`, ephemeral: true });
-            });
     }
-};
+}
