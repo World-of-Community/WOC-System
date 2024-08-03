@@ -37,7 +37,7 @@ module.exports = {
                     const [day, month, year] = dateStr.split('.').map(Number);
                     return new Date(year, month - 1, day);
                 };
-                
+
                 const now = new Date();
                 const urlaubBeginn = parseDate(vonStr);
                 const urlaubEnde = parseDate(bisStr);
@@ -46,7 +46,7 @@ module.exports = {
                     return interaction.reply({ content: '> `❌` » Bitte gib gültige Daten im Format `DD-MM-YYYY` ein.', ephemeral: true });
                 }
 
-                const teamData = await TeamData.findOneAndUpdate(
+                const teamData = await teamdb.findOneAndUpdate(
                     { userID: member.id },
                     {
                         $set: {
