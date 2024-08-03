@@ -135,41 +135,48 @@ module.exports = {
                         interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                     }
                     break;      
-            case "plan":
-                const dateStr = interaction.options.getString('datum');
-                const description = interaction.options.getString('beschreibung') || 'Keine Beschreibung angegeben';
-
-                const [day, month, year, time] = dateStr.split(/[\s.:-]+/);
-                const [hour, minute] = time ? time.split(':') : [0, 0];
-
-                const meetingDate = new Date(year, month - 1, day, hour, minute);
-
-                if (isNaN(meetingDate.getTime())) {
-                    return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum im Format `DD.MM.YYYY HH:MM` ein.', ephemeral: true });
-                }
-
-                const meetingDateUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
-
-                try {
-                    await serverdb.findOneAndUpdate(
-                        { guildID: "815919809379172354" },
-                        {
-                            $push: {
-                                meetings: {
-                                    date: meetingDateUTC,
-                                    description: description
-                                }
-                            }
-                        },
-                        { new: true, upsert: true }
-                    );
-
-                    await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
-                } catch (error) {
-                    console.error('Fehler beim Speichern des Meetings:', error);
-                    await interaction.reply({ content: '> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.', ephemeral: true });
-                }
-                break;      
+                    case "plan":
+                        const dateStr = interaction.options.getString('datum');
+                        const description = interaction.options.getString('beschreibung') || 'Keine Beschreibung angegeben';
+                    
+                        // Validierung des Datumsformats
+                        const datePattern = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/;
+                        const match = dateStr.match(datePattern);
+                    
+                        if (!match) {
+                            return interaction.reply({ content: '> `❌` » Bitte gib das Datum im Format `DD.MM.YYYY HH:MM` ein.', ephemeral: true });
+                        }
+                    
+                        const [_, day, month, year, hour, minute] = match;
+                    
+                        // Erstelle das Meeting-Datum in UTC
+                        const meetingDateUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
+                    
+                        // Überprüfe die Gültigkeit des Datums
+                        if (isNaN(meetingDateUTC.getTime())) {
+                            return interaction.reply({ content: '> `❌` » Das Datum scheint ungültig zu sein. Bitte überprüfe deine Eingabe.', ephemeral: true });
+                        }
+                    
+                        // Speichern des Meetings in der Datenbank
+                        try {
+                            await serverdb.findOneAndUpdate(
+                                { guildID: "815919809379172354" },
+                                {
+                                    $push: {
+                                        meetings: {
+                                            date: meetingDateUTC,
+                                            description: description
+                                        }
+                                    }
+                                },
+                                { new: true, upsert: true }
+                            );
+                    
+                            await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
+                        } catch (error) {
+                            console.error('Fehler beim Speichern des Meetings:', error);
+                            await interaction.reply({ content: '> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.', ephemeral: true });
+                        }  
         }
     },
 };
