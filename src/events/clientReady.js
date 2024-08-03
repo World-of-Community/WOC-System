@@ -48,6 +48,7 @@ module.exports = {
     // RSS Feed
     setInterval(async () => {
       monitor.ping({message: 'Alive'});
+      monitor_job.ping({state: 'run'});
       processRSSFeed(client, lastEntries);
     }, 60000);
 
