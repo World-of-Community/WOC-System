@@ -36,7 +36,8 @@ module.exports = {
 
             banLogEmbed = new EmbedBuilder()
                 .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
-                .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n> \`👤\` - **BENUTZER INFORMATIONEN**\n> Banngrund: \`${reason}\`\n> Dauer: \`${duration}\`\n> Benutzername: **${member.user.username}** (\`${member.id}\`) (${member})\n> Account erstellt am: ${createdAt}\n> Beigetreten am: ${joinedAt}`)
+                .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` **- BENUTZER INFORMATIONEN**\n> Banngrund: \`${reason}\`\n> Dauer: \`${duration}\`\n> Benutzername: **${member.user.username}** (\`${member.id}\`) (${member})\n> Account erstellt am: ${createdAt}\n> Beigetreten am: ${joinedAt}`)
+                .setThumbnail(member.displayAvatarURL({ dynamic: true, format: 'png'}))
                 .setColor('Red')
                 .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` })
             
