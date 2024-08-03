@@ -22,8 +22,6 @@ module.exports = {
             }
         }
 
-        // Streamer Rolle System // Wartung keine ahnung ob das system funktioniert
-        const stream_member = newPresence.member;
         const streamer_role = newPresence.guild.roles.cache.get('1266095218239995968');
 
         if (!streamer_role) return console.log("❌ > presenceUpdate > \"Streamer Rolle\" wurde nicht gefunden")
@@ -31,13 +29,13 @@ module.exports = {
         const isStreaming = newPresence.activities.some(activity => ActivityType === ActivityType.Streaming);
 
         if (isStreaming) {
-            if (!stream_member.roles.cache.has(streamer_role.id)) {
-                await stream_member.roles.add(streamer_role.id);
+            if (!stream_member.roles.cache.has(streamer_role)) {
+                await member.roles.add(streamer_role);
                 console.log(`Rolle hinzugefügt zu ${streamMember.user.displayName}`);
             }
         } else {
-            if (stream_member.roles.cache.has(streamer_role.id)) {
-                await stream_member.roles.remove(streamer_role.id);
+            if (stream_member.roles.cache.has(streamer_role)) {
+                await member.roles.remove(streamer_role);
                 console.log(`Rolle entfernt von ${streamMember.user.displayName}`);
             }
         }

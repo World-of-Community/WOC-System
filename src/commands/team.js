@@ -37,23 +37,12 @@ module.exports = {
     async execute(interaction, client) {
         const member = interaction.options.getMember('user');
         const role = interaction.options.getRole('role');
-        //const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
         const reason = interaction.options.getString('reason') || 'Kein Grund angegeben';
         const targetChannel = interaction.guild.channels.cache.get('1173986308641804338'); 
         const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
         const sub = interaction.options.getSubcommand();
-
-        //const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
-
-                            //if (TeamRolle) {
-                            //    const member = interaction.member;
-
-                            //    if (member.roles.cache.has(TeamRolle.id)) {
-                            //        member.roles.remove(TeamRolle)
-                            //        .then(() => console.log(`Die Rolle ${TeamRolle.name} wurde von ${member.user.displayName} entfernt`))
-                            //        .catch(console.error);
-                            //    }
-                            //}
+        const teamrole = interaction.guild.roles.cache.get('820658664536145940');
+        const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
 
         if (!member || !role || !targetChannel) {
             return interaction.reply('> `❌` » Fehler beim Verarbeiten des Befehls.');
@@ -69,8 +58,6 @@ module.exports = {
                         .setDescription(`> Herzlichen Glückwunsch, ${member}!\n> Du wurdest **befördert!**\n\n**__Rang__**\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
-
-                    const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
                     
                     await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
                     await interaction.reply({ content: `> \`✅\` » Das Teammitglied wurde **befördert.**`, ephemeral: true });
@@ -89,8 +76,6 @@ module.exports = {
                         .setColor('Blurple')
                         .setTimestamp();
         
-                    const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
-        
                     targetChannel.send({ embeds: [RangUpdateembed] });
                     await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
                 } catch (error) {
@@ -101,7 +86,8 @@ module.exports = {
                 case "add":
                     try {
                         await member.roles.add(role);
-            
+                        await member.roles.add(teamrole)
+
                         const { EmbedBuilder } = require('discord.js');
                         const TeammitgliedEmbed = new EmbedBuilder()
                             .setTitle('`➕` | __NEUES TEAMMITGLIED__')
@@ -109,16 +95,6 @@ module.exports = {
                             .setDescription(`> » Wir begrüßen ${member} herzlichst im Team.\n> Wir hoffen auf eine gemeinsame schöne Zeit!\n\n**__Rang__**\n${role}\n\n**__Im Team seit__**\n${formattedDate}`)
                             .setTimestamp();
 
-                        const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
-                        //const TeamRolle = interaction.guild.roles.cache.get('820658664536145940');
-
-                        //if (TeamRolle) {
-                        //    const member = interaction.member;
-                        //    member.roles.add(TeamRolle)
-                        //      .then(() => console.log(`Die Rolle ${TeamRolle.name} wurde an ${member.user.displayName} hinzugefügt`))
-                        //      .catch(console.error);
-                        //  }
-                        
                         targetChannel.send({ content: `${member}`, embeds: [TeammitgliedEmbed] });
                         await interaction.reply({ content: `> \`✅\` » Ein neues Teammitglied ist nun da.`, ephemeral: true});
                     } catch (error) {
@@ -129,24 +105,13 @@ module.exports = {
                 case "kick":
                     try {
                         await member.roles.remove(role);
-            
+                        await member.roles.remove(teamrole)
+
                         const dmEmbed = new EmbedBuilder()
                             .setTitle('`❗` | __DU WURDEST AUS DEM SERVER-TEAM ENTLASSEN__')
                             .setDescription(`Hallo ${member}, Du wurdest aus dem Server-Team entlassen.\n\nGrund: \`${reason}\``)
                             .setColor('Red')
                             .setTimestamp();
-
-                            //const TeamRolle2 = interaction.guild.roles.cache.get('820658664536145940');
-
-                            //if (TeamRolle) {
-                            //    const member = interaction.member;
-
-                            //    if (member.roles.cache.has(TeamRolle.id)) {
-                            //        member.roles.remove(TeamRolle)
-                            //        .then(() => console.log(`Die Rolle ${TeamRolle.name} wurde von ${member.user.displayName} entfernt`))
-                            //        .catch(console.error);
-                            //    }
-                            //}
             
                         try {
                             await member.send({ embeds: [dmEmbed] });
@@ -159,8 +124,6 @@ module.exports = {
                             .setColor('Red')
                             .setTimestamp();
 
-                        const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
-            
                         targetChannel.send({ embeds: [kickEmbed] });
                         await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**', ephemeral: true });
                     } catch (error) {
