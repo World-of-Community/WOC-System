@@ -97,9 +97,10 @@ module.exports = {
                         .setTimestamp();
             
                     sortedMeetings.forEach(meeting => {
-                        const timestamp = Math.floor(meeting.date.getTime() / 1000);
+                        const localDate = new Date(meeting.date.getTime() - (meeting.date.getTimezoneOffset() * 60 * 1000));
+                        const localTimestamp = Math.floor(localDate.getTime() / 1000);
                         embed.addFields({
-                            name: `> Besprechung am: <t:${timestamp}:F>`,
+                            name: `> Besprechung am: <t:${localTimestamp}:F>`,
                             value: meeting.description,
                             inline: false
                         });

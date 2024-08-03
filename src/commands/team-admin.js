@@ -139,7 +139,6 @@ module.exports = {
                         const dateStr = interaction.options.getString('datum');
                         const description = interaction.options.getString('beschreibung') || 'Keine Beschreibung angegeben';
                     
-                        // Validierung des Datumsformats
                         const datePattern = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/;
                         const match = dateStr.match(datePattern);
                     
