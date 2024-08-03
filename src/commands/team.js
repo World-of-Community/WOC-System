@@ -22,7 +22,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     
     async execute(interaction, client) {
-        const targetChannel = interaction.guild.channels.cache.get('1173986308641804338'); // ID des Zielkanals
+        const targetChannel = interaction.guild.channels.cache.get('877446081036836884'); 
         const sub = interaction.options.getSubcommand();
         const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
 

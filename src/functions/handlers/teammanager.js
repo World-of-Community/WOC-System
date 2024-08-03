@@ -7,7 +7,6 @@ module.exports = (client) => {
         client.on('messageCreate', async (message) => {
             if (message.author.bot) return;
 
-            console.log("Received a message:", message.content);
 
             const mentionedUsers = message.mentions.users;
             for (const user of mentionedUsers.values()) {
@@ -21,10 +20,6 @@ module.exports = (client) => {
                     const urlaubBeginn = parseDate(teamData.urlaub.beginn);
                     const urlaubEnde = parseDate(teamData.urlaub.ende);
                     
-                    console.log("Current time:", now);
-                    console.log("Urlaub begin:", urlaubBeginn);
-                    console.log("Urlaub end:", urlaubEnde);
-
                     if (now >= urlaubBeginn && now <= urlaubEnde) {
                         const urlaubMessageUrl = `https://discord.com/channels/${message.guild.id}/877446081036836884/${teamData.urlaub.messageID}`;
 
@@ -32,16 +27,11 @@ module.exports = (client) => {
                             await message.reply({
                                 content: `> ${user} ist derzeit im Urlaub und daher nicht erreichbar. [Mehr Infos](${urlaubMessageUrl})`
                             });
-                            console.log("Reply sent to message:", message.id);
                         } catch (error) {
                             console.error('Fehler beim Senden der Antwort:', error);
                         }
-                    } else {
-                        console.log(`User ${user.id} is not on vacation. Current time: ${now}`);
-                    }
-                } else {
-                    console.log(`No vacation data found for user ${user.id}`);
-                }
+                    } 
+                } 
             }
         });
 
