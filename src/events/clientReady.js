@@ -18,7 +18,6 @@ module.exports = {
   name: Events.ClientReady,
   async execute(client) {
     const monitor = new cronitor.Monitor('System Bot');
-    monitor.ping({message: 'Alive'});
 
     let lastEntries = {};
     try {
@@ -41,6 +40,7 @@ module.exports = {
 
     // RSS Feed
     setInterval(async () => {
+      monitor.ping({message: 'Alive'});
       processRSSFeed(client, lastEntries);
     }, 60000);
 
