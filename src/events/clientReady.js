@@ -17,7 +17,7 @@ const cronitor = require('cronitor')('bbfc3034eaee49229dc7d1cfb4b65935');
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
-    const monitor = new cronitor.Monitor('important-heartbeat-monitor');
+    const monitor = new cronitor.Monitor('System Bot');
     monitor.ping({message: 'Alive'});
 
     let lastEntries = {};
