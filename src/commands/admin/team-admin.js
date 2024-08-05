@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const teamdb = require("../../Datenbank/teamdb");
+const teamdb = require("../../../Datenbank/teamdb");
 const serverdb = require("../../../Datenbank/serverdb");
 const schedule = require('node-schedule');
 
