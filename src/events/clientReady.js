@@ -18,6 +18,44 @@ module.exports = {
   async execute(client) {
     const monitor = new cronitor.Monitor('System Bot');
 
+
+    const channel = client.channels.cache.get("1254340245772701747")
+    channel.threads.create({
+      name: '📁 » Kanal Logs', message: { content: `» In diesen Log Kanal werden alle \`Kanal Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '👤 » Join & Leave Logs', message: { content: `» In diesen Log Kanal werden alle \`Join & Leave Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '💬 » Nachrichten Logs', message: { content: `» In diesen Log Kanal werden alle \`Nachrichten Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '📩 » Invite Log', message: {  content: `» In diesen Log Kanal werden alle \`Invites Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '📚 » Moderation Logs', message: {  content: `» In diesen Log Kanal werden alle \`Moderation Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '🔨 » Server Logs', message: {  content: `» In diesen Log Kanal werden alle \`Server Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '🎭 » Rollen Logs', message: {  content: `» In diesen Log Kanal werden alle \`Rollen Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+
     let lastEntries = {};
     try {
       const data = fs.readFileSync("src/json/lastEntries.json");
