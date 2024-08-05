@@ -10,12 +10,13 @@ const deployCommands = async function deploy() {
     const config = JSON.parse(file);
     const commands = [];
 
+    // Funktion zum rekursiven Durchsuchen von Verzeichnissen
     const readCommands = (dir) => {
         const files = fs.readdirSync(dir);
         for (const file of files) {
             const fullPath = path.join(dir, file);
             if (fs.statSync(fullPath).isDirectory()) {
-                readCommands(fullPath); 
+                readCommands(fullPath);  // Rekursiv in das Unterverzeichnis gehen
             } else if (file.endsWith(".js")) {
                 const command = require(fullPath);
                 if (command.data) {
@@ -29,9 +30,12 @@ const deployCommands = async function deploy() {
 
     const restClient = new REST({ version: "10" }).setToken(config.token);
 
-    restClient.put(Routes.applicationGuildCommands(config.application, config.server), { body: commands })
-        .then(() => console.log("Successfully registered Commands!"))
-        .catch(console.error);
+    try {
+        await restClient.put(Routes.applicationGuildCommands(config.application, config.server), { body: commands });
+        console.log("Successfully registered Commands!");
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 module.exports = { deployCommands };

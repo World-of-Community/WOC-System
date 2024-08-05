@@ -3,6 +3,7 @@ const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
 const config = JSON.parse(file);
+const AsciiTable = require('ascii-table');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
@@ -36,21 +37,44 @@ let invites = new Map();
 const cronitor = require('cronitor')('bbfc3034eaee49229dc7d1cfb4b65935');
 
 // Lade Commands
-deployCommands()
-client.commands = new Collection()
+deployCommands();
+client.commands = new Collection();
 
-const commandFiles = fs.readdirSync("./src/commands").filter(file => file.endsWith(".js"))
-console.log('-------------------------------------------')
-console.log('|   Command                  |   Loaded   |')
-console.log('-------------------------------------------')
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    if (command.data) {
-        client.commands.set(command.data.name, command);
-        console.log(`|   ${(command.data.name).padEnd(17, ' ')}        |     ✅     |`)
+const readCommands = (dir, table) => {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+        const fullPath = path.join(dir, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+            readCommands(fullPath, table);  
+        } else if (file.endsWith(".js")) {
+            try {
+                const command = require(fullPath);
+                if (command.data && command.data.name) {
+                    client.commands.set(command.data.name, command);
+                    table.addRow(command.data.name, '✅');
+                } else {
+                    table.addRow(file.split('.js')[0], '⛔');
+                }
+            } catch (error) {
+                console.error(`Error loading command ${file}: ${error.message}`);
+                table.addRow(file.split('.js')[0], '⛔');
+            }
+        }
     }
-}
-console.log('-------------------------------------------')
+};
+
+console.log('-------------------------------------------');
+console.log('|   Command                  |   Loaded   |');
+console.log('-------------------------------------------');
+
+let table = new AsciiTable()
+    .setHeading('Slash Commands', 'Status')
+    .setBorder('|', '=', '0', '0');
+
+readCommands(path.resolve(__dirname, 'commands'), table);
+
+console.log(table.toString());
+console.log('-------------------------------------------');
 
 // Load Events
 const eventsPath = path.join(__dirname, 'events');
