@@ -13,7 +13,6 @@ const parser = new Parser();
 const FeedManager = require("../FeedManager");
 const { processRSSFeed } = FeedManager;
 const cronitor = require('cronitor')('bbfc3034eaee49229dc7d1cfb4b65935');
-//Todo: 
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
