@@ -14,7 +14,7 @@ const cron = require("node-cron");
 module.exports = (client) => {
   client.handleErfolg = async () => {
 
-  //Intervall for Presence
+  // Intervall for Presence
 
     client.on("messageCreate", async (message) => {
       if (!message.guild || message.author.bot) return;
@@ -31,7 +31,7 @@ module.exports = (client) => {
             { upsert: true }
           );
 
-          //Todo: Economy System einbinden. ~ @vxnsin
+          // Todo: Economy System einbinden. ~ @vxnsin
           const button = new ButtonBuilder()
             .setCustomId("first_message_reward" + message.author.id)
             .setLabel("» Belohnung abholen")
@@ -45,8 +45,6 @@ module.exports = (client) => {
         console.error("Fehler bei der Verarbeitung der ersten Nachricht:", err);
       }
     });
-
-
   
     // 1 Jahr Server mitglied
     cron.schedule("0 0 * * *", async () => {

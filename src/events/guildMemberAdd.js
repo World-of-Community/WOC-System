@@ -90,6 +90,7 @@ module.exports = {
         const logChannel = await member.guild.channels.cache.get(LOG_CHANNEL_ID);
         if (logChannel) {
             await logChannel.send({ embeds: [joinEmbed] });
+            //await sendLog(ThreadIDs.CHANNEL, joinEmbed)
         } else {
         console.log('Log Kanal nicht gefunden');
         }

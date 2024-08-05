@@ -64,7 +64,7 @@ module.exports = (client) => {
                     { $unset: { urlaub: '' } }
                 );
 
-                //Besprechung Check
+                // Besprechung Check
                 try {
                     await serverDB.updateMany(
                         { guildID: "815919809379172354" },
