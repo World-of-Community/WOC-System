@@ -64,7 +64,7 @@ module.exports = {
                 .addUserOption(option => option.setName('user').setDescription('» Wähle einen Benutzer aus, der die Spende erhalten soll.').setRequired(true))
                 .addIntegerOption(option => option.setName('amount').setDescription('» Gib den Betrag der Spende ein.').setMinValue(1).setRequired(true))
         )
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction, client) {
         const member = interaction.options.getMember('user');
         const role = interaction.options.getRole('role');
@@ -93,7 +93,7 @@ module.exports = {
                     interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                 }
                 break;
-                
+
             case "downrank":
                 try {
                     await member.roles.remove(role);
