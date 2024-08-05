@@ -87,6 +87,6 @@ module.exports = {
         .setColor('Green')
         .setTimestamp();
 
-        await logchannel.threads.cache.get("1269294005254881412").send({embeds: [joinEmbed]});
+        await logchannel.threads.cache.get("1269998215512457259").send({embeds: [joinEmbed]});
     }
 }

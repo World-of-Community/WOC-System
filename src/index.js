@@ -140,13 +140,13 @@ client.on('messageCreate', async message => {
 //==================LOGS=====================
 
 const ThreadIDs = {
-    CHANNEL: "1269294362869633135",
-    MESSAGE: "1269294582366212168",
-    JOIN: "1269294005254881412",
-    ROLES: "1269294740172705853",
-    SERVER: "1269295029122367549",
-    MODERATION: "1269295450721222740",
-    INVITE: "1269295619483373588"
+    CHANNEL: "1269998213952442525",
+    MESSAGE: "1269998217181921320",
+    JOIN: "1269998215512457259",
+    ROLES: "1269998221518831721",
+    SERVER: "1269998220440895510",
+    MODERATION: "1269998219266490538",
+    INVITE: "1269998218264055818"
 };
 
 client.on('guildMemberAdd', async member => {
@@ -548,3 +548,42 @@ async function sendLog(threadID, embed) {
 }
 // Bot Start
 client.login(config.token)
+
+
+/*
+    const channel = client.channels.cache.get("1263436406655680513")
+    channel.threads.create({
+      name: '📁 » Kanal Logs', message: { content: `» In diesen Log Kanal werden alle \`Kanal Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '👤 » Join & Leave Logs', message: { content: `» In diesen Log Kanal werden alle \`Join & Leave Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '💬 » Nachrichten Logs', message: { content: `» In diesen Log Kanal werden alle \`Nachrichten Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '📩 » Invite Log', message: {  content: `» In diesen Log Kanal werden alle \`Invites Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '📚 » Moderation Logs', message: {  content: `» In diesen Log Kanal werden alle \`Moderation Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '🔨 » Server Logs', message: {  content: `» In diesen Log Kanal werden alle \`Server Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '🎭 » Rollen Logs', message: {  content: `» In diesen Log Kanal werden alle \`Rollen Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+*/
