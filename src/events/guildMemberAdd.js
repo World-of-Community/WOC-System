@@ -78,7 +78,7 @@ module.exports = {
         }
 
         // Join Log
-        const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
+        const logchannel = await member.guild.channels.cache.get("1263436406655680513");
 
         const joinEmbed = new EmbedBuilder()
         .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
@@ -86,5 +86,7 @@ module.exports = {
         .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
         .setColor('Green')
         .setTimestamp();
+
+        await logchannel.threads.cache.get("1269294005254881412").send({embeds: [joinEmbed]});
     }
 }

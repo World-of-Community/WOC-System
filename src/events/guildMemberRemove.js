@@ -8,7 +8,7 @@ const userdb = require("../../Datenbank/userdb");
 module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
-        const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
+        const logchannel = await member.guild.channels.cache.get("1263436406655680513");
 
             const leave = new EmbedBuilder()
                 .setTitle('<:user_leave:1228329456079343731> | NUTZER VERLASSEN')
