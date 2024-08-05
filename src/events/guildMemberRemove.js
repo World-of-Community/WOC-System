@@ -8,7 +8,7 @@ const userdb = require("../../Datenbank/userdb");
 module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
-        const LOG_CHANNEL_ID = '1242799344692887662';
+        const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
 
             const leave = new EmbedBuilder()
                 .setTitle('<:user_leave:1228329456079343731> | NUTZER VERLASSEN')
@@ -16,16 +16,13 @@ module.exports = {
                 .setColor('Red')
                 .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
                 .setTimestamp();
-            const logChannel = await member.guild.channels.cache.get(LOG_CHANNEL_ID);
-            if (logChannel) await logChannel.send({ embeds: [leave] });
+                await logchannel.threads.cache.get("1269294005254881412").send({embeds: [leave]});
 
         const userData = await userdb.findOne({ userID: member.user.id })  
         if(!userData) return
         await userData.deleteOne()
 
-        // Automatisches Löschen wenn ein Nutzer verlässt
-        const CHANNEL_ID = '1172920281526960238'; // Ersetze durch die ID des Kanals, in dem die Werbung gepostet wird.
-
+        const CHANNEL_ID = '1172920281526960238'; 
         const channel = member.guild.channels.cache.get(CHANNEL_ID);
         if (!channel) return console.log('Kanal nicht gefunden.');
 

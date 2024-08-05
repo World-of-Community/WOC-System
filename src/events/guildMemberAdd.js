@@ -78,7 +78,7 @@ module.exports = {
         }
 
         // Join Log
-        const LOG_CHANNEL_ID = '1242799344692887662';
+        const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
 
         const joinEmbed = new EmbedBuilder()
         .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
@@ -86,13 +86,5 @@ module.exports = {
         .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
         .setColor('Green')
         .setTimestamp();
-
-        const logChannel = await member.guild.channels.cache.get(LOG_CHANNEL_ID);
-        if (logChannel) {
-            await logChannel.send({ embeds: [joinEmbed] });
-            //await sendLog(ThreadIDs.CHANNEL, joinEmbed)
-        } else {
-        console.log('Log Kanal nicht gefunden');
-        }
     }
 }

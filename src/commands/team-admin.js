@@ -1,6 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const teamdb = require("../../Datenbank/teamdb");
 const serverdb = require("../../Datenbank/serverdb");
+const schedule = require('node-schedule');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -48,6 +49,7 @@ module.exports = {
         const role = interaction.options.getRole('role');
         const reason = interaction.options.getString('reason') || 'Kein Grund angegeben';
         const targetChannel = interaction.guild.channels.cache.get('1173986308641804338'); 
+        const targetChannel2 = interaction.guild.channels.cache.get('877446081036836884'); 
         const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
         const sub = interaction.options.getSubcommand();
         const teamrole = interaction.guild.roles.cache.get('820658664536145940');
@@ -158,13 +160,17 @@ module.exports = {
                     
                         // Speichern des Meetings in der Datenbank
                         try {
-                            await serverdb.findOneAndUpdate(
+                            const teamDataMeeting =await serverdb.findOneAndUpdate(
                                 { guildID: "815919809379172354" },
                                 {
                                     $push: {
                                         meetings: {
                                             date: meetingDateUTC,
-                                            description: description
+                                            description: description,
+                                            reminders: [],
+                                            attendees: [],
+                                            nonAttendees: [],
+                                            messageID: null,
                                         }
                                     }
                                 },
@@ -172,6 +178,46 @@ module.exports = {
                             );
                     
                             await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
+
+                            const TeamMeetingEmbed = new EmbedBuilder()
+                            .setTitle('📅 » Eine Team-Besprechung wurde geplant.')
+                            .setDescription(`> **Datum:** ${day}.${month}.${year} ${hour}:${minute}\n> **Beschreibung:** ${description}`)
+
+                            const remindMeButton = new ButtonBuilder()
+                                .setCustomId('remindMe')
+                                .setLabel('Remind Me')
+                                .setStyle(ButtonStyle.Primary);
+                    
+                            const attendButton = new ButtonBuilder()
+                                .setCustomId('attend')
+                                .setLabel('Teilnehmen')
+                                .setStyle(ButtonStyle.Success);
+                    
+                            const declineButton = new ButtonBuilder()
+                                .setCustomId('decline')
+                                .setLabel('Nicht Teilnehmen')
+                                .setStyle(ButtonStyle.Danger);
+                
+                        const row = new ActionRowBuilder().addComponents(remindMeButton, attendButton, declineButton);
+                
+                        const meetingMessage = await targetChannel2.send({ embeds: [TeamMeetingEmbed], components: [row] });
+
+                        const meetingIndex = teamDataMeeting.meetings.length - 1;
+                        teamDataMeeting.meetings[meetingIndex].messageID = meetingMessage.id;
+                
+                        await teamDataMeeting.save();
+
+                        const reminderDate = new Date(meetingDateUTC.getTime() - 10 * 60000);
+                        const deleteDate = new Date(meetingDateUTC.getTime() + 60000); 
+                
+                        schedule.scheduleJob(reminderDate, () => {
+                            remindUsers(client, meetingDateUTC);
+                        });
+    
+                        schedule.scheduleJob(deleteDate, () => {
+                            deleteMeetingMessage(client, meetingDateUTC);
+                        });
+    
                         } catch (error) {
                             console.error('Fehler beim Speichern des Meetings:', error);
                             await interaction.reply({ content: '> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.', ephemeral: true });
@@ -179,3 +225,36 @@ module.exports = {
         }
     },
 };
+
+async function remindUsers(client, meetingDateUTC) {
+    const meeting = await serverdb.findOne({ "meetings.date": meetingDateUTC });
+
+    if (!meeting) return;
+
+    for (const userId of meeting.reminders) {
+        const user = await client.users.fetch(userId);
+        if (user) {
+            await user.send(`> \`📣\` » Erinnerung: Das Meeting beginnt in **10 Minuten**.\nDatum: ${meetingDateUTC}`);
+        }
+    }
+}
+
+async function deleteMeetingMessage(client, meetingDateUTC) {
+    const meeting = await serverdb.findOne({ "meetings.date": meetingDateUTC });
+
+    if (!meeting) return;
+
+    const messageID = meeting.messageID;
+    const channel = await client.channels.fetch("877446081036836884");
+
+    if (channel && messageID) {
+        try {
+            const message = await channel.messages.fetch(messageID);
+            if (message) {
+                await message.delete();
+            }
+        } catch (error) {
+            console.error(`Fehler beim Löschen der Nachricht: ${error}`);
+        }
+    }
+}

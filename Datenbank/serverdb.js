@@ -83,6 +83,21 @@ const serverSchema = new mongoose.Schema({
             type: String,
             default: "Keine Beschreibung"
         },
+        messageID: {
+          type: String  
+        },
+        reminders: {
+            type: [String],
+            default: []
+        },
+        attendees: {
+            type: [String],
+            default: []
+        },
+        nonAttendees: {
+            type: [String],
+            default: []
+        }
     }]
 });
 

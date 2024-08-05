@@ -38,6 +38,7 @@ module.exports = (client) => {
             const [year, month, day] = dateStr.split('-').map(Number);
             return new Date(year, month - 1, day);
         }
+        
         cron.schedule('0 0 * * *', async () => {
             const now = new Date();
             const nowFormatted = formatDate(now);
@@ -74,6 +75,54 @@ module.exports = (client) => {
                 } catch (error) {
                     console.error('Fehler beim Löschen abgelaufener Meetings:', error);
                 }
+            }
+        });
+
+
+        client.on('interactionCreate', async interaction => {
+            if (!interaction.isButton()) return;
+        
+            const userId = interaction.user.id;
+            const customId = interaction.customId;
+            const meetingDate = new Date(interaction.message.embeds[0].description.match(/Datum:\s*(.*)\n/)[1]);
+            const meeting = await serverDB.findOne({ "meetings.date": meetingDate });
+        
+            if (!meeting) {
+                await interaction.reply({ content: '> `❌` » Meeting nicht gefunden.', ephemeral: true });
+                return;
+            }
+        
+            switch (customId) {
+                case 'remindMe':
+                    await serverDB.updateOne(
+                        { "meetings.date": meetingDate },
+                        { $addToSet: { "meetings.$.reminders": userId } }
+                    );
+                    await interaction.reply({ content: '> `🔔` » Du wirst 10 Minuten vor dem Meeting erinnert.', ephemeral: true });
+                    break;
+                case 'attend':
+                    await serverdb.updateOne(
+                        { "meetings.date": meetingDate },
+                        {
+                            $addToSet: { "meetings.$.attendees": userId },
+                            $pull: { "meetings.$.nonAttendees": userId }
+                        }
+                    );
+                    await interaction.reply({ content: '> `✅` » Du hast deine Teilnahme bestätigt.', ephemeral: true });
+                    break;
+                case 'decline':
+                    await serverDB.updateOne(
+                        { "meetings.date": meetingDate },
+                        {
+                            $addToSet: { "meetings.$.nonAttendees": userId },
+                            $pull: { "meetings.$.attendees": userId }
+                        }
+                    );
+                    await interaction.reply({ content: '> `❌` » Du hast deine Teilnahme abgelehnt.', ephemeral: true });
+                    break;
+                default:
+                    await interaction.reply({ content: '> `❌` » Unbekannte Aktion.', ephemeral: true });
+                    break;
             }
         });
 

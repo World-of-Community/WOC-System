@@ -33,6 +33,7 @@ const serverdb = require('../Datenbank/serverdb');
 const userdb = require('../Datenbank/userdb');
 const { deployCommands } = require('./deployCommands');
 let invites = new Map();
+const cronitor = require('cronitor')('bbfc3034eaee49229dc7d1cfb4b65935');
 
 // Lade Commands
 deployCommands()
@@ -271,7 +272,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         .setColor('Orange')
         .setTimestamp();
 
-        await sendLog(ThreadIDs.MESSAGE, messageUpdate)
+        await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
 });
 
 // Birthday System
