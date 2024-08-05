@@ -5,7 +5,7 @@ const schedule = require('node-schedule');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('team-admin')
+        .setName('admin')
         .setDescription('Team')
         .addSubcommand((command) =>
             command
@@ -43,6 +43,27 @@ module.exports = {
                 .addStringOption(option => option.setName('datum').setDescription('» Datum und Uhrzeit des Meetings (DD.MM.YYYY HH:MM)').setRequired(true))
                 .addStringOption(option => option.setName('beschreibung').setDescription('» Beschreibung des Meetings').setRequired(false))
         )
+        .addSubcommand((command) =>
+            command
+                .setName('aktivieren')
+                .setDescription('» Aktiviere eine Funktion. 🟢')
+                .addStringOption(option => option.setName('system').setDescription('» Welches System soll aktiviert werden?').setRequired(true)
+                .addChoices({ name: 'Changelog', value: 'changelog' }, { name: 'Spielersuche', value: 'spielersuche' }, { name: 'Vorschläge', value: 'vorschläge' }, { name: 'Willkommensnachrichten', value: 'willkommensnachrichten' }))
+        )
+        .addSubcommand((command) =>
+            command
+                .setName('deaktivieren')
+                .setDescription('» Deaktiviere eine Funktion. 🔴')
+                .addStringOption(option => option.setName('system').setDescription('» Welches System soll deaktiviert werden?').setRequired(true)
+                .addChoices({ name: 'Changelog', value: 'changelog' }, { name: 'Spielersuche', value: 'spielersuche' }, { name: 'Vorschläge', value: 'vorschläge' }, { name: 'Willkommensnachrichten', value: 'willkommensnachrichten' }))
+        )
+        .addSubcommand((command) =>
+            command
+                .setName('donate')
+                .setDescription('» Füge den Betrag der Spende an einem User hinzu. 💸')
+                .addUserOption(option => option.setName('user').setDescription('» Wähle einen Benutzer aus, der die Spende erhalten soll.').setRequired(true))
+                .addIntegerOption(option => option.setName('amount').setDescription('» Gib den Betrag der Spende ein.').setMinValue(1).setRequired(true))
+        )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     async execute(interaction, client) {
         const member = interaction.options.getMember('user');
@@ -72,6 +93,7 @@ module.exports = {
                     interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                 }
                 break;
+                
             case "downrank":
                 try {
                     await member.roles.remove(role);
@@ -89,6 +111,7 @@ module.exports = {
                     interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                 }
                 break;
+
                 case "add":
                     try {
                         await member.roles.add(role);
@@ -108,6 +131,7 @@ module.exports = {
                         interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                     }
                 break;
+
                 case "kick":
                     try {
                         await member.roles.remove(role);
@@ -137,6 +161,7 @@ module.exports = {
                         interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                     }
                     break;      
+
                     case "plan":
                         const dateStr = interaction.options.getString('datum');
                         const description = interaction.options.getString('beschreibung') || 'Keine Beschreibung angegeben';
@@ -222,6 +247,78 @@ module.exports = {
                             console.error('Fehler beim Speichern des Meetings:', error);
                             await interaction.reply({ content: '> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.', ephemeral: true });
                         }  
+                        break;
+
+                    case "aktivieren":
+                    case "deaktivieren":
+                        const system = await interaction.options.getString('system')
+                        const serverData = await serverdb.findOne({ guildID: interaction.guildId })
+                        if (!serverData) return;
+                        
+                        if(sub === "aktivieren") {
+                            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $pull: { deactivated: `${system}` } })
+                            await interaction.reply({ content: `> \`🟢\` » Das ${system} System wurde **erfolgreich** aktiviert.`, ephemeral: true })
+                        } else if(sub === "deaktivieren") {
+                            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { deactivated: `${system}` } })
+                            await interaction.reply({ content: `> \`🔴\` » Das ${system} System wurde **erfolgreich** deaktiviert.`, ephemeral: true })
+                        }
+                        break;
+
+                    case "donate":
+                            const amount = interaction.options.getInteger('amount');
+
+                            let userData = await userDB.findOne({userID: member.id})
+                    
+                            if(!userData) {
+                                userData = new userDB({
+                                    userID: member.id, 
+                                    donation: 0,
+                                    reactions: {}
+                                })
+                            }
+                    
+                            const confirmButton = new ButtonBuilder()
+                            .setCustomId('confirm')
+                            .setLabel('Bestätigen')
+                            .setStyle(ButtonStyle.Danger);
+                    
+                            const cancelButton = new ButtonBuilder()
+                                .setCustomId('cancel')
+                                .setLabel('Abbrechen')
+                                .setStyle(ButtonStyle.Secondary);
+                    
+                            const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
+                            
+                            const response1 = await interaction.reply({
+                                content: `> \`❗\` » Möchtest du wirklich den Betrag in Höhe von \`${amount}\` hinzufügen?`,
+                                components: [row],
+                                ephemeral: true,
+                                
+                            });
+                            const collectorFilter1 = i => i.user.id === interaction.user.id;
+                        
+                        try {
+                            const confirmation = await response1.awaitMessageComponent({ filter: collectorFilter1, time: 30_000 });
+                                if (confirmation.customId === 'confirm') {     
+                                    userData.donation = Number(userData.donation += amount);
+                                    await userData.save();
+                            
+                                    const donateEmbed = new EmbedBuilder()
+                                        .setTitle('`💖` × SPENDE ERHALTEN!')
+                                        .setDescription(`> \`✅\` » ${interaction.user} hat ${member} eine Spende von \`${amount}€\` erhalten!`)
+                                        .setColor('Green')
+                                        .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+                                        .setTimestamp();
+                            
+                                    await confirmation.update({ content: null, embeds: [donateEmbed], ephemeral: true, components: [] });
+                            } else if (confirmation.customId === 'cancel') {
+                                await confirmation.update({ content:  `> \`❌\` » Du hast die Spende in Höhe von \`${amount}\` **nicht hinzugefügt**`, ephemeral: true, components: [] });
+                            }
+                        } catch (e) {
+                            console.log(e)
+                            await interaction.editReply({ content: "> `⏰` » Zeit ist abgelaufen", ephemeral: true, components: [] });
+                            }
+                        break;
         }
     },
 };
