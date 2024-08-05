@@ -18,11 +18,15 @@ module.exports = {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
         if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) return;
-        var banLogEmbed
+        let banLogEmbed
         const member = interaction.options.getMember('user')
         const reason = interaction.options.getString('grund')
         const duration = interaction.options.getString('dauer') ?? 'Keine Zeit angegeben'
         const banMember = await interaction.guild.members.fetch(member.id)
+
+        const banRole = interaction.guild.roles.cache.find(role => role.id === "1155570143393488896");
+        const memberRole = interaction.guild.roles.cache.find(role => role.id === "815920703067914290");
+
 
         const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
         const joinedAt = `<t:${Math.round(banMember.joinedTimestamp / 1000)}>`;
@@ -41,8 +45,8 @@ module.exports = {
                 .setColor('Red')
                 .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` })
             
-                member.roles.add(config.banRolle)
-                member.roles.remove(config.memberRolle)
+                member.roles.add(banRole)
+                member.roles.remove(memberRole)
 
             const newBan = new bandb({
                 creator: interaction.user,
@@ -59,9 +63,9 @@ module.exports = {
                 .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` - **BENUTZER INFORMATIONEN**\nBanngrund: \`${reason}\`\nDauer: \`${duration}\`\nBenutzername: **${member.user.username}** (\`${member.id}\`) (${member})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
                 .setColor('Red')
                 .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` })
-            
-                member.roles.add(config.banRolle)
-                member.roles.remove(config.memberRolle)
+                
+                member.roles.add(banRole)
+                member.roles.remove(memberRole)
 
             const newBan = new bandb({
                 creator: interaction.user,

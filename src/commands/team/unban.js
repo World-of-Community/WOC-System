@@ -19,6 +19,9 @@ module.exports = {
 
         const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
         const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
+        
+        const banRole = interaction.guild.roles.cache.find(role => role.id === "1155570143393488896");
+        const memberRole = interaction.guild.roles.cache.find(role => role.id === "815920703067914290");
 
         const unbanLogEmbed = new EmbedBuilder()
             .setTitle(`\`✅\` - ${member.displayName} wurde Entbannt.`)
@@ -27,8 +30,8 @@ module.exports = {
             .setColor('Green')
             .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
         
-        member.roles.remove(config.banRolle)
-        member.roles.add(config.memberRolle)
+            member.roles.add(banRole)
+            member.roles.remove(memberRole)
 
         const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
 
