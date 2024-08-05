@@ -63,10 +63,6 @@ const readCommands = (dir, table) => {
     }
 };
 
-console.log('-------------------------------------------');
-console.log('|   Command                  |   Loaded   |');
-console.log('-------------------------------------------');
-
 let table = new AsciiTable()
     .setHeading('Slash Commands', 'Status')
     .setBorder('|', '=', '0', '0');
