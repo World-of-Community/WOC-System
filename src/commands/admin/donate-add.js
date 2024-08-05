@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const userDB = require("../../Datenbank/userdb")
+const userDB = require("../../../Datenbank/userdb")
 
 
 module.exports = {

@@ -10,13 +10,12 @@ const deployCommands = async function deploy() {
     const config = JSON.parse(file);
     const commands = [];
 
-    // Funktion zum rekursiven Durchsuchen von Verzeichnissen
     const readCommands = (dir) => {
         const files = fs.readdirSync(dir);
         for (const file of files) {
             const fullPath = path.join(dir, file);
             if (fs.statSync(fullPath).isDirectory()) {
-                readCommands(fullPath);  // Rekursiv in das Unterverzeichnis gehen
+                readCommands(fullPath); 
             } else if (file.endsWith(".js")) {
                 const command = require(fullPath);
                 if (command.data) {

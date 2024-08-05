@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField } = require("discord.js");
-const userdb = require("../../Datenbank/userdb");
+const userdb = require("../../../Datenbank/userdb");
 const fs = require("fs")
 
 module.exports = {

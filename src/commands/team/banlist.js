@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 const fs = require('fs');
-const bandb = require("../../Datenbank/bandb");
+const bandb = require("../../../Datenbank/bandb");
 
 // Folgende Punkte abarbeiten
 // Nutzer untereinander auflisten hinter den Namen in klammern also @User (Test) den banngrund wenn man bei /ban command ausführt

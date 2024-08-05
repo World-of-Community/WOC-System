@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const userdb = require("../../Datenbank/userdb");
+const userdb = require("../../../Datenbank/userdb");
 
 const afktexte = [
     'Die Tür vom Nachbarn mit Brettern zunageln. <a:Ping_Hammer:1077295673289998417>',
