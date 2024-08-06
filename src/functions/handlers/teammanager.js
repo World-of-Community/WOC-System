@@ -2,7 +2,7 @@ const { EmbedBuilder, Permissions } = require('discord.js');
 const teamDB = require('../../../Datenbank/teamdb');
 const serverDB = require('../../../Datenbank/serverdb');
 const cron = require('node-cron');
-//Todo: Team-Besprechung cron schedule machen, Weil wenn der Bot crasht funktioniert der Messge Delete nicht und der Reminder
+const schedule = require('node-schedule');
 module.exports = (client) => {
     client.manageTeam = async () => {
 
