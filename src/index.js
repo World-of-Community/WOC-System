@@ -34,7 +34,6 @@ const serverdb = require('../Datenbank/serverdb');
 const userdb = require('../Datenbank/userdb');
 const { deployCommands } = require('./deployCommands');
 let invites = new Map();
-const cronitor = require('cronitor')('bbfc3034eaee49229dc7d1cfb4b65935');
 
 // Lade Commands
 deployCommands();
@@ -392,12 +391,6 @@ cron.schedule('0 0 * * *', async () => {
 
 // Werbung
 setInterval( async () => {
-    const monitor = await cronitor.Monitor.put({
-        type: 'job',
-        key: 'Werbung',
-    });
-
-    monitor.ping({state: 'run'});
     try {
     const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");

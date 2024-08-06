@@ -118,15 +118,7 @@ module.exports = {
       await message.edit({ embeds: [bannembed] });
     }, 30000);
 
-    // Auto Delete | Spielersuche
-    const monitor_ad = await cronitor.Monitor.put({
-      type: 'job',
-      key: 'AD - Spielersuche',
-      schedule: '0 0 * * *',
-  });
-  
     cron.schedule("0 0 * * *", async () => {
-      monitor_ad.ping({state: 'run'});
       const channel = await client.channels.fetch("896743941813207081");
 
       channel.messages
@@ -139,7 +131,6 @@ module.exports = {
           });
         })
         .catch(console.error);
-        monitor_ad.ping({state: 'complete'});
     });
 
     cron.schedule("0 0 * * *", async () => {
