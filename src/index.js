@@ -306,11 +306,20 @@ cron.schedule('0 0 * * *', async () => {
     const day = today.getDate();
     const month = today.getMonth() + 1;
     const currentYear = today.getFullYear();
-    const roleId = '1244945910262399046';
     const guild = client.guilds.cache.get("815919809379172354");
 
     try {
         const birthdayUsers = await userdb.find({ "birthday.tag": day, "birthday.monat": month });
+
+        guild.members.cache.forEach(async member => {
+            try {
+                    if (member.roles.cache.has(birthdayRole2)) {
+                        await member.roles.remove(birthdayRole2);
+                    }
+            } catch (removeError) {
+                console.error(`Fehler beim Entfernen der Rollen von Mitglied ${member.id}:`, removeError);
+            }
+        });
 
         if (birthdayUsers.length > 0) {
             const birthdayChannel = client.channels.cache.get("1243964646449483788");
@@ -327,6 +336,7 @@ cron.schedule('0 0 * * *', async () => {
                         if (age <= 18) roleId = '1199786765666500710';
                         else if (age > 18) roleId = '1199786814051979344';
                         const birthdayRole = await guild.roles.fetch(roleId);
+                        const birthdayRole2 = await guild.roles.fetch("1244945910262399046");
 
                         if (birthdayRole) {
                             await member.roles.add(birthdayRole);
@@ -335,7 +345,7 @@ cron.schedule('0 0 * * *', async () => {
                     } else {
                         birthdayUsersList.push(`${member}`);
                     }
-                    await member.roles.add(roleId);
+                    await member.roles.add(birthdayRole2);
                 } catch (fetchError) {
                     console.error(`Fehler beim Verarbeiten des Mitglieds mit ID ${user.userID}:`, fetchError);
                     continue;
