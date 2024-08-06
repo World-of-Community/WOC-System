@@ -65,12 +65,12 @@ module.exports = {
 
             case 'delete':
                 if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-                    return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
+                    return interaction.reply({ content: '> `❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
                 }
 
                 user = interaction.options.getUser('user');
                 if (!user) {
-                    return interaction.reply({ content: '`❌` » User wurde nicht gefunden.', ephemeral: true });
+                    return interaction.reply({ content: '> `❌` » User wurde nicht gefunden.', ephemeral: true });
                 }
 
                 try {
@@ -78,16 +78,16 @@ module.exports = {
                         { userID: user.id },
                         { $unset: { birthday: '' } }
                     );
-                    await interaction.reply({ content: '`✅` » Der Geburtstag wurde gelöscht.', ephemeral: true });
+                    await interaction.reply({ content: '> `✅` » Der Geburtstag wurde gelöscht.', ephemeral: true });
                 } catch (error) {
                     console.error(error);
-                    await interaction.reply({ content: '`❌` » Es gab einen Fehler beim Löschen des Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
+                    await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Löschen des Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
                 }
                 break;
 
             case 'change':
                 if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-                    return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
+                    return interaction.reply({ content: '> `❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
                 }
 
                 user = interaction.options.getUser('user');
@@ -96,11 +96,11 @@ module.exports = {
                 jahr = interaction.options.getInteger('jahr');
 
                 if (!user) {
-                    return interaction.reply({ content: '`❌` » User wurde nicht gefunden.', ephemeral: true });
+                    return interaction.reply({ content: '> `❌` » User wurde nicht gefunden.', ephemeral: true });
                 }
 
                 if (!isValidDate(tag, monat, jahr)) {
-                    return interaction.reply({ content: '`❌` » Bitte gib ein gültiges Datum ein.', ephemeral: true });
+                    return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum ein.', ephemeral: true });
                 }
 
                 try {
@@ -124,10 +124,10 @@ module.exports = {
                             { upsert: true, new: true }
                         );
                     }
-                    await interaction.reply({ content: '`✅` » Der Geburtstag wurde geändert.', ephemeral: true });
+                    await interaction.reply({ content: '> `✅` » Der Geburtstag wurde geändert.', ephemeral: true });
                 } catch (error) {
                     console.error(error);
-                    await interaction.reply({ content: '`❌` » Es gab einen Fehler beim Ändern des Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
+                    await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Ändern des Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
                 }
                 break;
         }

@@ -7,14 +7,14 @@ module.exports = {
       .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 
 async execute(interaction, client) {
-    if (interaction.channel.type !== ChannelType.PublicThread) return await interaction.reply({content: `\`❌\` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.`, ephemeral: true})
-    if (interaction.channel.parentId !== "1254340245772701747") return await interaction.reply({content: `\`❌\` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.`, ephemeral: true})
+    if (interaction.channel.type !== ChannelType.PublicThread) return await interaction.reply({content: `> \`❌\` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.`, ephemeral: true})
+    if (interaction.channel.parentId !== "1254340245772701747") return await interaction.reply({content: `> \`❌\` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.`, ephemeral: true})
         const message = await interaction.channel.fetchStarterMessage();
         const vorschlagsembed = message.embeds[0];
 
-        if (vorschlagsembed.color === "Green") return await interaction.reply({ content: `\`❌\` » Der Vorschlag wurde bereits akzeptiert.`, ephemeral: true });
-        if (vorschlagsembed.color === "Grey") return await interaction.reply({ content: `\`❌\` » Der Vorschlag wurde bereits in Planung gesetzt.`, ephemeral: true });
-        if (vorschlagsembed.color === "Red") return await interaction.reply({ content: `\`❌\` » Der Vorschlag wurde bereits abgelehnt.`, ephemeral: true });
+        if (vorschlagsembed.color === "Green") return await interaction.reply({ content: `> \`❌\` » Der Vorschlag wurde bereits akzeptiert.`, ephemeral: true });
+        if (vorschlagsembed.color === "Grey") return await interaction.reply({ content: `> \`❌\` » Der Vorschlag wurde bereits in Planung gesetzt.`, ephemeral: true });
+        if (vorschlagsembed.color === "Red") return await interaction.reply({ content: `> \`❌\` » Der Vorschlag wurde bereits abgelehnt.`, ephemeral: true });
         
 
         const accept = new ButtonBuilder()
@@ -40,6 +40,6 @@ async execute(interaction, client) {
   
         const row = new ActionRowBuilder().addComponents(accept, edit, duplicate, delice)
 
-        await interaction.reply({ content: `\`💡\` » Wähle eine Aktion aus.`, components: [row], ephemeral: true })
+        await interaction.reply({ content: `> \`💡\` » Wähle eine Aktion aus.`, components: [row], ephemeral: true })
     }
 };

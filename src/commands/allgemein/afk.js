@@ -18,9 +18,9 @@ module.exports = {
         const timestamp = Math.floor(interaction.createdTimestamp / 1000); // Zeitstempel im UNIX-Zeitformat
         const discordTimestamp = `<t:${timestamp}:R>`;
         const grund = await interaction.options.getString("grund") ?? afktexte[Math.floor(Math.random() * afktexte.length)];
-        const userData = await userdb.findOne({ userID: interaction.user.id })
-        if (!userData) { return await interaction.reply({ content: "No userdata found" }) }
-        if (userData.afk) { return await interaction.reply({ content: "You are already AFK" }) }
+        const userData = await userdb.findOne({ userID: interaction.user.id }, { upsert: true, new: true })
+        if (!userData) { return await interaction.reply({ content: "> `❌` » Fehler, Falls dieser Fehler sich wiederholt, Melde dies bitte im Support (<#819555839362072606>) ", ephemeral: true }) }
+        if (userData.afk) { return await interaction.reply({ content: "> `❌` » Du bist bereits AFK!", ephemeral: true }) }
         userData.afk = true
         userData.afkReason = grund
         userData.afkStamp = discordTimestamp
