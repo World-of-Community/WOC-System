@@ -70,7 +70,7 @@ let table = new AsciiTable()
 readCommands(path.resolve(__dirname, 'commands'), table);
 
 console.log(table.toString());
-console.log('-------------------------------------------');
+console.log('-----------------------------');
 
 // Load Events
 const eventsPath = path.join(__dirname, 'events');
