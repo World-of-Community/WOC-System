@@ -310,7 +310,7 @@ cron.schedule('0 0 * * *', async () => {
 
     try {
         const birthdayUsers = await userdb.find({ "birthday.tag": day, "birthday.monat": month });
-
+        const birthdayRole2 = await guild.roles.fetch("1244945910262399046");
         guild.members.cache.forEach(async member => {
             try {
                     if (member.roles.cache.has(birthdayRole2)) {
@@ -336,7 +336,6 @@ cron.schedule('0 0 * * *', async () => {
                         if (age <= 18) roleId = '1199786765666500710';
                         else if (age > 18) roleId = '1199786814051979344';
                         const birthdayRole = await guild.roles.fetch(roleId);
-                        const birthdayRole2 = await guild.roles.fetch("1244945910262399046");
 
                         if (birthdayRole) {
                             await member.roles.add(birthdayRole);
