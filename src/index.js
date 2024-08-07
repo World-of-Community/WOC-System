@@ -269,6 +269,8 @@ client.on('channelDelete', async (channel) => {
 client.on('messageCreate', async (message) => {
     if (!message.author || message.author.bot) return;
 
+    if(message.channelID === "1205936920866328576") return
+
     const MessageSendEmbed = new EmbedBuilder()
         .setTitle('`📨` | NACHRICHT GESENDET')
         .setDescription(`**${message.author.displayName}** hat eine Nachricht gesendet in ${message.channel}\n\n> Nachricht: ${message.content || '**Kein Inhalt**'}`)
@@ -280,6 +282,8 @@ client.on('messageCreate', async (message) => {
 
 client.on('messageDelete', async (message) => {
     if (!message.author || message.author.bot) return;
+
+    if(message.channelID === "1205936920866328576") return
 
     const MessageDeleteEmbed = new EmbedBuilder()
         .setTitle('`🗑️` | NACHRICHT GELÖSCHT')
