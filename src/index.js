@@ -410,9 +410,7 @@ setInterval( async () => {
         .then(async msg => {
             msg.crosspost()
         })
-        monitor.ping({state: 'complete'});    
-    } catch (error) {
-        monitor.ping({state: 'fail'});    
+    } catch (error) { 
     }
 }, 60000 * 240); // 4 Stunden in Millisekunden
 
