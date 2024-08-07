@@ -21,7 +21,7 @@ module.exports = {
         const uptimeEmbed = new EmbedBuilder()
             .setTitle('🤖 × Interessante Bot Statistiken')
             .setDescription(`» Hier siehst du ein paar Interessante Infos, die in speziellen Fällen auch sehr nützlich sein könnten.\n\n\`🔋\` » **Online** seit \`${uptime}\`\n\`📡\` » Meine **Reaktionszeit** liegt bei: \`${ping}\`ms`)
-            .setThumbnail('https://cdn.discordapp.com/attachments/1145779055644393592/1151073428099575858/WOC_Orange.png')
+            .setThumbnail('https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b4fba8&is=66b3aa28&hm=0c61d77ee96136f6dfe2a1b717736edc59d09666f4cea2948d3ddb13c1378ec1&')
             .setColor('Orange')
             .setFooter({ text: `${client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
