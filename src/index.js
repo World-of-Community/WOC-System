@@ -219,17 +219,27 @@ client.on('channelUpdate', async (oldChannel, newChannel) => {
 
         let description = `\`📂\` » **Informationen:**\n<:text3:1228332174911213638>**Name:** \`${newChannel.name}\` (<#${newChannel.id}>)\n<:text2:1228330539941888011>**Kanaltyp:** \`${type}\`\n`;
 
+        let changesDetected = false;
+
         if (oldChannel.name !== newChannel.name) {
             description += `\n\`✒️\` » **Namensänderung:**\n<:text3:1228332174911213638>**Alt:** \`${oldChannel.name}\`\n<:text2:1228330539941888011>**Neu:** \`${newChannel.name}\``;
+            changesDetected = true;
         }
         if (oldChannel.nsfw !== newChannel.nsfw) {
             description += `\n\`🔞\` » **Altersbegrenzung:**\n<:text2:1228330539941888011>${newChannel.nsfw ? "<:on:1228350947898687508>" : "<:off:1228350962205200475>"}`;
+            changesDetected = true;
         }
         if (oldChannel.topic !== newChannel.topic) {
             description += `\n\`🏝️\` » **Beschreibungsänderung:**\n<:text3:1228332174911213638>**Alt:** \`${oldChannel.topic || "❌"}\`\n<:text2:1228330539941888011>**Neu:** \`${newChannel.topic || "❌"}\``;
+            changesDetected = true;
         }
         if (oldChannel.rateLimitPerUser !== newChannel.rateLimitPerUser) {
             description += `\n\`🦥\` » **Slowmode:**\n<:text3:1228332174911213638>**Alt:** ${oldChannel.rateLimitPerUser || "<:off:1228350962205200475>"}\n<:text2:1228330539941888011>**Neu:** ${newChannel.rateLimitPerUser || "<:off:1228350962205200475>"}`;
+            changesDetected = true;
+        }
+
+        if (!changesDetected) {
+            return;
         }
 
         const EditingEmbed = new EmbedBuilder()
@@ -238,7 +248,6 @@ client.on('channelUpdate', async (oldChannel, newChannel) => {
             .setDescription(description)
             .setColor('Orange')
             .setTimestamp();
-
             await sendLog(ThreadIDs.CHANNEL, EditingEmbed)
     })
 });
@@ -284,6 +293,8 @@ client.on('messageDelete', async (message) => {
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (!newMessage.author || newMessage.author.bot) return;
+
+    if (oldMessage.content === newMessage.content) return; //Prüfen ob der Inhalt der Nachricht sich verändert hat
 
     const MessageEditEmbed = new EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')
