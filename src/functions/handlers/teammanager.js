@@ -87,10 +87,12 @@ module.exports = (client) => {
         });
 
         client.on('interactionCreate', async interaction => {
+            if(interaction.channelID !== "877446081036836884") return
             if (!interaction.isButton()) return;
 
             const userId = interaction.user.id;
             const customId = interaction.customId;
+        
 
             const dateMatch = interaction.message.embeds[0].description.match(/Datum:\s*(.*)\n/);
             if (!dateMatch) {

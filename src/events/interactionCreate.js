@@ -214,39 +214,37 @@ module.exports = {
             await interaction.reply({ embeds: [seite2Embed], components: [regelButton], ephemeral: true })
         }
 
+        // Verifizierung
         if (interaction.customId === 'verifizieren') {
-            const rndNumber = Math.floor(Math.random() * 9000) + 1000; 
-            const verifyNumber = rndNumber.toString();
+            const rndNumber = Math.floor(Math.random() * 999) + 1000
+            let verifyNumber = rndNumber.toString()
             const verifyModal = new ModalBuilder()
                 .setTitle('Verifiziere dich!')
                 .setCustomId('verify-modal');
-        
+
             const verifyInput = new TextInputBuilder()
                 .setCustomId('verifyInput')
                 .setLabel(`Dein Verifizierungscode: ${verifyNumber}`)
                 .setMinLength(4)
-                .setMaxLength(4)
                 .setStyle(TextInputStyle.Short)
                 .setRequired(true);
-        
+
             const row = new ActionRowBuilder().addComponents(verifyInput);
             verifyModal.addComponents(row);
-        
-            await interaction.showModal(verifyModal);
-        
-            const filter = inter => inter.customId === 'verify-modal' && inter.user.id === interaction.user.id;
-        
-            interaction.client.once('interactionCreate', async inter => {
-                if (!filter(inter)) return;
-        
-                const input = inter.fields.getTextInputValue('verifyInput');
-        
-                if (input !== verifyNumber) {
-                    await inter.reply({ content: '> `❌` » Dieser Verifizierungscode war falsch, Bitte versuche es erneut.', ephemeral: true });
-                } else {
-                    await inter.member.roles.add(config.verifyRolle);
-                    await inter.reply({ content: `> \`✅\` » Die Verifizierung war **erfolgreich**, du hast die <@&${config.verifyRolle}>-Rolle bekommen. Viel Spaß auf dem Server.`, ephemeral: true });
-                }
+            await interaction.showModal(verifyModal).then(async msg => {
+                await interaction.client.once('interactionCreate', async (inter) => {
+                    if (inter.customId === 'verify-modal') {
+                        const input = await inter.fields.getTextInputValue('verifyInput')
+
+                        if (input !== verifyNumber) {
+                            await await inter.reply({ content: '> \`❌\` » Dieser Verifizierungscode war falsch, Bitte versuche es erneut.', ephemeral: true })
+                        }
+                        if (input === verifyNumber) {
+                            await inter.member.roles.add(config.verifyRolle)
+                            await await inter.reply({ content: `> \`✅\` » Die Verifizierung war **erfolgreich**, du hast die <@&${config.verifyRolle}>-Rolle bekommen. Viel Spaß auf dem Server.`, ephemeral: true })
+                        }
+                    }
+                });
             });
         }
 
