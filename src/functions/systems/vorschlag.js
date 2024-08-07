@@ -44,8 +44,8 @@ module.exports = (client) => {
                     .addFields({ name: `\`📚\` - **Kategorie**`, value: `» ${matchedTagText}`, inline: true })
                     .addFields({ name: `\`📊\` - **Nützlich?**`, value: `» Votes: \`0\` <a:upvote:1008781495055429672>`, inline: true })
                     .addFields({ name: `\`💡\` - **Vorschläge**`, value: `> Erstelle einen Post um deine eigenen Vorschlag einzureichen` })
-                    .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1261416102228004944/Idee.png?ex=6692e0ca&is=66918f4a&hm=253aca5718a07aba974d34a6430b06fcff86ecc43932cb449cf59700258482dc&')
-                    .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909633417936947/WOC_Banner_Server_Idee_Eingereicht.jpg?ex=66925240&is=669100c0&hm=7dcfdfba7b0dffef2fcced49cee11a8c924a5754870a84d8e4ea6438b1fd3550&')
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1269340269246025872/Idee.png?ex=66b4fabf&is=66b3a93f&hm=962b53d930a743aee4a4836af336ae3aa912520db34bf6d1467d73a43fe3b3c0&')
+                    .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340833887424552/WOC_Banner_Server_Idee_Eingereicht.png?ex=66b4fb46&is=66b3a9c6&hm=ba66896d82bb10487f8e52a294cf2b259de2bfc54bf08bc25a68054496933959&')
                     .setColor("Orange")
                     .setFooter({ text: "» Eingereicht von " + member.user.username + " » " + member.id, iconURL: member.displayAvatarURL({ dynamic: true })});
         
@@ -196,8 +196,8 @@ module.exports = (client) => {
                                         }
                                     )
                                     .setColor("Green")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1266797786519834815/akzeptiert.png?ex=66a674e0&is=66a52360&hm=c3d4fbd4e80070d4a858eee6d938117126b1eb6a516e43de61921b11d5068c1b&')
-                                    .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909598311616523/WOC_Banner_Server_Idee_Akzeptiert.jpg?ex=6698e9b8&is=66979838&hm=23974e4bb3171d7bd0367898d8c7bddfac270a1610395fd5ea9b524c223f1e06&')
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1269340142326513705/akzeptiert.png?ex=66b4faa1&is=66b3a921&hm=de05f1242d66e1bb6aba76b120f69f5fe4afa81def74bc60f3a741d294c4d688&')
+                                    .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340862265950219/WOC_Banner_Server_Idee_Akzeptiert.png?ex=66b4fb4c&is=66b3a9cc&hm=7ed09aa66a49748f9ae9708fa5750baefcdbdd087545792428ce5095c0c17353&')
                                     .setFooter(vorschlagsembed.footer);
 
                                     
@@ -271,8 +271,8 @@ module.exports = (client) => {
                                         }
                                     )
                                     .setColor("Orange")
-                                    .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1266798100521947186/bearbeitung.png?ex=66a6752b&is=66a523ab&hm=82c961bae0798cdc88b878c80913c9ee536d882f2105df9dd7b613d7c8d20c4f&')
-                                    .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909673905688618/WOC_Banner_Server_Idee_in_Planung.jpg?ex=6698e9ca&is=6697984a&hm=230bbba748a97a21eed858e66addea033043b4d3ad7beaeda06c19917f5e75c5&')
+                                    .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1269340099875835975/bearbeitung.png?ex=66b4fa97&is=66b3a917&hm=d6fa6354b16fa6bc5aa0293d461635fb4fb46cc535e4393d67e506730be358fd&')
+                                    .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340799674351796/WOC_Banner_Server_Idee_in_Planung.png?ex=66b4fb3d&is=66b3a9bd&hm=42c46c93749ec918420bdfe758b8f8409b86836645671fadbeeb562fb2540a32&')
                                     .setFooter(vorschlagsembed.footer);
                                     await message.edit({ embeds: [embed], components: [] });
                                 
@@ -298,7 +298,7 @@ module.exports = (client) => {
                 if(interaction.customId === "vorschlag_delice") {
                     const modal = new ModalBuilder()
                     .setCustomId("delicereason")
-                    .setTitle("🔗 | Ablehnen");
+                    .setTitle("❌ | Ablehnen");
               
                   const textInputAccept = new TextInputBuilder()
                     .setCustomId("grund")
@@ -343,8 +343,8 @@ module.exports = (client) => {
                             }
                         )
                         .setColor("Red")
-                        .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1266798151205916823/abgelehnt.png?ex=66a67537&is=66a523b7&hm=0865929b95ab2108a36a74b83941b319b9606da537cff4aa27caca412b986513&')
-                        .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1231909574089641984/WOC_Banner_Server_Idee_Abgelehnt.jpg?ex=6698e9b2&is=66979832&hm=fa930b40b3a36a9bc40da453d0d5e7ad94ea977d95420e06d8b5ceddb222cf31&')
+                        .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1269339986394878125/abgelehnt.png?ex=66b4fa7b&is=66b3a8fb&hm=59207d85f9b5317312d6d2bd6eba5f79af2f2f62fc9b96babb944cc8d293acc5&')
+                        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340888048341003/WOC_Banner_Server_Idee_Abgelehnt.png?ex=66b4fb52&is=66b3a9d2&hm=443627b29e194bba0081e2443646fb757573a435b40af224b44bf5f6956caccf&')
                         .setFooter(vorschlagsembed.footer);
                         await message.edit({ embeds: [embed], components: [] });
                     
@@ -397,8 +397,8 @@ module.exports = (client) => {
                         }
                     )
                     .setColor("Yellow")
-                    .setThumbnail('https://cdn.discordapp.com/attachments/815983648574275584/1266798125348294850/link.png?ex=66a67531&is=66a523b1&hm=baf103511bbc0bdce38ad867f2e5788d71422302a427917a33ed43bca3c36dcc&')
-                    .setImage('https://cdn.discordapp.com/attachments/967522063944392704/1266802824151564339/WOC_Banner_Server_Idee_Doppelt.jpg?ex=66a67991&is=66a52811&hm=df4bbf126d07e3ed0e6defcbaf650ccaad10aa4b6d9e7b6d282b0831c29be6ea&')
+                    .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1269340060579270756/link.png?ex=66b4fa8d&is=66b3a90d&hm=e7c7a2b53b0bde6ae01f01d3732cc59132059c8a025286c1f892cbfb7139449c&')
+                    .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340319288393800/WOC_Banner_Server_Idee_Doppelt.png?ex=66b4facb&is=66b3a94b&hm=8ab1aff62cd7b7ffe20845e056bd3fa6c08b2ed92383d58d98204e2d9ff424c7&')
                     .setFooter(vorschlagsembed.footer);
 
                     
