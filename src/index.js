@@ -562,24 +562,6 @@ async function sendLog(threadID, embed) {
     await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
 }
 
-const embed1 = new EmbedBuilder()
-    .setTitle('`💕`-LICH WILLKOMMEN IM SERVER-IDEEN SYSTEM!')
-    .setColor("Orange")
-    .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339874029473825/WOC_Banner_Information_Server_Ideen.png?ex=66b5a321&is=66b451a1&hm=a8a489e834b752151e3221131bef1c4dbaba90ff632902892310d34fc8c5858e&');
-
-    const embed2 = new EmbedBuilder()
-    .setTitle('<a:pin:1119708768326914100> - INFORMATIONEN (FAQ)')
-    .setColor("Orange")
-    .setDescription('» In diesem Kanal kannst du **eigene Posts** für **deine kreative Idee** erstellen, um World Of Community zu unterstützen. Wir bedanken uns bei jeder Idee - ihr helft uns damit enorm! `💕`\n\n> `❓` - **__WIE REICHE ICH EINE SERVER-IDEE EIN?__**\n» Du kannst **zuerst nach deiner Idee suchen**, um zu überprüfen ob Sie jemand schon mal Eingereicht hat. Tippe oben bei der Suche **deine Idee** ein. Wenn du nichts dazu finden kannst, dann füge eine **Beschreibung** hinzu und klicke anschließend auf \"Post\".\n\n> `❓` - **__WELCHEN TAG MUSS ICH WÄHLEN?__**\n» Du musst von deiner Idee oder deinem Vorschlag **einen Tag wählen**. Wähle den Tag, der **deine Idee am besten beschreibt**. Hier sind ein paar Beispiele dazu:\n\n𑁉 **Problem:** `Schreibfehler` | **Tag:** <a:discordbloblove:855482395325890570> `Discord-Server`\n𑁉 **Problem:** `Systemfehler` | **Tag:** <a:MinecraftGrassBlock:872034424181637171> `Minecraft-Server`\n𑁉 **Problem:** `DC-Link abgelaufen` | **Tag:** <a:wocbook:1178664700469317692> `Webseite`\n𑁉 **Problem:** `Bug gefunden` | **Tag:** <a:System:915211580805881876> `WOC-System Bot`\n\n> `📌` - **__SONST NOCH FRAGEN?__**\n» Solltest du noch **Fragen** haben, zögere nicht und Öffne ein Ticket in ⁠<#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.')
-    .setFooter({ text: '» Wir danken jedem für seine einzigartige Idee!', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=66a8b123&is=66a75fa3&hm=c1153e75f4971748e8ff2acb4d7f4e86572a2c976bc4661723af16163c0984a6&' })
-    .setThumbnail('https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b5a468&is=66b452e8&hm=6849696a3f0e4fe5c35349cbe5d38f6a17c4d83ab03eeabe704f274ede9c7220&');
-
-    const channel = client.channels.cache.get("1254340245772701747")
-    channel.threads.create({
-      name: 'Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Vorschlag System' })
-    .then(threadChannel => console.log(threadChannel))
-    .catch(console.error);
-    
 // Bot Start
 client.login(config.token)
 
