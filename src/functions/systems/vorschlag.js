@@ -426,9 +426,9 @@ module.exports = (client) => {
 
     }
 }
-    /*
+
     const embed1 = new EmbedBuilder()
-    .setTitle('`❤️`-LICH WILLKOMMEN IM SERVER-IDEEN SYSTEM!')
+    .setTitle('`💕`-LICH WILLKOMMEN IM SERVER-IDEEN SYSTEM!')
     .setColor("Orange")
     .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339874029473825/WOC_Banner_Information_Server_Ideen.png?ex=66b5a321&is=66b451a1&hm=a8a489e834b752151e3221131bef1c4dbaba90ff632902892310d34fc8c5858e&');
 
@@ -444,4 +444,3 @@ module.exports = (client) => {
       name: 'Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Vorschlag System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
-    /* /*/
