@@ -430,7 +430,7 @@ module.exports = (client) => {
     const embed1 = new EmbedBuilder()
     .setTitle('`❤️`-LICH WILLKOMMEN IM SERVER-IDEEN SYSTEM!')
     .setColor("Orange")
-    .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1267143224351391834/WOC_Banner_Information_Server_Ideen.jpg?ex=66a85f57&is=66a70dd7&hm=cf7ada30ad821db52bcdacd6dd8db274c328ec9ea4a44002a7b7e8c66f9ebce0');
+    .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339874029473825/WOC_Banner_Information_Server_Ideen.png?ex=66b5a321&is=66b451a1&hm=a8a489e834b752151e3221131bef1c4dbaba90ff632902892310d34fc8c5858e&');
 
     const embed2 = new EmbedBuilder()
     .setTitle('<a:pin:1119708768326914100> - INFORMATIONEN (FAQ)')
