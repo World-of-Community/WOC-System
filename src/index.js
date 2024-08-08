@@ -554,7 +554,6 @@ process.on('unhandledRejection', error => {
     console.log(error)
 });
 
-
 async function sendLog(threadID, embed) {
     const serverCatch = client.guilds.cache.get("815919809379172354")
     const logchannel = await serverCatch.channels.cache.get("1263436406655680513");
@@ -564,7 +563,6 @@ async function sendLog(threadID, embed) {
 
 // Bot Start
 client.login(config.token)
-
 
 /*
     const channel = client.channels.cache.get("1263436406655680513")
