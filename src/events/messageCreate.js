@@ -25,7 +25,7 @@ module.exports = {
 
         if (hasTeamMemberMention) {
         // Sende eine Nachricht, wenn ein Teammitglied erwähnt wurde
-        message.reply('Bitte erwähne oder pinge keine Teammitglieder, öffne ein Ticket im <#819555839362072606> bei Fragen oder Problemen.')
+        message.reply({ text: 'Bitte erwähne oder Pinge keine Teammitglieder, öffne ein Ticket im <#819555839362072606> bei Fragen oder Problemen.', ephemeral: true })
             .then(sentMessage => {
                 // Lösche die Nachricht nach 5 Sekunden
                 setTimeout(() => {
