@@ -257,10 +257,10 @@ module.exports = {
                         
                         if(sub === "aktivieren") {
                             await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $pull: { deactivated: `${system}` } })
-                            await interaction.reply({ content: `> \`🟢\` » Das ${system} System wurde **erfolgreich** aktiviert.`, ephemeral: true })
+                            await interaction.reply({ content: `> \`🟢\` » Das \`${system}\` System wurde **erfolgreich** __aktiviert.__`, ephemeral: true })
                         } else if(sub === "deaktivieren") {
                             await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { deactivated: `${system}` } })
-                            await interaction.reply({ content: `> \`🔴\` » Das ${system} System wurde **erfolgreich** deaktiviert.`, ephemeral: true })
+                            await interaction.reply({ content: `> \`🔴\` » Das \`${system}\` System wurde **erfolgreich** __deaktiviert.__`, ephemeral: true })
                         }
                         break;
 
