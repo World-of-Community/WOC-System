@@ -21,7 +21,6 @@ module.exports = {
             'https://tenor.com/de/view/yikes-howard-gayle-saturday-night-live-awkward-cringe-gif-19311772'
         ]
 
-        const mitglied = await interaction.options.getUser('user')
         const gif = cringegifs[Math.floor(Math.random() * cringegifs.length)]
         
         await interaction.reply({

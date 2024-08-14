@@ -23,7 +23,6 @@ module.exports = {
             'https://tenor.com/de/view/laverne-and-shirley-funny-cool-gif-27491810'
         ]
 
-        const mitglied = await interaction.options.getUser('user')
         const gif = huggifs[Math.floor(Math.random() * huggifs.length)]
         
         await interaction.reply({
