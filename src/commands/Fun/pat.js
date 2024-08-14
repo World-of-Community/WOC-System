@@ -11,10 +11,7 @@ module.exports = {
 
         // Überprüfen, ob der Benutzer versucht, sich selbst zu streicheln
         if (mitglied.id === interaction.user.id) {
-            return interaction.reply({
-                content: `🫂 | ${interaction.user} streichelt sich... selbst? <a:ehm:968876193828982854>`,
-                ephemeral: true
-            });
+            return interaction.reply({ content: `🫂 | ${interaction.user} streichelt sich... selbst? <a:ehm:968876193828982854>` });
         }
         
         const patgifs = [
@@ -29,7 +26,7 @@ module.exports = {
             content: `${mitglied}`,
             embeds: [
                 new EmbedBuilder()
-                    .setDescription(`**${interaction.user}** streichelt **${mitglied}**. Wie niedlich!`)
+                    .setDescription(`**${interaction.user}** streichelt **${mitglied}**. Wie niedlich! <a:pet_WOC:1120286364626333706>`)
                     .setImage(gif)
                     .setColor('Purple')
                     .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: interaction.guild.iconURL({ dynamic: true }) })

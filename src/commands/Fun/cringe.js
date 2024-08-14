@@ -4,9 +4,15 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('cringe')
         .setDescription('» Zeig jemanden, das er sich peinlich verhält. 😑')
-        .addUserOption(option => option.setName('user').setDescription('Welcher User hat sich blamiert?').setRequired(true)),
+        .addUserOption(option => option.setName('user').setDescription('Hat sich blamiert? Verdammt ich habs verpasst!').setRequired(true)),
         
     async execute(interaction) {
+        const mitglied = await interaction.options.getUser('user')
+
+        // Überprüfen, ob der Benutzer versucht, sich selbst zu auszulachen
+        if (mitglied.id === interaction.user.id) {
+            return interaction.reply({ content: "> `❌` - **Selbstscham**: Du schämst dich für dich selbst. Das tut mir leid. <:Cowboy:1273154946308636702>" });
+        }
         
         const cringegifs = [
             'https://tenor.com/de/view/homer-simpson-goodbye-bye-disappears-hide-in-the-bushes-gif-3394899.gif',

@@ -3,10 +3,16 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('hug')
-        .setDescription('» Umarme einen Freund von dir. 🤗')
+        .setDescription('» Umarme einen Freund von dir. Keine Fremden, Weirdo. 🤗')
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du umarmen?').setRequired(true)),
         
     async execute(interaction) {
+        const mitglied = await interaction.options.getUser('user')
+
+        // Überprüfen, ob der Benutzer versucht, sich selbst zu auszulachen
+        if (mitglied.id === interaction.user.id) {
+            return interaction.reply({ content: "> `✅` - **Keine Umarmung?** Will dich niemand umarmen? Na komm, ich umarme dich 🤗" });
+        }
         
         const huggifs = [
             'https://tenor.com/de/view/so-cute-aww-gif-26434851.gif',
