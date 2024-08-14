@@ -7,6 +7,15 @@ module.exports = {
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du streicheln?').setRequired(true)),
         
     async execute(interaction) {
+        const mitglied = await interaction.options.getUser('user')
+
+        // Überprüfen, ob der Benutzer versucht, sich selbst zu streicheln
+        if (mitglied.id === interaction.user.id) {
+            return interaction.reply({
+                content: `🫂 | ${interaction.user} streichelt sich... selbst? <a:ehm:968876193828982854>`,
+                ephemeral: true
+            });
+        }
         
         const patgifs = [
             'https://tenor.com/de/view/bunny-gif-4514864.gif',
@@ -14,7 +23,6 @@ module.exports = {
             'https://tenor.com/de/view/big-hero6-baymax-there-there-patting-head-pat-head-gif-4086973.gif'
         ]
         
-        const mitglied = await interaction.options.getUser('user')
         const gif = patgifs[Math.floor(Math.random() * patgifs.length)]
         
         await interaction.reply({
