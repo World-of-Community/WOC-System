@@ -68,7 +68,7 @@ module.exports = (client) => {
                         .setFooter({ text: `» Erfolg freigeschaltet auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
                         .setTimestamp();
 
-                        await member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [oneYearEmbed] });
+                        member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [oneYearEmbed] });
                         
                         console.log(`Added role to ${member.user.displayName}`);
                     }).catch(console.error);
