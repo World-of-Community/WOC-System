@@ -59,7 +59,18 @@ module.exports = (client) => {
             await members.forEach(member => {
               if (!member.roles.cache.some(role => role.id === '972193356333604874') && member.joinedAt <= oneYearAgo && !member.bot) {
                     member.roles.add(roletoAdd).then(() => {
-                        console.log(`Added role to ${member.user.tag}`);
+                        
+                        const oneYearEmbed = new EmbedBuilder()
+                        .setTitle("<a:checkgreen:1154702583202578472> 𑁉 ERFOLG ERHALTEN")
+                        .setDescription('`💕`**-lichen Glückwunsch zu diesem Erfolg!** Das war bestimmt ein steiniger Weg, aber endlich hast du dir diesen Erfolg mehr als verdient!\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💖〢 1 Jahr Server-Mitglied`\n<:PfeilBlau:1119711275014955080> Stell dir vor, heute vor exakt einem Jahr bist du unserer Community beigetreten! Dafür wollten wir uns bei dir bedanken. ❤️')
+                        .setColor("Green")
+                        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&')
+                        .setFooter({ text: `» Erfolg freigeschaltet auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+                        .setTimestamp();
+
+                        await member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [oneYearEmbed] });
+                        
+                        console.log(`Added role to ${member.user.displayName}`);
                     }).catch(console.error);
                 }
             });
@@ -96,7 +107,7 @@ module.exports = (client) => {
               .setTitle('<a:checkgreen:1154702583202578472> 𑁉 ERFOLG ERHALTEN')
               .setDescription('» `💕`**-lichen Glückwunsch zu diesem Erfolg!**\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💡〢 Informant (10 Server-Ideen)`\n<:PfeilBlau:1119711275014955080> Vielen Dank dass du den Server und uns dabei unterstützt mit deinen Kreativen Ideen!\n\n<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: https://discord.com/channels/815919809379172354/872063101640532008')
               .setColor('Green')
-              .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1267143249248649297/WOC_Banner_Server_Erfolg_Erhalten.jpg?ex=66a7b69d&is=66a6651d&hm=c96a175b36c826801303d40d10c22d1f7f25136616574a8f66edfc42d8d520f0&')
+              .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&')
               .setFooter({ text: `» Erfolg freigeschaltet auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
               .setTimestamp();
           user.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] });
