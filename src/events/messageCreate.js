@@ -8,6 +8,8 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {        
         if(!message.guild) return
+        const file = fs.readFileSync('src/json/config.json', 'utf-8');
+        const config = JSON.parse(file);
         if (message.channel.id === '1250047970116636756' && !message.user.id === "1020023299448786955") {
             try {
                 await message.react('<a:wocheartbeat:1250054562912538724>');
@@ -36,8 +38,6 @@ module.exports = {
     }
 
         if (!message.author.bot) { 
-        const file = fs.readFileSync('src/json/config.json', 'utf-8');
-        const config = JSON.parse(file);
         
         const uD = await userdb.findOne({ userID: message.author.id });
         if (uD) {
