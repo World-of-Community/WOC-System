@@ -28,6 +28,10 @@ module.exports = (client) => {
                     try {
                         await message.reply({
                             content: `> \`❗\` » \`${user.displayName}\` ist derzeit im Urlaub und daher nicht erreichbar. ${urlaubMessageUrl}`
+                        }).then(sentMessage => {
+                            setTimeout(() => {
+                                sentMessage.delete().catch(console.error);
+                            }, 5000); 
                         });
                     } catch (error) {
                         console.error('Fehler beim Senden der Antwort:', error);
