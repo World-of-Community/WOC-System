@@ -26,7 +26,7 @@ module.exports = {
         const mentions = message.mentions.members;
         const hasTeamMemberMention = mentions.some((member) => member.roles.cache.some((role) => role.id === '820658664536145940'));
 
-        if (hasTeamMemberMention && message.type !== "REPLY") {
+        if (hasTeamMemberMention &&  !message.reference) {
         message.reply('Bitte erwähne oder Pinge keine Teammitglieder, öffne ein Ticket im <#819555839362072606> bei Fragen oder Problemen.')
             .then(sentMessage => {
                 setTimeout(() => {
