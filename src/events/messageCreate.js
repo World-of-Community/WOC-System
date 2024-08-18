@@ -21,12 +21,12 @@ module.exports = {
         if (!message.author.bot) {
 
         const authorHasTeamRole = message.member.roles.cache.some((role) => role.id === '820658664536145940');
-        if (authorHasTeamRole) return;
+       // if (authorHasTeamRole) return;
 
         const mentions = message.mentions.members;
         const hasTeamMemberMention = mentions.some((member) => member.roles.cache.some((role) => role.id === '820658664536145940'));
 
-        if (hasTeamMemberMention) {
+        if (hasTeamMemberMention && message.type !== "REPLY") {
         message.reply('Bitte erwähne oder Pinge keine Teammitglieder, öffne ein Ticket im <#819555839362072606> bei Fragen oder Problemen.')
             .then(sentMessage => {
                 setTimeout(() => {
