@@ -16,26 +16,26 @@ module.exports = {
             }
         }
 
-        // Überprüfe, ob die Nachricht von einem Bot gesendet wurde
-        if (message.author.bot) return;
+        if (!message.author.bot) {
 
-        // Überprüfe, ob in der Nachricht Teammitglieder erwähnt werden
+        const authorHasTeamRole = message.member.roles.cache.some((role) => role.id === '820658664536145940');
+        if (authorHasTeamRole) return;
+
         const mentions = message.mentions.members;
         const hasTeamMemberMention = mentions.some((member) => member.roles.cache.some((role) => role.id === '820658664536145940'));
 
         if (hasTeamMemberMention) {
-        // Sende eine Nachricht, wenn ein Teammitglied erwähnt wurde
         message.reply('Bitte erwähne oder Pinge keine Teammitglieder, öffne ein Ticket im <#819555839362072606> bei Fragen oder Problemen.')
             .then(sentMessage => {
-                // Lösche die Nachricht nach 5 Sekunden
                 setTimeout(() => {
                     sentMessage.delete().catch(console.error);
                 }, 5000);
             })
             .catch(console.error);
         }
+    }
 
-        if (message.author.bot) { return }
+        if (!message.author.bot) { 
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
         
@@ -57,6 +57,7 @@ module.exports = {
                 }, 5000)
 
                 await message.member.setNickname(`${message.member.displayName.replace("AFK | ", "")}`).catch((err) => { })
+            }
             }
         }
 
