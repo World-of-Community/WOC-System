@@ -32,12 +32,12 @@ module.exports = {
         if (isStreaming) {
             if (!member.roles.cache.has(streamer_role.id)) {
                 await member.roles.add(streamer_role);
-                console.log(`Rolle hinzugefügt zu ${member.user.displayName} (${member.user.username})`);
+                console.log(`Streamer-Rolle hinzugefügt zu ${member.user.displayName} (${member.user.username})`);
             }
         } else {
             if (member.roles.cache.has(streamer_role.id)) {
                 await member.roles.remove(streamer_role);
-                console.log(`Rolle entfernt von ${member.user.displayName} (${member.user.username})`);
+                console.log(`Streamer-Rolle entfernt von ${member.user.displayName} (${member.user.username})`);
             }
         }
     }
