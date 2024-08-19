@@ -36,7 +36,7 @@ module.exports = {
             `<a:Join:978633410992021524> **Danke dass du uns eine Chance gibst,** ${member} (\`#${member.guild.memberCount}\`) **Willkommen!** <a:winken:1086560167442796544>`,
             `<a:Join:978633410992021524> **Wir begrüßen** ${member} (\`#${member.guild.memberCount}\`) **in der Community** <a:winken:1086560167442796544>`,
             `<a:Join:978633410992021524> **Diese Entscheidung war kein Fehler,** ${member} (\`#${member.guild.memberCount}\`) **- Willkommen!** <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> **Schön, das du da bist,** ${member}. (\`#${member.guild.memberCount}\`) <a:winken:1086560167442796544>`
+            `<a:Join:978633410992021524> **Schön, dass du da bist,** ${member}. (\`#${member.guild.memberCount}\`) <a:winken:1086560167442796544>`
         ]
         const rndContent = Math.floor(Math.random() * contents.length)
 
