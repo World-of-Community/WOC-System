@@ -37,7 +37,7 @@ module.exports = {
     }
     console.log("Verbunden mit Discord");
 
-    // Server Ideen Embed Platz
+    // Server Ideen Embed Information Platz
 
     // RSS Feed
     setInterval(async () => {
