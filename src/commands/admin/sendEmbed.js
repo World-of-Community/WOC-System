@@ -95,7 +95,7 @@ module.exports = {
             const partnerEmbed = new EmbedBuilder()
                 .setDescription('# `👥` - **SO WIRST DU EIN PARTNER!**\nEin **Server-Partner** von uns zu sein ist eine **einmalige Möglichkeit**, um eine **riesige Auswahl an Usern** zu erreichen.\n\n# `🔥` ᕁ **WAS SIND DIE BEDINGUNGEN?**\n\n<:Pfeil:1119709908540076124> Um ein Partner zu werden, musst du die **unteren Voraussetzungen** erfüllen, damit du dich bewerben kannst.\n\n- `👥` » Mindestens **100 Server-Mitglieder** besitzen!\n- `💬` » Hält <#815922286502346773> und die **[Discord ToS](https://discord.com/terms)** ein!\n- `💖` » Ist ein **vollständiger deutscher Discord-Server**!\n- `📢` » Muss unserem <#1177536720229650442> Kanal **folgen**!\n# `📡` ᕁ **WAS SIND DIE VORTEILE?**\n<:Pfeil:1119709908540076124> Wir veranstalten regelmäßig Events um die Server unserer Partner noch etwas bekannter zu machen.')
                 .setColor('Blurple')
-                .setImage('https://cdn.discordapp.com/attachments/815983648574275584/1230394438497603624/WOC_Partner_werden_Banner.jpg?ex=6633291d&is=6620b41d&hm=6215f23decf0d736fa27dfd023943667d78792afbab6fe67ee44631bf62a430a&')
+                .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341195310469200/WOC_Partner_werden_Banner.png?ex=66c5765c&is=66c424dc&hm=32f98edaa2aa32418c879199d7fe5f03562fbace9b105396d6df475005cf4674&')
 
             const partnerButton = new ActionRowBuilder()
                 .addComponents(
