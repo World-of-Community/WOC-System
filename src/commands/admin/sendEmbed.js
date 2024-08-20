@@ -5,7 +5,7 @@ module.exports = {
         .setName("send-embed")
         .setDescription('» Hier können die verschienden Embeds gesendet werden. 📋')
         .addStringOption(option => option.setName('embed').setDescription('Welches Embed?').setRequired(true)
-        .addChoices({ name: 'Ränge Info', value: 'ränge-info' }, { name: 'Regelwerk', value: 'regelwerk' }, { name: 'Partner', value: 'partner' }))
+        .addChoices({ name: 'Ränge Info (Rollen Info)', value: 'ränge-info' }, { name: 'Regelwerk (Server-regeln)', value: 'regelwerk' }, { name: 'Partner (Partner werden)', value: 'partner' }))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
