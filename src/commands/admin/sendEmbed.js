@@ -12,7 +12,7 @@ module.exports = {
         const embedType = interaction.options.getString('embed');
 
         if (embedType === 'ränge-info') {
-            const channel = message.guild.channels.cache.get("872063101640532008"); // Channel ID
+            const channel = interaction.guild.channels.cache.get("872063101640532008"); // Channel ID
             const msg = await channel.messages.fetch("1260234136665194567"); // Nachricht ID
 
             const rängeEmbed = new EmbedBuilder()
@@ -69,7 +69,7 @@ module.exports = {
             await msg.edit({ embeds: [rängeEmbed], components: [rängeMenu] })
 
         } else if (embedType === 'regelwerk') {
-            const channel = message.guild.channels.cache.get("815922286502346773"); // Channel ID
+            const channel = interaction.guild.channels.cache.get("815922286502346773"); // Channel ID
             const msg = await channel.messages.fetch("1151068177845977148"); // Nachricht ID
 
             const regelwerkEmbed = new EmbedBuilder()
@@ -89,7 +89,7 @@ module.exports = {
             await msg.edit({ embeds: [regelwerkEmbed], components: [regelButton] })
 
         } else if (embedType === 'partner') {
-            const channel = message.guild.channels.cache.get("1172819623935221810"); // Channel ID
+            const channel = interaction.guild.channels.cache.get("1172819623935221810"); // Channel ID
             const msg = await channel.messages.fetch("1187070677073801268"); // Nachricht ID
 
             const partnerEmbed = new EmbedBuilder()
