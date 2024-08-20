@@ -50,7 +50,7 @@ module.exports = {
     .setThumbnail('https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b5a468&is=66b452e8&hm=6849696a3f0e4fe5c35349cbe5d38f6a17c4d83ab03eeabe704f274ede9c7220&');
 
     const channel = client.channels.cache.get("1254340245772701747")
-    channel.threads.edit({
+    channel.threads.create({
       name: 'Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Vorschlag System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
