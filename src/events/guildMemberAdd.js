@@ -29,7 +29,7 @@ module.exports = {
             `<a:Join:978633410992021524> Heißen wir **${member.displayName}** (\`#${member.guild.memberCount}\`) Willkommen bei uns! <a:winken:1086560167442796544>`,
             `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) gibt allen eine Runde aus, Willkommen <a:winken:1086560167442796544>`,
             `<a:Join:978633410992021524> Willkommen **${member.displayName}** (\`#${member.guild.memberCount}\`) Wir hoffen, du hast Pizza mitgebracht. <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Hey **${member.displayName} (\`#${member.guild.memberCount}\`) sind wir froh das du uns gefunden hast <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> Hey **${member.displayName}** (\`#${member.guild.memberCount}\`) sind wir froh das du uns gefunden hast <a:winken:1086560167442796544>`,
             `<a:Join:978633410992021524> Juhu, **${member.displayName}** (\`#${member.guild.memberCount}\`) du hast es zu uns geschafft! <a:winken:1086560167442796544>`,
             `<a:Join:978633410992021524> Herzlich Willkommen **${member.displayName}** (\`#${member.guild.memberCount}\`) Sag hallo <a:winken:1086560167442796544>`,
             `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) Hilft uns die Welt zu erobern. <a:winken:1086560167442796544>`,
