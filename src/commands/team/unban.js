@@ -20,7 +20,7 @@ module.exports = {
         const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
         const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
         
-        const banRole = interaction.guild.roles.cache.find(role => role.id === "1155570143393488896");
+        const banRole = interaction.guild.roles.cache.find(role => role.id === "886989738244964362");
         const memberRole = interaction.guild.roles.cache.find(role => role.id === "815920703067914290");
 
         const unbanLogEmbed = new EmbedBuilder()

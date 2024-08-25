@@ -24,7 +24,7 @@ module.exports = {
         const duration = interaction.options.getString('dauer') ?? 'Keine Zeit angegeben'
         const banMember = await interaction.guild.members.fetch(member.id)
 
-        const banRole = interaction.guild.roles.cache.find(role => role.id === "1155570143393488896");
+        const banRole = interaction.guild.roles.cache.find(role => role.id === "886989738244964362");
         const memberRole = interaction.guild.roles.cache.find(role => role.id === "815920703067914290");
 
 
