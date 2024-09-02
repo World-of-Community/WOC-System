@@ -13,8 +13,8 @@ module.exports = {
 
         if (interaction.customId === 'giveaway-enter') {
             const giveawayData = await giveawaydb.findOne({ msgID: interaction.message.id });
-            if (!giveawayData) return await interaction.reply({ content: 'Das Gewinnspiel existiert nicht.', ephemeral: true });
-            if (giveawayData.endTime !== null) return await interaction.reply({ content: 'Das Gewinnspiel wurde schon beendet!', ephemeral: true });
+            if (!giveawayData) return await interaction.reply({ content: '> \`❌\` » Das Gewinnspiel existiert nicht.', ephemeral: true });
+            if (giveawayData.endTime !== null) return await interaction.reply({ content: '> \`❌\` » Das Gewinnspiel wurde schon beendet!', ephemeral: true });
 
             const userData = await userdb.findOne({ userID: interaction.user.id });
             const statsData = userData ? userData.stats : null;
@@ -32,7 +32,7 @@ module.exports = {
             if (serverData.roleBypass.length > 0) {
                 if (serverData.roleBypass.some(roleId => interaction.member.roles.cache.has(roleId))) {
                     if (giveawayData.teilnehmer.includes(interaction.user.id)) {
-                        return await interaction.reply({ content: '`❗` » Du nimmst bereits am Gewinnspiel teil!', ephemeral: true });
+                        return await interaction.reply({ content: '> `❌` » Du nimmst bereits am Gewinnspiel teil!', ephemeral: true });
                     }
 
                     const channel = await interaction.client.channels.fetch(giveawayData.channelID);
@@ -58,17 +58,17 @@ module.exports = {
             // Bedingung prüfen
             if (giveawayData.bedingung === 'messages') {
                 const msgs = parseInt(giveawayData.bedingungString);
-                if (!statsData || msgs > statsData.messages) return await interaction.reply({ content: '`❌` » Du erfüllst nicht die Bedingungen.', ephemeral: true });
+                if (!statsData || msgs > statsData.messages) return await interaction.reply({ content: '> `❌` » Du erfüllst nicht die Bedingungen.', ephemeral: true });
             }
 
             if (giveawayData.bedingung === 'voiceTime') {
                 const voiceTime = parseInt(giveawayData.bedingungString);
-                if (!statsData || voiceTime > statsData.voiceTime) return await interaction.reply({ content: '`❌` » Du erfüllst nicht die Bedingungen.', ephemeral: true });
+                if (!statsData || voiceTime > statsData.voiceTime) return await interaction.reply({ content: '> `❌` » Du erfüllst nicht die Bedingungen.', ephemeral: true });
             }
 
             if (giveawayData.bedingung === 'role') {
                 const role = await interaction.guild.roles.fetch(giveawayData.bedingungString);
-                if (!interaction.member.roles.cache.has(role.id)) return await interaction.reply({ content: '`❌` » Du erfüllst nicht die Bedingungen.', ephemeral: true });
+                if (!interaction.member.roles.cache.has(role.id)) return await interaction.reply({ content: '> `❌` » Du erfüllst nicht die Bedingungen.', ephemeral: true });
             }
 
             if (giveawayData.bedingung === 'membersince') {

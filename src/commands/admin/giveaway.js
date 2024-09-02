@@ -139,7 +139,7 @@ module.exports = {
 
               const durationDauer = ms(durationInput);
               if (isNaN(durationDauer)) {
-                return inter.editReply({ content: '» Ungültige Dauer angegeben.', ephemeral: true });
+                return inter.editReply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
               }  
               const endDate = new Date(Date.now() + durationDauer);
               const timestamp = Math.floor(endDate / 1000);
@@ -198,7 +198,7 @@ module.exports = {
 
             
 
-              await inter.editReply({ content: `» Gewinnspiel gestartet! ${channel}`, ephemeral: true });
+              await inter.editReply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
             }
           });
         });
@@ -210,23 +210,23 @@ module.exports = {
         const giveaway = await giveawaydb.findOne({ _id: messageId });
 
         if (!giveaway) {
-          return interaction.reply({ content: "» Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> \`❌\` » Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
         }
         const endechannel = await interaction.client.channels.fetch(giveaway.channelID);
         const giveawayMessage = await endechannel.messages.fetch(activeGiveaways.msgID);
         if (!giveawayMessage) {
-          return interaction.reply({ content: "» Nachricht nicht gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> \`❌\` » Nachricht nicht gefunden.", ephemeral: true });
         }
 
         const winners = await giveawayMessage.reactions.cache.get("🎉")?.users.fetch();
 
         if (!winners || winners.size === 0) {
-          return interaction.reply({ content: "» Keine Gewinner für dieses Gewinnspiel gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> \`❌\` » Keine Gewinner für dieses Gewinnspiel gefunden.", ephemeral: true });
         }
 
         let winnerList = Array.from(winners.values()).filter(user => !user.bot);
         if (winnerList.length === 0) {
-          return interaction.reply({ content: "» Keine gültigen Gewinner gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> \`❌\` » Keine gültigen Gewinner gefunden.", ephemeral: true });
         }
 
         let winnersDisplay = winnerList.map((winner, index) => `**${index + 1}.** <@${winner.id}>`).join('\n');
@@ -245,7 +245,7 @@ module.exports = {
 
         await giveawaydb.deleteOne({ _id: messageId });
 
-        await interaction.reply({ content: "» Gewinnspiel erfolgreich beendet!", ephemeral: true });
+        await interaction.reply({ content: "> \`✅\` » Gewinnspiel erfolgreich beendet!", ephemeral: true });
         break;
 
       case "reroll":
@@ -253,24 +253,24 @@ module.exports = {
         const rerollGiveaway = await giveawaydb.findOne({ _id: rerollId });
 
         if (!rerollGiveaway) {
-          return interaction.reply({ content: "» Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> \`❌\` » Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
         }
 
         const rerollChannel = await interaction.client.channels.fetch(rerollGiveaway.channelID);
         const rerollMessage = await rerollChannel.messages.fetch(rerollId);
         if (!rerollMessage) {
-          return interaction.reply({ content: "» Nachricht nicht gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> \`❌\` » Nachricht nicht gefunden.", ephemeral: true });
         }
 
         const rerollWinners = await rerollMessage.reactions.cache.get("🎉")?.users.fetch();
 
         if (!rerollWinners || rerollWinners.size === 0) {
-          return interaction.reply({ content: "» Keine Gewinner für dieses Gewinnspiel gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> \`❌\` » Keine Gewinner für dieses Gewinnspiel gefunden.", ephemeral: true });
         }
 
         let rerollWinnerList = Array.from(rerollWinners.values()).filter(user => !user.bot);
         if (rerollWinnerList.length === 0) {
-          return interaction.reply({ content: "» Keine gültigen Gewinner gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> \`❌\` » Keine gültigen Gewinner gefunden.", ephemeral: true });
         }
 
         let newWinner = rerollWinnerList[Math.floor(Math.random() * rerollWinnerList.length)];
@@ -288,7 +288,7 @@ module.exports = {
     
       await rerollMessage.edit({ embeds: [rerollEmbed] });
     
-      await interaction.reply({ content: "» Gewinner erfolgreich neu gezogen und Nachricht aktualisiert!", ephemeral: true });
+      await interaction.reply({ content: "> \`✅\` » Gewinner erfolgreich neu gezogen und Nachricht aktualisiert!", ephemeral: true });
       break;
     }
   },
