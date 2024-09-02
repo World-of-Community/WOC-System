@@ -12,20 +12,6 @@ const ms = require("ms");
 const giveawaydb = require("../../../Datenbank/giveawaydb");
 const userDB = require("../../../Datenbank/userdb");
 
-const createTextInput = (customId, label, placeholder, required = true) => {
-  return new TextInputBuilder()
-    .setCustomId(customId)
-    .setLabel(label)
-    .setPlaceholder(placeholder)
-    .setStyle(TextInputStyle.Short)
-    .setRequired(required);
-};
-
-const addModalComponents = (modal, components) => {
-  components.forEach(component => {
-    modal.addComponents(new ActionRowBuilder().addComponents(component));
-  });
-};
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -83,7 +69,7 @@ module.exports = {
         )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-  async execute(interaction, client) {
+    async execute(interaction, client) {
     const sub = interaction.options.getSubcommand();
 
     switch (sub) {
@@ -96,6 +82,22 @@ module.exports = {
           .setTitle("🎁 - Gewinnspiel starten")
           .setCustomId("gw-modal");
 
+
+          const createTextInput = (customId, label, placeholder, required = true) => {
+            return new TextInputBuilder()
+              .setCustomId(customId)
+              .setLabel(label)
+              .setPlaceholder(placeholder)
+              .setStyle(TextInputStyle.Short)
+              .setRequired(required);
+          };
+          
+          const addModalComponents = (modal, components) => {
+            components.forEach(component => {
+              modal.addComponents(new ActionRowBuilder().addComponents(component));
+            });
+          };
+          
         const durationInput = createTextInput('durationInput', '⏰ - WIE LANGE SOLL DAS GEWINNSPIEL DAUERN?', 'Beispiel: 5d 30m');
         const winnerInput = createTextInput('winnerInput', '👥 - WIEVIEL USER KÖNNEN GEWINNEN?', 'Beispiel: 15');
         const priceInput = createTextInput('priceInput', '🎁 - WAS GIBT ES ZU GEWINNEN?', 'Beispiel: Discord Nitro');
