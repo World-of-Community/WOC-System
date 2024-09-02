@@ -119,8 +119,6 @@ module.exports = {
         await interaction.showModal(modal).then(async () => {
             await interaction.client.once("interactionCreate", async (inter) => {
             if (inter.customId === 'gw-modal') {
-              await inter.deferReply({ content: '> Bitte warten', ephemeral: true });
-
               const durationInput = inter.fields.getTextInputValue('durationInput');
               const winnerInput = inter.fields.getTextInputValue('winnerInput');
               const priceInput = inter.fields.getTextInputValue('priceInput').toUpperCase();
@@ -137,9 +135,15 @@ module.exports = {
                 }
               }
 
+              if(bedingung === 'messages' || bedingung === "role") {
+                if (isNaN(bedingungsvalue)) {
+                  return inter.reply({ content: '> \`❌\` » Es dürfen nur Zahlen angegeben werden.', ephemeral: true });
+                }  
+              }
+
               const durationDauer = ms(durationInput);
               if (isNaN(durationDauer)) {
-                return inter.editReply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
+                return inter.reply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
               }  
               const endDate = new Date(Date.now() + durationDauer);
               const timestamp = Math.floor(endDate / 1000);
@@ -198,7 +202,7 @@ module.exports = {
 
             
 
-              await inter.editReply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
+              await inter.reply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
             }
           });
         });
