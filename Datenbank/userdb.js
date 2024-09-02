@@ -9,11 +9,11 @@ const userSchema = new mongoose.Schema({
     birthday: {
         tag: {
             type: Number,
-            required: true,
+            required: false ,
         },
         monat: {
             type: Number,
-            required: true,
+            required: false ,
         },
         jahr: {
             type: Number,
