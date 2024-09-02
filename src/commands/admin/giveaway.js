@@ -15,61 +15,61 @@ const userDB = require("../../../Datenbank/userdb");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("giveaway")
-    .setDescription("Giveaway")
-    .addSubcommand((command) =>
-      command
-        .setName("start")
-        .setDescription("» Starte ein neues Gewinnspiel. 🎁")
-        .addChannelOption((option) =>
-          option
-            .setName("kanal")
-            .setDescription("In welchen Kanal soll das Gewinnspiel stattfinden?")
-        )
-        .addStringOption((option) =>
-          option
-            .setName("bedingung")
-            .setDescription("Möchtest du eine Teilnahmebedingung festlegen?")
-            .addChoices(
-              { name: "⛔ × Keine Bedingung", value: "none" },
-              { name: "📚 × Nachrichtenanzahl", value: "messages" },
-              { name: "🔊 × Sprachkanal-Zeit", value: "voiceTime" },
-              { name: "📌 × Rolle besitzen", value: "role" },
-              { name: "👥 × Server-Mitgliedschaft", value: "membersince" },
-              { name: "💡 × Server-Empfehlung", value: "server" }
-            )
-            .setRequired(true)
-        )
-        .addUserOption((option) =>
-          option
-            .setName("sponsor")
-            .setDescription("Wähle einen Sponsor für das Gewinnspiel aus?")
-            .setRequired(false)
-        )
-    )
-    .addSubcommand((command) =>
-      command
-        .setName("end")
-        .setDescription("» Beende ein spezielles Gewinnspiel sofort. 🎊")
-        .addStringOption((option) =>
-          option
-            .setName("nachrichtenid")
-            .setDescription("Welche Nachricht ist es?")
-            .setRequired(true)
-        )
-    )
-    .addSubcommand((command) =>
-      command
-        .setName("reroll")
-        .setDescription("» Ziehe neue Gewinner aus einem beendeten Gewinnspiel. 🔄")
-        .addStringOption((option) =>
-          option
-            .setName("nachrichtenid")
-            .setDescription("Welche Nachricht ist es?")
-            .setRequired(true)
-        )
-    )
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+  .setName("giveaway")
+  .setDescription("Giveaway")
+  .addSubcommand((command) =>
+    command
+      .setName("start")
+      .setDescription("» Starte ein neues Gewinnspiel. 🎁")
+      .addChannelOption((option) =>
+        option
+          .setName("kanal")
+          .setDescription("In welchen Kanal soll das Gewinnspiel stattfinden?")
+      )
+      .addStringOption((option) =>
+        option
+          .setName("bedingung")
+          .setDescription("Möchtest du eine Teilnahmebedingung festlegen?")
+          .addChoices(
+            { name: "⛔ × Keine Bedingung", value: "none" },
+            { name: "📚 × Nachrichtenanzahl", value: "messages" },
+            { name: "🔊 × Sprachkanal-Zeit", value: "voiceTime" },
+            { name: "📌 × Rolle besitzen", value: "role" },
+            { name: "👥 × Server-Mitgliedschaft", value: "membersince" },
+            { name: "💡 × Server-Empfehlung", value: "server" }
+          )
+          .setRequired(true)
+      )
+      .addUserOption((option) =>
+        option
+          .setName("sponsor")
+          .setDescription("Wähle einen Sponsor für das Gewinnspiel aus?")
+          .setRequired(false)
+      )
+  )
+  .addSubcommand((command) =>
+    command
+      .setName("end")
+      .setDescription("» Beende ein spezielles Gewinnspiel sofort. 🎊")
+      .addStringOption((option) =>
+        option
+          .setName("nachrichtenid")
+          .setDescription("Welche Nachricht ist es?")
+          .setRequired(true)
+      )
+  )
+  .addSubcommand((command) =>
+    command
+      .setName("reroll")
+      .setDescription("» Ziehe neue Gewinner aus einem beendeten Gewinnspiel. 🔄")
+      .addStringOption((option) =>
+        option
+          .setName("nachrichtenid")
+          .setDescription("Welche Nachricht ist es?")
+          .setRequired(true)
+      )
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     async execute(interaction) {
       const client = interaction.client;
     const sub = interaction.options.getSubcommand();
