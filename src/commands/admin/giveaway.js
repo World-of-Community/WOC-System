@@ -37,7 +37,8 @@ module.exports = {
               { name: "📌 × Rolle besitzen", value: "role" },
               { name: "👥 × Server-Mitgliedschaft", value: "membersince" },
               { name: "💡 × Server-Empfehlung", value: "server" }
-            ).setRequired(true)
+            )
+            .setRequired(true)
         )
         .addUserOption((option) =>
           option
