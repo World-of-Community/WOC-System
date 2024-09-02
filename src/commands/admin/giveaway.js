@@ -135,12 +135,11 @@ module.exports = {
                 }
               }
 
-              if(bedingung === 'messages' || bedingung === "role") {
-                if (isNaN(bedingungsvalue)) {
-                  return inter.reply({ content: '> \`❌\` » Es dürfen nur Zahlen angegeben werden.', ephemeral: true });
+              if (bedingung === 'winnerInput' || bedingung === 'messages' || bedingung === "role") {
+                if (isNaN(bedingungInput)) {
+                  return inter.reply({ content: '> `❌` » Es dürfen nur Zahlen angegeben werden.', ephemeral: true });
                 }  
               }
-
               const durationDauer = ms(durationInput);
               if (isNaN(durationDauer)) {
                 return inter.reply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
