@@ -87,7 +87,6 @@ module.exports = {
             }
         });
 
-
         const userData = await userdb.findOne({ userID: member.id })
 
         if (userData) {
