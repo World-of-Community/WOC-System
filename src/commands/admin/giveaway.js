@@ -135,18 +135,18 @@ module.exports = {
               let bedingungsvalue; 
               let serverEmpfehlung;
 
+
               if (bedingung && bedingungsInputs[bedingung]) {
-                bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput');
+                bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput') || ''; 
                 
-                if(bedingung === "none") {
+                if (bedingung === "none") {
                   bedingungInput = "none";
-                }
-                if (bedingung === 'voiceTime' || bedingung === 'membersince') {
-                  bedingungInput = ms(bedingungsvalue);
+                } else if (bedingung === 'voiceTime' || bedingung === 'membersince') {
+                  bedingungInput = ms(bedingungsvalue) || null; 
                 } else {
                   bedingungInput = bedingungsvalue;
                 }
-        
+              
                 if (bedingung === 'server') {
                   serverEmpfehlung = bedingungsvalue;
                 }
@@ -166,14 +166,14 @@ module.exports = {
               const endDate = new Date(Date.now() + durationDauer);
               const timestamp = Math.floor(endDate / 1000);
 
-              const bedingungsNachrichten = {
+              const bedingungNachrichten = {
                 none: "\n<:Pfeil:1119709908540076124> **Keine Bedingung**",
-                messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput}** Nachrichten senden`,
-                voiceTime: `\n<:Pfeil:1119709908540076124> **${bedingungsvalue} Sprachkanal-Zeit**`,
-                role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput}> **besitzen**`,
-                membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true })} auf dem Server**`,
+                messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput || '0'}** Nachrichten senden`, // Fallback auf 0
+                voiceTime: `\n<:Pfeil:1119709908540076124> **${bedingungsvalue || '0'} Sprachkanal-Zeit**`, // Fallback auf 0
+                role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput || '0'}> **besitzen**`, // Fallback auf 0
+                membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true }) || '0'} auf dem Server**`, // Fallback auf 0
               };
-
+              
               const bedingungNachricht = bedingung === "none" ? bedingungsNachrichten['none'] : bedingungsNachrichten[bedingung];
 
 
