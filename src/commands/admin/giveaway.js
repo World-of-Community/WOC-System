@@ -184,7 +184,7 @@ module.exports = {
                 const newGiveaway = new giveawaydb({
                 channelID: channel.id,
                 creator: inter.user.id,
-                msgID: msg.id,
+                msgID: giveawayMessage.id,
                 price: priceInput,
                 teilnehmer: [],
                 bedingung: bedingung,
