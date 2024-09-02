@@ -150,10 +150,9 @@ module.exports = {
                 }
               }
 
-              const durationDauer = ms(durationInput);
-              if (isNaN(durationDauer)) {
+              if (!durationInput || typeof durationInput !== 'string') {
                 return inter.reply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
-              }  
+              }
               const endDate = new Date(Date.now() + durationDauer);
               const timestamp = Math.floor(endDate / 1000);
 
