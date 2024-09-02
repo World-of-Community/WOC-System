@@ -117,7 +117,7 @@ module.exports = {
         }
         
         await interaction.showModal(modal)
-            await interaction.client.once("interactionCreate", async (inter) => {
+            await client.once("interactionCreate", async (inter) => {
             if (inter.customId === 'gw-modal') {
               const durationInput = inter.fields.getTextInputValue('durationInput');
               const winnerInput = inter.fields.getTextInputValue('winnerInput');
