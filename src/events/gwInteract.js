@@ -140,7 +140,11 @@ module.exports = {
                 .setDescription(embed.description.includes("** Teilnehmer") ? embed.description.replace(`**${(updatedGiveawayData.teilnehmer.length) + 1}** Teilnehmer`, `**${(updatedGiveawayData.teilnehmer.length)}** Teilnehmer`) : (embed.description.replace("** Gewinner", `** Gewinner\n<:PfeilBlau:1147248395837247613> **${(updatedGiveawayData.teilnehmer.length) + 1}** Teilnehmer`)).replace(`**${(updatedGiveawayData.teilnehmer.length) + 1}** Teilnehmer`, `**${(updatedGiveawayData.teilnehmer.length)}** Teilnehmer`))
                 .setThumbnail('https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66ca0e3d&is=66c8bcbd&hm=e34c924d9ee5947c75b485bed384536467c3b974d1bebdcbb602ded06df21b13&');
 
-            await message.edit({ embeds: [updatedEmbed] });
+            const channel = await interaction.client.channels.fetch(giveawayData.channelID);
+            const giveawayMessage = await channel.messages.fetch(messageId);
+            if (!giveawayMessage) return;
+
+            await giveawayMessage.edit({ embeds: [updatedEmbed] });
 
             await interaction.editReply({ content: '> `✅` » Du hast erfolgreich das Gewinnspiel verlassen!', ephemeral: true });
 
