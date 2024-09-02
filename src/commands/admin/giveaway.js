@@ -209,18 +209,7 @@ module.exports = {
             });
                 await newGiveaway.save();
 
-                const users = await userDB.find({});
-
-                for (const user of users) {
-                if (!user) {
-                  continue; 
-                }
-
-                user.stats.messages = 0;
-                user.stats.voiceTime = 0;
-
-                await user.save();
-              }
+                const result = await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
 
               await inter.editReply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
               isProcessingComplete = true; 
