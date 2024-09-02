@@ -33,11 +33,15 @@ module.exports = {
             if (serverData.roleBypass.length > 0) {
                 if (serverData.roleBypass.some(roleId => interaction.member.roles.cache.has(roleId))) {
                     if (giveawayData.teilnehmer.includes(interaction.user.id)) {
-                        const leaveButton = new ButtonBuilder()
-                        .setCustomId('giveaway-leave')
-                        .setLabel('» Teilnahme zurückziehen')
-                        .setStyle(ButtonStyle.Danger);
-                        return await interaction.reply({ content: '> `❌` » Du nimmst bereits am Gewinnspiel teil!', compoments: [leaveButton], ephemeral: true });
+
+                        
+                        const row = new ActionRowBuilder().addComponents(
+                            new ButtonBuilder()
+                            .setCustomId('giveaway-leave')
+                            .setLabel('» Teilnahme zurückziehen')
+                            .setStyle(ButtonStyle.Danger)
+                        );
+                        return await interaction.reply({ content: '> `❌` » Du nimmst bereits am Gewinnspiel teil!', components: [row], ephemeral: true });
                     }
 
                     const channel = await interaction.client.channels.fetch(giveawayData.channelID);
