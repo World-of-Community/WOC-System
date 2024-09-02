@@ -592,7 +592,7 @@ setInterval(async () => {
             for (const winnerId of winnerIds) {
                 const userData = await userdb.findOne({ userID: winnerId });
                 if (userData) {
-                    userData.eventWins += 1;
+                    userData.giveaway.eventWins += 1;
                     await userData.save();
                 }
 

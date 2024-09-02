@@ -132,18 +132,18 @@ module.exports = {
               const priceInput = inter.fields.getTextInputValue('priceInput').toUpperCase();
 
               let bedingungInput;
-              let serverEmpfehlung;
               let bedingungsvalue; 
+              let serverEmpfehlung;
 
-              if (bedingung && bedingungsInputs[bedingung]) {
-                bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput'); // Definiere die Variable hier
+              if (bedingung && bedingung != "none" && bedingungsInputs[bedingung]) {
+                bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput');
                 bedingungInput = bedingung === 'voiceTime' || bedingung === 'membersince' ? ms(bedingungsvalue) : bedingungsvalue;
               
                 if (bedingung === 'server') {
                   serverEmpfehlung = bedingungsvalue;
                 }
               }
-
+              
               if (bedingung === 'winnerInput' || bedingung === 'messages' || bedingung === "role") {
                 if (isNaN(bedingungInput)) {
                   return inter.reply({ content: '> `❌` » Es dürfen nur Zahlen angegeben werden.', ephemeral: true });
