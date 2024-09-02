@@ -30,6 +30,7 @@ module.exports = {
           option
             .setName("bedingung")
             .setDescription("Möchtest du eine Teilnahmebedingung festlegen?")
+            .setRequired(true)
             .addChoices(
               { name: "⛔ × Keine Bedingung", value: "none" },
               { name: "📚 × Nachrichtenanzahl", value: "messages" },
