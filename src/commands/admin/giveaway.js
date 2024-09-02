@@ -69,7 +69,7 @@ module.exports = {
           .setRequired(true)
       )
   )
-  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     async execute(interaction) {
       const client = interaction.client;
     const sub = interaction.options.getSubcommand();
