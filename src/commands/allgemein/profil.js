@@ -56,11 +56,11 @@ module.exports = {
         let rolePingsList = [];
 
         const removeSymbols = (str) => {
-            return str.replace(/[^\w\s]/gi, ''); // Entfernt alle nicht-alphanumerischen Zeichen
+            return str.replace(/[^\w\s]/gi, '');
         };
 
-        ember.roles.cache.forEach(role => {
-            const cleanedRoleName = removeSymbols(role.name); // Rolle bereinigen
+        member.roles.cache.forEach(role => {
+            const cleanedRoleName = removeSymbols(role.name);
             
             if (roleNationalität[cleanedRoleName]) {
                 userNationalität = roleNationalität[cleanedRoleName]; 
