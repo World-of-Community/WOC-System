@@ -80,10 +80,11 @@ module.exports = {
         const bedingung = interaction.options.getString("bedingung");
 
 
-        var generateRandomId = () => Math.floor(1000 + Math.random() * 9000);
+        const generateRandomId = () => Math.floor(1000 + Math.random() * 9000);
+        var id = generateRandomId();
         const modal = new ModalBuilder()
           .setTitle("🎁 - Gewinnspiel starten")
-          .setCustomId(`gw-modal-${generateRandomId()}`);
+          .setCustomId(`gw-modal-${id}`);
 
 
           const createTextInput = (customId, label, placeholder, required = true) => {
@@ -126,7 +127,7 @@ module.exports = {
                 // Wenn die Verarbeitung abgeschlossen ist, ignorieren
                 return;
             }
-              if (inter.isModalSubmit() && inter.customId === `gw-modal-${generateRandomId()}`) {
+              if (inter.isModalSubmit() && inter.customId === `gw-modal-${id}`) {
               const durationInput = inter.fields.getTextInputValue('durationInput');
               const winnerInput = inter.fields.getTextInputValue('winnerInput');
               const priceInput = inter.fields.getTextInputValue('priceInput').toUpperCase();
