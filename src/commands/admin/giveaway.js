@@ -167,14 +167,14 @@ module.exports = {
               const timestamp = Math.floor(endDate / 1000);
 
               const bedingungNachrichten = {
-                noneMessage: "\n<:Pfeil:1119709908540076124> **Keine Bedingung**",
-                messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput || '0'}** Nachrichten senden`, 
-                voiceTime: `\n<:Pfeil:1119709908540076124> **${bedingungsvalue || '0'} Sprachkanal-Zeit**`,
-                role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput || '0'}> **besitzen**`, 
-                membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true }) || '0'} auf dem Server**`,
+                none: "\n<:Pfeil:1119709908540076124> **Keine Bedingung**",
+                messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput || '0'}** Nachrichten senden`, // Fallback auf 0
+                voiceTime: `\n<:Pfeil:1119709908540076124> **${bedingungsvalue || '0'} Sprachkanal-Zeit**`, // Fallback auf 0
+                role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput || '0'}> **besitzen**`, // Fallback auf 0
+                membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true }) || '0'} auf dem Server**`, // Fallback auf 0
               };
               
-              const bedingungNachricht = bedingung === "none" ? bedingungsNachrichten['noneMessage'] : bedingungsNachrichten[bedingung];
+              const bedingungNachricht = bedingung === "none" ? "\n<:Pfeil:1119709908540076124> **Keine Bedingung**" : bedingungsNachrichten[bedingung];
 
 
               const embed = new EmbedBuilder()
