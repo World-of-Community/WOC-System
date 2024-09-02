@@ -21,14 +21,14 @@ module.exports = {
 
         const roleGeschlecht = {
             'Männlich': ':male_sign:',
-            'Weiblich': ':femal_sign:',
-            'Divers': '❓'
+            'Weiblich': ':female_sign:',
+            'Divers': ':transgender_symbol:'
         };
 
         const roleGames = {
             'Roblox': 'Roblox',
             'Rocket League': 'Rocket League',
-            'GTA 5': 'GTA 5',
+            'Grand Theft Auto 5': 'Grand Theft Auto 5',
             'Minecraft': 'Minecraft',
             'FIFA': 'FIFA',
             'League of Legends': 'League of Legends',
@@ -37,17 +37,18 @@ module.exports = {
         };
 
         const rolePings = {
-            'Umfragen': 'Umfragen',
-            'Neuigkeiten': 'Neuigkeiten',
-            'Änderungen': 'Änderungen',
-            'Gewinnspiel': 'Gewinnspiel',
-            'Event': 'Event',
-            'Dead Chat': 'Dead Chat',
-            'Changelog': 'Changelog',
-            'Welt News': 'Welt News',
-            'Gratis Spiele': 'Gratis Spiele',
-            'Gaming News': 'Gaming News',
-            'Mediathek': 'Mediathek',
+            '📣 » Umfragen': 'Umfragen',
+            '📰 » Neuigkeiten': 'Neuigkeiten',
+            '🎁 » Gewinnspiel': 'Gewinnspiel',
+            '🔔 » Server-Events': 'Server-Events',
+            '🔧 » Changelog': 'Changelog',
+            '📢 » Änderungen': 'Änderungen',
+            '☠️ » Dead Chat Ping': 'Dead Chat',
+            '🔧 » Changelog': 'Changelog',
+            '💸 » Gratis Spiele': 'Gratis Spiele',
+            '🎮 » Gaming News': 'Gaming News',
+            '📺 » Mediathek': 'Mediathek',
+            '🌍 » Welt News': 'Welt News',
         };
 
         let userNationalität = '❓';
