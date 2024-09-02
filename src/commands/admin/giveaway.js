@@ -116,9 +116,8 @@ module.exports = {
           addModalComponents(modal, [durationInput, winnerInput, priceInput]);
         }
         
-        await interaction.showModal(modal).then(async () => {
+        await interaction.showModal(modal)
             await interaction.client.once("interactionCreate", async (inter) => {
-              if (!interaction.isModalSubmit()) return;
             if (inter.customId === 'gw-modal') {
               const durationInput = inter.fields.getTextInputValue('durationInput');
               const winnerInput = inter.fields.getTextInputValue('winnerInput');
@@ -205,7 +204,6 @@ module.exports = {
 
               await inter.reply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
             }
-          });
         });
 
         break;
