@@ -135,9 +135,12 @@ module.exports = {
               let bedingungsvalue; 
               let serverEmpfehlung;
 
-              if (bedingung && bedingung !== "none" && bedingungsInputs[bedingung]) {
+              if (bedingung && bedingungsInputs[bedingung]) {
                 bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput');
-        
+                
+                if(bedingung === "none") {
+                  bedingungInput = "none";
+                }
                 if (bedingung === 'voiceTime' || bedingung === 'membersince') {
                   bedingungInput = ms(bedingungsvalue);
                 } else {
@@ -155,7 +158,7 @@ module.exports = {
                 }
               }
 
-              const durationDauer = ms(durationInput || '1m'); 
+              const durationDauer = ms(durationInput); 
               if (isNaN(durationDauer)) {
                 return inter.reply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
               }
