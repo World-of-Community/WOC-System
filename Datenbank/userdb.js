@@ -39,6 +39,43 @@ const userSchema = new mongoose.Schema({
     vorstellungID: {
         type: String,
         required: false,
+    },
+    giveaway: {
+        eventWins: {
+            type: Number,
+            required: true,
+        },
+    
+        toggledm: {
+            type: Boolean,
+            required: true,
+        },
+    
+        messages: {
+            type: Number,
+            required: true,
+        },
+    
+        voiceTime: {
+            type: Number,
+            required: true,
+        },
+    
+        startTime: {
+            type: Number,
+            required: true,
+        },
+    },
+    stats: {
+        messages: {
+            type: Number,
+            required: true,
+        },
+    
+        voiceTime: {
+            type: Number,
+            required: true,
+        },
     }
 });
 

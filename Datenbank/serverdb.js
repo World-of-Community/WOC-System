@@ -23,6 +23,10 @@ const serverSchema = new mongoose.Schema({
 
         }]
     },
+    roleBypass: {
+        type: Object,
+        required: false,
+    },
     deactivated: {
         type: Object,
         required: false,
