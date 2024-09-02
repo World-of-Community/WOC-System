@@ -14,15 +14,15 @@ module.exports = {
 
         const roleNationalität = {
             'Deutschland': ':flag_de:',
-            'Österreich': 'Österreich',
-            'Schweiz': 'Schweiz',
-            'England': 'Englisch',
+            'Österreich': ':flag_at:',
+            'Schweiz': ':flag_ch:',
+            'England': ':england:',
         };
 
         const roleGeschlecht = {
-            'Männlich': 'Männlich',
-            'Weiblich': 'Weiblich',
-            'Divers': 'Divers'
+            'Männlich': ':male_sign:',
+            'Weiblich': ':femal_sign:',
+            'Divers': '❓'
         };
 
         const roleGames = {
@@ -32,7 +32,7 @@ module.exports = {
             'Minecraft': 'Minecraft',
             'FIFA': 'FIFA',
             'League of Legends': 'League of Legends',
-            'VALORANT': 'VALORANT',
+            'VALORANT': 'Valorant',
             'Fortnite': 'Fortnite',
         };
 
@@ -55,18 +55,24 @@ module.exports = {
         let rolegamesList = [];
         let rolePingsList = [];
 
-        member.roles.cache.forEach(role => {
-            if (roleNationalität[role.name]) {
-                userNationalität = roleNationalität[role.name]; 
+        const removeSymbols = (str) => {
+            return str.replace(/[^\w\s]/gi, ''); // Entfernt alle nicht-alphanumerischen Zeichen
+        };
+
+        ember.roles.cache.forEach(role => {
+            const cleanedRoleName = removeSymbols(role.name); // Rolle bereinigen
+            
+            if (roleNationalität[cleanedRoleName]) {
+                userNationalität = roleNationalität[cleanedRoleName]; 
             }
-            if (roleGeschlecht[role.name]) {
-                userGeschlecht = roleGeschlecht[role.name]; 
+            if (roleGeschlecht[cleanedRoleName]) {
+                userGeschlecht = roleGeschlecht[cleanedRoleName]; 
             }
-            if (roleGames[role.name]) {
-                rolegamesList.push(roleGames[role.name]); 
+            if (roleGames[cleanedRoleName]) {
+                rolegamesList.push(roleGames[cleanedRoleName]); 
             }
-            if (rolePings[role.name]) {
-                rolePingsList.push(rolePings[role.name]);
+            if (rolePings[cleanedRoleName]) {
+                rolePingsList.push(rolePings[cleanedRoleName]);
             }
         });
 
@@ -79,7 +85,7 @@ module.exports = {
         if (userData) {
             const embed = new EmbedBuilder()
             .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
-            .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n\`📌\` » Name: ${member.displayName}\n\`📌\` » Geschlecht: ${userGeschlecht}\n\`📌\` » Land: ${userNationalität}\n\`🎮\` » Meine Spiele: ${rolegamesList.length > 0 ? rolegamesList.join(', ') : '**Keine Spiele**'}\n\`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n\`🎁\` » Hat **${userData.eventWins || '0'}** Events gewonnen\n\`📚\` » Du hast bereits \`${userData.messages || '0'}\` Nachrichten versendet.\n\`🔊\` » \`${(userData.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
+            .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n\`📌\` » Geschlecht: ${userGeschlecht}\n\`📌\` » Land: ${userNationalität}\n\`🎮\` » Meine Spiele: ${rolegamesList.length > 0 ? rolegamesList.join(', ') : '**Keine Spiele**'}\n\`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n\`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n\`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n\`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
             .setColor('Blurple')
             .setThumbnail(`${member.user.displayAvatarURL({ dynamic: true })}`)
             .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
