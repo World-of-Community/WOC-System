@@ -132,17 +132,17 @@ module.exports = {
 
             await giveawaydb.findOneAndUpdate({ msgID: message.id }, { $pull: { teilnehmer: interaction.user.id } });
 
+            const channel = await interaction.client.channels.fetch(giveawayData.channelID);
+            const giveawayMessage = await channel.messages.fetch(messageId);
+            if (!giveawayMessage) return;
+
             const updatedGiveawayData = await giveawaydb.findOne({ msgID: messageId });
-            const embed = message.embeds[0];
+            const embed = giveawayMessage.embeds[0];
             const updatedEmbed = new EmbedBuilder()
                 .setColor(embed.color)
                 .setTitle(embed.title)
                 .setDescription(embed.description.includes("** Teilnehmer") ? embed.description.replace(`**${(updatedGiveawayData.teilnehmer.length) + 1}** Teilnehmer`, `**${(updatedGiveawayData.teilnehmer.length)}** Teilnehmer`) : (embed.description.replace("** Gewinner", `** Gewinner\n<:PfeilBlau:1147248395837247613> **${(updatedGiveawayData.teilnehmer.length) + 1}** Teilnehmer`)).replace(`**${(updatedGiveawayData.teilnehmer.length) + 1}** Teilnehmer`, `**${(updatedGiveawayData.teilnehmer.length)}** Teilnehmer`))
                 .setThumbnail('https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66ca0e3d&is=66c8bcbd&hm=e34c924d9ee5947c75b485bed384536467c3b974d1bebdcbb602ded06df21b13&');
-
-            const channel = await interaction.client.channels.fetch(giveawayData.channelID);
-            const giveawayMessage = await channel.messages.fetch(messageId);
-            if (!giveawayMessage) return;
 
             await giveawayMessage.edit({ embeds: [updatedEmbed] });
 
