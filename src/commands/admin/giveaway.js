@@ -134,11 +134,12 @@ module.exports = {
 
               let bedingungInput;
               let serverEmpfehlung;
+              let bedingungsvalue; 
 
               if (bedingung && bedingungsInputs[bedingung]) {
-                const bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput');
+                bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput'); // Definiere die Variable hier
                 bedingungInput = bedingung === 'voiceTime' || bedingung === 'membersince' ? ms(bedingungsvalue) : bedingungsvalue;
-
+              
                 if (bedingung === 'server') {
                   serverEmpfehlung = bedingungsvalue;
                 }
