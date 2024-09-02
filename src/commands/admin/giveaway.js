@@ -136,8 +136,8 @@ module.exports = {
               let serverEmpfehlung;
 
               console.log("Bedingung:", bedingung);
-            console.log("Bedingungsvalue:", bedingungsvalue);
-            console.log("BedingungInput:", bedingungInput);
+              console.log("Bedingungsvalue:", bedingungsvalue);
+              console.log("BedingungInput:", bedingungInput);
 
 
               if (bedingung != "none" && bedingung && bedingungsInputs[bedingung]) {
@@ -168,14 +168,15 @@ module.exports = {
               const endDate = new Date(Date.now() + durationDauer);
               const timestamp = Math.floor(endDate / 1000);
 
-              const bedingungNachrichten = {
+              const bedingungsNachrichten = {
                 messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput || '0'}** Nachrichten senden`,
                 voiceTime: `\n<:Pfeil:1119709908540076124> **${bedingungsvalue || '0'} Sprachkanal-Zeit**`,
                 role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput || '0'}> **besitzen**`,
                 membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true }) || '0'} auf dem Server**`,
               };
-              
-              const bedingungNachricht = bedingung === "none" ? "\n<:Pfeil:1119709908540076124> **Keine Bedingung**" : bedingungsNachrichten[bedingung];
+              if(bedingung != "none") {
+              const bedingungNachricht = bedingungsNachrichten[bedingung];
+              }
 
 
               const embed = new EmbedBuilder()
