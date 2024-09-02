@@ -156,7 +156,7 @@ module.exports = {
               const bedingungsNachrichten = {
                 none: "\n<:Pfeil:1119709908540076124> **Keine Bedingung**",
                 messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput}** Nachrichten senden`,
-                voiceTime: `\n<:Pfeil:1119709908540076124> **${bedingungInput} Sprachkanal-Zeit**`,
+                voiceTime: `\n<:Pfeil:1119709908540076124> **${bedingungsvalue} Sprachkanal-Zeit**`,
                 role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput}> **besitzen**`,
                 membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true })} auf dem Server**`,
               };
