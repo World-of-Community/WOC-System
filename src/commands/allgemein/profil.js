@@ -28,27 +28,26 @@ module.exports = {
         const roleGames = {
             'Roblox': 'Roblox',
             'Rocket League': 'Rocket League',
-            'Grand Theft Auto 5': 'Grand Theft Auto 5',
+            'Grand Theft Auto V': 'Grand Theft Auto V',
             'Minecraft': 'Minecraft',
             'FIFA': 'FIFA',
             'League of Legends': 'League of Legends',
-            'VALORANT': 'Valorant',
+            'Valorant': 'Valorant',
             'Fortnite': 'Fortnite',
         };
 
         const rolePings = {
-            '📣 » Umfragen': 'Umfragen',
-            '📰 » Neuigkeiten': 'Neuigkeiten',
-            '🎁 » Gewinnspiel': 'Gewinnspiel',
-            '🔔 » Server-Events': 'Server-Events',
-            '🔧 » Changelog': 'Changelog',
-            '📢 » Änderungen': 'Änderungen',
-            '☠️ » Dead Chat Ping': 'Dead Chat',
-            '🔧 » Changelog': 'Changelog',
-            '💸 » Gratis Spiele': 'Gratis Spiele',
-            '🎮 » Gaming News': 'Gaming News',
-            '📺 » Mediathek': 'Mediathek',
-            '🌍 » Welt News': 'Welt News',
+            '📣 » Umfragen': '📣 » Umfragen',
+            '📰 » Neuigkeiten': '📰 » Neuigkeiten',
+            '🎁 » Gewinnspiel': '🎁 » Gewinnspiel',
+            '🔔 » Server-Events': '🔔 » Server-Events',
+            '🔧 » Changelog': '🔧 » Changelog',
+            '📢 » Änderungen': '📢 » Änderungen',
+            '☠️ » Dead Chat': '☠️ » Dead Chat',
+            '💸 » Gratis Spiele': '💸 » Gratis Spiele',
+            '🎮 » Gaming News': '🎮 » Gaming News',
+            '📺 » Mediathek': '📺 » Mediathek',
+            '🌍 » Welt News': '🌍 » Welt News',
         };
 
         let userNationalität = '❓';
