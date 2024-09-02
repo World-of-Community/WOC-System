@@ -27,9 +27,9 @@ module.exports = {
           .setDescription("In welchen Kanal soll das Gewinnspiel stattfinden?")
       )
       .addStringOption((option) =>
-        option
-          .setName("bedingung")
+        option.setName("bedingung")
           .setDescription("Möchtest du eine Teilnahmebedingung festlegen?")
+          .setRequired(true)
           .addChoices(
             { name: "⛔ × Keine Bedingung", value: "none" },
             { name: "📚 × Nachrichtenanzahl", value: "messages" },
@@ -38,7 +38,6 @@ module.exports = {
             { name: "👥 × Server-Mitgliedschaft", value: "membersince" },
             { name: "💡 × Server-Empfehlung", value: "server" }
           )
-          .setRequired(true)
       )
       .addUserOption((option) =>
         option
