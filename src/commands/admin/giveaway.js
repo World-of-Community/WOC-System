@@ -135,10 +135,15 @@ module.exports = {
               let bedingungsvalue; 
               let serverEmpfehlung;
 
-              if (bedingung && bedingung != "none" && bedingungsInputs[bedingung]) {
+              if (bedingung && bedingung !== "none" && bedingungsInputs[bedingung]) {
                 bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput');
-                bedingungInput = bedingung === 'voiceTime' || bedingung === 'membersince' ? ms(bedingungsvalue) : bedingungsvalue;
-              
+        
+                if (bedingung === 'voiceTime' || bedingung === 'membersince') {
+                  bedingungInput = ms(bedingungsvalue);
+                } else {
+                  bedingungInput = bedingungsvalue;
+                }
+        
                 if (bedingung === 'server') {
                   serverEmpfehlung = bedingungsvalue;
                 }
@@ -150,9 +155,11 @@ module.exports = {
                 }
               }
 
-              if (!durationInput || typeof durationInput !== 'string') {
+              const durationDauer = ms(durationInput || '1m'); 
+              if (isNaN(durationDauer)) {
                 return inter.reply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
               }
+
               const endDate = new Date(Date.now() + durationDauer);
               const timestamp = Math.floor(endDate / 1000);
 
@@ -164,7 +171,8 @@ module.exports = {
                 membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true })} auf dem Server**`,
               };
 
-              const bedingungNachricht = bedingung !== "none" && bedingungInput ? bedingungsNachrichten[bedingung] : bedingungsNachrichten['none'];
+              const bedingungNachricht = bedingung === "none" ? bedingungsNachrichten['none'] : bedingungsNachrichten[bedingung];
+
 
               const embed = new EmbedBuilder()
               .setTitle(`<a:Diamond:1018911546430210128> ${priceInput} <a:Diamond:1018911546430210128>`)
