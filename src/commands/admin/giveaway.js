@@ -79,9 +79,11 @@ module.exports = {
         const channel = interaction.options.getChannel("kanal") || interaction.channel;
         const bedingung = interaction.options.getString("bedingung");
 
+
+        var generateRandomId = () => Math.floor(1000 + Math.random() * 9000);
         const modal = new ModalBuilder()
           .setTitle("🎁 - Gewinnspiel starten")
-          .setCustomId("gw-modal");
+          .setCustomId(`gw-modal-${generateRandomId()}`);
 
 
           const createTextInput = (customId, label, placeholder, required = true) => {
@@ -124,7 +126,7 @@ module.exports = {
                 // Wenn die Verarbeitung abgeschlossen ist, ignorieren
                 return;
             }
-              if (inter.isModalSubmit() && inter.customId === 'gw-modal') {
+              if (inter.isModalSubmit() && inter.customId === `gw-modal-${generateRandomId()}`) {
               const durationInput = inter.fields.getTextInputValue('durationInput');
               const winnerInput = inter.fields.getTextInputValue('winnerInput');
               const priceInput = inter.fields.getTextInputValue('priceInput').toUpperCase();

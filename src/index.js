@@ -685,19 +685,12 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     const userId = newState.member.user.id;
     const currentTime = new Date().getTime();
 
-    console.log(`Voice state update detected for user ID: ${userId}`);
-    console.log(`Current time: ${currentTime}`);
-
     if (!oldState.channelId && newState.channelId) {
-        // User has joined a voice channel
-        console.log('User joined a voice channel.');
 
         let userData = await userdb.findOne({ userID: userId });
         if (userData) {
-            console.log(`User data found: ${JSON.stringify(userData)}`);
             userData.giveaway.startTime = currentTime;
             await userData.save();
-            console.log(`Updated startTime for user ID ${userId} to ${currentTime}`);
         } else {
             console.error(`No user data found for user ID: ${userId}`);
         }
@@ -709,18 +702,14 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         let userData = await userdb.findOne({ userID: userId });
         if (userData) {
             const startTime = userData.giveaway.startTime;
-            console.log(`Retrieved startTime: ${startTime}`);
 
             if (startTime !== 0) {
                 const durationInMilliseconds = currentTime - startTime;
-                console.log(`Duration in milliseconds: ${durationInMilliseconds}`);
-
                 if (!isNaN(durationInMilliseconds)) {
                     userData.giveaway.voiceTime += durationInMilliseconds;
                     userData.stats.voiceTime += durationInMilliseconds;
                     userData.giveaway.startTime = 0;
                     await userData.save();
-                    console.log(`Updated voiceTime for user ID ${userId}. New voiceTime: ${userData.giveaway.voiceTime}`);
                 } else {
                     console.error('Invalid durationInMilliseconds:', durationInMilliseconds);
                 }
