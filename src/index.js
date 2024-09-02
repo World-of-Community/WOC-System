@@ -693,19 +693,27 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     } 
     else if (oldState.channelId && !newState.channelId) {
         let userData = await userdb.findOne({ userID: userId });
-        if (userData && userData.giveaway.startTime !== 0) {
-            const durationInMilliseconds = currentTime - userData.giveaway.startTime;
-            if (!isNaN(durationInMilliseconds)) {
-                userData.giveaway.voiceTime += durationInMilliseconds;
-                userData.stats.voiceTime += durationInMilliseconds;
-                userData.giveaway.startTime = 0;
-                await userData.save();
+        if (userData) {
+            const startTime = userData.giveaway.startTime;
+            if (startTime !== 0) {
+                const durationInMilliseconds = currentTime - startTime;
+                if (!isNaN(durationInMilliseconds)) {
+                    userData.giveaway.voiceTime += durationInMilliseconds;
+                    userData.stats.voiceTime += durationInMilliseconds;
+                    userData.giveaway.startTime = 0;
+                    await userData.save();
+                } else {
+                    console.error('Invalid durationInMilliseconds:', durationInMilliseconds);
+                }
             } else {
-                console.error('Invalid durationInMilliseconds:', durationInMilliseconds);
+                console.error('Start time was zero or not set.');
             }
+        } else {
+            console.error('User data not found for userID:', userId);
         }
     }
 });
+
 client.on('error', (error) => {
     const errorMessage = error.stack || error;
     console.log(errorMessage)
