@@ -211,7 +211,7 @@ module.exports = {
 
                 const result = await userDB.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
 
-              await inter.editReply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
+              await inter.reply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
               isProcessingComplete = true; 
             }
         });
