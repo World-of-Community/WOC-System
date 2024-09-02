@@ -5,7 +5,7 @@ const vorschlagEmitter = require('../custom_events/vorschlag');
 
 module.exports = {
     name: Events.InteractionCreate,
-    async execute(interaction) {
+    async execute(interaction, client) {
         const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
 
@@ -500,7 +500,7 @@ module.exports = {
 
         if (command) {
             try {
-                await command.execute(interaction)
+                await command.execute(interaction, client)
             } catch (error) {
                 console.error(error)
 
