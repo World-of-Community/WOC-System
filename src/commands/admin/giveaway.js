@@ -216,10 +216,8 @@ module.exports = {
                   continue; 
                 }
 
-                user.stats = {
-                  messages: 0,
-                  voiceTime: 0
-                };
+                user.stats.messages = 0;
+                user.stats.voiceTime = 0;
 
                 await user.save();
               }
