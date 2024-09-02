@@ -11,6 +11,9 @@ module.exports = {
     async execute(interaction) {
         const member = await interaction.options.getMember('mitglied') || interaction.member
 
+        if (member.user.bot) {
+            return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
+        }
 
         const roleNationalität = {
             'Deutschland': ':flag_de:',
@@ -20,9 +23,9 @@ module.exports = {
         };
 
         const roleGeschlecht = {
-            'Männlich': 'Männlich',
-            'Weiblich': 'Weiblich',
-            'Divers': 'Divers'
+            'Männlich': ':male_sign:',
+            'Weiblich': ':female_sign:',
+            'Divers': ':heavy_equals_sign:'
         };
 
         const roleGames = {
@@ -55,30 +58,35 @@ module.exports = {
         let rolegamesList = [];
         let rolePingsList = [];
 
-        const removeSymbols = (str) => {
-            return str.replace(/[^\w\s]/gi, '');
+        const getBaseRoleName = (roleName) => {
+            const separator = '»';
+            if (roleName.includes(separator)) {
+                return roleName.split(separator)[1].trim();
+            }
+            return roleName.trim();
         };
 
         member.roles.cache.forEach(role => {
-            const cleanedRoleName = removeSymbols(role.name);
+            const roleName = role.name;
+
+            if (role.name === '@everyone') return;
+
+            const baseRoleName = getBaseRoleName(role.name);
             
-            if (roleNationalität[cleanedRoleName]) {
-                userNationalität = roleNationalität[cleanedRoleName]; 
+            if (roleNationalität[baseRoleName]) {
+                userNationalität = roleNationalität[baseRoleName];
             }
-            if (roleGeschlecht[cleanedRoleName]) {
-                userGeschlecht = roleGeschlecht[cleanedRoleName]; 
+            if (roleGeschlecht[baseRoleName]) {
+                userGeschlecht = roleGeschlecht[baseRoleName];
             }
-            if (roleGames[cleanedRoleName]) {
-                rolegamesList.push(roleGames[cleanedRoleName]); 
+            if (roleGames[baseRoleName]) {
+                rolegamesList.push(roleGames[baseRoleName]);
             }
-            if (rolePings[cleanedRoleName]) {
-                rolePingsList.push(rolePings[cleanedRoleName]);
+            if (rolePings[baseRoleName]) {
+                rolePingsList.push(rolePings[baseRoleName]);
             }
         });
 
-        if (member.user.bot) {
-            return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
-        }
 
         const userData = await userdb.findOne({ userID: member.id })
 
