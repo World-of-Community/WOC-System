@@ -118,7 +118,8 @@ module.exports = {
             await interaction.message.edit({ content: '<a:Giveaway:968876442618306560><a:Giveaway:968876442618306560> **NEUES EVENT!** <a:Giveaway:968876442618306560><a:Giveaway:968876442618306560>', embeds: [updatedEmbed] });
             await interaction.reply({ content: '> `✅` » **Teilnahme erfolgreich**: Ich habe dich erfolgreich als Teilnehmer des Gewinnspiels eingetragen! <a:Gewinnspiel:1148705932231057598>', ephemeral: true });
         
-        } else if(interaction.customID === 'giveaway-leave') {
+        } 
+        if(interaction.customID === 'giveaway-leave') {
 
             const giveawayData = await giveawaydb.findOne({ msgID: message.id });
             if (!giveawayData) return await interaction.reply({ content: '> `❌` » Das Gewinnspiel existiert nicht.', ephemeral: true });

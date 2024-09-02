@@ -135,9 +135,6 @@ module.exports = {
               let bedingungsvalue = "none"; 
               let serverEmpfehlung;
 
-              console.log("Bedingung:", bedingung);
-              console.log("Bedingungsvalue:", bedingungsvalue);
-              console.log("BedingungInput:", bedingungInput);
 
 
               if (bedingung != "none" && bedingung && bedingungsInputs[bedingung]) {
