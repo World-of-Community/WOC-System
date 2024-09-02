@@ -124,10 +124,10 @@ module.exports = {
             const messageId = interaction.customId.replace('giveaway-leave-', '');
 
             const giveawayData = await giveawaydb.findOne({ msgID: messageId });
-            if (!giveawayData) return await interaction.reply({ content: '> `❌` » Das Gewinnspiel existiert nicht.', ephemeral: true });
+            if (!giveawayData) return await interaction.update({ content: '> `❌` » Das Gewinnspiel existiert nicht.', ephemeral: true });
             
             if (!giveawayData.teilnehmer.includes(interaction.user.id)) {
-                return await interaction.reply({ content: '> `❌` » Du nimmst nicht an diesem Gewinnspiel teil!', ephemeral: true });
+                return await interaction.update({ content: '> `❌` » Du nimmst nicht an diesem Gewinnspiel teil!', ephemeral: true });
             }
 
             await giveawaydb.findOneAndUpdate({ msgID: messageId }, { $pull: { teilnehmer: interaction.user.id } });
@@ -146,8 +146,7 @@ module.exports = {
 
             await giveawayMessage.edit({ embeds: [updatedEmbed] });
             
-            await interaction.update({components: []})
-            await interaction.reply({ content: '> `✅` » Du hast erfolgreich das Gewinnspiel verlassen!', ephemeral: true });
+            await interaction.update({content: '> `✅` » Du hast erfolgreich das Gewinnspiel verlassen!', components: []})
 
         }
     }
