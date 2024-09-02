@@ -115,7 +115,7 @@ module.exports = {
         }
 
         await interaction.showModal(modal).then(async () => {
-          client.once('interactionCreate', async (inter) => {
+          interaction.client.once('interactionCreate', async (inter) => {
             if (inter.customId === 'gw-modal') {
               await inter.deferReply({ content: '> Bitte warten', ephemeral: true });
 
