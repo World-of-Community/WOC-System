@@ -209,7 +209,7 @@ module.exports = {
             });
                 await newGiveaway.save();
 
-                const result = await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
+                const result = await userDB.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
 
               await inter.editReply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
               isProcessingComplete = true; 
