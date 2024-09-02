@@ -117,8 +117,13 @@ module.exports = {
         }
         
         await interaction.showModal(modal)
-            await client.once("interactionCreate", async (inter) => {
-            if (inter.customId === 'gw-modal') {
+        let isProcessingComplete = false; 
+            await client.on("interactionCreate", async (inter) => {
+              if (isProcessingComplete) {
+                // Wenn die Verarbeitung abgeschlossen ist, ignorieren
+                return;
+            }
+              if (inter.isModalSubmit() && inter.customId === 'gw-modal') {
               const durationInput = inter.fields.getTextInputValue('durationInput');
               const winnerInput = inter.fields.getTextInputValue('winnerInput');
               const priceInput = inter.fields.getTextInputValue('priceInput').toUpperCase();
@@ -202,6 +207,7 @@ module.exports = {
             
 
               await inter.reply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
+              isProcessingComplete = true; 
             }
         });
 
