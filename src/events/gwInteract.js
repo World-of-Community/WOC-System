@@ -126,11 +126,11 @@ module.exports = {
             const giveawayData = await giveawaydb.findOne({ msgID: messageId });
             if (!giveawayData) return await interaction.editReply({ content: '> `❌` » Das Gewinnspiel existiert nicht.', ephemeral: true });
             
-            if (!giveawayData.teilnehmer.includes(user.id)) {
+            if (!giveawayData.teilnehmer.includes(interaction.user.id)) {
                 return await interaction.editReply({ content: '> `❌` » Du nimmst nicht an diesem Gewinnspiel teil!', ephemeral: true });
             }
 
-            await giveawaydb.findOneAndUpdate({ msgID: message.id }, { $pull: { teilnehmer: user.id } });
+            await giveawaydb.findOneAndUpdate({ msgID: message.id }, { $pull: { teilnehmer: interaction.user.id } });
 
             const updatedGiveawayData = await giveawaydb.findOne({ msgID: messageId });
             const embed = message.embeds[0];
