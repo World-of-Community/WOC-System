@@ -174,8 +174,9 @@ module.exports = {
                 role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput || '0'}> **besitzen**`,
                 membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true }) || '0'} auf dem Server**`,
               };
-              let bedingungNachricht
-              if(bedingung != "none") bedingungNachricht = bedingungsNachrichten[bedingung];
+              const bedingungNachricht = bedingung === "none"
+              ? ""
+              : bedingungsNachrichten[bedingung];
 
 
               const embed = new EmbedBuilder()
