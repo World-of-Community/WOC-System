@@ -658,11 +658,13 @@ client.on('messageCreate', async (message) => {
     if (!userData) {
         userData = new userdb({
             userID: message.author.id,
-            eventWins: 0,
-            toggledm: true,
-            messages: 1,
-            voiceTime: 0,
-            startTime: 0,
+            giveaway: {
+                eventWins: 0,
+                toggledm: true,
+                messages: 1,
+                voiceTime: 0,
+                startTime: 0,
+            },
             stats: {
                 messages: 1,
                 voiceTime: 0
@@ -670,7 +672,7 @@ client.on('messageCreate', async (message) => {
         });
         await userData.save();
     } else {
-        userData.messages += 1;
+        userData.giveaway.messages += 1;
         userData.stats.messages += 1;
         await userData.save();
     }
@@ -694,9 +696,9 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         if (userData && userData.startTime !== 0) {
             const durationInMilliseconds = currentTime - userData.startTime;
             if (!isNaN(durationInMilliseconds)) {
-                userData.voiceTime += durationInMilliseconds;
+                userData.giveaway.voiceTime += durationInMilliseconds;
                 userData.stats.voiceTime += durationInMilliseconds;
-                userData.startTime = 0;
+                userData.giveaway.startTime = 0;
                 await userData.save();
             } else {
                 console.error('Invalid durationInMilliseconds:', durationInMilliseconds);
