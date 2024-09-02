@@ -189,8 +189,8 @@ module.exports = {
         if (!giveaway) {
           return interaction.reply({ content: "» Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
         }
-        const channel = await interaction.client.channels.fetch(giveaway.channelID);
-        const giveawayMessage = await channel.messages.fetch(activeGiveaways.msgID);
+        const endechannel = await interaction.client.channels.fetch(giveaway.channelID);
+        const giveawayMessage = await endechannel.messages.fetch(activeGiveaways.msgID);
         if (!giveawayMessage) {
           return interaction.reply({ content: "» Nachricht nicht gefunden.", ephemeral: true });
         }
