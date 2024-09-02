@@ -37,8 +37,8 @@ module.exports = {
                         
                         const row = new ActionRowBuilder().addComponents(
                             new ButtonBuilder()
-                            .setCustomId('giveaway-leave')
-                            .setLabel('» Teilnahme zurückziehen')
+                            .setCustomId(`giveaway-leave-${giveawayData.msgID}`)
+                            .setLabel(`» Teilnahme zurückziehen`)
                             .setStyle(ButtonStyle.Danger)
                         );
                         return await interaction.reply({ content: '> `❌` » Du nimmst bereits am Gewinnspiel teil!', components: [row], ephemeral: true });
@@ -94,7 +94,7 @@ module.exports = {
             if (giveawayData.teilnehmer.includes(interaction.user.id)) {
                 const row = new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
-                    .setCustomId('giveaway-leave')
+                    .setCustomId(`giveaway-leave-${giveawayData.msgID}`)
                     .setLabel('» Teilnahme zurückziehen')
                     .setStyle(ButtonStyle.Danger)
                 );
@@ -119,9 +119,11 @@ module.exports = {
             await interaction.reply({ content: '> `✅` » **Teilnahme erfolgreich**: Ich habe dich erfolgreich als Teilnehmer des Gewinnspiels eingetragen! <a:Gewinnspiel:1148705932231057598>', ephemeral: true });
         } 
 
-        if(interaction.customId === 'giveaway-leave') {
+        if (interaction.customId.startsWith('giveaway-leave-')) {
 
-            const giveawayData = await giveawaydb.findOne({ msgID: message.id });
+            const messageId = interaction.customId.replace('giveaway-leave-', '');
+
+            const giveawayData = await giveawaydb.findOne({ msgID: messageId });
             if (!giveawayData) return await interaction.editReply({ content: '> `❌` » Das Gewinnspiel existiert nicht.', ephemeral: true });
             
             if (!giveawayData.teilnehmer.includes(user.id)) {
@@ -130,7 +132,7 @@ module.exports = {
 
             await giveawaydb.findOneAndUpdate({ msgID: message.id }, { $pull: { teilnehmer: user.id } });
 
-            const updatedGiveawayData = await giveawaydb.findOne({ msgID: message.id });
+            const updatedGiveawayData = await giveawaydb.findOne({ msgID: messageId });
             const embed = message.embeds[0];
             const updatedEmbed = new EmbedBuilder()
                 .setColor(embed.color)
