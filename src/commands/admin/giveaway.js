@@ -138,6 +138,9 @@ module.exports = {
               }
 
               const durationDauer = ms(durationInput);
+              if (isNaN(durationDauer)) {
+                return inter.editReply({ content: '» Ungültige Dauer angegeben.', ephemeral: true });
+              }  
               const endDate = new Date(Date.now() + durationDauer);
               const timestamp = Math.floor(endDate / 1000);
 
@@ -161,7 +164,22 @@ module.exports = {
                 "https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=61eaa2c48e285bd587d9c30df8d489038c99cb289d5cd6bfa3f404ec8d3c1672&=&size=4096"
               )
             
-              const giveawayMessage = await channel.send({ embeds: [embed] });
+
+              const row = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setCustomId("giveaway-enter")
+                  .setLabel("» Klicke zum Teilnehmen")
+                  .setEmoji("<a:Gewinnspiel:968876390982234202>")
+                  .setStyle(ButtonStyle.Primary)
+              );
+
+              const giveawayMessage = await channel
+              .send({
+                content:
+                  "<a:Giveaway:968876442618306560><a:Giveaway:968876442618306560> **NEUES EVENT!** <a:Giveaway:968876442618306560><a:Giveaway:968876442618306560>",
+                embeds: [embed],
+                components: [row],
+              })
 
                 const newGiveaway = new giveawaydb({
                 channelID: channel.id,
@@ -176,7 +194,9 @@ module.exports = {
                 startTime: new Date(),
                 endTime: null,
             });
-            await newGiveaway.save();
+                await newGiveaway.save();
+
+            
 
               await inter.editReply({ content: `» Gewinnspiel gestartet! ${channel}`, ephemeral: true });
             }
