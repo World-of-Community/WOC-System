@@ -145,11 +145,12 @@ module.exports = {
                 }
               }
               
-              if (bedingung === 'winnerInput' || bedingung === 'messages' || bedingung === "role") {
+              if (bedingung !== 'none' && (bedingung === 'winnerInput' || bedingung === 'messages' || bedingung === 'role')) {
                 if (isNaN(bedingungInput)) {
                   return inter.reply({ content: '> `❌` » Es dürfen nur Zahlen angegeben werden.', ephemeral: true });
-                }  
+                }
               }
+              
               const durationDauer = ms(durationInput);
               if (isNaN(durationDauer)) {
                 return inter.reply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
@@ -165,7 +166,7 @@ module.exports = {
                 membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true })} auf dem Server**`,
               };
 
-              const bedingungNachricht = bedingung !== "none" && bedingungInput ? bedingungsNachrichten[bedingung] : "";
+              const bedingungNachricht = bedingung !== "none" && bedingungInput ? bedingungsNachrichten[bedingung] : bedingungsNachrichten['none'];
 
               const embed = new EmbedBuilder()
               .setTitle(`<a:Diamond:1018911546430210128> ${priceInput} <a:Diamond:1018911546430210128>`)
