@@ -103,23 +103,4 @@ module.exports = {
             await interaction.message.edit({ content: '<a:Giveaway:968876442618306560><a:Giveaway:968876442618306560> **NEUES EVENT!** <a:Giveaway:968876442618306560><a:Giveaway:968876442618306560>', embeds: [updatedEmbed] });
             await interaction.reply({ content: '> `✅` » **Teilnahme erfolgreich**: Ich habe dich erfolgreich als Teilnehmer des Gewinnspiels eingetragen! <a:Gewinnspiel:1148705932231057598>', ephemeral: true });
         }
-
-        if (!interaction.isCommand()) return;
-
-        const command = client.commands.get(interaction.commandName);
-
-        if (command) {
-            try {
-                await command.execute(interaction);
-            } catch (error) {
-                console.error(error);
-
-                if (interaction.deferred || interaction.replied) {
-                    await interaction.editReply({ content: "> `❌` » Es ist ein Fehler beim Ausführen aufgetreten!\n> Bitte gebe einem Teammitglied Bescheid oder öffne ein Ticket im <#819555839362072606>.", ephemeral: true });
-                } else {
-                    await interaction.reply({ content: "> `❌` » Es ist ein Fehler beim Ausführen aufgetreten!\n> Bitte gebe einem Teammitglied Bescheid oder öffne ein Ticket im <#819555839362072606>.", ephemeral: true });
-                }
-            }
-        }
-    }
 };

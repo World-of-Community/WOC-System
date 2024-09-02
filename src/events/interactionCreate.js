@@ -5,7 +5,7 @@ const vorschlagEmitter = require('../custom_events/vorschlag');
 
 module.exports = {
     name: Events.InteractionCreate,
-    async execute(interaction, client) {
+    async execute(interaction) {
         const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
 
@@ -493,14 +493,15 @@ module.exports = {
                 await interaction.reply(`> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** abgelehnt.`)
             }
         }
-  
+
         if(interaction.isChatInputCommand()) {
 
         const command = client.commands.get(interaction.commandName)
 
         if (command) {
             try {
-                await command.execute(interaction, client)
+                await command.execute(interaction)
+                
             } catch (error) {
                 console.error(error)
 
