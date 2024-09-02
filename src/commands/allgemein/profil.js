@@ -20,9 +20,9 @@ module.exports = {
         };
 
         const roleGeschlecht = {
-            'Männlich': ':male_sign:',
-            'Weiblich': ':female_sign:',
-            'Divers': ':transgender_symbol:'
+            'Männlich': 'Männlich',
+            'Weiblich': 'Weiblich',
+            'Divers': 'Divers'
         };
 
         const roleGames = {
@@ -43,7 +43,7 @@ module.exports = {
             '🔔 » Server-Events': '🔔 » Server-Events',
             '🔧 » Changelog': '🔧 » Changelog',
             '📢 » Änderungen': '📢 » Änderungen',
-            '☠️ » Dead Chat': '☠️ » Dead Chat',
+            '☠️ » Dead Chat Ping': '☠️ » Dead Chat Ping',
             '💸 » Gratis Spiele': '💸 » Gratis Spiele',
             '🎮 » Gaming News': '🎮 » Gaming News',
             '📺 » Mediathek': '📺 » Mediathek',
