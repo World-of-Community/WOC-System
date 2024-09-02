@@ -92,7 +92,13 @@ module.exports = {
             }
 
             if (giveawayData.teilnehmer.includes(interaction.user.id)) {
-                return await interaction.reply({ content: '> `❌` » Du nimmst bereits am Gewinnspiel teil!', ephemeral: true });
+                const row = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                    .setCustomId('giveaway-leave')
+                    .setLabel('» Teilnahme zurückziehen')
+                    .setStyle(ButtonStyle.Danger)
+                );
+                return await interaction.reply({ content: '> `❌` » Du nimmst bereits am Gewinnspiel teil!', components: [row], ephemeral: true });
             }
 
             const channel = await interaction.client.channels.cache.get(giveawayData.channelID);
