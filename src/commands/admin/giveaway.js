@@ -30,7 +30,6 @@ module.exports = {
           option
             .setName("bedingung")
             .setDescription("Möchtest du eine Teilnahmebedingung festlegen?")
-            .setRequired(true)
             .addChoices(
               { name: "⛔ × Keine Bedingung", value: "none" },
               { name: "📚 × Nachrichtenanzahl", value: "messages" },
@@ -38,7 +37,7 @@ module.exports = {
               { name: "📌 × Rolle besitzen", value: "role" },
               { name: "👥 × Server-Mitgliedschaft", value: "membersince" },
               { name: "💡 × Server-Empfehlung", value: "server" }
-            )
+            ).setRequired(true)
         )
         .addUserOption((option) =>
           option
@@ -150,7 +149,7 @@ module.exports = {
                   return inter.reply({ content: '> `❌` » Es dürfen nur Zahlen angegeben werden.', ephemeral: true });
                 }
               }
-              
+
               const durationDauer = ms(durationInput);
               if (isNaN(durationDauer)) {
                 return inter.reply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
