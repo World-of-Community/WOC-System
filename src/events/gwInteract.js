@@ -130,7 +130,7 @@ module.exports = {
                 return await interaction.editReply({ content: '> `❌` » Du nimmst nicht an diesem Gewinnspiel teil!', ephemeral: true });
             }
 
-            await giveawaydb.findOneAndUpdate({ msgID: message.id }, { $pull: { teilnehmer: interaction.user.id } });
+            await giveawaydb.findOneAndUpdate({ msgID: messageId }, { $pull: { teilnehmer: interaction.user.id } });
 
             const channel = await interaction.client.channels.fetch(giveawayData.channelID);
             const giveawayMessage = await channel.messages.fetch(messageId);
