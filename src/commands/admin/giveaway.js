@@ -124,7 +124,6 @@ module.exports = {
         let isProcessingComplete = false; 
             await client.on("interactionCreate", async (inter) => {
               if (isProcessingComplete) {
-                // Wenn die Verarbeitung abgeschlossen ist, ignorieren
                 return;
             }
               if (inter.isModalSubmit() && inter.customId === `gw-modal-${id}`) {
