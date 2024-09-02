@@ -207,7 +207,7 @@ module.exports = {
 
             
 
-              await inter.reply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
+              await inter.editReply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
               isProcessingComplete = true; 
             }
         });

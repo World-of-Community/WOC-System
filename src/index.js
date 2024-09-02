@@ -563,7 +563,7 @@ setInterval(async () => {
             if (giveaway.teilnehmer.length < giveaway.gewinnerAnzahl) {
                 const channel = await client.channels.fetch(giveaway.channelID);
                 const giveawayMessage = await channel.messages.fetch(giveaway.msgID);
-                await giveawayMessage.reply({ content: `\`⛔\` » **Zu wenig Teilnehmer:** Es fehlen \`${giveaway.gewinnerAnzahl - giveaway.teilnehmer.length}👥\` Teilnehmer um genug Gewinner auszulosen!\nDas Gewinnspiel wurde als \`ERLEDIGT\` markiert. Nutze \`/gw reroll\` um neue Gewinner zu ziehen.`, ephemeral: true });
+                await giveawayMessage.reply({ content: `\`⛔\` » **Zu wenig Teilnehmer:** Es fehlen \`${giveaway.gewinnerAnzahl - giveaway.teilnehmer.length}👥\` Teilnehmer um genug Gewinner auszulosen!`, ephemeral: true });
                 continue;
             }
 
