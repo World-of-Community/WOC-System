@@ -136,7 +136,7 @@ module.exports = {
               let serverEmpfehlung;
 
 
-              if (bedingung && bedingungsInputs[bedingung]) {
+              if (bedingung != "none" && bedingung && bedingungsInputs[bedingung]) {
                 bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput') || ''; 
                 
               if (bedingung === 'voiceTime' || bedingung === 'membersince') {
