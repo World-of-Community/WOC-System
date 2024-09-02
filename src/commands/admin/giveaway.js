@@ -21,6 +21,12 @@ module.exports = {
     command
       .setName("start")
       .setDescription("» Starte ein neues Gewinnspiel. 🎁")
+      .addChannelOption((option) =>
+        option
+          .setName("kanal")
+          .setDescription("In welchen Kanal soll das Gewinnspiel stattfinden?")
+          .setRequired(true)
+      )
       .addStringOption((option) =>
         option.setName("bedingung")
           .setDescription("Möchtest du eine Teilnahmebedingung festlegen?")
@@ -33,11 +39,6 @@ module.exports = {
             { name: "👥 × Server-Mitgliedschaft", value: "membersince" },
             { name: "💡 × Server-Empfehlung", value: "server" }
           )
-      )
-      .addChannelOption((option) =>
-        option
-          .setName("kanal")
-          .setDescription("In welchen Kanal soll das Gewinnspiel stattfinden?")
       )
       .addUserOption((option) =>
         option
