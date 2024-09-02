@@ -97,7 +97,7 @@ module.exports = {
               modal.addComponents(new ActionRowBuilder().addComponents(component));
             });
           };
-          
+
         const durationInput = createTextInput('durationInput', '⏰ - WIE LANGE SOLL DAS GEWINNSPIEL DAUERN?', 'Beispiel: 5d 30m');
         const winnerInput = createTextInput('winnerInput', '👥 - WIEVIEL USER KÖNNEN GEWINNEN?', 'Beispiel: 15');
         const priceInput = createTextInput('priceInput', '🎁 - WAS GIBT ES ZU GEWINNEN?', 'Beispiel: Discord Nitro');
@@ -160,22 +160,23 @@ module.exports = {
               .setThumbnail(
                 "https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=61eaa2c48e285bd587d9c30df8d489038c99cb289d5cd6bfa3f404ec8d3c1672&=&size=4096"
               )
-              .setFooter({ text: `📅 ➔ ${new Date().toLocaleDateString()}  🕔 ➔ ${new Date().toLocaleTimeString()}` });
             
               const giveawayMessage = await channel.send({ embeds: [embed] });
 
-              await giveawaydb.create({
-                _id: giveawayMessage.id,
-                channelId: channel.id,
-                endDate: timestamp,
-                winnerCount: winnerInput,
-                prize: priceInput,
-                sponsor: sponsor ? sponsor.id : null,
-                condition: bedingung,
-                conditionValue: bedingungInput,
-                server: serverEmpfehlung,
-                messageId: giveawayMessage.id
-              });
+                const newGiveaway = new giveawaydb({
+                channelID: channel.id,
+                creator: inter.user.id,
+                msgID: msg.id,
+                price: priceInput,
+                teilnehmer: [],
+                bedingung: bedingung,
+                bedingungString: bedingungInput,
+                duration: durationDauer,
+                gewinnerAnzahl: winnerInput,
+                startTime: new Date(),
+                endTime: null,
+            });
+            await newGiveaway.save();
 
               await inter.editReply({ content: `» Gewinnspiel gestartet! ${channel}`, ephemeral: true });
             }
