@@ -687,14 +687,14 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     if (!oldState.channelId && newState.channelId) {
         let userData = await userdb.findOne({ userID: userId });
         if (userData) {
-            userData.startTime = currentTime;
+            userData.giveaway.startTime = currentTime;
             await userData.save();
         }
     } 
     else if (oldState.channelId && !newState.channelId) {
         let userData = await userdb.findOne({ userID: userId });
-        if (userData && userData.startTime !== 0) {
-            const durationInMilliseconds = currentTime - userData.startTime;
+        if (userData && userData.giveaway.startTime !== 0) {
+            const durationInMilliseconds = currentTime - userData.giveaway.startTime;
             if (!isNaN(durationInMilliseconds)) {
                 userData.giveaway.voiceTime += durationInMilliseconds;
                 userData.stats.voiceTime += durationInMilliseconds;
