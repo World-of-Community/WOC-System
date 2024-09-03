@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('disc
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('warn')
+        .setName('warnlist')
         .setDescription('» Warne einen User. ❗')
         .addUserOption(option => option.setName('user').setDescription('» Welchen User möchtest du Warnen?').setRequired(true))
         .addStringOption(option => option.setName('grund').setDescription('» Der Grund der Warnung').setRequired(true))
@@ -22,7 +22,7 @@ module.exports = {
 
         const WarnEmbed = new EmbedBuilder()
             .setTitle('Information zu den Warnungen der Nutzer')
-            .setDescription(`Hier ist eine Liste der Warnungen der Nutzer \n\n ${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
+            .setDescription(`Hier ist eine Liste der Warnungen der Nutzer \n\n ${bans.length > 0 ? bans.join("\n") : "Keine Warnungen vorhanden!"}`)
             .setColor('Red')
 
         await interaction.channel.send({ embeds: [WarnEmbed] })

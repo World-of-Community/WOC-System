@@ -10,10 +10,7 @@ module.exports = {
 
 async execute(interaction) {
 
-    // Hole das Mitglied, dem die Rolle entfernt werden soll
     const member = interaction.options.getMember('user') || interaction.member;
-
-    // Hole die Rolle, die entfernt werden soll
     const role = interaction.options.getRole('role');
 
     try {

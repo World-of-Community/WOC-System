@@ -221,7 +221,7 @@ module.exports = {
 
                 const result = await userDB.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
 
-              await inter.reply({ content: `> \`✅\` » Gewinnspiel gestartet! ${channel}`, ephemeral: true });
+              await inter.reply({ content: `> \`✅\` - **Gewinnspiel erstellt:** Das Gewinnspiel wurde so eben in dem Kanal ${channel} erstellt.`, ephemeral: true });
               isProcessingComplete = true; 
             }
         });
@@ -311,7 +311,7 @@ module.exports = {
     
       await rerollMessage.edit({ embeds: [rerollEmbed] });
     
-      await interaction.reply({ content: "> \`✅\` » Gewinner erfolgreich neu gezogen und Nachricht aktualisiert!", ephemeral: true });
+      await interaction.reply({ content: "> \`✅\` » Gewinner erfolgreich neu gezogen und die Nachricht aktualisiert!", ephemeral: true });
       break;
     }
   },

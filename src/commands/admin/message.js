@@ -9,7 +9,6 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
-        // Benutzer und Nachrichteninhalt aus den Optionen erhalten
         const member = interaction.options.getMember('user');
         const message = interaction.options.getString('nachricht');
 
