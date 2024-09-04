@@ -35,3 +35,9 @@ module.exports = {
         await interaction.reply({ embeds: [MessageEmbed], ephemeral: true })
     }
 }
+
+// Function to simulate fetching the message count from a database or other source
+async function getMessageCount(memberId) {
+    // Replace this mock logic with actual code to fetch data from your database or logging system
+    return 123; // Returning a mock number for demonstration
+}
