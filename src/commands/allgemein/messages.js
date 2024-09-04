@@ -13,7 +13,16 @@ module.exports = {
             return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
         }
 
-        const messageCount = await getMessageCount(member.id);
+        let messageCount;
+        try {
+            messageCount = await getMessageCount(member.id);  // Make sure to await the result of getMessageCount
+        } catch (error) {
+            console.error(error); // Log any potential errors for debugging
+            return interaction.reply({ content: "> `❌` » Fehler beim Abrufen der Nachrichtenanzahl!", ephemeral: true });
+        }
+
+        // If no message count is found, default to 0
+        messageCount = messageCount || 0;
 
         const MessageEmbed = new EmbedBuilder()
         .setTitle(`\`👤\` × ${member.user.displayName}'s Nachrichten`)
