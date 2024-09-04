@@ -43,7 +43,7 @@ module.exports = {
       .addUserOption((option) =>
         option
           .setName("sponsor")
-          .setDescription("Wähle einen Sponsor für das Gewinnspiel aus?")
+          .setDescription("Wähle einen Sponsor für das Gewinnspiel aus.")
           .setRequired(false)
       )
   )
