@@ -91,6 +91,9 @@ module.exports = {
         const invites = await interaction.guild.invites.fetch();
         const userInvites = invites.filter(invite => invite.inviter && invite.inviter.id === member.id).reduce((acc, invite) => acc + invite.uses, 0);
 
+        // Wandeln die Collection in ein Array um
+        const userInvitesArray = Array.from(userInvites.values());
+
         // Anzahl der erfolgreichen Einladungen (eingetretene Mitglieder)
         const inviteUses = userInvites.reduce((acc, invite) => acc + invite.uses, 0);
 
