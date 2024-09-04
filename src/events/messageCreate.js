@@ -67,6 +67,21 @@ module.exports = {
             await messageData.save()
         }
 
+        // Changelog Info Neues Update Nachricht
+        if (message.content === '/bot-news' && message.channel.id === '1051393854328279120') {
+            try {
+                // Sendet die Nachricht
+                const msg = await message.channel.send('Neues Update');
+    
+                // Wartet 5 Sekunden
+                setTimeout(() => {
+                    msg.delete().catch(console.error);
+                }, 5000);
+            } catch (error) {
+                console.error('Error sending or deleting message:', error);
+            }
+        }
+
         // Discord Server Links im Haupt Chat & andere Chats löschen
         const CHANNEL_IDS = ['815922756918181898', '896743941813207081', '1250047970116636756', '886140608039747614', '1051072824875425822', '1243964646449483788']; // Nicht erlaubte Kanäle
         const ALLOWED_CHANNEL_IDS = ['1172920281526960238']; // Liste der erlaubten Kanäle

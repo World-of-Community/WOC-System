@@ -17,9 +17,16 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
-        console.log("Alles Ok beim Changelog - hinzugefügt")
+        console.log("Update wurde ins Changelog hinzugefügt")
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
+
+        // Nachricht senden und löschen
+        await interaction.reply({ content: 'Neues Update' });
+        const replyMessage = await interaction.fetchReply();
+        setTimeout(() => {
+            replyMessage.delete().catch(console.error);
+        }, 5000);
 
         if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
         const kategorie = await interaction.options.getString('kategorie')
