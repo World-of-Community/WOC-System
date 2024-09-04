@@ -91,6 +91,8 @@ module.exports = {
         //Todo noch machen: Falls man 2 Länder auswählt: ${userNationalität.length > 0 ? userNationalität.join(' / ') : '**Kein Land**'}
 
         if (userData) {
+            const inviteUses = invite.uses;
+            
             const embed = new EmbedBuilder()
             .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
             .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${rolegamesList.length > 0 ? rolegamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Hat **${inviteUses}** User eingeladen.\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
