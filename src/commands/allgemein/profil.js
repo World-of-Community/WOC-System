@@ -89,21 +89,10 @@ module.exports = {
 
         // Hole die Einladungen des Mitglieds
         const invites = await interaction.guild.invites.fetch();
-        const userInvites = invites.filter(invite => invite.inviter && invite.inviter.id === member.id).reduce((acc, invite) => acc + invite.uses, 0);
-
-        // Umwandlung der Collection in ein Array
-        const userInvitesArray = Array.from(userInvites.values());
-
-        // Anzahl der erfolgreichen Einladungen (eingetretene Mitglieder)
+        const userInvites = invites.filter(invite => invite.inviter && invite.inviter.id === member.id);
         const inviteUses = userInvites.reduce((acc, invite) => acc + invite.uses, 0);
-
-        // Mitglieder, die eingeladen wurden, aber den Server verlassen haben
-        const totalLeft = userInvites.reduce((acc, invite) => acc + (invite.uses - invite.remaining), 0);
-
-        // Berechne den Gesamtbonus oder verlassene Einladungen
+        const totalLeft = userInvites.reduce((acc, invite) => acc + (invite.maxUses - invite.uses), 0);
         const totalBonus = inviteUses - totalLeft;
-
-        // (Gesamt ``, `${totalBonus}` Bonus & `${totalLeft}` Verlassen)
 
         const userData = await userdb.findOne({ userID: member.id })
         //Todo noch machen: Falls man 2 Länder auswählt: ${userNationalität.length > 0 ? userNationalität.join(' / ') : '**Kein Land**'}
