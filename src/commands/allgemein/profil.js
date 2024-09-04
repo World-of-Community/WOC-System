@@ -86,19 +86,7 @@ module.exports = {
                 rolePingsList.push(rolePings[baseRoleName]);
             }
         });
-
-        // Fetch all the invites for the guild
-        const invites = await guild.invites.fetch();
-
-        // Get the user's invite count (replace userId with the message author's ID)
-        const userId = message.author.id;
-        let userInvites = 0;
-        invites.forEach(invite => {
-          if (invite.inviter && invite.inviter.id === userId) {
-            userInvites += invite.uses;
-          }
-        });
-
+        
         const userData = await userdb.findOne({ userID: member.id })
         //Todo noch machen: Falls man 2 Länder auswählt: ${userNationalität.length > 0 ? userNationalität.join(' / ') : '**Kein Land**'}
 
