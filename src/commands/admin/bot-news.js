@@ -21,12 +21,15 @@ module.exports = {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
+        //Todo: System wenn man was hinzufügt das es eine öffentliche Nachricht gibt und nach 5 Sekunden wieder gelöscht wird die Nachricht 
+        //damit man weiß es wurde was neues ins Changelog hinzugefügt
+
         // Nachricht senden und löschen
-        await interaction.reply({ content: 'Neues Update' });
-        const replyMessage = await interaction.fetchReply();
-        setTimeout(() => {
-            replyMessage.delete().catch(console.error);
-        }, 5000);
+        //await interaction.reply({ content: 'Neues Update' });
+        //const replyMessage = await interaction.fetchReply();
+        //setTimeout(() => {
+        //    replyMessage.delete().catch(console.error);
+        //}, 5000);
 
         if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
         const kategorie = await interaction.options.getString('kategorie')
