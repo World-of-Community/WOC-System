@@ -88,7 +88,7 @@ module.exports = {
         });
 
         const newInvites = await member.guild.invites.fetch();
-        const oldInvites = invites.get(member.guild.id);
+        const oldInvites = invite.get(member.guild.id);
 
         // Check if old Invites is defined
         if (!oldInvites) {

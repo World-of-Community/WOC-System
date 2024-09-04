@@ -506,10 +506,10 @@ module.exports = {
                 console.error(error)
 
                 if (interaction.deferred || interaction.replied) {
-                    interaction.editReply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!\n> Bitte gebe einem Teammitglied bescheid oder Öffne ein Ticket im <#819555839362072606>.", ephemeral: true })
+                    interaction.editReply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!\n> ℹ️ Bitte gebe einem Teammitglied bescheid oder Öffne ein Ticket im <#819555839362072606>.", ephemeral: true })
                 }
                 else {
-                    interaction.reply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!\n> Bitte gebe einem Teammitglied bescheid oder Öffne ein Ticket im <#819555839362072606>.", ephemeral: true })
+                    interaction.reply({content: "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!\n> ℹ️ Bitte gebe einem Teammitglied bescheid oder Öffne ein Ticket im <#819555839362072606>.", ephemeral: true })
                 }
             }
         }
