@@ -13,7 +13,7 @@ module.exports = {
             return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
         }
 
-        if (embed) {
+        if (MessageEmbed) {
         const MessageEmbed = new EmbedBuilder()
         .setTitle(`\`👤\` × ${member.user.displayName}'s Nachrichten`)
         .setDescription(`<a:Chat1:976129450112593990> » ${member} hat \`${messageCount || 0}\` Nachrichten geschrieben.`)
