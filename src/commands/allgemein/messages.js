@@ -1,4 +1,5 @@
 const { Client, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require("discord.js");
+const userdb = require("../../../Datenbank/userdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,31 +14,18 @@ module.exports = {
             return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
         }
 
-        let messageCount;
-        try {
-            messageCount = await getMessageCount(member.id);  // Make sure to await the result of getMessageCount
-        } catch (error) {
-            console.error(error); // Log any potential errors for debugging
-            return interaction.reply({ content: "> `❌` » Fehler beim Abrufen der Nachrichtenanzahl!", ephemeral: true });
-        }
+        const userData = await userdb.findOne({ userID: member.id })
 
-        // If no message count is found, default to 0
-        messageCount = messageCount || 0;
-
+        if (userData) {
         const MessageEmbed = new EmbedBuilder()
         .setTitle(`\`👤\` × ${member.user.displayName}'s Nachrichten`)
-        .setDescription(`<a:Chat1:976129450112593990> » ${member} hat \`${messageCount || 0}\` Nachrichten geschrieben.`)
+        .setDescription(`<a:Chat1:976129450112593990> » ${member} hat \`${userData.giveaway.messages || '0'}\` Nachrichten geschrieben.`)
         .setColor('Blurple')
         .setThumbnail(`${member.user.displayAvatarURL({ dynamic: true })}`)
         .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
         .setTimestamp();
 
         await interaction.reply({ embeds: [MessageEmbed], ephemeral: true })
+        } else return await interaction.reply({ content: `> \`❌\` » Ich konnte keine Statistiken über ${member} finden.`, ephemeral: true })
     }
-}
-
-// Function to simulate fetching the message count from a database or other source
-async function getMessageCount(memberId) {
-    // Replace this mock logic with actual code to fetch data from your database or logging system
-    return 123; // Returning a mock number for demonstration
 }
