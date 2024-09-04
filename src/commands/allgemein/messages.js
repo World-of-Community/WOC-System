@@ -13,7 +13,6 @@ module.exports = {
             return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
         }
 
-        if (MessageEmbed) {
         const MessageEmbed = new EmbedBuilder()
         .setTitle(`\`👤\` × ${member.user.displayName}'s Nachrichten`)
         .setDescription(`<a:Chat1:976129450112593990> » ${member} hat \`${messageCount || 0}\` Nachrichten geschrieben.`)
@@ -23,6 +22,5 @@ module.exports = {
         .setTimestamp();
 
         await interaction.reply({ embeds: [MessageEmbed], ephemeral: true })
-        } else return await interaction.reply({ content: `> \`❌\` » Ich konnte keine Statistiken über ${member} finden.`, ephemeral: true })
     }
 }
