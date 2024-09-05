@@ -153,7 +153,7 @@ module.exports = {
                 });
 
                 const NextBirthdayEmbed = new EmbedBuilder()
-                    .setName('`🎂` × Geburtstage der Community')
+                    .setTitle('`🎂` × Geburtstage der Community')
                     .setDescription(description)
                     .setColor('Blurple')
                     .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `` })
