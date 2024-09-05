@@ -172,13 +172,13 @@ const createPaginationButtons = (page, totalPages) => {
             new ButtonBuilder()
                 .setCustomId('prev')
                 .setLabel('Vorherige Seite')
-                .setStyle(ButtonStyle.Secondary)
+                .setStyle(ButtonStyle.Primary)
                 .setDisabled(page === 1), // Disable button if on first page
 
             new ButtonBuilder()
                 .setCustomId('next')
                 .setLabel('Nächste Seite')
-                .setStyle(ButtonStyle.Secondary)
+                .setStyle(ButtonStyle.Primary)
                 .setDisabled(page === totalPages) // Disable button if on last page
         );
 };
