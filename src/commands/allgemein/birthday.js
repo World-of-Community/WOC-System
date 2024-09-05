@@ -159,7 +159,7 @@ module.exports = {
                     .setTitle('`🎂` × Geburtstage der Community')
                     .setDescription(description)
                     .setColor('Blurple')
-                    .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `` })
+                    .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `${interaction.guild.iconURL()}` })
                     .setTimestamp()
 
         }
