@@ -92,7 +92,7 @@ module.exports = {
         const startTime = ms(startenIn);
         if (!startTime) return interaction.reply({ content: '> `❗` » Bitte gib eine gültige Zeit für "starten-in" an. Beispiel: 10m, 1h', ephemerl: true });
 
-        await interaction.reply(`> \`✅\` - **Gewinnspiel geplant:** Das Gewinnspiel wird in ${startenIn} in dem Kanal ${kanal} erstellt.`);
+        await interaction.reply(`> \`✅\` - **Gewinnspiel geplant:** Das Gewinnspiel wird in ${startenIn} in dem Kanal ${channel} erstellt.`);
 
         const generateRandomId = () => Math.floor(1000 + Math.random() * 9000);
         var id = generateRandomId();
