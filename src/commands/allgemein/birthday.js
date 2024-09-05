@@ -152,7 +152,7 @@ const createBirthdayEmbed = (birthdays, page) => {
         const formattedMonat = monat.toString().padStart(2, '0');
         const formattedDate = `${formattedTag}.${formattedMonat}.${jahr}`;
 
-        description += `${member.user.displayName} - ${formattedDate}\n`;
+        description += `${member} - ${formattedDate}\n`;
     });
 
     const embed = new EmbedBuilder()
