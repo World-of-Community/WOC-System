@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const userDB = require("../../../Datenbank/userdb")
 
 module.exports = {
@@ -18,7 +18,8 @@ module.exports = {
                 .addIntegerOption(option => option.setName('tag').setDescription('» An welchem Tag wurde der Nutzer geboren?').setRequired(true))
                 .addIntegerOption(option => option.setName('monat').setDescription('» In welchem Monat wurde der Nutzer geboren?').setRequired(true))
                 .addIntegerOption(option => option.setName('jahr').setDescription('» In welchem Jahr wurde der Nutzer geboren?').setRequired(false))
-        ),
+        )
+        .addSubcommand((command) => command.setName('next birthday').setDescription('» Zeigt dir die nächsten Geburtstage an. 🎂')),
 
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
@@ -130,6 +131,34 @@ module.exports = {
                     await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Ändern des Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
                 }
                 break;
+
+            case 'next birthday':
+                // Stelle sicher, dass userDB korrekt auf die Datenbank zugreift
+                // und dass du die Geburtstagsdaten aus der Datenbank abrufst.
+                const upcomingBirthdays = await userDB.find({
+                    'birthday.jahr': { $exists: true }, // Falls Jahr vorhanden ist
+                }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
+
+                if (upcomingBirthdays.length === 0) {
+                    return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
+                }
+
+                upcomingBirthdays.forEach(birthday => {
+                    const { userID, birthday: { tag, monat, jahr } } = birthday;
+                    const user = interaction.guild.members.cache.get(userID) || { user: { member: 'Unbekannt' } };
+                    const member = user.user.displayName;
+                    const date = `${tag}.${monat}`;
+            
+                    description += `${member} - Geburtstag: ${date} ${jahr ? `(${jahr})` : ''}\n`;
+                });
+
+                const NextBirthdayEmbed = new EmbedBuilder()
+                    .setName('`🎂` × Geburtstage der Community')
+                    .setDescription(description)
+                    .setColor('Blurple')
+                    .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `` })
+                    .setTimestamp()
+
         }
     },
 };
