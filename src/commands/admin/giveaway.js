@@ -268,7 +268,7 @@ module.exports = {
       <:PfeilBlau:1147248395837247613> Erstellt von <@${activeGiveaways.creator}>`)
         .setColor('Red')
         .setThumbnail('https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=53e18bea4e53fcfa6bef3450c65670ac3d7d1d57e3dd66a18e23d9660dfdfc6d&')
-        .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
+        .setFooter({ text: `${interaction.client.user.username} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
         .setTimestamp();
 
         await giveawayMessage.edit({ embeds: [endEmbed] });
