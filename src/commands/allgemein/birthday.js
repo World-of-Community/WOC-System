@@ -148,11 +148,10 @@ module.exports = {
 
                 upcomingBirthdays.forEach(birthday => {
                     const { userID, birthday: { tag, monat, jahr } } = birthday;
-                    const user = interaction.guild.members.cache.get(userID) || { user: { member: 'Unbekannt' } };
-                    const member = user.displayName;
+                    const member = interaction.guild.members.cache.get(userID) || { user: { member: 'Unbekannt' } };
                     const date = `${tag}.${monat}`;
             
-                    description += `${member.displayName} - Geburtstag: ${date} ${jahr ? `(${jahr})` : ''}\n`;
+                    description += `${member} - ${date} ${jahr ? `(${jahr})` : ''}\n`;
                 });
 
                 const NextBirthdayEmbed = new EmbedBuilder()
