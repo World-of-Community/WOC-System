@@ -46,12 +46,12 @@ module.exports = {
           .setDescription("Wähle einen Sponsor für das Gewinnspiel aus.")
           .setRequired(false)
       )
-      .addStringOption((option) =>
-        option
-          .setName("starten-in")
-          .setDescription("Wann soll das Gewinnspiel starten? (Beispiel: 1d 5h 10m)")
-          .setRequired(false)
-      )
+      //.addStringOption((option) =>
+      //  option
+      //    .setName("starten-in")
+      //    .setDescription("Wann soll das Gewinnspiel starten? (Beispiel: 1d 5h 10m)")
+      //    .setRequired(false)
+      //)
   )
   .addSubcommand((command) =>
     command
@@ -86,7 +86,7 @@ module.exports = {
         const sponsor = interaction.options.getMember("sponsor") || null;
         const channel = interaction.options.getChannel("kanal") || interaction.channel;
         const bedingung = interaction.options.getString("bedingung");
-        const startenIn = interaction.options.getString("starten-in");
+        //const startenIn = interaction.options.getString("starten-in");
 
         // Timer funktioniert noch nicht
         //const startTime = ms(startenIn);
