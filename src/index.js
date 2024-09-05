@@ -606,6 +606,8 @@ setInterval(async () => {
                 }
             }
 
+            const guild = '815919809379172354'
+
             const embed = giveawayMessage.embeds[0];
             const giveawayEndEmbed = new EmbedBuilder()
                 .setTitle(`${embed.title}`)
