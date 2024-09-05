@@ -614,7 +614,7 @@ setInterval(async () => {
                 .setDescription(`<a:Neuigkeiten:1018910061348798564> » **__Gewinnspiel - Gewinner__**\n<:PfeilBlau:1147248395837247613> Teilnehmer: **${giveaway.teilnehmer.length}**\n<:PfeilBlau:1147248395837247613> Gewinner: ${winnerIds.length > 0 ? winnersMentions : "**`Zu wenig Teilnehmer`**"}\n<:PfeilBlau:1147248395837247613> Erstellt von <@${giveaway.creator}>`)
                 .setColor('Red')
                 .setThumbnail('https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=53e18bea4e53fcfa6bef3450c65670ac3d7d1d57e3dd66a18e23d9660dfdfc6d&')
-                .setFooter({ text: `${client.user.displayName} - Bot`, iconURL: `${guild.iconURL()}` })
+                .setFooter({ text: `${client.user.displayName} - Bot` })
                 .setTimestamp();
             await giveawayMessage.edit({ content: '⛔ **GEWINNSPIEL VORBEI!** ⛔', embeds: [giveawayEndEmbed], components: [] });
 
