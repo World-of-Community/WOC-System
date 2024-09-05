@@ -57,7 +57,7 @@ module.exports = (client) => {
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         const roletoAdd = await guild.roles.cache.get("972193356333604874");
             await members.forEach(member => {
-              if (!member.bot && !member.roles.cache.some(role => role.id === '972193356333604874') && member.joinedAt <= oneYearAgo && !member.bot) {
+              if (!member.bot && !member.roles.cache.some(role => role.id === '972193356333604874') && member.joinedAt <= oneYearAgo) {
                     member.roles.add(roletoAdd).then(() => {
                         
                         const oneYearEmbed = new EmbedBuilder()
