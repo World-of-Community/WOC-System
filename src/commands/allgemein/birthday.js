@@ -143,6 +143,9 @@ module.exports = {
                     return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
                 }
 
+                // Initialisiere die Beschreibung
+                let description = 'Hier sind die nächsten Geburtstage:\n\n';
+
                 upcomingBirthdays.forEach(birthday => {
                     const { userID, birthday: { tag, monat, jahr } } = birthday;
                     const user = interaction.guild.members.cache.get(userID) || { user: { member: 'Unbekannt' } };
