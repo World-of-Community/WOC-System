@@ -35,7 +35,7 @@ module.exports = {
         )
         .addSubcommand((command) => 
             command
-                .setName('new word')
+                .setName('new-word')
                 .setDescription('» Füge einen neuen Begriff hinzu. ➕')
                 .addStringOption(option =>
                     option.setName('begriff')
