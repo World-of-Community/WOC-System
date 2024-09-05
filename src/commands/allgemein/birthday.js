@@ -19,7 +19,7 @@ module.exports = {
                 .addIntegerOption(option => option.setName('monat').setDescription('» In welchem Monat wurde der Nutzer geboren?').setRequired(true))
                 .addIntegerOption(option => option.setName('jahr').setDescription('» In welchem Jahr wurde der Nutzer geboren?').setRequired(false))
         )
-        .addSubcommand((command) => command.setName('next-birthday').setDescription('» Zeigt dir die nächsten Geburtstage an. 🎂')),
+        .addSubcommand((command) => command.setName('next').setDescription('» Zeigt dir die nächsten Geburtstage an. 🎂')),
 
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
@@ -132,7 +132,7 @@ module.exports = {
                 }
                 break;
 
-            case 'next-birthday':
+            case 'next':
                 // Stelle sicher, dass userDB korrekt auf die Datenbank zugreift
                 // und dass du die Geburtstagsdaten aus der Datenbank abrufst.
                 const upcomingBirthdays = await userDB.find({
