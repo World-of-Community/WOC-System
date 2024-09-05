@@ -88,11 +88,11 @@ module.exports = {
         const bedingung = interaction.options.getString("bedingung");
         const startenIn = interaction.options.getString("starten-in");
 
-        // Timer
-        const startTime = ms(startenIn);
-        if (!startTime) return interaction.reply({ content: '> `❗` » Bitte gib eine gültige Zeit für "starten-in" an. Beispiel: 10m, 1h', ephemerl: true });
+        // Timer funktioniert noch nicht
+        //const startTime = ms(startenIn);
+        //if (!startTime) return interaction.reply({ content: '> `❗` » Bitte gib eine gültige Zeit für "starten-in" an. Beispiel: 10m, 1h', ephemerl: true });
 
-        await interaction.reply(`> \`✅\` - **Gewinnspiel geplant:** Das Gewinnspiel wird in ${startenIn} in dem Kanal ${channel} erstellt.`);
+        //await interaction.reply(`> \`✅\` - **Gewinnspiel geplant:** Das Gewinnspiel wird in ${startenIn} in dem Kanal ${channel} erstellt.`);
 
         const generateRandomId = () => Math.floor(1000 + Math.random() * 9000);
         var id = generateRandomId();
