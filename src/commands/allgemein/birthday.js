@@ -162,6 +162,7 @@ module.exports = {
                     .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `${interaction.guild.iconURL()}` })
                     .setTimestamp()
 
+                await interaction.reply({ embeds: [NextBirthdayEmbed], ephemeral: true })
         }
     },
 };
