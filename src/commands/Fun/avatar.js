@@ -13,7 +13,8 @@ module.exports = {
             '*Ich weiß nicht was ich davon halten soll...*',
             '*So wunderschön, besser geht es nicht. :)*',
             '*Dieser Avatar gefällt mir sehr!*',
-            '*Kenne schon bessere Avatare.*'
+            '*Kenne schon bessere Avatare.*',
+            'Dieser Avatar ist sehr... speziell.'
         ]
 
         const text = texte[Math.floor(Math.random() * texte.length)]
@@ -24,7 +25,7 @@ module.exports = {
             .setDescription(`${text}`)
             .setImage(user.displayAvatarURL({ dynamic: true, size: 1024 }))
             .setColor('Blurple')
-            .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: "https://cdn.discordapp.com/attachments/1145779055644393592/1151073428099575858/WOC_Orange.png" })
+            .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
         
             interaction.reply({ embeds: [avatarEmbed] })
     }
