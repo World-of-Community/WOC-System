@@ -31,7 +31,32 @@ module.exports = {
         .addSubcommand((command) =>
             command
                 .setName('settings')
-                .setDescription('» Zeigt die aktuellen Einstellungen. 📌'),
+                .setDescription('» Zeigt die aktuellen Einstellungen. 📌')
+        )
+        .addSubcommand((command) => 
+            command
+                .setName('new word')
+                .setDescription('» Füge einen neuen Begriff hinzu. ➕')
+                .addStringOption(option =>
+                    option.setName('begriff')
+                        .setDescription('Der Begriff, der erraten werden soll. (Emojis)')
+                        .setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName('schwierigkeit')
+                        .setDescription('Schwierigkeitsgrad des Begriffs')
+                        .addChoices(
+                            { name: 'schwer', value: 'schwer' },     
+                            { name: 'mittel', value: 'mittel' },
+                            { name: 'leicht', value: 'leicht' })
+                        .setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName('belohnung')
+                        .setDescription('Belohnung für das Erraten (Punkte 1-3)')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('tipp')
+                        .setDescription('Ein Hinweis, der den Usern gegeben wird.')
+                        .setRequired(true)),
         ))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
@@ -54,10 +79,9 @@ module.exports = {
 
                 // Embed für das Emojiquiz
                 const emojiQuizEmbed = new EmbedBuilder()
-                    .setTitle('🎉 Emojiquiz 🎉')
                     .setDescription(`Gesuchter Begriff • ${currentQuiz.term}\n\nSchwierigkeit • **${currentQuiz.difficulty}**\nBelohnung • **${currentQuiz.reward}** Punkte\n\nTipp • **${currentQuiz.hint}**`)
                     .setColor('Blurple')
-                    .setFooter({ text: `${interaction.guild.name} - Emojiquiz`, iconURL: `${interaction.guild.iconURL()}` })
+                    .setFooter({ text: `» Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button, um das Emojiquiz zu überspringen.`, iconURL: `${interaction.guild.iconURL()}` })
                     .setTimestamp();
 
                 // Action-Buttons
@@ -90,7 +114,7 @@ module.exports = {
                         const newQuiz = quizTerms[Math.floor(Math.random() * quizTerms.length)];
                         const newEmbed = new EmbedBuilder()
                             .setTitle('🎉 Emojiquiz (Neuer Begriff) 🎉')
-                            .setDescription('Versuche den gesuchten Begriff anhand des Emojis zu erraten!')
+                            .setDescription(`Gesuchter Begriff • ${currentQuiz.term}\n\nSchwierigkeit • **${currentQuiz.difficulty}**\nBelohnung • **${currentQuiz.reward}** Punkte\n\nTipp • **${currentQuiz.hint}**`)
                             .addFields(
                                 { name: 'Gesuchter Begriff', value: `${newQuiz.term}`, inline: true },
                                 { name: 'Schwierigkeit', value: `${newQuiz.difficulty}`, inline: true },
