@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ButtonBuilder, ButtonStyle, InteractionCollector } = require('discord.js');
 const userDB = require("../../../Datenbank/userdb")
 
 module.exports = {
@@ -133,41 +133,97 @@ module.exports = {
                 break;
 
             case 'next':
-                // Stelle sicher, dass userDB korrekt auf die Datenbank zugreift
-                // und dass du die Geburtstagsdaten aus der Datenbank abrufst.
-                const upcomingBirthdays = await userDB.find({
-                    'birthday.tag': { $exists: true }, // Tag muss vorhanden sein
-                    'birthday.monat': { $exists: true }, // Monat muss vorhanden sein
-                    'birthday.jahr': { $exists: false } // Jahr muss vorhanden sein (nicht unbedingt)
-                }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
+                const pageSize = 10; // Anzahl der Einträge pro Seite
 
-                if (upcomingBirthdays.length === 0) {
-                    return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
-                }
+// Funktion zum Erstellen des Embeds
+const createBirthdayEmbed = (birthdays, page) => {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = Math.min(page * pageSize, birthdays.length);
+    const pageBirthdays = birthdays.slice(startIndex, endIndex);
 
-                // Initialisiere die Beschreibung
-                let description = 'Hier sind die nächsten Geburtstage:\n\n';
+    let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
-                upcomingBirthdays.forEach(birthday => {
-                    const { userID, birthday: { tag, monat, jahr } } = birthday;
-                    const member = interaction.guild.members.cache.get(userID) || { user: { displayName: 'Unbekannt' } };
-            
-                    // Füge führende Nullen hinzu
-                    const formattedTag = tag.toString().padStart(2, '0');
-                    const formattedMonat = monat.toString().padStart(2, '0');
-                    const formattedDate = `${formattedTag}.${formattedMonat}.${jahr}`;
-            
-                    description += `${member.user.displayName} - ${formattedDate}\n`;
-                });
+    pageBirthdays.forEach(birthday => {
+        const { userID, birthday: { tag, monat, jahr } } = birthday;
+        const member = interaction.guild.members.cache.get(userID) || { user: { displayName: 'Unbekannt' } };
 
-                const NextBirthdayEmbed = new EmbedBuilder()
-                    .setTitle('`🎂` × Geburtstage der Community')
-                    .setDescription(description)
-                    .setColor('Blurple')
-                    .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `${interaction.guild.iconURL()}` })
-                    .setTimestamp()
+        // Füge führende Nullen hinzu
+        const formattedTag = tag.toString().padStart(2, '0');
+        const formattedMonat = monat.toString().padStart(2, '0');
+        const formattedDate = `${formattedTag}.${formattedMonat}.${jahr}`;
 
-                await interaction.reply({ embeds: [NextBirthdayEmbed], ephemeral: true })
+        description += `${member.user.displayName} - ${formattedDate}\n`;
+    });
+
+    const embed = new EmbedBuilder()
+        .setTitle('`🎂` × Geburtstage der Community')
+        .setDescription(description)
+        .setColor('Blurple')
+        .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `${interaction.guild.iconURL()}` })
+        .setTimestamp();
+
+    return embed;
+};
+
+// Funktion zum Erstellen der Buttons
+const createPaginationButtons = (page, totalPages) => {
+    return new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setCustomId('prev')
+                .setLabel('Vorherige Seite')
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(page === 1), // Disable button if on first page
+
+            new ButtonBuilder()
+                .setCustomId('next')
+                .setLabel('Nächste Seite')
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(page === totalPages) // Disable button if on last page
+        );
+};
+
+case 'next': {
+    const upcomingBirthdays = await userDB.find({
+        'birthday.tag': { $exists: true },
+        'birthday.monat': { $exists: true },
+        'birthday.jahr': { $exists: false }
+    }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
+
+    if (upcomingBirthdays.length === 0) {
+        return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
+    }
+
+    let currentPage = 1;
+    const totalPages = Math.ceil(upcomingBirthdays.length / pageSize);
+
+    const embed = createBirthdayEmbed(upcomingBirthdays, currentPage);
+    const buttons = createPaginationButtons(currentPage, totalPages);
+
+    const message = await interaction.reply({ embeds: [embed], components: [buttons], ephemeral: true });
+
+    const filter = i => ['prev', 'next'].includes(i.customId) && i.user.id === interaction.user.id;
+    const collector = new InteractionCollector(interaction.client, { message, filter });
+
+    collector.on('collect', async i => {
+        if (i.customId === 'prev') {
+            currentPage = Math.max(currentPage - 1, 1);
+        } else if (i.customId === 'next') {
+            currentPage = Math.min(currentPage + 1, totalPages);
+        }
+
+        const updatedEmbed = createBirthdayEmbed(upcomingBirthdays, currentPage);
+        const updatedButtons = createPaginationButtons(currentPage, totalPages);
+
+        await i.update({ embeds: [updatedEmbed], components: [updatedButtons] });
+    });
+
+    collector.on('end', collected => {
+        // Disable buttons after the collector ends
+        message.edit({ components: [] });
+    });
+    break;
+}
         }
     },
 };

@@ -67,7 +67,7 @@ module.exports = {
             await messageData.save()
         }
 
-        // Changelog Info Neues Update Nachricht
+        // Changelog Info Neues Update Nachricht - geht nicht
         if (message.content === '/bot-news' && message.channel.id === '1051393854328279120') {
             try {
                 // Sendet die Nachricht
