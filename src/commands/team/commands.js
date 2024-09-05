@@ -12,7 +12,7 @@ async execute(interaction) {
         // Überprüfen, ob der Befehl funktioniert (kein Fehler beim Laden)
         let status;
         try {
-            require(`../commands/${command.data.name}.js`);
+            require.resolve(`../commands/${command.data.name}.js`);
             status = '🟢';  // Befehl funktioniert
         } catch (error) {
             status = '🔴';  // Befehl funktioniert nicht
