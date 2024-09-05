@@ -136,7 +136,9 @@ module.exports = {
                 // Stelle sicher, dass userDB korrekt auf die Datenbank zugreift
                 // und dass du die Geburtstagsdaten aus der Datenbank abrufst.
                 const upcomingBirthdays = await userDB.find({
-                    'birthday.jahr': { $exists: true }, // Falls Jahr vorhanden ist
+                    'birthday.tag': { $exists: true }, // Tag muss vorhanden sein
+                    'birthday.monat': { $exists: true }, // Monat muss vorhanden sein
+                    'birthday.jahr': { $exists: false } // Jahr muss vorhanden sein (nicht unbedingt)
                 }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
 
                 if (upcomingBirthdays.length === 0) {
@@ -148,10 +150,14 @@ module.exports = {
 
                 upcomingBirthdays.forEach(birthday => {
                     const { userID, birthday: { tag, monat, jahr } } = birthday;
-                    const member = interaction.guild.members.cache.get(userID) || { user: { member: 'Unbekannt' } };
-                    const date = `${tag}.${monat}`;
+                    const member = interaction.guild.members.cache.get(userID) || { user: { displayName: 'Unbekannt' } };
             
-                    description += `${member} - ${date} ${jahr ? `(${jahr})` : ''}\n`;
+                    // Füge führende Nullen hinzu
+                    const formattedTag = tag.toString().padStart(2, '0');
+                    const formattedMonat = monat.toString().padStart(2, '0');
+                    const formattedDate = `${formattedTag}.${formattedMonat}.${jahr}`;
+            
+                    description += `${member.user.displayName} - ${formattedDate}\n`;
                 });
 
                 const NextBirthdayEmbed = new EmbedBuilder()
