@@ -189,13 +189,11 @@ module.exports = {
               ? ""
               : bedingungsNachrichten[bedingung];
 
-
               const embed = new EmbedBuilder()
               .setTitle(`<a:Diamond:1018911546430210128> ${priceInput} <a:Diamond:1018911546430210128>`)
               .setDescription(`<a:Neuigkeiten:1018910061348798564> » **__Informationen__**\n<:PfeilBlau:1147248395837247613> **${winnerInput}** Gewinner\n<:PfeilBlau:1147248395837247613> Erstellt von ${interaction.user}\n<:PfeilBlau:1147248395837247613> Endet **<t:${timestamp}:R>** (<t:${timestamp}:D>)${sponsor ? `\n<:PfeilBlau:1147248395837247613>  Danke an den **Sponsor:** ${sponsor.user}` : ""}\n\n<a:pin:1007908864198463499> » **__Anforderung__**${bedingungNachricht}\n<:Pfeil:1119709908540076124> Klicke auf den **Button** zum teilnehmen!\n\n\`🌍\` » Rufe alle deine Statistiken mit \`/profil\` ab.`)
               .setColor("Blurple")
               .setThumbnail("https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=61eaa2c48e285bd587d9c30df8d489038c99cb289d5cd6bfa3f404ec8d3c1672&=&size=4096")
-            
 
               const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
