@@ -180,8 +180,8 @@ module.exports = {
               const timestamp = Math.floor(endDate / 1000);
 
               const bedingungsNachrichten = {
-                messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput || '0'}** Nachrichten senden`,
-                voiceTime: `\n<:Pfeil:1119709908540076124> **${bedingungsvalue || '0'} Sprachkanal-Zeit**`,
+                messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput || '0'}** Nachrichten senden!`,
+                voiceTime: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungsvalue || '0'}** in Sprachkanälen!`,
                 role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput || '0'}> **besitzen**`,
                 membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true }) || '0'} auf dem Server**`,
               };
