@@ -9,16 +9,17 @@ module.exports = {
 
         // Liste der Befehle und deren Status (🟢 oder 🔴)
         const commandList = interaction.client.commands.map(command => {
-            // Überprüfen, ob der Befehl funktioniert (kein Fehler beim Laden)
-            let status;
+            let status = '🟢'; // Standardmäßig auf "funktioniert" setzen
             try {
-                // Hier wäre es besser, nicht erneut zu require, sondern einfach die Existenz zu prüfen
-                require.resolve(`../commands/${command.data.name}.js`);
-                status = '🟢';  // Befehl funktioniert
+                // Überprüfen, ob die Datei existiert
+                const commandPath = `./commands/${command.data.name}.js`;
+                if (!fs.existsSync(commandPath)) {
+                    status = '🔴'; // Falls die Datei nicht existiert, setze den Status auf rot
+                }
             } catch (error) {
-                status = '🔴';  // Befehl funktioniert nicht
+                status = '🔴'; // Falls ein Fehler auftritt, setze den Status auf rot
             }
-            return `/${command.data.name} - (\`${status}\`)`; // Befehl und Status ohne Backticks
+            return `(\`${status}\`) - \`${command.data.name}\``; // Befehl und Status
         }).join('\n'); // Liste untereinander
 
         // Erstelle das Embed
