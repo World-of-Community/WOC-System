@@ -31,7 +31,7 @@ module.exports = {
 
         const userEmbed = new EmbedBuilder()
             .setTitle(`\`👤\` | Informationen über \`${member.displayName}\``)
-            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'} (Grund: (\`${banReason}\`)\n> \`🔇\` » Timeouts: \`${timeoutCount}\``)
+            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'} (Grund: \`${banReason}\`)\n> \`🔇\` » Timeouts: \`${timeoutCount}\``)
             .setColor('Blurple')
             .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
             .setFooter({ text: `${interaction.guild.name} | User Information`, iconURL: `${interaction.guild.iconURL()}` })
