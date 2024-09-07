@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('bot-commands')
+        .setName('commands')
         .setDescription('» Listet dir alle Befehle auf.'),
 
     async execute(interaction) {
