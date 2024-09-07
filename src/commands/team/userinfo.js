@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require("discord.js");
+const Timeout = require('../../../Datenbank/timeoutdb');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -28,13 +29,9 @@ module.exports = {
         const timeouts = await Timeout.find({ userId: user.id, guildId: interaction.guild.id });
         const timeoutCount = timeouts.length;
 
-        // Fetch the number of rule violations
-        const ruleViolations = await RuleViolation.find({ userId: user.id, guildId: interaction.guild.id });
-        const ruleViolationCount = ruleViolations.length;  // ruleViolationCount wird 0 sein, wenn keine Regelverstöße vorhanden sind
-
         const userEmbed = new EmbedBuilder()
             .setTitle(`\`👤\` | Informationen über \`${member.displayName}\``)
-            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`📌\` » Gebannt: ${banned ? 'Ja (`❗`)' : 'Nein (`✅`)'} (\`${banReason}\`)\n> \`🔇\` » Timeouts: \`${timeoutCount}\`\n> \`📋\` » Regelverstöße: \`${ruleViolationCount}\``)
+            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`📌\` » Gebannt: ${banned ? 'Ja (`❗`)' : 'Nein (`✅`)'} (\`${banReason}\`)\n> \`🔇\` » Timeouts: \`${timeoutCount}\``)
             .setColor('Blurple')
             .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
             .setFooter({ text: `${interaction.guild.name} | User Information`, iconURL: `${interaction.guild.iconURL()}` })
