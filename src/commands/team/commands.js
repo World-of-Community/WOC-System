@@ -19,7 +19,7 @@ module.exports = {
             } catch (error) {
                 status = '🔴'; // Falls ein Fehler auftritt, setze den Status auf rot
             }
-            return `(\`${status}\`) - \`${command.data.name}\``; // Befehl und Status
+            return `(\`${status}\`) - \`/${command.data.name}\``; // Befehl und Status
         }).join('\n'); // Liste untereinander
 
         // Erstelle das Embed
