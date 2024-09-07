@@ -45,8 +45,8 @@ module.exports = {
                 .setColor('Red')
                 .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: `${interaction.client.user.displayAvatarURL()}` })
             
-                member.roles.add(banRole)
-                member.roles.remove(memberRole)
+                member.roles.add("886989738244964362")
+                member.roles.remove("815920703067914290")
 
             const newBan = new bandb({
                 creator: interaction.user,
