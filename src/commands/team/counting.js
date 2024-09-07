@@ -30,7 +30,7 @@ module.exports = {
         if (!isNaN(userNumber)) {
             if (userNumber === currentCount + 1) {
                 if (message.author.id === lastUserId) {
-                    await message.channel.send(`@${message.author}, hat Die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen.**`);
+                    await message.channel.send(`@${message.author.displayName}, hat Die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen.**`);
                     currentCount = 0;
                     lastUserId = null;
                 } else {
@@ -40,7 +40,7 @@ module.exports = {
                 }
             } else {
                 message.react('❌');
-                await message.channel.send(`@${message.author}, Falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist 1.`)
+                await message.channel.send(`@${message.author.displayName}, Falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist 1.`)
             }
         }
 
