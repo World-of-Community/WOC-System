@@ -20,18 +20,13 @@ module.exports = {
         const banned = bans.has(user.id);
         const banReason = banned ? (await interaction.guild.bans.fetch(user.id)).reason || 'Keine Angabe' : 'Nicht gebannt';
 
-        // Fetch the number of timeouts (if applicable)
-        // This is a placeholder as Discord.js doesn't track timeouts natively
-        // You would need to implement your own tracking mechanism for this
-        //const timeouts = 0;  // Placeholder for actual timeout fetching logic
-
         // Fetch the number of timeouts
         const timeouts = await Timeout.find({ userId: user.id, guildId: interaction.guild.id });
         const timeoutCount = timeouts.length;
 
         const userEmbed = new EmbedBuilder()
             .setTitle(`\`👤\` | Informationen über \`${member.displayName}\``)
-            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`📌\` » Gebannt: ${banned ? 'Ja (`❗`)' : 'Nein (`✅`)'} (\`${banReason}\`)\n> \`🔇\` » Timeouts: \`${timeoutCount}\``)
+            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'} (Grund: \`${banReason}\`)\n> \`🔇\` » Timeouts: \`${timeoutCount}\``)
             .setColor('Blurple')
             .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
             .setFooter({ text: `${interaction.guild.name} | User Information`, iconURL: `${interaction.guild.iconURL()}` })
