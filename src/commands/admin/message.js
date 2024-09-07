@@ -26,7 +26,7 @@ module.exports = {
             await interaction.reply({ content: `> \`✅\` » Ich habe die Nachricht erfolgreich an ${member} gesendet!`, ephemeral: true });
         } catch (error) {
             console.error(`Fehler beim Senden der Nachricht an ${member}:`, error);
-            await interaction.reply({ content: `> \`❌\` » Beim Senden der Nachricht an ${member} ist ein Fehler aufgetreten.\nBitte schau im Server-Log nach oder melde dich bei einem Admin.`, ephemeral: true });
+            await interaction.reply({ content: `> \`❌\` » Beim Senden der Nachricht an ${member} ist ein Fehler aufgetreten.\n> \`📌\` » Bitte schau im Server-Log nach oder melde dich bei einem Admin.`, ephemeral: true });
         }
     },
 };
