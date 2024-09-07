@@ -1,10 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require("discord.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('userinfo')
         .setDescription('» Rufe Informationen über einen User ab. 👤')
-        .addUserOption(option => option.setName("user").setDescription("» Wähle einen User aus").setRequired(true)),
+        .addUserOption(option => option.setName("user").setDescription("» Wähle einen User aus").setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
         const user = interaction.options.getUser('user');
@@ -21,15 +22,19 @@ module.exports = {
         // Fetch the number of timeouts (if applicable)
         // This is a placeholder as Discord.js doesn't track timeouts natively
         // You would need to implement your own tracking mechanism for this
-        const timeouts = 0;  // Placeholder for actual timeout fetching logic
+        //const timeouts = 0;  // Placeholder for actual timeout fetching logic
 
-        // Placeholder for rule violations
-        // You would need to implement your own tracking mechanism for rule violations
-        const ruleViolations = 'Keine Regelverstöße';  // Placeholder for actual rule violation data
+        // Fetch the number of timeouts
+        const timeouts = await Timeout.find({ userId: user.id, guildId: interaction.guild.id });
+        const timeoutCount = timeouts.length;
+
+        // Fetch the number of rule violations
+        const ruleViolations = await RuleViolation.find({ userId: user.id, guildId: interaction.guild.id });
+        const ruleViolationCount = ruleViolations.length;  // ruleViolationCount wird 0 sein, wenn keine Regelverstöße vorhanden sind
 
         const userEmbed = new EmbedBuilder()
             .setTitle(`\`👤\` | Informationen über \`${member.displayName}\``)
-            .setDescription(`**Account Informationen**\n> » Benutzername: ${user.username} (\`${user.id}\`)\n> » Anzeigename: ${member.displayName}\n\n> » Account erstellt am: ${createdAt}\n> » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> Gebannt: ${banned ? 'Ja' : 'Nein'}\n> Grund: \`${banReason}\`\n> Timeouts: \`${timeouts}\`\n> Regelverstöße: \`${ruleViolations}\``)
+            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`📌\` » Gebannt: ${banned ? 'Ja (`❗`)' : 'Nein (`✅`)'} (\`${banReason}\`)\n> \`🔇\` » Timeouts: \`${timeoutCount}\`\n> \`📋\` » Regelverstöße: \`${ruleViolationCount}\``)
             .setColor('Blurple')
             .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
             .setFooter({ text: `${interaction.guild.name} | User Information`, iconURL: `${interaction.guild.iconURL()}` })

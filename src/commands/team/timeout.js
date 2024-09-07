@@ -1,4 +1,4 @@
-//Code von @vxnsin
+// Code von @vxnsin
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require("discord.js")
 const ms = require('ms');
 
@@ -41,7 +41,7 @@ module.exports = {
             .setDescription("» Du wurdest getimeoutet!\n» **Grund:** `" + grund + "`\n» **Dauer:** <t:" + Math.floor(timeoutTime.getTime() / 1000) + ":R>")
             .setColor("Red")
             .setTimestamp()
-            
+
         await user.send({embeds: [userdm]})
        
             const embed = new EmbedBuilder()
