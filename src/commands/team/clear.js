@@ -7,7 +7,7 @@ module.exports = {
         .addIntegerOption(option => option.setName('anzahl').setDescription('» Wie viele Nachrichten möchtest du löschen?').setRequired(true))
         .addChannelOption(option => option.setName('kanal').setDescription('» In welchen Kanal soll gelöscht werden?').setRequired(false))
         .addStringOption(option => option.setName('grund').setDescription('» Wie lautet die Begründung?').setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages), 
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
     async execute(interaction) {
         
@@ -15,9 +15,38 @@ module.exports = {
         const kanal = interaction.options.getChannel('kanal') || interaction.channel;
         const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
 
-        if (messagedelete < 1 || messagedelete > 100) {
-            return interaction.reply({ content: '> `❗` » Bitte gib eine Anzahl von Nachrichten zwischen `1 und 100` an.', ephemeral: true });
+        //if (messagedelete < 1 || messagedelete > 100) {
+        //    return interaction.reply({ content: '> `❗` » Bitte gib eine Anzahl von Nachrichten zwischen `1 und 100` an.', ephemeral: true });
+        //}
+
+        // Prüfen, ob die Anzahl größer als 0 ist
+        if (messagedelete < 1) {
+            return interaction.reply({ content: '> `❗` » Bitte gib eine Anzahl von Nachrichten an.', ephemeral: true });
         }
+
+        let remainingMessages = messagedelete;
+
+        while (remainingMessages > 0) {
+            // Maximal 100 Nachrichten auf einmal löschen
+            const deleteCount = Math.min(remainingMessages, 100);
+
+            // Nachrichten löschen
+            await interaction.channel.bulkDelete(deleteCount, true)
+                .then(deletedMessages => {
+                    remainingMessages -= deletedMessages.size;
+                })
+                .catch(error => {
+                    console.error(error);
+                    return interaction.reply({ content: '> `❗` » Ein Fehler ist beim Löschen der Nachrichten aufgetreten.', ephemeral: true });
+                });
+
+            // Wenn keine Nachrichten mehr übrig sind, breche die Schleife ab
+            if (remainingMessages <= 0) {
+                break;
+            }
+        }
+
+        //
 
         try {
             const messages = await kanal.bulkDelete(messagedelete, true);
