@@ -22,25 +22,25 @@ module.exports = {
         await interaction.reply(`> \`✅\` » Der Zählkanal wurde auf <#${countingChannelId}> eingestellt.`);
 
         // Ignore messages from the bot and check if it's in the counting channel
-        if (message.member.bot || message.channel.id !== countingChannelId) return;
+        if (message.author.bot || message.channel.id !== countingChannelId) return;
 
         // Parse the message content to check if it's a number
         const userNumber = parseInt(message.content);
 
         if (!isNaN(userNumber)) {
             if (userNumber === currentCount + 1) {
-                if (message.member.id === lastUserId) {
-                    await message.channel.send(`@${message.member.displayName}, hat Die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen.**`);
+                if (message.author.id === lastUserId) {
+                    await message.channel.send(`@${message.author.displayName}, hat Die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen.**`);
                     currentCount = 0;
                     lastUserId = null;
                 } else {
                     currentCount++;
-                    lastUserId = message.member.id;
+                    lastUserId = message.author.id;
                     message.react('✅');
                 }
             } else {
                 message.react('❌');
-                await message.channel.send(`@${message.member.displayName}, Falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist 1.`)
+                await message.channel.send(`@${message.author.displayName}, Falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist 1.`)
             }
         }
 
