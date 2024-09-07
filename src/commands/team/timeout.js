@@ -11,11 +11,14 @@ module.exports = {
     .addStringOption(option => option.setName("dauer").setDescription("» Gebe eine Dauer an. (z.B. 30s 10m)").setRequired(true))
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
     .setDMPermission(false),
+
     async execute(interaction, client) {
+
         const user = interaction.options.getUser('user');
         const zeitString = interaction.options.getString('dauer');
         const grund = interaction.options.getString('grund');
         const member = await interaction.guild.members.fetch({ user, force: true }).catch(() => null);
+
         if(!member) return await interaction.reply({ content: utils.other.text.userFound(), ephemeral: true });    
         if (interaction.user.id === user.id) return interaction.reply({ content: '> `❌` » Du kannst dir selbst keinen Timeout geben.', ephemeral: true });
         if(!member.kickable) return interaction.reply({ content: '> `❌` » Dieser Benutzer kann nicht getimeoutet werden.', ephemeral: true });
@@ -38,6 +41,7 @@ module.exports = {
             .setDescription("» Du wurdest getimeoutet!\n» **Grund:** `" + grund + "`\n» **Dauer:** <t:" + Math.floor(timeoutTime.getTime() / 1000) + ":R>")
             .setColor("Red")
             .setTimestamp()
+            
         await user.send({embeds: [userdm]})
        
             const embed = new EmbedBuilder()
