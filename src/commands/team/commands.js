@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('disc
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('commands')
+        .setName('command-status')
         .setDescription('» Listet dir alle Befehle auf.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
