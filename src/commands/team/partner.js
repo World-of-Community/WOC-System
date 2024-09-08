@@ -218,7 +218,7 @@ module.exports = {
                     }
                     break;  
                 
-            case 'change':
+            case 'edit':
                 break;
         }
     },
