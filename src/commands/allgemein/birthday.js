@@ -136,8 +136,8 @@ module.exports = {
                 const pageSize = 10; // Anzahl der Einträge pro Seite
 
                 const upcomingBirthdays = await userDB.find({
-                    'birthday.tag': { $exists: true },
-                    'birthday.monat': { $exists: true },
+                    'birthday.tag': { $exists: true, $ne: null }, // Ensures 'tag' (day) is defined
+                    'birthday.monat': { $exists: true, $ne: null }, // Ensures 'monat' (month) is defined
                 }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
 
                 if (upcomingBirthdays.length === 0) {
