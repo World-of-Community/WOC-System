@@ -157,14 +157,14 @@ module.exports = {
                     pageBirthdays.forEach(birthday => {
                         const { userID, birthday: { tag, monat, jahr } } = birthday;
                         const member = interaction.guild.members.cache.get(userID);
-                        const displayName = member ? member.displayName : 'Unbekannt'; // Use displayName for guild members or fallback to 'Unbekannt'
+                        const displayName = member ? member.displayName : 'Unbekannt';
 
                         // Füge führende Nullen hinzu
                         const formattedTag = tag.toString().padStart(2, '0');
                         const formattedMonat = monat.toString().padStart(2, '0');
                         const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}`;
 
-                        description += `${displayName} - ${formattedDate}\n`;
+                        description += `${member} - ${formattedDate}\n`;
 
                     });
 
