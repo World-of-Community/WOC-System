@@ -190,7 +190,7 @@ module.exports = {
                                 //.setDisabled(page === totalPages) // Disable button if on last page
                             )
 
-                    return Embed;
+                    return embed;
                 };
 
                 // Function to create pagination buttons
