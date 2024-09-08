@@ -171,20 +171,20 @@ module.exports = {
                         .setTitle('`🎂` × Geburtstage der Community')
                         .setDescription(description)
                         .setColor('Blurple')
-                        .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `${interaction.guild.iconURL()}` })
+                        .setFooter({ text: `${interaction.guild.name} - - Seite ${page} von ${totalPages}`, iconURL: `${interaction.guild.iconURL()}` })
                         .setTimestamp();
 
                         const buttons = new ActionRowBuilder()
                             .addComponents(
                                 new ButtonBuilder()
                                 .setCustomId('prev')
-                                .setLabel(`⬅️ Vorherige Seite (${page}/${totalPages})`)
+                                .setLabel('⬅️ Vorherige Seite')
                                 .setStyle(ButtonStyle.Primary)
                                 .setDisabled(page === 1), // Disable button if on first page
 
                                 new ButtonBuilder()
                                 .setCustomId('next')
-                                .setLabel(`➡️ Nächste Seite (${page}/${totalPages})`)
+                                .setLabel('➡️ Nächste Seite')
                                 .setStyle(ButtonStyle.Primary)
                                 .setDisabled(page === Math.ceil(birthdays.length / pageSize)), // Disable button if on
                                 //.setDisabled(page === totalPages) // Disable button if on last page
