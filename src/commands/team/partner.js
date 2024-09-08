@@ -219,6 +219,65 @@ module.exports = {
                     break;  
                 
             case 'edit':
+                const partnerNameToEdit = interaction.options.getString('partner');
+
+                try {
+                    const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
+            
+                    if (!serverData || !serverData.partner || !serverData.partner.partners || serverData.partner.partners.length === 0) {
+                        await interaction.reply({content: '> `❌` » Keine Server-Partner zum Bearbeiten gefunden.', ephemeral: true});
+                        return;
+                    }
+            
+                    const partnerIndex = serverData.partner.partners.findIndex(partner => partner.name.toLowerCase() === partnerNameToEdit.toLowerCase());
+            
+                    if (partnerIndex === -1) {
+                        await interaction.reply({content: '> `❌` » Der angegebene Server-Partner wurde nicht gefunden.', ephemeral: true});
+                        return;
+                    }
+            
+                    const partnerToEdit = serverData.partner.partners[partnerIndex];
+            
+                    // Prompt the user to enter the new values for each field
+                    const newName = interaction.options.getString('name') || partnerToEdit.name;
+                    const newCategory = interaction.options.getString('kategorie') || partnerToEdit.category;
+                    const newOwner = interaction.options.getUser('owner') || interaction.guild.members.cache.get(partnerToEdit.ownerID);
+                    const newInvite = interaction.options.getString('invite') || partnerToEdit.invite;
+            
+                    // Update the partner details
+                    partnerToEdit.name = newName;
+                    partnerToEdit.category = newCategory;
+                    partnerToEdit.ownerID = newOwner.id;
+                    partnerToEdit.invite = newInvite;
+            
+                    await serverData.save();
+            
+                    // Fetch the existing embed and update it
+                    const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
+                    const sentMessage = await channel.messages.fetch(serverData.partner.msg);
+                    const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
+                    const existingFieldIndex = existingEmbed.data.fields.findIndex(field => field.name.toLowerCase() === newCategory.toLowerCase());
+            
+                    if (existingFieldIndex !== -1) {
+                        const partnersInSameCategory = serverData.partner.partners.filter(partner => partner.category.toLowerCase() === newCategory.toLowerCase());
+                        existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n');
+                    } else {
+                        // Add a new field if the category doesn't exist yet
+                        existingEmbed.addFields({
+                            name: newCategory,
+                            value: `1. [${newName}](${newInvite}) (${newOwner})`,
+                            inline: false
+                        });
+                    }
+            
+                    await sentMessage.edit({ embeds: [existingEmbed] });
+            
+                    await interaction.reply({content: `> \`✅\` » Server-Partner \`${partnerNameToEdit}\` wurde erfolgreich bearbeitet.`, ephemeral: true});
+            
+                } catch (error) {
+                    console.error('Fehler beim Bearbeiten des Partners:', error);
+                    await interaction.reply('Fehler beim Bearbeiten des Partners.');
+                }
                 break;
         }
     },
