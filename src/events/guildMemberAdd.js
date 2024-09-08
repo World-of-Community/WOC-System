@@ -18,25 +18,25 @@ module.exports = {
         const welcomeChannel = await member.guild.channels.cache.get(config.willkommen)
 
         const contents = [
-            `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) ist gerade auf den Server geschlittert <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Ein wildes **${member.displayName}** (\`#${member.guild.memberCount}\`) erscheint! <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) hat den weg gefunden <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) ist gelandet <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) ist auf den Server gehüpft <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) bringt Kekse <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Kann jemand **${member.displayName}** (\`#${member.guild.memberCount}\`) etwas herumführen? <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Huch! **${member.displayName}** (\`#${member.guild.memberCount}\`) ist zu uns gestolpert <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Heißen wir **${member.displayName}** (\`#${member.guild.memberCount}\`) Willkommen bei uns! <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) gibt allen eine Runde aus, Willkommen <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Willkommen **${member.displayName}** (\`#${member.guild.memberCount}\`) Wir hoffen, du hast Pizza mitgebracht. <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Hey **${member.displayName}** (\`#${member.guild.memberCount}\`) sind wir froh das du uns gefunden hast <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Juhu, **${member.displayName}** (\`#${member.guild.memberCount}\`) du hast es zu uns geschafft! <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Herzlich Willkommen **${member.displayName}** (\`#${member.guild.memberCount}\`) Sag hallo <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) Hilft uns die Welt zu erobern. <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Danke dass du uns eine Chance gibst, **${member.displayName}** (\`#${member.guild.memberCount}\`) Willkommen! <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Wir begrüßen **${member.displayName}** (\`#${member.guild.memberCount}\`) in der Community <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Diese Entscheidung war kein Fehler, **${member.displayName}** (\`#${member.guild.memberCount}\`) - Willkommen! <a:winken:1086560167442796544>`,
-            `<a:Join:978633410992021524> Schön, dass du da bist, **${member.displayName}** (\`#${member.guild.memberCount}\`) <a:winken:1086560167442796544>`
+            `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **ist gerade auf den Server geschlittert** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Ein wildes** ${member} (\`#${member.guild.memberCount}\`) **erscheint!** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **hat den weg gefunden** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **ist gelandet** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **ist auf den Server gehüpft** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **bringt Kekse** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Kann jemand** ${member} (\`#${member.guild.memberCount}\`) **etwas herumführen?** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Huch!** ${member} (\`#${member.guild.memberCount}\`) **ist zu uns gestolpert** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Heißen wir** ${member} (\`#${member.guild.memberCount}\`) **Willkommen bei uns!** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **${member.displayName}** (\`#${member.guild.memberCount}\`) **gibt allen eine Runde aus, Willkommen** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Willkommen** ${member} (\`#${member.guild.memberCount}\`) **Wir hoffen, du hast Pizza mitgebracht.** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Hey** ${member} (\`#${member.guild.memberCount}\`) **sind wir froh das du uns gefunden hast** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Juhu,** ${member} (\`#${member.guild.memberCount}\`) **du hast es zu uns geschafft!** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Herzlich Willkommen** **${member.displayName}** (\`#${member.guild.memberCount}\`) **Sag hallo** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **Hilft uns die Welt zu erobern.** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Danke dass du uns eine Chance gibst,** ${member} (\`#${member.guild.memberCount}\`) **Willkommen!** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Wir begrüßen** ${member} (\`#${member.guild.memberCount}\`) **in der Community** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Diese Entscheidung war kein Fehler,** ${member} (\`#${member.guild.memberCount}\`) **- Willkommen!** <a:winken:1086560167442796544>`,
+            `<a:Join:978633410992021524> **Schön, dass du da bist,** ${member} (\`#${member.guild.memberCount}\`) <a:winken:1086560167442796544>`
         ]
         const rndContent = Math.floor(Math.random() * contents.length)
 
