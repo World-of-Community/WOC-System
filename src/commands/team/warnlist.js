@@ -11,7 +11,7 @@ module.exports = {
     async execute(interaction)  {
 
         // Warnungen aus der Datenbank abrufen
-        const warnings = await Warning.find({ guildId: interaction.guild.id });
+        const warnings = await warndb.find({ guildId: interaction.guild.id });
 
         if (warnings.length === 0) {
             return interaction.reply('Keine Warnungen vorhanden.');
