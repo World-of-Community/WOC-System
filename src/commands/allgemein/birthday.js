@@ -171,7 +171,7 @@ module.exports = {
                         .setTitle('`🎂` × Geburtstage der Community')
                         .setDescription(description)
                         .setColor('Blurple')
-                        .setFooter({ text: `${interaction.guild.name} - - Seite ${page} von ${totalPages}`, iconURL: `${interaction.guild.iconURL()}` })
+                        .setFooter({ text: `${interaction.guild.name} - Seite ${page} von ${totalPages}`, iconURL: `${interaction.guild.iconURL()}` })
                         .setTimestamp();
 
                         const buttons = new ActionRowBuilder()
