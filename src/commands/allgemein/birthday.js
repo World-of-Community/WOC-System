@@ -178,13 +178,13 @@ module.exports = {
                             .addComponents(
                                 new ButtonBuilder()
                                 .setCustomId('prev')
-                                .setLabel('⬅️ Vorherige Seite')
+                                .setLabel(`⬅️ Vorherige Seite (${page}/${totalPages})`)
                                 .setStyle(ButtonStyle.Primary)
                                 .setDisabled(page === 1), // Disable button if on first page
 
                                 new ButtonBuilder()
                                 .setCustomId('next')
-                                .setLabel('➡️ Nächste Seite')
+                                .setLabel(`➡️ Nächste Seite (${page}/${totalPages})`)
                                 .setStyle(ButtonStyle.Primary)
                                 .setDisabled(page === Math.ceil(birthdays.length / pageSize)), // Disable button if on
                                 //.setDisabled(page === totalPages) // Disable button if on last page
