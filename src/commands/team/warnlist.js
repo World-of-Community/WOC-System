@@ -7,16 +7,19 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction)  {
-        const user = interaction.options.getUser('user');
-        const reason = interaction.options.getString('grund');
 
-        let list = 'Warnliste:\n';
-        for (const userId in warns) {
-            const userWarns = warns[userId];
-            list += `${userWarns.name}: ${userWarns.warns} Warnung(en)\n`;
+        // Warnungen aus der Datenbank abrufen
+        const warnings = await Warning.find({ guildId: interaction.guild.id });
+
+        if (warnings.length === 0) {
+            return interaction.reply('Keine Warnungen vorhanden.');
         }
 
-        await interaction.reply(list || 'Keine Warnungen vorhanden.');
+        // Warnliste formatieren
+        let list = 'Warnliste:\n';
+        warnings.forEach(({ userId, warnings }) => {
+            list += `<@${userId}>: \`${warnings.length}\` Warnung(en)\n`;
+        });
 
         const WarnEmbed = new EmbedBuilder()
             .setTitle('Information zu den Warnungen der Nutzer')

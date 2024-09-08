@@ -17,6 +17,19 @@ async execute(interaction) {
     const member = interaction.options.getMember('user');
     const reason = interaction.options.getString('grund');
 
+    // Warnung in der Datenbank speichern
+    const warningData = await Warning.findOne({ guildId: interaction.guild.id, userId: member.id });
+    if (warningData) {
+        warningData.warnings.push({ reason });
+        await warningData.save();
+    } else {
+        await new Warning({
+            guildId: interaction.guild.id,
+            userId: member.id,
+            warnings: [{ reason }],
+        }).save();
+    }
+
     // Embed für die DM-Nachricht erstellen
     const WarnEmbed = new EmbedBuilder()
     .setTitle('DU WURDEST GERADE GEWARNT!')
