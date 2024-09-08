@@ -431,7 +431,7 @@ setInterval( async () => {
     }
 }, 60000 * 240); // 4 Stunden in Millisekunden
 
-cron.schedule('12 16 1 * *', async () => {
+cron.schedule('15 16 1 * *', async () => {
     console.log('Senden einer monatlichen Ankündigung von Aktivitätsereignis...');
 
     const channelId = '1281901873355554906'; // Replace with your channel ID
@@ -439,6 +439,12 @@ cron.schedule('12 16 1 * *', async () => {
     const channel = client.channels.cache.get(channelId);
     if (!channel) {
         console.error('Kanal nicht gefunden');
+        return;
+    }
+
+    const guild = channel.guild;
+    if (!guild) {
+        console.error('Guild nicht gefunden');
         return;
     }
 
@@ -459,7 +465,7 @@ cron.schedule('12 16 1 * *', async () => {
         .setTitle(`\`📅\` × Monatliche Aktivitätsevent (${currentMonth})`)
         .setDescription('Gesponsert von **World Of Community!**\n\n**Wie funktioniert das Monatliche Aktivitätsevent?**\nIndem du Nachrichten in einem Chat sendest, z.b. in (<#815922756918181898>)\n\nNachrichten überprüfen\n• Mit `/messages` kannst du deine gesendete Anzahl an Nachrichten anschauen.\n• Mit `/leaderboard messages` kannst du das Leaderboard abfragen.')
         .setColor('Blurple')
-        .setFooter({ text: `${interaction.guild.name} - Dieses Event geht immer vom Anfangs Monat bis zum Ende des Monats!`, iconURL: `${interaction.guild.iconURL()}` });
+        .setFooter({ text: `${guild.name} - Dieses Event geht immer vom Anfangs Monat bis zum Ende des Monats!`, iconURL: `${interaction.guild.iconURL()}` });
 
     // Send the embed with buttons
     await channel.send({ embeds: [eventEmbed] });
