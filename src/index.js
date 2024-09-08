@@ -431,7 +431,8 @@ setInterval( async () => {
     }
 }, 60000 * 240); // 4 Stunden in Millisekunden
 
-cron.schedule('15 16 1 * *', async () => {
+// Aktivitäts Event
+cron.schedule('0 0 1 * *', async () => {
     console.log('Senden einer monatlichen Ankündigung von Aktivitätsereignis...');
 
     const channelId = '1281901873355554906'; // Replace with your channel ID
