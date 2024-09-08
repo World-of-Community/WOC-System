@@ -21,7 +21,7 @@ module.exports = {
 
         const WarnEmbed = new EmbedBuilder()
             .setTitle('Information zu den Warnungen der Nutzer')
-            .setDescription(`Hier ist eine Liste der Warnungen der Nutzer \n\n ${warn.length > 0 ? warn.join("\n") : "> `❌` » Keine Warnungen vorhanden!"}`)
+            .setDescription(`Hier ist eine Liste der Warnungen der Nutzer \n\n ${warnings.length > 0 ? warnings.join("\n") : "> `❌` » Keine Warnungen vorhanden!"}`)
             .setColor('Red')
 
         await interaction.channel.send({ embeds: [WarnEmbed] })
