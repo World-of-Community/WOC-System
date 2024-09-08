@@ -116,9 +116,9 @@ module.exports = (client) => {
     });
 
     // Gewinnspiel Gewinner (Accepted)
-    gewinnspielEmitter.on("win", async (interaction) => {
-      const channel = interaction.channel;
-      const message = await interaction.channel.fetchStarterMessage();
+    gewinnspielEmitter.on("win", async (inter) => {
+      const channel = inter.channel;
+      const message = await inter.channel.fetchStarterMessage();
       const gewinnspielEmbed = message.embeds[0];
 
       const footerText = gewinnspielEmbed.footer.text;
@@ -152,22 +152,22 @@ module.exports = (client) => {
       await userErfolge.save();
 
       // Gewinnerrolle zuweisen
-      const member = await interaction.guild.members.fetch(userID);
-      const gewinnerRole = interaction.guild.roles.cache.find(r => r.id === '1124598019862573096');
+      const member = await inter.guild.members.fetch(userID);
+      const gewinnerRole = inter.guild.roles.cache.find(r => r.id === '1124598019862573096');
       if (gewinnerRole && member) {
         await member.roles.add(gewinnerRole);
       }
 
       // DM mit Embed senden
       if (userErfolge.gewinnspiel === 1) { // Erfolg freigeschaltet
-      const user = await interaction.client.users.fetch(userID);
+      const user = await inter.client.users.fetch(userID);
       if (user) {
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
         .setTitle('<a:checkgreen:1154702583202578472> 𑁉 ERFOLG ERHALTEN')
         .setDescription("» `💕`**-lichen Glückwunsch zum Gewinn des Gewinnspiels!**\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `☘️〢 Glückspilz (Event-Gewinner)`\n<:PfeilBlau:1119711275014955080> Vielen Dank für deine Teilnahme und viel Glück beim nächsten Mal!\n\n<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: https://discord.com/channels/815919809379172354/872063101640532008")
-        .setColor("Greem")
+        .setColor("Green")
         .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&')
-        .setFooter({ text: `» Erfolg freigeschaltet auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` });
+        .setFooter({ text: `» Erfolg freigeschaltet auf ${inter.guild.name}`, iconURL: `${inter.guild.iconURL()}` });
         await user.send({ content: "<a:Cool:915211628755169301> **GEWINNSPIEL ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] });
       }
      }
