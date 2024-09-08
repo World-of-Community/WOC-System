@@ -29,6 +29,11 @@ module.exports = {
                 .setDescription('» Lösche einen Partner. 🤝')
                 .addStringOption((option) => option.setName('partner').setDescription('» Wähle ein Server-Partner aus').setAutocomplete(true).setRequired(true))
         )
+        .addSubcommand((command) =>
+            command
+                .setName('refresh')
+                .setDescription('» Aktualisiere die Partnerliste. 🤝')
+        )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
         async autocomplete(interaction) {
             const focusedOption = interaction.options.getFocused(true);
@@ -219,6 +224,58 @@ module.exports = {
                     break;  
                 
             case 'edit':
+                break;
+
+            case 'refresh':
+                try {
+                    const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
+
+                    if (!serverData || !serverData.partner || !serverData.partner.partners || serverData.partner.partners.length === 0) {
+                        await interaction.reply({ content: '> `❌` » Keine Server-Partner zum Aktualisieren gefunden.', ephemeral: true });
+                        return;
+                    }
+
+                    const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
+                    const sentMessage = await channel.messages.fetch(serverData.partner.msg);
+
+                    const newEmbed = new EmbedBuilder()
+                        .setTitle('Unsere Partnerliste')
+                        .setColor('Blurple')
+                        .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
+                        .setFooter({ text: `Maximale Server-Partner sind (**15**)`, iconURL: `${interaction.guild.iconURL()}` });
+
+                    const cooperationPartners = serverData.partner.partners.filter(partner => partner.category === 'Kooperation');
+                    const normalPartners = serverData.partner.partners.filter(partner => partner.category === 'Normale Partner');
+
+                    if (cooperationPartners.length > 0) {
+                        newEmbed.addFields({
+                            name: 'Kooperation',
+                            value: cooperationPartners.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n'),
+                            inline: false,
+                        });
+                    } else {
+                        newEmbed.addFields({ name: 'Kooperation', value: '> `❌` » Kein Eintrag', inline: false });
+                    }
+
+                    if (normalPartners.length > 0) {
+                        newEmbed.addFields({
+                            name: 'Normale Partner',
+                            value: normalPartners.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n'),
+                            inline: false,
+                        });
+                    } else {
+                        newEmbed.addFields({ name: 'Normale Partner', value: '> `❌` » Kein Eintrag', inline: false });
+                    }
+
+                    // Update the message with the new embed
+                    await sentMessage.edit({ embeds: [newEmbed] });
+
+                    await interaction.reply({ content: '> `✅` » Die Partnerliste wurde erfolgreich aktualisiert!', ephemeral: true });
+
+                } catch (error) {
+                    console.error('Fehler beim Aktualisieren der Partnerliste:', error);
+                    await interaction.reply({ content: '> `❌` » Fehler beim Aktualisieren der Partnerliste.', ephemeral: true });
+                }
                 break;
         }
     },
