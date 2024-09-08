@@ -242,7 +242,7 @@ module.exports = {
                         .setTitle('Unsere Partnerliste')
                         .setColor('Blurple')
                         .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
-                        .setFooter({ text: `Maximale Server-Partner sind (**15**)`, iconURL: `${interaction.guild.iconURL()}` });
+                        .setFooter({ text: `Maximal 15 Server-Partner`, iconURL: `${interaction.guild.iconURL()}` });
 
                     const cooperationPartners = serverData.partner.partners.filter(partner => partner.category === 'Kooperation');
                     const normalPartners = serverData.partner.partners.filter(partner => partner.category === 'Normale Partner');
