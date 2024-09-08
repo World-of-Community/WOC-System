@@ -138,7 +138,11 @@ module.exports = {
                 const upcomingBirthdays = await userDB.find({
                     'birthday.tag': { $exists: true, $ne: null }, // Ensures 'tag' (day) is defined
                     'birthday.monat': { $exists: true, $ne: null }, // Ensures 'monat' (month) is defined
-                }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
+                }).sort({
+                    'birthday.tag': 1,   // Sort by day
+                    'birthday.monat': 1, // Sort by month
+                    'birthday.jahr': 1   // Sort by year, optional (those without year will be last)
+                 });
 
                 if (upcomingBirthdays.length === 0) {
                     return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
