@@ -135,95 +135,58 @@ module.exports = {
             case 'next':
                 const pageSize = 10; // Anzahl der Einträge pro Seite
 
-// Funktion zum Erstellen des Embeds
-const createBirthdayEmbed = (birthdays, page) => {
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = Math.min(page * pageSize, birthdays.length);
-    const pageBirthdays = birthdays.slice(startIndex, endIndex);
+                const upcomingBirthdays = await userDB.find({
+                    'birthday.tag': { $exists: true },
+                    'birthday.monat': { $exists: true },
+                    'birthday.jahr': { $exists: false } // Ensure that the year is also defined
+                }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
 
-    let description = 'Hier sind die nächsten Geburtstage:\n\n';
+                const createBirthdayEmbed = (birthdays, page) => {
+                    const startIndex = (page - 1) * pageSize;
+                    const endIndex = Math.min(page * pageSize, birthdays.length);
+                    const pageBirthdays = birthdays.slice(startIndex, endIndex);
 
-    pageBirthdays.forEach(birthday => {
-        const { userID, birthday: { tag, monat, jahr } } = birthday;
-        const member = interaction.guild.members.cache.get(userID) || { user: { displayName: 'Unbekannt' } };
+                    let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
-        // Füge führende Nullen hinzu
-        const formattedTag = tag.toString().padStart(2, '0');
-        const formattedMonat = monat.toString().padStart(2, '0');
-        const formattedDate = `${formattedTag}.${formattedMonat}.${jahr}`;
+                    pageBirthdays.forEach(birthday => {
+                        const { userID, birthday: { tag, monat, jahr } } = birthday;
+                        const member = interaction.guild.members.cache.get(userID) || { user: { displayName: 'Unbekannt' } };
 
-        description += `${member} - ${formattedDate}\n`;
-    });
+                        // Füge führende Nullen hinzu
+                        const formattedTag = tag.toString().padStart(2, '0');
+                        const formattedMonat = monat.toString().padStart(2, '0');
+                        const formattedDate = `${formattedTag}.${formattedMonat}.${jahr}`;
 
-    const embed = new EmbedBuilder()
-        .setTitle('`🎂` × Geburtstage der Community')
-        .setDescription(description)
-        .setColor('Blurple')
-        .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `${interaction.guild.iconURL()}` })
-        .setTimestamp();
+                        description += `${member} - ${formattedDate}\n`;
 
-    return embed;
-};
+                    });
 
-// Funktion zum Erstellen der Buttons
-const createPaginationButtons = (page, totalPages) => {
-    return new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId('prev')
-                .setLabel('Vorherige Seite')
-                .setStyle(ButtonStyle.Primary)
-                .setDisabled(page === 1), // Disable button if on first page
+                    const embed = new EmbedBuilder()
+                        .setTitle('`🎂` × Geburtstage der Community')
+                        .setDescription(description)
+                        .setColor('Blurple')
+                        .setFooter({ text: `${interaction.guild.name} - Geburtstags System`, iconURL: `${interaction.guild.iconURL()}` })
+                        .setTimestamp();
 
-            new ButtonBuilder()
-                .setCustomId('next')
-                .setLabel('Nächste Seite')
-                .setStyle(ButtonStyle.Primary)
-                .setDisabled(page === totalPages) // Disable button if on last page
-        );
-};
+                        const buttons = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                .setCustomId('prev')
+                                .setLabel('⬅️ Vorherige Seite')
+                                .setStyle(ButtonStyle.Primary)
+                                .setDisabled(page === 1), // Disable button if on first page
 
-case 'next': {
-    const upcomingBirthdays = await userDB.find({
-        'birthday.tag': { $exists: true },
-        'birthday.monat': { $exists: true },
-        'birthday.jahr': { $exists: false }
-    }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
+                                new ButtonBuilder()
+                                .setCustomId('next')
+                                .setLabel('➡️ Nächste Seite')
+                                .setStyle(ButtonStyle.Primary)
+                                .setDisabled(page === Math.ceil(birthdays.length / pageSize)), // Disable button if on
+                                //.setDisabled(page === totalPages) // Disable button if on last page
+                            )
 
-    if (upcomingBirthdays.length === 0) {
-        return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
-    }
+                    interaction.reply({ embeds: [embed], components: [buttons], ephemeral: true })
 
-    let currentPage = 1;
-    const totalPages = Math.ceil(upcomingBirthdays.length / pageSize);
-
-    const embed = createBirthdayEmbed(upcomingBirthdays, currentPage);
-    const buttons = createPaginationButtons(currentPage, totalPages);
-
-    const message = await interaction.reply({ embeds: [embed], components: [buttons], ephemeral: true });
-
-    const filter = i => ['prev', 'next'].includes(i.customId) && i.user.id === interaction.user.id;
-    const collector = new InteractionCollector(interaction.client, { message, filter });
-
-    collector.on('collect', async i => {
-        if (i.customId === 'prev') {
-            currentPage = Math.max(currentPage - 1, 1);
-        } else if (i.customId === 'next') {
-            currentPage = Math.min(currentPage + 1, totalPages);
-        }
-
-        const updatedEmbed = createBirthdayEmbed(upcomingBirthdays, currentPage);
-        const updatedButtons = createPaginationButtons(currentPage, totalPages);
-
-        await i.update({ embeds: [updatedEmbed], components: [updatedButtons] });
-    });
-
-    collector.on('end', collected => {
-        // Disable buttons after the collector ends
-        message.edit({ components: [] });
-    });
-    break;
-}
+                }
         }
     },
 };
