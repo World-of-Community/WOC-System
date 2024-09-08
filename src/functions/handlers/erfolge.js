@@ -9,6 +9,7 @@ const {
 } = require("discord.js");
 const erfolgDB = require("../../../Datenbank/erfolgdb");
 const vorschlagEmitter = require("../../custom_events/vorschlag");
+const gewinnspielEmitter = new EventEmitter();
 const cron = require("node-cron");
 
 module.exports = (client) => {
