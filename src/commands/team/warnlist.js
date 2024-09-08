@@ -6,12 +6,49 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('warnlist')
         .setDescription('» Zeigt dir die Warnliste an. 📋')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('add')
+                .setDescription('» Füge einen Benutzer zur Warnliste hinzu.')
+                .addUserOption(option => 
+                    option.setName('user')
+                        .setDescription('» Der Benutzer, der gewarnt werden soll.')
+                        .setRequired(true))
+                .addStringOption(option => 
+                    option.setName('grund')
+                        .setDescription('» Der Grund für die Warnung.')
+                        .setRequired(true))),
 
     async execute(interaction)  {
 
-        // Warnungen aus der Datenbank abrufen
-        const warnings = await warndb.find({ guildId: interaction.guild.id });
+        const subcommand = interaction.options.getSubcommand();
+
+        if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
+            return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
+        }
+
+        if (subcommand === 'add') {
+            const user = interaction.options.getUser('user');
+            const reason = interaction.options.getString('grund');
+            const userId = user.id;
+
+            // Warnung in der Datenbank speichern
+            let warningData = await warndb.findOne({ guildId: interaction.guild.id, userId });
+
+            if (warningData) {
+                // Füge eine neue Warnung hinzu
+                warningData.warnings.push({ reason });
+                await warningData.save();
+            } else {
+                // Erstelle einen neuen Eintrag
+                await new warndb({
+                    guildId: interaction.guild.id,
+                    userId,
+                    warnings: [{ reason }],
+                }).save();
+            }
+        }
 
         // Warnliste formatieren
         let list = 'Warnliste:\n';
