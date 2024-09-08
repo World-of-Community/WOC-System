@@ -138,8 +138,14 @@ module.exports = {
                 const upcomingBirthdays = await userDB.find({
                     'birthday.tag': { $exists: true },
                     'birthday.monat': { $exists: true },
-                    'birthday.jahr': { $exists: false } // Ensure that the year is also defined
                 }).sort({ 'birthday.monat': 1, 'birthday.tag': 1 });
+
+                if (upcomingBirthdays.length === 0) {
+                    return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
+                }
+            
+                let currentPage = 1;
+                const totalPages = Math.ceil(upcomingBirthdays.length / pageSize);
 
                 const createBirthdayEmbed = (birthdays, page) => {
                     const startIndex = (page - 1) * pageSize;
@@ -184,9 +190,55 @@ module.exports = {
                                 //.setDisabled(page === totalPages) // Disable button if on last page
                             )
 
-                    interaction.reply({ embeds: [embed], components: [buttons], ephemeral: true })
+                    return Embed;
+                };
 
-                }
+                // Function to create pagination buttons
+                const createPaginationButtons = (page, totalPages) => {
+                    return new ActionRowBuilder()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId('prev')
+                                .setLabel('⬅️ Vorherige Seite')
+                                .setStyle(ButtonStyle.Primary)
+                                .setDisabled(page === 1), // Disable button if on first page
+
+                            new ButtonBuilder()
+                                .setCustomId('next')
+                                .setLabel('➡️ Nächste Seite')
+                                .setStyle(ButtonStyle.Primary)
+                                .setDisabled(page === totalPages), // Disable button if on last page
+                        );
+                };
+
+                // Send the first page
+                const embed = createBirthdayEmbed(upcomingBirthdays, currentPage);
+                const buttons = createPaginationButtons(currentPage, totalPages);
+
+                const message = await interaction.reply({ embeds: [embed], components: [buttons], ephemeral: true });
+
+                // Create interaction collector for button clicks
+                const filter = i => ['prev', 'next'].includes(i.customId) && i.user.id === interaction.user.id;
+                const collector = message.createMessageComponentCollector({ filter }); //time: 60000
+
+                collector.on('collect', async i => {
+                    if (i.customId === 'prev') {
+                        currentPage = Math.max(currentPage - 1, 1);
+                    } else if (i.customId === 'next') {
+                        currentPage = Math.min(currentPage + 1, totalPages);
+                    }
+
+                    const updatedEmbed = createBirthdayEmbed(upcomingBirthdays, currentPage);
+                    const updatedButtons = createPaginationButtons(currentPage, totalPages);
+
+                    await i.update({ embeds: [updatedEmbed], components: [updatedButtons] });
+                });
+
+                collector.on('end', () => {
+                    message.edit({ components: [] });
+                });
+
+                break;
         }
     },
 };
