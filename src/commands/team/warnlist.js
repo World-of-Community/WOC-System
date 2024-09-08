@@ -13,10 +13,6 @@ module.exports = {
         // Warnungen aus der Datenbank abrufen
         const warnings = await warndb.find({ guildId: interaction.guild.id });
 
-        if (warnings.length === 0) {
-            return interaction.reply('Keine Warnungen vorhanden.');
-        }
-
         // Warnliste formatieren
         let list = 'Warnliste:\n';
         warnings.forEach(({ userId, warnings }) => {
@@ -25,7 +21,7 @@ module.exports = {
 
         const WarnEmbed = new EmbedBuilder()
             .setTitle('Information zu den Warnungen der Nutzer')
-            .setDescription(`Hier ist eine Liste der Warnungen der Nutzer \n\n ${bans.length > 0 ? bans.join("\n") : "Keine Warnungen vorhanden!"}`)
+            .setDescription(`Hier ist eine Liste der Warnungen der Nutzer \n\n ${warn.length > 0 ? warn.join("\n") : "> `❌` » Keine Warnungen vorhanden!"}`)
             .setColor('Red')
 
         await interaction.channel.send({ embeds: [WarnEmbed] })
