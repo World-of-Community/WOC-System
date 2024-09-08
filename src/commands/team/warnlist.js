@@ -38,7 +38,7 @@ module.exports = {
 
             if (warningData) {
                 // Füge eine neue Warnung hinzu
-                warningData.warnings.push({ reason });
+                warningData.warning.push({ reason });
                 await warningData.save();
             } else {
                 // Erstelle einen neuen Eintrag
