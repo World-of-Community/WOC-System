@@ -3,9 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('disc
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('warnlist')
-        .setDescription('» Warne einen User. ❗')
-        .addUserOption(option => option.setName('user').setDescription('» Welchen User möchtest du Warnen?').setRequired(true))
-        .addStringOption(option => option.setName('grund').setDescription('» Der Grund der Warnung').setRequired(true))
+        .setDescription('» Zeigt dir die Warnliste an. 📋')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction)  {
