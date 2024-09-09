@@ -42,7 +42,7 @@ module.exports = {
         
         const bannembed = new EmbedBuilder()
             .setTitle('Information zu den Gebannten Nutzern')
-            .setDescription(`Hier ist eine Liste der gebannten Nutzer (\`${bans.length}👥\`)\n\n ${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
+            .setDescription(`Hier ist eine Liste der gebannten Nutzer (\`${bans.length}👥\`)\n\n${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
             .setColor('Red')
 
         await interaction.channel.send({ embeds: [bannembed] })
