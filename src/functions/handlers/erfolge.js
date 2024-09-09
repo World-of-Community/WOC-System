@@ -59,7 +59,7 @@ module.exports = (client) => {
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         const roletoAdd = await guild.roles.cache.get("972193356333604874");
             await members.forEach(member => {
-              if (!member.bot && !member.roles.cache.some(role => role.id === '972193356333604874') && member.joinedAt <= oneYearAgo) {
+              if (!member.bot && !member.roles.cache.has('972193356333604874') && member.joinedAt <= oneYearAgo) {
                     member.roles.add(roletoAdd).then(() => {
                         
                         const oneYearEmbed = new EmbedBuilder()
@@ -72,7 +72,7 @@ module.exports = (client) => {
 
                         member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [oneYearEmbed] });
                         
-                        console.log(`Added role to ${member.user.displayName}`);
+                        console.log(`Rolle hinzugefügt zu ${member.user.displayName}`);
                     }).catch(console.error);
                 }
             });
