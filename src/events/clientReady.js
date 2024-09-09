@@ -85,7 +85,7 @@ module.exports = {
               '1230540900439031929' // Welt News
             ];
 
-            const channelCount = channelIds ? categoryId.children.size : 0;
+            const channelCount = channelIds ? categoryId.children.fetch() : 0;
 
             await guild.channels.cache.get(config.category1).setName(`(🌍) - [INFOS] - (USER: ${memberCount})`)
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
