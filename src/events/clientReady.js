@@ -73,7 +73,7 @@ module.exports = {
             }
             const count = serverData.partner.partners.length;
 
-            //const categoryId = '1230540006439915610'; // Ersetze mit der Kategorie-ID, in der sich die Kanäle befinden
+            const categoryId = '1230540006439915610'; // Ersetze mit der Kategorie-ID, in der sich die Kanäle befinden
 
             //const category = guild.channels.cache.get('1230540006439915610');
             //const channelCount = category ? category.children.size : 0;
@@ -85,7 +85,7 @@ module.exports = {
               '1230540900439031929' // Welt News
             ];
 
-            const channelCount = channelIds ? categoryIds.children.size : 0;
+            const channelCount = channelIds ? categoryId.children.size : 0;
 
             await guild.channels.cache.get(config.category1).setName(`(🌍) - [INFOS] - (USER: ${memberCount})`)
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
