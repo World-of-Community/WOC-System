@@ -73,10 +73,24 @@ module.exports = {
             }
             const count = serverData.partner.partners.length;
 
+            //const categoryId = '1230540006439915610'; // Ersetze mit der Kategorie-ID, in der sich die Kanäle befinden
+
+            //const category = guild.channels.cache.get('1230540006439915610');
+            //const channelCount = category ? category.children.size : 0;
+
+            const channelIds = [
+              '1230540716808343592', // Gratis Spiele
+              '1230540230470144073', // Gaming News
+              '1230540761708105728', // Mediathek
+              '1230540900439031929' // Welt News
+            ];
+
+            const channelCount = channelIds ? categoryIds.children.size : 0;
 
             await guild.channels.cache.get(config.category1).setName(`(🌍) - [INFOS] - (USER: ${memberCount})`)
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
             await guild.channels.cache.get(config.category3).setName(`(⚡) - [ADS] - (PARTNER: ${count})`)
+            await guild.channels.cache.get(config.category4).setName(`(📰) - [NEWS] - (ABOS: ${channelCount})`)
         }, 30000);
 
     // Hauptchat Beschreibung
