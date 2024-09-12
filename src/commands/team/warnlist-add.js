@@ -3,16 +3,11 @@ const warndb = require("../../../Datenbank/warndb");
 
 module.exports = {
     data: new SlashCommandBuilder()
-      .setName('warnlist')
+      .setName('warnlist-add')
       .setDescription('Füge eine Warnung für einen Benutzer hinzu.')
-      .addUserOption(option => 
-        option.setName('user')
-          .setDescription('Der Benutzer, der gewarnt werden soll')
-          .setRequired(true))
-      .addStringOption(option => 
-        option.setName('grund')
-          .setDescription('Der Grund für die Warnung')
-          .setRequired(true)),
+      .addUserOption(option =>  option.setName('user').setDescription('Der Benutzer, der gewarnt werden soll').setRequired(true))
+      .addStringOption(option =>  option.setName('grund').setDescription('Der Grund für die Warnung').setRequired(true))
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     
     async execute(interaction) {
       const member = interaction.options.getUser('user');
@@ -28,4 +23,4 @@ module.exports = {
   
       await interaction.reply({ content: `Warnung für ${member} hinzugefügt, Grund: ${reason}`, ephemeral: true });
     },
-  };
+};
