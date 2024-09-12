@@ -30,8 +30,8 @@ module.exports = {
             .setColor('Green')
             .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
         
-            member.roles.add("886989738244964362")
-            member.roles.remove("815920703067914290")
+            member.roles.add("815920703067914290")
+            member.roles.remove("886989738244964362")
 
         const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
 
