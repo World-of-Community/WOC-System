@@ -33,9 +33,9 @@ module.exports = {
 
             warnings.forEach((warn, index) => {
                 // Display based on the count of warnings
-                const date = new Date(warn.date).toLocaleDateString('de-DE'); // Format date
+                const date = formatDate(warn.date);
+                //const date = new Date(warn.date).toLocaleDateString('de-DE'); // Format date
                 list += `<@${userId}> - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
-                //${warnCount === 1 ? '' : ` (Grund: ${warn.reason})`}
             });
         });
 
