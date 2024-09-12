@@ -445,7 +445,7 @@ const getMonthName = (month) => {
     console.log('Senden einer Ankündigung für das Aktivitätsereignis...');
 
     const channelId = '1281901873355554906'; // Replace with your channel ID
-    const channel = client.channels.cache.get('1281901873355554906');
+    const channel = client.channels.cache.get(channelId);
     if (!channel) {
         console.error('Kanal nicht gefunden');
         return;
@@ -476,7 +476,7 @@ cron.schedule('0 0 1 * *', async () => {
     console.log('Senden einer monatlichen Ankündigung von Aktivitätsereignis...');
 
     const channelId = '1281901873355554906'; // Replace with your channel ID
-    const channel = client.channels.cache.get('1281901873355554906');
+    const channel = client.channels.cache.get(channelId);
     if (!channel) {
         console.error('Kanal nicht gefunden');
         return;
