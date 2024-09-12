@@ -17,14 +17,15 @@ module.exports = {
         let warnings = await warndb.find({ guildId: interaction.guild.id });
 
         // Warnliste formatieren
-        let list = 'Warnliste:\n';
+        let list = '';
         warnings.forEach(({ userId, warnings }) => {
             const warnCount = warnings.length;
             const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';  // Singular or plural
 
             warnings.forEach((warn, index) => {
                 // Display based on the count of warnings
-                list += `<@${userId}> - \`${warnCount}\` ${warnText} (Grund: ${warn.reason})\n`;
+                const date = new Date(warn.date).toLocaleDateString('de-DE'); // Format date
+                list += `<@${userId}> - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
                 //${warnCount === 1 ? '' : ` (Grund: ${warn.reason})`}
             });
         });
