@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
-const path = require('path'); // Import path for better path handling
+const path = require('path');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,14 +11,33 @@ module.exports = {
     async execute(interaction) {
         // Pfad zu den Befehlen
         const commandsPath = path.resolve(__dirname, '../commands');
-        
+
+        // Funktion zum rekursiven Durchsuchen von Verzeichnissen
+        const getCommandFiles = (dir) => {
+            let results = [];
+            const list = fs.readdirSync(dir);
+            list.forEach(file => {
+                const filePath = path.join(dir, file);
+                const stat = fs.statSync(filePath);
+                if (stat && stat.isDirectory()) {
+                    results = results.concat(getCommandFiles(filePath)); // Rekursion für Unterverzeichnisse
+                } else if (file.endsWith('.js')) {
+                    results.push(filePath);
+                }
+            });
+            return results;
+        };
+
+        // Alle Befehlsdateien finden
+        const commandFiles = getCommandFiles(commandsPath);
+
         // Liste der Befehle und deren Status (🟢 oder 🔴)
         const commandList = interaction.client.commands.map(command => {
             let status = '🟢'; // Standardmäßig auf "funktioniert" setzen
             try {
                 // Überprüfen, ob die Datei existiert
                 const commandPath = path.join(commandsPath, `${command.data.name}.js`);
-                if (!fs.existsSync(commandPath)) {
+                if (!commandFiles.includes(commandPath)) {
                     console.error(`Datei nicht gefunden: ${commandPath}`); // Fehlerprotokollierung
                     status = '🔴'; // Falls die Datei nicht existiert, setze den Status auf rot
                 }
