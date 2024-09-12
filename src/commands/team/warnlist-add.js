@@ -14,7 +14,7 @@ module.exports = {
       const reason = interaction.options.getString('grund');
       
       // Speichern der Warnung in der Datenbank
-      const warningsCollection = db.collection('warnings');
+      const warningsCollection = warndb.collection('warnings');
       await warningsCollection.insertOne({
         userId: user.id,
         reason: reason,
