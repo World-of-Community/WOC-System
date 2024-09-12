@@ -13,10 +13,14 @@ module.exports = {
       const member = interaction.options.getUser('user');
       const reason = interaction.options.getString('grund');
       
-      // Speichern der Warnung in der Datenbank
-      const warningsCollection = warndb.collection('warnings');
+      // Verbinde mit der Datenbank
+      const db = await warndb();
+      const warningsCollection = db.collection('warnings');
+
+      // Füge die Warnung zur Datenbank hinzu
       await warningsCollection.insertOne({
         userId: user.id,
+        guildId: interaction.guild.id,
         reason: reason,
         timestamp: new Date(),
       });

@@ -13,8 +13,11 @@ module.exports = {
       const user = interaction.options.getUser('user');
       const reason = interaction.options.getString('grund') || '';
 
-      // Entfernen der Warnung aus der Datenbank
-      const warningsCollection = warndb.collection('warnings');
+      // Verbinde mit der Datenbank
+      const db = await warndb();
+      const warningsCollection = db.collection('warnings');
+
+      // Entferne die Warnung aus der Datenbank
       const result = await warningsCollection.deleteOne({
         userId: user.id,
         reason: reason,
