@@ -19,7 +19,14 @@ module.exports = {
         // Warnliste formatieren
         let list = 'Warnliste:\n';
         warnings.forEach(({ userId, warnings }) => {
-            list += `<@${userId}>: \`${warnings.length}\` Warnung(en)\n`;
+            const warnCount = warnings.length;
+            const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';  // Singular or plural
+
+            warnings.forEach((warn, index) => {
+                // Display based on the count of warnings
+                list += `<@${userId}> - \`${warnCount}\` ${warnText} (Grund: ${warn.reason})\n`;
+                //${warnCount === 1 ? '' : ` (Grund: ${warn.reason})`}
+            });
         });
 
         const WarnEmbed = new EmbedBuilder()
