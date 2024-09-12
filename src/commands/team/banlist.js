@@ -13,7 +13,6 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
-        if (!interaction.member.permissions.has(PermissionFlagsBits.Flags.ManageRoles) && interaction.user.id != "782893084400681001") return;
 
         async function getMemberList(roleID) {
             var list = [];
