@@ -89,6 +89,14 @@ module.exports = {
                         '815920170371383366', // Supporter
                         '1155564692455034990', // T-Supporter
                         '1263645368441241700', // Builder
+                        '1154345358030282782', // (Dev) Developer Leitung
+                        '1155080722466488351', // Support Leitung
+                        '1258773853249863734', // Builder Leitung
+                        '1269384021402714263', // Creator Leitung
+                        '1269383970349650087', // Clan Leitung
+                        '1175879013688954980', // Partner Leitung
+                        '1246368940318392411', // Event Leitung
+                        '1269370651500609586', // Bewerbung Leitung
                     ]; // IDs der Teamrollen
                     const currentRoles = member.roles.cache; // Aktuelle Rollen des Nutzers
                 
@@ -149,6 +157,14 @@ module.exports = {
                         '815920170371383366', // Supporter
                         '1155564692455034990', // T-Supporter
                         '1263645368441241700', // Builder
+                        '1154345358030282782', // (Dev) Developer Leitung
+                        '1155080722466488351', // Support Leitung
+                        '1258773853249863734', // Builder Leitung
+                        '1269384021402714263', // Creator Leitung
+                        '1269383970349650087', // Clan Leitung
+                        '1175879013688954980', // Partner Leitung
+                        '1246368940318392411', // Event Leitung
+                        '1269370651500609586', // Bewerbung Leitung
                     ]; // IDs der Teamrollen
                     const currentRoles = member.roles.cache; // Aktuelle Rollen des Nutzers
                 
