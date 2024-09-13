@@ -78,15 +78,57 @@ module.exports = {
         switch (sub) {
             case "uprank":
                 try {
-                    await member.roles.add(role);
-        
+                    // Definiere die alten und neuen Rollengruppen (zum Beispiel Teamrollen)
+                    const teamRoles = [
+                        '959869691529154631', // Admin
+                        '893423428558782465', // Team-Leitung
+                        '929349039433056276', // Developer
+                        '838840742742458368', // T-Developer
+                        '816985466230145044', // Sr-Moderator
+                        '815920052385480754', // Moderator
+                        '815920170371383366', // Supporter
+                        '1155564692455034990', // T-Supporter
+                        '1263645368441241700', // Builder
+                    ]; // IDs der Teamrollen
+                    const currentRoles = member.roles.cache; // Aktuelle Rollen des Nutzers
+                
+                    // Finde die alte Rolle (eine, die der Nutzer derzeit hat und in den Teamrollen vorkommt)
+                    const alteRolle = currentRoles.find(r => teamRoles.includes(r.id));
+                
+                    // Logik zur Festlegung der neuen Rolle (zum Beispiel die nächst höhere Rolle)
+                    let neueRolle;
+                    if (alteRolle) {
+                        const alteRolleIndex = teamRoles.indexOf(alteRolle.id);
+                        if (alteRolleIndex < teamRoles.length - 1) {
+                            neueRolle = teamRoles[alteRolleIndex + 1]; // Wähle die nächst höhere Rolle
+                        }
+                    }
+                
+                    if (!neueRolle) {
+                        return interaction.reply({ content: '> `❌` » Es konnte keine passende Rolle für die Beförderung gefunden werden.', ephemeral: true });
+                    }
+                
+                    const neueRolleObjekt = interaction.guild.roles.cache.get(neueRolle);
+                
+                    // Alte Rolle entfernen, falls vorhanden
+                    if (alteRolle) {
+                        await member.roles.remove(alteRolle);
+                    }
+                
+                    // Neue Rolle hinzufügen
+                    await member.roles.add(neueRolleObjekt);
+                
+                    // Embed für das Rollenupdate
                     const Uprankembed = new EmbedBuilder()
                         .setTitle('`🔼` | __TEAMMITGLIED RANGUPDATE__')
-                        .setDescription(`> Herzlichen Glückwunsch, ${member}!\n> Du wurdest **befördert!**\n\n**__Rang__**\n${role}`)
+                        .setDescription(`> Herzlichen Glückwunsch, ${member}!\n> Du wurdest **befördert!**\n\n**__Neuer Rang__**: ${neueRolleObjekt}\n**__Alter Rang__**: ${alteRolle ? alteRolle : 'Keine'}`)
                         .setColor('Blurple')
                         .setTimestamp();
-                    
+                
+                    // Nachricht im Zielkanal senden
                     await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
+                
+                    // Antwort an den interagierenden Nutzer
                     await interaction.reply({ content: `> \`✅\` » Das Teammitglied wurde **befördert.**`, ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Hinzufügen der Rolle:', error);
@@ -96,15 +138,53 @@ module.exports = {
 
             case "downrank":
                 try {
-                    await member.roles.remove(role);
-        
+                    // Definiere die alten und neuen Rollengruppen (zum Beispiel Teamrollen)
+                    const teamRoles = [
+                        '959869691529154631', // Admin
+                        '893423428558782465', // Team-Leitung
+                        '929349039433056276', // Developer
+                        '838840742742458368', // T-Developer
+                        '816985466230145044', // Sr-Moderator
+                        '815920052385480754', // Moderator
+                        '815920170371383366', // Supporter
+                        '1155564692455034990', // T-Supporter
+                        '1263645368441241700', // Builder
+                    ]; // IDs der Teamrollen
+                    const currentRoles = member.roles.cache; // Aktuelle Rollen des Nutzers
+                
+                    // Finde die alte Rolle (eine, die der Nutzer derzeit hat und in den Teamrollen vorkommt)
+                    const alteRolle = currentRoles.find(r => teamRoles.includes(r.id));
+                
+                    // Logik zur Festlegung der neuen Rolle (zum Beispiel die nächstniedrigere Rolle)
+                    let neueRolle;
+                    if (alteRolle) {
+                        const alteRolleIndex = teamRoles.indexOf(alteRolle.id);
+                        if (alteRolleIndex > 0) {
+                            neueRolle = teamRoles[alteRolleIndex - 1]; // Wähle die nächstniedrigere Rolle
+                        }
+                    }
+                
+                    if (!alteRolle || !neueRolle) {
+                        return interaction.reply({ content: '> `❌` » Es konnte keine passende Rolle für die Herabstufung gefunden werden.', ephemeral: true });
+                    }
+                
+                    const neueRolleObjekt = interaction.guild.roles.cache.get(neueRolle);
+                
+                    // Alte Rolle entfernen und neue Rolle hinzufügen
+                    await member.roles.remove(alteRolle);
+                    await member.roles.add(neueRolleObjekt);
+                
+                    // Embed für das Rollenupdate
                     const RangUpdateembed = new EmbedBuilder()
                         .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
-                        .setDescription(`Der Nutzer ${member} wurde **herabgestuft.**\n\n**__Rang__**:\n${role}`)
+                        .setDescription(`Der Nutzer ${member} wurde **herabgestuft.**\n\n**__Neuer Rang__**: ${neueRolleObjekt}\n**__Alter Rang__**: ${alteRolle}`)
                         .setColor('Blurple')
                         .setTimestamp();
-        
+                
+                    // Nachricht im Zielkanal senden
                     targetChannel.send({ embeds: [RangUpdateembed] });
+                
+                    // Antwort an den interagierenden Nutzer
                     await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Herabstufen des Benutzers:', error);
