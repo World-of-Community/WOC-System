@@ -83,7 +83,7 @@ module.exports = {
                 
                     // Embed für das Rollenupdate erstellen
                     const Uprankembed = new EmbedBuilder()
-                        .setTitle('🔼 | __TEAMMITGLIED RANGUPDATE__')
+                        .setTitle('`🔼` | __TEAMMITGLIED RANGUPDATE__')
                         .setDescription(`Herzlichen Glückwunsch, ${member}!\nDu wurdest **befördert!**\n\n**__Rang__**:\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
@@ -92,7 +92,7 @@ module.exports = {
                     await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
                 
                     // Antwort an den interagierenden Nutzer senden
-                    await interaction.reply({ content: '> ✅ » Das Teammitglied wurde **befördert.**', ephemeral: true });
+                    await interaction.reply({ content: '> `✅` » Das Teammitglied wurde **befördert.**', ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Hinzufügen der Rolle:', error);
                     // Fehlerantwort an den interagierenden Nutzer senden
@@ -107,7 +107,7 @@ module.exports = {
                 
                     // Embed für das Rollenupdate erstellen
                     const RangUpdateembed = new EmbedBuilder()
-                        .setTitle('🔽 | __TEAMMITGLIED RANGUPDATE__')
+                        .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
                         .setDescription(`Der Nutzer ${member} wurde **herabgestuft.**\n\n**__Rang__**:\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
@@ -116,7 +116,7 @@ module.exports = {
                     await targetChannel.send({ embeds: [RangUpdateembed] });
                 
                     // Antwort an den interagierenden Nutzer senden
-                    await interaction.reply({ content: '> ✅ » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
+                    await interaction.reply({ content: '> `✅` » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Herabstufen des Benutzers:', error);
                     // Fehlerantwort an den interagierenden Nutzer senden
