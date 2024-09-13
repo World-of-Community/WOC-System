@@ -121,7 +121,7 @@ module.exports = {
                     // Embed für das Rollenupdate
                     const Uprankembed = new EmbedBuilder()
                         .setTitle('`🔼` | __TEAMMITGLIED RANGUPDATE__')
-                        .setDescription(`> Herzlichen Glückwunsch, ${member}!\n> Du wurdest **befördert!**\n\n**__Neuer Rang__**: ${neueRolleObjekt}\n**__Alter Rang__**: ${alteRolle ? alteRolle : 'Keine'}`)
+                        .setDescription(`> Herzlichen Glückwunsch, ${member}!\n> Du wurdest **befördert!**\n\n**__Neuer Rang__**: ${neueRolleObjekt}\n\n**__Alter Rang__**: ${alteRolle ? alteRolle : 'Keine'}`)
                         .setColor('Blurple')
                         .setTimestamp();
                 
@@ -177,7 +177,7 @@ module.exports = {
                     // Embed für das Rollenupdate
                     const RangUpdateembed = new EmbedBuilder()
                         .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
-                        .setDescription(`Der Nutzer ${member} wurde **herabgestuft.**\n\n**__Neuer Rang__**: ${neueRolleObjekt}\n**__Alter Rang__**: ${alteRolle}`)
+                        .setDescription(`Der Nutzer ${member} wurde **herabgestuft.**\n\n**__Neuer Rang__**: ${neueRolleObjekt}\n\n**__Alter Rang__**: ${alteRolle}`)
                         .setColor('Blurple')
                         .setTimestamp();
                 
