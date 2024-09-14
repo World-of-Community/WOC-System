@@ -3,7 +3,7 @@ const warndb = require("../../../Datenbank/warndb");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('warnlist')
+        .setName('warnlist-refresh')
         .setDescription('» Aktualisiert die Warnliste und zeigt sie an. 📋')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
