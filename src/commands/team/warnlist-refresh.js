@@ -48,7 +48,7 @@ module.exports = {
             .setColor('Red');
 
         // Warn-Embed senden
-        await interaction.channel.editReply({ embeds: [WarnEmbed] });
-        await interaction.reply({ content: "> `✅` » Die Warnliste wurde aktualisiert und gesendet.", ephemeral: true });
+        await interaction.reply({ embeds: [WarnEmbed] });
+        await interaction.followUp({ content: "> `✅` » Die Warnliste wurde aktualisiert und gesendet.", ephemeral: true });
     }
 };
