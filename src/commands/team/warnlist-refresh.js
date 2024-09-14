@@ -13,6 +13,9 @@ module.exports = {
             return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
         }
 
+        // Antwort verzögern, um Zeit für das Abrufen der Warnungen zu haben
+        await interaction.deferReply({ ephemeral: true });
+
         // Alle Warnungen für die Guild abrufen
         let warnings = await warndb.find({ guildId: interaction.guild.id });
 
@@ -47,8 +50,10 @@ module.exports = {
             .setDescription(warnings.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
             .setColor('Red');
 
-        // Warn-Embed senden
-        await interaction.reply({ embeds: [WarnEmbed] });
-        await interaction.followUp({ content: "> `✅` » Die Warnliste wurde aktualisiert und gesendet.", ephemeral: true });
+        // Vorherige Nachricht bearbeiten, um das Embed zu aktualisieren
+        await interaction.editReply({ embeds: [WarnEmbed] });
+
+        // Optionale Bestätigungsnachricht
+        // await interaction.followUp({ content: "> `✅` » Die Warnliste wurde aktualisiert.", ephemeral: true });
     }
 };
