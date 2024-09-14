@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require("discord.js");
 const Timeout = require('../../../Datenbank/timeoutdb');
+const Warn = require('../../../Datenbank/warndb');
 
 module.exports = {
     data: new SlashCommandBuilder()
