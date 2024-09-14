@@ -23,7 +23,7 @@ module.exports = {
         let banReason = 'Nicht gebannt'; // Fallback for non-banned users
 
         if (banned) {
-            const banData = await bandb.find({ user: member.id });
+            const banData = await bandb.find({ user: user.id, guildId: interaction.guild.id });
             banReason = banData ? (banData.reason || 'Keine Angabe') : 'Keine Angabe';
         }
 
