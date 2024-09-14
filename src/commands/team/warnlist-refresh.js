@@ -45,13 +45,13 @@ module.exports = {
             list += '\n'; // Abstand zwischen verschiedenen Nutzern
         });
 
-        const WarnEmbed = new EmbedBuilder()
+        const updateEmbed = new EmbedBuilder()
             .setTitle('Information zu den Warnungen der Nutzer')
             .setDescription(warnings.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
             .setColor('Red');
 
         // Vorherige Nachricht bearbeiten, um das Embed zu aktualisieren
-        await interaction.editReply({ embeds: [WarnEmbed] });
+        await interaction.editReply({ embeds: [updateEmbed] });
 
         // Optionale Bestätigungsnachricht
         // await interaction.followUp({ content: "> `✅` » Die Warnliste wurde aktualisiert.", ephemeral: true });
