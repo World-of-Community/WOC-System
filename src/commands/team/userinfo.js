@@ -23,7 +23,7 @@ module.exports = {
         let banReason = 'Nicht gebannt'; // Fallback for non-banned users
 
         if (banned) {
-            const banData = await bandb.findOne({ user: member.id });
+            const banData = await bandb.find({ user: member.id });
             banReason = banData ? (banData.reason || 'Keine Angabe') : 'Keine Angabe';
         }
 
@@ -38,7 +38,7 @@ module.exports = {
         // Create the embed
         const userEmbed = new EmbedBuilder()
             .setTitle(`\`👤\` | Informationen über \`${member.displayName}\``)
-            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'}${banned ? ` (Grund: \`${banReason}\`)` : ''}\n> \`🔇\` » Timeouts: \`${timeoutCount}\`\n> \`❗\` » Warnungen: \`${warnCount}\``)
+            .setDescription(`**Account Informationen**\n> \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)\n> \`📌\` » Anzeigename: ${member.displayName}\n\n> \`⏰\` » Account erstellt am: ${createdAt}\n> \`⏰\` » Beigetreten am: ${joinedAt}\n\n**Server Informationen**\n> \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'} (Grund: \`${banReason}\`)\n> \`🔇\` » Timeouts: \`${timeoutCount}\`\n> \`❗\` » Warnungen: \`${warnCount}\``)
             .setColor('Blurple')
             .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
             .setFooter({ text: `${interaction.guild.name} | User Information`, iconURL: `${interaction.guild.iconURL()}` })
