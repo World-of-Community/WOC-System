@@ -133,6 +133,13 @@ module.exports = {
                 }
 
                 await interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
+                //await interaction.reply({ content: 'Neues Update' });
+
+                // Nachricht nach 5 Sekunden löschen (5000 Millisekunden)
+                //setTimeout(() => {
+                //    interaction.deleteReply();
+                //}, 5000);
+
                 await msg.edit({ embeds: [updateEmbed] })
             }, 5000);
         })
