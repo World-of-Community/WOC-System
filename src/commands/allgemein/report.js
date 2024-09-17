@@ -30,7 +30,7 @@ module.exports = {
         }
         const reportEmbed = new EmbedBuilder()
             .setTitle(`\`📝\` | Neuer Report von ${interaction.user.displayName}`)
-            .setDescription(`${reportedUser} wurde von ${interaction.user} gemeldet.\n\n> \`👤\` - **BENUTZER INFORMATIONEN**\nReportgrund: ${grund}\nServer: ${server === 'discord' ? 'Discord Server' : 'Minecraft Server'}\nBenutzername: ${reportedUser.displayName} (\`${reportedUser.id}\`) (${reportedUser})\nAccount erstellt am: ${createdAt}\nBeigetreten am: ${joinedAt}`)
+            .setDescription(`${reportedUser} wurde von ${interaction.user} gemeldet.\n\n> \`👤\` - **BENUTZER INFORMATIONEN**\n\`✍️\` » Reportgrund: ${grund}\n\`📌\` » Server: ${server === 'discord' ? 'Discord Server' : 'Minecraft Server'}\n\`📌\` » Benutzername: ${reportedUser.displayName} (\`${reportedUser.id}\`) (${reportedUser})\n\n\`⏰\` » Account erstellt am: ${createdAt}\n\`⏰\` » Beigetreten am: ${joinedAt}`)
             .setColor('Red')
             .setFooter({ text: `©️ ${interaction.guild.name} - Report System`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
