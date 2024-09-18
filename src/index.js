@@ -513,6 +513,60 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
+// Test
+
+// ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
+const logChannelID = '1286088839466717355';
+
+// Funktion zum Senden eines Logs in Discord
+function sendLogToDiscord(message, level = 'info') {
+    const colors = {
+        info: 'Blue',
+        warn: 'Yellow',
+        error: 'Red',
+        debug: 'Grey'
+    };
+
+    const embed = new EmbedBuilder()
+        .setDescription(`\`\`\`${message}\`\`\``)
+        .setColor(colors[level] || 'Blue')
+        .setTimestamp();
+
+    // Sende den Embed in den spezifizierten Kanal
+    const logChannel = client.channels.cache.get(logChannelID);
+    if (logChannel) {
+        logChannel.send({ embeds: [embed] });
+    }
+}
+
+// Überschreibe die Standard-Konsolenmethoden
+const originalLog = console.log;
+const originalError = console.error;
+const originalWarn = console.warn;
+const originalDebug = console.debug;
+
+console.log = function (...args) {
+    originalLog(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
+    sendLogToDiscord(args.join(' '), 'info'); // Sende das Log an Discord
+};
+
+console.error = function (...args) {
+    originalError(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
+    sendLogToDiscord(args.join(' '), 'error'); // Sende das Log an Discord
+};
+
+console.warn = function (...args) {
+    originalWarn(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
+    sendLogToDiscord(args.join(' '), 'warn'); // Sende das Log an Discord
+};
+
+console.debug = function (...args) {
+    originalDebug(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
+    sendLogToDiscord(args.join(' '), 'debug'); // Sende das Log an Discord
+};
+
+// Test
+
 
 // Aktivitäts Event
 
