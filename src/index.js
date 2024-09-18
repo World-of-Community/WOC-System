@@ -442,9 +442,6 @@ const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
 // Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
 const botStatus = {};
 
-// Initialisiert den Client
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
-
 // Setzt den Intervall auf alle 5 Minuten (300000 Millisekunden)
 setInterval(() => {
     botIDs.forEach(botID => {
