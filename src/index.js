@@ -446,35 +446,38 @@ const botStatus = {};
 // ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
 const logChannelID = '1286088839466717355';
 
-botIDs.forEach(botID => {
-    const bot = client.guilds.cache.first().members.cache.get(botID);
+// Durch alle Guilds iterieren und prüfen
+client.guilds.cache.forEach(guild => {
+    botIDs.forEach(botID => {
+        const member = guild.members.cache.get(botID);
 
-    if (!bot) {
-        const embed = new EmbedBuilder()
-            .setTitle('Fehler: Bot nicht gefunden')
-            .setColor('Red')
-            .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
-            .setTimestamp();
+        if (!member) {
+            const embed = new EmbedBuilder()
+                .setTitle('Fehler: Bot nicht gefunden')
+                .setColor('Red')
+                .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
+                .setTimestamp();
 
-        client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
-        return;
-    }
+            client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+            return;
+        }
 
-    // Prüft den aktuellen Status und meldet ihn nur einmal beim Start
-    const currentStatus = bot.presence ? bot.presence.status : 'offline';
+        // Prüft den aktuellen Status und meldet ihn nur einmal beim Start
+        const currentStatus = member.presence ? member.presence.status : 'offline';
 
-    // Sende nur, wenn der Status anders ist als das zuletzt gespeicherte
-    if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
-        botStatus[botID] = currentStatus;
+        // Sende nur, wenn der Status anders ist als das zuletzt gespeicherte
+        if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
+            botStatus[botID] = currentStatus;
 
-        const embed = new EmbedBuilder()
-            .setTitle(`Bot ist ${currentStatus === 'online' ? 'online' : 'offline'}`)
-            .setColor(currentStatus === 'online' ? 'Green' : 'Red')
-            .setDescription(`Der Bot ${bot.user.tag} ist jetzt **${currentStatus}**.`)
-            .setTimestamp();
+            const embed = new EmbedBuilder()
+                .setTitle(`Bot ist ${currentStatus === 'online' ? 'online' : 'offline'}`)
+                .setColor(currentStatus === 'online' ? 'Green' : 'Red')
+                .setDescription(`Der Bot mit der ID ${botID} ist jetzt **${currentStatus}**.`)
+                .setTimestamp();
 
-        client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
-    }
+            client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+        }
+    });
 });
 
 // Funktion zum Senden eines Logs in Discord
