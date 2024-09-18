@@ -442,49 +442,36 @@ const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
 // Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
 const botStatus = {};
 
-// Setzt den Intervall auf alle 5 Minuten (300000 Millisekunden)
-setInterval(() => {
-    botIDs.forEach(botID => {
-        const bot = client.guilds.cache.first().members.cache.get(botID);
+botIDs.forEach(botID => {
+    const bot = client.guilds.cache.first().members.cache.get(botID);
 
-        // Falls der Bot nicht gefunden wird, logge einen Fehler
-        if (!bot) {
-            const embed = new EmbedBuilder()
-                .setTitle('Fehler: Bot nicht gefunden')
-                .setColor('Red')
-                .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
-                .setTimestamp();
+    if (!bot) {
+        const embed = new EmbedBuilder()
+            .setTitle('Fehler: Bot nicht gefunden')
+            .setColor('Red')
+            .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
+            .setTimestamp();
 
-            client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
-            return;
-        }
+        client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+        return;
+    }
 
-        // Prüft, ob der Bot offline ist und loggt, wenn sich der Status ändert
-        const currentStatus = bot.presence ? bot.presence.status : 'offline';
+    // Prüft den aktuellen Status und meldet ihn nur einmal beim Start
+    const currentStatus = bot.presence ? bot.presence.status : 'Offline';
 
-        if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
-            botStatus[botID] = currentStatus;
+    // Sende nur, wenn der Status anders ist als das zuletzt gespeicherte
+    if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
+        botStatus[botID] = currentStatus;
 
-            if (currentStatus === 'online') {
-                const embed = new EmbedBuilder()
-                    .setTitle('`🟢` » BOT ONLINE')
-                    .setColor('Green')
-                    .setDescription(`Der Bot ${bot.user.displayName} ist jetzt **online**.`)
-                    .setTimestamp();
+        const embed = new EmbedBuilder()
+            .setTitle(`Bot ist ${currentStatus === 'Online' ? 'Online' : 'Offline'}`)
+            .setColor(currentStatus === 'Online' ? 'Green' : 'Red')
+            .setDescription(`Der Bot \`${bot.user.displayName}\` ist aktuell **${currentStatus}**.`)
+            .setTimestamp();
 
-                client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
-            } else {
-                const embed = new EmbedBuilder()
-                    .setTitle('`🔴` » BOT OFFLINE')
-                    .setColor('Red')
-                    .setDescription(`Der Bot ${bot.user.displayName} ist jetzt **offline**.`)
-                    .setTimestamp();
-
-                client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
-            }
-        }
-    });
-}, 300000); // Alle 5 Minuten wird der Status überprüft
+        client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+    }
+});
 
 // Konsolenfehler überwachen und loggen
 process.on('uncaughtException', (error) => {
@@ -512,8 +499,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
-
-// Test
 
 // Liste der Bots und ihrer zugehörigen Kanal-IDs für Logs
 const bots = [
@@ -570,9 +555,6 @@ console.debug = function (...args) {
     originalDebug(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
     sendLogToDiscord(args.join(' '), 'debug'); // Sende das Log an Discord
 };
-
-// Test
-
 
 // Aktivitäts Event
 
