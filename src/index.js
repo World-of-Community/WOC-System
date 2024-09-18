@@ -433,17 +433,49 @@ setInterval( async () => {
 
 // Error & Online/Offline Log
 
-// Konfiguration für die beiden Bots
-const botsConfig = [
-    { token: 'MTAzMTQ4NzMzNjc4MzAyODI3NA.GHC0-t.rOUUjcO0nILICAW7Yf00Ky2d0lMyBUXUMLXkd0', botID: '1031487336783028274' }, // WOC Support
-    { token: 'MTAyMDAyMzI5OTQ0ODc4Njk1NQ.GY7gBD.hN58wUf5lBIKTZWlabC0otdD_ntpGkqkFFdepk', botID: '1020023299448786955' }, // WOC System
-];
+// Liste der Bot-IDs, die überwacht werden sollen
+const botIDs = [
+    '1031487336783028274', // WOC Support
+    '1020023299448786955', // WOC System
+]; // IDs der Bots einfügen
+const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
 
 // Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
 const botStatus = {};
 
 // ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
 const logChannelID = '1286088839466717355';
+
+botIDs.forEach(botID => {
+    const bot = client.guilds.cache.first().members.cache.get(botID);
+
+    if (!bot) {
+        const embed = new EmbedBuilder()
+            .setTitle('Fehler: Bot nicht gefunden')
+            .setColor('Red')
+            .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
+            .setTimestamp();
+
+        client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+        return;
+    }
+
+    // Prüft den aktuellen Status und meldet ihn nur einmal beim Start
+    const currentStatus = bot.presence ? bot.presence.status : 'offline';
+
+    // Sende nur, wenn der Status anders ist als das zuletzt gespeicherte
+    if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
+        botStatus[botID] = currentStatus;
+
+        const embed = new EmbedBuilder()
+            .setTitle(`Bot ist ${currentStatus === 'online' ? 'online' : 'offline'}`)
+            .setColor(currentStatus === 'online' ? 'Green' : 'Red')
+            .setDescription(`Der Bot ${bot.user.tag} ist jetzt **${currentStatus}**.`)
+            .setTimestamp();
+
+        client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+    }
+});
 
 // Funktion zum Senden eines Logs in Discord
 function sendLogToDiscord(message, level = 'info') {
@@ -491,76 +523,6 @@ console.debug = function (...args) {
     originalDebug(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
     sendLogToDiscord(args.join(' '), 'debug'); // Sende das Log an Discord
 };
-
-// Funktion zum Senden eines Logs in Discord
-function sendLogToDiscord(channelID, title, description, color) {
-    const embed = new EmbedBuilder()
-        .setTitle(title)
-        .setDescription(description)
-        .setColor(color)
-        .setTimestamp();
-
-    const channel = client.channels.cache.get(channelID);
-    if (channel) {
-        channel.send({ embeds: [embed] });
-    }
-}
-
-botsConfig.forEach(botConfig => {
-    const guild = client.guilds.cache.first(); // Hier wird die erste Guild verwendet, falls mehrere vorhanden sind
-    if (guild) {
-        const member = guild.members.cache.get(botConfig.botID);
-
-        if (!member) {
-            sendLogToDiscord(
-                botConfig.logChannelID,
-                'Fehler: Bot nicht gefunden',
-                `Der Bot mit der ID ${botConfig.botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`,
-                'Red'
-            );
-            return;
-        }
-
-        const currentStatus = member.presence ? member.presence.status : 'offline';
-        if (!botStatus[botConfig.botID] || botStatus[botConfig.botID] !== currentStatus) {
-            botStatus[botConfig.botID] = currentStatus;
-
-            sendLogToDiscord(
-                botConfig.logChannelID,
-                `Bot ist ${currentStatus === 'online' ? 'online' : 'offline'}`,
-                `Der Bot mit der ID ${botConfig.botID} ist jetzt **${currentStatus}**.`,
-                currentStatus === 'online' ? 'Green' : 'Red'
-            );
-        }
-    } else {
-        sendLogToDiscord(
-            botConfig.logChannelID,
-            'Fehler: Keine Guild gefunden',
-            `Der Bot konnte keine Guild finden, um den Status der Bots zu überprüfen.`,
-            'Red'
-        );
-    }
-});
-
-// Fehlerbehandlung für alle Bots
-client.on('error', error => {
-    botsConfig.forEach(botConfig => {
-        sendLogToDiscord(
-            botConfig.logChannelID,
-            'Bot Fehler', `Ein Fehler ist aufgetreten: ${error.message}`, 'Red'
-        );
-    });
-});
-
-// Bot-Logout-Event
-client.on('disconnect', () => {
-    botsConfig.forEach(botConfig => {
-        sendLogToDiscord(
-            botConfig.logChannelID,
-            'Bot wurde getrennt', 'Der Bot hat die Verbindung zu Discord verloren.', 'Red'
-        );
-    });
-});
 
 const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
 
