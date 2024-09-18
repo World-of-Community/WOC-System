@@ -9,5 +9,7 @@ async execute(interaction) {
      
     await interaction.channel.send('Das Zuständige Teammitglied wird sich zeitnah darum kümmern, wir bitten daher um Geduld.', );
 
+    await interaction.reply({ content: `> \`✅\` - Die Nachricht wurde erfolgreich gesendet`, ephemeral: true })
+
   },
 };
