@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const teamdb = require("../../../Datenbank/teamdb");
 const serverdb = require("../../../Datenbank/serverdb");
+const userdb = require("../../../Datenbank/userdb");
 const schedule = require('node-schedule');
 
 module.exports = {
