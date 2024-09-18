@@ -492,6 +492,26 @@ botsConfig.forEach(botConfig => {
     }
 });
 
+// Fehlerbehandlung für alle Bots
+client.on('error', error => {
+    botsConfig.forEach(botConfig => {
+        sendLogToDiscord(
+            botConfig.logChannelID,
+            'Bot Fehler', `Ein Fehler ist aufgetreten: ${error.message}`, 'Red'
+        );
+    });
+});
+
+// Bot-Logout-Event
+client.on('disconnect', () => {
+    botsConfig.forEach(botConfig => {
+        sendLogToDiscord(
+            botConfig.logChannelID,
+            'Bot wurde getrennt', 'Der Bot hat die Verbindung zu Discord verloren.', 'Red'
+        );
+    });
+});
+
 // Konsolenfehler überwachen und loggen
 process.on('uncaughtException', (error) => {
     const embed = new EmbedBuilder()
