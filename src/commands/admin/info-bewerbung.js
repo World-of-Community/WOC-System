@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('info-bewerbung')
-        .setDescription('Sendet eine Info Bewerbungsnachricht.'),
+        .setDescription('» Sendet eine Info Bewerbungsnachricht. 💬'),
 
 async execute(interaction) {
      
