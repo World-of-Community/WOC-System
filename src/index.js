@@ -435,8 +435,8 @@ setInterval( async () => {
 
 // Konfiguration für die beiden Bots
 const botsConfig = [
-    { token: 'MTAzMTQ4NzMzNjc4MzAyODI3NA.GHC0-t.rOUUjcO0nILICAW7Yf00Ky2d0lMyBUXUMLXkd0', logChannelID: '1286088839466717355', botID: '1031487336783028274' }, // WOC Support
-    { token: 'MTAyMDAyMzI5OTQ0ODc4Njk1NQ.GY7gBD.hN58wUf5lBIKTZWlabC0otdD_ntpGkqkFFdepk', logChannelID: '1286088839466717355', botID: '1020023299448786955' }, // WOC System
+    { token: 'MTAzMTQ4NzMzNjc4MzAyODI3NA.GHC0-t.rOUUjcO0nILICAW7Yf00Ky2d0lMyBUXUMLXkd0', botID: '1031487336783028274' }, // WOC Support
+    { token: 'MTAyMDAyMzI5OTQ0ODc4Njk1NQ.GY7gBD.hN58wUf5lBIKTZWlabC0otdD_ntpGkqkFFdepk', botID: '1020023299448786955' }, // WOC System
 ];
 
 // Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
@@ -588,9 +588,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
-
-// ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
-const logChannelID = '1286088839466717355';
 
 // Aktivitäts Event
 
