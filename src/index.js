@@ -562,6 +562,8 @@ client.on('disconnect', () => {
     });
 });
 
+const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
+
 // Konsolenfehler überwachen und loggen
 process.on('uncaughtException', (error) => {
     const embed = new EmbedBuilder()
