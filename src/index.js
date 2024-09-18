@@ -524,8 +524,6 @@ console.debug = function (...args) {
     sendLogToDiscord(args.join(' '), 'debug'); // Sende das Log an Discord
 };
 
-const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
-
 // Konsolenfehler überwachen und loggen
 process.on('uncaughtException', (error) => {
     const embed = new EmbedBuilder()
