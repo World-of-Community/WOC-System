@@ -521,7 +521,7 @@ const logChannelID = '1286088839466717355';
 // Funktion zum Senden eines Logs in Discord
 function sendLogToDiscord(message, level = 'info') {
     const colors = {
-        info: 'Blue',
+        info: 'Blurple',
         warn: 'Yellow',
         error: 'Red',
         debug: 'Grey'
@@ -529,7 +529,7 @@ function sendLogToDiscord(message, level = 'info') {
 
     const embed = new EmbedBuilder()
         .setDescription(`\`\`\`${message}\`\`\``)
-        .setColor(colors[level] || 'Blue')
+        .setColor(colors[level] || 'Blurple')
         .setTimestamp();
 
     // Sende den Embed in den spezifizierten Kanal
