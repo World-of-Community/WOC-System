@@ -432,45 +432,49 @@ setInterval( async () => {
 }, 60000 * 240); // 4 Stunden in Millisekunden
 
 // Error & Online/Offline Log
+
 // Liste der Bot-IDs, die überwacht werden sollen
 const botIDs = [
     '1031487336783028274', // WOC Support
-    '1020023299448786955' // WOC System
+    '1020023299448786955', // WOC System
 ]; // IDs der Bots einfügen
 const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
 
 // Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
 const botStatus = {};
 
-botIDs.forEach(botID => {
-    const bot = client.guilds.cache.first().members.cache.get(botID);
+// Durch alle Guilds iterieren und prüfen
+client.guilds.cache.forEach(guild => {
+    botIDs.forEach(botID => {
+        const member = guild.members.cache.get(botID);
 
-    if (!bot) {
-        const embed = new EmbedBuilder()
-            .setTitle('Fehler: Bot nicht gefunden')
-            .setColor('Red')
-            .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
-            .setTimestamp();
+        if (!member) {
+            const embed = new EmbedBuilder()
+                .setTitle('Fehler: Bot nicht gefunden')
+                .setColor('Red')
+                .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
+                .setTimestamp();
 
-        client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
-        return;
-    }
+            client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+            return;
+        }
 
-    // Prüft den aktuellen Status und meldet ihn nur einmal beim Start
-    const currentStatus = bot.presence ? bot.presence.status : 'Offline';
+        // Prüft den aktuellen Status und meldet ihn nur einmal beim Start
+        const currentStatus = member.presence ? member.presence.status : 'Offline';
 
-    // Sende nur, wenn der Status anders ist als das zuletzt gespeicherte
-    if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
-        botStatus[botID] = currentStatus;
+        // Sende nur, wenn der Status anders ist als das zuletzt gespeicherte
+        if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
+            botStatus[botID] = currentStatus;
 
-        const embed = new EmbedBuilder()
-            .setTitle(`Bot ist ${currentStatus === 'Online' ? 'Online' : 'Offline'}`)
-            .setColor(currentStatus === 'Online' ? 'Green' : 'Red')
-            .setDescription(`Der Bot \`${bot.user.displayName}\` ist aktuell **${currentStatus}**.`)
-            .setTimestamp();
+            const embed = new EmbedBuilder()
+                .setTitle(`Bot ist ${currentStatus === 'online' ? 'Online' : 'Offline'}`)
+                .setColor(currentStatus === 'Online' ? 'Green' : 'Red')
+                .setDescription(`Der Bot mit der ID ${botID} ist aktuell **${currentStatus}**.`)
+                .setTimestamp();
 
-        client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
-    }
+            client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+        }
+    });
 });
 
 // Konsolenfehler überwachen und loggen
