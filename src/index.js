@@ -486,6 +486,34 @@ setInterval(() => {
     });
 }, 300000); // Alle 5 Minuten wird der Status überprüft
 
+// Konsolenfehler überwachen und loggen
+process.on('uncaughtException', (error) => {
+    const embed = new EmbedBuilder()
+        .setTitle('Uncaught Exception')
+        .setColor('Red')
+        .setDescription(`Ein schwerwiegender Fehler ist aufgetreten:\n\`\`\`${error.message}\`\`\``)
+        .setTimestamp();
+
+    // Fehler-Embed in den überwachten Kanal senden
+    client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+
+    console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    const embed = new EmbedBuilder()
+        .setTitle('Unhandled Rejection')
+        .setColor('Orange')
+        .setDescription(`Ein nicht abgefangener Promise wurde abgelehnt:\n\`\`\`${reason}\`\`\``)
+        .setTimestamp();
+
+    // Fehler-Embed in den überwachten Kanal senden
+    client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+
 // Aktivitäts Event
 
 
