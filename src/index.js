@@ -515,6 +515,12 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Test
 
+// Liste der Bots und ihrer zugehörigen Kanal-IDs für Logs
+const bots = [
+    { token: 'MTAzMTQ4NzMzNjc4MzAyODI3NA.GHC0-t.rOUUjcO0nILICAW7Yf00Ky2d0lMyBUXUMLXkd0', logChannelID: '1286088839466717355' }, // WOC Support
+    { token: 'MTAyMDAyMzI5OTQ0ODc4Njk1NQ.GY7gBD.hN58wUf5lBIKTZWlabC0otdD_ntpGkqkFFdepk', logChannelID: '1286088839466717355' }, // WOC System
+];
+
 // ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
 const logChannelID = '1286088839466717355';
 
