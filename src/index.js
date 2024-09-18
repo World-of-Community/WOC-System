@@ -431,6 +431,64 @@ setInterval( async () => {
     }
 }, 60000 * 240); // 4 Stunden in Millisekunden
 
+// Error & Online/Offline Log
+// Liste der Bot-IDs, die überwacht werden sollen
+const botIDs = [
+    '1031487336783028274', // WOC Support
+    '1020023299448786955' // WOC System
+]; // IDs der Bots einfügen
+const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
+
+// Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
+const botStatus = {};
+
+// Initialisiert den Client
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
+
+// Setzt den Intervall auf alle 5 Minuten (300000 Millisekunden)
+setInterval(() => {
+    botIDs.forEach(botID => {
+        const bot = client.guilds.cache.first().members.cache.get(botID);
+
+        // Falls der Bot nicht gefunden wird, logge einen Fehler
+        if (!bot) {
+            const embed = new EmbedBuilder()
+                .setTitle('Fehler: Bot nicht gefunden')
+                .setColor('Red')
+                .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
+                .setTimestamp();
+
+            client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+            return;
+        }
+
+        // Prüft, ob der Bot offline ist und loggt, wenn sich der Status ändert
+        const currentStatus = bot.presence ? bot.presence.status : 'offline';
+
+        if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
+            botStatus[botID] = currentStatus;
+
+            if (currentStatus === 'online') {
+                const embed = new EmbedBuilder()
+                    .setTitle('`🟢` » BOT ONLINE')
+                    .setColor('Green')
+                    .setDescription(`Der Bot ${bot.user.displayName} ist jetzt **online**.`)
+                    .setTimestamp();
+
+                client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+            } else {
+                const embed = new EmbedBuilder()
+                    .setTitle('`🔴` » BOT OFFLINE')
+                    .setColor('Red')
+                    .setDescription(`Der Bot ${bot.user.displayName} ist jetzt **offline**.`)
+                    .setTimestamp();
+
+                client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+            }
+        }
+    });
+}, 300000); // Alle 5 Minuten wird der Status überprüft
+
 // Aktivitäts Event
 
 
