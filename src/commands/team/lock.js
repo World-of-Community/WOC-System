@@ -74,7 +74,7 @@ client.on('interactionCreate', async interaction => {
         }
 
         // Hier kannst du das Teammitglied erwähnen
-        await targetChannel.send(`<@&1286370548384927825>, bitte kümmert euch um den gesperrten Chat!`);
+        await targetChannel.send(`<@&1286370548384927825>, bitte kümmert euch um den ${channel} (gesperrten) Chat!`);
         await interaction.reply({ content: '> `✅` » Das zuständige Teammitglied wurde informiert.', ephemeral: true });
 
     } else if (customId === 'unlock_chat') {
