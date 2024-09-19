@@ -55,8 +55,8 @@ async execute(interaction) {
                 .setStyle(ButtonStyle.Secondary),
         );
 
-    await interaction.reply({ embeds: [LockEmbed], components:[Lock] });
-    await interaction.followUp({ content: '> `✅` » Das Lock-Embed wurde erfolgreich gesendet.', ephemeral: true });
+    await interaction.channel.send({ embeds: [LockEmbed], components: [Lock] });
+    await interaction.reply({ content: '> `✅` » Das Lock-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
     // Event-Handler für Button-Interaktionen
 client.on('interactionCreate', async interaction => {
