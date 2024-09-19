@@ -445,8 +445,6 @@ const botStatus = {};
 // ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
 const logChannelID = '1286088839466717355';
 
-const monitoredChannelID = '1286088839466717355';
-
 // Funktion zum Senden eines Logs in Discord
 function sendLogToDiscord(message, level = 'info') {
     const colors = {
@@ -493,33 +491,6 @@ console.debug = function (...args) {
     originalDebug(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
     sendLogToDiscord(args.join(' '), 'debug'); // Sende das Log an Discord
 };
-
-// Konsolenfehler überwachen und loggen
-process.on('uncaughtException', (error) => {
-    const embed = new EmbedBuilder()
-        .setTitle('Uncaught Exception')
-        .setColor('Red')
-        .setDescription(`Ein schwerwiegender Fehler ist aufgetreten:\n\`\`\`${error.message}\`\`\``)
-        .setTimestamp();
-
-    // Fehler-Embed in den überwachten Kanal senden
-    client.channels.cache.get('1286088839466717355').send({ embeds: [embed] });
-
-    console.error('Uncaught Exception:', error);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    const embed = new EmbedBuilder()
-        .setTitle('Unhandled Rejection')
-        .setColor('Orange')
-        .setDescription(`Ein nicht abgefangener Promise wurde abgelehnt:\n\`\`\`${reason}\`\`\``)
-        .setTimestamp();
-
-    // Fehler-Embed in den überwachten Kanal senden
-    client.channels.cache.get('1286088839466717355').send({ embeds: [embed] });
-
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-});
 
 // Aktivitäts Event
 
