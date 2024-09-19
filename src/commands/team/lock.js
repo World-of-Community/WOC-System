@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
