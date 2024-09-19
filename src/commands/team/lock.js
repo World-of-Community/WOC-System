@@ -77,11 +77,21 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply({ content: '> `✅` » Das zuständige Teammitglied wurde informiert.', ephemeral: true });
 
     } else if (customId === 'unlock_chat') {
-        // Sende die Nachricht
-        const msg = await interaction.reply({ content: `<@&1286370385108926536>, Chat wird entsperrt...`, fetchReply: true });
-
+        // Berechne den aktuellen Unix-Timestamp und den Timestamp für 30 Sekunden später
+        const deleteTimestamp = Math.floor(Date.now() / 1000) + 30; // Zeitstempel für 30 Sekunden später
+    
+        // Sende die Nachricht mit dem Unix-Timestamp für den Zeitpunkt, wann die Nachricht gelöscht wird
+        const msg = await interaction.reply({ content: `> <@&1286370385108926536>, Chat wird entsperrt...\n(Diese Nachricht wird automatisch gelöscht <t:${deleteTimestamp}:R>).`});
+    
         // Füge hier die Logik zum Entsperren des Chats hinzu
-
+        const channel = interaction.channel; // Hole den aktuellen Kanal
+        const memberRole = interaction.guild.roles.everyone; // @everyone-Rolle oder spezifische Rolle, die du entsperren möchtest
+    
+        // Setze die Berechtigungen zurück, sodass Mitglieder wieder schreiben können
+        await channel.permissionOverwrites.edit(memberRole, {
+            SendMessages: true, // Erlaube das Senden von Nachrichten für Mitglieder
+        });
+    
         // Lösche die Nachricht nach 30 Sekunden
         setTimeout(async () => {
             if (msg) {
