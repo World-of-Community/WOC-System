@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -39,6 +39,7 @@ async execute(interaction) {
     .setDescription(`Der Chat ist derzeit gesperrt, da nicht genügend Personal verfügbar ist, um den Chat zu moderieren.\n\nWenn du benachrichtigt werden möchtest, wenn der Chat entsperrt wird, klicke auf den Button unten.`)
     .setColor('Blurple')
     .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1286373310653010043/Support_Chat.png?ex=66edac00&is=66ec5a80&hm=321e66b98cadfa0a410be9c76ddc613345254b55caa6f6967039766afd9f65eb&')
+    .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
     .setTimestamp();
 
     const Lock = new ActionRowBuilder()
@@ -77,11 +78,9 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply({ content: '> `✅` » Das zuständige Teammitglied wurde informiert.', ephemeral: true });
 
     } else if (customId === 'unlock_chat') {
-        // Definiere die erforderliche Rolle, die Mitglieder haben müssen, um den Button zu verwenden
-        //const requiredRoleId = '820658664536145940'; // Ersetze 'ROLLE_ID' durch die ID der Rolle, die benötigt wird
-
-        // Überprüfe, ob der Benutzer die erforderliche Rolle hat
-        if (!interaction.member.roles.cache.has(requiredRoleId)) {
+        
+        // Überprüfe, ob der Benutzer die Berechtigung 'ManageChannels' hat
+        if (!interaction.member.permissions.has(PermissionFlagsBits.ManageChannels)) {
             return interaction.reply({ content: '> `❌` » Du hast keine Berechtigung, um den Chat zu entsperren.', ephemeral: true });
         }
 
