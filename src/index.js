@@ -503,7 +503,7 @@ process.on('uncaughtException', (error) => {
         .setTimestamp();
 
     // Fehler-Embed in den überwachten Kanal senden
-    client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+    client.channels.cache.get('1286088839466717355').send({ embeds: [embed] });
 
     console.error('Uncaught Exception:', error);
 });
@@ -516,7 +516,7 @@ process.on('unhandledRejection', (reason, promise) => {
         .setTimestamp();
 
     // Fehler-Embed in den überwachten Kanal senden
-    client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+    client.channels.cache.get('1286088839466717355').send({ embeds: [embed] });
 
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
