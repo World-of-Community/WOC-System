@@ -15,6 +15,16 @@ async execute(interaction) {
         return interaction.reply({ content: 'Bitte wähle einen gültigen Textkanal aus.', ephemeral: true });
     }
 
+    // Sperre den Kanal für alle Benutzer außer dem Bot
+    await channel.permissionOverwrites.edit(interaction.guild.roles.everyone, {
+        SendMessages: false, // Verhindert das Senden von Nachrichten für alle
+    });
+
+    // Gib dem Bot weiterhin die Berechtigung zum Schreiben
+    await channel.permissionOverwrites.edit(interaction.guild.members.me, {
+        SendMessages: true, // Erlaubt dem Bot das Senden von Nachrichten
+    });
+
     // Erstelle das Embed
     const LockEmbed = new EmbedBuilder()
     .setTitle('Kanal wurde gesperrt')
