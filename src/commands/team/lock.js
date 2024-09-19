@@ -55,12 +55,12 @@ client.on('interactionCreate', async interaction => {
         }
 
         // Hier kannst du das Teammitglied erwähnen
-        await targetChannel.send(`<@1286370548384927825>, bitte kümmert euch um den gesperrten Chat!`);
+        await targetChannel.send(`<@&1286370548384927825>, bitte kümmert euch um den gesperrten Chat!`);
         await interaction.reply({ content: '> `✅` » Das zuständige Teammitglied wurde informiert.', ephemeral: true });
 
     } else if (customId === 'unlock_chat') {
         // Sende die Nachricht
-        const msg = await interaction.reply({ content: `<@1286370385108926536>, Chat wird entsperrt...`, fetchReply: true });
+        const msg = await interaction.reply({ content: `<@&1286370385108926536>, Chat wird entsperrt...`, fetchReply: true });
 
         // Füge hier die Logik zum Entsperren des Chats hinzu
 
