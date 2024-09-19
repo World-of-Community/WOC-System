@@ -38,6 +38,7 @@ async execute(interaction) {
         );
 
     await interaction.reply({ embeds: [LockEmbed], components:[Lock] });
+    await interaction.reply({ content: '> `✅` » Das Lock-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
     if (!interaction.isButton()) return;
 
