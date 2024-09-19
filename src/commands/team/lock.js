@@ -77,6 +77,14 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply({ content: '> `✅` » Das zuständige Teammitglied wurde informiert.', ephemeral: true });
 
     } else if (customId === 'unlock_chat') {
+        // Definiere die erforderliche Rolle, die Mitglieder haben müssen, um den Button zu verwenden
+        const requiredRoleId = '820658664536145940'; // Ersetze 'ROLLE_ID' durch die ID der Rolle, die benötigt wird
+
+        // Überprüfe, ob der Benutzer die erforderliche Rolle hat
+        if (!interaction.member.roles.cache.has(requiredRoleId)) {
+            return interaction.reply({ content: '> `❌` » Du hast keine Berechtigung, um den Chat zu entsperren.', ephemeral: true });
+        }
+
         // Berechne den aktuellen Unix-Timestamp und den Timestamp für 30 Sekunden später
         const deleteTimestamp = Math.floor(Date.now() / 1000) + 30; // Zeitstempel für 30 Sekunden später
     
