@@ -475,7 +475,7 @@ client.guilds.cache.forEach(guild => {
                 .setDescription(`Der Bot mit der ID ${botID} ist jetzt **${currentStatus}**.`)
                 .setTimestamp();
 
-            client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
+            client.channels.cache.get('1286088839466717355').send({ embeds: [embed] });
         }
     });
 });
