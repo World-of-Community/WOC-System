@@ -95,7 +95,9 @@ module.exports = {
         const totalBonus = inviteUses - totalLeft;
 
         const userData = await userdb.findOne({ userID: member.id })
-        //Todo noch machen: Falls man 2 Länder auswählt: ${userNationalität.length > 0 ? userNationalität.join(' / ') : '**Kein Land**'}
+        
+        // Falls mehrere Nationalitäten gefunden wurden, werden sie hier korrekt dargestellt.
+        const nationalitätOutput = userNationalität.length > 0 ? userNationalität.join(' / ') : '❓';
 
         if (userData) {
             const embed = new EmbedBuilder()
