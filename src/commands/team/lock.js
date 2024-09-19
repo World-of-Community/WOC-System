@@ -73,8 +73,11 @@ client.on('interactionCreate', async interaction => {
             return await interaction.reply({ content: '> `❌` » Kanal wurde nicht gefunden.', ephemeral: true });
         }
 
+        // Erhalte den Benutzer, der den Button geklickt hat
+        const member = interaction.member;
+
         // Hier kannst du das Teammitglied erwähnen
-        await targetChannel.send(`<@&1286370548384927825>, bitte kümmert euch um den ${channel} (gesperrten) Chat!`);
+        await targetChannel.send(`> ${member} hat angefragt. <@&1286370548384927825>, bitte kümmert euch um den ${channel} (gesperrten) Chat!`);
         await interaction.reply({ content: '> `✅` » Das zuständige Teammitglied wurde informiert.', ephemeral: true });
 
     } else if (customId === 'unlock_chat') {
