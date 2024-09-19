@@ -53,7 +53,8 @@ module.exports = {
             'Welt News': 'Welt News',
         };
 
-        let userNationalität = '❓';
+        let userNationalität = [];  // Array statt String
+        //let userNationalität = '❓';
         let userGeschlecht = '❓';
         let rolegamesList = [];
         let rolePingsList = [];
@@ -95,7 +96,7 @@ module.exports = {
         const totalBonus = inviteUses - totalLeft;
 
         const userData = await userdb.findOne({ userID: member.id })
-        
+
         // Falls mehrere Nationalitäten gefunden wurden, werden sie hier korrekt dargestellt.
         const nationalitätOutput = userNationalität.length > 0 ? userNationalität.join(' / ') : '❓';
 
