@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionBitField } = require('discord.js');
+const ms = require('ms'); // Falls du eine Zeit wie "5m" oder "10s" akzeptieren möchtest
 
 module.exports = {
     data: new SlashCommandBuilder()
