@@ -97,8 +97,17 @@ module.exports = {
 
         const userData = await userdb.findOne({ userID: member.id })
 
-        // Falls mehrere Nationalitäten gefunden wurden, werden sie hier korrekt dargestellt.
-        const nationalitätOutput = userNationalität.length > 0 ? userNationalität.join(' / ') : '❓';
+        // Debugging-Log, um sicherzustellen, dass userNationalität ein Array ist
+        console.log("userNationalität Type:", typeof userNationalität);
+        console.log("userNationalität Value:", userNationalität);
+
+        // Prüfe, ob userNationalität wirklich ein Array ist, bevor du join() aufrufst
+        if (Array.isArray(userNationalität)) {
+            const nationalitätOutput = userNationalität.length > 0 ? userNationalität.join(' / ') : '❓';
+            console.log("nationalitätOutput:", nationalitätOutput);
+            } else {
+              console.error("Fehler: userNationalität ist kein Array:", userNationalität);
+            }
 
         if (userData) {
             const embed = new EmbedBuilder()
