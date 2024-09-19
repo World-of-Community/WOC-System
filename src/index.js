@@ -438,47 +438,12 @@ const botIDs = [
     '1031487336783028274', // WOC Support
     '1020023299448786955', // WOC System
 ]; // IDs der Bots einfügen
-const monitoredChannelID = '1286088839466717355'; // Die ID des Kanals für Logs
 
 // Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
 const botStatus = {};
 
 // ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
 const logChannelID = '1286088839466717355';
-
-// Durch alle Guilds iterieren und prüfen
-client.guilds.cache.forEach(guild => {
-    botIDs.forEach(botID => {
-        const member = guild.members.cache.get(botID);
-
-        if (!member) {
-            const embed = new EmbedBuilder()
-                .setTitle('Fehler: Bot nicht gefunden')
-                .setColor('Red')
-                .setDescription(`Der Bot mit der ID ${botID} konnte nicht gefunden werden. Er ist möglicherweise nicht auf dem Server.`)
-                .setTimestamp();
-
-            client.channels.cache.get(monitoredChannelID).send({ embeds: [embed] });
-            return;
-        }
-
-        // Prüft den aktuellen Status und meldet ihn nur einmal beim Start
-        const currentStatus = member.presence ? member.presence.status : 'offline';
-
-        // Sende nur, wenn der Status anders ist als das zuletzt gespeicherte
-        if (!botStatus[botID] || botStatus[botID] !== currentStatus) {
-            botStatus[botID] = currentStatus;
-
-            const embed = new EmbedBuilder()
-                .setTitle(`Bot ist ${currentStatus === 'online' ? 'online' : 'offline'}`)
-                .setColor(currentStatus === 'online' ? 'Green' : 'Red')
-                .setDescription(`Der Bot mit der ID ${botID} ist jetzt **${currentStatus}**.`)
-                .setTimestamp();
-
-            client.channels.cache.get('1286088839466717355').send({ embeds: [embed] });
-        }
-    });
-});
 
 // Funktion zum Senden eines Logs in Discord
 function sendLogToDiscord(message, level = 'info') {
