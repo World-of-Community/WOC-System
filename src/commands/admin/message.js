@@ -12,6 +12,7 @@ module.exports = {
     async execute(interaction) {
         const member = interaction.options.getMember('user');
         const message = interaction.options.getString('nachricht');
+        const imageUrl = interaction.options.getString('image');
 
         // Embed für die DM-Nachricht erstellen
         const Nachrichtembed = new EmbedBuilder()
