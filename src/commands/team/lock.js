@@ -29,7 +29,6 @@ async execute(interaction) {
                 .setLabel('» Teammitglied Informieren')
                 .setEmoji('💬')
                 .setStyle(ButtonStyle.Primary),
-            new 
             new ButtonBuilder()
                 .setCustomId('unlock_chat')
                 .setLabel('» Kanal entsperren')
@@ -38,10 +37,6 @@ async execute(interaction) {
         );
 
     await interaction.reply({ embeds: [LockEmbed], components:[Lock] });
-
-    if (!interaction.isButton()) return;
-
-    const { customId } = interaction;
 
     if (!interaction.isButton()) return;
 
