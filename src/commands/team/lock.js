@@ -78,7 +78,7 @@ client.on('interactionCreate', async interaction => {
 
     } else if (customId === 'unlock_chat') {
         // Definiere die erforderliche Rolle, die Mitglieder haben müssen, um den Button zu verwenden
-        const requiredRoleId = '820658664536145940'; // Ersetze 'ROLLE_ID' durch die ID der Rolle, die benötigt wird
+        //const requiredRoleId = '820658664536145940'; // Ersetze 'ROLLE_ID' durch die ID der Rolle, die benötigt wird
 
         // Überprüfe, ob der Benutzer die erforderliche Rolle hat
         if (!interaction.member.roles.cache.has(requiredRoleId)) {
