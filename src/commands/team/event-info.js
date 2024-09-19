@@ -16,31 +16,23 @@ async execute(interaction) {
     const message = interaction.options.getString('nachricht');
     const delay = interaction.options.getString('starten'); // Zeitstring für Verzögerung
 
-    // Verzögerung prüfen und festlegen
-    let delayMs = 0;
-    if (delay) {
-        try {
-            delayMs = ms(delay); // Konvertiere die Zeitangabe (z.B. "5m" zu Millisekunden)
-            if (!delayMs) throw new Error('Invalid time format');
-        } catch (error) {
-            return await interaction.reply({ content: '> `❌` » Bitte gib eine gültige Zeit für die Verzögerung ein (z.B. 10s, 5m, 1h).', ephemeral: true });
-        }
+    // Zeit umwandeln
+    const delayMs = ms(delay);
+    if (!delayMs) {
+        return await interaction.reply({ content: '> `❌` » Bitte gib eine gültige Zeit für die Verzögerung ein (z.B. 10s, 5m, 1h).', ephemeral: true });
     }
 
-    // Nachricht senden, entweder sofort oder mit Verzögerung
-    try {
-        if (delayMs > 0) {
-            await interaction.reply({ content: `> \`⏳\` » Die Nachricht wird in ${delay} gesendet.`, ephemeral: true });
-            setTimeout(async () => {
-                await channel.send(message);
-            }, delayMs);
-        } else {
-            await channel.send(message);
-            await interaction.reply({ content: `> \`✅\` » Die Nachricht wurde erfolgreich gesendet.`, ephemeral: true });
-        }
-    } catch (error) {
-        console.error(error);
-        await interaction.reply({ content: `> \`❌\` » Fehler beim Senden der Nachricht.`, ephemeral: true });
-    }
+    // Berechnung des Enddatums
+    const endDate = new Date(Date.now() + delayMs);
+    const timestamp = Math.floor(endDate / 1000); // Unix-Timestamp für Discord
+
+    // Erste Nachricht mit Timestamp senden
+    await interaction.reply({ content: `> \`⏳\` » Die Nachricht wird <t:${timestamp}:R> gesendet.`, ephemeral: true });
+
+    // Countdown mit Verzögerung
+    setTimeout(async () => {
+        await channel.send(message);
+        await interaction.editReply({ content: `> \`✅\` » Die Nachricht wurde erfolgreich gesendet.`, ephemeral: true });
+    }, delayMs);
   },
 };
