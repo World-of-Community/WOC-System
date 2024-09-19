@@ -25,6 +25,12 @@ async execute(interaction) {
         SendMessages: true, // Erlaubt dem Bot das Senden von Nachrichten
     });
 
+    // Sperre den Kanal für die Mitgliederrolle (z.B. @everyone oder eine bestimmte Mitglieder-Rolle)
+    //const memberRole = interaction.guild.roles.everyone; // Alternativ kannst du hier eine spezifische Mitglieder-Rolle wählen
+    //await channel.permissionOverwrites.edit(memberRole, {
+    //    SendMessages: false, // Verhindert das Senden von Nachrichten für Mitglieder
+    //});
+
     // Erstelle das Embed
     const LockEmbed = new EmbedBuilder()
     .setTitle('Kanal wurde gesperrt')
