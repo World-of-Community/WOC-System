@@ -53,7 +53,7 @@ module.exports = {
             'Welt News': 'Welt News',
         };
 
-        let userNationalität = [];  // Array statt String
+        const userNationalität = [];  // Array statt String
         //let userNationalität = '❓';
         let userGeschlecht = '❓';
         let rolegamesList = [];
