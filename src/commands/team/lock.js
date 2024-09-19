@@ -40,6 +40,8 @@ async execute(interaction) {
     await interaction.reply({ embeds: [LockEmbed], components:[Lock] });
     await interaction.followUp({ content: '> `✅` » Das Lock-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
+    // Event-Handler für Button-Interaktionen
+client.on('interactionCreate', async interaction => {
     if (!interaction.isButton()) return;
 
     const { customId } = interaction;
@@ -51,17 +53,17 @@ async execute(interaction) {
         if (!targetChannel) {
             return await interaction.reply({ content: '> `❌` » Kanal wurde nicht gefunden.', ephemeral: true });
         }
-        
-        // Hier kannst du das Teammitglied erwähnen, z.B. @Teammitglied
+
+        // Hier kannst du das Teammitglied erwähnen
         await targetChannel.send(`<@1286370548384927825>, bitte kümmert euch um den gesperrten Chat!`);
-        await interaction.reply({ content: '> `✅` » Das zuständige Teammitglied wurde Informiert.', ephemeral: true });
+        await interaction.reply({ content: '> `✅` » Das zuständige Teammitglied wurde informiert.', ephemeral: true });
 
     } else if (customId === 'unlock_chat') {
         // Sende die Nachricht
-        const msg = await interaction.reply({ content: `<@1286370385108926536>, Chat wird entsperrt...` });
-        
+        const msg = await interaction.reply({ content: `<@1286370385108926536>, Chat wird entsperrt...`, fetchReply: true });
+
         // Füge hier die Logik zum Entsperren des Chats hinzu
-    
+
         // Lösche die Nachricht nach 30 Sekunden
         setTimeout(async () => {
             if (msg) {
@@ -69,5 +71,6 @@ async execute(interaction) {
             }
         }, 30000); // 30 Sekunden
     }
+  });
   },
 };
