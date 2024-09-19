@@ -6,6 +6,7 @@ module.exports = {
         .setDescription('» Sendet eine Nachricht an ein Nutzer per Direktnachricht. 💬')
         .addUserOption(option => option.setName('user').setDescription('» Der Benutzer, an den die Nachricht gesendet werden soll').setRequired(true))
         .addStringOption(option => option.setName('nachricht').setDescription('» Die Nachricht, die gesendet werden soll').setRequired(true))
+        .addStringOption(option => option.setName('image').setDescription('» URL des Bildes, das hinzugefügt werden soll').setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
@@ -19,6 +20,11 @@ module.exports = {
             .setColor('Blurple')
             .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
+
+        // Optional: Bild hinzufügen, wenn vorhanden
+        if (imageUrl) {
+            Nachrichtembed.setImage(imageUrl);
+        }
 
         // Nachricht und Embed an den Benutzer per DM senden
         try {
