@@ -445,6 +445,8 @@ const botStatus = {};
 // ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
 const logChannelID = '1286088839466717355';
 
+const monitoredChannelID = '1286088839466717355';
+
 // Funktion zum Senden eines Logs in Discord
 function sendLogToDiscord(message, level = 'info') {
     const colors = {
