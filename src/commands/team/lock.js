@@ -20,6 +20,7 @@ async execute(interaction) {
     .setTitle('Kanal wurde gesperrt')
     .setDescription(`Der Chat ist derzeit gesperrt, da nicht genügend Personal verfügbar ist, um den Chat zu moderieren.\n\nWenn du benachrichtigt werden möchtest, wenn der Chat entsperrt wird, klicke auf den Button unten.`)
     .setColor('Blurple')
+    .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1286373310653010043/Support_Chat.png?ex=66edac00&is=66ec5a80&hm=321e66b98cadfa0a410be9c76ddc613345254b55caa6f6967039766afd9f65eb&')
     .setTimestamp();
 
     const Lock = new ActionRowBuilder()
@@ -28,12 +29,12 @@ async execute(interaction) {
                 .setCustomId('mention_mod')
                 .setLabel('» Teammitglied Informieren')
                 .setEmoji('💬')
-                .setStyle(ButtonStyle.Primary),
+                .setStyle(ButtonStyle.Secondary),
             new ButtonBuilder()
                 .setCustomId('unlock_chat')
                 .setLabel('» Kanal entsperren')
                 .setEmoji('🔓')
-                .setStyle(ButtonStyle.Primary),
+                .setStyle(ButtonStyle.Secondary),
         );
 
     await interaction.reply({ embeds: [LockEmbed], components:[Lock] });
@@ -43,7 +44,7 @@ async execute(interaction) {
     const { customId } = interaction;
 
     // Stelle sicher, dass der Kanal, in dem die Nachricht gesendet werden soll, bekannt ist
-    const targetChannel = interaction.guild.channels.cache.find(channel => channel.name === 'name-des-kanals'); // Ersetze 'name-des-kanals' durch den tatsächlichen Namen des Kanals
+    const targetChannel = interaction.guild.channels.cache.find(channel => channel.id === '1286372685755973684');
 
     if (customId === 'mention_mod') {
         if (!targetChannel) {
