@@ -3,7 +3,7 @@ const { SlashCommandBuilder, PermissionBitField } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('event-info')
-        .setDescription('Sende eine Info Event Nachricht. 💬')
+        .setDescription('» Sende eine Info Event Nachricht. 💬')
         .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true))
         .addStringOption(option => option.setName('nachricht').setDescription('Die Nachricht, die gesendet werden soll').setRequired(true)),
 
