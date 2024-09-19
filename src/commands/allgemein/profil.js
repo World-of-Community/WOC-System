@@ -53,8 +53,7 @@ module.exports = {
             'Welt News': 'Welt News',
         };
 
-        let userNationalität = [];  // Array statt String
-        //let userNationalität = '❓';
+        let userNationalität = '❓';
         let userGeschlecht = '❓';
         let rolegamesList = [];
         let rolePingsList = [];
@@ -97,22 +96,12 @@ module.exports = {
 
         const userData = await userdb.findOne({ userID: member.id })
 
-        // Debugging-Log, um sicherzustellen, dass userNationalität ein Array ist
-        console.log("userNationalität Type:", typeof userNationalität);
-        console.log("userNationalität Value:", userNationalität);
-
-        // Prüfe, ob userNationalität wirklich ein Array ist, bevor du join() aufrufst
-        if (Array.isArray(userNationalität)) {
-            const nationalitätOutput = userNationalität.length > 0 ? userNationalität.join(' / ') : '❓';
-            console.log("nationalitätOutput:", nationalitätOutput);
-            } else {
-              console.error("Fehler: userNationalität ist kein Array:", userNationalität);
-            }
+        const userNationalität = userNationalität.length > 0 ? userNationalität.join(' / ') : '❓';
 
         if (userData) {
             const embed = new EmbedBuilder()
             .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
-            .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${nationalitätOutput}\n- \`🎮\` » Meine Spiele: ${rolegamesList.length > 0 ? rolegamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
+            .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${rolegamesList.length > 0 ? rolegamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
             .setColor('Blurple')
             .setThumbnail(`${member.user.displayAvatarURL({ dynamic: true })}`)
             .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
