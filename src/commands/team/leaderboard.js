@@ -49,6 +49,8 @@ module.exports = {
             }));
 
             console.log(data.member);
+            console.log(topMessagesMembers);
+            console.log(topVoiceMembers);
 
             // Format message leaderboard with emoji positions
             const messageLeaderboardText = topMessagesMembers
