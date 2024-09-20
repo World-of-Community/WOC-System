@@ -3,6 +3,8 @@ const cron = require('node-cron'); // For scheduling the monthly reset
 const User = require('../../../Datenbank/userdb');
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
+ // Mit den Emoji 1️⃣ bis zu 10
+
 // Reset stats every month on the 1st at midnight
 cron.schedule('0 0 1 * *', async () => {
     await User.updateMany({}, { $set: { messages: 0, voiceTime: 0 } });
@@ -19,6 +21,9 @@ function getCurrentMonth() {
     return monthNames[now.getMonth()];
 }
 
+// Emoji list for positions 1 to 10
+const positionEmojis = ['\`1️⃣\`', '\`2️⃣\`', '\`3️⃣\`', '\`4️⃣\`', '\`5️⃣\`', '\`6️⃣\`', '\`7️⃣\`', '\`8️⃣\`', '\`9️⃣\`', '\`🔟\`'];
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('leaderboard')
@@ -31,7 +36,7 @@ module.exports = {
 
         // Format message leaderboard
         const messageLeaderboardText = topMessages.map((user, index) =>
-            `${index + 1}. ${user}\n> \`${user.messages}\` Nachrichten`
+            `${positionEmojis[index]} » ${user}\n> \`${user.messages}\` Nachrichten`
         ).join('\n');
 
         // Format voice leaderboard (days, hours, minutes)
@@ -41,7 +46,7 @@ module.exports = {
             const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
             const minutes = Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000));
 
-            return `${index + 1}. ${user} \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
+            return `${positionEmojis[index]} » ${user} \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
         }).join('\n');
 
         const currentMonth = getCurrentMonth(); // Get the current month name
