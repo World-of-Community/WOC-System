@@ -34,19 +34,20 @@ module.exports = {
             const topVoice = await userdb.find().sort({ voiceTime: -1 }).limit(10);
 
             // Map user IDs to guild members to ensure we use actual Discord members
-            const topMessagesMembers = await Promise.all(topMessages.map(async (userdb) => {
-                const member = await interaction.guild.members.fetch(userdb.userId).catch(() => null);
-                return { member, messages: userdb.messages ?? 0 }; // Set messages to 0 if undefined
+            const topMessagesMembers = await Promise.all(topMessages.map(async (user) => {
+            const member = await interaction.guild.members.fetch(user.userId).catch(() => null); // Use 'user', not 'userdb'
+            return { member, messages: user.messages ?? 0 }; // Set messages to 0 if undefined
             }));
 
             const topVoiceMembers = await Promise.all(topVoice.map(async (user) => {
-                const member = await interaction.guild.members.fetch(user.userId).catch(() => null);
+                const member = await interaction.guild.members.fetch(user.userId).catch(() => null); // Use 'user', not 'userdb'
                 const voiceTime = user.voiceTime ?? 0; // Set voiceTime to 0 if undefined
                 const days = Math.floor(voiceTime / (24 * 60 * 60 * 1000));
                 const hours = Math.floor((voiceTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
                 const minutes = Math.floor((voiceTime % (60 * 60 * 1000)) / (60 * 1000));
                 return { member, timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten` };
             }));
+
             
             // Format message leaderboard with emoji positions
             const messageLeaderboardText = topMessagesMembers
