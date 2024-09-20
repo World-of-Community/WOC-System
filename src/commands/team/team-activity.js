@@ -6,17 +6,17 @@ let messageGoals = {};
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('teamactivity')
-        .setDescription('Setzt das Nachrichtenziel für eine Rolle oder zeigt die Aktivität eines Benutzers an.')
+        .setDescription('» Setzt das Nachrichtenziel für eine Rolle oder zeigt die Aktivität eines Benutzers an.')
         .addSubcommand(subcommand => 
             subcommand
                 .setName('setgoal')
-                .setDescription('Setzt das Nachrichtenziel für eine Rolle.')
+                .setDescription('» Setzt das Nachrichtenziel für eine Rolle.')
                 .addRoleOption(option =>  option.setName('role').setDescription('Die Rolle, für die das Ziel festgelegt wird').setRequired(true))
                 .addIntegerOption(option =>  option.setName('messagegoal').setDescription('Das Nachrichtenziel für diese Rolle').setRequired(true)))
         .addSubcommand(subcommand => 
             subcommand
                 .setName('check')
-                .setDescription('Überprüft die Nachrichtenaktivität eines Benutzers.')
+                .setDescription('» Überprüft die Nachrichtenaktivität eines Benutzers.')
                 .addUserOption(option =>  option.setName('user').setDescription('Der Benutzer, dessen Aktivität angezeigt werden soll').setRequired(true))),
     async execute(interaction) {
         if (interaction.options.getSubcommand() === 'setgoal') {
@@ -27,7 +27,7 @@ module.exports = {
             messageGoals[role.id] = messageGoal;
 
             // Rückmeldung an den Benutzer
-            await interaction.reply(`Das Nachrichtenziel für die Rolle ${role.name} wurde auf ${messageGoal} Nachrichten gesetzt.`);
+            await interaction.reply({ content: `> \`✅\` » Das Nachrichtenziel für die Rolle ${role} wurde auf \`${messageGoal}\` Nachrichten gesetzt.`, ephemeral: true });
         }
 
         if (interaction.options.getSubcommand() === 'check') {
