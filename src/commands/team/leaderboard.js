@@ -1,9 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron'); // For scheduling the monthly reset
-const User = require('../../../Datenbank/userdb');
+const User = require('../../../Datenbank/userdb'); // Your MongoDB user database
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
-
- // Mit den Emoji 1️⃣ bis zu 10
 
 // Reset stats every month on the 1st at midnight
 cron.schedule('0 0 1 * *', async () => {
@@ -22,7 +20,19 @@ function getCurrentMonth() {
 }
 
 // Emoji list for positions 1 to 10
-const positionEmojis = ['\`1️⃣\`', '\`2️⃣\`', '\`3️⃣\`', '\`4️⃣\`', '\`5️⃣\`', '\`6️⃣\`', '\`7️⃣\`', '\`8️⃣\`', '\`9️⃣\`', '\`🔟\`'];
+const positionEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+
+// Function to split leaderboard into smaller chunks if needed
+function splitLeaderboard(text, maxLength = 4000) {
+    const parts = [];
+    while (text.length > maxLength) {
+        let sliceIndex = text.lastIndexOf('\n', maxLength); // Split at the last newline
+        parts.push(text.slice(0, sliceIndex));
+        text = text.slice(sliceIndex + 1);
+    }
+    parts.push(text); // Push the remaining part
+    return parts;
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -34,41 +44,51 @@ module.exports = {
         const topMessages = await User.find().sort({ messages: -1 }).limit(10);
         const topVoice = await User.find().sort({ voiceTime: -1 }).limit(10);
 
-        // Format message leaderboard
-        const messageLeaderboardText = topMessages.map((user, index) =>
-            `${positionEmojis[index]} » ${user}\n> \`${user.messages}\` Nachrichten`
+        // Format message leaderboard with emoji positions
+        let messageLeaderboardText = topMessages.map((user, index) =>
+            `${positionEmojis[index]} <@${user.userId}>\n> \`${user.messages}\` Nachrichten`
         ).join('\n');
 
-        // Format voice leaderboard (days, hours, minutes)
-        const voiceLeaderboardText = topVoice.map((user, index) => {
+        // Format voice leaderboard with emoji positions (days, hours, minutes)
+        let voiceLeaderboardText = topVoice.map((user, index) => {
             const totalMilliseconds = user.voiceTime;
             const days = Math.floor(totalMilliseconds / (24 * 60 * 60 * 1000));
             const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
             const minutes = Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000));
 
-            return `${positionEmojis[index]} » ${user} \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
+            return `${positionEmojis[index]} <@${user.userId}> \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
         }).join('\n');
 
         const currentMonth = getCurrentMonth(); // Get the current month name
 
-        // Create the message leaderboard embed
-        const messageEmbed = new EmbedBuilder()
-            .setTitle(`${currentMonth} Leaderboard - Nachrichten`)
-            .setDescription(messageLeaderboardText)
-            .setColor('Blurple')
-            .setFooter({ text: 'Zuletzt aktualisiert' })
-            .setTimestamp();
+        // Split message leaderboard if it exceeds the size limit
+        const messageParts = splitLeaderboard(messageLeaderboardText);
+        const voiceParts = splitLeaderboard(voiceLeaderboardText);
 
-        // Create the voice leaderboard embed
-        const voiceEmbed = new EmbedBuilder()
-            .setTitle(`${currentMonth} Leaderboard - Voice Zeit`)
-            .setDescription(voiceLeaderboardText)
-            .setColor('Blue')
-            .setFooter({ text: 'Zuletzt aktualisiert' })
-            .setTimestamp();
+        // Create the embeds for each part of the message leaderboard
+        const messageEmbeds = messageParts.map((part, i) => 
+            new EmbedBuilder()
+                .setTitle(`${currentMonth} Leaderboard - Nachrichten (Teil ${i + 1})`)
+                .setDescription(part)
+                .setColor('Blurple')
+                .setFooter({ text: 'Zuletzt aktualisiert' })
+                .setTimestamp()
+        );
 
-        // Send the embeds to the channel
-        await interaction.channel.send({ embeds: [messageEmbed, voiceEmbed] });
+        // Create the embeds for each part of the voice leaderboard
+        const voiceEmbeds = voiceParts.map((part, i) => 
+            new EmbedBuilder()
+                .setTitle(`${currentMonth} Leaderboard - Voice Zeit (Teil ${i + 1})`)
+                .setDescription(part)
+                .setColor('Blue')
+                .setFooter({ text: 'Zuletzt aktualisiert' })
+                .setTimestamp()
+        );
+
+        // Send the embeds in batches
+        for (const embed of [...messageEmbeds, ...voiceEmbeds]) {
+            await interaction.channel.send({ embeds: [embed] });
+        }
 
         // Send confirmation that the leaderboard was sent
         await interaction.reply({ content: '> `✅` » Das Leaderboard-Embed wurde erfolgreich gesendet.', ephemeral: true });
@@ -94,3 +114,4 @@ module.exports = {
         });
     }
 };
+
