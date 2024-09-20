@@ -14,11 +14,6 @@ module.exports = {
         const message = interaction.options.getString('nachricht');
         const time = interaction.options.getString('starten');
 
-        // Check permissions
-        if (!channel.permissionsFor(interaction.guild.members.me).has(PermissionBitField.Flags.SendMessages)) {
-            return await interaction.reply({ content: '> `❌` » Ich habe keine Berechtigung, in diesem Kanal zu senden.', ephemeral: true });
-        }
-
         const timeMs = ms(time);
         if (!timeMs) {
             return await interaction.reply({ content: '> `❌` » Bitte gib eine gültige Zeit für die Verzögerung ein (z.B. 10s, 5m, 1h).', ephemeral: true });
