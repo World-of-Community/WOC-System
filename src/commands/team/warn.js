@@ -24,7 +24,7 @@ async execute(interaction) {
         warningData.warnings.push({ reason });
         await warningData.save();
     } else {
-        await new Warning({
+        await new warndb({
             guildId: interaction.guild.id,
             userId: member.id,
             warnings: [{ reason }],
