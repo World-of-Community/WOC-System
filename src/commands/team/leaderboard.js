@@ -28,67 +28,81 @@ module.exports = {
         .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌'),
 
     async execute(interaction) {
-        // Fetch the top 10 users for messages and voice time
-        const topMessages = await User.find().sort({ messages: -1 }).limit(10);
-        const topVoice = await User.find().sort({ voiceTime: -1 }).limit(10);
+        try {
+            // Fetch the top 10 users for messages and voice time
+            const topMessages = await User.find().sort({ messages: -1 }).limit(10);
+            const topVoice = await User.find().sort({ voiceTime: -1 }).limit(10);
 
-        // Format message leaderboard with emoji positions
-        const messageLeaderboardText = topMessages.map((user, index) =>
-            `${positionEmojis[index]} <@${user.username}>\n> \`${user.messages}\` Nachrichten`
-        ).join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
+            // Format message leaderboard with emoji positions
+            const messageLeaderboardText = topMessages.map((user, index) => {
+                const messages = user.messages ?? 0; // If messages is null or undefined, default to 0
+                return `${positionEmojis[index]} <@${user.userId}> - \`${messages}\` Nachrichten`;
+            }).join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
-        // Format voice leaderboard with emoji positions (days, hours, minutes)
-        const voiceLeaderboardText = topVoice.map((user, index) => {
-            const totalMilliseconds = user.voiceTime;
-            const days = Math.floor(totalMilliseconds / (24 * 60 * 60 * 1000));
-            const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-            const minutes = Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000));
+            // Format voice leaderboard with emoji positions (days, hours, minutes)
+            const voiceLeaderboardText = topVoice.map((user, index) => {
+                const totalMilliseconds = user.voiceTime ?? 0; // If voiceTime is null or undefined, default to 0
+                const days = Math.floor(totalMilliseconds / (24 * 60 * 60 * 1000));
+                const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                const minutes = Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000));
 
-            return `${positionEmojis[index]} <@${user.username}> \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
-        }).join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
+                return `${positionEmojis[index]} <@${user.userId}> - \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
+            }).join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
-        const currentMonth = getCurrentMonth(); // Get the current month name
+            const currentMonth = getCurrentMonth(); // Get the current month name
 
-        // Create the message leaderboard embed
-        const messageEmbed = new EmbedBuilder()
-            .setTitle(`${currentMonth} Leaderboard - Nachrichten`)
-            .setDescription(messageLeaderboardText)
-            .setColor('Blurple')
-            .setFooter({ text: 'Zuletzt aktualisiert' })
-            .setTimestamp();
+            // Create the message leaderboard embed
+            const messageEmbed = new EmbedBuilder()
+                .setTitle(`${currentMonth} Leaderboard - Nachrichten`)
+                .setDescription(messageLeaderboardText)
+                .setColor('Blurple')
+                .setFooter({ text: 'Zuletzt aktualisiert' })
+                .setTimestamp();
 
-        // Create the voice leaderboard embed
-        const voiceEmbed = new EmbedBuilder()
-            .setTitle(`${currentMonth} Leaderboard - Voice Zeit`)
-            .setDescription(voiceLeaderboardText)
-            .setColor('Blue')
-            .setFooter({ text: 'Zuletzt aktualisiert' })
-            .setTimestamp();
+            // Create the voice leaderboard embed
+            const voiceEmbed = new EmbedBuilder()
+                .setTitle(`${currentMonth} Leaderboard - Voice Zeit`)
+                .setDescription(voiceLeaderboardText)
+                .setColor('Blue')
+                .setFooter({ text: 'Zuletzt aktualisiert' })
+                .setTimestamp();
 
-        // Send the embeds to the channel
-        await interaction.channel.send({ embeds: [messageEmbed, voiceEmbed] });
+            // Send the embeds to the channel
+            await interaction.channel.send({ embeds: [messageEmbed, voiceEmbed] });
 
-        // Send confirmation that the leaderboard was sent
-        await interaction.reply({ content: '> `✅` » Das Leaderboard-Embed wurde erfolgreich gesendet.', ephemeral: true });
+            // Send confirmation that the leaderboard was sent
+            await interaction.reply({ content: '> `✅` » Das Leaderboard-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
-        // Handle top 3 role assignment
-        const top3Users = [...topMessages.slice(0, 3), ...topVoice.slice(0, 3)];
-        const uniqueTop3Users = Array.from(new Set(top3Users.map(user => user.userId))); // Ensure uniqueness
+            // Handle top 3 role assignment
+            const top3Users = [...topMessages.slice(0, 3), ...topVoice.slice(0, 3)];
+            const uniqueTop3Users = Array.from(new Set(top3Users.map(user => user.userId))); // Ensure uniqueness
 
-        // Assign the role to the top 3 users
-        for (const userId of uniqueTop3Users) {
-            const member = await interaction.guild.members.fetch(userId);
-            if (!member.roles.cache.has(RoleID)) {
-                await member.roles.add(RoleID);
+            // Fetch the role by ID and check if it exists
+            const role = interaction.guild.roles.cache.get(RoleID);
+            if (!role) {
+                console.error(`Die Rolle mit der ID ${RoleID} konnte nicht gefunden werden.`);
+                return;
             }
+
+            // Assign the role to the top 3 users
+            for (const userId of uniqueTop3Users) {
+                const member = await interaction.guild.members.fetch(userId);
+                if (!member.roles.cache.has(RoleID)) {
+                    await member.roles.add(RoleID);
+                }
+            }
+
+            // Remove the role from users who are no longer in the top 3
+            const allMembersWithRole = role.members;
+            allMembersWithRole.forEach(async (member) => {
+                if (!uniqueTop3Users.includes(member.id)) {
+                    await member.roles.remove(RoleID);
+                }
+            });
+
+        } catch (error) {
+            console.error('Ein Fehler ist aufgetreten:', error);
+            await interaction.reply({ content: '> `❌` » Ein Fehler ist aufgetreten. Bitte versuche es erneut.', ephemeral: true });
         }
-
-        // Remove the role from users who are no longer in the top 3
-        const allMembersWithRole = interaction.guild.roles.cache.get(RoleID).members;
-        allMembersWithRole.forEach(async (member) => {
-            if (!uniqueTop3Users.includes(member.id)) {
-                await member.roles.remove(RoleID);
-            }
-        });
     }
 };
