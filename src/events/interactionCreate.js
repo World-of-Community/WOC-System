@@ -247,43 +247,6 @@ module.exports = {
                 });
             });
         }
-
-        // Bump System (geht noch nicht)
-
-        const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
-        const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
-
-        // Überprüfen, ob die Nachricht vom Disboard-Bot stammt und den erfolgreichen Bump bestätigt
-    if (message.author.id === disboardBotId && message.embeds.length > 0) {
-        const embed = message.embeds[0];
-
-        if (embed.description && embed.description.includes('Bump done')) {
-            // Benutzer, der den Bump ausgeführt hat
-            const member = message.guild.members.cache.get(message.interaction.user.id);
-
-            if (!member) return;
-
-            const role = message.guild.roles.cache.get(roleId);
-            if (!role) {
-                return message.channel.send('> `❗` » Die Rolle existiert nicht.');
-            }
-
-            try {
-                // Rolle hinzufügen
-                await member.roles.add(role);
-                await message.channel.send(`> \`✅\` » ${member} hat die Rolle ${role} für **2 Stunden** erhalten!`);
-
-                // Rolle nach 2 Stunden entfernen
-                setTimeout(async () => {
-                    await member.roles.remove(role);
-                    member.send({ content: `> \`❗\` » Deine Rolle ${role} ist gerade abgelaufen (Du hattest die Rolle für: \`2 Stunden\`)`, ephemeral: true });
-                }, 7200000); // 2 Stunden in Millisekunden
-            } catch (error) {
-                console.error(error);
-                message.channel.send({ content: '> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.', ephemeral: true });
-            }
-        }
-    }
         
         // Bann Button
          if (interaction.isButton()) {
