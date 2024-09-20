@@ -98,6 +98,16 @@ module.exports = {
 
         const Nationalität = userNationalität.length > 0 ? userNationalität.join(' ') : '❓';
 
+        let userNationalität = interaction.options.getString('nationalität');
+
+        // Check if userNationalität is an array before using join()
+        if (Array.isArray(userNationalität)) {
+            userNationalität = userNationalität.join(', ');
+        } else {
+        // Handle cases where userNationalität is not an array (e.g., if it's a string)
+        userNationalität = userNationalität || 'Not provided';
+        }
+
         if (userData) {
             const embed = new EmbedBuilder()
             .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
