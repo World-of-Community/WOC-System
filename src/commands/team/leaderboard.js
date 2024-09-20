@@ -33,9 +33,6 @@ module.exports = {
             const topMessages = await userdb.find().sort({ messages: -1 }).limit(10);
             const topVoice = await userdb.find().sort({ voiceTime: -1 }).limit(10);
 
-            console.log(topMessagesMembers);
-            console.log(topVoiceMembers);
-
             // Map user IDs to guild members to ensure we use actual Discord members
             const topMessagesMembers = await Promise.all(topMessages.map(async (userdb) => {
                 const member = await interaction.guild.members.fetch(userdb.userId).catch(() => null);
