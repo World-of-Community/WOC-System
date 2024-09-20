@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
 const cron = require('node-cron'); // For scheduling the monthly reset
 const userdb = require('../../../Datenbank/userdb'); // Your MongoDB user database
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
