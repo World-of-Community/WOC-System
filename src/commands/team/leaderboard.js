@@ -50,23 +50,24 @@ module.exports = {
 
             
             // Format message leaderboard with emoji positions
+            // Format message leaderboard with emoji positions
             const messageLeaderboardText = topMessagesMembers
-                .filter(user => user.member)
-                .map((user, index) => {
-                    const member = user.member ? `${member.username}` : 'Unbekannt';
-                    return `${positionEmojis[index]} ${member}\n> \`${user.messages}\` Nachrichten`;
-                })
-                .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
-            
+            .filter(user => user.member) // Ensure member exists
+            .map((user, index) => {
+                const memberName = user.member ? `${user.member.user.tag}` : 'Unbekannt'; // Correctly reference 'user.member'
+                return `${positionEmojis[index]} ${memberName}\n> \`${user.messages}\` Nachrichten`;
+            })
+            .join('\n').slice(0, 1024); // Ensure the text is within 1024 characters
+
             // Format voice leaderboard with emoji positions
             const voiceLeaderboardText = topVoiceMembers
-                .filter(user => user.member)
-                .map((user, index) => {
-                    const username = user.member ? `${member.username}` : 'Unbekannt';
-                    return `${positionEmojis[index]} ${username}\n> \`${user.timeText}\``;
-                })
-                .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
-            
+            .filter(user => user.member) // Ensure member exists
+            .map((user, index) => {
+                const username = user.member ? `${user.member.user.tag}` : 'Unbekannt'; // Correctly reference 'user.member'
+                return `${positionEmojis[index]} ${username}\n> \`${user.timeText}\``;
+            })
+            .join('\n').slice(0, 1024); // Ensure the text is within 1024 characters
+             
 
             const currentMonth = getCurrentMonth(); // Get the current month name
 
