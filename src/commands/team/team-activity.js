@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const teammessagedb = require("../../../Datenbank/teammessagedb");
+const teammessagedb = require("../../../Datenbank/teammessagedb.js");
 
 // Hier kannst du die Nachrichtenziele dynamisch speichern (z.B. in einer Datenbank)
 let messageGoals = {};
