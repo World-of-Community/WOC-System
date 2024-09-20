@@ -12,7 +12,7 @@ module.exports = {
     async execute(interaction) {
         const channel = interaction.options.getChannel('kanal');
         const message = interaction.options.getString('nachricht');
-        const delay = interaction.options.getString('starten');
+        const time = interaction.options.getString('starten');
 
         // Check if the channel is a text channel
         if (!channel || channel.type !== 'GUILD_TEXT') {
@@ -24,12 +24,12 @@ module.exports = {
             return await interaction.reply({ content: '> `❌` » Ich habe keine Berechtigung, in diesem Kanal zu senden.', ephemeral: true });
         }
 
-        const delayMs = ms(delay);
-        if (!delayMs) {
+        const timeMs = ms(time);
+        if (!timeMs) {
             return await interaction.reply({ content: '> `❌` » Bitte gib eine gültige Zeit für die Verzögerung ein (z.B. 10s, 5m, 1h).', ephemeral: true });
         }
 
-        const endDate = new Date(Date.now() + delayMs);
+        const endDate = new Date(Date.now() + timeMs);
         const timestamp = Math.floor(endDate / 1000);
 
         await interaction.reply({ content: `> \`⏳\` » Die Nachricht wird <t:${timestamp}:R> gesendet.`, ephemeral: true });
@@ -42,6 +42,6 @@ module.exports = {
                 console.error('Fehler beim Senden der Nachricht:', error);
                 await interaction.editReply({ content: '> `❌` » Ein Fehler ist beim Senden der Nachricht aufgetreten.', ephemeral: true });
             }
-        }, delayMs);
+        }, timeMs);
     },
 };
