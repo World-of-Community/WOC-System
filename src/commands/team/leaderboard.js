@@ -51,13 +51,13 @@ module.exports = {
             // Format message leaderboard with emoji positions
             const messageLeaderboardText = topMessagesMembers
                 .filter(data => data.member)
-                .map((data, index) => `${positionEmojis[index]} ${data.member.user.username}\n> \`${data.messages}\` Nachrichten`)
+                .map((data, index) => `${positionEmojis[index]} ${data.member.user.tag}\n> \`${data.messages}\` Nachrichten`)
                 .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
             // Format voice leaderboard with emoji positions
             const voiceLeaderboardText = topVoiceMembers
                 .filter(data => data.member)
-                .map((data, index) => `${positionEmojis[index]} ${data.member.user.username}\n> \`${data.timeText}\``)
+                .map((data, index) => `${positionEmojis[index]} ${data.member.user.tag}\n> \`${data.timeText}\``)
                 .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
             const currentMonth = getCurrentMonth(); // Get the current month name
