@@ -3,6 +3,10 @@ const cron = require('node-cron'); // For scheduling the monthly reset
 const userdb = require('../../../Datenbank/userdb'); // Your MongoDB user database
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
+// der 1. Platz soll als Thumbnail sein bei beiden Embeds des jeweiligen Embeds
+// Author in beiden embeds mit bild
+
+
 // Reset stats every month on the 1st at midnight
 cron.schedule('0 0 1 * *', async () => {
     await userdb.updateMany({}, { $set: { messages: 0, voiceTime: 0 } });
@@ -53,7 +57,7 @@ const messageLeaderboardText = topMessagesMembers
 .filter(user => user.member) // Ensure member exists
 .map((user, index) => {
     const memberName = user.member ? user.memberName : 'Unbekannt'; // Richtiges Member-Tag verwenden
-    return `${positionEmojis[index]} ${memberName}\n> \`${user.messages}\` Nachrichten`;
+    return `${positionEmojis[index]} ${memberName}\n> \`${user.messages} Nachrichten\``;
 })
 .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
@@ -72,18 +76,18 @@ const voiceLeaderboardText = topVoiceMembers
 
             // Create the message leaderboard embed
             const messageEmbed = new EmbedBuilder()
-                .setTitle(`${currentMonth} Leaderboard - Nachrichten`)
+                .setAuthor({ name: `${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png?ex=66ef1fec&is=66edce6c&hm=79ac4014b2c7029d3626510a317726d634bb3be99d8f1d434663f3dd9958be65&' })
                 .setDescription(messageLeaderboardText)
                 .setColor('Blurple')
-                .setFooter({ text: 'Zuletzt aktualisiert' })
+                .setFooter({ text: 'Zuletzt aktualisiert', iconURL: `https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png?ex=66ef20d6&is=66edcf56&hm=4f1646414c5b12703949ced1bd6e3309fbcfe2b14d1db8fbdd027bd4bd00f7f4&` })
                 .setTimestamp();
 
             // Create the voice leaderboard embed
             const voiceEmbed = new EmbedBuilder()
-                .setTitle(`${currentMonth} Leaderboard - Voice Zeit`)
+                .setAuthor({ name: `${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png?ex=66ef1f98&is=66edce18&hm=585587b4b5efccc1677763f99f5b318792a7a6ebc7260eb05e5557c3f5805910&' })
                 .setDescription(voiceLeaderboardText)
                 .setColor('Blue')
-                .setFooter({ text: 'Zuletzt aktualisiert' })
+                .setFooter({ text: 'Zuletzt aktualisiert', iconURL: `https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png?ex=66ef2117&is=66edcf97&hm=0450d7c2ffdff54e4ebd984c3f09c8d3e72208e527d94af9051c8e61c0db62af&` })
                 .setTimestamp();
 
             // Send the embeds to the channel
