@@ -68,8 +68,8 @@ module.exports = {
             .setFooter({ text: 'Zuletzt aktualisiert' })
             .setTimestamp();
 
-        // Send both leaderboards
-        await interaction.reply({ embeds: [messageLeaderboard, voiceLeaderboard] });
+        await interaction.channel.send({ embeds: [messageLeaderboard, voiceLeaderboard] });
+        await interaction.reply({ content: '> `✅` » Das Leaderboard-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
         // Handle top 3 role assignment
         const top3Users = [...topMessages.slice(0, 3), ...topVoice.slice(0, 3)];
