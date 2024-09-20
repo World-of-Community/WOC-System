@@ -33,7 +33,6 @@ module.exports = {
             const topMessages = await userdb.find().sort({ messages: -1 }).limit(10);
             const topVoice = await userdb.find().sort({ voiceTime: -1 }).limit(10);
 
-            console.log(data.member);
             console.log(topMessagesMembers);
             console.log(topVoiceMembers);
 
