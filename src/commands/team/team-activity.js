@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const messagedb = require("../../../Datenbank/messagedb");
+const teammessagedb = require("../../../Datenbank/teammessagedb");
 
 // Hier kannst du die Nachrichtenziele dynamisch speichern (z.B. in einer Datenbank)
 let messageGoals = {};
@@ -70,6 +70,6 @@ module.exports = {
 // Funktion, um Nachrichten aus der Datenbank zu holen
 async function getMessagesForUser(userId) {
     // Beispiel-Datenbankabfrage
-    const messages = await messagedb.getMessageCount(userId);
+    const messages = await teammessagedb.getMessageCount(userId);
     return messages || 0;
 }
