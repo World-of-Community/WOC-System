@@ -29,25 +29,36 @@ module.exports = {
 
     async execute(interaction) {
         try {
-            // Fetch the top 10 users for messages and voice time
+            // Fetch the top 10 users for messages and voice time from the database
             const topMessages = await User.find().sort({ messages: -1 }).limit(10);
             const topVoice = await User.find().sort({ voiceTime: -1 }).limit(10);
 
+            // Map user IDs to guild members to ensure we use actual Discord members
+            const topMessagesMembers = await Promise.all(topMessages.map(async (user) => {
+                const member = await interaction.guild.members.fetch(user.userId).catch(() => null);
+                return { member, messages: user.messages ?? 0 }; // Set messages to 0 if undefined
+            }));
+
+            const topVoiceMembers = await Promise.all(topVoice.map(async (user) => {
+                const member = await interaction.guild.members.fetch(user.userId).catch(() => null);
+                const voiceTime = user.voiceTime ?? 0; // Set voiceTime to 0 if undefined
+                const days = Math.floor(voiceTime / (24 * 60 * 60 * 1000));
+                const hours = Math.floor((voiceTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                const minutes = Math.floor((voiceTime % (60 * 60 * 1000)) / (60 * 1000));
+                return { member, timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten` };
+            }));
+
             // Format message leaderboard with emoji positions
-            const messageLeaderboardText = topMessages.map((user, index) => {
-                const messages = user.messages ?? 0; // If messages is null or undefined, default to 0
-                return `${positionEmojis[index]} <@${user.userId}> - \`${messages}\` Nachrichten`;
-            }).join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
+            const messageLeaderboardText = topMessagesMembers
+                .filter(data => data.member)
+                .map((data, index) => `${positionEmojis[index]} ${data.member}\n> \`${data.messages}\` Nachrichten`)
+                .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
-            // Format voice leaderboard with emoji positions (days, hours, minutes)
-            const voiceLeaderboardText = topVoice.map((user, index) => {
-                const totalMilliseconds = user.voiceTime ?? 0; // If voiceTime is null or undefined, default to 0
-                const days = Math.floor(totalMilliseconds / (24 * 60 * 60 * 1000));
-                const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-                const minutes = Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000));
-
-                return `${positionEmojis[index]} <@${user.userId}> - \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
-            }).join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
+            // Format voice leaderboard with emoji positions
+            const voiceLeaderboardText = topVoiceMembers
+                .filter(data => data.member)
+                .map((data, index) => `${positionEmojis[index]} ${data.member}\n> \`${data.timeText}\``)
+                .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
             const currentMonth = getCurrentMonth(); // Get the current month name
 
@@ -106,3 +117,4 @@ module.exports = {
         }
     }
 };
+
