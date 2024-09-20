@@ -1,11 +1,11 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron'); // For scheduling the monthly reset
-const User = require('../../../Datenbank/userdb'); // Your MongoDB user database
+const userdb = require('../../../Datenbank/userdb'); // Your MongoDB user database
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
 // Reset stats every month on the 1st at midnight
 cron.schedule('0 0 1 * *', async () => {
-    await User.updateMany({}, { $set: { messages: 0, voiceTime: 0 } });
+    await userdb.updateMany({}, { $set: { messages: 0, voiceTime: 0 } });
     console.log('Die Leaderboard-Statistiken wurden für den neuen Monat zurückgesetzt.');
 });
 
@@ -30,17 +30,17 @@ module.exports = {
     async execute(interaction) {
         try {
             // Fetch the top 10 users for messages and voice time from the database
-            const topMessages = await User.find().sort({ messages: -1 }).limit(10);
-            const topVoice = await User.find().sort({ voiceTime: -1 }).limit(10);
+            const topMessages = await userdb.find().sort({ messages: -1 }).limit(10);
+            const topVoice = await userdb.find().sort({ voiceTime: -1 }).limit(10);
 
             console.log(data.member);
             console.log(topMessagesMembers);
             console.log(topVoiceMembers);
 
             // Map user IDs to guild members to ensure we use actual Discord members
-            const topMessagesMembers = await Promise.all(topMessages.map(async (user) => {
-                const member = await interaction.guild.members.fetch(user.userId).catch(() => null);
-                return { member, messages: user.messages ?? 0 }; // Set messages to 0 if undefined
+            const topMessagesMembers = await Promise.all(topMessages.map(async (userdb) => {
+                const member = await interaction.guild.members.fetch(userdb.userId).catch(() => null);
+                return { member, messages: userdb.messages ?? 0 }; // Set messages to 0 if undefined
             }));
 
             const topVoiceMembers = await Promise.all(topVoice.map(async (user) => {
@@ -51,24 +51,25 @@ module.exports = {
                 const minutes = Math.floor((voiceTime % (60 * 60 * 1000)) / (60 * 1000));
                 return { member, timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten` };
             }));
-
+            
             // Format message leaderboard with emoji positions
             const messageLeaderboardText = topMessagesMembers
-                .filter(data => data.member)
-                .map((data, index) => {
-                    const member = data.member ? `${data.member.user.tag}` : 'Unbekannt';
-                    return `${positionEmojis[index]} ${member}\n> \`${data.messages}\` Nachrichten`;
+                .filter(user => user.member)
+                .map((user, index) => {
+                    const member = user.member ? `${user.member.user.tag}` : 'Unbekannt';
+                    return `${positionEmojis[index]} ${member}\n> \`${user.messages}\` Nachrichten`;
                 })
                 .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
-
+            
             // Format voice leaderboard with emoji positions
             const voiceLeaderboardText = topVoiceMembers
-                .filter(data => data.member)
-                .map((data, index) => {
-                    const username = data.member ? `${data.member.user.tag}` : 'Unbekannt';
-                    return `${positionEmojis[index]} ${username}\n> \`${data.timeText}\``;
+                .filter(user => user.member)
+                .map((user, index) => {
+                    const username = user.member ? `${user.member.user.tag}` : 'Unbekannt';
+                    return `${positionEmojis[index]} ${username}\n> \`${user.timeText}\``;
                 })
                 .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
+            
 
             const currentMonth = getCurrentMonth(); // Get the current month name
 
