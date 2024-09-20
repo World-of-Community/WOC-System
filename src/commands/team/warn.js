@@ -45,8 +45,8 @@ async execute(interaction) {
         await member.send({ embeds: [WarnEmbed] });
         await interaction.reply({ content: `> \`✅\` » ${member} wurde **erfolgreich** gewarnt.`, ephemeral: true });
     } catch (error) {
-        console.error(`Konnte keine DM an ${member} senden:`, error);
-        await interaction.reply({ content: `> \`❌\` » Es konnte **keine** DM an ${member} gesendet werden.`, ephemeral: true });
+        console.error(`Konnte keine DM an ${member.displayName} senden:`, error);
+        await interaction.reply({ content: `> \`❌\` » Es konnte **keine** DM an ${member.displayName} gesendet werden.`, ephemeral: true });
     } 
   },
 };
