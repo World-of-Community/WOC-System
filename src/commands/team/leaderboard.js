@@ -31,17 +31,17 @@ module.exports = {
 
         // Format message leaderboard
         const messageLeaderboardText = topMessages.map((user, index) =>
-            `${index + 1}. <@${user.userId}>\n> \`${user.messages}\` Nachrichten`
+            `${index + 1}. ${user}\n> \`${user.messages}\` Nachrichten`
         ).join('\n');
 
         // Format voice leaderboard (days, hours, minutes)
         const voiceLeaderboardText = topVoice.map((user, index) => {
-            const totalMilliseconds = user.voiceTime;
+            const totalMilliseconds = member.voiceTime;
             const days = Math.floor(totalMilliseconds / (24 * 60 * 60 * 1000));
             const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
             const minutes = Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000));
 
-            return `${index + 1}. <@${user.userId}> \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
+            return `${index + 1}. ${user} \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
         }).join('\n');
 
         const currentMonth = getCurrentMonth(); // Get the current month name
