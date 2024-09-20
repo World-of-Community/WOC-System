@@ -15,7 +15,7 @@ module.exports = {
         const time = interaction.options.getString('starten');
 
         // Check if the channel is a text channel
-        if (!channel || channel.type !== 'GUILD_TEXT') {
+        if (!channel || channel.type !== ChannelType.GuildText) {
             return await interaction.reply({ content: '> `❌` » Bitte wähle einen gültigen Textkanal aus.', ephemeral: true });
         }
 
