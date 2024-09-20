@@ -1,21 +1,15 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron'); // For scheduling the monthly reset
-const userdb = require("../../../Datenbank/userdb");
-const RoleID = '1150753421339676722'; // Top 3 users (Minenarbeiter (Event))
+const User = require('../../../Datenbank/userdb');
+const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
-// Soll Monatlich zurück gesetzt werden die Stats
-// Voice mit Tag(e) Stunde(n) Minute(n) anzeigen
-// Embeds bearbeiten sobald sich was ändert
-// Top 3 Nutzer bekommen eine Rolle für 1 Monat
-// Aktuellen Monat anzeigen in den Embeds
-
-// Reset stats every month
+// Reset stats every month on the 1st at midnight
 cron.schedule('0 0 1 * *', async () => {
     await User.updateMany({}, { $set: { messages: 0, voiceTime: 0 } });
     console.log('Die Leaderboard-Statistiken wurden für den neuen Monat zurückgesetzt.');
 });
 
-// Utility function to get the current month name
+// Utility function to get the current month name in German
 function getCurrentMonth() {
     const monthNames = [
         'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
@@ -31,17 +25,17 @@ module.exports = {
         .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌'),
 
     async execute(interaction) {
-        // Fetch the top 10 users for both messages and voice time
+        // Fetch the top 10 users for messages and voice time
         const topMessages = await User.find().sort({ messages: -1 }).limit(10);
         const topVoice = await User.find().sort({ voiceTime: -1 }).limit(10);
 
         // Format message leaderboard
-        const messageLeaderboard = topMessages.map((user, index) =>
-            `${index + 1}. <@${user.userId}>\n\`${user.messages}\` Nachrichten`
+        const messageLeaderboardText = topMessages.map((user, index) =>
+            `${index + 1}. <@${user.userId}>\n> \`${user.messages}\` Nachrichten`
         ).join('\n');
 
         // Format voice leaderboard (days, hours, minutes)
-        const voiceLeaderboard = topVoice.map((user, index) => {
+        const voiceLeaderboardText = topVoice.map((user, index) => {
             const totalMilliseconds = user.voiceTime;
             const days = Math.floor(totalMilliseconds / (24 * 60 * 60 * 1000));
             const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
@@ -50,12 +44,12 @@ module.exports = {
             return `${index + 1}. <@${user.userId}> \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
         }).join('\n');
 
-        const currentMonth = getCurrentMonth(); // Get the current month
+        const currentMonth = getCurrentMonth(); // Get the current month name
 
         // Create the message leaderboard embed
-        const messageLeaderboard = new EmbedBuilder()
+        const messageEmbed = new EmbedBuilder()
             .setTitle(`${currentMonth} Leaderboard - Nachrichten`)
-            .setDescription(messageLeaderboard)
+            .setDescription(messageLeaderboardText)
             .setColor('Blurple')
             .setFooter({ text: 'Zuletzt aktualisiert' })
             .setTimestamp();
@@ -63,24 +57,28 @@ module.exports = {
         // Create the voice leaderboard embed
         const voiceEmbed = new EmbedBuilder()
             .setTitle(`${currentMonth} Leaderboard - Voice Zeit`)
-            .setDescription(voiceLeaderboard)
+            .setDescription(voiceLeaderboardText)
             .setColor('Blue')
             .setFooter({ text: 'Zuletzt aktualisiert' })
             .setTimestamp();
 
-        await interaction.channel.send({ embeds: [messageLeaderboard, voiceLeaderboard] });
+        // Send the embeds to the channel
+        await interaction.channel.send({ embeds: [messageEmbed, voiceEmbed] });
+
+        // Send confirmation that the leaderboard was sent
         await interaction.reply({ content: '> `✅` » Das Leaderboard-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
         // Handle top 3 role assignment
         const top3Users = [...topMessages.slice(0, 3), ...topVoice.slice(0, 3)];
         const uniqueTop3Users = Array.from(new Set(top3Users.map(user => user.userId))); // Ensure uniqueness
 
-        uniqueTop3Users.forEach(async (userId) => {
+        // Assign the role to the top 3 users
+        for (const userId of uniqueTop3Users) {
             const member = await interaction.guild.members.fetch(userId);
             if (!member.roles.cache.has(RoleID)) {
                 await member.roles.add(RoleID);
             }
-        });
+        }
 
         // Remove the role from users who are no longer in the top 3
         const allMembersWithRole = interaction.guild.roles.cache.get(RoleID).members;
@@ -91,4 +89,3 @@ module.exports = {
         });
     }
 };
-
