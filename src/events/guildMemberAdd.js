@@ -79,7 +79,7 @@ module.exports = {
         }
 
         // Join Log
-        const logchannel = await member.guild.channels.cache.get("1263436406655680513");
+        const logchannel = await member.guild.channels.cache.get("1269998215512457259");
 
         const joinEmbed = new EmbedBuilder()
         .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
