@@ -20,7 +20,7 @@ function getCurrentMonth() {
 }
 
 // Emoji list for positions 1 to 10
-const positionEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -32,6 +32,10 @@ module.exports = {
             // Fetch the top 10 users for messages and voice time from the database
             const topMessages = await User.find().sort({ messages: -1 }).limit(10);
             const topVoice = await User.find().sort({ voiceTime: -1 }).limit(10);
+
+            console.log(data.member);
+            console.log(topMessagesMembers);
+            console.log(topVoiceMembers);
 
             // Map user IDs to guild members to ensure we use actual Discord members
             const topMessagesMembers = await Promise.all(topMessages.map(async (user) => {
@@ -47,10 +51,6 @@ module.exports = {
                 const minutes = Math.floor((voiceTime % (60 * 60 * 1000)) / (60 * 1000));
                 return { member, timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten` };
             }));
-
-            console.log(data.member);
-            console.log(topMessagesMembers);
-            console.log(topVoiceMembers);
 
             // Format message leaderboard with emoji positions
             const messageLeaderboardText = topMessagesMembers
