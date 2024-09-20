@@ -34,7 +34,7 @@ module.exports = {
 
         // Format message leaderboard with emoji positions
         const messageLeaderboardText = topMessages.map((user, index) =>
-            `${positionEmojis[index]} <@${user}>\n> \`${user.messages}\` Nachrichten`
+            `${positionEmojis[index]} <@${user.username}>\n> \`${user.messages}\` Nachrichten`
         ).join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
         // Format voice leaderboard with emoji positions (days, hours, minutes)
@@ -44,7 +44,7 @@ module.exports = {
             const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
             const minutes = Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000));
 
-            return `${positionEmojis[index]} <@${user}> \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
+            return `${positionEmojis[index]} <@${user.username}> \n> \`${days} Tage ${hours} Stunden ${minutes} Minuten\``;
         }).join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
         const currentMonth = getCurrentMonth(); // Get the current month name
