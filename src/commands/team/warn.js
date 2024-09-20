@@ -18,7 +18,7 @@ async execute(interaction) {
     const reason = interaction.options.getString('grund');
 
     // Warnung in der Datenbank speichern
-    const warningData = await Warning.findOne({ guildId: interaction.guild.id, userId: member.id });
+    const warningData = await warning.findOne({ guildId: interaction.guild.id, userId: member.id });
     if (warningData) {
         warningData.warnings.push({ reason });
         await warningData.save();
