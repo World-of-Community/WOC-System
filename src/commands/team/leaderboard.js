@@ -70,8 +70,6 @@ const voiceLeaderboardText = topVoiceMembers
 })
 .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
 
-             
-
             const currentMonth = getCurrentMonth(); // Get the current month name
 
             // Create the message leaderboard embed
@@ -90,10 +88,7 @@ const voiceLeaderboardText = topVoiceMembers
                 .setFooter({ text: 'Zuletzt aktualisiert', iconURL: `https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png?ex=66ef2117&is=66edcf97&hm=0450d7c2ffdff54e4ebd984c3f09c8d3e72208e527d94af9051c8e61c0db62af&` })
                 .setTimestamp();
 
-            // Send the embeds to the channel
             await interaction.channel.send({ embeds: [messageEmbed, voiceEmbed] });
-
-            // Send confirmation that the leaderboard was sent
             await interaction.reply({ content: '> `✅` » Das Leaderboard-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
             // Handle top 3 role assignment
