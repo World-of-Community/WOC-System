@@ -52,7 +52,7 @@ module.exports = {
 const messageLeaderboardText = topMessagesMembers
 .filter(user => user.member) // Ensure member exists
 .map((user, index) => {
-    const memberName = user.member ? user.member.user.tag : 'Unbekannt'; // Richtiges Member-Tag verwenden
+    const memberName = user.member ? user.member.user.username : 'Unbekannt'; // Richtiges Member-Tag verwenden
     return `${positionEmojis[index]} ${memberName}\n> \`${user.messages}\` Nachrichten`;
 })
 .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
@@ -61,7 +61,7 @@ const messageLeaderboardText = topMessagesMembers
 const voiceLeaderboardText = topVoiceMembers
 .filter(user => user.member) // Ensure member exists
 .map((user, index) => {
-    const username = user.member ? user.member.user.tag : 'Unbekannt'; // Richtiges Member-Tag verwenden
+    const username = user.member ? user.member.user.username : 'Unbekannt'; // Richtiges Member-Tag verwenden
     return `${positionEmojis[index]} ${username}\n> \`${user.timeText}\``;
 })
 .join('\n').slice(0, 1024); // Slice to ensure under 1024 characters
