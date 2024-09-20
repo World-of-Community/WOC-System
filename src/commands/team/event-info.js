@@ -14,11 +14,6 @@ module.exports = {
         const message = interaction.options.getString('nachricht');
         const time = interaction.options.getString('starten');
 
-        // Check if the channel is a text channel
-        if (!channel || channel.type !== ChannelType.GuildText) {
-            return await interaction.reply({ content: '> `❌` » Bitte wähle einen gültigen Textkanal aus.', ephemeral: true });
-        }
-
         // Check permissions
         if (!channel.permissionsFor(interaction.guild.members.me).has(PermissionBitField.Flags.SendMessages)) {
             return await interaction.reply({ content: '> `❌` » Ich habe keine Berechtigung, in diesem Kanal zu senden.', ephemeral: true });
