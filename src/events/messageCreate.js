@@ -105,7 +105,7 @@ module.exports = {
             try {
                 // Rolle hinzufügen
                 await member.roles.add(role);
-                await message.channel.send(`> \`✅\` » ${member} hat die Rolle ${role} für **2 Stunden** erhalten!`);
+                await message.channel.send(`${member} vielen Dank für deinen Bump!\nDu hast nun die ${role} Rolle.`);
 
                 // Rolle nach 2 Stunden entfernen
                 setTimeout(async () => {
