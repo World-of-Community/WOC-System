@@ -36,7 +36,7 @@ module.exports = {
 
         // Format voice leaderboard (days, hours, minutes)
         const voiceLeaderboardText = topVoice.map((user, index) => {
-            const totalMilliseconds = member.voiceTime;
+            const totalMilliseconds = user.voiceTime;
             const days = Math.floor(totalMilliseconds / (24 * 60 * 60 * 1000));
             const hours = Math.floor((totalMilliseconds % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
             const minutes = Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000));
