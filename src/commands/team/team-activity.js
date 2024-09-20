@@ -4,9 +4,6 @@ const messagedb = require("../../../Datenbank/messagedb");
 // Hier kannst du die Nachrichtenziele dynamisch speichern (z.B. in einer Datenbank)
 let messageGoals = {};
 
-// embed für den Progress machen 
-// im embed das der User mit der rolle angezeigt wird 
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('teamactivity')
@@ -41,10 +38,12 @@ module.exports = {
             // Finde das Nachrichtenziel basierend auf der Rolle des Benutzers
             const userRoles = member.roles.cache;
             let messageGoal = 0;
+            let userRole = null; // Variable für die Rolle des Benutzers
 
             userRoles.forEach(role => {
                 if (messageGoals[role.id]) {
                     messageGoal = messageGoals[role.id];
+                    userRole = role; // Setze die Rolle für die Ausgabe
                 }
             });
 
@@ -57,7 +56,7 @@ module.exports = {
 
             // Erstelle ein Embed für den Fortschritt
             const activityEmbed = new EmbedBuilder()
-                .setTitle(`Nachrichtenaktivität von ${targetUser}`)
+                .setTitle(`Nachrichtenaktivität von ${targetUser.username}`)
                 .setDescription(`${targetUser} (${userRole})\n\n> Hat bereits ${messageProgress} erreicht.`)
                 .setColor('Blurple')
                 .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
