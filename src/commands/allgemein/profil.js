@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const userdb = require("../../../Datenbank/userdb");
-const ms = require("ms");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,7 +8,7 @@ module.exports = {
         .addUserOption(option => option.setName('mitglied').setDescription('» Welches Profil möchtest du Abrufen?').setRequired(false)),
 
     async execute(interaction) {
-        const member = await interaction.options.getMember('mitglied') || interaction.member
+        const member = interaction.options.getMember('mitglied') || interaction.member;
 
         if (member.user.bot) {
             return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
@@ -25,7 +24,7 @@ module.exports = {
         const roleGeschlecht = {
             'Männlich': ':male_sign:',
             'Weiblich': ':female_sign:',
-            'Divers': ':heavy_equals_sign:'
+            'Divers': ':heavy_equals_sign:',
         };
 
         const roleGames = {
@@ -53,8 +52,7 @@ module.exports = {
             'Welt News': 'Welt News',
         };
 
-        let userNationalität = interaction.options.getString('nationalität');
-        //let userNationalität = '❓';
+        let userNationalität = '❓';
         let userGeschlecht = '❓';
         let rolegamesList = [];
         let rolePingsList = [];
@@ -68,12 +66,10 @@ module.exports = {
         };
 
         member.roles.cache.forEach(role => {
-            const roleName = role.name;
-
             if (role.name === '@everyone') return;
 
             const baseRoleName = getBaseRoleName(role.name);
-            
+
             if (roleNationalität[baseRoleName]) {
                 userNationalität = roleNationalität[baseRoleName];
             }
@@ -95,28 +91,22 @@ module.exports = {
         const totalLeft = userInvites.reduce((acc, invite) => acc + (invite.maxUses - invite.uses), 0);
         const totalBonus = inviteUses - totalLeft;
 
-        const userData = await userdb.findOne({ userID: member.id })
-
-        const Nationalität = userNationalität.length > 0 ? userNationalität.join(' ') : '❓';
-
-        // Check if userNationalität is an array before using join()
-        if (Array.isArray(userNationalität)) {
-            userNationalität = userNationalität.join(', ');
-        } else {
-        // Handle cases where userNationalität is not an array (e.g., if it's a string)
-        userNationalität = userNationalität || 'Not provided';
-        }
+        // Hole die User-Daten
+        const userData = await userdb.findOne({ userID: member.id });
 
         if (userData) {
             const embed = new EmbedBuilder()
-            .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
-            .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${Nationalität}\n- \`🎮\` » Meine Spiele: ${rolegamesList.length > 0 ? rolegamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
-            .setColor('Blurple')
-            .setThumbnail(`${member.user.displayAvatarURL({ dynamic: true })}`)
-            .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
-            .setTimestamp();
+                .setTitle(`\`👤\` × ${member.user.username}'s Profil`)
+                .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${rolegamesList.length > 0 ? rolegamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
+                .setColor('Blurple')
+                .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+                .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: interaction.guild.iconURL() })
+                .setTimestamp();
 
-            await interaction.reply({ embeds: [embed], ephemeral: true })
-        } else return await interaction.reply({ content: `> \`❌\` » Ich konnte keine Statistiken über ${member} finden.`, ephemeral: true })
-    }
-}
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+        } else {
+            await interaction.reply({ content: `> \`❌\` » Ich konnte keine Statistiken über ${member} finden.`, ephemeral: true });
+        }
+    },
+};
+
