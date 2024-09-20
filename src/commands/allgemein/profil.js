@@ -53,7 +53,8 @@ module.exports = {
             'Welt News': 'Welt News',
         };
 
-        let userNationalität = '❓';
+        let userNationalität = interaction.options.getString('nationalität');
+        //let userNationalität = '❓';
         let userGeschlecht = '❓';
         let rolegamesList = [];
         let rolePingsList = [];
@@ -97,8 +98,6 @@ module.exports = {
         const userData = await userdb.findOne({ userID: member.id })
 
         const Nationalität = userNationalität.length > 0 ? userNationalität.join(' ') : '❓';
-
-        let userNationalität = interaction.options.getString('nationalität');
 
         // Check if userNationalität is an array before using join()
         if (Array.isArray(userNationalität)) {
