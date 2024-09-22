@@ -54,7 +54,7 @@ module.exports = {
 
         let userNationalität = '❓';
         let userGeschlecht = '❓';
-        let rolegamesList = [];
+        let roleGamesList = [];
         let rolePingsList = [];
 
         const getBaseRoleName = (roleName) => {
