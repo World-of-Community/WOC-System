@@ -112,6 +112,16 @@ const pingMessages = [
     'Grüße dich! <a:winken:1086560167442796544>',
 ];
 
+// MongoDB
+
+mongoose.connection.on('connected', () => {
+    console.log('Connected to MongoDB!');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error(`Connection error: ${err.message}`);
+});
+
 
 client.on('messageCreate', message => {
     if (message.mentions.has(client.user) && !message.author.bot) {
