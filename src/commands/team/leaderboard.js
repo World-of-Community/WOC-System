@@ -20,19 +20,12 @@ module.exports = {
         .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌'),
 
     async execute(interaction) {
-        // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
-        const timestampNow = Math.floor(Date.now() / 1000); // Aktueller Unix-Timestamp
-        const timestampAfter5Seconds = timestampNow + 5; // 5 Sekunden hinzufügen
+        const channel = interaction.channel;
 
-        await interaction.reply({ content: `> \`⏳\` » Bitte **5 Sekunden** warten, während das Leaderboard generiert wird. (Ablaufzeit: <t:${timestampAfter5Seconds}:R>)`, ephemeral: true });
+        await interaction.reply({ content: '> `⏳` » Leaderboard wird jede Minute aktualisiert.', ephemeral: true });
 
-        // 5 Sekunden warten
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        let leaderboardMessage; // Hier wird die Variable definiert
 
-        // Variablen zum Speichern der gesendeten Nachrichten
-        let messageEmbedMessage, voiceEmbedMessage;
-
-        // Funktion zum Erstellen und Senden der Leaderboard-Embeds
         async function updateLeaderboardEmbeds() {
             try {
                 const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
@@ -70,10 +63,6 @@ module.exports = {
 
                 const currentMonth = getCurrentMonth();
 
-                const InfoEmbed = new EmbedBuilder()
-                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten die <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n- **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> `📌` » Das Leaderboard wird Monatlich zurück gesetzt.')
-                    .setColor('Orange')
-
                 const messageEmbed = new EmbedBuilder()
                     .setAuthor({ name: `${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
                     .setDescription(messageLeaderboardText)
@@ -88,7 +77,7 @@ module.exports = {
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png?ex=66f26cd7&is=66f11b57&hm=3bd3c63df44cf64e6461070433b6b001300a43c9567847f007c9f848817fb963&' })
                     .setTimestamp();
 
-                // Füge das Thumbnail für den ersten Platz hinzu
+                // Füge Thumbnails für den ersten Platz hinzu
                 if (topMessagesMembers[0]?.member) {
                     messageEmbed.setThumbnail(topMessagesMembers[0].member.displayAvatarURL({ dynamic: true }));
                 }
@@ -109,10 +98,7 @@ module.exports = {
             }
         }
 
-        // Starte den Cronjob, um die Embeds jede Minute zu aktualisieren
         cron.schedule('* * * * *', updateLeaderboardEmbeds);
-
-        // Führe die Funktion auch sofort aus
         updateLeaderboardEmbeds();
     }
 };
