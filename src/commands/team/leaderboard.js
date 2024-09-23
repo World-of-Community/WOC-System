@@ -100,7 +100,7 @@ module.exports = {
             }
 
             // Rolle nur zuweisen, wenn interaction.guild.roles definiert ist
-            const role = interaction.guild.roles?.cache.get(RoleID);
+            const role = interaction.guild.roles?.cache.get('1150753421339676722');
             if (!role) {
                 console.error(`Die Rolle mit der ID ${RoleID} konnte nicht gefunden werden.`);
                 await interaction.editReply({ content: '> `❌` » Fehler: Rolle konnte nicht gefunden werden.', ephemeral: true });
@@ -110,7 +110,7 @@ module.exports = {
             const top3Users = [...topMessages.slice(0, 3), ...topVoice.slice(0, 3)];
             const uniqueTop3Users = Array.from(new Set(top3Users.map(user => user.userId)));
 
-            const role = interaction.guild.roles.cache.get(RoleID);
+            const role = interaction.guild.roles.cache.get('1150753421339676722');
             if (!role) {
                 console.error(`Die Rolle mit der ID ${RoleID} konnte nicht gefunden werden.`);
                 return;
@@ -118,15 +118,15 @@ module.exports = {
 
             for (const userId of uniqueTop3Users) {
                 const member = await interaction.guild.members.fetch(userId);
-                if (!member.roles.cache.has(RoleID)) {
-                    await member.roles.add(RoleID);
+                if (!member.roles.cache.has('1150753421339676722')) {
+                    await member.roles.add('1150753421339676722');
                 }
             }
 
             const allMembersWithRole = role.members;
             allMembersWithRole.forEach(async (member) => {
                 if (!uniqueTop3Users.includes(member.id)) {
-                    await member.roles.remove(RoleID);
+                    await member.roles.remove('1150753421339676722');
                 }
             });
 
