@@ -92,7 +92,7 @@ module.exports = {
                 }
 
                 // Sende die aktualisierten Embeds in den gespeicherten Kanal
-                await channel.send({ embeds: [messageEmbed, voiceEmbed] });
+                await interaction.channel.send({ embeds: [messageEmbed, voiceEmbed] });
 
             } catch (error) {
                 console.error('Fehler beim Aktualisieren des Leaderboards:', error);
