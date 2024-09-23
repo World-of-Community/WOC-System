@@ -53,15 +53,7 @@ module.exports = {
 
     const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
 
-    const collector = channel.createMessageCollector({ filter });
-
-    // Funktion zum Löschen aller Nachrichten im Kanal
-    const deleteAllMessages = async () => {
-      const fetchedMessages = await channel.messages.fetch({ limit: 100 });
-      if (fetchedMessages.size > 0) {
-        await channel.bulkDelete(fetchedMessages, true).catch(console.error);
-      }
-    };
+    const collector = channel.createMessageCollector({ filter })
 
     // Starten Sie eine Schleife, um alle 5 Sekunden Nachrichten zu löschen
     const messageDeletionInterval = setInterval(deleteAllMessages, 5000);
@@ -86,10 +78,6 @@ module.exports = {
       } else {
         await msg.react('❌');
       }
-    });
-
-    collector.on('end', () => {
-      clearInterval(messageDeletionInterval); // Stoppe das Nachrichtenlöschintervall, wenn der Collector endet
     });
   },
 };
