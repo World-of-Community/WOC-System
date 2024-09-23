@@ -34,6 +34,7 @@ module.exports = {
 
         async function updateLeaderboardEmbeds() {
             try {
+
                 const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
                 const topVoice = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(10);
 
