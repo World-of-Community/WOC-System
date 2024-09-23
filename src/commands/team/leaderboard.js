@@ -3,6 +3,15 @@ const cron = require('node-cron');
 const userdb = require('../../../Datenbank/userdb');
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
+function getCurrentMonth() {
+    const monthNames = [
+        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+    ];
+    const now = new Date();
+    return monthNames[now.getMonth()];
+}
+
 // Definiere Emojis für Positionen 1 bis 10
 const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
 
