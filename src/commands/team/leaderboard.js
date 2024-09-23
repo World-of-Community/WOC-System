@@ -3,6 +3,8 @@ const cron = require('node-cron');
 const userdb = require('../../../Datenbank/userdb');
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
+// unix timestamp für die 5 sekunden soll ablaufen
+
 function getCurrentMonth() {
     const monthNames = [
         'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
@@ -22,7 +24,7 @@ module.exports = {
 
     async execute(interaction) {
         try {
-            await interaction.reply({ content: '> `⏳` » Bitte 5 Sekunden warten, während das Leaderboard generiert wird.', ephemeral: true });
+            await interaction.reply({ content: `> \`⏳\` » Bitte **5 Sekunden** warten, während das Leaderboard generiert wird. (Ablaufzeit: <t:${timestampAfter5Seconds}:R>`, ephemeral: true });
 
             // 5 Sekunden warten
             await new Promise(resolve => setTimeout(resolve, 5000));
