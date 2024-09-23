@@ -35,6 +35,8 @@ module.exports = {
 
     await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true });
 
+    let currentFlagMessage; // Variable für die aktuelle Flaggen-Nachricht
+
     const sendNewFlag = async () => {
       const randomFlag = flags[Math.floor(Math.random() * flags.length)];
 
@@ -44,29 +46,35 @@ module.exports = {
         .setImage(randomFlag.imageUrl)
         .setColor('Random');
 
-      const message = await channel.send({ embeds: [embed] });
+      // Vorherige Flaggen-Nachricht löschen, falls vorhanden
+      if (currentFlagMessage) {
+        await currentFlagMessage.delete();
+      }
 
-      return { flag: randomFlag, message };
+      // Neue Flaggen-Nachricht senden und speichern
+      currentFlagMessage = await channel.send({ embeds: [embed] });
+
+      return randomFlag; // Nur das randomFlag zurückgeben
     };
 
     let currentFlag = await sendNewFlag();
 
     const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
 
-    const collector = channel.createMessageCollector({ filter })
+    const collector = channel.createMessageCollector({ filter });
 
     collector.on('collect', async msg => {
-      if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
+      if (msg.content.toLowerCase() === currentFlag.country.toLowerCase()) {
         await msg.react('✅');
-        await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.flag.country}.`);
+        await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.country}.`);
 
         // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
-        const timestampNow = Math.floor(Date.now() / 1000); // Aktueller Unix-Timestamp
-        const timestampAfter5Seconds = timestampNow + 5; // 5 Sekunden hinzufügen
+        const timestampNow = Math.floor(Date.now() / 1000);
+        const timestampAfter5Seconds = timestampNow + 5;
 
         const waitingMessage = await channel.send(`Bitte warte... <t:${timestampAfter5Seconds}:R> geht es weiter.`);
 
-        // Lösche die Warte-Nachricht nach 5 Sekunden
+        // Warte-Nachricht nach 5 Sekunden löschen
         await new Promise(resolve => setTimeout(resolve, 5000));
         await waitingMessage.delete();
 
@@ -78,4 +86,3 @@ module.exports = {
     });
   },
 };
-
