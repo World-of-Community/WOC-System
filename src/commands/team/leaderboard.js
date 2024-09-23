@@ -33,17 +33,19 @@ module.exports = {
             // 5 Sekunden warten
             await new Promise(resolve => setTimeout(resolve, 5000));
 
-            const topMessages = await userdb.find().sort({ messages: -1 }).limit(10);
-            const topVoice = await userdb.find().sort({ voiceTime: -1 }).limit(10);
+            const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
+            const topVoice = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(10);
+
+            // return console.log(topMessages.map(data => data.stats["messages"]))
 
             const topMessagesMembers = await Promise.all(topMessages.map(async (user) => {
-                const member = await interaction.guild.members.fetch(user.userId).catch(() => null);
-                return { member, messages: user.messages ?? 0 };
+                const member = await interaction.guild.members.fetch(user.userID).catch(() => null);
+                return { member, messages: user.stats["messages"] ?? 0 };
             }));
 
             const topVoiceMembers = await Promise.all(topVoice.map(async (user) => {
-                const member = await interaction.guild.members.fetch(user.userId).catch(() => null);
-                const voiceTime = user.voiceTime ?? 0;
+                const member = await interaction.guild.members.fetch(user.userID).catch(() => null);
+                const voiceTime = user.stats["voiceTime"] ?? 0;
                 const days = Math.floor(voiceTime / (24 * 60 * 60 * 1000));
                 const hours = Math.floor((voiceTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
                 const minutes = Math.floor((voiceTime % (60 * 60 * 1000)) / (60 * 1000));
@@ -54,8 +56,9 @@ module.exports = {
                 .filter(user => user.member)
                 .map((user, index) => {
                     const memberMention = user.member ? user.member.toString() : 'Unbekannt';
-                    const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
-                    return `${positionEmojis[index]} » ${memberMention} - **${nickname}**\n> \`${user.messages} Nachrichten\``;
+                    // const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
+                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.displayName}**
+> \`${user.messages} Nachrichten\``;
                 })
                 .join('\n').slice(0, 1024);
 
@@ -63,8 +66,9 @@ module.exports = {
                 .filter(user => user.member)
                 .map((user, index) => {
                     const memberMention = user.member ? user.member.toString() : 'Unbekannt';
-                    const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
-                    return `${positionEmojis[index]} » ${memberMention} - **${nickname}**\n> \`${user.timeText}\``;
+                    // const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
+                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.displayName}**
+> \`${user.timeText}\``;
                 })
                 .join('\n').slice(0, 1024);
 
@@ -112,7 +116,7 @@ module.exports = {
 
             // Rolle zuweisen und entfernen
             for (const userId of uniqueTop3Users) {
-                const member = await interaction.guild.members.fetch(userId);
+                const member = await interaction.guild.members.cache.get(userId);
                 if (member && !member.roles.cache.has(RoleID)) {
                     await member.roles.add(RoleID);
                 }
