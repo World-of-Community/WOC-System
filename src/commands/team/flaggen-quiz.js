@@ -37,7 +37,7 @@ module.exports = {
 
     const sendNewFlag = async () => {
       const randomFlag = flags[Math.floor(Math.random() * flags.length)];
-      
+
       console.log(`Sende Flagge für: ${randomFlag.country} (${randomFlag.imageUrl})`); // Debugging-Ausgabe
 
       const embed = new EmbedBuilder()
@@ -60,19 +60,25 @@ module.exports = {
     collector.on('collect', async msg => {
       if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
         await msg.react('✅');
-        await channel.send(`> Richtig! Das ist die Flagge von **${currentFlag.flag.country}.**`);
-        
-        // Aktualisiere das Embed
-        const newFlag = flags[Math.floor(Math.random() * flags.length)];
-        currentFlag.flag = newFlag;
-      
-        const newEmbed = new EmbedBuilder()
-          .setTitle('Flaggenquiz')
-          .setDescription('Welche Flagge ist das? Schreib den Ländernamen in den Chat!')
-          .setImage(newFlag.imageUrl)
-          .setColor('Random');
-      
-        await currentFlag.message.edit({ embeds: [newEmbed] }); // Aktuellen Embed aktualisieren
+        await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.flag.country}.`);
+
+        // Alle Nachrichten im Kanal löschen
+        const fetchedMessages = await channel.messages.fetch({ limit: 100 });
+        await channel.bulkDelete(fetchedMessages, true);
+
+        // Verzögerung von 3 Sekunden (3000 Millisekunden)
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Warte 3 Sekunden
+
+        // Unix-Zeitstempel erstellen
+        const unixTimestamp = Math.floor(Date.now() / 1000);
+        const waitingMessage = await channel.send(`Bitte warte... ${unixTimestamp} geht es weiter.`);
+
+        // Lösche die Warte-Nachricht nach 3 Sekunden
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Warte 3 Sekunden
+        await waitingMessage.delete();
+
+        // Neues Flaggen-Embed senden
+        currentFlag = await sendNewFlag();
       } else {
         await msg.react('❌');
       }
