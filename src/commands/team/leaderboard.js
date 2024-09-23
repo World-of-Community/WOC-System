@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron');
 const userdb = require('../../../Datenbank/userdb');
+const leaderboarddb = require('../../../Datenbank/leaderboarddb'); // Datenbank zum Speichern der Nachricht-ID
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
 function getCurrentMonth() {
@@ -31,6 +32,13 @@ module.exports = {
         await new Promise(resolve => setTimeout(resolve, 5000));
 
         let leaderboardMessage; // Hier wird die Variable definiert
+
+        // Lese die gespeicherte Nachricht-ID beim Neustart
+        const savedMessage = await leaderboarddb.findOne({});
+        if (savedMessage && savedMessage.messageId) {
+            // Versuche die Nachricht zu laden
+            leaderboardMessage = await interaction.channel.messages.fetch(savedMessage.messageId).catch(() => null);
+        }
 
         async function updateLeaderboardEmbeds() {
             try {
@@ -71,21 +79,21 @@ module.exports = {
                 const currentMonth = getCurrentMonth();
 
                 const InfoEmbed = new EmbedBuilder()
-                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten\ndie <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n\n> `📌` » Das Leaderboard wird Monatlich zurück gesetzt.')
-                    .setColor('Orange')
+                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten\ndie <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n\n> `📌` » Das Leaderboard wird Monatlich zurückgesetzt.')
+                    .setColor('Orange');
 
                 const messageEmbed = new EmbedBuilder()
                     .setAuthor({ name: `${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
                     .setDescription(messageLeaderboardText)
                     .setColor('Blurple')
-                    .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png?ex=66f26c96&is=66f11b16&hm=a991f2c26a109a792031c1943b24fb19236eac65b72fc10c938bc5a0f68760e1&' })
+                    .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png' })
                     .setTimestamp();
 
                 const voiceEmbed = new EmbedBuilder()
                     .setAuthor({ name: `${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
                     .setDescription(voiceLeaderboardText)
                     .setColor('Blue')
-                    .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png?ex=66f26cd7&is=66f11b57&hm=3bd3c63df44cf64e6461070433b6b001300a43c9567847f007c9f848817fb963&' })
+                    .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png' })
                     .setTimestamp();
 
                 // Füge Thumbnails für den ersten Platz hinzu
@@ -102,6 +110,9 @@ module.exports = {
                     await leaderboardMessage.edit({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
                 } else {
                     leaderboardMessage = await interaction.channel.send({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
+                    
+                    // Nachricht-ID speichern
+                    await leaderboarddb.updateOne({}, { messageId: leaderboardMessage.id }, { upsert: true });
                 }
 
             } catch (error) {
@@ -109,6 +120,7 @@ module.exports = {
             }
         }
 
+        // Starte den Cron-Job, um die Embeds jede Minute zu aktualisieren
         cron.schedule('* * * * *', updateLeaderboardEmbeds);
         updateLeaderboardEmbeds();
     }
