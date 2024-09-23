@@ -38,8 +38,6 @@ module.exports = {
     const sendNewFlag = async () => {
       const randomFlag = flags[Math.floor(Math.random() * flags.length)];
 
-      console.log(`Sende Flagge für: ${randomFlag.country} (${randomFlag.imageUrl})`); // Debugging-Ausgabe
-
       const embed = new EmbedBuilder()
         .setTitle('Flaggenquiz')
         .setDescription('Welche Flagge ist das? Schreib den Ländernamen in den Chat!')
