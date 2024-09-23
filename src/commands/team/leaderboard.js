@@ -70,6 +70,10 @@ module.exports = {
 
                 const currentMonth = getCurrentMonth();
 
+                const InfoEmbed = new EmbedBuilder()
+                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten die <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n- **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> `📌` » Das Leaderboard wird Monatlich zurück gesetzt.')
+                    .setColor('Orange')
+
                 const messageEmbed = new EmbedBuilder()
                     .setAuthor({ name: `${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
                     .setDescription(messageLeaderboardText)
@@ -93,17 +97,11 @@ module.exports = {
                     voiceEmbed.setThumbnail(topVoiceMembers[0].member.displayAvatarURL({ dynamic: true }));
                 }
 
-                // Wenn die Nachrichten bereits existieren, bearbeite sie; andernfalls sende sie
-                if (messageEmbedMessage) {
-                    await messageEmbedMessage.edit({ embeds: [messageEmbed] });
+                // Bearbeite beide Embeds zusammen oder sende sie, wenn sie noch nicht existieren
+                if (leaderboardMessage) {
+                    await leaderboardMessage.edit({ embeds: [messageEmbed, voiceEmbed] });
                 } else {
-                    messageEmbedMessage = await interaction.channel.send({ embeds: [messageEmbed] });
-                }
-
-                if (voiceEmbedMessage) {
-                    await voiceEmbedMessage.edit({ embeds: [voiceEmbed] });
-                } else {
-                    voiceEmbedMessage = await interaction.channel.send({ embeds: [voiceEmbed] });
+                    leaderboardMessage = await channel.send({ embeds: [messageEmbed, voiceEmbed] });
                 }
 
             } catch (error) {
