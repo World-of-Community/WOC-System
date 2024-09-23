@@ -18,12 +18,12 @@ module.exports = {
         lastUserId = null;
 
         // Reply to confirm the channel has been set
-        await interaction.reply(`> \`✅\` » Der Zählkanal wurde auf <#${countingChannelId}> eingestellt.`);
+        await interaction.reply({ content: `> \`✅\` » Der Zählkanal wurde auf <#${countingChannelId}> eingestellt.`, ephemeral: true });
 
         // Inform the user about the counting game
         const countingEmbed = new EmbedBuilder()
             .setTitle('Zahlen Spiel Information')
-            .setDescription('Hier sind alle Informationen für das Zählspiel:\n\n`1️⃣` Beginne das Zählen mit der Zahl 1.\n`🛑` Wenn du falsch zählst oder zweimal hintereinander zählst, wird das Spiel zurückgesetzt.')
+            .setDescription('Hier sind alle Informationen für das Zählspiel:\n\n`1️⃣` » Beginne das Zählen mit der Zahl **1**.\n> `🛑` » Wenn du falsch zählst oder zweimal hintereinander zählst, wird das Spiel **zurückgesetzt**.')
             .setColor('Blurple')
             .setFooter({ text: `${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
             .setTimestamp();
@@ -40,7 +40,7 @@ module.exports = {
             if (!isNaN(userNumber)) {
                 if (userNumber === currentCount + 1) {
                     if (message.author.id === lastUserId) {
-                        await selectedChannel.send(`@${message.author.displayName}, hat die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen.**`);
+                        await selectedChannel.send(`${message.member} hat die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen!**`);
                         currentCount = 0; // Reset count
                         lastUserId = null;
                     } else {
@@ -50,7 +50,7 @@ module.exports = {
                     }
                 } else {
                     await message.react('❌');
-                    await selectedChannel.send(`@${message.author.displayName}, falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist **1**.`);
+                    await selectedChannel.send(`${message.member}, falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist **1**.`);
                     currentCount = 0; // Reset count
                     lastUserId = null;
                 }
