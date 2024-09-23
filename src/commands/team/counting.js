@@ -28,7 +28,9 @@ module.exports = {
             .setFooter({ text: `${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
             .setTimestamp();
 
-        await selectedChannel.send({ embeds: [countingEmbed] });
+        // Send the embed message and pin it
+        const embedMessage = await selectedChannel.send({ embeds: [countingEmbed] });
+        await embedMessage.pin(); // Pin the embed message
 
         // Create a message collector for the counting channel
         const filter = (m) => m.channel.id === countingChannelId && !m.author.bot;
@@ -40,7 +42,7 @@ module.exports = {
             if (!isNaN(userNumber)) {
                 if (userNumber === currentCount + 1) {
                     if (message.author.id === lastUserId) {
-                        await selectedChannel.send(`${message.member} hat die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen!**`);
+                        await selectedChannel.send(`> \`❗\` » ${message.member} hat die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen!**`);
                         currentCount = 0; // Reset count
                         lastUserId = null;
                     } else {
@@ -50,7 +52,7 @@ module.exports = {
                     }
                 } else {
                     await message.react('❌');
-                    await selectedChannel.send(`${message.member}, falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist **1**.`);
+                    await selectedChannel.send(`> \`❗\` » ${message.member}, falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist **1**.`);
                     currentCount = 0; // Reset count
                     lastUserId = null;
                 }
