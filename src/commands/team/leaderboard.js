@@ -98,10 +98,10 @@ module.exports = {
                 }
 
                 // Bearbeite beide Embeds zusammen oder sende sie, wenn sie noch nicht existieren
-                if (updateleaderboardMessage) {
-                    await updateleaderboardMessage.edit({ embeds: [messageEmbed, voiceEmbed] });
+                if (updateLeaderboardEmbeds) {
+                    await updateLeaderboardEmbeds.edit({ embeds: [messageEmbed, voiceEmbed] });
                 } else {
-                    updateleaderboardMessage = await channel.send({ embeds: [messageEmbed, voiceEmbed] });
+                    updateLeaderboardEmbeds = await channel.send({ embeds: [messageEmbed, voiceEmbed] });
                 }
 
             } catch (error) {
