@@ -67,10 +67,11 @@ module.exports = {
 
         member.roles.cache.forEach(role => {
             if (role.name === '@everyone') return;
-
-            const baseRoleName = getBaseRoleName(role.name);
+        
+            const baseRoleName = role.name.trim();  // Verwende den exakten Rollennamen
+        
             console.log(`Rolle gefunden: ${baseRoleName}`); // Debug-Ausgabe der gefundenen Rolle
-
+        
             if (roleNationalität[baseRoleName]) {
                 userNationalität = roleNationalität[baseRoleName];
             }
@@ -85,6 +86,7 @@ module.exports = {
                 rolePingsList.push(`${role}`); // Ping-Rollen als Erwähnung
             }
         });
+        
 
         // Hole die Einladungen des Mitglieds
         const invites = await interaction.guild.invites.fetch();
@@ -111,4 +113,3 @@ module.exports = {
         }
     },
 };
-
