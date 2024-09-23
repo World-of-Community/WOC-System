@@ -90,7 +90,7 @@ module.exports = {
                         .setTitle('Partnerliste')
                         .setColor('Blurple')
                         .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
-                        .setFooter({ text: `Maximale Server-Partner sind (**15**)`, iconURL: `${interaction.guild.iconURL()}` })
+                        .setFooter({ text: `» Maximal 15 Server-Partner`, iconURL: `${interaction.guild.iconURL()}` });
 
                         if(kategorie === "Kooperation") {
                             newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
