@@ -67,13 +67,14 @@ module.exports = {
         // Verzögerung von 3 Sekunden (3000 Millisekunden)
         await new Promise(resolve => setTimeout(resolve, 3000)); // Warte 3 Sekunden
 
-        // Unix-Zeitstempel erstellen
-        const unixTimestamp = Math.floor(Date.now() / 1000);
-        const waitingMessage = await channel.send(`Bitte warte... ${unixTimestamp} geht es weiter.`);
+        // Unix-Zeitstempel erstellen, der 5 Sekunden in der Zukunft liegt
+        const unixTimestampFuture = Math.floor(Date.now() / 1000) + 5; // Aktueller Unix-Zeitstempel + 5 Sekunden
+        const waitingMessage = await channel.send(`Bitte warte... ${unixTimestampFuture} geht es weiter.`);
 
-        // Lösche die Warte-Nachricht nach 3 Sekunden
-        await new Promise(resolve => setTimeout(resolve, 3000)); // Warte 3 Sekunden
+        // Lösche die Warte-Nachricht nach 5 Sekunden
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Warte 5 Sekunden
         await waitingMessage.delete();
+
 
         // Neues Flaggen-Embed senden
         currentFlag = await sendNewFlag();
