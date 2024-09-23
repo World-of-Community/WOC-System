@@ -14,14 +14,12 @@ function getCurrentMonth() {
 
 const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
 
-// Embeds jede Minute aktualisieren
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('leaderboard')
         .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌'),
 
     async execute(interaction) {
-
         // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
         const timestampNow = Math.floor(Date.now() / 1000); // Aktueller Unix-Timestamp
         const timestampAfter5Seconds = timestampNow + 5; // 5 Sekunden hinzufügen
@@ -31,7 +29,10 @@ module.exports = {
         // 5 Sekunden warten
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        // Erstelle eine Funktion zum Generieren und Senden der Leaderboard-Embeds
+        // Variablen zum Speichern der gesendeten Nachrichten
+        let messageEmbedMessage, voiceEmbedMessage;
+
+        // Funktion zum Erstellen und Senden der Leaderboard-Embeds
         async function updateLeaderboardEmbeds() {
             try {
                 const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
@@ -76,10 +77,6 @@ module.exports = {
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png?ex=66f26c96&is=66f11b16&hm=a991f2c26a109a792031c1943b24fb19236eac65b72fc10c938bc5a0f68760e1&' })
                     .setTimestamp();
 
-                if (topMessagesMembers[0] && topMessagesMembers[0].member && typeof topMessagesMembers[0].member.displayAvatarURL === 'function') {
-                    messageEmbed.setThumbnail(topMessagesMembers[0].member.displayAvatarURL({ dynamic: true }));
-                }
-
                 const voiceEmbed = new EmbedBuilder()
                     .setAuthor({ name: `${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
                     .setDescription(voiceLeaderboardText)
@@ -87,12 +84,18 @@ module.exports = {
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png?ex=66f26cd7&is=66f11b57&hm=3bd3c63df44cf64e6461070433b6b001300a43c9567847f007c9f848817fb963&' })
                     .setTimestamp();
 
-                if (topVoiceMembers[0] && topVoiceMembers[0].member && typeof topVoiceMembers[0].member.displayAvatarURL === 'function') {
-                    voiceEmbed.setThumbnail(topVoiceMembers[0].member.displayAvatarURL({ dynamic: true }));
+                // Wenn die Nachrichten bereits existieren, bearbeite sie; andernfalls sende sie
+                if (messageEmbedMessage) {
+                    await messageEmbedMessage.edit({ embeds: [messageEmbed] });
+                } else {
+                    messageEmbedMessage = await interaction.channel.send({ embeds: [messageEmbed] });
                 }
 
-                // Sende die aktualisierten Embeds in den gespeicherten Kanal
-                await interaction.channel.send({ embeds: [messageEmbed, voiceEmbed] });
+                if (voiceEmbedMessage) {
+                    await voiceEmbedMessage.edit({ embeds: [voiceEmbed] });
+                } else {
+                    voiceEmbedMessage = await interaction.channel.send({ embeds: [voiceEmbed] });
+                }
 
             } catch (error) {
                 console.error('Fehler beim Aktualisieren des Leaderboards:', error);
@@ -102,9 +105,7 @@ module.exports = {
         // Starte den Cronjob, um die Embeds jede Minute zu aktualisieren
         cron.schedule('* * * * *', updateLeaderboardEmbeds);
 
-        // Führe die Funktion auch sofort aus, nachdem der Befehl gesendet wurde
+        // Führe die Funktion auch sofort aus
         updateLeaderboardEmbeds();
     }
 };
-
-
