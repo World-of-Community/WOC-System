@@ -22,15 +22,20 @@ const flags = [
   { country: 'Saudi Arabia', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg' },
   { country: 'Egypt', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Egypt.svg' },
   { country: 'Turkey', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg' },
-  // Füge weitere Länder hinzu oder lade sie dynamisch über eine API.
 ];
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('flaggenquiz')
-    .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt'),
+    .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt')
+    .addChannelOption(option => 
+      option.setName('kanal')
+            .setDescription('Der Kanal, in den die Nachricht gesendet werden soll')
+            .setRequired(true)),
 
   async execute(interaction) {
+    const channel = interaction.options.getChannel('kanal');
+
     await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...' }); // Zuerst eine Antwort senden
 
     const sendNewFlag = async () => {
@@ -42,23 +47,23 @@ module.exports = {
         .setImage(randomFlag.imageUrl)
         .setColor('Random');
 
-      // Antwort mit neuem Embed
-      await interaction.editReply({ content: null, embeds: [embed] });
+      // Senden des Embeds an den angegebenen Kanal
+      const message = await interaction.channel.send({ embeds: [embed] });
 
-      return randomFlag; // Rückgabe des aktuellen Flags
+      return { flag: randomFlag, message }; // Rückgabe des aktuellen Flags und der Nachricht
     };
 
     let currentFlag = await sendNewFlag(); // Senden des ersten Embeds
 
-    // Filter für Nachrichten im Kanal, die der Benutzer eingibt
-    const filter = msg => msg.author.id === interaction.user.id;
+    // Filter für Nachrichten im angegebenen Kanal, die der Benutzer eingibt
+    const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
 
-    const collector = interaction.channel.createMessageCollector({ filter });
+    const collector = channel.createMessageCollector({ filter });
 
     collector.on('collect', async msg => {
-      if (msg.content.toLowerCase() === currentFlag.country.toLowerCase()) {
+      if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
         await msg.react('✅');
-        await interaction.followUp({ content: `Richtig! Das ist die Flagge von ${currentFlag.country}.` });
+        await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.flag.country}.`);
         currentFlag = await sendNewFlag(); // Senden eines neuen Embeds
       } else {
         await msg.react('❌'); // Falsche Antwort, der Bot reagiert mit ❌
