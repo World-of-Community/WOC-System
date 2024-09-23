@@ -66,7 +66,7 @@ module.exports = {
     collector.on('collect', async msg => {
       if (msg.content.toLowerCase() === currentFlag.country.toLowerCase()) {
         await msg.react('✅');
-        await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.country}.`);
+        await channel.send(`Richtig! Das ist die Flagge von **${currentFlag.country}.**`);
 
         // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
         const timestampNow = Math.floor(Date.now() / 1000);
