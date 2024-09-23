@@ -55,9 +55,6 @@ module.exports = {
 
     const collector = channel.createMessageCollector({ filter })
 
-    // Starten Sie eine Schleife, um alle 5 Sekunden Nachrichten zu löschen
-    const messageDeletionInterval = setInterval(deleteAllMessages, 5000);
-
     collector.on('collect', async msg => {
       if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
         await msg.react('✅');
