@@ -27,30 +27,30 @@ module.exports = {
             'Divers': ':heavy_equals_sign:',
         };
 
-        const roleGames = {
-            'Roblox': 'Roblox',
-            'Rocket League': 'Rocket League',
-            'Grand Theft Auto V': 'Grand Theft Auto V',
-            'Minecraft': 'Minecraft',
-            'FIFA': 'FIFA',
-            'League of Legends': 'League of Legends',
-            'Valorant': 'Valorant',
-            'Fortnite': 'Fortnite',
-        };
+        const GameRoleIds = [
+            '1232072165654794281', // Roblox
+            '1232066510554529905', // Rocket League
+            '1232066545492955136', // Grand Theft Auto V
+            '1232066588216135880', // Minecraft
+            '1232066657896108082', // FIFA
+            '1273369483951734866', // League of Legends
+            '1232066632491208704', // Valorant
+            '1232070141127426058', // Fortnite
+        ];
 
-        const rolePings = {
-            'Umfragen': 'Umfragen',
-            'Neuigkeiten': 'Neuigkeiten',
-            'Gewinnspiel': 'Gewinnspiel',
-            'Server-Events': 'Server-Events',
-            'Changelog': 'Changelog',
-            'Änderungen': 'Änderungen',
-            'Dead Chat Ping': 'Dead Chat Ping',
-            'Gratis Spiele': 'Gratis Spiele',
-            'Gaming News': 'Gaming News',
-            'Mediathek': 'Mediathek',
-            'Welt News': 'Welt News',
-        };
+        const PingRoleIDs = [
+            '847805121839890463', // Umfragen Ping
+            '848085701449744394', // Neuigkeiten Ping
+            '870297686467817492', // Gewinnspiel Ping
+            '870683971846041650', // Server-Events Ping
+            '963838152815050763', // Änderungen Ping
+            '1147093175186493490', // Changelog Ping
+            '1246190426646642698', // Dead Chat Ping
+            '1230568420240527462', // Gratis Spiele Ping 
+            '1231257421016469596', // Gaming News Ping
+            '1231257532844998666', // Mediathek Ping
+            '1231257309313765396', // Welt News Ping
+        ];
 
         let userNationalität = '❓';
         let userGeschlecht = '❓';
@@ -68,21 +68,17 @@ module.exports = {
         member.roles.cache.forEach(role => {
             if (role.name === '@everyone') return;
         
-            const baseRoleName = getBaseRoleName(role.name);
-        
-            if (roleNationalität[baseRoleName]) {
-                userNationalität = roleNationalität[baseRoleName];
+            // Überprüfe, ob die Rollen-ID in der Liste der Spiele-Rollen ist
+            if (GameRoleIds.includes(role.id)) {
+                roleGamesList.push(`${role}`); // Spiele-Rollen als Erwähnung hinzufügen
             }
-            if (roleGeschlecht[baseRoleName]) {
-                userGeschlecht = roleGeschlecht[baseRoleName];
-            }
-            if (roleGames[baseRoleName]) {
-                roleGamesList.push(`${role}`); // Spiele-Rollen als Erwähnung
-            }
-            if (rolePings[baseRoleName]) {
-                rolePingsList.push(`${role}`); // Ping-Rollen als Erwähnung
+            
+            // Überprüfe, ob die Rollen-ID in der Liste der Ping-Rollen ist
+            if (PingRoleIDs.includes(role.id)) {
+                rolePingsList.push(`${role}`); // Ping-Rollen als Erwähnung hinzufügen
             }
         });
+        
         
 
         // Hole die Einladungen des Mitglieds
