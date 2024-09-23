@@ -28,32 +28,33 @@ module.exports = {
             .setFooter({ text: `${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
             .setTimestamp();
 
-        await interaction.channel.send({ embeds: [countingEmbed] });
+        await selectedChannel.send({ embeds: [countingEmbed] });
+
+        // Create a message collector for the counting channel
+        const filter = (m) => m.channel.id === countingChannelId && !m.author.bot;
+        const collector = selectedChannel.createMessageCollector({ filter });
+
+        collector.on('collect', async (message) => {
+            const userNumber = parseInt(message.content);
+
+            if (!isNaN(userNumber)) {
+                if (userNumber === currentCount + 1) {
+                    if (message.author.id === lastUserId) {
+                        await selectedChannel.send(`@${message.author.displayName}, hat die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen.**`);
+                        currentCount = 0; // Reset count
+                        lastUserId = null;
+                    } else {
+                        currentCount++;
+                        lastUserId = message.author.id;
+                        await message.react('✅');
+                    }
+                } else {
+                    await message.react('❌');
+                    await selectedChannel.send(`@${message.author.displayName}, falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist **1**.`);
+                    currentCount = 0; // Reset count
+                    lastUserId = null;
+                }
+            }
+        });
     }
 };
-
-// Message event listener to handle counting
-client.on('messageCreate', async (message) => {
-    if (message.author.bot || message.channel.id !== countingChannelId) return;
-
-    const userNumber = parseInt(message.content);
-
-    if (!isNaN(userNumber)) {
-        if (userNumber === currentCount + 1) {
-            if (message.author.id === lastUserId) {
-                await message.channel.send(`@${message.author.displayName}, hat die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen.**`);
-                currentCount = 0; // Reset count
-                lastUserId = null;
-            } else {
-                currentCount++;
-                lastUserId = message.author.id;
-                await message.react('✅');
-            }
-        } else {
-            await message.react('❌');
-            await message.channel.send(`@${message.author.displayName}, falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist **1**.`);
-            currentCount = 0; // Reset count
-            lastUserId = null;
-        }
-    }
-});
