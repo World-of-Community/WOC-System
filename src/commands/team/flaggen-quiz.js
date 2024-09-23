@@ -28,9 +28,11 @@ const flags = [
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('flaggenquiz')
-    .setDescription('Startet ein Flaggenquiz mit allen Flaggen der Welt'),
+    .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt'),
 
   async execute(interaction) {
+    await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true }); // Zuerst eine Antwort senden
+
     const sendNewFlag = async () => {
       const randomFlag = flags[Math.floor(Math.random() * flags.length)];
 
@@ -41,7 +43,7 @@ module.exports = {
         .setColor('Random');
 
       // Antwort mit neuem Embed
-      await interaction.editReply({ embeds: [embed] });
+      await interaction.editReply({ content: null, embeds: [embed] });
 
       return randomFlag; // Rückgabe des aktuellen Flags
     };
