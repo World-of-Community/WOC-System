@@ -115,11 +115,11 @@ const pingMessages = [
 // MongoDB
 
 mongoose.connection.on('connected', () => {
-    console.log('Connected to MongoDB!');
+    console.log('Verbunden mit MongoDB!');
 });
 
 mongoose.connection.on('error', (err) => {
-    console.error(`Connection error: ${err.message}`);
+    console.error(`Verbindungsfehler: ${err.message}`);
 });
 
 
