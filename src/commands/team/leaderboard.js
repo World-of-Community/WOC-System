@@ -77,7 +77,7 @@ module.exports = {
                 .setTimestamp();
 
             // Set the first-place winner's avatar as thumbnail
-            if (topMessagesMembers[0]?.member) {
+            if (topMessagesMembers[0] && topMessagesMembers[0].member && typeof topMessagesMembers[0].member.displayAvatarURL === 'function') {
                 messageEmbed.setThumbnail(topMessagesMembers[0].member.displayAvatarURL({ dynamic: true }));
             }
 
@@ -90,7 +90,7 @@ module.exports = {
                 .setTimestamp();
 
             // Set the first-place winner's avatar as thumbnail for voice leaderboard
-            if (topVoiceMembers[0]?.member) {
+            if (topVoiceMembers[0] && topVoiceMembers[0].member && typeof topVoiceMembers[0].member.displayAvatarURL === 'function') {
                 voiceEmbed.setThumbnail(topVoiceMembers[0].member.displayAvatarURL({ dynamic: true }));
             }
 
