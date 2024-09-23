@@ -1,7 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
-// mit einer gewissen anzeigegröße der flagge im embed
-
 // Liste aller Flaggen der Welt
 const flags = [
   { country: 'Deutschland', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png' },
@@ -27,46 +25,57 @@ const flags = [
 ];
 
 module.exports = {
-    data: new SlashCommandBuilder()
-      .setName('flaggenquiz')
-      .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt')
-      .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true)),
-  
-    async execute(interaction) {
-      const channel = interaction.options.getChannel('kanal');
-  
-      await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true });
-  
-      const sendNewFlag = async () => {
-        const randomFlag = flags[Math.floor(Math.random() * flags.length)];
+  data: new SlashCommandBuilder()
+    .setName('flaggenquiz')
+    .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt')
+    .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true)),
+
+  async execute(interaction) {
+    const channel = interaction.options.getChannel('kanal');
+
+    await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true });
+
+    const sendNewFlag = async () => {
+      const randomFlag = flags[Math.floor(Math.random() * flags.length)];
+      
+      console.log(`Sende Flagge für: ${randomFlag.country} (${randomFlag.imageUrl})`); // Debugging-Ausgabe
+
+      const embed = new EmbedBuilder()
+        .setTitle('Flaggenquiz')
+        .setDescription('Welche Flagge ist das? Schreib den Ländernamen in den Chat!')
+        .setImage(randomFlag.imageUrl)
+        .setColor('Random');
+
+      const message = await channel.send({ embeds: [embed] });
+
+      return { flag: randomFlag, message };
+    };
+
+    let currentFlag = await sendNewFlag();
+
+    const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
+
+    const collector = channel.createMessageCollector({ filter });
+
+    collector.on('collect', async msg => {
+      if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
+        await msg.react('✅');
+        await channel.send(`> Richtig! Das ist die Flagge von **${currentFlag.flag.country}.**`);
         
-        //console.log(`Sende Flagge für: ${randomFlag.country} (${randomFlag.imageUrl})`); // Debugging-Ausgabe
-  
-        const embed = new EmbedBuilder()
+        // Aktualisiere das Embed
+        const newFlag = flags[Math.floor(Math.random() * flags.length)];
+        currentFlag.flag = newFlag;
+      
+        const newEmbed = new EmbedBuilder()
           .setTitle('Flaggenquiz')
           .setDescription('Welche Flagge ist das? Schreib den Ländernamen in den Chat!')
-          .setImage(randomFlag.imageUrl)
+          .setImage(newFlag.imageUrl)
           .setColor('Random');
-  
-        const message = await channel.send({ embeds: [embed] });
-  
-        return { flag: randomFlag, message };
-      };
-  
-      let currentFlag = await sendNewFlag();
-  
-      const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
-  
-      const collector = channel.createMessageCollector({ filter });
-  
-      collector.on('collect', async msg => {
-        if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
-          await msg.react('✅');
-          await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.flag.country}.`);
-          currentFlag = await sendNewFlag();
-        } else {
-          await msg.react('❌');
-        }
-      });
-    },
-  };
+      
+        await currentFlag.message.edit({ embeds: [newEmbed] }); // Aktuellen Embed aktualisieren
+      } else {
+        await msg.react('❌');
+      }
+    });
+  },
+};
