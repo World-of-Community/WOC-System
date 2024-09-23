@@ -55,26 +55,31 @@ module.exports = {
 
     const collector = channel.createMessageCollector({ filter });
 
+    // Funktion zum Löschen aller Nachrichten im Kanal
+    const deleteAllMessages = async () => {
+      const fetchedMessages = await channel.messages.fetch({ limit: 100 });
+      if (fetchedMessages.size > 0) {
+        await channel.bulkDelete(fetchedMessages, true).catch(console.error);
+      }
+    };
+
+    // Starten Sie eine Schleife, um alle 5 Sekunden Nachrichten zu löschen
+    const messageDeletionInterval = setInterval(deleteAllMessages, 5000);
+
     collector.on('collect', async msg => {
       if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
         await msg.react('✅');
         await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.flag.country}.`);
 
-        // Alle Nachrichten im Kanal löschen
-        const fetchedMessages = await channel.messages.fetch({ limit: 100 });
-        await channel.bulkDelete(fetchedMessages, true);
-
         // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
         const timestampNow = Math.floor(Date.now() / 1000); // Aktueller Unix-Timestamp
         const timestampAfter5Seconds = timestampNow + 5; // 5 Sekunden hinzufügen
 
-        // Unix-Zeitstempel erstellen, der 5 Sekunden in der Zukunft liegt
         const waitingMessage = await channel.send(`Bitte warte... <t:${timestampAfter5Seconds}:R> geht es weiter.`);
 
         // Lösche die Warte-Nachricht nach 5 Sekunden
         await new Promise(resolve => setTimeout(resolve, 5000));
         await waitingMessage.delete();
-
 
         // Neues Flaggen-Embed senden
         currentFlag = await sendNewFlag();
@@ -82,5 +87,10 @@ module.exports = {
         await msg.react('❌');
       }
     });
+
+    collector.on('end', () => {
+      clearInterval(messageDeletionInterval); // Stoppe das Nachrichtenlöschintervall, wenn der Collector endet
+    });
   },
 };
+
