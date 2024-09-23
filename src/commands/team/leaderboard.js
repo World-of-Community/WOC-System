@@ -20,9 +20,15 @@ module.exports = {
         .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌'),
 
     async execute(interaction) {
-        const channel = interaction.channel;
 
-        await interaction.reply({ content: '> `⏳` » Leaderboard wird jede Minute aktualisiert.', ephemeral: true });
+        // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
+        const timestampNow = Math.floor(Date.now() / 1000); // Aktueller Unix-Timestamp
+        const timestampAfter5Seconds = timestampNow + 5; // 5 Sekunden hinzufügen
+
+        await interaction.reply({ content: `> \`⏳\` » Bitte **5 Sekunden** warten, während das Leaderboard generiert wird. (Ablaufzeit: <t:${timestampAfter5Seconds}:R>)`, ephemeral: true });
+
+        // 5 Sekunden warten
+        await new Promise(resolve => setTimeout(resolve, 5000));
 
         let leaderboardMessage; // Hier wird die Variable definiert
 
@@ -63,6 +69,10 @@ module.exports = {
 
                 const currentMonth = getCurrentMonth();
 
+                const InfoEmbed = new EmbedBuilder()
+                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten die <@&1150753421339676722>-Rolle\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (/emoji)\n\n> `📌` » Das Leaderboard wird Monatlich zurück gesetzt.')
+                    .setColor('Orange')
+
                 const messageEmbed = new EmbedBuilder()
                     .setAuthor({ name: `${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
                     .setDescription(messageLeaderboardText)
@@ -90,7 +100,7 @@ module.exports = {
                 if (leaderboardMessage) {
                     await leaderboardMessage.edit({ embeds: [messageEmbed, voiceEmbed] });
                 } else {
-                    leaderboardMessage = await channel.send({ embeds: [messageEmbed, voiceEmbed] });
+                    leaderboardMessage = await channel.send({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
                 }
 
             } catch (error) {
