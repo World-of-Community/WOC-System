@@ -70,7 +70,7 @@ module.exports = {
                 const currentMonth = getCurrentMonth();
 
                 const InfoEmbed = new EmbedBuilder()
-                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten die <@&1150753421339676722>-Rolle\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (/emoji)\n\n> `📌` » Das Leaderboard wird Monatlich zurück gesetzt.')
+                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten\ndie <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n\n> `📌` » Das Leaderboard wird Monatlich zurück gesetzt.')
                     .setColor('Orange')
 
                 const messageEmbed = new EmbedBuilder()
@@ -98,7 +98,7 @@ module.exports = {
 
                 // Bearbeite beide Embeds zusammen oder sende sie, wenn sie noch nicht existieren
                 if (leaderboardMessage) {
-                    await leaderboardMessage.edit({ embeds: [messageEmbed, voiceEmbed] });
+                    await leaderboardMessage.edit({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
                 } else {
                     leaderboardMessage = await interaction.channel.send({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
                 }
