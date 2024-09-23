@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
 const cron = require('node-cron');
 const userdb = require('../../../Datenbank/userdb');
-const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
 // Reset stats every month on the 1st at midnight
 cron.schedule('0 0 1 * *', async () => {
@@ -110,7 +109,7 @@ module.exports = {
             const top3Users = [...topMessages.slice(0, 3), ...topVoice.slice(0, 3)];
             const uniqueTop3Users = Array.from(new Set(top3Users.map(user => user.userId)));
 
-            const role = interaction.guild.roles.cache.get('1150753421339676722');
+            const role = interaction.guild.roles.cache.get('1150753421339676722'); // Minenarbeiter (Event) role ID
             if (!role) {
                 console.error(`Die Rolle mit der ID ${RoleID} konnte nicht gefunden werden.`);
                 return;
