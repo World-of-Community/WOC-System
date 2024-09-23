@@ -76,7 +76,7 @@ module.exports = {
                 .setAuthor({ name: `${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
                 .setDescription(messageLeaderboardText)
                 .setColor('Blurple')
-                .setFooter({ text: 'Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png?ex=66f26c96&is=66f11b16&hm=a991f2c26a109a792031c1943b24fb19236eac65b72fc10c938bc5a0f68760e1&' })
+                .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png?ex=66f26c96&is=66f11b16&hm=a991f2c26a109a792031c1943b24fb19236eac65b72fc10c938bc5a0f68760e1&' })
                 .setTimestamp();
 
             if (topMessagesMembers[0] && topMessagesMembers[0].member && typeof topMessagesMembers[0].member.displayAvatarURL === 'function') {
@@ -87,7 +87,7 @@ module.exports = {
                 .setAuthor({ name: `${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
                 .setDescription(voiceLeaderboardText)
                 .setColor('Blue')
-                .setFooter({ text: 'Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png?ex=66f26cd7&is=66f11b57&hm=3bd3c63df44cf64e6461070433b6b001300a43c9567847f007c9f848817fb963&' })
+                .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png?ex=66f26cd7&is=66f11b57&hm=3bd3c63df44cf64e6461070433b6b001300a43c9567847f007c9f848817fb963&' })
                 .setTimestamp();
 
             if (topVoiceMembers[0] && topVoiceMembers[0].member && typeof topVoiceMembers[0].member.displayAvatarURL === 'function') {
