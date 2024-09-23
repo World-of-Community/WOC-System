@@ -77,13 +77,10 @@ module.exports = {
                 userGeschlecht = roleGeschlecht[baseRoleName];
             }
             if (roleGames[baseRoleName]) {
-                roleGamesList.push(roleGames[baseRoleName]);
+                roleGamesList.push(`${role}`); // Spiele-Rollen als Erwähnung
             }
             if (rolePings[baseRoleName]) {
-                rolePingsList.push(rolePings[baseRoleName]);
-            }
-            if (rolePings[baseRoleName]) {
-                rolePingsList.push(`${role}`); // Hier werden die Rollen als Erwähnung formatiert
+                rolePingsList.push(`${role}`); // Ping-Rollen als Erwähnung
             }
         });
 
