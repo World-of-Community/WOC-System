@@ -24,6 +24,10 @@ module.exports = {
 
     async execute(interaction) {
         try {
+            // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
+            const timestampNow = Math.floor(Date.now() / 1000); // Aktueller Unix-Timestamp
+            const timestampAfter5Seconds = timestampNow + 5; // 5 Sekunden hinzufügen
+            
             await interaction.reply({ content: `> \`⏳\` » Bitte **5 Sekunden** warten, während das Leaderboard generiert wird. (Ablaufzeit: <t:${timestampAfter5Seconds}:R>`, ephemeral: true });
 
             // 5 Sekunden warten
