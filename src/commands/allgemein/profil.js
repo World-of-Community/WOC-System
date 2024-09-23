@@ -82,6 +82,9 @@ module.exports = {
             if (rolePings[baseRoleName]) {
                 rolePingsList.push(rolePings[baseRoleName]);
             }
+            if (rolePings[baseRoleName]) {
+                rolePingsList.push(`<@&${role.id}>`); // Hier werden die Rollen als Erwähnung formatiert
+            }
         });
 
         // Hole die Einladungen des Mitglieds
