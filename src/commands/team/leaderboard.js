@@ -100,7 +100,7 @@ module.exports = {
                 if (leaderboardMessage) {
                     await leaderboardMessage.edit({ embeds: [messageEmbed, voiceEmbed] });
                 } else {
-                    leaderboardMessage = await channel.send({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
+                    leaderboardMessage = await interaction.channel.send({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
                 }
 
             } catch (error) {
