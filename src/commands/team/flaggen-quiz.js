@@ -31,7 +31,7 @@ module.exports = {
     .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt'),
 
   async execute(interaction) {
-    await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true }); // Zuerst eine Antwort senden
+    await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...' }); // Zuerst eine Antwort senden
 
     const sendNewFlag = async () => {
       const randomFlag = flags[Math.floor(Math.random() * flags.length)];
