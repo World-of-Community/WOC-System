@@ -84,6 +84,15 @@ module.exports = {
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png?ex=66f26cd7&is=66f11b57&hm=3bd3c63df44cf64e6461070433b6b001300a43c9567847f007c9f848817fb963&' })
                     .setTimestamp();
 
+                // Füge das Thumbnail für den ersten Platz hinzu
+                if (topMessagesMembers[0]?.member) {
+                    messageEmbed.setThumbnail(topMessagesMembers[0].member.displayAvatarURL({ dynamic: true }));
+                }
+
+                if (topVoiceMembers[0]?.member) {
+                    voiceEmbed.setThumbnail(topVoiceMembers[0].member.displayAvatarURL({ dynamic: true }));
+                }
+
                 // Wenn die Nachrichten bereits existieren, bearbeite sie; andernfalls sende sie
                 if (messageEmbedMessage) {
                     await messageEmbedMessage.edit({ embeds: [messageEmbed] });
