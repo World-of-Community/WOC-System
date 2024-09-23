@@ -31,7 +31,7 @@ module.exports = {
             await interaction.reply({ content: `> \`⏳\` » Bitte **5 Sekunden** warten, während das Leaderboard generiert wird. (Ablaufzeit: <t:${timestampAfter5Seconds}:R>)`, ephemeral: true });
 
             // 5 Sekunden warten
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            // await new Promise(resolve => setTimeout(resolve, 5000));
 
             const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
             const topVoice = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(10);
@@ -57,7 +57,7 @@ module.exports = {
                 .map((user, index) => {
                     const memberMention = user.member ? user.member.toString() : 'Unbekannt';
                     // const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
-                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.username}**\n> \`${user.messages} Nachrichten\``;
+                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.messages} Nachrichten\``;
                 })
                 .join('\n').slice(0, 1024);
 
@@ -66,7 +66,7 @@ module.exports = {
                 .map((user, index) => {
                     const memberMention = user.member ? user.member.toString() : 'Unbekannt';
                     // const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
-                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.username}**\n> \`${user.timeText}\``;
+                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.timeText}\``;
                 })
                 .join('\n').slice(0, 1024);
 
