@@ -55,7 +55,7 @@ module.exports = {
                 .map((user, index) => {
                     const memberMention = user.member ? user.member.toString() : 'Unbekannt';
                     const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
-                    return `${positionEmojis[index]} ${memberMention}${nickname}\n> \`${user.messages} Nachrichten\``;
+                    return `${positionEmojis[index]} » ${memberMention} - **${nickname}**\n> \`${user.messages} Nachrichten\``;
                 })
                 .join('\n').slice(0, 1024);
 
@@ -64,7 +64,7 @@ module.exports = {
                 .map((user, index) => {
                     const memberMention = user.member ? user.member.toString() : 'Unbekannt';
                     const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
-                    return `${positionEmojis[index]} ${memberMention}${nickname}\n> \`${user.timeText}\``;
+                    return `${positionEmojis[index]} » ${memberMention} - **${nickname}**\n> \`${user.timeText}\``;
                 })
                 .join('\n').slice(0, 1024);
 
