@@ -52,8 +52,8 @@ module.exports = {
             const messageLeaderboardText = topMessagesMembers
                 .filter(user => user.member)
                 .map((user, index) => {
-                    const memberMention = user.member ? user.member.toString() : 'Unbekannt';
-                    return `${positionEmojis[index]} ${memberMention}\n> \`${user.messages} Nachrichten\``;
+                    const member = user.member ? user.member.toString() : 'Unbekannt';
+                    return `${positionEmojis[index]} ${member}\n> \`${user.messages} Nachrichten\``;
                 })
                 .join('\n').slice(0, 1024);
 
@@ -61,8 +61,8 @@ module.exports = {
             const voiceLeaderboardText = topVoiceMembers
                 .filter(user => user.member)
                 .map((user, index) => {
-                    const memberMention = user.member ? user.member.toString() : 'Unbekannt';
-                    return `${positionEmojis[index]} ${memberMention}\n> \`${user.timeText}\``;
+                    const member = user.member ? user.member.toString() : 'Unbekannt';
+                    return `${positionEmojis[index]} ${member}\n> \`${user.timeText}\``;
                 })
                 .join('\n').slice(0, 1024);
 
