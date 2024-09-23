@@ -73,9 +73,6 @@ module.exports = {
             }
             const count = serverData.partner.partners.length;
 
-            //const category = guild.channels.cache.get('1230540006439915610');
-            //const channelCount = category ? category.children.size : 0;
-
             const channelCount = {
               '1230540716808343592': 0, // "gratis-spiele"
               '1230540230470144073': 0, // "gaming-news"
@@ -86,11 +83,13 @@ module.exports = {
             const category = guild.channels.cache.get('1230540006439915610');
 
             const totalChannels = category ? category.children.cache.size : 0;
+            const totalGameChannels = guild.channels.cache.filter(channel => channel.parentId === config.category5).size;
 
             await guild.channels.cache.get(config.category1).setName(`(🌍) - [INFOS] - (USER: ${memberCount})`)
             await guild.channels.cache.get(config.category2).setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembers})`)
             await guild.channels.cache.get(config.category3).setName(`(⚡) - [ADS] - (PARTNER: ${count})`)
             await guild.channels.cache.get(config.category4).setName(`(📰) - [NEWS] - (ABOS: ${totalChannels})`)
+            await guild.channels.cache.get(config.category5).setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
         }, 30000);
 
     // Hauptchat Beschreibung
