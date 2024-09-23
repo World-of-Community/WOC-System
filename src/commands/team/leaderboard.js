@@ -99,7 +99,7 @@ module.exports = {
             }
 
             // Rolle nur zuweisen, wenn interaction.guild.roles definiert ist
-            const role = interaction.guild.roles?.cache.get('1150753421339676722');
+            const role = interaction.guild.roles.cache.get('1150753421339676722'); // Minenarbeiter (Event) role ID
             if (!role) {
                 console.error(`Die Rolle mit der ID ${RoleID} konnte nicht gefunden werden.`);
                 await interaction.editReply({ content: '> `❌` » Fehler: Rolle konnte nicht gefunden werden.', ephemeral: true });
@@ -108,12 +108,6 @@ module.exports = {
 
             const top3Users = [...topMessages.slice(0, 3), ...topVoice.slice(0, 3)];
             const uniqueTop3Users = Array.from(new Set(top3Users.map(user => user.userId)));
-
-            const role = interaction.guild.roles.cache.get('1150753421339676722'); // Minenarbeiter (Event) role ID
-            if (!role) {
-                console.error(`Die Rolle mit der ID ${RoleID} konnte nicht gefunden werden.`);
-                return;
-            }
 
             for (const userId of uniqueTop3Users) {
                 const member = await interaction.guild.members.fetch(userId);
