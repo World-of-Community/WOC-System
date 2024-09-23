@@ -25,46 +25,46 @@ const flags = [
 ];
 
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('flaggenquiz')
-    .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt')
-    .addChannelOption(option =>  option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true)),
-
-  async execute(interaction) {
-    const channel = interaction.options.getChannel('kanal');
-
-    await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true }); // Zuerst eine Antwort senden
-
-    const sendNewFlag = async () => {
-      const randomFlag = flags[Math.floor(Math.random() * flags.length)];
-
-      const embed = new EmbedBuilder()
-        .setTitle('Flaggenquiz')
-        .setDescription('Welche Flagge ist das? Schreib den Ländernamen in den Chat!')
-        .setImage(randomFlag.imageUrl)
-        .setColor('Random');
-
-      // Senden des Embeds an den angegebenen Kanal
-      const message = await interaction.channel.send({ embeds: [embed] });
-
-      return { flag: randomFlag, message }; // Rückgabe des aktuellen Flags und der Nachricht
-    };
-
-    let currentFlag = await sendNewFlag(); // Senden des ersten Embeds
-
-    // Filter für Nachrichten im angegebenen Kanal, die der Benutzer eingibt
-    const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
-
-    const collector = channel.createMessageCollector({ filter });
-
-    collector.on('collect', async msg => {
-      if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
-        await msg.react('✅');
-        await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.flag.country}.`);
-        currentFlag = await sendNewFlag(); // Senden eines neuen Embeds
-      } else {
-        await msg.react('❌'); // Falsche Antwort, der Bot reagiert mit ❌
-      }
-    });
-  },
-};
+    data: new SlashCommandBuilder()
+      .setName('flaggenquiz')
+      .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt')
+      .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true)),
+  
+    async execute(interaction) {
+      const channel = interaction.options.getChannel('kanal');
+  
+      await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true });
+  
+      const sendNewFlag = async () => {
+        const randomFlag = flags[Math.floor(Math.random() * flags.length)];
+        
+        console.log(`Sende Flagge für: ${randomFlag.country} (${randomFlag.imageUrl})`); // Debugging-Ausgabe
+  
+        const embed = new EmbedBuilder()
+          .setTitle('Flaggenquiz')
+          .setDescription('Welche Flagge ist das? Schreib den Ländernamen in den Chat!')
+          .setImage(randomFlag.imageUrl)
+          .setColor('Random');
+  
+        const message = await channel.send({ embeds: [embed] });
+  
+        return { flag: randomFlag, message };
+      };
+  
+      let currentFlag = await sendNewFlag();
+  
+      const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
+  
+      const collector = channel.createMessageCollector({ filter });
+  
+      collector.on('collect', async msg => {
+        if (msg.content.toLowerCase() === currentFlag.flag.country.toLowerCase()) {
+          await msg.react('✅');
+          await channel.send(`Richtig! Das ist die Flagge von ${currentFlag.flag.country}.`);
+          currentFlag = await sendNewFlag();
+        } else {
+          await msg.react('❌');
+        }
+      });
+    },
+  };
