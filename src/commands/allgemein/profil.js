@@ -27,12 +27,12 @@ module.exports = {
             'Divers': ':heavy_equals_sign:',
         };
 
-        //const NationalitätRoleIds = [
-        //    '848163744197771276', // Deutschland
-        //    '848163749637914674', // Österreich
-        //    '848163753139896330', // Schweiz
-        //    '1127923622653210654', // England
-        //];
+        const NationalitätRoleIds = [
+            '848163744197771276', // Deutschland
+            '848163749637914674', // Österreich
+            '848163753139896330', // Schweiz
+            '1127923622653210654', // England
+        ];
 
         const GeschlechtRoleIds = [
             '848173921630945320', // Männlich
