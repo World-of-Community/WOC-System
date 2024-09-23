@@ -93,12 +93,12 @@ module.exports = {
                         .setFooter({ text: `Maximale Server-Partner sind (**15**)`, iconURL: `${interaction.guild.iconURL()}` })
 
                         if(kategorie === "Kooperation") {
-                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
+                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
                             } else {
                                 newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                             }
                                     if(kategorie === "Normale Partner") {
-                                        newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
+                                        newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
                                         } else {
                                             newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });
                                         }
@@ -125,12 +125,12 @@ module.exports = {
                             .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
                             if(kategorie === "Kooperation") {
-                                newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
+                                newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
                                 } else {
                                     newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
                                         if(kategorie === "Normale Partner") {
-                                            newEmbed.addFields({ name: kategorie, value: `1. [${name}](${invite}) (${owner})`, inline: false });
+                                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
                                             } else {
                                                 newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                             }
@@ -250,7 +250,7 @@ module.exports = {
                     if (cooperationPartners.length > 0) {
                         newEmbed.addFields({
                             name: 'Kooperation',
-                            value: cooperationPartners.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n'),
+                            value: cooperationPartners.map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n'),
                             inline: false,
                         });
                     } else {
@@ -260,7 +260,7 @@ module.exports = {
                     if (normalPartners.length > 0) {
                         newEmbed.addFields({
                             name: 'Normale Partner',
-                            value: normalPartners.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n'),
+                            value: normalPartners.map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n'),
                             inline: false,
                         });
                     } else {
