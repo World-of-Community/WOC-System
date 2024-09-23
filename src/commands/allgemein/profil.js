@@ -69,8 +69,8 @@ module.exports = {
             if (role.name === '@everyone') return;
         
             const baseRoleName = getBaseRoleName(role.name);
-        
-            console.log(`Rolle gefunden: ${baseRoleName}`); // Debug-Ausgabe der gefundenen Rolle
+
+            console.log(`Überprüfe Rolle: ${role.name} | BaseName: ${baseRoleName}`); // Debug: Rolle und Basisname anzeigen
         
             if (roleNationalität[baseRoleName]) {
                 userNationalität = roleNationalität[baseRoleName];
@@ -79,7 +79,10 @@ module.exports = {
                 userGeschlecht = roleGeschlecht[baseRoleName];
             }
             if (roleGames[baseRoleName]) {
+                console.log(`Spiel gefunden: ${baseRoleName}`); // Debug: Zeigt an, wenn eine Spielrolle gefunden wird
                 roleGamesList.push(`${role}`); // Spiele-Rollen als Erwähnung
+            } else {
+                console.log(`Spielrolle nicht erkannt: ${baseRoleName}`); // Debug: Zeigt an, wenn eine Rolle nicht im Vergleich gefunden wird
             }
             if (rolePings[baseRoleName]) {
                 rolePingsList.push(`${role}`); // Ping-Rollen als Erwähnung
