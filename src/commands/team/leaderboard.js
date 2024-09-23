@@ -1,23 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
 const cron = require('node-cron');
 const userdb = require('../../../Datenbank/userdb');
-
-// Reset stats every month on the 1st at midnight
-cron.schedule('0 0 1 * *', async () => {
-    await userdb.updateMany({}, { $set: { messages: 0, voiceTime: 0 } });
-    console.log('Die Leaderboard-Statistiken wurden für den neuen Monat zurückgesetzt.');
-});
-
-function getCurrentMonth() {
-    const monthNames = [
-        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
-    ];
-    const now = new Date();
-    return monthNames[now.getMonth()];
-}
-
-const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
+const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -53,7 +37,7 @@ module.exports = {
                 .map((user, index) => {
                     const memberMention = user.member ? user.member.toString() : 'Unbekannt';
                     const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
-                    return `${positionEmojis[index]} ${memberMention} - **${nickname}**\n> \`${user.messages} Nachrichten\``;
+                    return `${positionEmojis[index]} ${memberMention}${nickname}\n> \`${user.messages} Nachrichten\``;
                 })
                 .join('\n').slice(0, 1024);
 
@@ -62,7 +46,7 @@ module.exports = {
                 .map((user, index) => {
                     const memberMention = user.member ? user.member.toString() : 'Unbekannt';
                     const nickname = user.member.nickname ? ` (${user.member.nickname})` : '';
-                    return `${positionEmojis[index]} ${memberMention} - **${nickname}**\n> \`${user.timeText}\``;
+                    return `${positionEmojis[index]} ${memberMention}${nickname}\n> \`${user.timeText}\``;
                 })
                 .join('\n').slice(0, 1024);
 
@@ -94,14 +78,13 @@ module.exports = {
 
             // Überprüfe, ob interaction.guild existiert
             if (!interaction.guild) {
-                await interaction.editReply({ content: '> `❌` » Fehler: Server nicht gefunden.', ephemeral: true });
+                await interaction.editReply({ content: '> `❌` » Fehler: Gilde nicht gefunden.', ephemeral: true });
                 return;
             }
 
-            // Rolle nur zuweisen, wenn interaction.guild.roles definiert ist
-            const role = interaction.guild.roles.cache.get('1150753421339676722'); // Minenarbeiter (Event) role ID
+            // Überprüfe, ob die Rolle existiert
+            const role = interaction.guild.roles?.cache.get(RoleID);
             if (!role) {
-                console.error(`Die Rolle mit der ID ${RoleID} konnte nicht gefunden werden.`);
                 await interaction.editReply({ content: '> `❌` » Fehler: Rolle konnte nicht gefunden werden.', ephemeral: true });
                 return;
             }
@@ -109,17 +92,18 @@ module.exports = {
             const top3Users = [...topMessages.slice(0, 3), ...topVoice.slice(0, 3)];
             const uniqueTop3Users = Array.from(new Set(top3Users.map(user => user.userId)));
 
+            // Rolle zuweisen und entfernen
             for (const userId of uniqueTop3Users) {
                 const member = await interaction.guild.members.fetch(userId);
-                if (!member.roles.cache.has('1150753421339676722')) {
-                    await member.roles.add('1150753421339676722');
+                if (member && !member.roles.cache.has(RoleID)) {
+                    await member.roles.add(RoleID);
                 }
             }
 
             const allMembersWithRole = role.members;
             allMembersWithRole.forEach(async (member) => {
                 if (!uniqueTop3Users.includes(member.id)) {
-                    await member.roles.remove('1150753421339676722');
+                    await member.roles.remove(RoleID);
                 }
             });
 
@@ -129,3 +113,4 @@ module.exports = {
         }
     }
 };
+
