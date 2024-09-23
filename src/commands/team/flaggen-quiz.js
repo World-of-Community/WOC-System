@@ -64,15 +64,15 @@ module.exports = {
         const fetchedMessages = await channel.messages.fetch({ limit: 100 });
         await channel.bulkDelete(fetchedMessages, true);
 
-        // Verzögerung von 3 Sekunden (3000 Millisekunden)
-        await new Promise(resolve => setTimeout(resolve, 3000)); // Warte 3 Sekunden
+        // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
+        const timestampNow = Math.floor(Date.now() / 1000); // Aktueller Unix-Timestamp
+        const timestampAfter5Seconds = timestampNow + 5; // 5 Sekunden hinzufügen
 
         // Unix-Zeitstempel erstellen, der 5 Sekunden in der Zukunft liegt
-        const unixTimestampFuture = Math.floor(Date.now() / 1000) + 5; // Aktueller Unix-Zeitstempel + 5 Sekunden
-        const waitingMessage = await channel.send(`Bitte warte... ${unixTimestampFuture} geht es weiter.`);
+        const waitingMessage = await channel.send(`Bitte warte... <t:${timestampAfter5Seconds}:R> geht es weiter.`);
 
         // Lösche die Warte-Nachricht nach 5 Sekunden
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Warte 5 Sekunden
+        await new Promise(resolve => setTimeout(resolve, 5000));
         await waitingMessage.delete();
 
 
