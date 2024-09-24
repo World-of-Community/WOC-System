@@ -96,7 +96,7 @@ module.exports = {
         const hasTeamRole = TeamRoleIds.some(roleId => {
             const role = member.roles.cache.get(roleId); // Rolle abrufen
             if (role) {
-                teamRoleMention = `${roleId}`; // Rolle als Erwähnung speichern
+                teamRoleMention = `<@&${roleId}>`; // Rolle als Erwähnung speichern
                 return true;
             }
             return false;
@@ -104,7 +104,7 @@ module.exports = {
         const hasMemberRole = MitgliederRoleIds.some(roleId => {
             const role = member.roles.cache.get(roleId); // Rolle abrufen
             if (role) {
-                memberRoleMention = `${roleId}`; // Rolle als Erwähnung speichern
+                memberRoleMention = `<@&${roleId}>`; // Rolle als Erwähnung speichern
                 return true;
             }
             return false;
