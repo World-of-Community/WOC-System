@@ -53,12 +53,10 @@ module.exports = {
         await msg.react('✅');
         const correctMessage = await channel.send(`Richtig! Das ist die Flagge von **${currentFlag.country}.**`);
 
-        setTimeout(async () => {
-          await correctMessage.delete();
-        }, 5000);
-
-        // Nachricht des Benutzers löschen (richtige Antwort)
+        // Antwortnachricht des Nutzers nach 5 Sekunden löschen
+        await new Promise(resolve => setTimeout(resolve, 5000));
         await msg.delete();
+        await correctMessage.delete(); // Korrektnachricht nach 5 Sekunden löschen
 
         const timestampNow = Math.floor(Date.now() / 1000);
         const timestampAfter5Seconds = timestampNow + 5;
