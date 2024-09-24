@@ -57,6 +57,9 @@ module.exports = {
           await correctMessage.delete();
         }, 5000);
 
+        // Nachricht des Benutzers löschen (richtige Antwort)
+        await msg.delete();
+
         const timestampNow = Math.floor(Date.now() / 1000);
         const timestampAfter5Seconds = timestampNow + 5;
 
