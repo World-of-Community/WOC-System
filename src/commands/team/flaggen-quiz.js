@@ -106,7 +106,7 @@ module.exports = {
     const channel = interaction.options.getChannel('kanal');
     const currentTime = Math.floor(Date.now() / 1000); // Aktuelle Zeit in Unix-Timestamp
     const timestampAfter5Seconds = currentTime + 5; // Zeit in 5 Sekunden
-    await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz... **<t:${timestampAfter5Seconds}:R>**', ephemeral: true });
+    await interaction.reply({ content: `> \`⏰\` » Lade das Flaggenquiz... **<t:${timestampAfter5Seconds}:R>**`, ephemeral: true });
 
     let currentFlagMessage;
 
