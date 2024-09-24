@@ -142,8 +142,6 @@ module.exports = {
     // Button Interaktions-Handler
     const filter = (interaction) => interaction.customId === 'skip_flag' && interaction.user.id === channel.author.id;
 
-    const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
-
     const collector = channel.createMessageCollector({ filter });
 
     collector.on('collect', async msg => {
