@@ -146,6 +146,16 @@ module.exports = {
 
     collector.on('collect', async (i) => {
       await i.deferUpdate(); // Interaktion aufschieben, um Zeitüberschreitungen zu vermeiden
+      
+      // Nachricht senden, dass das Quiz übersprungen wurde
+      const skipMessage = await channel.send(`Das Flaggenquiz wurde von ${i.user} übersprungen.`);
+
+      // Nachricht nach 5 Sekunden löschen
+      setTimeout(async () => {
+        await skipMessage.delete();
+      }, 5000);
+
+      // Neue Flagge anzeigen
       currentFlag = await sendNewFlag(); // Embed bearbeiten und neue Flagge anzeigen
     });
 
