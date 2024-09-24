@@ -4,6 +4,7 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('disco
 let countingChannelId = null;
 let currentCount = 0;
 let lastUserId = null;
+let highestCount = 0; // Track the highest count so far
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,7 +24,7 @@ module.exports = {
         // Inform the user about the counting game
         const countingEmbed = new EmbedBuilder()
             .setTitle('`🔢` » Zahlen Spiel Information')
-            .setDescription('Hier sind alle Informationen für das Zählspiel:\n\n`1️⃣` » Beginne das Zählen mit der Zahl **1**.\n`🛑` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.')
+            .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **${highestCount}**`)
             .setColor('Blurple')
             .setFooter({ text: `» ${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
             .setTimestamp();
