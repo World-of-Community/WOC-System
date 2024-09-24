@@ -117,13 +117,13 @@ module.exports = {
         .setDescription(`\`🚩\` » Welche Flagge ist das?\n\n\`💡\` » Tipp: Der Name des Landes beginnt mit **${firstLetterHint}**.\n\n\`✍️\` » Schreibe den Namen der Flagge in den Chat!`)
         .setImage(randomFlag.imageUrl)
         .setColor('Random')
-        .setFooter({ text: 'Benutze den Button, um die Flagge zu überspringen.' });
+        .setFooter({ text: '» Benutze den Button, um die Flagge zu überspringen.', iconURL: `${interaction.guild.iconURL()}` });
 
       const row = new ActionRowBuilder()
         .addComponents(
           new ButtonBuilder()
             .setCustomId('skip_flag')
-            .setLabel('Überspringen')
+            .setLabel('➡️ Überspringen')
             .setStyle(ButtonStyle.Secondary)
         );
 
