@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 
 // Liste aller Flaggen der Welt
 const flags = [
@@ -108,15 +108,31 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setDescription(`\`🚩\` » Welche Flagge ist das?\n\n\`💡\` » Tipp: Der Name des Landes beginnt mit **${firstLetterHint}**.`)
         .setImage(randomFlag.imageUrl)
-        .setColor('Random');
+        .setColor('Random')
+        .setFooter({ text: 'Benutze den Button, um die Flagge zu überspringen.' });
+
+      const row = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setCustomId('skip_flag')
+                .setLabel('Überspringen')
+                .setStyle(ButtonStyle.Secondary)
+        );
 
       if (currentFlagMessage) {
         await currentFlagMessage.delete();
       }
 
-      currentFlagMessage = await channel.send({ embeds: [embed] });
+      currentFlagMessage = await channel.send({ embeds: [embed], components: [row] });
 
       console.log(`Flagge gezeigt: ${randomFlag.country}, Bild-URL: ${randomFlag.imageUrl}`);
+
+      if (!interaction.isButton()) return; // Stelle sicher, dass es sich um einen Button handelt
+
+      if (interaction.customId === 'skip_flag') {
+          await interaction.deferUpdate(); // Defer die Interaktion, um die Warteschlange zu vermeiden
+          await sendNewFlag(interaction.channel); // Neue Flagge senden
+      }
 
       return randomFlag;
     };
