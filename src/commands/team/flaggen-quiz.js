@@ -131,6 +131,7 @@ module.exports = {
       if (currentFlagMessage) {
         await currentFlagMessage.edit({ embeds: [embed], components: [row] });
       } else {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 Sekunde Pause
         currentFlagMessage = await channel.send({ embeds: [embed], components: [row] });
       }
 
