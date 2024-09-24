@@ -148,6 +148,24 @@ module.exports = {
         await msg.react('✅');
         const correctMessage = await channel.send(`Richtig! Das ist die Flagge von **${currentFlag.country}.**`);
 
+        await interaction.deferUpdate(); // Interaktion defern
+
+        // Neue Flagge senden und Embed aktualisieren
+        const newRandomFlag = flags[Math.floor(Math.random() * flags.length)];
+        const newFirstLetterHint = newRandomFlag.country.charAt(0); // Erster Buchstabe als Tipp
+
+        // Neues Embed erstellen
+        const newEmbed = new EmbedBuilder()
+            .setDescription(`\`🚩\` » Welche Flagge ist das?\n\n\`💡\` » Tipp: Der Name des Landes beginnt mit **${newFirstLetterHint}**.`)
+            .setImage(newRandomFlag.imageUrl)
+            .setColor('Random')
+            .setFooter({ text: 'Benutze den Button, um die Flagge zu überspringen.' });
+
+        // Nachricht mit neuem Embed aktualisieren
+        await currentFlagMessage.edit({ embeds: [newEmbed] });
+
+        console.log(`Flagge gezeigt: ${newRandomFlag.country}, Bild-URL: ${newRandomFlag.imageUrl}`);
+
         // Antwortnachricht des Nutzers nach 5 Sekunden löschen
         await new Promise(resolve => setTimeout(resolve, 5000));
         await msg.delete();
