@@ -56,6 +56,9 @@ module.exports = {
       // Neue Flaggen-Nachricht senden und speichern
       currentFlagMessage = await channel.send({ embeds: [embed] });
 
+      // Log the current flag to the console
+      console.log(`Flagge gezeigt: ${randomFlag.country}, Bild-URL: ${randomFlag.imageUrl}`);
+
       return randomFlag; // Nur das randomFlag zurückgeben
     };
 
