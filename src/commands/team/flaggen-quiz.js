@@ -127,11 +127,13 @@ module.exports = {
             .setStyle(ButtonStyle.Secondary)
         );
 
+      // Wenn es bereits eine Nachricht gibt, bearbeiten wir diese anstelle einer neuen
       if (currentFlagMessage) {
-        await currentFlagMessage.delete();
+        await currentFlagMessage.edit({ embeds: [embed], components: [row] });
+      } else {
+        currentFlagMessage = await channel.send({ embeds: [embed], components: [row] });
       }
 
-      currentFlagMessage = await channel.send({ embeds: [embed], components: [row] });
       console.log(`Flagge gezeigt: ${randomFlag.country}, Bild-URL: ${randomFlag.imageUrl}`);
       return randomFlag;
     };
@@ -144,7 +146,7 @@ module.exports = {
 
     collector.on('collect', async (i) => {
       await i.deferUpdate(); // Interaktion aufschieben, um Zeitüberschreitungen zu vermeiden
-      currentFlag = await sendNewFlag(); // Neue Flagge senden
+      currentFlag = await sendNewFlag(); // Embed bearbeiten und neue Flagge anzeigen
     });
 
     // Nachrichten-Collector für das Erraten der Flagge
