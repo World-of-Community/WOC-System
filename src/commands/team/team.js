@@ -6,6 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('team')
         .setDescription('Team')
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
         .addSubcommand((command) =>
             command
                 .setName('urlaub')
@@ -13,13 +14,13 @@ module.exports = {
                 .addStringOption(option => option.setName('von').setDescription('Startdatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
                 .addStringOption(option => option.setName('bis').setDescription('Enddatum des Urlaubs (DD.MM.YYYY)').setRequired(true))
                 .addStringOption(option => option.setName('grund').setDescription('Grund des Urlaubs').setRequired(false))
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
         )
         .addSubcommand((command) =>
             command
                 .setName('meeting')
                 .setDescription('» Schau nach wann die Nächste Team-Besprechung stattfindet. 📣')
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
         ),
     
     async execute(interaction, client) {
