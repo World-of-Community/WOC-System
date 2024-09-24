@@ -21,7 +21,7 @@ module.exports = {
         // Reply to confirm the channel has been set
         await interaction.reply({ content: `> \`✅\` » Der Zählkanal wurde auf <#${countingChannelId}> eingestellt.`, ephemeral: true });
 
-        // Inform the user about the counting game
+        // Send the initial embed
         const countingEmbed = new EmbedBuilder()
             .setTitle('`🔢` » Zahlen Spiel Information')
             .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **${highestCount}**`)
@@ -29,9 +29,20 @@ module.exports = {
             .setFooter({ text: `» ${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
             .setTimestamp();
 
-        // Send the embed message and pin it
-        const embedMessage = await selectedChannel.send({ embeds: [countingEmbed] });
-        await embedMessage.pin(); // Pin the embed message
+        countingEmbedMessage = await selectedChannel.send({ embeds: [countingEmbed] });
+        await countingEmbedMessage.pin(); // Pin the embed message
+
+        // Update the embed every 30 minutes (1800000 milliseconds)
+        setInterval(async () => {
+            const updatedEmbed = new EmbedBuilder()
+                .setTitle('`🔢` » Zahlen Spiel Information')
+                .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **${highestCount}**`)
+                .setColor('Blurple')
+                .setFooter({ text: `» ${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
+                .setTimestamp();
+
+            await countingEmbedMessage.edit({ embeds: [updatedEmbed] });
+        }, 1800000); // 30 minutes interval
 
         // Create a message collector for the counting channel
         const filter = (m) => m.channel.id === countingChannelId && !m.author.bot;
@@ -50,6 +61,12 @@ module.exports = {
                         currentCount++;
                         lastUserId = message.author.id;
                         await message.react('✅');
+
+                        // Check if the current count is a new record
+                        if (currentCount > highestCount) {
+                            highestCount = currentCount;
+                            await selectedChannel.send(`> \`🎉\` » **Neuer Rekord!** ${message.member} hat die höchste Zahl **${highestCount}** erreicht!`);
+                        }
                     }
                 } else {
                     await message.react('❌');
