@@ -165,13 +165,16 @@ module.exports = {
 
     messageCollector.on('collect', async (msg) => {
       await msg.react('✅');
-      const correctMessage = await channel.send(`Richtig! Das ist die Flagge von **${currentFlag.country}**.`);
+      const correctMessage = await channel.send(`> \`✅\` » Richtig! Das ist die Flagge von **${currentFlag.country}**.`);
 
       // Nachrichten nach 5 Sekunden löschen
       setTimeout(async () => {
         await msg.delete();
         await correctMessage.delete();
-        const waitingMessage = await channel.send('Bitte warte... In 5 Sekunden geht es weiter.');
+        const currentTime = Math.floor(Date.now() / 1000); // Aktuelle Zeit in Unix-Timestamp
+        const timestampAfter5Seconds = currentTime + 5; // Zeit in 5 Sekunden
+
+        const waitingMessage = await channel.send(`> \`❗\` » Bitte warte... **<t:${timestampAfter5Seconds}:R>** geht es weiter.`);
         
         setTimeout(async () => {
           await waitingMessage.delete();
