@@ -125,6 +125,8 @@ module.exports = {
                         .setColor('Orange')
                         .setFooter({ text: `${interaction.guild.name} - Team Befehle`, iconURL: `${interaction.user.displayName()}` })
                         .setTimestamp();
+
+                    await interaction.reply({ embeds: [TeamHelpEmbed], ephemeral: true })
                 }
         }
     },
