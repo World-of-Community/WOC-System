@@ -37,6 +37,16 @@ module.exports = {
             '1263645368441241700', // Builder
         ];
 
+        const ExklusivRoleIds = [
+            '815920219247214644', // Creator
+            '862708375698538507', // VIP
+            '1249802165501952053', // Geldgeber (Sponsor)
+            '946040266266144768', // Kooperation
+            '1187144777595101225', // Server-Partner
+            '1150753421339676722', // Minenarbeiter (Event)
+            '1155235780541821009', // Designer
+        ]
+
         const MitgliederRoleIds = [
             '815921105407574056', // Supreme
             '917826787977871441', // Premium
@@ -90,6 +100,7 @@ module.exports = {
         let roleGamesList = [];
         let rolePingsList = [];
         let teamRoleMention = '';
+        let exklusivRoleMention = '';
         let memberRoleMention = '';
 
         // Überprüfe, ob das Mitglied eine Teamrolle hat und erstelle eine Liste für Mitgliederrollen
@@ -97,6 +108,14 @@ module.exports = {
             const role = member.roles.cache.get(roleId); // Rolle abrufen
             if (role) {
                 teamRoleMention = `<@&${roleId}>`; // Rolle als Erwähnung speichern
+                return true;
+            }
+            return false;
+        });
+        const hasExklusivRole = ExklusivRoleIds.some(roleId => {
+            const role = member.roles.cache.get(roleId); // Rolle abrufen
+            if (role) {
+                exklusivRoleMention = `<@&${roleId}>`; // Rolle als Erwähnung speichern
                 return true;
             }
             return false;
@@ -147,7 +166,7 @@ module.exports = {
         if (userData) {
             const embed = new EmbedBuilder()
                 .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
-                .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle')}\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
+                .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasMemberRole ? memberRoleMention : (hasExklusivRole ? exklusivRoleMention : 'Keine Rolle'))}\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
                 .setColor('Blurple')
                 .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
                 .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
