@@ -1,7 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
-// warte nachricht nach 5 sekunden löschen
-
 // Liste aller Flaggen der Welt
 const flags = [
   { country: 'Deutschland', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png' },
@@ -73,9 +71,12 @@ module.exports = {
         await msg.react('✅');
         const correctMessage = await channel.send(`Richtig! Das ist die Flagge von **${currentFlag.country}.**`);
 
-        // Warte-Nachricht nach 5 Sekunden löschen
+        // Löschen der Bestätigungsnachricht nach 5 Sekunden
         await new Promise(resolve => setTimeout(resolve, 5000));
-        await correctMessage.delete(); // Löschen der Bestätigungsnachricht
+        await correctMessage.delete();
+
+        // Nachricht des Benutzers löschen (richtige Antwort)
+        await msg.delete();
 
         // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
         const timestampNow = Math.floor(Date.now() / 1000);
@@ -91,7 +92,12 @@ module.exports = {
         currentFlag = await sendNewFlag();
       } else {
         await msg.react('❌');
+
+        // Nachricht des Benutzers löschen (falsche Antwort)
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Kleines Delay, damit Benutzer die Reaktion sehen kann
+        await msg.delete();
       }
     });
   },
 };
+
