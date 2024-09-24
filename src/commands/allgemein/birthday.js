@@ -17,8 +17,7 @@ module.exports = {
                 .addUserOption(option => option.setName('user').setDescription('» Welchen Nutzer möchtest du ändern?').setRequired(true))
                 .addIntegerOption(option => option.setName('tag').setDescription('» An welchem Tag wurde der Nutzer geboren?').setRequired(true))
                 .addIntegerOption(option => option.setName('monat').setDescription('» In welchem Monat wurde der Nutzer geboren?').setRequired(true))
-                .addIntegerOption(option => option.setName('jahr').setDescription('» In welchem Jahr wurde der Nutzer geboren?').setRequired(false))
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+                .addIntegerOption(option => option.setName('jahr').setDescription('» In welchem Jahr wurde der Nutzer geboren?').setRequired(false)),
         )
         .addSubcommand((command) => command.setName('next').setDescription('» Zeigt dir die nächsten Geburtstage an. 🎂')),
 
