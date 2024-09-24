@@ -130,7 +130,7 @@ module.exports = {
       if (!interaction.isButton()) return; // Stelle sicher, dass es sich um einen Button handelt
 
       if (interaction.customId === 'skip_flag') {
-          await interaction.deferUpdate(); // Defer die Interaktion, um die Warteschlange zu vermeiden
+          await interaction.editReply(); // Defer die Interaktion, um die Warteschlange zu vermeiden
           await sendNewFlag(interaction.channel); // Neue Flagge senden
       }
 
@@ -139,14 +139,26 @@ module.exports = {
 
     let currentFlag = await sendNewFlag();
 
+    // Button Interaktions-Handler
+    const filter = (interaction) => interaction.customId === 'skip_flag' && interaction.user.id === channel.author.id;
+
     const filter = msg => msg.author.id === interaction.user.id && msg.channel.id === channel.id;
 
     const collector = channel.createMessageCollector({ filter });
 
     collector.on('collect', async msg => {
       if (msg.content.toLowerCase() === currentFlag.country.toLowerCase()) {
+
+        if (i.customId === 'skip_flag') {
+          currentFlagIndex = (currentFlagIndex + 1) % flags.length; // Nächste Flagge
+          const newEmbed = createEmbed(currentFlagIndex);
+          await i.update({ embeds: [newEmbed] });
+        }
         await msg.react('✅');
         const correctMessage = await channel.send(`Richtig! Das ist die Flagge von **${currentFlag.country}.**`);
+
+        const filter = i => i.customId === 'skip' && i.user.id === interaction.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter });
 
         await interaction.deferUpdate(); // Interaktion defern
 
