@@ -129,6 +129,7 @@ module.exports = {
 
       // Wenn es bereits eine Nachricht gibt, bearbeiten wir diese anstelle einer neuen
       if (currentFlagMessage) {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 Sekunde Pause
         await currentFlagMessage.edit({ embeds: [embed], components: [row] });
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000)); // 1 Sekunde Pause
