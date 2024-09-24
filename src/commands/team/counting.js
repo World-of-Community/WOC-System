@@ -24,7 +24,7 @@ module.exports = {
         // Send the initial embed
         const countingEmbed = new EmbedBuilder()
             .setTitle('`🔢` » Zahlen Spiel Information')
-            .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **${highestCount}**`)
+            .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **\`${highestCount}\`**`)
             .setColor('Blurple')
             .setFooter({ text: `» ${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
             .setTimestamp();
@@ -36,7 +36,7 @@ module.exports = {
         setInterval(async () => {
             const updatedEmbed = new EmbedBuilder()
                 .setTitle('`🔢` » Zahlen Spiel Information')
-                .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **${highestCount}**`)
+                .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **\`${highestCount}\`**`)
                 .setColor('Blurple')
                 .setFooter({ text: `» ${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
                 .setTimestamp();
