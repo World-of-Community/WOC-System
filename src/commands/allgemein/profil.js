@@ -94,15 +94,17 @@ module.exports = {
 
         // Überprüfe, ob das Mitglied eine Teamrolle hat und erstelle eine Liste für Mitgliederrollen
         const hasTeamRole = TeamRoleIds.some(roleId => {
-            if (member.roles.cache.has(roleId)) {
-                teamRoleMention = `${role}`; // Rolle als Erwähnung speichern
+            const role = member.roles.cache.get(roleId); // Rolle abrufen
+            if (role) {
+                teamRoleMention = `${roleId}`; // Rolle als Erwähnung speichern
                 return true;
             }
             return false;
         });
         const hasMemberRole = MitgliederRoleIds.some(roleId => {
-            if (member.roles.cache.has(roleId)) {
-                memberRoleMention = `${role}`; // Rolle als Erwähnung speichern
+            const role = member.roles.cache.get(roleId); // Rolle abrufen
+            if (role) {
+                memberRoleMention = `${roleId}`; // Rolle als Erwähnung speichern
                 return true;
             }
             return false;
