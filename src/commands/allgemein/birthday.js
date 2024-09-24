@@ -12,7 +12,6 @@ module.exports = {
         )
         .addSubcommand((command) => command.setName('delete').setDescription('» Lösche den Geburtstag eines Nutzers. 🎂')
                 .addUserOption(option => option.setName('user').setDescription('» Welchen Nutzer möchtest du löschen?').setRequired(true))
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
         )
         .addSubcommand((command) => command.setName('change').setDescription('» Ändere den Geburtstag eines Nutzers. 🎂')
                 .addUserOption(option => option.setName('user').setDescription('» Welchen Nutzer möchtest du ändern?').setRequired(true))
