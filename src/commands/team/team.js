@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 const teamdb = require("../../../Datenbank/teamdb");
 const serverdb = require("../../../Datenbank/serverdb");
 
@@ -18,8 +18,7 @@ module.exports = {
             command
                 .setName('meeting')
                 .setDescription('» Schau nach wann die Nächste Team-Besprechung stattfindet. 📣')
-        )
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        ),
     
     async execute(interaction, client) {
         const targetChannel = interaction.guild.channels.cache.get('877446081036836884'); 
@@ -111,8 +110,7 @@ module.exports = {
     
                     await interaction.reply({ embeds: [embed], ephemeral: true });
                     break;  
-                }
-            
+                } 
         }
     },
 };

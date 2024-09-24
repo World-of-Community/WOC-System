@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require("discord.js");
 const fs = require('fs')
 const ms = require("ms");
 const bandb = require("../../../Datenbank/bandb");

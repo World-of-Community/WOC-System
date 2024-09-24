@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
 
 // Variables to store game state
 let countingChannelId = null;

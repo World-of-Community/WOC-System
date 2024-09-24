@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
 const cron = require('node-cron');
 const userdb = require('../../../Datenbank/userdb');
 const leaderboarddb = require('../../../Datenbank/leaderboarddb'); // Datenbank zum Speichern der Nachricht-ID
