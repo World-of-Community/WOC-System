@@ -89,11 +89,24 @@ module.exports = {
         let userGeschlecht = '❓';
         let roleGamesList = [];
         let rolePingsList = [];
-        let memberRolesList = [];
+        let teamRoleMention = '';
+        let memberRoleMention = '';
 
         // Überprüfe, ob das Mitglied eine Teamrolle hat und erstelle eine Liste für Mitgliederrollen
-        const hasTeamRole = TeamRoleIds.some(roleId => member.roles.cache.has(roleId));
-        const hasMemberRole = MitgliederRoleIds.some(roleId => member.roles.cache.has(roleId));
+        const hasTeamRole = TeamRoleIds.some(roleId => {
+            if (member.roles.cache.has(roleId)) {
+                teamRoleMention = `${role}`; // Rolle als Erwähnung speichern
+                return true;
+            }
+            return false;
+        });
+        const hasMemberRole = MitgliederRoleIds.some(roleId => {
+            if (member.roles.cache.has(roleId)) {
+                memberRoleMention = `${role}`; // Rolle als Erwähnung speichern
+                return true;
+            }
+            return false;
+        });
 
         member.roles.cache.forEach(role => {
             if (role.name === '@everyone') return;
@@ -132,7 +145,7 @@ module.exports = {
         if (userData) {
             const embed = new EmbedBuilder()
                 .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
-                .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Rang: ${hasTeamRole ? 'Teamrolle' : (hasMemberRole ? 'Mitgliederrolle' : 'Keine Rolle')}\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
+                .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle')}\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
                 .setColor('Blurple')
                 .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
                 .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
