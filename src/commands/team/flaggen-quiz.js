@@ -104,7 +104,9 @@ module.exports = {
 
   async execute(interaction) {
     const channel = interaction.options.getChannel('kanal');
-    await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true });
+    const currentTime = Math.floor(Date.now() / 1000); // Aktuelle Zeit in Unix-Timestamp
+    const timestampAfter5Seconds = currentTime + 5; // Zeit in 5 Sekunden
+    await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz... **<t:${timestampAfter5Seconds}:R>**', ephemeral: true });
 
     let currentFlagMessage;
 
@@ -129,10 +131,10 @@ module.exports = {
 
       // Wenn es bereits eine Nachricht gibt, bearbeiten wir diese anstelle einer neuen
       if (currentFlagMessage) {
-        await new Promise(resolve => setTimeout(resolve, 5000)); // 5 Sekunden Pause
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 Sekunden Pause
         await currentFlagMessage.edit({ embeds: [embed], components: [row] });
       } else {
-        await new Promise(resolve => setTimeout(resolve, 5000)); // 5 Sekunden Pause
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 Sekunden Pause
         currentFlagMessage = await channel.send({ embeds: [embed], components: [row] });
       }
 
