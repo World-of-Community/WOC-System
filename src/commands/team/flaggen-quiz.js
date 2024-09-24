@@ -38,11 +38,13 @@ module.exports = {
     let currentFlagMessage; // Variable für die aktuelle Flaggen-Nachricht
 
     const sendNewFlag = async () => {
+
       const randomFlag = flags[Math.floor(Math.random() * flags.length)];
+      const firstLetterHint = randomFlag.country.charAt(0); // Erster Buchstabe als Tipp
 
       const embed = new EmbedBuilder()
         .setTitle('Flaggenquiz')
-        .setDescription('Welche Flagge ist das? Schreib den Ländernamen in den Chat!')
+        .setDescription(`Welche Flagge ist das? Tipp: Der Name des Landes beginnt mit **${firstLetterHint}**`)
         .setImage(randomFlag.imageUrl)
         .setColor('Random');
 
