@@ -88,19 +88,27 @@ const flags = [
   { country: 'Jordanien', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Flag_of_Jordan.svg/2560px-Flag_of_Jordan.svg.png' },
 ];
 
+// Funktion, um eine zufällige Flagge auszuwählen
+function getRandomFlag() {
+  const randomIndex = Math.floor(Math.random() * flags.length);
+  return flags[randomIndex];
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('flaggenquiz')
     .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt')
-    .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true)),
+    .addChannelOption(option =>
+      option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true)
+    ),
 
   async execute(interaction) {
     const channel = interaction.options.getChannel('kanal');
-
     await interaction.reply({ content: '> `⏰` » Lade das Flaggenquiz...', ephemeral: true });
 
     let currentFlagMessage;
 
+    // Funktion, um eine neue Flagge anzuzeigen
     const sendNewFlag = async () => {
       const randomFlag = flags[Math.floor(Math.random() * flags.length)];
       const firstLetterHint = randomFlag.country.charAt(0); // Erster Buchstabe als Tipp
@@ -113,10 +121,10 @@ module.exports = {
 
       const row = new ActionRowBuilder()
         .addComponents(
-            new ButtonBuilder()
-                .setCustomId('skip_flag')
-                .setLabel('Überspringen')
-                .setStyle(ButtonStyle.Secondary)
+          new ButtonBuilder()
+            .setCustomId('skip_flag')
+            .setLabel('Überspringen')
+            .setStyle(ButtonStyle.Secondary)
         );
 
       if (currentFlagMessage) {
@@ -124,78 +132,47 @@ module.exports = {
       }
 
       currentFlagMessage = await channel.send({ embeds: [embed], components: [row] });
-
       console.log(`Flagge gezeigt: ${randomFlag.country}, Bild-URL: ${randomFlag.imageUrl}`);
-
-      if (!interaction.isButton()) return; // Stelle sicher, dass es sich um einen Button handelt
-
-      if (interaction.customId === 'skip_flag') {
-          await interaction.editReply(); // Defer die Interaktion, um die Warteschlange zu vermeiden
-          await sendNewFlag(interaction.channel); // Neue Flagge senden
-      }
-
       return randomFlag;
     };
 
     let currentFlag = await sendNewFlag();
 
-    // Button Interaktions-Handler
-    const filter = (interaction) => interaction.customId === 'skip_flag' && interaction.user.id === channel.author.id;
+    // Button-Interaktions-Handler
+    const filter = (i) => i.customId === 'skip_flag' && i.user.id === interaction.user.id;
+    const collector = channel.createMessageComponentCollector({ filter });
 
-    const collector = channel.createMessageCollector({ filter });
+    collector.on('collect', async (i) => {
+      await i.deferUpdate(); // Interaktion aufschieben, um Zeitüberschreitungen zu vermeiden
+      currentFlag = await sendNewFlag(); // Neue Flagge senden
+    });
 
-    collector.on('collect', async msg => {
-      if (msg.content.toLowerCase() === currentFlag.country.toLowerCase()) {
+    // Nachrichten-Collector für das Erraten der Flagge
+    const messageFilter = (msg) => msg.content.toLowerCase() === currentFlag.country.toLowerCase();
+    const messageCollector = channel.createMessageCollector({ filter: messageFilter });
 
-        if (i.customId === 'skip_flag') {
-          currentFlagIndex = (currentFlagIndex + 1) % flags.length; // Nächste Flagge
-          const newEmbed = createEmbed(currentFlagIndex);
-          await i.update({ embeds: [newEmbed] });
-        }
-        await msg.react('✅');
-        const correctMessage = await channel.send(`Richtig! Das ist die Flagge von **${currentFlag.country}.**`);
+    messageCollector.on('collect', async (msg) => {
+      await msg.react('✅');
+      const correctMessage = await channel.send(`Richtig! Das ist die Flagge von **${currentFlag.country}**.`);
 
-        const filter = i => i.customId === 'skip' && i.user.id === interaction.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({ filter });
-
-        await interaction.deferUpdate(); // Interaktion defern
-
-        // Neue Flagge senden und Embed aktualisieren
-        const newRandomFlag = flags[Math.floor(Math.random() * flags.length)];
-        const newFirstLetterHint = newRandomFlag.country.charAt(0); // Erster Buchstabe als Tipp
-
-        // Neues Embed erstellen
-        const newEmbed = new EmbedBuilder()
-            .setDescription(`\`🚩\` » Welche Flagge ist das?\n\n\`💡\` » Tipp: Der Name des Landes beginnt mit **${newFirstLetterHint}**.`)
-            .setImage(newRandomFlag.imageUrl)
-            .setColor('Random')
-            .setFooter({ text: 'Benutze den Button, um die Flagge zu überspringen.' });
-
-        // Nachricht mit neuem Embed aktualisieren
-        await currentFlagMessage.edit({ embeds: [newEmbed] });
-
-        console.log(`Flagge gezeigt: ${newRandomFlag.country}, Bild-URL: ${newRandomFlag.imageUrl}`);
-
-        // Antwortnachricht des Nutzers nach 5 Sekunden löschen
-        await new Promise(resolve => setTimeout(resolve, 5000));
+      // Nachrichten nach 5 Sekunden löschen
+      setTimeout(async () => {
         await msg.delete();
-        await correctMessage.delete(); // Korrektnachricht nach 5 Sekunden löschen
-
-        const timestampNow = Math.floor(Date.now() / 1000);
-        const timestampAfter5Seconds = timestampNow + 5;
-
-        const waitingMessage = await channel.send(`Bitte warte... <t:${timestampAfter5Seconds}:R> geht es weiter.`);
-
+        await correctMessage.delete();
+        const waitingMessage = await channel.send('Bitte warte... In 5 Sekunden geht es weiter.');
+        
         setTimeout(async () => {
           await waitingMessage.delete();
           currentFlag = await sendNewFlag();
         }, 5000);
-      } else {
-        await msg.react('❌');
-        setTimeout(async () => {
-          await msg.delete();
-        }, 3000);
-      }
+      }, 5000);
+    });
+
+    messageCollector.on('end', async (msg) => {
+      await msg.react('❌');
+      setTimeout(async () => {
+        await msg.delete();
+      }, 3000);
     });
   },
 };
