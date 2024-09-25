@@ -498,9 +498,6 @@ console.debug = function (...args) {
     sendLogToDiscord(args.join(' '), 'debug'); // Sende das Log an Discord
 };
 
-// Aktivitäts Event
-
-
 // Threads Checker
 cron.schedule('0 0 * * *', async () => {
     const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
