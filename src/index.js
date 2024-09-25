@@ -421,17 +421,14 @@ setInterval( async () => {
     const guild = client.guilds.cache.get("815919809379172354");
     const channel = guild.channels.cache.get("1177536720229650442");
 
-    const bannerEmbed = new EmbedBuilder()
-        .setColor('Blurple')
-        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png?ex=66b30177&is=66b1aff7&hm=0397fdb8031ef7316a8668df5cad914f61dc6d25fa7ff396bb3107d9463f6bc0&')
-
     const werbeEmbed = new EmbedBuilder()
         .setTitle('`🌍` WORLD OF COMMUNITY')
         .setDescription('__Du suchst ein Minecraft-& Discord Server?__\n\n> __Dann bist du bei uns genau richtig!__\n\n**__Wir bieten dir:__**\n\n> `🎭` | » **Server-Rollen** um **dein Server Profil** anzupassen\n> `🔔` | » **Server-Events** in **Discord**\n> `✨` | » **Selbst** Programmierte Bots mit einzigartigen Features!\n> `👥` | » **Freundliche & Hilfsbereite** Community!\n> `🪛` | » Einen Technik Bereich mit **Programmieren** und **Setup Vorstellung**\n> `📄` | » **Täglich neue Nachrichten** sowie **Gaming, Filme** und **Welt News**\n> `🎮` | » Ein **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n> `📰` | » Du kannst **Freie Werbung** senden.\n\n`🔍` - **__Wir suchen nach:__**\n\n> - Mitglieder die den Server aktiver gestalten\n> - Server Booster & Sponsoren für Gewinnspiele\n> - Neue Ideen/Vorschläge um den Discord-Server zu verbessern\n> - Teammitglieder in folgenden Bereichen: Developer, Supporter, Builder & Creator\n\n<a:MinecraftGrassBlock:872034424181637171> Bald WOC Minecraft Server!\nBetrete noch heute unseren Discord-Server!\n\n> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\nKleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schonmal jemanden kennst!\n\n» Link: https://discord.gg/686M8Cxsaa')
         .setColor('Blurple')
-        .setFooter({ text: 'World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=6624db23&is=662389a3&hm=5bccd1823f8042757910fb78c8cca1cb6ff34a2095e77c9b9aa22b31e9cd4046&' })
+        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png?ex=66b30177&is=66b1aff7&hm=0397fdb8031ef7316a8668df5cad914f61dc6d25fa7ff396bb3107d9463f6bc0&')
+        .setFooter({ text: '» World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66f4ec68&is=66f39ae8&hm=ab3c1d2943afe003b938fa850ae5e5c643ed69225e1980d73573fef78234ad83&' })
 
-    channel.send({ embeds: [bannerEmbed, werbeEmbed] })
+    channel.send({ embeds: [werbeEmbed] })
         // Wenn die Nachricht automatisch veröffentlicht werden soll:
         .then(async msg => {
             msg.crosspost()
