@@ -435,7 +435,7 @@ setInterval( async () => {
         })
     } catch (error) { 
     }
-}, 60000 * 240); // 4 Stunden in Millisekunden
+}, 60000 * 360); // 6 Stunden in Millisekunden
 
 // Error & Online/Offline Log
 
