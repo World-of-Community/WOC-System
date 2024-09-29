@@ -707,11 +707,9 @@ function determineEmoji(priceInput) {
     }
 }
 
-
-
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
-    if (message.guild.id !== config.server) return; 
+    if (message.guild !== config.server) return; 
 
     let serverData = await serverdb.findOne({ guildID: message.guildId });
     if (!serverData) {
