@@ -172,9 +172,6 @@ module.exports = {
 
                     });                   
 
-
-                    console.log(description)
-
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
                         .setDescription(description)
@@ -182,22 +179,7 @@ module.exports = {
                         .setFooter({ text: `${interaction.guild.name} - Seite ${page} von ${totalPages}`, iconURL: `${interaction.guild.iconURL()}` })
                         .setTimestamp();
 
-                        const buttons = new ActionRowBuilder()
-                            .addComponents(
-                                new ButtonBuilder()
-                                .setCustomId('prev')
-                                .setLabel('⬅️ Vorherige Seite')
-                                .setStyle(ButtonStyle.Primary)
-                                .setDisabled(page === 1), // Disable button if on first page
-
-                                new ButtonBuilder()
-                                .setCustomId('next')
-                                .setLabel('➡️ Nächste Seite')
-                                .setStyle(ButtonStyle.Primary)
-                                .setDisabled(page === Math.ceil(birthdays.length / pageSize)), // Disable button if on
-                            )
-
-                    //return { embed, buttons };
+                    return embed;
                 };
 
                 // Function to create pagination buttons
