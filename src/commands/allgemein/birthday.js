@@ -158,23 +158,17 @@ module.exports = {
 
                     let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
-                    if (pageBirthdays.length === 0) {
-                        description += 'Es gibt keine Geburtstage auf dieser Seite.';
-                    } else {
-                        pageBirthdays.forEach(birthday => {
-                            const { userID, birthday: { tag, monat, jahr } } = birthday;
-                            const member = interaction.guild.members.cache.get(userID);
+                    pageBirthdays.forEach(birthday => {
+                        const { userID, birthday: { tag, monat, jahr } } = birthday;
+                        const member = interaction.guild.members.cache.get(userID);
+                        const displayName = member ? member.displayName : 'Unbekannt';
                 
-                            // Skip users who are not in the guild or have not set their birthday
-                            if (!member || !tag || !monat) return;
+                        const formattedTag = tag.toString().padStart(2, '0');
+                        const formattedMonat = monat.toString().padStart(2, '0');
+                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}`;
                 
-                            const formattedTag = tag.toString().padStart(2, '0');
-                            const formattedMonat = monat.toString().padStart(2, '0');
-                            const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}`;
-                
-                            description += `<@${userID}> (${member.user.username}) - ${formattedDate}\n`;
-                        });
-                    }                    
+                        description += `${displayName} - ${formattedDate}\n`;
+                    });                    
 
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
