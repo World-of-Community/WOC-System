@@ -194,10 +194,9 @@ module.exports = {
                                 .setLabel('➡️ Nächste Seite')
                                 .setStyle(ButtonStyle.Primary)
                                 .setDisabled(page === Math.ceil(birthdays.length / pageSize)), // Disable button if on
-                                //.setDisabled(page === totalPages) // Disable button if on last page
                             )
 
-                    return embed;
+                    return { embed, buttons };
                 };
 
                 // Function to create pagination buttons
