@@ -172,6 +172,9 @@ module.exports = {
 
                     });                   
 
+
+                    console.log(embed)
+                    
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
                         .setDescription(description)
