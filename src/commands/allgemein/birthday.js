@@ -161,18 +161,20 @@ module.exports = {
                     pageBirthdays.forEach(birthday => {
                         const { userID, birthday: { tag, monat, jahr } } = birthday;
                         const member = interaction.guild.members.cache.get(userID);
-                        const displayName = member ? member.displayName : 'Unbekannt';
-                
+                        if(!member) return;
+
+                        // Füge führende Nullen hinzu
                         const formattedTag = tag.toString().padStart(2, '0');
                         const formattedMonat = monat.toString().padStart(2, '0');
                         const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}`;
-                
-                        description += `${displayName} - ${formattedDate}\n`;
-                    });                    
+
+                        description += `${member.displayName} - ${formattedDate}\n`;
+
+                    });                   
 
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
-                        .setDescription(`${description}`)
+                        .setDescription(description)
                         .setColor('Blurple')
                         .setFooter({ text: `${interaction.guild.name} - Seite ${page} von ${totalPages}`, iconURL: `${interaction.guild.iconURL()}` })
                         .setTimestamp();
