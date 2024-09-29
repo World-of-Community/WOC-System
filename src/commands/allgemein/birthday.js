@@ -178,7 +178,7 @@ module.exports = {
 
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
-                        .setDescription(description)
+                        .setDescription(`${description}`)
                         .setColor('Blurple')
                         .setFooter({ text: `${interaction.guild.name} - Seite ${page} von ${totalPages}`, iconURL: `${interaction.guild.iconURL()}` })
                         .setTimestamp();
