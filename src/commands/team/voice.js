@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, PermissionBitField } = require('@discordjs/builders');
 
 //Placeholder Code muss noch gecodet werden
 

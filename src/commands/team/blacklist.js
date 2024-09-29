@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, ChannelType, PermissionBitField } = require('discord.js');
 
 //Placeholder Code muss noch gecodet werden
 
