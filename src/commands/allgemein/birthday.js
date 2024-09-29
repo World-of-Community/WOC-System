@@ -161,16 +161,17 @@ module.exports = {
                     pageBirthdays.forEach(birthday => {
                         const { userID, birthday: { tag, monat, jahr } } = birthday;
                         const member = interaction.guild.members.cache.get(userID);
-                        if(!member) continue;
-
+                    
+                        // Skip users who are not in the guild or have not set their birthday
+                        if (!member || !tag || !monat) return;
+                    
                         // Füge führende Nullen hinzu
                         const formattedTag = tag.toString().padStart(2, '0');
                         const formattedMonat = monat.toString().padStart(2, '0');
                         const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}`;
-
+                    
                         description += `${member.displayName} - ${formattedDate}\n`;
-
-                    });
+                    });                    
 
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
