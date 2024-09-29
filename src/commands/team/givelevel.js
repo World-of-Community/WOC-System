@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionBitField } = require('discord.js');
-const UserModel = require('../models/User'); // Assuming you have a User model for MongoDB
+//const UserModel = require('../models/User'); // Assuming you have a User model for MongoDB
 
 //Placeholder Code muss noch gecodet werden
 
