@@ -174,7 +174,7 @@ module.exports = {
 
 
                     console.log(embed)
-                    
+
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
                         .setDescription(description)
@@ -197,7 +197,7 @@ module.exports = {
                                 .setDisabled(page === Math.ceil(birthdays.length / pageSize)), // Disable button if on
                             )
 
-                    return { embed, buttons };
+                    //return { embed, buttons };
                 };
 
                 // Function to create pagination buttons
