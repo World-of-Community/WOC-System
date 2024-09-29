@@ -8,7 +8,23 @@ module.exports = {
     .setDescription("» Gebe einem User eine Pause für eine bestimme Dauer. 🕛")
     .addUserOption((option) => option.setName("user").setDescription("» Welcher User soll einen Timeout bekommen?").setRequired(true))
     .addStringOption((option) => option.setName("grund").setDescription("» Gebe einen Grund an.").setRequired(true))
-    .addStringOption(option => option.setName("dauer").setDescription("» Gebe eine Dauer an. (z.B. 30s 10m)").setRequired(true))
+    .addStringOption(option =>  option.setName("dauer").setDescription("» Wähle eine Dauer aus.").setRequired(true)
+        .addChoices(
+            { name: "🕒 » 1 Minute", value: "1m" },
+            { name: "🕒 » 2 Minuten", value: "2m" },
+            { name: "🕒 » 5 Minuten", value: "5m" },
+            { name: "🕒 » 10 Minuten", value: "10m" },
+            { name: "🕒 » 15 Minuten", value: "15m" },
+            { name: "🕒 » 30 Minuten", value: "30m" },
+            { name: "🕒 » 1 Stunde", value: "1h" },
+            { name: "🕒 » 2 Stunden", value: "2h" },
+            { name: "🕒 » 6 Stunden", value: "6h" },
+            { name: "🕒 » 1 Tag", value: "1d" },
+            { name: "🕒 » 2 Tage", value: "2d" },
+            { name: "🕒 » 5 Tage", value: "5d" },
+            { name: "🕒 » 7 Tage", value: "7d" }
+        )
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
     .setDMPermission(false),
 
