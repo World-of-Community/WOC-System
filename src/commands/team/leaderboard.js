@@ -130,6 +130,9 @@ module.exports = {
 
             // Statistiken zurücksetzen
             await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
+
+            // Aktualisiere die Embeds mit den zurückgesetzten Werten
+            await updateLeaderboardEmbeds();
         });
     }
 };
