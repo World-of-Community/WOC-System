@@ -83,14 +83,14 @@ module.exports = {
                     .setColor('Orange');
 
                 const messageEmbed = new EmbedBuilder()
-                    .setAuthor({ name: `${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
+                    .setAuthor({ name: `» ${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
                     .setDescription(messageLeaderboardText)
                     .setColor('Blurple')
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png' })
                     .setTimestamp();
 
                 const voiceEmbed = new EmbedBuilder()
-                    .setAuthor({ name: `${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
+                    .setAuthor({ name: `» ${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
                     .setDescription(voiceLeaderboardText)
                     .setColor('Blue')
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png' })
