@@ -123,5 +123,13 @@ module.exports = {
         // Starte den Cron-Job, um die Embeds jede Minute zu aktualisieren
         cron.schedule('* * * * *', updateLeaderboardEmbeds);
         updateLeaderboardEmbeds();
+
+        // Cron-Job für das Zurücksetzen des Leaderboards am 1. jeden Monats
+        cron.schedule('0 0 1 * *', async () => {
+            console.log('Leaderboard wird am 1. des Monats zurückgesetzt.');
+
+            // Statistiken zurücksetzen
+            await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
+        });
     }
 };
