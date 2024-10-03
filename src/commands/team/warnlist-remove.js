@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField } = require('discord.js');
 const warndb = require("../../../Datenbank/warndb");
+const { updateWarnlist } = require('../../../functions/warn');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,5 +24,7 @@ module.exports = {
       } else {
         await interaction.reply({ content: `Warnung für ${user.tag} entfernt.`, ephemeral: true });
       }
+
+      updateWarnlist(interaction)
     },
 };

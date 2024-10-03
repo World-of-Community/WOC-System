@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require('discord.js');
 const warndb = require("../../../Datenbank/warndb");
+const { updateWarnlist } = require('../../../functions/warn');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -29,5 +30,7 @@ module.exports = {
       await userWarnings.save()
   
       await interaction.reply({ content: `Warnung für ${member} hinzugefügt, Grund: ${reason}`, ephemeral: true });
+
+      updateWarnlist(interaction)
     },
 };
