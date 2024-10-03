@@ -27,20 +27,21 @@ module.exports = {
 
         // Warnliste formatieren
         let list = '';
-        warnings.forEach(({ userId, warnings }) => {
+        await warnings.forEach(async ({ userId, warnings }) => {
             const warnCount = warnings.length;
             const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';  // Singular or plural
+            const user = await interaction.guild.members.cache.get(userId)
 
             warnings.forEach((warn, index) => {
                 // Display based on the count of warnings
                 const date = formatDate(warn.date);
-                list += `<@${userId}> (${user.username}) (${user.displayName}) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
+                list += `<@${userId}> (${user?.user.username}) (${user?.user.displayName}) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
             });
         });
 
         const WarnEmbed = new EmbedBuilder()
             .setTitle('Information zu den Warnungen der Nutzer')
-            .setDescription(warnings.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
+            .setDescription(warnings.length !== '' ? list : "> `❌` » Keine Warnungen vorhanden!")
             .setColor('Red');
 
         // Send the embed to the channel
