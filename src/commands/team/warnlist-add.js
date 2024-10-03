@@ -13,13 +13,20 @@ module.exports = {
       const member = interaction.options.getUser('user');
       const reason = interaction.options.getString('grund');
 
+      let userWarnings = await warndb.findOne({ userId: member.id, guildId: interaction.guild.id })
+      if(!userWarnings) {
+        userWarnings = await warndb.create({
+          userId: member.id,
+          guildId: interaction.guild.id,
+          warnings: []
+        });
+      }
+
       // Füge die Warnung zur Datenbank hinzu
-      await warndb.create({
-        userId: member.id,
-        guildId: interaction.guild.id,
-        reason: reason,
-        timestamp: new Date(),
-      });
+      userWarnings.warnings.push({
+        reason: reason
+      })
+      await userWarnings.save()
   
       await interaction.reply({ content: `Warnung für ${member} hinzugefügt, Grund: ${reason}`, ephemeral: true });
     },
