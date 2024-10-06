@@ -79,18 +79,12 @@ module.exports = {
         }
 
         // Join Log
+
         const logchannel = await member.guild.channels.cache.get("1263436406655680513");
 
         if (!logchannel) {
             console.error('Log channel not found');
             return; // Exit early if the log channel doesn't exist
-        }
-
-        const thread = logchannel.threads.cache.get("1269998215512457259");
-
-        if (!thread) {
-            console.error('Thread not found');
-            return; // Exit early if the thread doesn't exist
         }
 
         const join = new EmbedBuilder()
@@ -100,6 +94,6 @@ module.exports = {
             .setColor('Green')
             .setTimestamp();
 
-        await thread.send({ embeds: [join] });
+        await logchannel.threads.cache.get("1269998215512457259").send({embeds: [join]});
     }
 }
