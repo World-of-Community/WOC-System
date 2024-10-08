@@ -757,12 +757,12 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             userData.giveaway.startTime = currentTime;
             await userData.save();
         } else {
-            console.error(`No user data found for user ID: ${userId}`);
+            console.error(`Für die Benutzer-ID wurde keine Benutzerdaten gefunden: ${userId}`);
         }
     } 
     else if (oldState.channelId && !newState.channelId) {
         // User has left a voice channel
-        console.log('User left a voice channel.');
+        console.log('Benutzer hat einen Sprachkanal verlassen.');
 
         let userData = await userdb.findOne({ userID: userId });
         if (userData) {
@@ -776,13 +776,13 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                     userData.giveaway.startTime = 0;
                     await userData.save();
                 } else {
-                    console.error('Invalid durationInMilliseconds:', durationInMilliseconds);
+                    console.error('Ungültige durationInMilliseconds:', durationInMilliseconds);
                 }
             } else {
-                console.error('Start time was zero or not set.');
+                console.error('Die Startzeit war Null oder nicht eingestellt.');
             }
         } else {
-            console.error('User data not found for userID:', userId);
+            console.error('Für die Benutzer-ID wurde keine Benutzerdaten gefunden:', userId);
         }
     }
 });
