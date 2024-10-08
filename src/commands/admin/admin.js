@@ -292,18 +292,18 @@ module.exports = {
                     
                             const confirmButton = new ButtonBuilder()
                             .setCustomId('confirm')
-                            .setLabel('Bestätigen')
-                            .setStyle(ButtonStyle.Danger);
+                            .setLabel('✅ » Bestätigen')
+                            .setStyle(ButtonStyle.Primary);
                     
                             const cancelButton = new ButtonBuilder()
                                 .setCustomId('cancel')
-                                .setLabel('Abbrechen')
+                                .setLabel('❌ » Abbrechen')
                                 .setStyle(ButtonStyle.Secondary);
                     
                             const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
                             
                             const response1 = await interaction.reply({
-                                content: `> \`❗\` » Möchtest du wirklich den Betrag in Höhe von \`${amount}\` hinzufügen?`,
+                                content: `> \`❗\` » Möchtest du wirklich den Betrag in Höhe von \`${amount}€\` hinzufügen?`,
                                 components: [row],
                                 ephemeral: true,
                                 
@@ -311,7 +311,7 @@ module.exports = {
                             const collectorFilter1 = i => i.user.id === interaction.user.id;
                         
                         try {
-                            const confirmation = await response1.awaitMessageComponent({ filter: collectorFilter1, time: 30_000 });
+                            const confirmation = await response1.awaitMessageComponent({ filter: collectorFilter1 });
                                 if (confirmation.customId === 'confirm') {     
                                     userData.donation = Number(userData.donation += amount);
                                     await userData.save();
@@ -325,7 +325,7 @@ module.exports = {
                             
                                     await confirmation.update({ content: null, embeds: [donateEmbed], ephemeral: true, components: [] });
                             } else if (confirmation.customId === 'cancel') {
-                                await confirmation.update({ content:  `> \`❌\` » Du hast die Spende in Höhe von \`${amount}\` **nicht hinzugefügt**`, ephemeral: true, components: [] });
+                                await confirmation.update({ content:  `> \`❌\` » Du hast die Spende in Höhe von \`${amount}€\` **nicht hinzugefügt**`, ephemeral: true, components: [] });
                             }
                         } catch (e) {
                             console.log(e)
