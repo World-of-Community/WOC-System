@@ -124,18 +124,11 @@ module.exports = {
         cron.schedule('* * * * *', updateLeaderboardEmbeds);
         updateLeaderboardEmbeds();
 
-        cron.schedule('*/1 * * * *', async () => {
-            console.log('Test: Cron-Job für das Zurücksetzen alle 5 Minuten.');
+        cron.schedule('0 0 1 * *', async () => {
+            console.log('Cron-Job: Zurücksetzen des Leaderboards gestartet.');
             const result = await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
-            console.log('Test: Leaderboard zurückgesetzt:', result);
+            console.log('Leaderboard zurückgesetzt:', result);
             await updateLeaderboardEmbeds();
         });
-
-        //cron.schedule('0 0 1 * *', async () => {
-        //    console.log('Cron-Job: Zurücksetzen des Leaderboards gestartet.');
-        //    const result = await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
-        //    console.log('Leaderboard zurückgesetzt:', result);
-        //    await updateLeaderboardEmbeds();
-        //});
     }
 };
