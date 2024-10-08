@@ -280,7 +280,7 @@ module.exports = {
                     case "donate":
                             const amount = interaction.options.getInteger('amount');
 
-                            let userData = await userDB.findOne({userID: member.id})
+                            let userData = await userdb.findOne({userID: member.id})
                     
                             if(!userData) {
                                 userData = new userDB({
