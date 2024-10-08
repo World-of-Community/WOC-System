@@ -125,9 +125,9 @@ module.exports = {
         updateLeaderboardEmbeds();
 
         cron.schedule('0 0 1 * *', async () => {
-            console.log('Cron-Job: Zurücksetzen des Leaderboards gestartet.');
+            console.log('Zurücksetzen des Monatlichen Leaderboards gestartet.');
             const result = await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
-            console.log('Leaderboard zurückgesetzt:', result);
+            console.log('Leaderboard wurde Monatlich zurückgesetzt:', result);
             await updateLeaderboardEmbeds();
         });
     }
