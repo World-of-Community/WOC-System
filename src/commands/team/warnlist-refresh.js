@@ -12,9 +12,6 @@ module.exports = {
             return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
         }
 
-        // Antwort verzögern, um Zeit für das Abrufen der Warnungen zu haben
-        await interaction.deferReply({ ephemeral: true });
-
         try {
             // Alle Warnungen für die Guild abrufen
             let warnings = await warndb.find({ guildId: interaction.guild.id });
@@ -48,13 +45,14 @@ module.exports = {
                 });
             }
 
-            const updateEmbed = new EmbedBuilder()
+            const WarnEmbed = new EmbedBuilder()
                 .setTitle('Information zu den Warnungen der Nutzer')
                 .setDescription(list)
-                .setColor('Red');
+                .setColor('Red')
+                .setFooter({ text: `» ${interaction.guild.name} - Warn system`, iconURL: interaction.guild.displayAvatarURL() });
 
             // Vorherige Antwort bearbeiten, um das Embed zu aktualisieren
-            await interaction.editReply({ embeds: [updateEmbed] });
+            await interaction.editReply({ embeds: [WarnEmbed] });
 
             // Optionale Bestätigungsnachricht
             await interaction.followUp({ content: "> `✅` » Die Warnliste wurde aktualisiert.", ephemeral: true });

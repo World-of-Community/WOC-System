@@ -61,7 +61,7 @@ module.exports = {
                 .setTitle('Information zu den Warnungen der Nutzer')
                 .setDescription(list)
                 .setColor('Red')
-                .setFooter({ text: `Gesendet von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+                .setFooter({ text: `» ${interaction.guild.name} - Warn system`, iconURL: interaction.guild.displayAvatarURL() });
 
             // Send the embed to the channel
             await interaction.channel.send({ embeds: [WarnEmbed] });
