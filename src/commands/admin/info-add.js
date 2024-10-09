@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-let teamEmbedMessageId = '1293540628105531413'; // Store the message ID of the embed
+let teamEmbedMessageId = '1293540628105531413';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,31 +30,31 @@ module.exports = {
         const name = interaction.options.getString('name') || '`keine Angabe`'; 
         const alter = interaction.options.getString('alter') || ''; 
 
-        // Create the embed if it doesn't exist yet
+        const role = interaction.guild.roles.cache.find(role => role.name === bereich);
+        const roleMention = role ? `<@&${role.id}>` : bereich;
+
         if (!teamEmbedMessageId) {
             const TeamEmbed = new EmbedBuilder()
                 .setTitle('Information zum WOC Server-Team')
-                .setDescription(`> ${bereich}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`)
+                .setDescription(`> ${roleMention}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`)
                 .setColor('Orange')
                 .setFooter({ text: `${interaction.guild.name} - Server-Team`, iconURL: `${interaction.guild.iconURL()}` })
-                .setTimestamp()
+                .setTimestamp();
 
             const message = await interaction.reply({ embeds: [TeamEmbed], fetchReply: true });
-            teamEmbedMessageId = message.id; // Store the message ID for future edits
+            teamEmbedMessageId = message.id;
         } else {
             const channel = interaction.channel;
-            const message = await channel.messages.fetch(teamEmbedMessageId); // Fetch the existing embed message
+            const message = await channel.messages.fetch(teamEmbedMessageId);
 
-            // Create a new EmbedBuilder based on the existing embed
-            const embed = new EmbedBuilder(message.embeds[0]); // Clone the existing embed
+            const embed = new EmbedBuilder(message.embeds[0]);
 
-            // Update the existing description with the new member info
-            const newDescription = `${embed.data.description}\n\n> ${bereich}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
-            embed.setDescription(newDescription); // Set the updated description
+            const newDescription = `${embed.data.description}\n\n> ${roleMention}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
+            embed.setDescription(newDescription);
 
-            // Edit the existing embed message
-            await message.edit({ embeds: [embed] }); // Use message.edit instead of interaction.edit
+            await message.edit({ embeds: [embed] });
             await interaction.reply({ content: '> `✅` » Das Teammitglied wurde hinzugefügt!', ephemeral: true });
         }
     },
 };
+
