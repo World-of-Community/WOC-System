@@ -21,13 +21,13 @@ module.exports = {
                 .setDescription('Bereich des Teammitglieds')
                 .setRequired(true)
                 .addChoices(
-                    { name: '🎯 Admin', value: 'Admin' },
-                    { name: '👨‍✈️ Team-Leitung', value: 'Team-Leitung' },
-                    { name: '👨‍💻 Developer', value: 'Developer' },
-                    { name: '🕵 Sr-Moderator', value: 'Sr-Moderator' },
-                    { name: '👮 Moderator', value: 'Moderator' },
-                    { name: '🧩 Supporter', value: 'Supporter' },
-                    { name: '🪓 Builder', value: 'Builder' }
+                    { name: '🎯 Admin', value: '> `🎯` | <@&959869691529154631>' },
+                    { name: '👨‍✈️ Team-Leitung', value: '> `👨‍✈️` | <@&893423428558782465>' },
+                    { name: '👨‍💻 Developer', value: '> `👨‍💻` | <@&929349039433056276>' },
+                    { name: '🕵 Sr-Moderator', value: '> `🕵` | <@&816985466230145044>' },
+                    { name: '👮 Moderator', value: '> `👮` | <@&815920052385480754>' },
+                    { name: '🧩 Supporter', value: '> `🧩` | <@&815920170371383366>' },
+                    { name: '🪓 Builder', value: '> `🪓` | <@&1263645368441241700>' }
                 ))
         .addUserOption(option => option.setName('user').setDescription('Das Teammitglied').setRequired(true))
         .addStringOption(option => option.setName('beschreibung').setDescription('Eine Beschreibung des Teammitglieds').setRequired(true))
