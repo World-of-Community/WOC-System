@@ -1,6 +1,17 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 let teamEmbedMessageId = '1293540628105531413';
 
+// Struktur zum Speichern von Teammitgliedern nach Kategorie
+const teamMembers = {
+    'Admin': [],
+    'Team-Leitung': [],
+    'Developer': [],
+    'Sr-Moderator': [],
+    'Moderator': [],
+    'Supporter': [],
+    'Builder': []
+};
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('info-add')
@@ -30,13 +41,26 @@ module.exports = {
         const name = interaction.options.getString('name') || '`keine Angabe`'; 
         const alter = interaction.options.getString('alter') || ''; 
 
-        const role = interaction.guild.roles.cache.find(role => role.id === bereich);
+        const role = interaction.guild.roles.cache.find(role => role.name === bereich);
         const roleMention = role ? `<@&${role.id}>` : bereich;
+
+        // Hinzufügen des neuen Mitglieds zur entsprechenden Kategorie
+        const teamMemberEntry = `- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
+        teamMembers[bereich].push(teamMemberEntry);
+
+        let embedDescription = '\n\n';
+        
+        // Erstellung der Embed-Beschreibung aus den Teammitgliedern nach Kategorie
+        for (const [key, members] of Object.entries(teamMembers)) {
+            if (members.length > 0) {
+                embedDescription += `**${key}**\n${members.join('\n')}\n\n`;
+            }
+        }
 
         if (!teamEmbedMessageId) {
             const TeamEmbed = new EmbedBuilder()
                 .setTitle('Information zum WOC Server-Team')
-                .setDescription(`> <@&${rolemention}>\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`)
+                .setDescription(embedDescription || 'Aktuell sind keine Teammitglieder aufgelistet. Bitte später erneut versuchen!')
                 .setColor('Orange')
                 .setFooter({ text: `${interaction.guild.name} - Server-Team`, iconURL: `${interaction.guild.iconURL()}` })
                 .setTimestamp();
@@ -48,13 +72,11 @@ module.exports = {
             const message = await channel.messages.fetch(teamEmbedMessageId);
 
             const embed = new EmbedBuilder(message.embeds[0]);
-
-            // Hier wird die Beschreibung aktualisiert
-            const newDescription = `${embed.data.description}\n\n> ${roleMention}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
-            embed.setDescription(newDescription);
+            embed.setDescription(embedDescription || 'Aktuell sind keine Teammitglieder aufgelistet. Bitte später erneut versuchen!');
 
             await message.edit({ embeds: [embed] });
             await interaction.reply({ content: '> `✅` » Das Teammitglied wurde hinzugefügt!', ephemeral: true });
         }
     },
 };
+
