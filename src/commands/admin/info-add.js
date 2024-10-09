@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('team-info-add')
+        .setName('info-add')
         .setDescription('Zeigt Informationen über das Server-Team an.')
         .addStringOption(option => 
             option.setName('bereich')
