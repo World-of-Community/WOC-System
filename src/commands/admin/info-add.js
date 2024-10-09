@@ -47,7 +47,7 @@ module.exports = {
         if (key) {
             // Hinzufügen des neuen Mitglieds zur entsprechenden Kategorie
             const teamMemberEntry = `- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
-            teamMembers[key].push(teamMemberEntry);
+            teamMembers[key].push(teamMemberEntry); // Neue Mitgliedsdaten hinzufügen
         } else {
             return interaction.reply({ content: 'Ungültiger Bereich angegeben!', ephemeral: true });
         }
