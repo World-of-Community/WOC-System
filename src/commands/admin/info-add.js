@@ -3,13 +3,13 @@ let teamEmbedMessageId = '1293540628105531413';
 
 // Struktur zum Speichern von Teammitgliedern nach Kategorie
 const teamMembers = {
-    'Admin': [],
-    'Team-Leitung': [],
-    'Developer': [],
-    'Sr-Moderator': [],
-    'Moderator': [],
-    'Supporter': [],
-    'Builder': []
+    '> `🎯` | <@&959869691529154631>': [], // Admin
+    '> `👨‍✈️` | <@&893423428558782465>': [], // Team-Leitung
+    '> `👨‍💻` | <@&929349039433056276>': [], // Developer
+    '> `🕵` | <@&816985466230145044>': [], // Sr-Moderator
+    '> `👮` | <@&815920052385480754>': [], // Moderator
+    '> `🧩` | <@&815920170371383366>': [], // Supporter
+    '> `🪓` | <@&1263645368441241700>': [] // Builder
 };
 
 module.exports = {
@@ -41,19 +41,19 @@ module.exports = {
         const name = interaction.options.getString('name') || '`keine Angabe`'; 
         const alter = interaction.options.getString('alter') || ''; 
 
-        const role = interaction.guild.roles.cache.find(role => role.name === bereich);
-        const roleMention = role ? `<@&${role.id}>` : bereich;
-
         // Hinzufügen des neuen Mitglieds zur entsprechenden Kategorie
         const teamMemberEntry = `- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
-        teamMembers[bereich].push(teamMemberEntry);
+        const key = Object.keys(teamMembers).find(k => k.includes(bereich));
+        if (key) {
+            teamMembers[key].push(teamMemberEntry);
+        }
 
-        let embedDescription = '\n\n';
+        let embedDescription = 'Information zum WOC Server-Team\n\n';
         
         // Erstellung der Embed-Beschreibung aus den Teammitgliedern nach Kategorie
         for (const [key, members] of Object.entries(teamMembers)) {
             if (members.length > 0) {
-                embedDescription += `**${key}**\n${members.join('\n')}\n\n`;
+                embedDescription += `${key}\n${members.join('\n')}\n\n`;
             }
         }
 
@@ -79,4 +79,3 @@ module.exports = {
         }
     },
 };
-
