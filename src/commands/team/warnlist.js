@@ -14,7 +14,7 @@ module.exports = {
 
         try {
             // Fetch all warning data for the guild
-            let warnings = await warndb.find({ guildId: interaction.guild.id });
+            const warningData = await warndb.find({ guildId: interaction.guild.id });
 
             // Helper function to format date with leading zeros
             function formatDate(date) {
@@ -27,12 +27,12 @@ module.exports = {
 
             // Warnliste formatieren
             let list = '';
-            for (const { userId, warnings } of warnings) {
+            for (const { userId, warnings: userWarnings } of warningData) { // Renamed `warnings` to `userWarnings`
                 const user = await interaction.guild.members.fetch(userId); // Fetch the user from the guild
-                const warnCount = warnings.length;
+                const warnCount = userWarnings.length;
                 const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';  // Singular or plural
 
-                warnings.forEach((warn) => {
+                userWarnings.forEach((warn) => {
                     const date = formatDate(warn.date);
                     list += `<@${userId}> (${user.user.username}) (${user.displayName}) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
                 });
@@ -40,7 +40,7 @@ module.exports = {
 
             const WarnEmbed = new EmbedBuilder()
                 .setTitle('Information zu den Warnungen der Nutzer')
-                .setDescription(warnings.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
+                .setDescription(warningData.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
                 .setColor('Red')
                 .setFooter({ text: `Gesendet von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() }); // Add a footer
 
