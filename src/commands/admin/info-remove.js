@@ -1,7 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
-//das der user aus dem embed entfernt wird ohne eine nachricht im embed
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('info-remove')
@@ -21,22 +19,17 @@ module.exports = {
                     { name: '🪓 Builder', value: 'Builder' }
                 ))
         .addUserOption(option => option.setName('user').setDescription('Das Teammitglied').setRequired(true))
-        .addStringOption(option => option.setName('beschreibung').setDescription('Eine Beschreibung des Teammitglieds').setRequired(false))
-        .addStringOption(option => option.setName('name').setDescription('Der Name des Teammitglieds').setRequired(false))
-        .addStringOption(option => option.setName('alter').setDescription('Das Alter des Teammitglieds').setRequired(false)),
+        .addStringOption(option => option.setName('beschreibung').setDescription('Eine Beschreibung des Teammitglieds').setRequired(false)),
     
     async execute(interaction) {
-        const action = interaction.options.getString('action');
+        const action = interaction.options.getString('remove');
         const bereich = interaction.options.getString('bereich');
         const user = interaction.options.getUser('user') || 'Niemand'; // Wenn kein User, dann 'Niemand'
-        const beschreibung = interaction.options.getString('beschreibung') || 'Unbekannt';
-        const name = interaction.options.getString('name') || 'Unbekannt'; // Wenn kein Name, dann 'Unbekannt'
-        const alter = interaction.options.getString('alter') || 'Unbekannt'; // Wenn kein Alter, dann 'Unbekannt'
 
         const TeamEmbed = new EmbedBuilder()
             .setTitle('Information zum WOC Server-Team')
             .setColor('Orange')
-            .setFooter({ text: '', iconURL: '' })
+            .setFooter({ text: `${interaction.guild.name} - Server-Team`, iconURL: `${interaction.guild.iconURL}` })
             .setTimestamp();
 
         // Embed-Nachricht senden
