@@ -42,7 +42,7 @@ module.exports = {
         const alter = interaction.options.getString('alter') || ''; 
 
         // Hinzufügen des neuen Mitglieds zur entsprechenden Kategorie
-        const teamMemberEntry = `- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
+        const teamMemberEntry = { user, beschreibung, name, alter };
         
         // Finde den entsprechenden Schlüssel
         const key = Object.keys(teamMembers).find(k => k.includes(bereich));
@@ -58,7 +58,14 @@ module.exports = {
         // Erstellung der Embed-Beschreibung aus den Teammitgliedern nach Kategorie
         for (const [key, members] of Object.entries(teamMembers)) {
             if (members.length > 0) {
-                embedDescription += `${key}\n${members.join('\n')}\n\n`;
+                // Sortiere Mitglieder alphabetisch nach Benutzernamen
+                members.sort((a, b) => a.user.username.localeCompare(b.user.username));
+                
+                embedDescription += `${key}\n`;
+                for (const member of members) {
+                    embedDescription += `- ${member.user} (${member.beschreibung})\n⠀⠀➥ ${member.name} | ${member.alter}\n`;
+                }
+                embedDescription += '\n';
             }
         }
 
@@ -85,4 +92,3 @@ module.exports = {
         }
     },
 };
-
