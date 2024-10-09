@@ -21,7 +21,8 @@ module.exports = {
 
         try {
             // Embed-Nachricht senden
-            await interaction.reply({ content: '> `✅` - das Embed wurde gesendet', embeds: [TeamEmbed] });
+            await interaction.channel.send({ embeds: [TeamEmbed] })
+        ^   await interaction.reply({content: "> `✅` » Das Embed wurde gesendet.", ephemeral: true})
         } catch (error) {
             console.error('Fehler beim Senden der Nachricht:', error);
             await interaction.reply({ content: '> `❗` » Beim Senden der Nachricht ist ein Fehler aufgetreten. Bitte versuche es später erneut.', ephemeral: true });
