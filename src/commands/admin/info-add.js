@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-let teamEmbedMessageId; // Store the message ID of the embed
+let teamEmbedMessageId = '1293540628105531413'; // Store the message ID of the embed
 
 module.exports = {
     data: new SlashCommandBuilder()
