@@ -31,12 +31,12 @@ module.exports = {
         const alter = interaction.options.getString('alter') || ''; 
 
         const role = interaction.guild.roles.cache.find(role => role.id === bereich);
-        const role = role ? `<@&${role.id}>` : bereich;
+        const roleMention = role ? `<@&${role.id}>` : bereich;
 
         if (!teamEmbedMessageId) {
             const TeamEmbed = new EmbedBuilder()
                 .setTitle('Information zum WOC Server-Team')
-                .setDescription(`> ${role}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`)
+                .setDescription(`> <@&${rolemention}>\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`)
                 .setColor('Orange')
                 .setFooter({ text: `${interaction.guild.name} - Server-Team`, iconURL: `${interaction.guild.iconURL()}` })
                 .setTimestamp();
