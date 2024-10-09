@@ -43,12 +43,17 @@ module.exports = {
 
         // Hinzufügen des neuen Mitglieds zur entsprechenden Kategorie
         const teamMemberEntry = `- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
+        
+        // Finde den entsprechenden Schlüssel
         const key = Object.keys(teamMembers).find(k => k.includes(bereich));
+        
         if (key) {
             teamMembers[key].push(teamMemberEntry);
+        } else {
+            return interaction.reply({ content: 'Ungültiger Bereich angegeben!', ephemeral: true });
         }
 
-        let embedDescription = '\n\n';
+        let embedDescription = ''; // Leere Beschreibung initialisieren
         
         // Erstellung der Embed-Beschreibung aus den Teammitgliedern nach Kategorie
         for (const [key, members] of Object.entries(teamMembers)) {
@@ -57,6 +62,7 @@ module.exports = {
             }
         }
 
+        // Überprüfe, ob das Embed existiert oder erstellt werden muss
         if (!teamEmbedMessageId) {
             const TeamEmbed = new EmbedBuilder()
                 .setTitle('Information zum WOC Server-Team')
@@ -79,3 +85,4 @@ module.exports = {
         }
     },
 };
+
