@@ -52,9 +52,8 @@ module.exports = {
             return interaction.reply({ content: 'Ungültiger Bereich angegeben!', ephemeral: true });
         }
 
-        let embedDescription = ''; // Leere Beschreibung initialisieren
-        
         // Erstellung der Embed-Beschreibung aus den Teammitgliedern nach Kategorie
+        let embedDescription = ''; // Leere Beschreibung initialisieren
         for (const [key, members] of Object.entries(teamMembers)) {
             if (members.length > 0) {
                 // Sortiere Mitglieder alphabetisch nach Benutzernamen
