@@ -7,7 +7,7 @@ module.exports = {
         .setDescription('» Zeigt dir die Warnliste an. 📋')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
-    async execute(interaction)  {
+    async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
             return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
         }
@@ -27,22 +27,27 @@ module.exports = {
 
             // Warnliste formatieren
             let list = '';
-            for (const { userId, warnings: userWarnings } of warningData) { // Renamed `warnings` to `userWarnings`
-                const user = await interaction.guild.members.fetch(userId); // Fetch the user from the guild
-                const warnCount = userWarnings.length;
-                const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';  // Singular or plural
+            for (const { userId, warnings: userWarnings } of warningData) {
+                try {
+                    const user = await interaction.guild.members.fetch(userId); // Fetch the user from the guild
+                    const warnCount = userWarnings.length;
+                    const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';  // Singular or plural
 
-                userWarnings.forEach((warn) => {
-                    const date = formatDate(warn.date);
-                    list += `<@${userId}> (${user.username}) (${user.displayName}) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
-                });
+                    userWarnings.forEach((warn) => {
+                        const date = formatDate(warn.date);
+                        list += `<@${userId}> (${user.user.username}) (**${user.displayName}**) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
+                    });
+                } catch (userError) {
+                    console.error(`User not found: ${userId}`, userError);
+                    list += `<@${userId}> (Benutzer nicht gefunden) - \`${userWarnings.length}\` Warnungen\n`;
+                }
             }
 
             const WarnEmbed = new EmbedBuilder()
                 .setTitle('Information zu den Warnungen der Nutzer')
                 .setDescription(warningData.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
                 .setColor('Red')
-                .setFooter({ text: `Gesendet von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() }); // Add a footer
+                .setFooter({ text: `Gesendet von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
 
             // Send the embed to the channel
             await interaction.channel.send({ embeds: [WarnEmbed] });
