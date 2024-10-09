@@ -48,7 +48,6 @@ module.exports = {
                 .setTitle('Information zu den Warnungen der Nutzer')
                 .setDescription(warnings.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
                 .setColor('Red')
-                .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL() });
 
             // Vorherige Nachricht bearbeiten, um das Embed zu aktualisieren
             await interaction.editReply({ embeds: [updateEmbed] });

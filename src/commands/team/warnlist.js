@@ -34,7 +34,7 @@ module.exports = {
 
                 userWarnings.forEach((warn) => {
                     const date = formatDate(warn.date);
-                    list += `<@${userId}> (${user.user.username}) (${user.displayName}) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
+                    list += `<@${userId}> (${user.username}) (${user.displayName}) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
                 });
             }
 
