@@ -49,6 +49,7 @@ module.exports = {
 
             const embed = new EmbedBuilder(message.embeds[0]);
 
+            // Hier wird die Beschreibung aktualisiert
             const newDescription = `${embed.data.description}\n\n> ${roleMention}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
             embed.setDescription(newDescription);
 
@@ -57,4 +58,3 @@ module.exports = {
         }
     },
 };
-
