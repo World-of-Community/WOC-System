@@ -115,6 +115,29 @@ module.exports = {
                     await leaderboarddb.updateOne({}, { messageId: leaderboardMessage.id }, { upsert: true });
                 }
 
+                // Rolle entfernen von allen Mitgliedern, die sie vorher hatten
+                const role = await interaction.guild.roles.fetch(RoleID);
+                if (role) {
+                    const membersWithRole = await interaction.guild.members.fetch({ role: RoleID });
+                    membersWithRole.forEach(member => {
+                        member.roles.remove(role).catch(err => console.error(`Fehler beim Entfernen der Rolle: ${err}`));
+                    });
+                }
+
+                // Vergibt die Rolle an die Top 3 in Nachrichten
+                topMessagesMembers.slice(0, 3).forEach(user => {
+                    if (user.member) {
+                        user.member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
+                    }
+                });
+
+                // Vergibt die Rolle an die Top 3 in Voice
+                topVoiceMembers.slice(0, 3).forEach(user => {
+                    if (user.member) {
+                        user.member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
+                    }
+                });
+
             } catch (error) {
                 console.error('Fehler beim Aktualisieren des Leaderboards:', error);
             }
