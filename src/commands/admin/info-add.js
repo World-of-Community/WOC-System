@@ -48,7 +48,7 @@ module.exports = {
             teamMembers[key].push(teamMemberEntry);
         }
 
-        let embedDescription = 'Information zum WOC Server-Team\n\n';
+        let embedDescription = '\n\n';
         
         // Erstellung der Embed-Beschreibung aus den Teammitgliedern nach Kategorie
         for (const [key, members] of Object.entries(teamMembers)) {
