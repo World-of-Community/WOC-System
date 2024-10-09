@@ -45,16 +45,16 @@ module.exports = {
             const channel = interaction.channel;
             const message = await channel.messages.fetch(teamEmbedMessageId); // Fetch the existing embed message
 
-            const embed = message.embeds[0]; // Get the existing embed
+            // Create a new EmbedBuilder based on the existing embed
+            const embed = new EmbedBuilder(message.embeds[0]); // Clone the existing embed
 
             // Update the existing description with the new member info
-            const newDescription = `${embed.description}\n\n> ${bereich}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
+            const newDescription = `${embed.data.description}\n\n> ${bereich}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
             embed.setDescription(newDescription); // Set the updated description
 
             // Edit the existing embed message
-            await message.edit({ embeds: [embed] });
+            await message.edit({ embeds: [embed] }); // Use message.edit instead of interaction.edit
             await interaction.reply({ content: '> `✅` » Das Teammitglied wurde hinzugefügt!', ephemeral: true });
         }
     },
 };
-
