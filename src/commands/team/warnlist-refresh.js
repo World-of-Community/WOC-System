@@ -54,6 +54,6 @@ module.exports = {
         await interaction.editReply({ embeds: [updateEmbed] });
 
         // Optionale Bestätigungsnachricht
-        // await interaction.followUp({ content: "> `✅` » Die Warnliste wurde aktualisiert.", ephemeral: true });
+         await interaction.followUp({ content: "> `✅` » Die Warnliste wurde aktualisiert.", ephemeral: true });
     }
 };
