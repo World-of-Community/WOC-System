@@ -4,7 +4,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('team-info')
+        .setName('team-info-remove')
         .setDescription('Zeigt Informationen über das Server-Team an oder entfernt sie.')
         .addStringOption(option => option.setName('remove').setDescription('Wählen Sie, ob Sie Informationen hinzufügen oder entfernen möchten.'))
         .addStringOption(option => 
