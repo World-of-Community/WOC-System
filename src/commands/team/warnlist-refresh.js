@@ -12,6 +12,9 @@ module.exports = {
             return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
         }
 
+        // Antwort verzögern, um Zeit für das Abrufen der Warnungen zu haben
+        await interaction.deferReply({ ephemeral: true });
+
         try {
             // Alle Warnungen für die Guild abrufen
             let warnings = await warndb.find({ guildId: interaction.guild.id });
@@ -45,21 +48,21 @@ module.exports = {
                 });
             }
 
-            const WarnEmbed = new EmbedBuilder()
+            const updateEmbed = new EmbedBuilder()
                 .setTitle('Information zu den Warnungen der Nutzer')
                 .setDescription(list)
                 .setColor('Red')
                 .setFooter({ text: `» ${interaction.guild.name} - Warn system`, iconURL: `${interaction.guild.iconURL()}` });
 
             // Vorherige Antwort bearbeiten, um das Embed zu aktualisieren
-            await interaction.editReply({ embeds: [WarnEmbed] });
+            await interaction.editReply({ embeds: [updateEmbed] });
 
             // Optionale Bestätigungsnachricht
             await interaction.followUp({ content: "> `✅` » Die Warnliste wurde aktualisiert.", ephemeral: true });
         } catch (error) {
             console.error(error);
+            // Bearbeite die Antwort, um den Fehler anzuzeigen
             await interaction.editReply({ content: "`❌` » Ein Fehler ist aufgetreten, während die Warnliste aktualisiert wurde.", ephemeral: true });
         }
     }
 };
-
