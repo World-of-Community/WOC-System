@@ -12,9 +12,6 @@ module.exports = {
             return interaction.reply({ content: '`❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.', ephemeral: true });
         }
 
-        // Antwort verzögern, um Zeit für das Abrufen der Warnungen zu haben
-        await interaction.deferReply({ ephemeral: true });
-
         try {
             // Alle Warnungen für die Guild abrufen
             let warnings = await warndb.find({ guildId: interaction.guild.id });
