@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
 let teamEmbedMessageId = '1293559329961803950';
 
 // Struktur zum Speichern von Teammitgliedern nach Kategorie
