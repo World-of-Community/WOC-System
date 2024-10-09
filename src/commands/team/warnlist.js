@@ -16,6 +16,20 @@ module.exports = {
             // Fetch all warning data for the guild
             const warningData = await warndb.find({ guildId: interaction.guild.id });
 
+            // Handle case where there are no warnings
+            if (warningData.length === 0) {
+                const noWarningsEmbed = new EmbedBuilder()
+                    .setTitle('Information zu den Warnungen der Nutzer')
+                    .setDescription("> `❌` » Keine Warnungen vorhanden!")
+                    .setColor('Red')
+                    .setFooter({ text: `Gesendet von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+                await interaction.reply({ embeds: [noWarningsEmbed], ephemeral: true });
+                return;
+            }
+
+            // Fetch all users in the guild
+            const members = await interaction.guild.members.fetch();
+            
             // Helper function to format date with leading zeros
             function formatDate(date) {
                 const d = new Date(date);
@@ -28,24 +42,24 @@ module.exports = {
             // Warnliste formatieren
             let list = '';
             for (const { userId, warnings: userWarnings } of warningData) {
-                try {
-                    const user = await interaction.guild.members.fetch(userId); // Fetch the user from the guild
-                    const warnCount = userWarnings.length;
-                    const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';  // Singular or plural
+                const user = members.get(userId); // Get user from cached members
+                const warnCount = userWarnings.length;
+                const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen'; // Singular or plural
 
+                if (user) {
                     userWarnings.forEach((warn) => {
                         const date = formatDate(warn.date);
                         list += `<@${userId}> (${user.user.username}) (**${user.displayName}**) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
                     });
-                } catch (userError) {
-                    console.error(`User not found: ${userId}`, userError);
-                    list += `<@${userId}> (Benutzer nicht gefunden) - \`${userWarnings.length}\` Warnungen\n`;
+                } else {
+                    list += `<@${userId}> (Benutzer nicht gefunden) - \`${warnCount}\` ${warnText}\n`;
                 }
+                list += '\n'; // Abstand zwischen verschiedenen Nutzern
             }
 
             const WarnEmbed = new EmbedBuilder()
                 .setTitle('Information zu den Warnungen der Nutzer')
-                .setDescription(warningData.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
+                .setDescription(list)
                 .setColor('Red')
                 .setFooter({ text: `Gesendet von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
 
@@ -58,3 +72,4 @@ module.exports = {
         }
     }
 };
+

@@ -30,26 +30,30 @@ module.exports = {
 
             // Warnliste formatieren
             let list = '';
-            warnings.forEach(({ userId, warnings }) => {
-                const warnCount = warnings.length;
-                const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';
+            if (warnings.length === 0) {
+                list = "> `❌` » Keine Warnungen vorhanden!";
+            } else {
+                warnings.forEach(({ userId, warnings }) => {
+                    const warnCount = warnings.length;
+                    const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';
 
-                list += `<@${userId}> - \`${warnCount}\` ${warnText}:\n`;
+                    list += `<@${userId}> - \`${warnCount}\` ${warnText}:\n`;
 
-                warnings.forEach((warn, index) => {
-                    const date = formatDate(warn.date);
-                    list += `\`${index + 1}.\` Grund: ${warn.reason}, Datum: ${date}\n`;
+                    warnings.forEach((warn, index) => {
+                        const date = formatDate(warn.date);
+                        list += `\`${index + 1}.\` Grund: ${warn.reason}, Datum: ${date}\n`;
+                    });
+
+                    list += '\n'; // Abstand zwischen verschiedenen Nutzern
                 });
-
-                list += '\n'; // Abstand zwischen verschiedenen Nutzern
-            });
+            }
 
             const updateEmbed = new EmbedBuilder()
                 .setTitle('Information zu den Warnungen der Nutzer')
-                .setDescription(warnings.length > 0 ? list : "> `❌` » Keine Warnungen vorhanden!")
-                .setColor('Red')
+                .setDescription(list)
+                .setColor('Red');
 
-            // Vorherige Nachricht bearbeiten, um das Embed zu aktualisieren
+            // Vorherige Antwort bearbeiten, um das Embed zu aktualisieren
             await interaction.editReply({ embeds: [updateEmbed] });
 
             // Optionale Bestätigungsnachricht
@@ -60,3 +64,4 @@ module.exports = {
         }
     }
 };
+
