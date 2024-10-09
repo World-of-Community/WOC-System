@@ -49,7 +49,7 @@ module.exports = {
                 .setTitle('Information zu den Warnungen der Nutzer')
                 .setDescription(list)
                 .setColor('Red')
-                .setFooter({ text: `» ${interaction.guild.name} - Warn system`, iconURL: interaction.guild.displayAvatarURL() });
+                .setFooter({ text: `» ${interaction.guild.name} - Warn system`, iconURL: `${interaction.guild.iconURL()}` });
 
             // Vorherige Antwort bearbeiten, um das Embed zu aktualisieren
             await interaction.editReply({ embeds: [WarnEmbed] });
