@@ -14,7 +14,7 @@ module.exports = {
 
         const TeamEmbed = new EmbedBuilder()
             .setTitle('Information zum WOC Server-Team')
-            .setDescription('')
+            .setDescription('⠀')
             .setColor('Orange')
             .setFooter({ text: `${interaction.guild.name} - Server-Team`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
