@@ -36,7 +36,7 @@ module.exports = {
                 .setTitle('Information zum WOC Server-Team')
                 .setDescription(`> ${bereich}\n- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`)
                 .setColor('Orange')
-                .setFooter({ text: 'WOC Server Team', iconURL: '' })
+                .setFooter({ text: `${interaction.guild.name} - Server-Team`, iconURL: `${interaction.guild.iconURL()}` })
                 .setTimestamp()
 
             const message = await interaction.reply({ embeds: [TeamEmbed], fetchReply: true });
