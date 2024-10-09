@@ -9,7 +9,7 @@ const teamMembers = {
     '> `🕵` | <@&816985466230145044>': [], // Sr-Moderator
     '> `👮` | <@&815920052385480754>': [], // Moderator
     '> `🧩` | <@&815920170371383366>': [], // Supporter
-    '> `🪓` | <@&1263645368441241700>': [] // Builder
+    '> `🪓` | <@&1263643648441241700>': [] // Builder
 };
 
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
                     { name: '🕵 Sr-Moderator', value: '> `🕵` | <@&816985466230145044>' },
                     { name: '👮 Moderator', value: '> `👮` | <@&815920052385480754>' },
                     { name: '🧩 Supporter', value: '> `🧩` | <@&815920170371383366>' },
-                    { name: '🪓 Builder', value: '> `🪓` | <@&1263645368441241700>' }
+                    { name: '🪓 Builder', value: '> `🪓` | <@&1263643648441241700>' }
                 ))
         .addUserOption(option => option.setName('user').setDescription('Das Teammitglied').setRequired(true))
         .addStringOption(option => option.setName('beschreibung').setDescription('Eine Beschreibung des Teammitglieds').setRequired(true))
@@ -36,18 +36,17 @@ module.exports = {
     
     async execute(interaction) {
         const bereich = interaction.options.getString('bereich');
-        const user = interaction.options.getUser('user') || 'Niemand'; 
+        const user = interaction.options.getUser('user'); // Einzelner Benutzer
         const beschreibung = interaction.options.getString('beschreibung');
         const name = interaction.options.getString('name') || '`keine Angabe`'; 
         const alter = interaction.options.getString('alter') || ''; 
 
-        // Hinzufügen des neuen Mitglieds zur entsprechenden Kategorie
-        const teamMemberEntry = { user, beschreibung, name, alter };
-        
         // Finde den entsprechenden Schlüssel
         const key = Object.keys(teamMembers).find(k => k.includes(bereich));
         
         if (key) {
+            // Hinzufügen des neuen Mitglieds zur entsprechenden Kategorie
+            const teamMemberEntry = `- ${user} (${beschreibung})\n⠀⠀➥ ${name} | ${alter}`;
             teamMembers[key].push(teamMemberEntry);
         } else {
             return interaction.reply({ content: 'Ungültiger Bereich angegeben!', ephemeral: true });
@@ -59,13 +58,9 @@ module.exports = {
         for (const [key, members] of Object.entries(teamMembers)) {
             if (members.length > 0) {
                 // Sortiere Mitglieder alphabetisch nach Benutzernamen
-                members.sort((a, b) => a.user.username.localeCompare(b.user.username));
+                members.sort((a, b) => a.localeCompare(b));
                 
-                embedDescription += `${key}\n`;
-                for (const member of members) {
-                    embedDescription += `- ${member.user} (${member.beschreibung})\n⠀⠀➥ ${member.name} | ${member.alter}\n`;
-                }
-                embedDescription += '\n';
+                embedDescription += `${key}\n${members.join('\n')}\n\n`;
             }
         }
 
