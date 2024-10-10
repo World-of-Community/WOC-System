@@ -6,6 +6,7 @@ const messagedb = require("../../Datenbank/messagedb");
 const userDB = require("../../Datenbank/userdb");
 const serverDB = require("../../Datenbank/serverdb")
 const bandb = require("../../Datenbank/bandb");
+const teamdb = require("../../Datenbank/teamdb");
 const internal = require("stream");
 const cron = require("node-cron");
 const Parser = require("rss-parser");
@@ -16,6 +17,7 @@ const cronitor = require('cronitor')('bbfc3034eaee49229dc7d1cfb4b65935');
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
+    teamAktivitätReset();
     const monitor = new cronitor.Monitor('System Bot');
 
     let lastEntries = {};
@@ -168,3 +170,14 @@ module.exports = {
   });
   },
 };
+
+function teamAktivitätReset() {
+  cron.schedule("0 0 0 1 * *", async () => {
+    const teamMitglieder = await teamdb.find()
+
+    teamMitglieder.forEach(async teamMitglied => {
+      teamMitglied.messages = 0;
+      await teamMitglied.save()
+    })
+  })
+}

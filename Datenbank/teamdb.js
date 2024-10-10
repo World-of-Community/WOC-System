@@ -5,6 +5,10 @@ const teamSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    messages: {
+        type: Number,
+        default: 0
+    },
     counter: {
         urlaub: { //Urlaub genommen
             type: Number,

@@ -3,6 +3,17 @@ const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
+const teamdb = require("../../Datenbank/teamdb");
+
+const TeamRoleIds = [
+    '959869691529154631', // Admin
+    '893423428558782465', // Team-leitung
+    '929349039433056276', // Developer
+    '816985466230145044', // Sr-Moderator
+    '815920052385480754', // Moderator
+    '815920170371383366', // Supporter
+    '1263645368441241700', // Builder
+];
 
 module.exports = {
     name: Events.MessageCreate,
@@ -19,6 +30,18 @@ module.exports = {
         }
 
         if (!message.author.bot) {
+
+            if(message.member.roles.cache.some(role => TeamRoleIds.includes(role.id))) {
+                let teamMitglied = await teamdb.findOne({ userID: message.author.id });
+                if(!teamMitglied) {
+                    teamMitglied = new teamdb({
+                        userID: message.author.id
+                    })
+                }
+
+                teamMitglied.messages++
+                await teamMitglied.save()
+            }
 
         const authorHasTeamRole = message.member.roles.cache.some((role) => role.id === '820658664536145940');
         if (authorHasTeamRole) return;

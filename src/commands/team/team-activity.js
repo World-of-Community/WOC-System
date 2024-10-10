@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 const teammessagedb = require("../../../Datenbank/teammessagedb.js");
+const teamdb = require("../../../Datenbank/teamdb.js");
 
 // Hier kannst du die Nachrichtenziele dynamisch speichern (z.B. in einer Datenbank)
 let messageGoals = {};
@@ -35,32 +36,21 @@ module.exports = {
         }
 
         if (interaction.options.getSubcommand() === 'check') {
-            const targetUser = interaction.options.getUser('user');
-            const member = await interaction.guild.members.fetch(targetUser.id);
+            const member = interaction.options.getMember('user');
 
-            // Finde das Nachrichtenziel basierend auf der Rolle des Benutzers
-            const userRoles = member.roles.cache;
-            let messageGoal = 0;
-            let userRole = null; // Variable für die Rolle des Benutzers
-
-            userRoles.forEach(role => {
-                if (messageGoals[role.id]) {
-                    messageGoal = messageGoals[role.id];
-                    userRole = role; // Setze die Rolle für die Ausgabe
-                }
-            });
-
+            /*
             if (messageGoal === 0) {
-                return interaction.reply({ content: `> \`📌\` » ${targetUser} hat keine definierte Rolle für Nachrichtenaktivität.`, ephemeral: true });
+                return interaction.reply({ content: `> \`📌\` » ${member} hat keine Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
             }
+            */
 
-            const currentMessages = await getMessagesForUser(targetUser.id); // Nachrichtenanzahl aus Datenbank holen
-            const messageProgress = `${currentMessages}/${messageGoal} Nachrichten`;
+            const teamUser = await teamdb.findOne({ userID: member.id })
+            const messageProgress = `${teamUser.messages}/${200} Nachrichten`;
 
             // Erstelle ein Embed für den Fortschritt
             const activityEmbed = new EmbedBuilder()
-                .setTitle(`Nachrichtenaktivität von ${targetUser.username}`)
-                .setDescription(`${targetUser} (${userRole})\n\n> Hat bereits ${messageProgress} erreicht.`)
+                .setTitle(`Nachrichtenaktivität von ${member.user.username}`)
+                .setDescription(`${member} (${undefined})\n\n> Hat bereits ${messageProgress} erreicht.`)
                 .setColor('Blurple')
                 .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
                 .setTimestamp();
