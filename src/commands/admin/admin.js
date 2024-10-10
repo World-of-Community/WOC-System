@@ -277,61 +277,70 @@ module.exports = {
                         }
                         break;
 
-                    case "donate":
+                        case "donate":
                             const amount = interaction.options.getInteger('amount');
-
-                            let userData = await userdb.findOne({userID: member.id})
-                    
-                            if(!userData) {
+                            
+                            // Fetch or create user data
+                            let userData = await userdb.findOne({ userID: member.id });
+                            
+                            if (!userData) {
                                 userData = new userDB({
-                                    userID: member.id, 
+                                    userID: member.id,
                                     donation: 0,
                                     reactions: {}
-                                })
+                                });
                             }
-                    
+                            
+                            // Create confirmation buttons
                             const confirmButton = new ButtonBuilder()
-                            .setCustomId('confirm')
-                            .setLabel('✅ » Bestätigen')
-                            .setStyle(ButtonStyle.Primary);
-                    
+                                .setCustomId('confirm')
+                                .setLabel('✅ » Bestätigen')
+                                .setStyle(ButtonStyle.Primary);
+                            
                             const cancelButton = new ButtonBuilder()
                                 .setCustomId('cancel')
                                 .setLabel('❌ » Abbrechen')
                                 .setStyle(ButtonStyle.Secondary);
-                    
+                            
                             const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
                             
+                            // Send initial confirmation message
                             const response1 = await interaction.reply({
                                 content: `> \`❗\` » Möchtest du wirklich den Betrag in Höhe von \`${amount}€\` hinzufügen?`,
                                 components: [row],
                                 ephemeral: true,
-                                
                             });
+                            
                             const collectorFilter1 = i => i.user.id === interaction.user.id;
                         
-                        try {
-                            const confirmation = await response1.awaitMessageComponent({ filter: collectorFilter1 });
-                                if (confirmation.customId === 'confirm') {     
-                                    userData.donation = Number(userData.donation += amount);
+                            try {
+                                const confirmation = await response1.awaitMessageComponent({ filter: collectorFilter1 });
+                                
+                                if (confirmation.customId === 'confirm') {
+                                    // Update user's donation
+                                    userData.donation += amount;
                                     await userData.save();
-                            
+                                    
                                     const donateEmbed = new EmbedBuilder()
                                         .setTitle('`💖` × SPENDE ERHALTEN!')
                                         .setDescription(`> \`✅\` » ${interaction.user} hat ${member} eine Spende von \`${amount}€\` erhalten!`)
                                         .setColor('Green')
-                                        .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+                                        .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                                         .setTimestamp();
-                            
+                                    
                                     await confirmation.update({ content: null, embeds: [donateEmbed], ephemeral: true, components: [] });
-                            } else if (confirmation.customId === 'cancel') {
-                                await confirmation.update({ content:  `> \`❌\` » Du hast die Spende in Höhe von \`${amount}€\` **nicht hinzugefügt**`, ephemeral: true, components: [] });
-                            }
-                        } catch (e) {
-                            console.log(e)
-                            await interaction.editReply({ content: "> `⏰` » Zeit ist abgelaufen", ephemeral: true, components: [] });
-                            }
-                        break;
+                                } else if (confirmation.customId === 'cancel') {
+                                    // Handle cancellation
+                                    await confirmation.update({
+                                        content: `> \`❌\` » Du hast die Spende in Höhe von \`${amount}€\` **nicht hinzugefügt**`,
+                                        ephemeral: true,
+                                        components: []
+                                    });
+                                }
+                            } catch (err) {
+                                // Handle possible errors, such as a timeout
+                                await interaction.followUp({ content: `> \`⚠️\` » Die Aktion wurde nicht rechtzeitig bestätigt.`, ephemeral: true });
+                            }                        
         }
     },
 };

@@ -47,7 +47,6 @@ module.exports = {
                     }
         
                     const partners = serverData.partner.partners;
-
         
                     const filtered = partners.filter(partner => partner.name.toLowerCase().includes(focusedOption.value.toLowerCase())).slice(0, 25);
 
