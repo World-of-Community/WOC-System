@@ -125,12 +125,12 @@ module.exports = {
                             .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
                             if(kategorie === "Kooperation") {
-                                newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
+                                newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner})`, inline: false });
                                 } else {
                                     newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
                                         if(kategorie === "Normale Partner") {
-                                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
+                                            newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner})`, inline: false });
                                             } else {
                                                 newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                             }
