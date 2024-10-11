@@ -15,13 +15,11 @@ module.exports = {
                 .setDescription('» Setzt das Nachrichtenziel für eine Rolle.')
                 .addRoleOption(option =>  option.setName('role').setDescription('Die Rolle, für die das Ziel festgelegt wird').setRequired(true))
                 .addIntegerOption(option =>  option.setName('messagegoal').setDescription('Das Nachrichtenziel für diese Rolle').setRequired(true)))
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .addSubcommand(subcommand => 
             subcommand
                 .setName('check')
                 .setDescription('» Überprüft die Nachrichtenaktivität eines Benutzers.')
-                .addUserOption(option =>  option.setName('user').setDescription('Der Benutzer, dessen Aktivität angezeigt werden soll').setRequired(true)))
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+                .addUserOption(option =>  option.setName('user').setDescription('Der Benutzer, dessen Aktivität angezeigt werden soll').setRequired(true))),
     async execute(interaction) {
         if (interaction.options.getSubcommand() === 'setgoal') {
             const role = interaction.options.getRole('role');
@@ -51,15 +49,15 @@ module.exports = {
             });
 
             if (messageGoal === 0) {
-                return interaction.reply({ content: `> \`📌\` » ${targetUser} hat keine definierte Rolle für Nachrichtenaktivität.`, ephemeral: true });
+                return interaction.reply({ content: `> \`📌\` » ${targetUser} hat keine Definierte Rolle für Nachrichtenaktivität.`, ephemeral: true });
             }
 
             const currentMessages = await getMessagesForUser(targetUser.id); // Nachrichtenanzahl aus Datenbank holen
-            const messageProgress = `${currentMessages}/${messageGoal} Nachrichten`;
+            const messageProgress = `\`${currentMessages}/${messageGoal}\` Nachrichten`;
 
             // Erstelle ein Embed für den Fortschritt
             const activityEmbed = new EmbedBuilder()
-                .setTitle(`Nachrichtenaktivität von ${targetUser.username}`)
+                .setTitle(`Nachrichtenaktivität von ${targetUser.displayName}`)
                 .setDescription(`${targetUser} (${userRole})\n\n> Hat bereits ${messageProgress} erreicht.`)
                 .setColor('Blurple')
                 .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
