@@ -519,7 +519,7 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Changelog Embed
-cron.schedule('0 0 * * 1', async () => {
+cron.schedule('*/30 * * * * *', async () => {
     const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
 
