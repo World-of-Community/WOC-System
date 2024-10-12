@@ -522,6 +522,7 @@ cron.schedule('0 0 * * *', async () => {
 cron.schedule('*/30 * * * * *', async () => {
      console.log("Cron job started: running every 30 seconds");
     const channel = client.channels.cache.get(config.changelog);
+    if(!channel) return console.log("Channel nicht gefunden")
     const serverData = await serverdb.findeOne({ guildID: config.server })
     if(serverData) {
         print("Found")
