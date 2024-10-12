@@ -521,11 +521,11 @@ cron.schedule('0 0 * * *', async () => {
 // Changelog Embed
 cron.schedule('*/30 * * * * *', async () => {
      console.log("Cron job started: running every 30 seconds");
-    const channel = client.channels.cache.get(config.changelog);
+    const channel = await client.channels.cache.get(config.changelog);
     if(!channel) return console.log("Channel nicht gefunden")
     const serverData = await serverdb.findeOne({ guildID: config.server })
     if(serverData) {
-        print("Found")
+        console.log("Found")
     }
 
     if (!serverData) return console.log("ServerData not found");
@@ -535,13 +535,13 @@ cron.schedule('*/30 * * * * *', async () => {
     const today = new Date();
     const nextWeek = new Date(today);
     nextWeek.setDate(today.getDate() + 6);
-    print(today)
-    print(nextWeek)
+    console.log(today)
+    console.log(nextWeek)
 
     const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
     const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
-    print(todayDate)
-    print(nextWeekDate)
+    console.log(todayDate)
+    console.log(nextWeekDate)
 
     const changelogEmbed = new EmbedBuilder()
         .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${todayDate} - ${nextWeekDate}]`)
@@ -595,7 +595,7 @@ cron.schedule('*/30 * * * * *', async () => {
         serverData.updateMessage = msg.id
         serverData.updateWeek = `${todayDate} - ${nextWeekDate}`
         await serverData.save()
-        print("embed send")
+        console.log("embed send")
     })
 });
 
