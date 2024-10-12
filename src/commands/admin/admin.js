@@ -280,12 +280,6 @@ module.exports = {
                     case "donate":
                         const amount = interaction.options.getInteger('amount');
                         
-                        let userData = await userdb.findOneAndUpdate(
-                            { userID: member.id }, 
-                            { $inc: { donation: amount } },
-                            { new: true, upsert: true, setDefaultsOnInsert: true } 
-                        );
-                        
                         // Create confirmation buttons
                         const confirmButton = new ButtonBuilder()
                             .setCustomId('confirm')
@@ -311,13 +305,21 @@ module.exports = {
                             const confirmation = await response1.awaitMessageComponent({ filter: collectorFilter1, time: 60_000 });
                             
                             if (confirmation.customId === "confirm") {
-                                // Update user's donation
-                                userData.donation += amount;
+
+                                let userData = await userdb.findOneAndUpdate(
+                                    { userID: member.id }, 
+                                    { 
+                                        $inc: { donation: amount },
+                                        $setOnInsert: { reactions: {} } 
+                                    },
+                                    { new: true, upsert: true }
+                                );
+                    
                                 await userData.save();
                                 
                                 const donateEmbed = new EmbedBuilder()
-                                    .setTitle('`💖` × SPENDE ERHALTEN!')
-                                    .setDescription(`> \`✅\` » ${member} hat nun \`${userData.donation}€\` gespendet!`)
+                                    .setTitle('`💖` × SPENDE HINZUGEFÜGT!')
+                                    .setDescription(`> \`✅\` » ${member} hat nun \`${userData.donation}€\` (\`+ ${amount}€\`) gespendet!`)
                                     .setColor('Green')
                                     .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                                     .setTimestamp();
