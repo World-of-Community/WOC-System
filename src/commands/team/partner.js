@@ -86,18 +86,18 @@ module.exports = {
 
                 if (!serverData.partner || !serverData.partner.msg || !serverData.partner.channel) {
                     const newEmbed = new EmbedBuilder()
-                        .setTitle('Partnerliste')
+                        .setTitle('Unsere Partnerliste')
                         .setColor('Blurple')
                         .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
                         .setFooter({ text: `» Maximal 15 Server-Partner`, iconURL: `${interaction.guild.iconURL()}` });
 
                         if(kategorie === "Kooperation") {
-                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
+                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
                             } else {
                                 newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                             }
                                     if(kategorie === "Normale Partner") {
-                                        newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
+                                        newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
                                         } else {
                                             newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });
                                         }
@@ -124,12 +124,12 @@ module.exports = {
                             .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
                             if(kategorie === "Kooperation") {
-                                newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner})`, inline: false });
+                                newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
                                 } else {
                                     newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
                                         if(kategorie === "Normale Partner") {
-                                            newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner})`, inline: false });
+                                            newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
                                             } else {
                                                 newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                             }
