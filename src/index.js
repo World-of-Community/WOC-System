@@ -519,20 +519,13 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Changelog Embed
-cron.schedule('*/30 * * * * *', async () => {
-    console.log("Cron job started: running every 30 seconds");
-
+cron.schedule('0 0 * * 1', async () => {
     try {
         const channel = await client.channels.cache.get(config.changelog);
-        if (!channel) {
-            return console.log("Channel nicht gefunden");
-        }
-        console.log("Channel gefunden:", channel.name);
+        if (!channel) return;
 
         let serverData = await serverdb.findOne({ guildID: config.server });
         if (!serverData) {
-            console.log("ServerData nicht gefunden, wird erstellt...");
-            // Falls serverData nicht existiert, wird es neu erstellt.
             serverData = new serverdb({
                 guildID: config.server,
                 support: [],
@@ -542,18 +535,12 @@ cron.schedule('*/30 * * * * *', async () => {
                 minecraft: []
             });
             await serverData.save();
-            console.log("ServerData wurde erstellt und gespeichert.");
         } else {
-            console.log("ServerData gefunden:", serverData);
-
-            // Wenn die Arrays nicht existieren, initialisiere sie.
             if (!serverData.support) serverData.support = [];
             if (!serverData.system) serverData.system = [];
             if (!serverData.gift) serverData.gift = [];
             if (!serverData.verify) serverData.verify = [];
             if (!serverData.minecraft) serverData.minecraft = [];
-
-            // Speichere die aktualisierten Daten in der Datenbank.
             await serverData.save();
         }
 
@@ -566,13 +553,8 @@ cron.schedule('*/30 * * * * *', async () => {
         const nextWeek = new Date(today);
         nextWeek.setDate(today.getDate() + 6);
 
-        console.log("Today's date:", today);
-        console.log("Next week's date:", nextWeek);
-
         const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
         const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
-        console.log("Formatted today's date:", todayDate);
-        console.log("Formatted next week's date:", nextWeekDate);
 
         const changelogEmbed = new EmbedBuilder()
             .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${todayDate} - ${nextWeekDate}]`)
@@ -594,7 +576,6 @@ cron.schedule('*/30 * * * * *', async () => {
                 name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
                 value: `${support.join('\n')}`
             });
-            console.log("Support field added:", support);
         }
 
         if (system.length > 0) {
@@ -602,7 +583,6 @@ cron.schedule('*/30 * * * * *', async () => {
                 name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
                 value: `${system.join('\n')}`
             });
-            console.log("System field added:", system);
         }
 
         if (gift.length > 0) {
@@ -610,7 +590,6 @@ cron.schedule('*/30 * * * * *', async () => {
                 name: '> <a:Giveaway:1072144077103054909> - **WOC`🎁`GIFT (BOT)** - UPDATE',
                 value: `${gift.join('\n')}`
             });
-            console.log("Gift field added:", gift);
         }
 
         if (verify.length > 0) {
@@ -618,7 +597,6 @@ cron.schedule('*/30 * * * * *', async () => {
                 name: '> <a:yes_tick:1042831133303386122> - **SERVICE (BOT)** - UPDATE',
                 value: `${verify.join('\n')}`
             });
-            console.log("Verify field added:", verify);
         }
 
         if (minecraft.length > 0) {
@@ -626,14 +604,12 @@ cron.schedule('*/30 * * * * *', async () => {
                 name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
                 value: `${minecraft.join('\n')}`
             });
-            console.log("Minecraft field added:", minecraft);
         }
 
         await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
             serverData.updateMessage = msg.id;
             serverData.updateWeek = `${todayDate} - ${nextWeekDate}`;
             await serverData.save();
-            console.log("Embed gesendet und ServerData aktualisiert.");
         });
 
     } catch (error) {
