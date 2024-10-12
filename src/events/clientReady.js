@@ -158,8 +158,6 @@ module.exports = {
         await updateLeaderboardEmbeds();
       });
 
-      await updateLeaderboardEmbeds();
-
     // RSS Feed
     setInterval(async () => {
       processRSSFeed(client, lastEntries);
