@@ -2,7 +2,6 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("disc
 const fs = require('fs');
 const serverdb = require("../../../Datenbank/serverdb");
 
-
 //Nicht Bearbeiten + ausser wenn eine neue Kategorie hinzugefügt wird!!!
 const kategorieMapping = {
     'support': 'support',
@@ -12,7 +11,6 @@ const kategorieMapping = {
     'webseite': 'webseite',
     'dc': 'dc'
 };
-
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -123,7 +121,7 @@ module.exports = {
                 await interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
                 const updateChannel = await interaction.guild.channels.cache.get("1051393854328279120")
                 await msg.edit({ embeds: [updateEmbed] })
-                const message = await updateChannel.send({content: `Neues Updatet`})
+                const message = await updateChannel.send({content: `Neues Changelog Update`})
                 setTimeout(() => {
                     message.delete().catch(console.error);
                 }, 5000);
