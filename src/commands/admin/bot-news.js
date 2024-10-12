@@ -54,7 +54,7 @@ module.exports = {
                 const today = new Date();
                 const nextWeek = new Date(today);
 
-                const existingEmbed = EmbedBuilder.from(sentMessage.embeds[0]);
+                const existingEmbed = EmbedBuilder.from(msg.embeds[0]);
 
                 // Set default value if updateWeek is undefined
                 //const updateWeek = serverData.updateWeek || 'Unbekannt';
