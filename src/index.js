@@ -575,7 +575,7 @@ cron.schedule('0 0 * * 1', async () => {
         const verify = serverData.verify || [];
         const minecraft = serverData.minecraft || [];
         const website = serverData.website || [];
-        const minecraft = serverData.minecraft || [];
+        const discord = serverData.discord || [];
 
         // Add fields based on serverData
         if (support.length > 0) {
