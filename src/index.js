@@ -532,15 +532,20 @@ cron.schedule('0 0 * * 1', async () => {
                 system: [],
                 gift: [],
                 verify: [],
-                minecraft: []
+                minecraft: [],
+                discord: [],
+                website: []
             });
             await serverData.save();
         } else {
+                        
             if (!serverData.support) serverData.support = [];
             if (!serverData.system) serverData.system = [];
             if (!serverData.gift) serverData.gift = [];
             if (!serverData.verify) serverData.verify = [];
             if (!serverData.minecraft) serverData.minecraft = [];
+            if (!serverData.website) serverData.website = [];
+            if (!serverData.dc) serverData.dc = [];
             await serverData.save();
         }
 
@@ -568,6 +573,8 @@ cron.schedule('0 0 * * 1', async () => {
         const system = serverData.system || [];
         const gift = serverData.gift || [];
         const verify = serverData.verify || [];
+        const minecraft = serverData.minecraft || [];
+        const website = serverData.website || [];
         const minecraft = serverData.minecraft || [];
 
         // Add fields based on serverData

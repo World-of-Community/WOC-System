@@ -2,6 +2,8 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("disc
 const fs = require('fs');
 const serverdb = require("../../../Datenbank/serverdb");
 
+
+//Nicht Bearbeiten + ausser wenn eine neue Kategorie hinzugefügt wird!!!
 const kategorieMapping = {
     'support': 'support',
     'system': 'system',
@@ -51,9 +53,9 @@ module.exports = {
         }
 
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
-            serverData = await serverdb.findOne({ guildID: interaction.guildId })
             await interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
             setTimeout(async () => {
+                serverData = await serverdb.findOne({ guildID: interaction.guildId })
                 // Week Date
                 const today = new Date();
                 const nextWeek = new Date(today);
