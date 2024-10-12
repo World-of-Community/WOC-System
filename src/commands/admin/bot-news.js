@@ -29,22 +29,24 @@ module.exports = {
         if (!serverData) return;
         const channel = await interaction.client.channels.cache.get(config.changelog)
 
-        if (kategorie === 'support') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { support: `${emoji} » ${update}` } })
-        } else if (kategorie === 'system') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { system: `${emoji} » ${update}` } })
-        } else if (kategorie === 'gift') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { gift: `${emoji} » ${update}` } })
-        } else if (kategorie === 'service') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { service: `${emoji} » ${update}` } })
-        } else if (kategorie === 'minecraft') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { minecraft: `${emoji} » ${update}` } })
-        }
-        else if (kategorie === 'webseite') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { webseite: `${emoji} » ${update}` } })
-        }
-        else if (kategorie === 'dc') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { dc: `${emoji} » ${update}` } })
+        const kategorieMapping = {
+            'support': 'support',
+            'system': 'system',
+            'gift': 'gift',
+            'service': 'service',
+            'minecraft': 'minecraft',
+            'webseite': 'webseite',
+            'dc': 'dc'
+        };
+    
+        if (kategorieMapping[kategorie]) {
+            const field = kategorieMapping[kategorie];
+            await serverdb.findOneAndUpdate(
+                { guildID: interaction.guildId },
+                { $push: { [field]: `${emoji} » ${update}` } }
+            );
+        } else {
+            console.log(`Kategorie '${kategorie}' nicht gefunden.`);
         }
 
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
