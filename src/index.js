@@ -595,7 +595,7 @@ cron.schedule('0 0 * * 1', async () => {
 
         if (discord.length > 0) {
             changelogEmbed.addFields({
-                name: '> EMOJI - **DISCORD SERVER** - UPDATE',
+                name: '> <:Discord:912007935616516098> - **DISCORD SERVER** - UPDATE',
                 value: `${discord.join('\n')}`
             });
         }
@@ -603,7 +603,7 @@ cron.schedule('0 0 * * 1', async () => {
 
         if (webseite.length > 0) {
             changelogEmbed.addFields({
-                name: '> EMOJI - **WEBSEITE** - UPDATE',
+                name: '> <a:wocbook:1178664700469317692> - **WEBSEITE** - UPDATE',
                 value: `${webseite.join('\n')}`
             });
         }
