@@ -116,8 +116,6 @@ module.exports = {
                     )
                 }
 
-                
-
                 await interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
                 const updateChannel = await interaction.guild.channels.cache.get("1051393854328279120")
                 await msg.edit({ embeds: [updateEmbed] })
