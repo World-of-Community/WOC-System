@@ -61,23 +61,10 @@ module.exports = {
             }
         }
 
-        //if (message.channelId === config.willkommen) {
-        //    const messageData = await messagedb.findOne({ guildID: config.server })
-        //    messageData.messages = parseInt(messageData.messages) + 1
-        //    await messageData.save()
-        //}
-
         if (message.channelId === config.willkommen) {
-            const messageData = await messagedb.findOne({ guildID: config.server });
-        
-            // Ensure `messageData.messages` is a valid number, defaulting to 0 if it's undefined or not a number
-            const currentMessages = parseInt(messageData?.messages, 10) || 0;
-        
-            // Increment the message count
-            messageData.messages = currentMessages + 1;
-        
-            // Save the updated document
-            await messageData.save();
+            const messageData = await messagedb.findOne({ guildID: config.server })
+            messageData.messages = parseInt(messageData.messages) + 1
+            await messageData.save()
         }
         
 
