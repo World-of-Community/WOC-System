@@ -24,6 +24,19 @@ module.exports = {
                 // Week Date
                 const today = new Date();
                 const nextWeek = new Date(today);
+
+                // Safely handle updateWeek
+                const updateWeek = serverData.updateWeek || 'Unbekannt';
+                let footerText;
+
+                if (updateWeek !== 'Unbekannt') {
+                    footerText = `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${updateWeek.split(" - ")[0]}.${new Date().getFullYear()}`;
+                } else {
+                    footerText = '» Wir wünschen euch viel Spaß mit dem neuen Update!';
+                }
+
+                //» Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData.updateWeek.split(" - ")[0]}.${today.getFullYear()}
+
                 nextWeek.setDate(today.getDate() + 6);
 
                 const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
@@ -34,7 +47,7 @@ module.exports = {
                     .setDescription(`<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n`)
                     .setColor('#ff7b00')
                     .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340524490260571/WOC_Banner_Update_Wochenruckblick.png?ex=66b5a3bc&is=66b4523c&hm=53cb5bb7292636bbaf71aa053f60553cafb8ed1d6da8a8dfb287b41d2dc24104&')
-                    .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData.updateWeek.split(" - ")[0]}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+                    .setFooter({ text: footerText, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
 
                 if (serverData.support.length > 0) {
                     updateEmbed.addFields(
