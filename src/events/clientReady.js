@@ -19,7 +19,7 @@ module.exports = {
     const monitor = new cronitor.Monitor('System Bot');
 
     async function createServerData() {
-      const newServerData = new ServerData({
+      const newServerData = new serverDB({
           guildID: '815919809379172354',
           updateMessage: '',
           updateWeek: '',
