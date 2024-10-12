@@ -52,103 +52,103 @@ module.exports = {
     }
     console.log("Verbunden mit Discord");
 
+    const leaderboardMessage = await leaderboarddb.findOne({});
+    const messageId = leaderboardMessage?.messageId;
+    const guildChannel = guild.channels.cache.find(channel => channel.type === 'GUILD_TEXT' && channel.permissionsFor(guild.members.me).has("VIEW_CHANNEL"));
+
+    await new Promise(resolve => setTimeout(resolve, 5000)); 
+
+    const updateLeaderboardEmbeds = async () => {
+        try {
+            const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
+            const topVoice = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(10);
+
+            const topMessagesMembers = await Promise.all(topMessages.map(async (user) => {
+                const member = await guild.members.fetch(user.userID).catch(() => null);
+                return { member, messages: user.stats.messages ?? 0 };
+            }));
+
+            const topVoiceMembers = await Promise.all(topVoice.map(async (user) => {
+                const member = await guild.members.fetch(user.userID).catch(() => null);
+                const voiceTime = user.stats.voiceTime ?? 0;
+                const days = Math.floor(voiceTime / (24 * 60 * 60 * 1000));
+                const hours = Math.floor((voiceTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                const minutes = Math.floor((voiceTime % (60 * 60 * 1000)) / (60 * 1000));
+                return { member, timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten` };
+            }));
+
+            const messageLeaderboardText = topMessagesMembers
+                .filter(user => user.member)
+                .map((user, index) => {
+                    const memberMention = user.member ? user.member.toString() : 'Unbekannt';
+                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.messages} Nachrichten\``;
+                })
+                .join('\n').slice(0, 1024);
+
+            const voiceLeaderboardText = topVoiceMembers
+                .filter(user => user.member)
+                .map((user, index) => {
+                    const memberMention = user.member ? user.member.toString() : 'Unbekannt';
+                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.timeText}\``;
+                })
+                .join('\n').slice(0, 1024);
+
+            const currentMonth = getCurrentMonth();
+
+            const InfoEmbed = new EmbedBuilder()
+                .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten\ndie <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n\n> `📌` » Das Leaderboard wird monatlich zurückgesetzt.')
+                .setColor('Orange');
+
+            const messageEmbed = new EmbedBuilder()
+                .setAuthor({ name: `» ${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
+                .setDescription(messageLeaderboardText)
+                .setColor('Blurple')
+                .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png' })
+                .setTimestamp();
+
+            const voiceEmbed = new EmbedBuilder()
+                .setAuthor({ name: `» ${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
+                .setDescription(voiceLeaderboardText)
+                .setColor('Blue')
+                .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png' })
+                .setTimestamp();
+
+            if (topMessagesMembers[0]?.member) {
+                messageEmbed.setThumbnail(topMessagesMembers[0].member.displayAvatarURL({ dynamic: true }));
+            }
+
+            if (topVoiceMembers[0]?.member) {
+                voiceEmbed.setThumbnail(topVoiceMembers[0].member.displayAvatarURL({ dynamic: true }));
+            }
+
+            if (messageId) {
+                const leaderboardChannel = await guild.channels.fetch(guildChannel.id);
+                const fetchedMessage = await leaderboardChannel.messages.fetch(messageId).catch(() => null);
+                if (fetchedMessage) {
+                    await fetchedMessage.edit({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
+                }
+            }
+
+            const role = await guild.roles.fetch(RoleID);
+            if (role) {
+                const membersWithRole = await guild.members.fetch({ role: RoleID });
+                membersWithRole.forEach(member => {
+                    member.roles.remove(role).catch(err => console.error(`Fehler beim Entfernen der Rolle: ${err}`));
+                });
+            }
+
+            const roleAssignments = [...topMessagesMembers.slice(0, 3), ...topVoiceMembers.slice(0, 3)].map(async user => {
+                if (user.member) {
+                    await user.member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
+                }
+            });
+            await Promise.all(roleAssignments);
+        } catch (error) {
+            console.error('Fehler beim Aktualisieren des Leaderboards:', error);
+        }
+      }
+
     setInterval(async () => {
-      const leaderboardMessage = await leaderboarddb.findOne({});
-      const messageId = leaderboardMessage?.messageId;
-      const guildChannel = guild.channels.cache.find(channel => channel.type === 'GUILD_TEXT' && channel.permissionsFor(guild.members.me).has("VIEW_CHANNEL"));
-
-      await new Promise(resolve => setTimeout(resolve, 5000)); 
-
-      const updateLeaderboardEmbeds = async () => {
-          try {
-              const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
-              const topVoice = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(10);
-
-              const topMessagesMembers = await Promise.all(topMessages.map(async (user) => {
-                  const member = await guild.members.fetch(user.userID).catch(() => null);
-                  return { member, messages: user.stats.messages ?? 0 };
-              }));
-
-              const topVoiceMembers = await Promise.all(topVoice.map(async (user) => {
-                  const member = await guild.members.fetch(user.userID).catch(() => null);
-                  const voiceTime = user.stats.voiceTime ?? 0;
-                  const days = Math.floor(voiceTime / (24 * 60 * 60 * 1000));
-                  const hours = Math.floor((voiceTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-                  const minutes = Math.floor((voiceTime % (60 * 60 * 1000)) / (60 * 1000));
-                  return { member, timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten` };
-              }));
-
-              const messageLeaderboardText = topMessagesMembers
-                  .filter(user => user.member)
-                  .map((user, index) => {
-                      const memberMention = user.member ? user.member.toString() : 'Unbekannt';
-                      return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.messages} Nachrichten\``;
-                  })
-                  .join('\n').slice(0, 1024);
-
-              const voiceLeaderboardText = topVoiceMembers
-                  .filter(user => user.member)
-                  .map((user, index) => {
-                      const memberMention = user.member ? user.member.toString() : 'Unbekannt';
-                      return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.timeText}\``;
-                  })
-                  .join('\n').slice(0, 1024);
-
-              const currentMonth = getCurrentMonth();
-
-              const InfoEmbed = new EmbedBuilder()
-                  .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten\ndie <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n\n> `📌` » Das Leaderboard wird monatlich zurückgesetzt.')
-                  .setColor('Orange');
-
-              const messageEmbed = new EmbedBuilder()
-                  .setAuthor({ name: `» ${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
-                  .setDescription(messageLeaderboardText)
-                  .setColor('Blurple')
-                  .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png' })
-                  .setTimestamp();
-
-              const voiceEmbed = new EmbedBuilder()
-                  .setAuthor({ name: `» ${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
-                  .setDescription(voiceLeaderboardText)
-                  .setColor('Blue')
-                  .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png' })
-                  .setTimestamp();
-
-              if (topMessagesMembers[0]?.member) {
-                  messageEmbed.setThumbnail(topMessagesMembers[0].member.displayAvatarURL({ dynamic: true }));
-              }
-
-              if (topVoiceMembers[0]?.member) {
-                  voiceEmbed.setThumbnail(topVoiceMembers[0].member.displayAvatarURL({ dynamic: true }));
-              }
-
-              if (messageId) {
-                  const leaderboardChannel = await guild.channels.fetch(guildChannel.id);
-                  const fetchedMessage = await leaderboardChannel.messages.fetch(messageId).catch(() => null);
-                  if (fetchedMessage) {
-                      await fetchedMessage.edit({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
-                  }
-              }
-
-              const role = await guild.roles.fetch(RoleID);
-              if (role) {
-                  const membersWithRole = await guild.members.fetch({ role: RoleID });
-                  membersWithRole.forEach(member => {
-                      member.roles.remove(role).catch(err => console.error(`Fehler beim Entfernen der Rolle: ${err}`));
-                  });
-              }
-
-              const roleAssignments = [...topMessagesMembers.slice(0, 3), ...topVoiceMembers.slice(0, 3)].map(async user => {
-                  if (user.member) {
-                      await user.member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
-                  }
-              });
-              await Promise.all(roleAssignments);
-          } catch (error) {
-              console.error('Fehler beim Aktualisieren des Leaderboards:', error);
-          }
-      };
-
       await updateLeaderboardEmbeds();
   }, 21600000); 
 
@@ -158,6 +158,8 @@ module.exports = {
         console.log('Leaderboard wurde monatlich zurückgesetzt.');
         await updateLeaderboardEmbeds();
       });
+
+      await updateLeaderboardEmbeds();
 
     // RSS Feed
     setInterval(async () => {
