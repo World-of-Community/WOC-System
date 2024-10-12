@@ -8,7 +8,6 @@ const kategorieMapping = {
     'support': 'support',
     'system': 'system',
     'gift': 'gift',
-    'service': 'service',
     'minecraft': 'minecraft',
     'webseite': 'webseite',
     'dc': 'dc'
@@ -93,14 +92,6 @@ module.exports = {
                         {
                             name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
                             value: `${serverData.gift.join('\n')}\n${emoji} » ${update}\n** **`
-                        }
-                    )
-                }
-                if (serverData.verify.length > 0) {
-                    updateEmbed.addFields(
-                        {
-                            name: '> 🤖 - **SERVICE (BOT)** - UPDATE',
-                            value: `${serverData.service.join('\n')}`
                         }
                     )
                 }

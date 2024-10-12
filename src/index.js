@@ -519,7 +519,7 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Changelog Embed
-cron.schedule('0 0 * * 1', async () => {
+cron.schedule('*/30 * * * * *', async () => {
     try {
         const channel = await client.channels.cache.get(config.changelog);
         if (!channel) return;
@@ -612,6 +612,14 @@ cron.schedule('0 0 * * 1', async () => {
                 value: `${minecraft.join('\n')}`
             });
         }
+
+        if (discord.length > 0) {
+            changelogEmbed.addFields({
+                name: '> EMOJI - **DISCORD SERVER** - UPDATE',
+                value: `${minecraft.join('\n')}`
+            });
+        }
+
 
         await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
             serverData.updateMessage = msg.id;
