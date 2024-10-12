@@ -67,28 +67,13 @@ module.exports = {
             await messageData.save()
         }
 
-        // Changelog Info Neues Update Nachricht - geht nicht
-        if (message.content === '/bot-news' && message.channel.id === '1051393854328279120') {
-            try {
-                // Sendet die Nachricht
-                const msg = await message.channel.send('Neues Update');
-    
-                // Wartet 5 Sekunden
-                setTimeout(() => {
-                    msg.delete().catch(console.error);
-                }, 5000);
-            } catch (error) {
-                console.error('Error sending or deleting message:', error);
-            }
-        }
-
         // Bump System (geht noch nicht)
 
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
 
         // Überprüfen, ob die Nachricht vom Disboard-Bot stammt und den erfolgreichen Bump bestätigt
-    if (message.author.id === disboardBotId && message.embeds.length > 0) {
+        if (message.author.id === disboardBotId && message.embeds.length > 0) {
         const embed = message.embeds[0];
 
         if (embed.description && embed.description.includes('Bump done')) {
