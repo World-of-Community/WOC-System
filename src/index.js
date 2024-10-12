@@ -529,11 +529,33 @@ cron.schedule('*/30 * * * * *', async () => {
         }
         console.log("Channel gefunden:", channel.name);
 
-        const serverData = await serverdb.findOne({ guildID: config.server });
+        let serverData = await serverdb.findOne({ guildID: config.server });
         if (!serverData) {
-            return console.log("ServerData nicht gefunden");
+            console.log("ServerData nicht gefunden, wird erstellt...");
+            // Falls serverData nicht existiert, wird es neu erstellt.
+            serverData = new serverdb({
+                guildID: config.server,
+                support: [],
+                system: [],
+                gift: [],
+                verify: [],
+                minecraft: []
+            });
+            await serverData.save();
+            console.log("ServerData wurde erstellt und gespeichert.");
+        } else {
+            console.log("ServerData gefunden:", serverData);
+
+            // Wenn die Arrays nicht existieren, initialisiere sie.
+            if (!serverData.support) serverData.support = [];
+            if (!serverData.system) serverData.system = [];
+            if (!serverData.gift) serverData.gift = [];
+            if (!serverData.verify) serverData.verify = [];
+            if (!serverData.minecraft) serverData.minecraft = [];
+
+            // Speichere die aktualisierten Daten in der Datenbank.
+            await serverData.save();
         }
-        console.log("ServerData gefunden:", serverData);
 
         if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) {
             return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' });
@@ -559,58 +581,66 @@ cron.schedule('*/30 * * * * *', async () => {
             .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340524490260571/WOC_Banner_Update_Wochenruckblick.png')
             .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${todayDate}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' });
 
+        // Arrays initialisieren (falls nicht vorhanden) und Daten anzeigen
+        const support = serverData.support || [];
+        const system = serverData.system || [];
+        const gift = serverData.gift || [];
+        const verify = serverData.verify || [];
+        const minecraft = serverData.minecraft || [];
+
         // Add fields based on serverData
-        if (serverData.support.length > 0) {
+        if (support.length > 0) {
             changelogEmbed.addFields({
                 name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
-                value: `${serverData.support.join('\n')}`
+                value: `${support.join('\n')}`
             });
-            console.log("Support field added:", serverData.support);
+            console.log("Support field added:", support);
         }
 
-        if (serverData.system.length > 0) {
+        if (system.length > 0) {
             changelogEmbed.addFields({
                 name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
-                value: `${serverData.system.join('\n')}`
+                value: `${system.join('\n')}`
             });
-            console.log("System field added:", serverData.system);
+            console.log("System field added:", system);
         }
 
-        if (serverData.gift.length > 0) {
+        if (gift.length > 0) {
             changelogEmbed.addFields({
                 name: '> <a:Giveaway:1072144077103054909> - **WOC`🎁`GIFT (BOT)** - UPDATE',
-                value: `${serverData.gift.join('\n')}`
+                value: `${gift.join('\n')}`
             });
-            console.log("Gift field added:", serverData.gift);
+            console.log("Gift field added:", gift);
         }
 
-        if (serverData.verify.length > 0) {
+        if (verify.length > 0) {
             changelogEmbed.addFields({
                 name: '> <a:yes_tick:1042831133303386122> - **SERVICE (BOT)** - UPDATE',
-                value: `${serverData.verify.join('\n')}`
+                value: `${verify.join('\n')}`
             });
-            console.log("Verify field added:", serverData.verify);
+            console.log("Verify field added:", verify);
         }
 
-        if (serverData.minecraft.length > 0) {
+        if (minecraft.length > 0) {
             changelogEmbed.addFields({
                 name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
-                value: `${serverData.minecraft.join('\n')}`
+                value: `${minecraft.join('\n')}`
             });
-            console.log("Minecraft field added:", serverData.minecraft);
+            console.log("Minecraft field added:", minecraft);
         }
 
         await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
             serverData.updateMessage = msg.id;
             serverData.updateWeek = `${todayDate} - ${nextWeekDate}`;
             await serverData.save();
-            console.log("Embed sent and serverData updated.");
+            console.log("Embed gesendet und ServerData aktualisiert.");
         });
 
     } catch (error) {
-        console.error("Error in Cron job:", error);
+        console.log("Error in Cron job:", error);
     }
 });
+
 
 
 // 18 Uhr Message
