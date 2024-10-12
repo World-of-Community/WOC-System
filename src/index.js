@@ -615,7 +615,7 @@ cron.schedule('0 0 * * 1', async () => {
         });
 
     } catch (error) {
-        console.log("Error in Cron job:", error);
+        console.log("Fehler im Cron job:", error);
     }
 });
 
@@ -792,7 +792,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         }
     } 
     else if (oldState.channelId && !newState.channelId) {
-        // User has left a voice channel
+
         console.log('Benutzer hat einen Sprachkanal verlassen.');
 
         let userData = await userdb.findOne({ userID: userId });
