@@ -48,13 +48,13 @@ module.exports = {
         }
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
             serverData = await serverdb.findOne({ guildID: interaction.guildId })
+            const existingEmbed = msg.embeds.lenght > 0 ? EmbedBuilder.from(msg.embeds[0]) : null;
+            print(msg.embeds[0])
             await interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
             setTimeout(async () => {
                 // Week Date
                 const today = new Date();
                 const nextWeek = new Date(today);
-
-                const existingEmbed = EmbedBuilder.from(msg.embeds[0]);
 
                 // Set default value if updateWeek is undefined
                 //const updateWeek = serverData.updateWeek || 'Unbekannt';
