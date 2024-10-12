@@ -520,84 +520,98 @@ cron.schedule('0 0 * * *', async () => {
 
 // Changelog Embed
 cron.schedule('*/30 * * * * *', async () => {
-     console.log("Cron job started: running every 30 seconds");
-    const channel = await client.channels.cache.get(config.changelog);
-    if(!channel) return console.log("Channel nicht gefunden")
-    const serverData = await serverdb.findeOne({ guildID: config.server })
-    if(serverData) {
-        console.log("Found")
-    }
+    console.log("Cron job started: running every 30 seconds");
 
-    if (!serverData) return console.log("ServerData not found");
-    if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
+    try {
+        const channel = await client.channels.cache.get(config.changelog);
+        if (!channel) {
+            return console.log("Channel nicht gefunden");
+        }
+        console.log("Channel gefunden:", channel.name);
 
-    // Week Date
-    const today = new Date();
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 6);
-    console.log(today)
-    console.log(nextWeek)
+        const serverData = await serverdb.findOne({ guildID: config.server });
+        if (!serverData) {
+            return console.log("ServerData nicht gefunden");
+        }
+        console.log("ServerData gefunden:", serverData);
 
-    const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
-    const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
-    console.log(todayDate)
-    console.log(nextWeekDate)
+        if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) {
+            return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' });
+        }
 
-    const changelogEmbed = new EmbedBuilder()
-        .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${todayDate} - ${nextWeekDate}]`)
-        .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n> In dieser Woche gab es keine Änderung.\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀')
-        .setColor('#ff7b00')
-        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340524490260571/WOC_Banner_Update_Wochenruckblick.png?ex=66b5a3bc&is=66b4523c&hm=53cb5bb7292636bbaf71aa053f60553cafb8ed1d6da8a8dfb287b41d2dc24104&')
-        .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${todayDate}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+        // Week Date
+        const today = new Date();
+        const nextWeek = new Date(today);
+        nextWeek.setDate(today.getDate() + 6);
 
-    if (serverData.support.length > 0) {
-        changelogEmbed.addFields(
-            {
+        console.log("Today's date:", today);
+        console.log("Next week's date:", nextWeek);
+
+        const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+        const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
+        console.log("Formatted today's date:", todayDate);
+        console.log("Formatted next week's date:", nextWeekDate);
+
+        const changelogEmbed = new EmbedBuilder()
+            .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${todayDate} - ${nextWeekDate}]`)
+            .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n> In dieser Woche gab es keine Änderung.\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀')
+            .setColor('#ff7b00')
+            .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340524490260571/WOC_Banner_Update_Wochenruckblick.png')
+            .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${todayDate}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' });
+
+        // Add fields based on serverData
+        if (serverData.support.length > 0) {
+            changelogEmbed.addFields({
                 name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
                 value: `${serverData.support.join('\n')}`
-            }
-        )
-    }
-    if (serverData.system.length > 0) {
-        changelogEmbed.addFields(
-            {
+            });
+            console.log("Support field added:", serverData.support);
+        }
+
+        if (serverData.system.length > 0) {
+            changelogEmbed.addFields({
                 name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
                 value: `${serverData.system.join('\n')}`
-            }
-        )
-    }
-    if (serverData.gift.length > 0) {
-        changelogEmbed.addFields(
-            {
+            });
+            console.log("System field added:", serverData.system);
+        }
+
+        if (serverData.gift.length > 0) {
+            changelogEmbed.addFields({
                 name: '> <a:Giveaway:1072144077103054909> - **WOC`🎁`GIFT (BOT)** - UPDATE',
                 value: `${serverData.gift.join('\n')}`
-            }
-        )
-    }
-    if (serverData.verify.length > 0) {
-        changelogEmbed.addFields(
-            {
+            });
+            console.log("Gift field added:", serverData.gift);
+        }
+
+        if (serverData.verify.length > 0) {
+            changelogEmbed.addFields({
                 name: '> <a:yes_tick:1042831133303386122> - **SERVICE (BOT)** - UPDATE',
-                value: `${serverData.service.join('\n')}`
-            }
-        )
-    }
-    if (serverData.minecraft.length > 0) {
-        changelogEmbed.addFields(
-            {
+                value: `${serverData.verify.join('\n')}`
+            });
+            console.log("Verify field added:", serverData.verify);
+        }
+
+        if (serverData.minecraft.length > 0) {
+            changelogEmbed.addFields({
                 name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
                 value: `${serverData.minecraft.join('\n')}`
-            }
-        )
-    }
+            });
+            console.log("Minecraft field added:", serverData.minecraft);
+        }
 
-    await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
-        serverData.updateMessage = msg.id
-        serverData.updateWeek = `${todayDate} - ${nextWeekDate}`
-        await serverData.save()
-        console.log("embed send")
-    })
+        await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
+            serverData.updateMessage = msg.id;
+            serverData.updateWeek = `${todayDate} - ${nextWeekDate}`;
+            await serverData.save();
+            console.log("Embed sent and serverData updated.");
+        });
+
+    } catch (error) {
+        console.error("Error in Cron job:", error);
+    }
 });
+
 
 // 18 Uhr Message
 cron.schedule('0 18 * * 0', async () => {
