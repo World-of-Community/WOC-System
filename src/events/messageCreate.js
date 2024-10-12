@@ -61,12 +61,11 @@ module.exports = {
             }
         }
 
-        if (message.channelId === config.willkommen) {
-            const messageData = await messagedb.findOne({ guildID: config.server })
-            messageData.messages = parseInt(messageData.messages) + 1
-            await messageData.save()
-        }
-        
+        //if (message.channelId === config.willkommen) {
+        //    const messageData = await messagedb.findOne({ guildID: config.server })
+        //    messageData.messages = parseInt(messageData.messages) + 1
+        //    await messageData.save()
+        //}
 
         // Bump System (geht noch nicht)
 
