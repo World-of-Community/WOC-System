@@ -277,18 +277,14 @@ module.exports = {
                         }
                         break;
 
-                        case "donate":
+                    case "donate":
                         const amount = interaction.options.getInteger('amount');
                         
-                        let userData = await userdb.findOne({ userID: member.id });
-                        
-                        if (!userData) {
-                            userData = new userDB({
-                                userID: member.id,
-                                donation: 0,
-                                reactions: {}
-                            });
-                        }
+                        let userData = await userdb.findOneAndUpdate(
+                            { userID: member.id }, 
+                            { $inc: { donation: amount } },
+                            { new: true, upsert: true, setDefaultsOnInsert: true } 
+                        );
                         
                         // Create confirmation buttons
                         const confirmButton = new ButtonBuilder()
