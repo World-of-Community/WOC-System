@@ -522,10 +522,10 @@ cron.schedule('0 0 * * *', async () => {
 cron.schedule('*/30 * * * * *', async () => {
      console.log("Cron job started: running every 30 seconds");
     const channel = client.channels.cache.get(config.changelog);
-    const serverData = await serverdb.findeOne({ guilIdD: "815919809379172354" })
+    const serverData = await serverdb.findeOne({ guildID: config.server })
 
     if (!serverData) return console.log("ServerData not found");
-   // if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
+    if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
 
     // Week Date
     const today = new Date();
