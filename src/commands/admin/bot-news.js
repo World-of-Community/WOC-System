@@ -2,6 +2,17 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("disc
 const fs = require('fs');
 const serverdb = require("../../../Datenbank/serverdb");
 
+const kategorieMapping = {
+    'support': 'support',
+    'system': 'system',
+    'gift': 'gift',
+    'service': 'service',
+    'minecraft': 'minecraft',
+    'webseite': 'webseite',
+    'dc': 'dc'
+};
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bot-news')
@@ -29,16 +40,6 @@ module.exports = {
         if (!serverData) return;
         const channel = await interaction.client.channels.cache.get(config.changelog)
 
-        const kategorieMapping = {
-            'support': 'support',
-            'system': 'system',
-            'gift': 'gift',
-            'service': 'service',
-            'minecraft': 'minecraft',
-            'webseite': 'webseite',
-            'dc': 'dc'
-        };
-    
         if (kategorieMapping[kategorie]) {
             const field = kategorieMapping[kategorie];
             await serverdb.findOneAndUpdate(
@@ -51,15 +52,11 @@ module.exports = {
 
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
             serverData = await serverdb.findOne({ guildID: interaction.guildId })
-            const existingEmbed = msg.embeds.length > 0 ? EmbedBuilder.from(msg.embeds[0]) : null;
             await interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
             setTimeout(async () => {
                 // Week Date
                 const today = new Date();
                 const nextWeek = new Date(today);
-
-                // Set default value if updateWeek is undefined
-                //const updateWeek = serverData.updateWeek || 'Unbekannt';
 
                 nextWeek.setDate(today.getDate() + 6);
 
@@ -71,7 +68,7 @@ module.exports = {
                     .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n')
                     .setColor('#ff7b00')
                     .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1186716971883049102/WOC_Banner_Update_Wochenruckblick.jpg?ex=6594434e&is=6581ce4e&hm=f324b57bfaa32b34f5f6606623d575e2028f477f730279e99df12d8d601d3273&')
-                    .setFooter({ text: existingEmbed.footer.text, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+                    .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData.updateWeek.split(" - ")[0]}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
 
                 if (serverData.support.length > 0) {
                     updateEmbed.addFields(
