@@ -54,7 +54,6 @@ module.exports = {
 
     const leaderboardMessage = await leaderboarddb.findOne({});
     const messageId = leaderboardMessage?.messageId;
-    const guildChannel = guild.channels.cache.find(channel => channel.type === 'GUILD_TEXT' && channel.permissionsFor(guild.members.me).has("VIEW_CHANNEL"));
 
     await new Promise(resolve => setTimeout(resolve, 5000)); 
 
@@ -122,7 +121,7 @@ module.exports = {
             }
 
             if (messageId) {
-                const leaderboardChannel = await guild.channels.fetch(guildChannel.id);
+                const leaderboardChannel = await guild.channels.fetch("1286655600440115240");
                 const fetchedMessage = await leaderboardChannel.messages.fetch(messageId).catch(() => null);
                 if (fetchedMessage) {
                     await fetchedMessage.edit({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
