@@ -608,7 +608,6 @@ cron.schedule('0 0 * * 1', async () => {
             });
         }
 
-
         await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
             serverData.updateMessage = msg.id;
             serverData.updateWeek = `${todayDate} - ${nextWeekDate}`;
@@ -619,7 +618,6 @@ cron.schedule('0 0 * * 1', async () => {
         console.log("Error in Cron job:", error);
     }
 });
-
 
 
 // 18 Uhr Message
