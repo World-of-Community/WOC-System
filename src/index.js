@@ -520,6 +520,7 @@ cron.schedule('0 0 * * *', async () => {
 
 // Changelog Embed
 cron.schedule('*/30 * * * * *', async () => {
+    console.log("Cron job started: running every 30 seconds");
     const channel = client.channels.cache.get(config.changelog);
     const serverData = await serverdb.findOne({ guildID: config.server })
 
