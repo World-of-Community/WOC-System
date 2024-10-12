@@ -21,16 +21,6 @@ module.exports = {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
-        //Todo: System wenn man was hinzufügt das es eine öffentliche Nachricht gibt und nach 5 Sekunden wieder gelöscht wird die Nachricht 
-        //damit man weiß es wurde was neues ins Changelog hinzugefügt
-
-        // Nachricht senden und löschen
-        //await interaction.reply({ content: 'Neues Update' });
-        //const replyMessage = await interaction.fetchReply();
-        //setTimeout(() => {
-        //    replyMessage.delete().catch(console.error);
-        //}, 5000);
-
         if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
         const kategorie = await interaction.options.getString('kategorie')
         const emoji = await interaction.options.getString('emoji')
@@ -64,20 +54,10 @@ module.exports = {
                 const today = new Date();
                 const nextWeek = new Date(today);
 
+                const oldEmbed = await msg.embeds[0]
+
                 // Set default value if updateWeek is undefined
                 //const updateWeek = serverData.updateWeek || 'Unbekannt';
-
-                // Safely handle updateWeek
-                const updateWeek = serverData.updateWeek || 'Unbekannt';
-                let footerText;
-
-                if (updateWeek !== 'Unbekannt') {
-                    footerText = `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${updateWeek.split(" - ")[0]}.${new Date().getFullYear()}`;
-                } else {
-                    footerText = '» Wir wünschen euch viel Spaß mit dem neuen Update!';
-                }
-
-                //» Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData.updateWeek.split(" - ")[0]}.${today.getFullYear()}
 
                 nextWeek.setDate(today.getDate() + 6);
 
@@ -89,7 +69,7 @@ module.exports = {
                     .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n')
                     .setColor('#ff7b00')
                     .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1186716971883049102/WOC_Banner_Update_Wochenruckblick.jpg?ex=6594434e&is=6581ce4e&hm=f324b57bfaa32b34f5f6606623d575e2028f477f730279e99df12d8d601d3273&')
-                    .setFooter({ text: footerText, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+                    .setFooter({ text: oldEmbed.footer.text, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
 
                 if (serverData.support.length > 0) {
                     updateEmbed.addFields(
@@ -148,13 +128,14 @@ module.exports = {
                     )
                 }
 
-                await interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
-                //await interaction.reply({ content: 'Neues Update' });
+                
 
-                // Nachricht nach 5 Sekunden löschen (5000 Millisekunden)
-                //setTimeout(() => {
-                //    interaction.deleteReply();
-                //}, 5000);
+                await interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
+                const updateChannel = await interaction.guild.channels.cache.get("1051393854328279120")
+                const message = await updateChannel.send({content: `Neues Updatet`})
+                setTimeout(() => {
+                    message.delete().catch(console.error);
+                }, 5000);
 
                 await msg.edit({ embeds: [updateEmbed] })
             }, 5000);
