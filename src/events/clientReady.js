@@ -18,6 +18,32 @@ module.exports = {
   async execute(client) {
     const monitor = new cronitor.Monitor('System Bot');
 
+    async function createServerData() {
+      const newServerData = new ServerData({
+          guildID: '815919809379172354',
+          updateMessage: '',
+          updateWeek: '',
+          support: {},
+          system: {},
+          gift: {},
+          verify: {},
+          minecraft: {},
+          webseite: {},
+          dc: {},
+          service: {},
+          meetings: []
+      });
+  
+      try {
+          await newServerData.save();
+          console.log('Server data created successfully!');
+      } catch (error) {
+          console.error('Error creating server data:', error);
+      }
+  }
+
+  createServerData()
+
     let lastEntries = {};
     try {
       const data = fs.readFileSync("src/json/lastEntries.json");
