@@ -20,7 +20,13 @@ module.exports = {
         .setDescription('» Füge ein Update hinzu. 🔧')
         
         .addStringOption(option => option.setName('kategorie').setDescription('» Wähle eine Update-Kategorie').setRequired(true)
-        .addChoices({ name: 'WOC SUPPORT', value: 'support' }, { name: 'WOC SYSTEM', value: 'system' }, { name: 'WOC GIFT', value: 'gift' }, { name: 'SERVICE BOT', value: 'service' }, { name: 'MINECRAFT', value: 'minecraft' }, { name: 'WEBSEITE', value: 'webseite' }, { name: 'DISCORD SERVER', value: 'dc' }))
+        .addChoices(
+            { name: 'WOC SUPPORT', value: 'support' }, 
+            { name: 'WOC SYSTEM', value: 'system' }, 
+            { name: 'MINECRAFT', value: 'minecraft' },
+            { name: 'WEBSEITE', value: 'webseite' },
+            { name: 'DISCORD SERVER', value: 'dc' }
+        ))
         
         .addStringOption(option => option.setName('emoji').setDescription('» Wähle ein Update-Emoji').setRequired(true)
         .addChoices({ name: '🔴 = Bug behoben', value: '<:PointRed:1123612255800524940>' }, { name: '🟠 = Änderung', value: '<:PointOrange:1123612277669630092>' }, { name: '🟢 = Neu hinzugefügt', value: '<:PointGreen:1123612318694117477>' }))
@@ -84,14 +90,6 @@ module.exports = {
                         {
                             name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
                             value: `${serverData.system.join('\n')}`
-                        }
-                    )
-                }
-                if (serverData.gift.length > 0) {
-                    updateEmbed.addFields(
-                        {
-                            name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
-                            value: `${serverData.gift.join('\n')}\n${emoji} » ${update}\n** **`
                         }
                     )
                 }
