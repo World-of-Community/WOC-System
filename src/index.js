@@ -519,7 +519,7 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Changelog Embed
-cron.schedule('0 0 * * 1', async () => {
+cron.schedule('*/30 * * * * *', async () => {
     try {
         const channel = await client.channels.cache.get(config.changelog);
         if (!channel) return;
@@ -530,21 +530,17 @@ cron.schedule('0 0 * * 1', async () => {
                 guildID: config.server,
                 support: [],
                 system: [],
-                gift: [],
-                verify: [],
                 minecraft: [],
-                discord: [],
-                website: []
+                dc: [],
+                webseite: []
             });
             await serverData.save();
         } else {
                         
             if (!serverData.support) serverData.support = [];
             if (!serverData.system) serverData.system = [];
-            if (!serverData.gift) serverData.gift = [];
-            if (!serverData.verify) serverData.verify = [];
             if (!serverData.minecraft) serverData.minecraft = [];
-            if (!serverData.website) serverData.website = [];
+            if (!serverData.webseite) serverData.webseite = [];
             if (!serverData.dc) serverData.dc = [];
             await serverData.save();
         }
@@ -571,11 +567,9 @@ cron.schedule('0 0 * * 1', async () => {
         // Arrays initialisieren (falls nicht vorhanden) und Daten anzeigen
         const support = serverData.support || [];
         const system = serverData.system || [];
-        const gift = serverData.gift || [];
-        const verify = serverData.verify || [];
         const minecraft = serverData.minecraft || [];
-        const website = serverData.website || [];
-        const discord = serverData.discord || [];
+        const webseite = serverData.webseite || [];
+        const discord = serverData.dc || [];
 
         // Add fields based on serverData
         if (support.length > 0) {
@@ -592,20 +586,6 @@ cron.schedule('0 0 * * 1', async () => {
             });
         }
 
-        if (gift.length > 0) {
-            changelogEmbed.addFields({
-                name: '> <a:Giveaway:1072144077103054909> - **WOC`🎁`GIFT (BOT)** - UPDATE',
-                value: `${gift.join('\n')}`
-            });
-        }
-
-        if (verify.length > 0) {
-            changelogEmbed.addFields({
-                name: '> <a:yes_tick:1042831133303386122> - **SERVICE (BOT)** - UPDATE',
-                value: `${verify.join('\n')}`
-            });
-        }
-
         if (minecraft.length > 0) {
             changelogEmbed.addFields({
                 name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
@@ -616,7 +596,15 @@ cron.schedule('0 0 * * 1', async () => {
         if (discord.length > 0) {
             changelogEmbed.addFields({
                 name: '> EMOJI - **DISCORD SERVER** - UPDATE',
-                value: `${minecraft.join('\n')}`
+                value: `${discord.join('\n')}`
+            });
+        }
+
+
+        if (webseite.length > 0) {
+            changelogEmbed.addFields({
+                name: '> EMOJI - **WEBSEITE** - UPDATE',
+                value: `${webseite.join('\n')}`
             });
         }
 
