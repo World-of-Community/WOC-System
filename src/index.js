@@ -639,9 +639,9 @@ cron.schedule('0 18 * * 0', async () => {
     serverData.updateMessage = ''
     serverData.support = [];
     serverData.system = [];
-    serverData.gift = [];
-    serverData.verify = [];
     serverData.minecraft = [];
+    serverData.dc = [];
+    serverData.webseite = [];
 
     await serverData.save();
 
