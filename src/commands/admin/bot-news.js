@@ -46,6 +46,7 @@ module.exports = {
         else if (kategorie === 'dc') {
             await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { dc: `${emoji} » ${update}` } })
         }
+        print(serverData.updateMessage)
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
             serverData = await serverdb.findOne({ guildID: interaction.guildId })
             const existingEmbed = msg.embeds.length > 0 ? EmbedBuilder.from(msg.embeds[0]) : null;

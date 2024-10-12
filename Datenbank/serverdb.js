@@ -34,7 +34,7 @@ const serverSchema = new mongoose.Schema({
 
     updateMessage: {
         type: String,
-        required: false,
+        required: true,
     },
     
     updateWeek: {
