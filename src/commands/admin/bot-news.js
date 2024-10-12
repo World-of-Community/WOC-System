@@ -63,6 +63,10 @@ module.exports = {
                 // Week Date
                 const today = new Date();
                 const nextWeek = new Date(today);
+
+                // Set default value if updateWeek is undefined
+                //const updateWeek = serverData.updateWeek || 'Unbekannt';
+
                 nextWeek.setDate(today.getDate() + 6);
 
                 const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
