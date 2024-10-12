@@ -48,7 +48,7 @@ module.exports = {
         }
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
             serverData = await serverdb.findOne({ guildID: interaction.guildId })
-            const existingEmbed = msg.embeds.lenght > 0 ? EmbedBuilder.from(msg.embeds[0]) : null;
+            const existingEmbed = msg.embeds.length > 0 ? EmbedBuilder.from(msg.embeds[0]) : null;
             print(msg.embeds[0])
             await interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
             setTimeout(async () => {
