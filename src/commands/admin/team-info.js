@@ -123,7 +123,7 @@ async function sendTeamEmbed(interaction) {
     let embedDescription = '';
 
     teamMembers.forEach(member => {
-        embedDescription += `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter || 'Nicht angegeben'}\n\n`;
+        embedDescription += `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter || ''}\n\n`;
     });
 
     const TeamEmbed = new EmbedBuilder()
