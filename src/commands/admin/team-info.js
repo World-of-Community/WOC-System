@@ -89,7 +89,7 @@ module.exports = {
                 await interaction.reply({ content: `> \`❗\` » ${user} ist kein Teil des Teams.`, ephemeral: true });
             }
         } else if (subcommand === 'list') {
-            // Call the function to send the team embed
+            // Correctly call the sendTeamEmbed function
             await sendTeamEmbed(interaction);
         }
     },
@@ -123,7 +123,7 @@ async function sendTeamEmbed(interaction) {
     let embedDescription = '';
 
     teamMembers.forEach(member => {
-        embedDescription += `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter || ''}\n\n`;
+        embedDescription += `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter || 'Nicht angegeben'}\n\n`;
     });
 
     const TeamEmbed = new EmbedBuilder()
