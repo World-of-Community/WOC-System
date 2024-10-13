@@ -47,7 +47,12 @@ module.exports = {
                 .addUserOption(option =>
                     option.setName('user')
                         .setDescription('Welches Teammitglied soll entfernt werden?')
-                        .setRequired(true))),
+                        .setRequired(true)))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('list')
+                .setDescription('Sendet das Team Info Embed.')
+        ),
     
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
@@ -101,7 +106,7 @@ async function updateTeamEmbed(interaction) {
         .setTimestamp();
 
     const channel = interaction.channel;
-    const messageId = '1293559329961803950';  // Diese Nachricht-ID muss an einem persistenten Ort gespeichert werden
+    const messageId = '';  // Diese Nachricht-ID muss an einem persistenten Ort gespeichert werden
     const message = await channel.messages.fetch(messageId);
     
     await message.edit({ embeds: [TeamEmbed] });
