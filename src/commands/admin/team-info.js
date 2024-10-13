@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const mongoose = require('mongoose');
-const TeamMember = require('../../../Datenbank/teamdb');  // Correct import
+const TeamMember = require('../../../Datenbank/teamdb');  // Import TeamMember
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -64,7 +64,7 @@ module.exports = {
 
         if (subcommand === 'add') {
             const newMember = new TeamMember({
-                userId: user.id,
+                userId: user.id,  // Using 'userId' now to match schema
                 name: name,
                 alter: alter,  // Changed to 'alter'
                 role: bereich,  // Changed to 'bereich'
@@ -106,7 +106,7 @@ async function updateTeamEmbed(interaction) {
         .setTimestamp();
 
     const channel = interaction.channel;
-    const messageId = '';  // Diese Nachricht-ID muss an einem persistenten Ort gespeichert werden
+    const messageId = '1293559329961803950';  // Diese Nachricht-ID muss an einem persistenten Ort gespeichert werden
     const message = await channel.messages.fetch(messageId);
     
     await message.edit({ embeds: [TeamEmbed] });
