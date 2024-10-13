@@ -10,9 +10,9 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('add')
-                .setDescription('Füge ein Teammitglied hinzu')
+                .setDescription('» Füge ein Teammitglied hinzu. 📌')
                 .addStringOption(option =>
-                    option.setName('category')
+                    option.setName('bereich')
                         .setDescription('Bereich des Teammitglieds')
                         .setRequired(true)
                         .addChoices(
@@ -29,7 +29,7 @@ module.exports = {
                         .setDescription('Welches Teammitglied?')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('description')
+                    option.setName('bescheibung')
                         .setDescription('Beschreibung des Teammitglieds')
                         .setRequired(true))
                 .addStringOption(option =>
@@ -37,13 +37,13 @@ module.exports = {
                         .setDescription('Name des Teammitglieds')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('age')
+                    option.setName('alter')
                         .setDescription('Alter des Teammitglieds')
                         .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('remove')
-                .setDescription('Entferne ein Team Mitglied')
+                .setDescription('» Entferne ein Team Mitglied. 📌')
                 .addUserOption(option =>
                     option.setName('user')
                         .setDescription('Welches Teammitglied soll entfernt werden?')
@@ -51,20 +51,20 @@ module.exports = {
     
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
-        const category = interaction.options.getString('category');
+        const bereich = interaction.options.getString('bereich');
         const user = interaction.options.getUser('user');
         const name = interaction.options.getString('name');
-        const description = interaction.options.getString('description');
-        const age = interaction.options.getString('age') || '';
+        const beschreibung = interaction.options.getString('beschreibung');
+        const alter = interaction.options.getString('alter') || '';
 
         if (subcommand === 'add') {
             const newMember = new TeamMember({
                 userId: user.id,
                 name: name,
-                age: age,
+                alter: age,
                 role: category,
-                description: description,
-                category: category,
+                beschreibung: description,
+                bereich: category,
             });
 
             await newMember.save();
@@ -76,7 +76,7 @@ module.exports = {
             const member = await TeamMember.findOneAndDelete({ userId: user.id });
 
             if (member) {
-                await interaction.reply({ content: `> \`❌\` » ${user} wurde aus dem Team entfernt.`, ephemeral: true });
+                await interaction.reply({ content: `> \`❌\` » ${user} wurde aus dem Team-Embed entfernt.`, ephemeral: true });
                 updateTeamEmbed(interaction);
             } else {
                 await interaction.reply({ content: `> \`❗\` » ${user} ist kein Teil des Teams.`, ephemeral: true });

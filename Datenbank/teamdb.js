@@ -38,16 +38,16 @@ const teamSchema = new mongoose.Schema({
         userId: {
             type: String,
         },
-        category: {
+        bereich: {
             type: String,
         },
-        description: {
+        beschreibung: {
             type: String,
         },
         name: {
             type: String,
         },
-        age: {
+        alter: {
             type: String,
         },
         role: {
