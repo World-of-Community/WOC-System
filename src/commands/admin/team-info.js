@@ -56,20 +56,21 @@ module.exports = {
     
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
-        const bereich = interaction.options.getString('bereich');
-        const user = interaction.options.getUser('user');
-        const name = interaction.options.getString('name');
-        const beschreibung = interaction.options.getString('beschreibung');
-        const alter = interaction.options.getString('alter') || '';  // Optional field
 
         if (subcommand === 'add') {
+            const bereich = interaction.options.getString('bereich');
+            const user = interaction.options.getUser('user');
+            const name = interaction.options.getString('name');
+            const beschreibung = interaction.options.getString('beschreibung');
+            const alter = interaction.options.getString('alter') || '';  // Optional field
+
             const newMember = new TeamMember({
-                userId: user.id,  // Using 'userId' now to match schema
+                userId: user.id,
                 name: name,
-                alter: alter,  // Changed to 'alter'
-                role: bereich,  // Changed to 'bereich'
-                beschreibung: beschreibung,  // Changed to 'beschreibung'
-                bereich: bereich,  // Changed to 'bereich'
+                alter: alter,
+                role: bereich,
+                beschreibung: beschreibung,
+                bereich: bereich,
             });
 
             await newMember.save();
@@ -78,6 +79,7 @@ module.exports = {
 
             updateTeamEmbed(interaction);
         } else if (subcommand === 'remove') {
+            const user = interaction.options.getUser('user');
             const member = await TeamMember.findOneAndDelete({ userId: user.id });
 
             if (member) {
@@ -86,6 +88,9 @@ module.exports = {
             } else {
                 await interaction.reply({ content: `> \`❗\` » ${user} ist kein Teil des Teams.`, ephemeral: true });
             }
+        } else if (subcommand === 'list') {
+            // Call the function to send the team embed
+            await sendTeamEmbed(interaction);
         }
     },
 };
@@ -112,3 +117,21 @@ async function updateTeamEmbed(interaction) {
     await message.edit({ embeds: [TeamEmbed] });
 }
 
+// Funktion zum Senden des Team-Embeds
+async function sendTeamEmbed(interaction) {
+    const teamMembers = await TeamMember.find({});
+    let embedDescription = '';
+
+    teamMembers.forEach(member => {
+        embedDescription += `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter || 'Nicht angegeben'}\n\n`;
+    });
+
+    const TeamEmbed = new EmbedBuilder()
+        .setTitle('WOC Server-Team')
+        .setDescription(embedDescription || 'Keine Team Mitglieder gelistet.')
+        .setColor('Orange')
+        .setTimestamp();
+
+    // Send the embed to the interaction channel
+    await interaction.reply({ embeds: [TeamEmbed] });
+}
