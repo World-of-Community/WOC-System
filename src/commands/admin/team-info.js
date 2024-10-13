@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const mongoose = require('mongoose');
-const userDB = require("../../../Datenbank/teamdb");
+const TeamMember = require('../../../Datenbank/teamdb');  // Correct import
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -29,7 +29,7 @@ module.exports = {
                         .setDescription('Welches Teammitglied?')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('bescheibung')
+                    option.setName('beschreibung')
                         .setDescription('Beschreibung des Teammitglieds')
                         .setRequired(true))
                 .addStringOption(option =>
@@ -60,21 +60,21 @@ module.exports = {
         const user = interaction.options.getUser('user');
         const name = interaction.options.getString('name');
         const beschreibung = interaction.options.getString('beschreibung');
-        const alter = interaction.options.getString('alter') || '';
+        const alter = interaction.options.getString('alter') || '';  // Optional field
 
         if (subcommand === 'add') {
             const newMember = new TeamMember({
                 userId: user.id,
                 name: name,
-                alter: age,
-                role: category,
-                beschreibung: description,
-                bereich: category,
+                alter: alter,  // Changed to 'alter'
+                role: bereich,  // Changed to 'bereich'
+                beschreibung: beschreibung,  // Changed to 'beschreibung'
+                bereich: bereich,  // Changed to 'bereich'
             });
 
             await newMember.save();
 
-            await interaction.reply({ content: `> \`✅\` » ${user} wurde dem Team hinzugefügt im Bereich ${category}.`, ephemeral: true });
+            await interaction.reply({ content: `> \`✅\` » ${user} wurde dem Team hinzugefügt im Bereich ${bereich}.`, ephemeral: true });
 
             updateTeamEmbed(interaction);
         } else if (subcommand === 'remove') {
@@ -96,7 +96,7 @@ async function updateTeamEmbed(interaction) {
     let embedDescription = '';
 
     teamMembers.forEach(member => {
-        embedDescription += `- ${member.name} (${member.description})\n⠀➥ Alter: ${member.age}\n\n`;
+        embedDescription += `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter || 'Nicht angegeben'}\n\n`;
     });
 
     const TeamEmbed = new EmbedBuilder()
@@ -111,3 +111,4 @@ async function updateTeamEmbed(interaction) {
     
     await message.edit({ embeds: [TeamEmbed] });
 }
+
