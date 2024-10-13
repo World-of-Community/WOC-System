@@ -4,7 +4,7 @@ const userDB = require("../../../Datenbank/teamdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('team')
+        .setName('team-info')
         .setDescription('» Verwaltung der Team Mitglieder')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addSubcommand(subcommand =>
