@@ -49,7 +49,7 @@ module.exports = {
 
             // Unix-Timestamp berechnen (in Sekunden)
             const timestamp = Math.floor((Date.now() + verzögerungInMs) / 1000);
-            await interaction.reply({ content: `> \`📌\` » Das Bild wird in <t:${timestamp}:R> im Kanal ${kanal} gesendet. (Geplanter Zeitpunkt: <t:${timestamp}:F>)`, ephemeral: true });
+            await interaction.reply({ content: `> \`📌\` » Das Bild wird in **<t:${timestamp}:R>** im Kanal ${kanal} gesendet. (Geplanter Zeitpunkt: <t:${timestamp}:F>)`, ephemeral: true });
         } else {
             await interaction.reply({ content: `> \`📌\` » Das Bild wird sofort im Kanal ${kanal} gesendet.`, ephemeral: true });
         }
