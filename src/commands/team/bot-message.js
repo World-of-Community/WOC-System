@@ -58,7 +58,6 @@ module.exports = {
         const imageEmbed = new EmbedBuilder()
             .setImage(imageUrl)
             .setColor('Blurple')
-            .setFooter({ text: `» ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` });
 
         // Versand des Bildes planen
         setTimeout(async () => {
