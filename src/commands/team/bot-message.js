@@ -1,0 +1,54 @@
+const { SlashCommandBuilder, ChannelType, EmbedBuilder, PermissionBitField } = require('discord.js');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('bot-image')
+        .setDescription('» Sende ein Bild mit dem Bot in einen Kanal. 📌')
+        .addChannelOption(option =>  option.setName('kanal').setDescription('Der Kanal, in den das Bild gesendet werden soll').addChannelTypes(ChannelType.GuildText).setRequired(true))
+        .addStringOption(option =>  option.setName('image').setDescription('» URL des Bildes, das hinzugefügt werden soll').setRequired(true))
+        .addStringOption(option =>  option.setName('starten_in').setDescription('Wann soll es gesendet werden? (z.B. 10s, 5m, 2h, 1d)').setRequired(false)),
+
+    async execute(interaction, client) {
+        const kanal = interaction.options.getChannel('kanal');
+        const imageUrl = interaction.options.getString('image');
+        const zeit = interaction.options.getString('starten_in');
+
+        // Zeiteinheit und -wert bestimmen
+        const zeitwert = parseInt(zeit.slice(0, -1)); // Zahl extrahieren
+        const einheit = zeit.slice(-1); // Letztes Zeichen als Einheit
+
+        let verzögerungInMs;
+        switch (einheit) {
+            case 's':
+                verzögerungInMs = zeitwert * 1000; // Sekunden in Millisekunden
+                break;
+            case 'm':
+                verzögerungInMs = zeitwert * 60 * 1000; // Minuten in Millisekunden
+                break;
+            case 'h':
+                verzögerungInMs = zeitwert * 60 * 60 * 1000; // Stunden in Millisekunden
+                break;
+            case 'd':
+                verzögerungInMs = zeitwert * 24 * 60 * 60 * 1000; // Tage in Millisekunden
+                break;
+            default:
+                return interaction.reply({ content: '> `❗` » Bitte gib eine gültige Zeiteinheit an (s, m, h, d).', ephemeral: true });
+        }
+
+        // Unix-Timestamp berechnen (in Sekunden)
+        const timestamp = Math.floor((Date.now() + verzögerungInMs) / 1000);
+
+        await interaction.reply({ content: `> \`📌\` » Das Bild wird in ${zeit} im Kanal ${kanal} gesendet. Geplanter Zeitpunkt: <t:${timestamp}:F> (<t:${timestamp}:R>)`, ephemeral: true });
+
+        const imageEmbed = new EmbedBuilder()
+            .setImage(imageUrl)
+            .setColor('Blurple')
+            .setFooter({ text: `» ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` });
+
+        // Plane den Versand des Bildes
+        setTimeout(() => {
+            kanal.send({ embeds: [imageEmbed] });
+        }, verzögerungInMs);
+    },
+};
+
