@@ -8,6 +8,7 @@ const userdb = require("../../Datenbank/userdb");
 module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
+
             const logchannel = await member.guild.channels.cache.get("1263436406655680513");
 
             const leave = new EmbedBuilder()
@@ -17,7 +18,7 @@ module.exports = {
                 .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
                 .setTimestamp();
                 
-                await logchannel.threads.cache.get("1269998215512457259").send({embeds: [leave]});
+            await logchannel.threads.cache.get("1269998215512457259").send({embeds: [leave]});
 
         const userData = await userdb.findOne({ userID: member.user.id })  
         if(!userData) return
