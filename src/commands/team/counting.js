@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const countingdb = require("../../../Datenbank/countingdb"); // Make sure this exports the model/schema
+const CountingModel = require("../../../Datenbank/countingdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,12 +10,11 @@ module.exports = {
     async execute(interaction) {
         const selectedChannel = interaction.options.getChannel('kanal');
         const guildId = interaction.guild.id;
-        
-        let countingData = await countingdb.findOne({ guildId });
-        console.log('Counting Data:', countingData);
+
+        let countingData = await CountingModel.findOne({ guildId });
 
         if (!countingData) {
-            countingData = await countingdb.create({
+            countingData = await CountingModel.create({
                 guildId,
                 channelId: selectedChannel.id,
                 highestCount: 0,
