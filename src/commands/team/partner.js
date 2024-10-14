@@ -279,6 +279,7 @@ module.exports = {
         }
     },
 };
+
 function isValidInviteLink(link) {
     const inviteRegex = /^(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|plus)\/|discordapp\.com\/invite\/)([a-zA-Z0-9]{2,32})\/?$/;
     return inviteRegex.test(link);
