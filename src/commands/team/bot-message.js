@@ -23,11 +23,6 @@ module.exports = {
         const imageUrl = interaction.options.getString('image');
         const zeit = interaction.options.getString('starten_in');
 
-        // Überprüfen, ob die URL ein gültiger Bild-Link ist
-        if (!/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(imageUrl)) {
-            return interaction.reply({ content: '> `❗` » Bitte gib eine gültige Bild-URL an.', ephemeral: true });
-        }
-
         let verzögerungInMs = 0; // Standard auf sofort senden
 
         if (zeit) {
