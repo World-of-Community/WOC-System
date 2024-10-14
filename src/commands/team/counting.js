@@ -12,6 +12,7 @@ module.exports = {
         const guildId = interaction.guild.id;
         
         let countingData = await countingdb.findOne({ guildId });
+        console.log('Counting Data:', countingData);
 
         if (!countingData) {
             countingData = await countingdb.create({
