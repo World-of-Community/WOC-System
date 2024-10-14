@@ -1,12 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
-const {
-  ModalBuilder,
-  TextInputBuilder,
-  ActionRowBuilder,
-  TextInputStyle,
-  ButtonBuilder,
-  ButtonStyle,
-} = require("discord.js");
+const { ModalBuilder, TextInputBuilder, ChannelType, ActionRowBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } = require("discord.js");
 const ms = require("ms");
 
 const giveawaydb = require("../../../Datenbank/giveawaydb");
@@ -22,9 +15,9 @@ module.exports = {
       .setName("start")
       .setDescription("» Starte ein neues Gewinnspiel. 🎁")
       .addChannelOption((option) =>
-        option
-          .setName("kanal")
+        option.setName("kanal")
           .setDescription("In welchen Kanal soll das Gewinnspiel stattfinden?")
+          .addChannelTypes(ChannelType.GuildText)
           .setRequired(true)
       )
       .addStringOption((option) =>
