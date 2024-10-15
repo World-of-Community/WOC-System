@@ -190,7 +190,7 @@ module.exports = (client) => {
                     const deleteDate = new Date(meetingDateUTC.getTime() + 60000);
         
 
-                    //Erinnerung Schedule
+                    // Erinnerung Schedule
                     schedule.scheduleJob(reminderDate, async () => {
                         try {
                             const meeting = await serverDB.findOne({ 'meetings.date': meetingDateUTC });
@@ -211,7 +211,7 @@ module.exports = (client) => {
                         }
                     });
         
-                    //Message Delete Schedule
+                    // Message Delete Schedule
                     schedule.scheduleJob(deleteDate, async () => {
                         try {
                             const meeting = await serverDB.findOne({ 'meetings.date': meetingDateUTC });

@@ -309,7 +309,7 @@ client.on('messageDelete', async (message) => {
 client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (!newMessage.author || newMessage.author.bot) return;
 
-    if (oldMessage.content === newMessage.content) return; //Prüfen ob der Inhalt der Nachricht sich verändert hat
+    if (oldMessage.content === newMessage.content) return; // Prüfen ob der Inhalt der Nachricht sich verändert hat
 
     const MessageEditEmbed = new EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')

@@ -1,12 +1,4 @@
-const {
-  EmbedBuilder,
-  Events,
-  ButtonBuilder,
-  ButtonStyle,
-  ActionRowBuilder,
-  Permissions,
-  interaction,
-} = require("discord.js");
+const { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder, Permissions, interaction } = require("discord.js");
 const erfolgDB = require("../../../Datenbank/erfolgdb");
 const vorschlagEmitter = require("../../custom_events/vorschlag");
 const EventEmitter = require('events');
