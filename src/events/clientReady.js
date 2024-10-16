@@ -28,7 +28,6 @@ function getCurrentMonth() {
 
 const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
 
-
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
@@ -44,7 +43,6 @@ module.exports = {
     const config = JSON.parse(file);
 
     const guild = await client.guilds.fetch("815919809379172354");
-  
     
     if (!guild) {
       console.log("Server wurde nicht gefunden");
@@ -149,7 +147,7 @@ module.exports = {
 
     setInterval(async () => {
       await updateLeaderboardEmbeds();
-  }, 60000); 
+    }, 60000); 
 
     cron.schedule('0 0 1 * *', async () => {
         console.log('Zurücksetzen des monatlichen Leaderboards gestartet.');
@@ -219,8 +217,20 @@ module.exports = {
       );
     }, 1000 * 60 * 5);
 
-    // Bann Liste
+    // Stelle sicher, dass client.application verfügbar ist
+    if (!client.application?.commands) {
+      console.error('client.application.commands ist nicht verfügbar!');
+      return;
+  }
 
+  // Registriere den "Nachricht melden"-Command
+  await client.application.commands.create({
+      name: 'Nachricht melden',
+      type: ApplicationCommandType.Message, // Kontextmenü für Nachrichten
+  });
+
+
+    // Bann Liste
     setInterval(async () => {
       const server = await client.guilds.fetch("815919809379172354");
       async function getMemberList(server, roleID) {
