@@ -37,13 +37,11 @@ module.exports = {
 
         if (interaction.options.getSubcommand() === 'check') {
             const member = interaction.options.getMember('user');
-
-            /*
+            
             if (messageGoal === 0) {
-                return interaction.reply({ content: `> \`📌\` » ${member} hat keine Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
+                return interaction.reply({ content: `> \`📌\` » ${member} hat **keine** Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
             }
-            */
-
+            
             const TeamRoleIds = [
                 '959869691529154631', // Admin
                 '893423428558782465', // Team-leitung
