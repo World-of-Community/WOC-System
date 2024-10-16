@@ -145,12 +145,6 @@ client.on('messageCreate', async message => {
     }
 });
 
-// Registriere den "Nachricht melden"-Command
-client.application.create({
-    name: 'Nachricht melden',
-    type: ApplicationType.Message, // Kontextmenü für Nachrichten
-});
-
 //==================LOGS=====================
 
 const ThreadIDs = {
