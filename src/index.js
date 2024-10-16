@@ -64,6 +64,27 @@ const readCommands = (dir, table) => {
     }
 };
 
+const duplicateCommands = new Set();
+
+commandFiles.forEach(file => {
+    const command = require(`${commandPath}/${file}`);
+
+    // Überprüfen, ob der Command-Name bereits existiert
+    if (commands.has(command.name)) {
+        // Wenn ein doppelter Command gefunden wird, füge ihn der Set-Liste hinzu
+        duplicateCommands.add(command.name);
+    } else {
+        commands.set(command.name, command);
+    }
+});
+
+// Wenn doppelte Commands gefunden wurden, automatisch in der Konsole ausgeben
+if (duplicateCommands.size > 0) {
+    console.log(`Doppelte Commands gefunden: ${[...duplicateCommands].join(', ')}`);
+} else {
+    console.log('Keine doppelten Commands gefunden.');
+}
+
 let table = new AsciiTable()
     .setHeading('Slash Commands', 'Status')
     .setBorder('|', '=', '0', '0');
