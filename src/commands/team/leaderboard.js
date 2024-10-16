@@ -18,7 +18,8 @@ const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5�
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('leaderboard')
-        .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌'),
+        .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌')
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
         const timestampNow = Math.floor(Date.now() / 1000);

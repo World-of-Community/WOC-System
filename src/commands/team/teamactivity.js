@@ -7,7 +7,7 @@ let messageGoals = {};
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('team-activity')
+        .setName('teamactivity')
         .setDescription('» Setzt das Nachrichtenziel für eine Rolle oder zeigt die Aktivität eines Benutzers an.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
         .addSubcommand(subcommand => 

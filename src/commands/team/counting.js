@@ -1,11 +1,12 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 const CountingModel = require("../../../Datenbank/countingdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('counting')
         .setDescription('» Setzt den Zählkanal. 🔢')
-        .addChannelOption(option => option.setName('kanal').setDescription('» In welchen Kanal soll gezählt werden?').setRequired(true)),
+        .addChannelOption(option => option.setName('kanal').setDescription('» In welchen Kanal soll gezählt werden?').setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 
     async execute(interaction) {
         const selectedChannel = interaction.options.getChannel('kanal');
