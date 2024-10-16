@@ -403,6 +403,26 @@ module.exports = {
                 await interaction.reply({ content: "> `✅` » Deine Anfrage wurde abgesendet, Bitte habe etwas Geduld!", ephemeral: true })
             }
         }
+
+        if (!interaction.isButton()) return;
+
+        const [action, messageId] = interaction.customId.split('-');
+
+        if (action === 'report') {
+            const reportedMessage = await interaction.channel.messages.fetch(messageId);
+    
+            // Sende die gemeldete Nachricht an den Meldekanal
+            const reportChannel = await client.channels.fetch(reportChannelId);
+    
+            const reportEmbed = new EmbedBuilder()
+                .setTitle('Gemeldete Nachricht')
+                .setDescription(`Autor: ${reportedMessage.author.tag} (ID: ${reportedMessage.author.id})\n\nNachricht: ${reportedMessage.content} || '[Nachricht ohne Text]'\n\nGemeldet von: ${interaction.user.tag} (ID: ${interaction.user.id})`)
+                .setColor('Red')
+                .setTimestamp()
+    
+            await reportChannel.send({ embeds: [reportEmbed] });
+            await interaction.reply({ content: '> `✅` » Die Nachricht wurde gemeldet. Vielen Dank!', ephemeral: true });
+        }
         
         if (interaction.isButton()) {
             if (interaction.customId === 'partner') {
