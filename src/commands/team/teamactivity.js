@@ -27,6 +27,22 @@ module.exports = {
         if (interaction.options.getSubcommand() === 'setgoal') {
             const role = interaction.options.getRole('role');
             const messageGoal = interaction.options.getInteger('messagegoal');
+            
+            // Setze das Nachrichtenziel für die Rolle
+            messageGoals[role.id] = messageGoal;
+
+            // Rückmeldung an den Benutzer
+            await interaction.reply({ content: `> \`✅\` » Das Nachrichtenziel für die Rolle ${role} wurde auf \`${messageGoal}\` Nachrichten gesetzt.`, ephemeral: true });
+        }
+
+        if (interaction.options.getSubcommand() === 'check') {
+            const member = interaction.options.getMember('user');
+
+            /*
+            if (messageGoal === 0) {
+                return interaction.reply({ content: `> \`📌\` » ${member} hat keine Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
+            }
+            */
 
             const TeamRoleIds = [
                 '959869691529154631', // Admin
@@ -48,22 +64,6 @@ module.exports = {
                 }
                 return false;
             });
-            
-            // Setze das Nachrichtenziel für die Rolle
-            messageGoals[role.id] = messageGoal;
-
-            // Rückmeldung an den Benutzer
-            await interaction.reply({ content: `> \`✅\` » Das Nachrichtenziel für die Rolle ${role} wurde auf \`${messageGoal}\` Nachrichten gesetzt.`, ephemeral: true });
-        }
-
-        if (interaction.options.getSubcommand() === 'check') {
-            const member = interaction.options.getMember('user');
-
-            /*
-            if (messageGoal === 0) {
-                return interaction.reply({ content: `> \`📌\` » ${member} hat keine Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
-            }
-            */
 
             const teamUser = await teamdb.findOne({ userID: member.id })
             const messageProgress = `\`${teamUser.messages}/${200}\` Nachrichten`;
