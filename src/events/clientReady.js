@@ -217,19 +217,6 @@ module.exports = {
       );
     }, 1000 * 60 * 5);
 
-    // Stelle sicher, dass client.application verfügbar ist
-    if (!client.application?.commands) {
-      console.error('client.application.commands ist nicht verfügbar!');
-      return;
-  }
-
-  // Registriere den "Nachricht melden"-Command
-  await client.application.commands.create({
-      name: 'Nachricht melden',
-      type: ApplicationCommandType.Message, // Kontextmenü für Nachrichten
-  });
-
-
     // Bann Liste
     setInterval(async () => {
       const server = await client.guilds.fetch("815919809379172354");
