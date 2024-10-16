@@ -29,7 +29,7 @@ module.exports = {
         if (interaction.options.getSubcommand() === 'setgoal') {
 
             const role = interaction.options.getRole('role');
-            const messageGoal = interaction.options.getInteger('messagegoal');
+            const messagegoal = interaction.options.getInteger('messagegoal');
             
             // Setze das Nachrichtenziel für die Rolle
             messageGoals[role.id] = messageGoal;
@@ -40,6 +40,9 @@ module.exports = {
 
         if (interaction.options.getSubcommand() === 'check') {
             const member = interaction.options.getMember('user');
+
+            const role = interaction.options.getRole('role');
+            const messagegoal = interaction.options.getInteger('messagegoal');
 
             // Setze das Nachrichtenziel für die Rolle
             messageGoals[role.id] = messageGoal;
