@@ -439,20 +439,18 @@ setInterval( async () => {
 
 // Error & Online/Offline Log
 
-// Liste der Bot-IDs, die überwacht werden sollen
 const botIDs = [
     '1031487336783028274', // WOC Support
     '1020023299448786955', // WOC System
 ]; // IDs der Bots einfügen
 
-// Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
 const botStatus = {};
 
-// ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
-const logChannelID = '1286088839466717355';
+const logChannelID = '1295742887388254278';
+const logThreads = {};
 
-// Funktion zum Senden eines Logs in Discord
-function sendLogToDiscord(message, level = 'info') {
+// Funktion, um ein Log in einem Discord-Thread zu senden
+async function sendLogToDiscord(message, botID, level = 'info') {
     const colors = {
         info: 'Blurple',
         warn: 'Yellow',
@@ -461,42 +459,57 @@ function sendLogToDiscord(message, level = 'info') {
     };
 
     const embed = new EmbedBuilder()
+        .setTitle(`${level.toUpperCase()} | BOT LOG`)
         .setDescription(`\`\`\`${message}\`\`\``)
         .setColor(colors[level] || 'Blurple')
         .setTimestamp();
 
-    // Sende den Embed in den spezifizierten Kanal
-    const logChannel = client.channels.cache.get(logChannelID);
-    if (logChannel) {
-        logChannel.send({ embeds: [embed] });
+    // Log-Kanal holen
+    const logChannel = await client.channels.cache.get(logChannelID);
+    if (!logChannel) return;
+
+    // Thread für den Bot holen oder erstellen
+    if (!logThreads[botID]) {
+        const botThread = await logChannel.threads.cache.get('1295742887388254278');
+        if (!botThread) {
+            console.error(`Thread für Bot ${botID} nicht gefunden!`);
+            return;
+        }
+        logThreads[botID] = botThread;
+    }
+
+    const botThread = logThreads[botID];
+    if (botThread) {
+        await botThread.send({ embeds: [embed] });
     }
 }
 
-// Überschreibe die Standard-Konsolenmethoden
+// Konsolenmethoden überschreiben
 const originalLog = console.log;
 const originalError = console.error;
 const originalWarn = console.warn;
 const originalDebug = console.debug;
 
 console.log = function (...args) {
-    originalLog(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
-    sendLogToDiscord(args.join(' '), 'info'); // Sende das Log an Discord
+    originalLog(...args);
+    sendLogToDiscord(args.join(' '), '1031487336783028274', 'info'); // Beispiel mit Bot-ID
 };
 
 console.error = function (...args) {
-    originalError(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
-    sendLogToDiscord(args.join(' '), 'error'); // Sende das Log an Discord
+    originalError(...args);
+    sendLogToDiscord(args.join(' '), '1031487336783028274', 'error'); // Beispiel mit Bot-ID
 };
 
 console.warn = function (...args) {
-    originalWarn(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
-    sendLogToDiscord(args.join(' '), 'warn'); // Sende das Log an Discord
+    originalWarn(...args);
+    sendLogToDiscord(args.join(' '), '1031487336783028274', 'warn'); // Beispiel mit Bot-ID
 };
 
 console.debug = function (...args) {
-    originalDebug(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
-    sendLogToDiscord(args.join(' '), 'debug'); // Sende das Log an Discord
+    originalDebug(...args);
+    sendLogToDiscord(args.join(' '), '1031487336783028274', 'debug'); // Beispiel mit Bot-ID
 };
+
 
 // Threads Checker
 cron.schedule('0 0 * * *', async () => {

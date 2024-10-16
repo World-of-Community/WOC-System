@@ -219,6 +219,8 @@ module.exports = {
       );
     }, 1000 * 60 * 5);
 
+    // Bann Liste
+
     setInterval(async () => {
       const server = await client.guilds.fetch("815919809379172354");
       async function getMemberList(server, roleID) {
