@@ -21,7 +21,7 @@ module.exports = {
 
             // Check if the user is banned
             let banned = false;
-            let banReason = 'Nicht gebannt'; // Fallback for non-banned users
+            let banReason = 'Nicht gebannt';
 
             try {
                 const banInfo = await interaction.guild.bans.fetch(user.id);
@@ -33,13 +33,11 @@ module.exports = {
                 console.log('Benutzer nicht gebannt oder kein Bann gefunden.');
             }
 
-            // Fetch the number of timeouts
             const timeouts = await Timeout.find({ userId: user.id, guildId: interaction.guild.id });
-            const timeoutCount = timeouts.length || 0;  // Fallback to 0 if no timeouts
+            const timeoutCount = timeouts.length || 0;
 
-            // Fetch the number of warnings
             const warns = await Warn.find({ userId: user.id, guildId: interaction.guild.id });
-            const warnCount = warns.length || 0;  // Fallback to 0 if no warnings
+            const warnCount = warns.length || 0;
 
             const userEmbed = new EmbedBuilder()
                 .setTitle(`\`👤\` | Informationen über \`${member.displayName}\``)
