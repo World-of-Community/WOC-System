@@ -40,6 +40,9 @@ module.exports = {
 
         if (interaction.options.getSubcommand() === 'check') {
             const member = interaction.options.getMember('user');
+
+            // Setze das Nachrichtenziel für die Rolle
+            messageGoals[role.id] = messageGoal;
             
             if (messageGoal === 0) {
                 return interaction.reply({ content: `> \`📌\` » ${member} hat **keine** Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
