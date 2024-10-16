@@ -146,9 +146,9 @@ client.on('messageCreate', async message => {
 });
 
 // Registriere den "Nachricht melden"-Command
-client.application.commands.create({
+client.application.create({
     name: 'Nachricht melden',
-    type: ApplicationCommandType.Message, // Kontextmenü für Nachrichten
+    type: ApplicationType.Message, // Kontextmenü für Nachrichten
 });
 
 //==================LOGS=====================
