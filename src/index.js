@@ -168,13 +168,13 @@ client.on('guildMemberAdd', async member => {
     const newInvites = await member.guild.invites.fetch();
     const oldInvites = invites.get(member.guild.id);
 
-    // Check if old Invites is defined
+    // Überprüfe, ob alte Einladungen definiert sind
     if (!oldInvites) {
         invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
         return;
     }
 
-    // Find the invite that was used
+    // Suche die verwendete Einladung
     const invite = newInvites.find(i => oldInvites.has(i.code) && i.uses > oldInvites.get(i.code));
 
     if (invite) {
