@@ -328,6 +328,11 @@ const colors = {
     debug: 'Grey'     // Debug-Farbe (optional für zukünftige Log-Typen)
 };
 
+// Log-Kanal Namen
+const onlineLogChannelName = 'bot-online-logs';  // Kanal für Online-Logs
+const offlineLogChannelName = 'bot-offline-logs';  // Kanal für Offline-Logs
+const errorLogChannelName = 'bot-error-logs';  // Kanal für Error-Logs
+
 // Funktion: Überprüfen und Erstellen von Kanälen, wenn sie nicht existieren
 async function ensureLogChannels(guild) {
     let onlineLogChannel = guild.channels.cache.find(channel => channel.name === onlineLogChannelName);
