@@ -45,22 +45,6 @@ module.exports = {
         if (!serverData) return;
         const channel = await interaction.client.channels.cache.get(config.changelog)
 
-<<<<<<< HEAD
-        if (kategorie === 'support') {
-            serverData.support.push(`${emoji} » ${update}`)
-        } else if (kategorie === 'system') {
-            serverData.system.push(`${emoji} » ${update}`)
-        } else if (kategorie === 'gift') {
-            serverData.gift.push(`${emoji} » ${update}`)
-        } else if (kategorie === 'service') {
-            serverData.service.push(`${emoji} » ${update}`)
-        } else if (kategorie === 'minecraft') {
-            serverData.minecraft.push(`${emoji} » ${update}`)
-        } else if (kategorie === 'webseite') {
-            serverData.webseite.push(`${emoji} » ${update}`)
-        } else if (kategorie === 'dc') {
-            serverData.dc.push(`${emoji} » ${update}`)
-=======
         if (kategorieMapping[kategorie]) {
             const field = kategorieMapping[kategorie];
             await serverdb.findOneAndUpdate(
@@ -69,7 +53,6 @@ module.exports = {
             );
         } else {
             console.log(`Kategorie '${kategorie}' nicht gefunden.`);
->>>>>>> 94f2a3577f056bf26d9c44e0973aa0b23d36397a
         }
 
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {

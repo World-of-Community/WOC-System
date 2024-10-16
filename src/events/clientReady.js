@@ -32,11 +32,6 @@ const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5�
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
-<<<<<<< HEAD
-    teamAktivitätReset();
-    const monitor = new cronitor.Monitor('System Bot');
-=======
->>>>>>> 94f2a3577f056bf26d9c44e0973aa0b23d36397a
 
     let lastEntries = {};
     try {
@@ -290,7 +285,6 @@ module.exports = {
   },
 };
 
-<<<<<<< HEAD
 function teamAktivitätReset() {
   cron.schedule("0 0 0 1 * *", async () => {
     const teamMitglieder = await teamdb.find()
@@ -301,35 +295,3 @@ function teamAktivitätReset() {
     })
   })
 }
-=======
-
-
-
-/* //~vxnsin Database Create
-    async function createServerData() {
-      const newServerData = new serverDB({
-          guildID: '815919809379172354',
-          updateMessage: '',
-          updateWeek: '',
-          support: {},
-          system: {},
-          gift: {},
-          verify: {},
-          minecraft: {},
-          webseite: {},
-          dc: {},
-          service: {},
-          meetings: []
-      });
-  
-      try {
-          await newServerData.save();
-          console.log('Server data created successfully!');
-      } catch (error) {
-          console.error('Error creating server data:', error);
-      }
-  }
-
-  createServerData()
-*/
->>>>>>> 94f2a3577f056bf26d9c44e0973aa0b23d36397a
