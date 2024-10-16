@@ -54,7 +54,7 @@ module.exports = {
         const userdm = new EmbedBuilder()
             .setAuthor({name: '» ' + interaction.guild.name, iconURL: interaction.guild.iconURL() })
             .setTitle("`👮` | ES GIBT EINE NEUE NACHRICHT")
-            .setDescription("**Du hast nun eine Auszeit! (Timeout)**\n\n» Grund: `" + grund + "`\n» **Dauer:** <t:" + Math.floor(timeoutTime.getTime() / 1000) + ":F> (<t:" + Math.floor(timeoutTime.getTime() / 1000) + ":R>)")
+            .setDescription("**Du hast nun eine Auszeit! (Timeout)**\n\n» Grund: `" + grund + "`\n» Dauer: <t:" + Math.floor(timeoutTime.getTime() / 1000) + ":F> (<t:" + Math.floor(timeoutTime.getTime() / 1000) + ":R>)")
             .setColor("Red")
             .setTimestamp()
 
@@ -75,6 +75,6 @@ module.exports = {
 
             await logchannel.threads.cache.get("1269998219266490538").send({embeds: [embed]});
 
-        await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\n**Information:**\n\n» **Grund:** \`${grund}\`\n» Dauer: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true })
+        await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\n**Information:**\n\n» Grund: \`${grund}\`\n» Dauer: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true })
     }
 }
