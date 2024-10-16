@@ -121,6 +121,7 @@ mongoose.connection.on('error', (err) => {
     console.error(`Verbindungsfehler: ${err.message}`);
 });
 
+// Wenn der Bot gepingt wird
 client.on('messageCreate', message => {
     if (message.mentions.has(client.user) && !message.author.bot) {
         const randomPingMessage = pingMessages[Math.floor(Math.random() * pingMessages.length)];
