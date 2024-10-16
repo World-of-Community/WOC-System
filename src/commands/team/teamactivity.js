@@ -23,8 +23,11 @@ module.exports = {
                 .setDescription('» Überprüft die Nachrichtenaktivität eines Benutzers.')
                 .addUserOption(option =>  option.setName('user').setDescription('Der Benutzer, dessen Aktivität angezeigt werden soll').setRequired(true)))
                 .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+
     async execute(interaction) {
+
         if (interaction.options.getSubcommand() === 'setgoal') {
+
             const role = interaction.options.getRole('role');
             const messageGoal = interaction.options.getInteger('messagegoal');
             
@@ -38,7 +41,7 @@ module.exports = {
         if (interaction.options.getSubcommand() === 'check') {
             const member = interaction.options.getMember('user');
             
-            if (messageProgress === 0) {
+            if (messageGoal === 0) {
                 return interaction.reply({ content: `> \`📌\` » ${member} hat **keine** Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
             }
             
