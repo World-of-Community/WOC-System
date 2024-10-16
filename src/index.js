@@ -440,7 +440,6 @@ setInterval( async () => {
 // Error & Online/Offline Log
 
 const botIDs = [
-    '1031487336783028274', // WOC Support
     '1020023299448786955', // WOC System
 ]; // IDs der Bots einfügen
 
@@ -483,33 +482,6 @@ async function sendLogToDiscord(message, botID, level = 'info') {
         await botThread.send({ embeds: [embed] });
     }
 }
-
-// Konsolenmethoden überschreiben
-const originalLog = console.log;
-const originalError = console.error;
-const originalWarn = console.warn;
-const originalDebug = console.debug;
-
-console.log = function (...args) {
-    originalLog(...args);
-    sendLogToDiscord(args.join(' '), '1031487336783028274', 'info'); // Beispiel mit Bot-ID
-};
-
-console.error = function (...args) {
-    originalError(...args);
-    sendLogToDiscord(args.join(' '), '1031487336783028274', 'error'); // Beispiel mit Bot-ID
-};
-
-console.warn = function (...args) {
-    originalWarn(...args);
-    sendLogToDiscord(args.join(' '), '1031487336783028274', 'warn'); // Beispiel mit Bot-ID
-};
-
-console.debug = function (...args) {
-    originalDebug(...args);
-    sendLogToDiscord(args.join(' '), '1031487336783028274', 'debug'); // Beispiel mit Bot-ID
-};
-
 
 // Threads Checker
 cron.schedule('0 0 * * *', async () => {
