@@ -62,10 +62,10 @@ module.exports = {
        
             const embed = new EmbedBuilder()
             .setTitle(`\`⛔\` | \`${user.displayName}\` wurde getimeoutet!`)
-            .setDescription(`\`📂\` » **Informationen:**\n<:text3:1228332174911213638> **Name:** \`${user.tag}\` (\`${user.id}\`)\n<:text3:1228332174911213638> **Account Erstellt:** <t:${parseInt(user.createdAt / 1000)}:D>\n<:text2:1228330539941888011> **Server beigetreten:** <t:${parseInt(member.joinedAt / 1000)}:D>\n\n<:text1:1228329935995670660>**Getimeoutet von:** \`${interaction.user.username}\` (\`${interaction.user.id}\`)\n<:text3:1228332174911213638> **Dauer:** <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n<:text2:1228330539941888011> **Grund:** \`${grund || "Nicht angegeben."}\``)
+            .setDescription(`\`📂\` » **Informationen:**\n» **Name:** \`${user.tag}\` (\`${user.id}\`)\n» **Account Erstellt:** <t:${parseInt(user.createdAt / 1000)}:D>\n» **Server beigetreten:** <t:${parseInt(member.joinedAt / 1000)}:D>\n\n» **Getimeoutet von:** \`${interaction.user.username}\` (\`${interaction.user.id}\`)\n» **Dauer:** <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n» **Grund:** \`${grund || "Nicht angegeben."}\``)
             .setColor('Red')
             .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png'}))
-            .setFooter({ text: `» wurde ausgeführt von ${interaction.user.displayName} (${interaction.user.username}) » ${interaction.user.id}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 }) })
+            .setFooter({ text: `» wurde ausgeführt von ${interaction.user.displayName}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 }) })
             .setTimestamp()
 
             await member.timeout(zeitInMilliseconds, grund).catch(console.log);
