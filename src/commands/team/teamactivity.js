@@ -45,7 +45,7 @@ module.exports = {
             */
 
             const teamUser = await teamdb.findOne({ userID: member.id })
-            const messageProgress = `${teamUser.messages}/${200} Nachrichten`;
+            const messageProgress = `\`${teamUser.messages}/${200} Nachrichten\``;
 
             // Erstelle ein Embed für den Fortschritt
             const activityEmbed = new EmbedBuilder()
