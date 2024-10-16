@@ -35,29 +35,27 @@ module.exports = {
         const kategorie = await interaction.options.getString('kategorie')
         const emoji = await interaction.options.getString('emoji')
         const update = await interaction.options.getString('update')
-        var serverData = await serverdb.findOne({ guildID: interaction.guildId })
+        const serverData = await serverdb.findOne({ guildID: interaction.guildId })
         if (!serverData) return;
         const channel = await interaction.client.channels.cache.get(config.changelog)
 
         if (kategorie === 'support') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { support: `${emoji} » ${update}` } })
+            serverData.support.push(`${emoji} » ${update}`)
         } else if (kategorie === 'system') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { system: `${emoji} » ${update}` } })
+            serverData.system.push(`${emoji} » ${update}`)
         } else if (kategorie === 'gift') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { gift: `${emoji} » ${update}` } })
+            serverData.gift.push(`${emoji} » ${update}`)
         } else if (kategorie === 'service') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { service: `${emoji} » ${update}` } })
+            serverData.service.push(`${emoji} » ${update}`)
         } else if (kategorie === 'minecraft') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { minecraft: `${emoji} » ${update}` } })
+            serverData.minecraft.push(`${emoji} » ${update}`)
+        } else if (kategorie === 'webseite') {
+            serverData.webseite.push(`${emoji} » ${update}`)
+        } else if (kategorie === 'dc') {
+            serverData.dc.push(`${emoji} » ${update}`)
         }
-        else if (kategorie === 'webseite') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { webseite: `${emoji} » ${update}` } })
-        }
-        else if (kategorie === 'dc') {
-            await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { dc: `${emoji} » ${update}` } })
-        }
+
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
-            serverData = await serverdb.findOne({ guildID: interaction.guildId })
             await interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
             setTimeout(async () => {
                 // Week Date
@@ -68,12 +66,14 @@ module.exports = {
                 const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
                 const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
 
+                console.log(serverData)
+
                 const updateEmbed = new EmbedBuilder()
                     .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${serverData.updateWeek}]`)
                     .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n')
                     .setColor('#ff7b00')
                     .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1186716971883049102/WOC_Banner_Update_Wochenruckblick.jpg?ex=6594434e&is=6581ce4e&hm=f324b57bfaa32b34f5f6606623d575e2028f477f730279e99df12d8d601d3273&')
-                    .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData.updateWeek.split(" - ")[0]}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+                    .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData?.updateWeek.split(" - ")[0]}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
 
                 if (serverData.support.length > 0) {
                     updateEmbed.addFields(
@@ -132,6 +132,7 @@ module.exports = {
                     )
                 }
 
+                await serverData.save()
                 await interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
                 //await interaction.reply({ content: 'Neues Update' });
 
