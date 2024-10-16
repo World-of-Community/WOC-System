@@ -41,15 +41,10 @@ module.exports = {
         if (interaction.options.getSubcommand() === 'check') {
             const member = interaction.options.getMember('user');
 
-            const role = interaction.options.getRole('role');
-            const messagegoal = interaction.options.getInteger('messagegoal');
-
-            // Setze das Nachrichtenziel für die Rolle
-            messageGoals[role.id] = messageGoal;
-            
-            if (messageGoal === 0) {
-                return interaction.reply({ content: `> \`📌\` » ${member} hat **keine** Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
-            }
+            // noch beheben
+            //if (messageGoal === 0) {
+            //    return interaction.reply({ content: `> \`📌\` » ${member} hat **keine** Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
+            //}
             
             const TeamRoleIds = [
                 '959869691529154631', // Admin
