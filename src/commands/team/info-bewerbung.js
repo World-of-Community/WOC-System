@@ -4,7 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('info-bewerbung')
         .setDescription('» Sendet eine Info Bewerbungsnachricht. 💬')
-        .setDefaultMemberPermissions(PermissionBitField.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
 async execute(interaction) {
      
