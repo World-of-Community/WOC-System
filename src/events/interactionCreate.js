@@ -405,10 +405,10 @@ module.exports = {
         }
 
         // Registriere den "Nachricht melden"-Command
-        await client.application.commands.create({
-            name: 'Nachricht melden',
-            type: ApplicationCommandType.Message, // Kontextmenü für Nachrichten
-        });
+        //await client.application.commands.create({
+        //    name: 'Nachricht melden',
+        //    type: ApplicationCommandType.Message, // Kontextmenü für Nachrichten
+        //});
 
         const reportChannelId = '1010515517460725782'; // ID des Kanals, in dem die Meldungen gesendet werden sollen
 
