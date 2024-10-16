@@ -2,13 +2,29 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("disc
 const fs = require('fs');
 const serverdb = require("../../../Datenbank/serverdb");
 
+//Nicht Bearbeiten + ausser wenn eine neue Kategorie hinzugefügt wird!!!
+const kategorieMapping = {
+    'support': 'support',
+    'system': 'system',
+    'gift': 'gift',
+    'minecraft': 'minecraft',
+    'webseite': 'webseite',
+    'dc': 'dc'
+};
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('bot-news')
         .setDescription('» Füge ein Update hinzu. 🔧')
         
         .addStringOption(option => option.setName('kategorie').setDescription('» Wähle eine Update-Kategorie').setRequired(true)
-        .addChoices({ name: 'WOC SUPPORT', value: 'support' }, { name: 'WOC SYSTEM', value: 'system' }, { name: 'WOC GIFT', value: 'gift' }, { name: 'SERVICE BOT', value: 'service' }, { name: 'MINECRAFT', value: 'minecraft' }, { name: 'WEBSEITE', value: 'webseite' }, { name: 'DISCORD SERVER', value: 'dc' }))
+        .addChoices(
+            { name: 'WOC SUPPORT', value: 'support' }, 
+            { name: 'WOC SYSTEM', value: 'system' }, 
+            { name: 'MINECRAFT', value: 'minecraft' },
+            { name: 'WEBSEITE', value: 'webseite' },
+            { name: 'DISCORD SERVER', value: 'dc' }
+        ))
         
         .addStringOption(option => option.setName('emoji').setDescription('» Wähle ein Update-Emoji').setRequired(true)
         .addChoices({ name: '🔴 = Bug behoben', value: '<:PointRed:1123612255800524940>' }, { name: '🟠 = Änderung', value: '<:PointOrange:1123612277669630092>' }, { name: '🟢 = Neu hinzugefügt', value: '<:PointGreen:1123612318694117477>' }))
@@ -21,16 +37,6 @@ module.exports = {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
-        //Todo: System wenn man was hinzufügt das es eine öffentliche Nachricht gibt und nach 5 Sekunden wieder gelöscht wird die Nachricht 
-        //damit man weiß es wurde was neues ins Changelog hinzugefügt
-
-        // Nachricht senden und löschen
-        //await interaction.reply({ content: 'Neues Update' });
-        //const replyMessage = await interaction.fetchReply();
-        //setTimeout(() => {
-        //    replyMessage.delete().catch(console.error);
-        //}, 5000);
-
         if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
         const kategorie = await interaction.options.getString('kategorie')
         const emoji = await interaction.options.getString('emoji')
@@ -39,6 +45,7 @@ module.exports = {
         if (!serverData) return;
         const channel = await interaction.client.channels.cache.get(config.changelog)
 
+<<<<<<< HEAD
         if (kategorie === 'support') {
             serverData.support.push(`${emoji} » ${update}`)
         } else if (kategorie === 'system') {
@@ -53,14 +60,26 @@ module.exports = {
             serverData.webseite.push(`${emoji} » ${update}`)
         } else if (kategorie === 'dc') {
             serverData.dc.push(`${emoji} » ${update}`)
+=======
+        if (kategorieMapping[kategorie]) {
+            const field = kategorieMapping[kategorie];
+            await serverdb.findOneAndUpdate(
+                { guildID: interaction.guildId },
+                { $push: { [field]: `${emoji} » ${update}` } }
+            );
+        } else {
+            console.log(`Kategorie '${kategorie}' nicht gefunden.`);
+>>>>>>> 94f2a3577f056bf26d9c44e0973aa0b23d36397a
         }
 
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
             await interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
             setTimeout(async () => {
+                serverData = await serverdb.findOne({ guildID: interaction.guildId })
                 // Week Date
                 const today = new Date();
                 const nextWeek = new Date(today);
+
                 nextWeek.setDate(today.getDate() + 6);
 
                 const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
@@ -91,22 +110,6 @@ module.exports = {
                         }
                     )
                 }
-                if (serverData.gift.length > 0) {
-                    updateEmbed.addFields(
-                        {
-                            name: '> <a:Giveaway:968876442618306560> - **WOC`🎁`GIFT (BOT)** - UPDATE',
-                            value: `${serverData.gift.join('\n')}\n${emoji} » ${update}\n** **`
-                        }
-                    )
-                }
-                if (serverData.verify.length > 0) {
-                    updateEmbed.addFields(
-                        {
-                            name: '> 🤖 - **SERVICE (BOT)** - UPDATE',
-                            value: `${serverData.service.join('\n')}`
-                        }
-                    )
-                }
                 if (serverData.minecraft.length > 0) {
                     updateEmbed.addFields(
                         {
@@ -134,14 +137,12 @@ module.exports = {
 
                 await serverData.save()
                 await interaction.editReply({ content: '> `✅` » Ich habe das Update erfolgreich hinzugefügt.', ephemeral: true })
-                //await interaction.reply({ content: 'Neues Update' });
-
-                // Nachricht nach 5 Sekunden löschen (5000 Millisekunden)
-                //setTimeout(() => {
-                //    interaction.deleteReply();
-                //}, 5000);
-
+                const updateChannel = await interaction.guild.channels.cache.get("1051393854328279120")
                 await msg.edit({ embeds: [updateEmbed] })
+                const message = await updateChannel.send({content: `Neues Changelog Update`})
+                setTimeout(() => {
+                    message.delete().catch(console.error);
+                }, 5000);
             }, 5000);
         })
     }

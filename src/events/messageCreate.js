@@ -84,26 +84,11 @@ module.exports = {
             }
         }
 
-        if (message.channelId === config.willkommen) {
-            const messageData = await messagedb.findOne({ guildID: config.server })
-            messageData.messages = parseInt(messageData.messages) + 1
-            await messageData.save()
-        }
-
-        // Changelog Info Neues Update Nachricht - geht nicht
-        if (message.content === '/bot-news' && message.channel.id === '1051393854328279120') {
-            try {
-                // Sendet die Nachricht
-                const msg = await message.channel.send('Neues Update');
-    
-                // Wartet 5 Sekunden
-                setTimeout(() => {
-                    msg.delete().catch(console.error);
-                }, 5000);
-            } catch (error) {
-                console.error('Error sending or deleting message:', error);
-            }
-        }
+        //if (message.channelId === config.willkommen) {
+        //    const messageData = await messagedb.findOne({ guildID: config.server })
+        //    messageData.messages = parseInt(messageData.messages) + 1
+        //    await messageData.save()
+        //}
 
         // Bump System (geht noch nicht)
 
@@ -111,7 +96,7 @@ module.exports = {
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
 
         // Überprüfen, ob die Nachricht vom Disboard-Bot stammt und den erfolgreichen Bump bestätigt
-    if (message.author.id === disboardBotId && message.embeds.length > 0) {
+        if (message.author.id === disboardBotId && message.embeds.length > 0) {
         const embed = message.embeds[0];
 
         if (embed.description && embed.description.includes('Bump done')) {

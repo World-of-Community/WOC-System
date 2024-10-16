@@ -8,7 +8,23 @@ module.exports = {
     .setDescription("» Gebe einem User eine Pause für eine bestimme Dauer. 🕛")
     .addUserOption((option) => option.setName("user").setDescription("» Welcher User soll einen Timeout bekommen?").setRequired(true))
     .addStringOption((option) => option.setName("grund").setDescription("» Gebe einen Grund an.").setRequired(true))
-    .addStringOption(option => option.setName("dauer").setDescription("» Gebe eine Dauer an. (z.B. 30s 10m)").setRequired(true))
+    .addStringOption(option =>  option.setName("dauer").setDescription("» Wähle eine Dauer aus.").setRequired(true)
+        .addChoices(
+            { name: "🕒 » 1 Minute", value: "1m" },
+            { name: "🕒 » 2 Minuten", value: "2m" },
+            { name: "🕒 » 5 Minuten", value: "5m" },
+            { name: "🕒 » 10 Minuten", value: "10m" },
+            { name: "🕒 » 15 Minuten", value: "15m" },
+            { name: "🕒 » 30 Minuten", value: "30m" },
+            { name: "🕒 » 1 Stunde", value: "1h" },
+            { name: "🕒 » 2 Stunden", value: "2h" },
+            { name: "🕒 » 6 Stunden", value: "6h" },
+            { name: "🕒 » 1 Tag", value: "1d" },
+            { name: "🕒 » 2 Tage", value: "2d" },
+            { name: "🕒 » 5 Tage", value: "5d" },
+            { name: "🕒 » 7 Tage", value: "7d" }
+        )
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
     .setDMPermission(false),
 
@@ -38,26 +54,26 @@ module.exports = {
         const userdm = new EmbedBuilder()
             .setAuthor({name: '» ' + interaction.guild.name, iconURL: interaction.guild.iconURL() })
             .setTitle("`👮` | ES GIBT EINE NEUE NACHRICHT")
-            .setDescription("» Du wurdest getimeoutet!\n» **Grund:** `" + grund + "`\n» **Dauer:** <t:" + Math.floor(timeoutTime.getTime() / 1000) + ":R>")
+            .setDescription("**Du hast nun eine Auszeit! (Timeout)**\n\n» Grund: `" + grund + "`\n» Dauer: <t:" + Math.floor(timeoutTime.getTime() / 1000) + ":F> (<t:" + Math.floor(timeoutTime.getTime() / 1000) + ":R>)")
             .setColor("Red")
             .setTimestamp()
 
         await user.send({embeds: [userdm]})
        
             const embed = new EmbedBuilder()
-            .setAuthor({ name: `${interaction.user.username} » ${interaction.user.id}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 })})
             .setTitle(`\`⛔\` | \`${user.displayName}\` wurde getimeoutet!`)
-            .setDescription(`\`📂\` » **Informationen:**\n<:text3:1228332174911213638> **Name:** \`${user.tag}\` (\`${user.id}\`)\n<:text3:1228332174911213638> **Account Erstellt:** <t:${parseInt(user.createdAt / 1000)}:D>\n<:text2:1228330539941888011> **Server beigetreten:** <t:${parseInt(member.joinedAt / 1000)}:D>\n\n<:text1:1228329935995670660>**Getimeoutet von:** \`${interaction.user.username}\` (\`${interaction.user.id}\`)\n<:text3:1228332174911213638> **Dauer:**  <t:${Math.floor(timeoutTime.getTime() / 1000)}:t> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n<:text2:1228330539941888011> **Grund:** \`${grund || "Nicht angegeben."}\``)
+            .setDescription(`\`📂\` » **INFORMATIONEN**\n» Name: \`${user.tag}\` (\`${user.id}\`)\n» Account Erstellt: <t:${parseInt(user.createdAt / 1000)}:D>\n» Server beigetreten: <t:${parseInt(member.joinedAt / 1000)}:D>\n\n» Getimeoutet von: \`${interaction.user.username}\` (\`${interaction.user.id}\`)\n» Dauer: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n» Grund: \`${grund || "Nicht angegeben."}\``)
             .setColor('Red')
             .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png'}))
+            .setFooter({ text: `» wurde ausgeführt von ${interaction.user.displayName}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 }) })
             .setTimestamp()
+
             await member.timeout(zeitInMilliseconds, grund).catch(console.log);
 
             const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
 
             await logchannel.threads.cache.get("1269998219266490538").send({embeds: [embed]});
 
-        await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\nInformation:\n» **Grund:** \`${grund}\`\n» **Dauer:** <t:${Math.floor(timeoutTime.getTime() / 1000)}:t> Uhr (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true })
-
+        await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\n**Information:**\n\n» Grund: \`${grund}\`\n» Dauer: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true })
     }
 }

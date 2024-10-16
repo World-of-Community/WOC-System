@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent } = require('discord.js')
+const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -113,7 +113,6 @@ const pingMessages = [
 ];
 
 // MongoDB
-
 mongoose.connection.on('connected', () => {
     console.log('Verbunden mit MongoDB!');
 });
@@ -122,6 +121,7 @@ mongoose.connection.on('error', (err) => {
     console.error(`Verbindungsfehler: ${err.message}`);
 });
 
+// Wenn der Bot gepingt wird
 client.on('messageCreate', message => {
     if (message.mentions.has(client.user) && !message.author.bot) {
         const randomPingMessage = pingMessages[Math.floor(Math.random() * pingMessages.length)];
@@ -136,7 +136,6 @@ client.on('messageCreate', message => {
 
 // Bot schreibt user per DM wenn der bot angeschrieben wird
 client.on('messageCreate', async message => {
-    // Überprüfen, ob die Nachricht in einer DM gesendet wurde
     if (message.channel.type === ChannelType.DM && !message.author.bot) {
         try {
             // Antwort auf die DM
@@ -156,7 +155,11 @@ const ThreadIDs = {
     ROLES: "1269998221518831721",
     SERVER: "1269998220440895510",
     MODERATION: "1269998219266490538",
-    INVITE: "1269998218264055818"
+    INVITE: "1269998218264055818",
+
+    OFFLINE: "",
+    ONLINE: "",
+    ERROR: ""
 };
 
 client.on('guildMemberAdd', async member => {
@@ -165,13 +168,13 @@ client.on('guildMemberAdd', async member => {
     const newInvites = await member.guild.invites.fetch();
     const oldInvites = invites.get(member.guild.id);
 
-    // Check if old Invites is defined
+    // Überprüfe, ob alte Einladungen definiert sind
     if (!oldInvites) {
         invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
         return;
     }
 
-    // Find the invite that was used
+    // Suche die verwendete Einladung
     const invite = newInvites.find(i => oldInvites.has(i.code) && i.uses > oldInvites.get(i.code));
 
     if (invite) {
@@ -184,7 +187,6 @@ client.on('guildMemberAdd', async member => {
 
             await sendLog(ThreadIDs.INVITE, InviteEmbed)
 
-        // Update the invite map
         invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
     }
 });
@@ -302,14 +304,13 @@ client.on('messageDelete', async (message) => {
         .setColor('Red')
         .setTimestamp();
 
-
         await sendLog(ThreadIDs.MESSAGE, MessageDeleteEmbed)
 });
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (!newMessage.author || newMessage.author.bot) return;
 
-    if (oldMessage.content === newMessage.content) return; //Prüfen ob der Inhalt der Nachricht sich verändert hat
+    if (oldMessage.content === newMessage.content) return;
 
     const MessageEditEmbed = new EmbedBuilder()
         .setTitle('`🖊️` | NACHRICHT BEARBEITET')
@@ -318,6 +319,133 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         .setTimestamp();
 
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
+});
+
+// Error & Online/Offline Log
+const colors = {
+    info: 'Blurple',  // Info-Farbe (Online-Status)
+    warn: 'Yellow',   // Warn-Farbe (Offline-Status)
+    error: 'Red',     // Error-Farbe (Fehler)
+    debug: 'Grey'     // Debug-Farbe (optional für zukünftige Log-Typen)
+};
+
+// Log-Kanal Namen
+const onlineLogChannelName = '1295742887388254278';  // Kanal für Online-Logs
+const offlineLogChannelName = '1295742887388254278';  // Kanal für Offline-Logs
+const errorLogChannelName = '1295742887388254278';  // Kanal für Error-Logs
+
+// Funktion: Überprüfen und Erstellen von Kanälen, wenn sie nicht existieren
+async function ensureLogChannels(guild) {
+    let onlineLogChannel = guild.channels.cache.find(channel => channel.id === onlineLogChannelName);
+    let offlineLogChannel = guild.channels.cache.find(channel => channel.id === offlineLogChannelName);
+    let errorLogChannel = guild.channels.cache.find(channel => channel.id === errorLogChannelName);
+
+    // Falls der Online-Log-Kanal nicht existiert, erstelle ihn
+    if (!onlineLogChannel) {
+        onlineLogChannel = await guild.channels.create({
+            name: onlineLogChannelName,
+            type: 4,
+            topic: '🟢 » Online Log',
+            permissionOverwrites: [
+                {
+                    id: guild.id, // Everyone role
+                    deny: ['SEND_MESSAGES'], // Nur Lesen erlaubt
+                },
+            ],
+        });
+    }
+
+    // Falls der Offline-Log-Kanal nicht existiert, erstelle ihn
+    if (!offlineLogChannel) {
+        offlineLogChannel = await guild.channels.create({
+            name: offlineLogChannelName,
+            type: 4,
+            topic: '🔴 » Offline Log',
+            permissionOverwrites: [
+                {
+                    id: guild.id, // Everyone role
+                    deny: ['SEND_MESSAGES'], // Nur Lesen erlaubt
+                },
+            ],
+        });
+    }
+
+    // Falls der Error-Log-Kanal nicht existiert, erstelle ihn
+    if (!errorLogChannel) {
+        errorLogChannel = await guild.channels.create({
+            name: errorLogChannelName,
+            type: 4,
+            topic: '⚠️ » Error Log',
+            permissionOverwrites: [
+                {
+                    id: guild.id, // Everyone role
+                    deny: ['SEND_MESSAGES'], // Nur Lesen erlaubt
+                },
+            ],
+        });
+    }
+
+    return { onlineLogChannel, offlineLogChannel, errorLogChannel };
+}
+
+// Event: Bot bereit
+client.on('ready', async () => {
+    const guild = client.guilds.cache.get('815919809379172354'); // Füge hier deine Gilde hinzu
+
+    // Prüfe, ob die Log-Kanäle existieren, und erstelle sie, falls nötig
+    const { onlineLogChannel, offlineLogChannel, errorLogChannel } = await ensureLogChannels(guild);
+
+    // Event: Bot wird online (Shard bereit)
+    client.on('shardReady', (id) => {
+        const botId = client.user.id; // Bot-ID
+
+        const onlineEmbed = new EmbedBuilder()
+            .setTitle('`🟢` | BOT ONLINE')
+            .setDescription(`> Shard: ${id}\nBot: **${client.user.displayName}** (${botId}) ist jetzt online.`)
+            .setColor(colors.info)
+            .setTimestamp();
+
+        onlineLogChannel.send({ embeds: [onlineEmbed] });
+    });
+
+    // Event: Bot wird offline (Shard getrennt)
+    client.on('shardDisconnect', (event, id) => {
+        const botId = client.user.id; // Bot-ID
+
+        const offlineEmbed = new EmbedBuilder()
+            .setColor(colors.warn) // Verwende die Warn-Farbe
+            .setTitle('`🔴` | BOT OFFLINE')
+            .setDescription(`> Shard: ${id}\nBot: **${client.user.tag}** (${botId}) ist offline.`)
+            .setTimestamp();
+
+        offlineLogChannel.send({ embeds: [offlineEmbed] });
+    });
+
+    // Event: Allgemeiner Bot-Fehler
+    client.on('error', (error) => {
+        const botId = client.user.id; // Bot-ID
+
+        const errorEmbed = new EmbedBuilder()
+            .setColor(colors.error) // Verwende die Error-Farbe
+            .setTitle('`❌` | FEHLER BEI BOT')
+            .setDescription(`> Bot: **${client.user.displayName}** (${botId})\nFehlermeldung: \`\`\`${error.message}\`\`\``)
+            .setTimestamp();
+
+        errorLogChannel.send({ embeds: [errorEmbed] });
+    });
+
+    // Event: Fehler auf einem bestimmten Shard
+    client.on('shardError', (error, shardId) => {
+        const botId = client.user.id; // Bot-ID
+
+        const shardErrorEmbed = new EmbedBuilder()
+            .setColor(colors.error) // Verwende die Error-Farbe
+            .setTitle('`❌` | SHARD FEHLER')
+            .setDescription(`> Shard: ${shardId}\nBot: **${client.user.displayName}** (${botId})\nFehlermeldung: \`\`\`${error.message}\`\`\``)
+            .setTimestamp();
+
+        errorLogChannel.send({ embeds: [shardErrorEmbed] });
+    });
 });
 
 // Birthday System
@@ -437,67 +565,6 @@ setInterval( async () => {
     }
 }, 60000 * 360); // 6 Stunden in Millisekunden
 
-// Error & Online/Offline Log
-
-// Liste der Bot-IDs, die überwacht werden sollen
-const botIDs = [
-    '1031487336783028274', // WOC Support
-    '1020023299448786955', // WOC System
-]; // IDs der Bots einfügen
-
-// Statusspeicherung für Bots (ob sie zuletzt online oder offline waren)
-const botStatus = {};
-
-// ID des Kanals, in dem die Konsolen-Logs gesendet werden sollen
-const logChannelID = '1286088839466717355';
-
-// Funktion zum Senden eines Logs in Discord
-function sendLogToDiscord(message, level = 'info') {
-    const colors = {
-        info: 'Blurple',
-        warn: 'Yellow',
-        error: 'Red',
-        debug: 'Grey'
-    };
-
-    const embed = new EmbedBuilder()
-        .setDescription(`\`\`\`${message}\`\`\``)
-        .setColor(colors[level] || 'Blurple')
-        .setTimestamp();
-
-    // Sende den Embed in den spezifizierten Kanal
-    const logChannel = client.channels.cache.get(logChannelID);
-    if (logChannel) {
-        logChannel.send({ embeds: [embed] });
-    }
-}
-
-// Überschreibe die Standard-Konsolenmethoden
-const originalLog = console.log;
-const originalError = console.error;
-const originalWarn = console.warn;
-const originalDebug = console.debug;
-
-console.log = function (...args) {
-    originalLog(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
-    sendLogToDiscord(args.join(' '), 'info'); // Sende das Log an Discord
-};
-
-console.error = function (...args) {
-    originalError(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
-    sendLogToDiscord(args.join(' '), 'error'); // Sende das Log an Discord
-};
-
-console.warn = function (...args) {
-    originalWarn(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
-    sendLogToDiscord(args.join(' '), 'warn'); // Sende das Log an Discord
-};
-
-console.debug = function (...args) {
-    originalDebug(...args); // Behalte das ursprüngliche Verhalten der Konsole bei
-    sendLogToDiscord(args.join(' '), 'debug'); // Sende das Log an Discord
-};
-
 // Threads Checker
 cron.schedule('0 0 * * *', async () => {
     const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
@@ -520,74 +587,105 @@ cron.schedule('0 0 * * *', async () => {
 
 // Changelog Embed
 cron.schedule('0 0 * * 1', async () => {
-    const channel = client.channels.cache.get(config.changelog);
-    const serverData = await serverdb.findOne({ guildID: config.server })
+    try {
+        const channel = await client.channels.cache.get(config.changelog);
+        if (!channel) return;
 
-    if (!serverData) return;
-    if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' })
+        let serverData = await serverdb.findOne({ guildID: config.server });
+        if (!serverData) {
+            serverData = new serverdb({
+                guildID: config.server,
+                support: [],
+                system: [],
+                minecraft: [],
+                dc: [],
+                webseite: []
+            });
+            await serverData.save();
+        } else {
+                        
+            if (!serverData.support) serverData.support = [];
+            if (!serverData.system) serverData.system = [];
+            if (!serverData.minecraft) serverData.minecraft = [];
+            if (!serverData.webseite) serverData.webseite = [];
+            if (!serverData.dc) serverData.dc = [];
+            await serverData.save();
+        }
 
-    // Week Date
-    const today = new Date();
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 6);
+        if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) {
+            return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' });
+        }
 
-    const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
-    const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
+        // Week Date
+        const today = new Date();
+        const nextWeek = new Date(today);
+        nextWeek.setDate(today.getDate() + 6);
 
-    const changelogEmbed = new EmbedBuilder()
-        .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${todayDate} - ${nextWeekDate}]`)
-        .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n> In dieser Woche gab es keine Änderung.\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀')
-        .setColor('#ff7b00')
-        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340524490260571/WOC_Banner_Update_Wochenruckblick.png?ex=66b5a3bc&is=66b4523c&hm=53cb5bb7292636bbaf71aa053f60553cafb8ed1d6da8a8dfb287b41d2dc24104&')
-        .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${todayDate}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' })
+        const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+        const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
 
-    if (serverData.support.length > 0) {
-        changelogEmbed.addFields(
-            {
+        const changelogEmbed = new EmbedBuilder()
+            .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${todayDate} - ${nextWeekDate}]`)
+            .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n> In dieser Woche gab es keine Änderung.\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀')
+            .setColor('#ff7b00')
+            .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340524490260571/WOC_Banner_Update_Wochenruckblick.png')
+            .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${todayDate}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' });
+
+        // Arrays initialisieren (falls nicht vorhanden) und Daten anzeigen
+        const support = serverData.support || [];
+        const system = serverData.system || [];
+        const minecraft = serverData.minecraft || [];
+        const webseite = serverData.webseite || [];
+        const discord = serverData.dc || [];
+
+        // Add fields based on serverData
+        if (support.length > 0) {
+            changelogEmbed.addFields({
                 name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
-                value: `${serverData.support.join('\n')}`
-            }
-        )
-    }
-    if (serverData.system.length > 0) {
-        changelogEmbed.addFields(
-            {
-                name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
-                value: `${serverData.system.join('\n')}`
-            }
-        )
-    }
-    if (serverData.gift.length > 0) {
-        changelogEmbed.addFields(
-            {
-                name: '> <a:Giveaway:1072144077103054909> - **WOC`🎁`GIFT (BOT)** - UPDATE',
-                value: `${serverData.gift.join('\n')}`
-            }
-        )
-    }
-    if (serverData.verify.length > 0) {
-        changelogEmbed.addFields(
-            {
-                name: '> <a:yes_tick:1042831133303386122> - **SERVICE (BOT)** - UPDATE',
-                value: `${serverData.service.join('\n')}`
-            }
-        )
-    }
-    if (serverData.minecraft.length > 0) {
-        changelogEmbed.addFields(
-            {
-                name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
-                value: `${serverData.minecraft.join('\n')}`
-            }
-        )
-    }
+                value: `${support.join('\n')}`
+            });
+        }
 
-    await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
-        serverData.updateMessage = msg.id
-        serverData.updateWeek = `${todayDate} - ${nextWeekDate}`
-        await serverData.save()
-    })
+        if (system.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
+                value: `${system.join('\n')}`
+            });
+        }
+
+        if (minecraft.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
+                value: `${minecraft.join('\n')}`
+            });
+        }
+
+        if (discord.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <:Discord:912007935616516098> - **DISCORD SERVER** - UPDATE',
+                value: `${discord.join('\n')}`
+            });
+        }
+
+
+        if (webseite.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <a:wocbook:1178664700469317692> - **WEBSEITE** - UPDATE',
+                value: `${webseite.join('\n')}`
+            });
+        }
+
+        await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
+            serverData.updateMessage = msg.id;
+            serverData.updateWeek = `${todayDate} - ${nextWeekDate}`;
+            await serverData.save();
+        });
+
+    } catch (error) {
+        console.log("Fehler im Cron job:", error);
+    }
 });
+
 
 // 18 Uhr Message
 cron.schedule('0 18 * * 0', async () => {
@@ -606,9 +704,9 @@ cron.schedule('0 18 * * 0', async () => {
     serverData.updateMessage = ''
     serverData.support = [];
     serverData.system = [];
-    serverData.gift = [];
-    serverData.verify = [];
     serverData.minecraft = [];
+    serverData.dc = [];
+    serverData.webseite = [];
 
     await serverData.save();
 
@@ -707,8 +805,6 @@ function determineEmoji(priceInput) {
     }
 }
 
-
-
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     if (message.guild.id !== config.server) return; 
@@ -759,12 +855,12 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             userData.giveaway.startTime = currentTime;
             await userData.save();
         } else {
-            console.error(`No user data found for user ID: ${userId}`);
+            console.error(`Für die Benutzer-ID wurde keine Benutzerdaten gefunden: ${userId}`);
         }
     } 
     else if (oldState.channelId && !newState.channelId) {
-        // User has left a voice channel
-        console.log('User left a voice channel.');
+
+        console.log('Benutzer hat einen Sprachkanal verlassen.');
 
         let userData = await userdb.findOne({ userID: userId });
         if (userData) {
@@ -778,13 +874,13 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                     userData.giveaway.startTime = 0;
                     await userData.save();
                 } else {
-                    console.error('Invalid durationInMilliseconds:', durationInMilliseconds);
+                    console.error('Ungültige durationInMilliseconds:', durationInMilliseconds);
                 }
             } else {
-                console.error('Start time was zero or not set.');
+                console.error('Die Startzeit war Null oder nicht eingestellt.');
             }
         } else {
-            console.error('User data not found for userID:', userId);
+            console.error('Für die Benutzer-ID wurde keine Benutzerdaten gefunden:', userId);
         }
     }
 });

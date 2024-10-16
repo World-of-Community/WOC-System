@@ -8,10 +8,8 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 
 async execute(interaction) {
-    // Hole den Kanal aus den Optionen
     const channel = interaction.options.getChannel('kanal');
-
-    const memberRole = interaction.guild.roles.cache.get('815920703067914290'); // Ersetze DEINE_MEMBER_ROLE_ID mit der ID der Mitglieder-Rolle
+    const memberRole = interaction.guild.roles.cache.get('815920703067914290');
 
     // Überprüfe, ob der Kanal ein Textkanal ist
     if (!channel || channel.type !== 0) {

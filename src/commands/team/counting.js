@@ -1,10 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
-
-// Variables to store game state
-let countingChannelId = null;
-let currentCount = 0;
-let lastUserId = null;
-let highestCount = 0; // Track the highest count so far
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const CountingModel = require("../../../Datenbank/countingdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,66 +9,67 @@ module.exports = {
 
     async execute(interaction) {
         const selectedChannel = interaction.options.getChannel('kanal');
-        countingChannelId = selectedChannel.id;
-        currentCount = 0; // Reset the count when the channel is set
-        lastUserId = null;
+        const guildId = interaction.guild.id;
 
-        // Reply to confirm the channel has been set
-        await interaction.reply({ content: `> \`✅\` » Der Zählkanal wurde auf <#${countingChannelId}> eingestellt.`, ephemeral: true });
+        let countingData = await CountingModel.findOne({ guildId });
 
-        // Send the initial embed
+        if (!countingData) {
+            countingData = await CountingModel.create({
+                guildId,
+                channelId: selectedChannel.id,
+                highestCount: 0,
+                currentCount: 0,
+                lastUserId: null
+            });
+        }
+
+        countingData.channelId = selectedChannel.id;
+        countingData.currentCount = 0;
+        countingData.lastUserId = null;
+        await countingData.save();
+
+        await interaction.reply({ content: `> \`✅\` » Der Zählkanal wurde auf <#${selectedChannel.id}> eingestellt.`, ephemeral: true });
+
         const countingEmbed = new EmbedBuilder()
             .setTitle('`🔢` » Zahlen Spiel Information')
-            .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **\`${highestCount}\`**`)
+            .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **\`${countingData.highestCount}\`**`)
             .setColor('Blurple')
             .setFooter({ text: `» ${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
             .setTimestamp();
 
-        countingEmbedMessage = await selectedChannel.send({ embeds: [countingEmbed] });
-        await countingEmbedMessage.pin(); // Pin the embed message
+        const countingEmbedMessage = await selectedChannel.send({ embeds: [countingEmbed] });
+        await countingEmbedMessage.pin();
 
-        // Update the embed every 30 minutes (1800000 milliseconds)
-        setInterval(async () => {
-            const updatedEmbed = new EmbedBuilder()
-                .setTitle('`🔢` » Zahlen Spiel Information')
-                .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **\`${highestCount}\`**`)
-                .setColor('Blurple')
-                .setFooter({ text: `» ${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
-                .setTimestamp();
-
-            await countingEmbedMessage.edit({ embeds: [updatedEmbed] });
-        }, 1800000); // 30 minutes interval
-
-        // Create a message collector for the counting channel
-        const filter = (m) => m.channel.id === countingChannelId && !m.author.bot;
+        const filter = (m) => m.channel.id === selectedChannel.id && !m.author.bot;
         const collector = selectedChannel.createMessageCollector({ filter });
 
         collector.on('collect', async (message) => {
             const userNumber = parseInt(message.content);
 
             if (!isNaN(userNumber)) {
-                if (userNumber === currentCount + 1) {
-                    if (message.author.id === lastUserId) {
+                if (userNumber === countingData.currentCount + 1) {
+                    if (message.author.id === countingData.lastUserId) {
                         await selectedChannel.send(`> \`❗\` » ${message.member} hat die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen!**`);
-                        currentCount = 0; // Reset count
-                        lastUserId = null;
+                        countingData.currentCount = 0;
+                        countingData.lastUserId = null;
                     } else {
-                        currentCount++;
-                        lastUserId = message.author.id;
+                        countingData.currentCount++;
+                        countingData.lastUserId = message.author.id;
                         await message.react('✅');
 
-                        // Check if the current count is a new record
-                        if (currentCount > highestCount) {
-                            highestCount = currentCount;
-                            await selectedChannel.send(`> \`🎉\` » **Neuer Rekord!** ${message.member} hat die höchste Zahl **${highestCount}** erreicht!`);
+                        if (countingData.currentCount > countingData.highestCount) {
+                            countingData.highestCount = countingData.currentCount;
+                            await selectedChannel.send(`> \`🎉\` » **Neuer Rekord!** ${message.member} hat die höchste Zahl **${countingData.highestCount}** erreicht!`);
                         }
                     }
                 } else {
                     await message.react('❌');
                     await selectedChannel.send(`> \`❗\` » ${message.member}, falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist **1**.`);
-                    currentCount = 0; // Reset count
-                    lastUserId = null;
+                    countingData.currentCount = 0;
+                    countingData.lastUserId = null;
                 }
+
+                await countingData.save();
             }
         });
     }

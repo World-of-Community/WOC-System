@@ -47,7 +47,6 @@ module.exports = {
                     }
         
                     const partners = serverData.partner.partners;
-
         
                     const filtered = partners.filter(partner => partner.name.toLowerCase().includes(focusedOption.value.toLowerCase())).slice(0, 25);
 
@@ -87,18 +86,18 @@ module.exports = {
 
                 if (!serverData.partner || !serverData.partner.msg || !serverData.partner.channel) {
                     const newEmbed = new EmbedBuilder()
-                        .setTitle('Partnerliste')
+                        .setTitle('Unsere Partnerliste')
                         .setColor('Blurple')
                         .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
                         .setFooter({ text: `» Maximal 15 Server-Partner`, iconURL: `${interaction.guild.iconURL()}` });
 
                         if(kategorie === "Kooperation") {
-                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
+                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
                             } else {
                                 newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                             }
                                     if(kategorie === "Normale Partner") {
-                                        newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
+                                        newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
                                         } else {
                                             newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });
                                         }
@@ -125,12 +124,12 @@ module.exports = {
                             .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
 
                             if(kategorie === "Kooperation") {
-                                newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
+                                newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
                                 } else {
                                     newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                 }
                                         if(kategorie === "Normale Partner") {
-                                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner})`, inline: false });
+                                            newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
                                             } else {
                                                 newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
                                             }
@@ -207,7 +206,7 @@ module.exports = {
                         
                         if (existingFieldIndex !== -1) {
                             const partnersInSameCategory = serverData.partner.partners.filter(partner => partner.category.toLowerCase() === deletedPartner.category.toLowerCase());
-                            existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n');
+                            existingEmbed.data.fields[existingFieldIndex].value = partnersInSameCategory.map((partner, index) => `\`${index + 1}\`. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n');
                             
                             if (partnersInSameCategory.length === 0) {
                                 existingEmbed.data.fields[existingFieldIndex].value = '> \`❌\` » Kein Eintrag';
@@ -280,6 +279,7 @@ module.exports = {
         }
     },
 };
+
 function isValidInviteLink(link) {
     const inviteRegex = /^(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|plus)\/|discordapp\.com\/invite\/)([a-zA-Z0-9]{2,32})\/?$/;
     return inviteRegex.test(link);

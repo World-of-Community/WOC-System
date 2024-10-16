@@ -13,12 +13,30 @@ const Parser = require("rss-parser");
 const parser = new Parser();
 const FeedManager = require("../FeedManager");
 const { processRSSFeed } = FeedManager;
-const cronitor = require('cronitor')('bbfc3034eaee49229dc7d1cfb4b65935');
+
+const userdb = require('../../Datenbank/userdb');
+const leaderboarddb = require('../../Datenbank/leaderboarddb');
+const RoleID = '1150753421339676722';
+
+function getCurrentMonth() {
+    const monthNames = [
+        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+    ];
+    const now = new Date();
+    return monthNames[now.getMonth()];
+}
+
+const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
+
 module.exports = {
   name: Events.ClientReady,
   async execute(client) {
+<<<<<<< HEAD
     teamAktivitätReset();
     const monitor = new cronitor.Monitor('System Bot');
+=======
+>>>>>>> 94f2a3577f056bf26d9c44e0973aa0b23d36397a
 
     let lastEntries = {};
     try {
@@ -31,7 +49,6 @@ module.exports = {
     const config = JSON.parse(file);
 
     const guild = await client.guilds.fetch("815919809379172354");
-  
     
     if (!guild) {
       console.log("Server wurde nicht gefunden");
@@ -39,13 +56,114 @@ module.exports = {
     }
     console.log("Verbunden mit Discord");
 
-    // Server Ideen Embed Information Platz
+    const leaderboardMessage = await leaderboarddb.findOne({});
+    const messageId = leaderboardMessage?.messageId;
 
-    // Server Feedback Embed Information Platz
+    await new Promise(resolve => setTimeout(resolve, 5000)); 
+
+    const updateLeaderboardEmbeds = async () => {
+        try {
+            const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
+            const topVoice = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(10);
+
+            const topMessagesMembers = await Promise.all(topMessages.map(async (user) => {
+                const member = await guild.members.fetch(user.userID).catch(() => null);
+                return { member, messages: user.stats.messages ?? 0 };
+            }));
+
+            const topVoiceMembers = await Promise.all(topVoice.map(async (user) => {
+                const member = await guild.members.fetch(user.userID).catch(() => null);
+                const voiceTime = user.stats.voiceTime ?? 0;
+                const days = Math.floor(voiceTime / (24 * 60 * 60 * 1000));
+                const hours = Math.floor((voiceTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                const minutes = Math.floor((voiceTime % (60 * 60 * 1000)) / (60 * 1000));
+                return { member, timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten` };
+            }));
+
+            const messageLeaderboardText = topMessagesMembers
+                .filter(user => user.member)
+                .map((user, index) => {
+                    const memberMention = user.member ? user.member.toString() : 'Unbekannt';
+                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.messages} Nachrichten\``;
+                })
+                .join('\n').slice(0, 1024);
+
+            const voiceLeaderboardText = topVoiceMembers
+                .filter(user => user.member)
+                .map((user, index) => {
+                    const memberMention = user.member ? user.member.toString() : 'Unbekannt';
+                    return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.timeText}\``;
+                })
+                .join('\n').slice(0, 1024);
+
+            const currentMonth = getCurrentMonth();
+
+            const InfoEmbed = new EmbedBuilder()
+                .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten\ndie <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n\n> `📌` » Das Leaderboard wird monatlich zurückgesetzt.')
+                .setColor('Orange');
+
+            const messageEmbed = new EmbedBuilder()
+                .setAuthor({ name: `» ${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
+                .setDescription(messageLeaderboardText)
+                .setColor('Blurple')
+                .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png' })
+                .setTimestamp();
+
+            const voiceEmbed = new EmbedBuilder()
+                .setAuthor({ name: `» ${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
+                .setDescription(voiceLeaderboardText)
+                .setColor('Blue')
+                .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png' })
+                .setTimestamp();
+
+            if (topMessagesMembers[0]?.member) {
+                messageEmbed.setThumbnail(topMessagesMembers[0].member.displayAvatarURL({ dynamic: true }));
+            }
+
+            if (topVoiceMembers[0]?.member) {
+                voiceEmbed.setThumbnail(topVoiceMembers[0].member.displayAvatarURL({ dynamic: true }));
+            }
+
+            if (messageId) {
+                const leaderboardChannel = await guild.channels.fetch("1286655600440115240");
+                const fetchedMessage = await leaderboardChannel.messages.fetch(messageId).catch(() => null);
+                if (fetchedMessage) {
+                    await fetchedMessage.edit({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
+                }
+            }
+
+            const role = await guild.roles.fetch(RoleID);
+            if (role) {
+                const membersWithRole = await guild.members.fetch({ role: RoleID });
+                membersWithRole.forEach(member => {
+                    member.roles.remove(role).catch(err => console.error(`Fehler beim Entfernen der Rolle: ${err}`));
+                });
+            }
+
+            const roleAssignments = [...topMessagesMembers.slice(0, 3), ...topVoiceMembers.slice(0, 3)].map(async user => {
+                if (user.member) {
+                    await user.member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
+                }
+            });
+            await Promise.all(roleAssignments);
+        } catch (error) {
+            console.error('Fehler beim Aktualisieren des Leaderboards:', error);
+        }
+      }
+
+    setInterval(async () => {
+      await updateLeaderboardEmbeds();
+    }, 60000); 
+
+    cron.schedule('0 0 1 * *', async () => {
+        console.log('Zurücksetzen des monatlichen Leaderboards gestartet.');
+        await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
+        console.log('Leaderboard wurde monatlich zurückgesetzt.');
+        await updateLeaderboardEmbeds();
+      });
 
     // RSS Feed
     setInterval(async () => {
-      monitor.ping({message: 'Alive'});
       processRSSFeed(client, lastEntries);
     }, 60000);
 
@@ -105,6 +223,7 @@ module.exports = {
       );
     }, 1000 * 60 * 5);
 
+    // Bann Liste
     setInterval(async () => {
       const server = await client.guilds.fetch("815919809379172354");
       async function getMemberList(server, roleID) {
@@ -171,6 +290,7 @@ module.exports = {
   },
 };
 
+<<<<<<< HEAD
 function teamAktivitätReset() {
   cron.schedule("0 0 0 1 * *", async () => {
     const teamMitglieder = await teamdb.find()
@@ -181,3 +301,35 @@ function teamAktivitätReset() {
     })
   })
 }
+=======
+
+
+
+/* //~vxnsin Database Create
+    async function createServerData() {
+      const newServerData = new serverDB({
+          guildID: '815919809379172354',
+          updateMessage: '',
+          updateWeek: '',
+          support: {},
+          system: {},
+          gift: {},
+          verify: {},
+          minecraft: {},
+          webseite: {},
+          dc: {},
+          service: {},
+          meetings: []
+      });
+  
+      try {
+          await newServerData.save();
+          console.log('Server data created successfully!');
+      } catch (error) {
+          console.error('Error creating server data:', error);
+      }
+  }
+
+  createServerData()
+*/
+>>>>>>> 94f2a3577f056bf26d9c44e0973aa0b23d36397a

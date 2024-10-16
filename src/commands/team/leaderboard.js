@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron');
 const userdb = require('../../../Datenbank/userdb');
-const leaderboarddb = require('../../../Datenbank/leaderboarddb'); // Datenbank zum Speichern der Nachricht-ID
-const RoleID = '1150753421339676722'; // Minenarbeiter (Event) role ID
+const leaderboarddb = require('../../../Datenbank/leaderboarddb');
+const RoleID = '1150753421339676722';
 
 function getCurrentMonth() {
     const monthNames = [
@@ -21,28 +21,22 @@ module.exports = {
         .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌'),
 
     async execute(interaction) {
-
-        // Aktuellen Unix-Timestamp holen und 5 Sekunden addieren
-        const timestampNow = Math.floor(Date.now() / 1000); // Aktueller Unix-Timestamp
-        const timestampAfter5Seconds = timestampNow + 5; // 5 Sekunden hinzufügen
+        const timestampNow = Math.floor(Date.now() / 1000);
+        const timestampAfter5Seconds = timestampNow + 5;
 
         await interaction.reply({ content: `> \`⏳\` » Bitte **5 Sekunden** warten, während das Leaderboard generiert wird. (Ablaufzeit: <t:${timestampAfter5Seconds}:R>)`, ephemeral: true });
 
         // 5 Sekunden warten
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        let leaderboardMessage; // Hier wird die Variable definiert
-
-        // Lese die gespeicherte Nachricht-ID beim Neustart
+        let leaderboardMessage;
         const savedMessage = await leaderboarddb.findOne({});
         if (savedMessage && savedMessage.messageId) {
-            // Versuche die Nachricht zu laden
             leaderboardMessage = await interaction.channel.messages.fetch(savedMessage.messageId).catch(() => null);
         }
 
-        async function updateLeaderboardEmbeds() {
+        const updateLeaderboardEmbeds = async () => {
             try {
-
                 const topMessages = await userdb.find().sort({ "stats.messages": -1 }).limit(10);
                 const topVoice = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(10);
 
@@ -79,18 +73,18 @@ module.exports = {
                 const currentMonth = getCurrentMonth();
 
                 const InfoEmbed = new EmbedBuilder()
-                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten\ndie <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n\n> `📌` » Das Leaderboard wird Monatlich zurückgesetzt.')
+                    .setDescription('Die Top 3 Mitglieder in Nachrichten & Voice erhalten\ndie <@&1150753421339676722>-Rolle\n\n> `👷‍♂️` » **Vorteile**\n- Bilder senden in <#815922756918181898>\n- Höher gelistet\n- Ping Reaktion (`/emoji`)\n\n> `📌` » Das Leaderboard wird monatlich zurückgesetzt.')
                     .setColor('Orange');
 
                 const messageEmbed = new EmbedBuilder()
-                    .setAuthor({ name: `${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
+                    .setAuthor({ name: `» ${currentMonth} Leaderboard - Nachrichten`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772658318479423/8280686.png' })
                     .setDescription(messageLeaderboardText)
                     .setColor('Blurple')
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773637562630154/image.png' })
                     .setTimestamp();
 
                 const voiceEmbed = new EmbedBuilder()
-                    .setAuthor({ name: `${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
+                    .setAuthor({ name: `» ${currentMonth} Leaderboard - Voice Zeit`, iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286772303455059988/5808970.png' })
                     .setDescription(voiceLeaderboardText)
                     .setColor('Blue')
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png' })
@@ -110,18 +104,44 @@ module.exports = {
                     await leaderboardMessage.edit({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
                 } else {
                     leaderboardMessage = await interaction.channel.send({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
-                    
-                    // Nachricht-ID speichern
                     await leaderboarddb.updateOne({}, { messageId: leaderboardMessage.id }, { upsert: true });
                 }
+
+                // Rolle entfernen von allen Mitgliedern, die sie vorher hatten
+                const role = await interaction.guild.roles.fetch(RoleID);
+                if (role) {
+                    const membersWithRole = await interaction.guild.members.fetch({ role: RoleID });
+                    membersWithRole.forEach(member => {
+                        member.roles.remove(role).catch(err => console.error(`Fehler beim Entfernen der Rolle: ${err}`));
+                    });
+                }
+
+                // Vergibt die Rolle an die Top 3 in Nachrichten und Voice
+                const roleAssignments = [...topMessagesMembers.slice(0, 3), ...topVoiceMembers.slice(0, 3)].map(async user => {
+                    if (user.member) {
+                        await user.member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
+                    }
+                });
+                await Promise.all(roleAssignments);
 
             } catch (error) {
                 console.error('Fehler beim Aktualisieren des Leaderboards:', error);
             }
-        }
+        };
 
         // Starte den Cron-Job, um die Embeds jede Minute zu aktualisieren
         cron.schedule('* * * * *', updateLeaderboardEmbeds);
-        updateLeaderboardEmbeds();
+        updateLeaderboardEmbeds(); // Update aufrufen
+
+        // Monatliches Zurücksetzen
+        cron.schedule('0 0 1 * *', async () => {
+            console.log('Zurücksetzen des monatlichen Leaderboards gestartet.');
+            await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
+            console.log('Leaderboard wurde monatlich zurückgesetzt.');
+            await updateLeaderboardEmbeds();
+        });
+
+        // Initialisiere das Leaderboard beim Start
+        await updateLeaderboardEmbeds();
     }
 };

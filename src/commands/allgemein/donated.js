@@ -16,8 +16,8 @@ module.exports = {
         const userData = await userDB.findOne({userID: member.id})
 
         if(!userData || !userData.donation) return await interaction.reply({content: `> \`❌\` » ${member} hat aktuell noch nichts gespendet.`, ephemeral: true})
-        
-        const donateAmount = userData.donation.toLocaleString('de-DE', {style: 'currency', currency: "EUR"}).replace(/,\d+/g, "");
+
+        const donateAmount = userData.donation.toLocaleString('de-DE') + "€";
 
         const donateEmbed = new EmbedBuilder()
             .setTitle(`\`💸\` × ${member.displayName}'s Gesamtspenden`)

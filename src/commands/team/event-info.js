@@ -35,7 +35,6 @@ module.exports = {
                 }
             }, timeMs);
         } else {
-            // Send the message immediately if no time was specified
             try {
                 await channel.send(message);
                 await interaction.reply({ content: `> \`✅\` » Die Nachricht wurde erfolgreich gesendet.`, ephemeral: true });
@@ -46,4 +45,3 @@ module.exports = {
         }
     },
 };
-
