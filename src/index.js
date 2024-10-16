@@ -329,15 +329,15 @@ const colors = {
 };
 
 // Log-Kanal Namen
-const onlineLogChannelName = 'bot-online-logs';  // Kanal für Online-Logs
-const offlineLogChannelName = 'bot-offline-logs';  // Kanal für Offline-Logs
-const errorLogChannelName = 'bot-error-logs';  // Kanal für Error-Logs
+const onlineLogChannelName = '1295742887388254278';  // Kanal für Online-Logs
+const offlineLogChannelName = '1295742887388254278';  // Kanal für Offline-Logs
+const errorLogChannelName = '1295742887388254278';  // Kanal für Error-Logs
 
 // Funktion: Überprüfen und Erstellen von Kanälen, wenn sie nicht existieren
 async function ensureLogChannels(guild) {
-    let onlineLogChannel = guild.channels.cache.find(channel => channel.name === onlineLogChannelName);
-    let offlineLogChannel = guild.channels.cache.find(channel => channel.name === offlineLogChannelName);
-    let errorLogChannel = guild.channels.cache.find(channel => channel.name === errorLogChannelName);
+    let onlineLogChannel = guild.channels.cache.find(channel => channel.id === onlineLogChannelName);
+    let offlineLogChannel = guild.channels.cache.find(channel => channel.id === offlineLogChannelName);
+    let errorLogChannel = guild.channels.cache.find(channel => channel.id === errorLogChannelName);
 
     // Falls der Online-Log-Kanal nicht existiert, erstelle ihn
     if (!onlineLogChannel) {
