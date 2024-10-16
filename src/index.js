@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent } = require('discord.js')
+const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -143,6 +143,12 @@ client.on('messageCreate', async message => {
             console.error('Fehler beim Senden der Antwort:', error);
         }
     }
+});
+
+// Registriere den "Nachricht melden"-Command
+await client.application.commands.create({
+    name: 'Nachricht melden',
+    type: ApplicationCommandType.Message, // Kontextmenü für Nachrichten
 });
 
 //==================LOGS=====================

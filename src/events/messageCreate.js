@@ -61,22 +61,6 @@ module.exports = {
             }
         }
 
-        const reportChannelId = 'DEIN_MODERATOR_CHANNEL_ID'; // ID des Kanals, in dem die Meldungen gesendet werden sollen
-
-        if (message.author.bot) return; // Ignoriere Bot-Nachrichten
-
-        // Erstelle eine Schaltfläche, um eine Nachricht zu melden
-        const reportButton = new MessageActionRow()
-            .addComponents(
-                new MessageButton()
-                    .setCustomId(`report-${message.id}`)
-                    .setLabel('Melden')
-                    .setStyle('DANGER')
-        );
-
-        // Sende eine Schaltfläche unter jeder Nachricht
-        await message.reply({ content: 'Wenn du diese Nachricht melden möchtest, klicke auf "Melden".', components: [reportButton] });
-
         //if (message.channelId === config.willkommen) {
         //    const messageData = await messagedb.findOne({ guildID: config.server })
         //    messageData.messages = parseInt(messageData.messages) + 1
