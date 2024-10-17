@@ -403,31 +403,6 @@ module.exports = {
                 await interaction.reply({ content: "> `✅` » Deine Anfrage wurde abgesendet, Bitte habe etwas Geduld!", ephemeral: true })
             }
         }
-
-        // Registriere den "Nachricht melden"-Command
-        //await client.application.commands.create({
-        //    name: 'Nachricht melden',
-        //    type: ApplicationCommandType.Message, // Kontextmenü für Nachrichten
-        //});
-
-        //const reportChannelId = '1010515517460725782'; // ID des Kanals, in dem die Meldungen gesendet werden sollen
-
-        //if (!interaction.isMessageContextMenuCommand()) return;
-
-        //const reportedMessage = interaction.targetMessage; // Zielnachricht des Kontextmenü-Commands
-
-        //if (interaction.commandName === 'Nachricht melden') {
-        //    const reportChannel = await client.channels.fetch(reportChannelId);
-
-        //    const reportEmbed = new EmbedBuilder()
-        //        .setTitle('Gemeldete Nachricht')
-        //        .setDescription(`**Autor:** ${reportedMessage.author.tag} (ID: ${reportedMessage.author.id})\n\n**Nachricht:** ${reportedMessage.content || '[Nachricht ohne Text]'}\n\n**Gemeldet von:** ${interaction.user.tag} (ID: ${interaction.user.id})\n\n**Kanal:** ${reportedMessage.channel.name} (ID: ${reportedMessage.channel.id})`)
-        //        .setColor('Red')
-        //        .setTimestamp();
-
-        //    await reportChannel.send({ embeds: [reportEmbed] });
-        //    await interaction.reply({ content: '> `✅` » Die Nachricht wurde gemeldet. Vielen Dank!', ephemeral: true });
-        //}
         
         if (interaction.isButton()) {
             if (interaction.customId === 'partner') {

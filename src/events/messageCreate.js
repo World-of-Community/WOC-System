@@ -22,6 +22,7 @@ module.exports = {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
+        // Teammitglied erwähnen Bot gibt Info Ticket Support
         if (!message.author.bot) {
 
             if(message.member.roles.cache.some(role => TeamRoleIds.includes(role.id))) {
@@ -53,6 +54,7 @@ module.exports = {
         }
     }
 
+        // afk System
         if (!message.author.bot) { 
         
         const uD = await userdb.findOne({ userID: message.author.id });
@@ -84,7 +86,6 @@ module.exports = {
         //}
 
         // Bump System (geht noch nicht)
-
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
 
