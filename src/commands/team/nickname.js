@@ -17,7 +17,7 @@ module.exports = {
 
             try {
                 await interaction.member.setNickname(newNick);
-                await interaction.reply({ content: `> \`✅\` » Dein Nickname wurde zu **${newNick}** geändert!`, ephemeral: true });
+                await interaction.reply({ content: `> \`✅\` » Dein Nickname wurde zu \`${newNick}\` geändert!`, ephemeral: true });
             } catch (error) {
                 console.error(error);
                 await interaction.reply({ content: '> `❌` » Ich konnte deinen Nickname nicht ändern. Stelle sicher, dass ich die erforderlichen Berechtigungen habe.', ephemeral: true });
