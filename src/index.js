@@ -342,53 +342,6 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
 });
 
-// Bot-Status
-client.on('ready', async () => {
-    const botId = client.user.id; // Bot-ID
-
-    const onlineEmbed = new EmbedBuilder()
-        .setTitle('`🟢` | BOT ONLINE')
-        .setDescription(`> **${client.user.displayName}** ist jetzt online.`)
-        .setColor('Green')
-        .setTimestamp();
-
-    try {
-        await sendLog(ThreadIDs.ONLINE, onlineEmbed);
-    } catch (error) {
-        console.error('Fehler beim Senden des Online-Logs:', error);
-    }
-});
-
-client.on('shardDisconnect', async (event, shardId) => {
-    const botId = client.user.id; // Bot-ID
-
-    const offlineEmbed = new EmbedBuilder()
-        .setTitle('`🔴` | BOT OFFLINE')
-        .setDescription(`> **${client.user.displayName}** ist offline.`)
-        .setColor('Red')
-        .setTimestamp();
-
-    try {
-        await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
-    } catch (error) {
-        console.error('Fehler beim Senden des Offline-Logs:', error);
-    }
-});
-
-client.on('error', async (error) => {
-    const errorEmbed = new EmbedBuilder()
-        .setTitle('`❌` | FEHLER BEI BOT')
-        .setDescription(`\`\`\`${error.message}\`\`\``)
-        .setColor('Orange')
-        .setTimestamp();
-
-    try {
-        await sendLog(ThreadIDs.ERROR, errorEmbed);
-    } catch (logError) {
-        console.error('Fehler beim Senden des Error-Logs:', logError);
-    }
-});
-
 // Birthday System
 const ageRoles = {
     "-18": "1199786765666500710",
