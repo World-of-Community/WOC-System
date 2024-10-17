@@ -4,9 +4,9 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('nick')
         .setDescription('» Verwalte deinen Nicknamen.')
-        .addSubcommand(subcommand => subcommand.setName('set').setDescription('Ändere deinen Nicknamen.')
+        .addSubcommand(subcommand => subcommand.setName('set').setDescription('» Ändere deinen Nicknamen. 📌')
         .addStringOption(option =>  option.setName('name').setDescription('Der neue Nickname').setRequired(true)))
-        .addSubcommand(subcommand => subcommand.setName('remove').setDescription('Entferne deinen Nicknamen und setze ihn auf den Standard zurück.'))
+        .addSubcommand(subcommand => subcommand.setName('remove').setDescription('» Entferne deinen Nicknamen und setze ihn auf den Standard zurück. 📌'))
         .setDefaultMemberPermissions(PermissionFlagsBits.setNickname),
 
     async execute(interaction) {
