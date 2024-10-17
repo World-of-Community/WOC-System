@@ -7,7 +7,7 @@ module.exports = {
         .addSubcommand(subcommand => subcommand.setName('set').setDescription('» Ändere deinen Nicknamen. 📌')
         .addStringOption(option =>  option.setName('name').setDescription('Der neue Nickname').setRequired(true)))
         .addSubcommand(subcommand => subcommand.setName('remove').setDescription('» Entferne deinen Nicknamen und setze ihn auf den Standard zurück. 📌'))
-        .setDefaultMemberPermissions(PermissionFlagsBits.setNickname),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
