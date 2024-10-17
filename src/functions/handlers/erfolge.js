@@ -9,7 +9,6 @@ module.exports = (client) => {
   client.handleErfolg = async () => {
 
   // Intervall for Presence
-
     client.on("messageCreate", async (message) => {
       if (!message.guild || message.author.bot) return;
 
