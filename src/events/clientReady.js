@@ -204,17 +204,6 @@ client.on('error', async (error) => {
         await updateLeaderboardEmbeds();
       });
 
-      const channel = client.channel.cache.get("1295742887388254278")
-      channel.threads.create({
-          name: '📌 » Online & Offline Logs', message: { content: `» In diesen Log Kanal werden alle \`Online & Offline Logs\` gepostet` }, reason: 'System' })
-      .then(threadChannel => console.log(threadChannel))
-      .catch(console.error);
-  
-      channel.threads.create({
-          name: '⚠️ » Error Logs', message: { content: `» In diesen Log Kanal werden alle \`Error Logs\` gepostet` }, reason: 'System' })
-      .then(threadChannel => console.log(threadChannel))
-      .catch(console.error);
-
     // RSS Feed
     setInterval(async () => {
       processRSSFeed(client, lastEntries);
