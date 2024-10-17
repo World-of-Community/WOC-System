@@ -21,13 +21,6 @@ module.exports = {
         if(!message.guild) return
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        if (message.channel.id === '1250047970116636756' && !message.user.id === "1020023299448786955") {
-            try {
-                await message.react('<a:wocheartbeat:1250054562912538724>');
-            } catch (error) {
-                console.error('Fehler beim Hinzufügen der Reaktion:', error);
-            }
-        }
 
         if (!message.author.bot) {
 
