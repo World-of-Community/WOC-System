@@ -348,7 +348,7 @@ client.on('ready', async () => {
 
     const onlineEmbed = new EmbedBuilder()
         .setTitle('`🟢` | BOT ONLINE')
-        .setDescription(`> **${client.user.username}** ist jetzt online.`)
+        .setDescription(`> **${client.user.displayName}** ist jetzt online.`)
         .setColor('Green')
         .setTimestamp();
 
@@ -364,7 +364,7 @@ client.on('shardDisconnect', async (event, shardId) => {
 
     const offlineEmbed = new EmbedBuilder()
         .setTitle('`🔴` | BOT OFFLINE')
-        .setDescription(`> **${client.user.username}** ist offline.`)
+        .setDescription(`> **${client.user.displayName}** ist offline.`)
         .setColor('Red')
         .setTimestamp();
 
