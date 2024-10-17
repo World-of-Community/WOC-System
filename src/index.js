@@ -342,39 +342,51 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
 });
 
+// Bot-Status
 client.on('ready', async () => {
     const botId = client.user.id; // Bot-ID
 
-        const onlineEmbed = new EmbedBuilder()
-            .setTitle('`🟢` | BOT ONLINE')
-            .setDescription(`> **${client.user.displayName}** ist jetzt online.`)
-            .setColor(colors.info)
-            .setTimestamp();
+    const onlineEmbed = new EmbedBuilder()
+        .setTitle('`🟢` | BOT ONLINE')
+        .setDescription(`> **${client.user.username}** ist jetzt online.`)
+        .setColor('Green')
+        .setTimestamp();
 
-        await sendLog(ThreadIDs.ONLINE, onlineEmbed)
+    try {
+        await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+    } catch (error) {
+        console.error('Fehler beim Senden des Online-Logs:', error);
+    }
 });
 
-client.on('disconnect', async () => {
+client.on('shardDisconnect', async (event, shardId) => {
     const botId = client.user.id; // Bot-ID
 
-        const offlineEmbed = new EmbedBuilder()
-            .setTitle('`🔴` | BOT OFFLINE')
-            .setDescription(`> **${client.user.displayName}** ist offline.`)
-            .setColor(colors.warn)
-            .setTimestamp();
+    const offlineEmbed = new EmbedBuilder()
+        .setTitle('`🔴` | BOT OFFLINE')
+        .setDescription(`> **${client.user.username}** ist offline.`)
+        .setColor('Red')
+        .setTimestamp();
 
-        await sendLog(ThreadIDs.OFFLINE, offlineEmbed)
+    try {
+        await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+    } catch (error) {
+        console.error('Fehler beim Senden des Offline-Logs:', error);
+    }
 });
 
-client.on('error', async () => {
+client.on('error', async (error) => {
+    const errorEmbed = new EmbedBuilder()
+        .setTitle('`❌` | FEHLER BEI BOT')
+        .setDescription(`\`\`\`${error.message}\`\`\``)
+        .setColor('Orange')
+        .setTimestamp();
 
-        const errorEmbed = new EmbedBuilder()
-            .setTitle('`❌` | FEHLER BEI BOT')
-            .setDescription(`\`\`\`${error.message}\`\`\``)
-            .setColor(colors.error)
-            .setTimestamp();
-
-        await sendLog(ThreadIDs.ERROR, errorEmbed)
+    try {
+        await sendLog(ThreadIDs.ERROR, errorEmbed);
+    } catch (logError) {
+        console.error('Fehler beim Senden des Error-Logs:', logError);
+    }
 });
 
 // Birthday System
