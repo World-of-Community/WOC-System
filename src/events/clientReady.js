@@ -157,7 +157,7 @@ module.exports = {
     .catch(console.error);
 
     logchannel.threads.create({
-        name: '⚠️ » Error Logs', message: { content: `» In diesen Log Kanal werden alle \`Error Logs\` gepostet` }, reason: 'System' })
+        name: '❗ » Error Logs', message: { content: `» In diesen Log Kanal werden alle \`Error Logs\` gepostet` }, reason: 'System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
 
