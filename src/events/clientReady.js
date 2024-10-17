@@ -150,7 +150,7 @@ module.exports = {
       await updateLeaderboardEmbeds();
     }, 60000);
 
-    const logchannel = client.channel.cache.get("1295742887388254278")
+    const logchannel = client.channels.cache.get("1295742887388254278")
     logchannel.threads.create({
         name: '📌 » Online & Offline Logs', message: { content: `» In diesen Log Kanal werden alle \`Online & Offline Logs\` gepostet` }, reason: 'System' })
     .then(threadChannel => console.log(threadChannel))
