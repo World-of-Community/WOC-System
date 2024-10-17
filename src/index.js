@@ -801,18 +801,21 @@ module.exports = { client }
 client.login(config.token)
 
 /*
-    const channel = client.channel.cache.get("1295742887388254278")
-    channel.threads.create({
+    // Bot-Status
+    const logchannel = client.channels.cache.get("1295742887388254278")
+    logchannel.threads.create({
         name: '📌 » Online & Offline Logs', message: { content: `» In diesen Log Kanal werden alle \`Online & Offline Logs\` gepostet` }, reason: 'System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
 
-    channel.threads.create({
-        name: '⚠️ » Error Logs', message: { content: `» In diesen Log Kanal werden alle \`Error Logs\` gepostet` }, reason: 'System' })
+    logchannel.threads.create({
+        name: '❗ » Error Logs', message: { content: `» In diesen Log Kanal werden alle \`Error Logs\` gepostet` }, reason: 'System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
 
+
 /*
+    // Server Logs
     const channel = client.channels.cache.get("1263436406655680513")
     channel.threads.create({
       name: '📁 » Kanal Logs', message: { content: `» In diesen Log Kanal werden alle \`Kanal Logs\` gepostet` }, reason: 'System' })

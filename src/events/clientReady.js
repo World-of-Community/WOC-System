@@ -150,17 +150,6 @@ module.exports = {
       await updateLeaderboardEmbeds();
     }, 60000);
 
-    const logchannel = client.channels.cache.get("1295742887388254278")
-    logchannel.threads.create({
-        name: '📌 » Online & Offline Logs', message: { content: `» In diesen Log Kanal werden alle \`Online & Offline Logs\` gepostet` }, reason: 'System' })
-    .then(threadChannel => console.log(threadChannel))
-    .catch(console.error);
-
-    logchannel.threads.create({
-        name: '❗ » Error Logs', message: { content: `» In diesen Log Kanal werden alle \`Error Logs\` gepostet` }, reason: 'System' })
-    .then(threadChannel => console.log(threadChannel))
-    .catch(console.error);
-
     // Bot-Status
 client.on('ready', async () => {
   const botId = client.user.id; // Bot-ID
