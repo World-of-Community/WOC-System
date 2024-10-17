@@ -218,7 +218,7 @@ module.exports = (client) => {
                                         `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
                                       );
                                     }
-                                    await inter.reply({ content: "`✅` » Der Vorschlag wurde als angenommen markiert.", ephemeral: true });
+                                    await inter.reply({ content: "`✅` » Der Vorschlag wurde als **angenommen** markiert.", ephemeral: true });
                                 }
                             })
                     })
@@ -290,7 +290,7 @@ module.exports = (client) => {
                                         `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
                                       );
                                     }
-                                    await inter.reply({ content: "`✅` » Der Vorschlag wurde als in Planung markiert.", ephemeral: true });
+                                    await inter.reply({ content: "`✅` » Der Vorschlag wurde als **in Planung** markiert.", ephemeral: true });
                                 }
                             })
                     })
@@ -364,7 +364,7 @@ module.exports = (client) => {
                           );
                         }
 
-                        await inter.reply({ content: "`✅` »  Der Vorschlag wurde als Abgelehnt markiert.", ephemeral: true });
+                        await inter.reply({ content: "`✅` »  Der Vorschlag wurde als **Abgelehnt** markiert.", ephemeral: true });
                         }
                     })
                     })
@@ -418,7 +418,7 @@ module.exports = (client) => {
                         `Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`
                       );
                     }
-                    await interaction.reply({ content: "`✅` » Der Vorschlag wurde als Doppelt markiert.", ephemeral: true });
+                    await interaction.reply({ content: "`✅` » Der Vorschlag wurde als **Doppelt** markiert.", ephemeral: true });
 
                 }
             }
