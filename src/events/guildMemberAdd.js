@@ -21,6 +21,16 @@ module.exports = {
 
         await logchannel.threads.cache.get("1269998215512457259").send({embeds: [join]});
 
+        const neuesMitglied = await member.guild.roles.cache.get('1222122625594294272'); 
+        const mitglied = await member.guild.roles.cache.get('815920703067914290'); 
+
+        try {
+            await member.roles.add(neuesMitglied);
+            await member.roles.add(mitglied);
+        } catch (error) {
+            console.error('Fehler beim Hinzufügen der Rolle:', error);
+        }
+
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
         if (member.user.bot) return; 
         if (serverData.deactivated.includes("willkommensnachrichten")) { return };
@@ -56,16 +66,6 @@ module.exports = {
 
         const channel = member.guild.channels.cache.get('815922286502346773');
         if (!channel) return console.error('Kanal wurde nicht gefunden.');
-
-        const neuesMitglied = await member.guild.roles.cache.get('1222122625594294272'); 
-        const mitglied = await member.guild.roles.cache.get('815920703067914290'); 
-
-        try {
-            await member.roles.add(neuesMitglied);
-            await member.roles.add(mitglied);
-        } catch (error) {
-            console.error('Fehler beim Hinzufügen der Rolle:', error);
-        }
 
         try {
             const message = await channel.send(`Willkommen auf unserem Discord-Server, ${member}! Bitte Verifiziere dich bei den Server-Regeln`);
