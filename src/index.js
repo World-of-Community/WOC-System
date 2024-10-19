@@ -351,11 +351,8 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
             .setColor('Green')
             .setTimestamp();
       
-        try {
-            await sendLog(ThreadIDs.ONLINE, onlineEmbed);
-        } catch (error) {
-            console.error('Fehler beim Senden des Online-Logs:', error);
-        }
+        await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+        
       });
       
       client.on('shardDisconnect', async (event, shardId) => {
@@ -367,11 +364,8 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
             .setColor('Red')
             .setTimestamp();
       
-        try {
-            await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
-        } catch (error) {
-            console.error('Fehler beim Senden des Offline-Logs:', error);
-        }
+        await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+        
       });
       
       client.on('error', async (error) => {
@@ -381,11 +375,8 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
             .setColor('Orange')
             .setTimestamp();
       
-        try {
-            await sendLog(ThreadIDs.ERROR, errorEmbed);
-        } catch (logError) {
-            console.error('Fehler beim Senden des Error-Logs:', logError);
-        }
+        await sendLog(ThreadIDs.ERROR, errorEmbed);
+        
       });
 
 // Birthday System
