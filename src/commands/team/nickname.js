@@ -37,7 +37,7 @@ module.exports = {
             if (subcommand === 'set') {
                 const nickname = interaction.options.getString('nickname');
                 await member.setNickname(nickname);
-                await interaction.reply({ content: `Der Nickname von ${user.username} wurde erfolgreich auf ${nickname} gesetzt.`, ephemeral: true });
+                await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.username}\` wurde erfolgreich auf \`${nickname}\` gesetzt.`, ephemeral: true });
             } else if (subcommand === 'remove') {
                 await member.setNickname(null); // Setzt den Nicknamen zurück
                 await interaction.reply(`> \`✅\` » Der Nickname von ${user.username} wurde erfolgreich entfernt.`);
