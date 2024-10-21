@@ -13,7 +13,6 @@ module.exports = {
             .addUserOption(option => option.setName('user').setDescription('Der Benutzer, dessen Nickname zurückgesetzt werden soll').setRequired(true)))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames),
     async execute(interaction) {
-        const subcommand = interaction.options.getSubcommand();
         const targetUser = interaction.options.getMember('user');
         if (!targetUser) return interaction.reply({ content: '> `❌` » Benutzer nicht gefunden.', ephemeral: true });
 
