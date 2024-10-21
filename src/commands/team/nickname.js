@@ -30,7 +30,7 @@ module.exports = {
         const member = interaction.guild.members.cache.get(user.id);
 
         if (!member) {
-            return interaction.reply({ content: '> ❌ » Benutzer nicht gefunden.', ephemeral: true });
+            return interaction.reply({ content: '> `❌` » Benutzer nicht gefunden.', ephemeral: true });
         }
 
         try {
@@ -44,7 +44,7 @@ module.exports = {
             }
         } catch (error) {
             console.error(error);
-            await interaction.reply({ content: '> ❌ » Ich habe keine Berechtigung, den Nicknamen dieses Benutzers zu ändern.', ephemeral: true });
+            await interaction.reply({ content: '> `❌` » Ich habe keine Berechtigung, den Nicknamen dieses Benutzers zu ändern.', ephemeral: true });
         }
     }
 };
