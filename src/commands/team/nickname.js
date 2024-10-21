@@ -27,7 +27,7 @@ module.exports = {
                 await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.username}\` wurde erfolgreich auf \`${nickname}\` gesetzt.`, ephemeral: true });
             } else if (subcommand === 'remove') {
                 await member.setNickname(null);
-                await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.displayname}\` wurde erfolgreich entfernt.`, ephemeral: true });
+                await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.username}\` wurde erfolgreich entfernt.`, ephemeral: true });
             }
         } catch (error) {
             console.error(error);
