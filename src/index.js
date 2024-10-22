@@ -353,7 +353,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         
       });
       
-      client.on('shardDisconnect', async (event, shardId) => {
+      client.on('disconnect', async () => {
       
         const offlineEmbed = new EmbedBuilder()
             .setTitle('`🔴` | BOT OFFLINE')
@@ -366,7 +366,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
       });
       
       client.on('error', async (error) => {
-        
+
         const errorEmbed = new EmbedBuilder()
             .setTitle('`❌` | FEHLER BEI BOT')
             .setDescription(`\`\`\`${error.message}\`\`\``)
