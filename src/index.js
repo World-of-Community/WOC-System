@@ -178,9 +178,9 @@ const ThreadIDs = {
     MODERATION: "1269998219266490538",
     INVITE: "1269998218264055818",
 
-    OFFLINE: "",
-    ONLINE: "",
-    ERROR: ""
+    OFFLINE: "1296391117507399763",
+    ONLINE: "1296391117507399763",
+    ERROR: "1296391118723878932"
 };
 
 client.on('guildMemberAdd', async member => {
