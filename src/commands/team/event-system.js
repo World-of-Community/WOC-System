@@ -37,8 +37,9 @@ module.exports = {
                     .setLabel('Eventitem einsammeln')
                     .setStyle(ButtonStyle.Success)
             );
-
-        await interaction.reply({ embeds: [eventEmbed], components: [buttons] });
+ 
+        await interaction.channel.send({ embeds: [eventEmbed], components: [buttons] })
+        await interaction.reply({ content: '> `✅` » Das `Event-Embed` wurde erfolgreich gesendet', ephemeral: true });
     },
 
     async handleButtonInteraction(interaction) {
