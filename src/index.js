@@ -177,7 +177,6 @@ const ThreadIDs = {
     SERVER: "1269998220440895510",
     MODERATION: "1269998219266490538",
     INVITE: "1269998218264055818",
-
     OFFLINE: "1296391117507399763",
     ONLINE: "1296391117507399763",
     ERROR: "1296391118723878932"
@@ -343,7 +342,6 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 });
 
     client.on('ready', async () => {
-        const botId = client.user.id; // Bot-ID
       
         const onlineEmbed = new EmbedBuilder()
             .setTitle('`🟢` | BOT ONLINE')
@@ -356,7 +354,6 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
       });
       
       client.on('shardDisconnect', async (event, shardId) => {
-        const botId = client.user.id; // Bot-ID
       
         const offlineEmbed = new EmbedBuilder()
             .setTitle('`🔴` | BOT OFFLINE')
@@ -369,6 +366,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
       });
       
       client.on('error', async (error) => {
+        
         const errorEmbed = new EmbedBuilder()
             .setTitle('`❌` | FEHLER BEI BOT')
             .setDescription(`\`\`\`${error.message}\`\`\``)
