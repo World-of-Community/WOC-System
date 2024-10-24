@@ -641,7 +641,7 @@ cron.schedule('0 18 * * 0', async () => {
 
 });
 
-//====================[Giveaway]====================
+//====================[Giveaway]==================== noch in giveaway.js machen
 
 setInterval(async () => {
     const currentTime = new Date();

@@ -4,6 +4,8 @@ const giveawaydb = require("../../Datenbank/giveawaydb");
 const userdb = require("../../Datenbank/userdb");
 const serverdb = require("../../Datenbank/serverdb");
 
+// noch in giveaway.js machen
+
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
