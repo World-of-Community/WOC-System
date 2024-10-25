@@ -820,12 +820,31 @@ process.on('unhandledRejection', error => {
     console.log(error)
 });
 
-async function sendLog(threadID, embed) {
-    const serverCatch = client.guilds.cache.get("815919809379172354")
-    const logchannel = await serverCatch.channels.cache.get("1263436406655680513");
+//async function sendLog(threadID, embed) {
+//    const serverCatch = client.guilds.cache.get("815919809379172354")
+//    const logchannel = await serverCatch.channels.cache.get("1263436406655680513");
 
-    await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
+//    await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
+//}
+
+async function sendLog(threadID, embed) {
+    try {
+        const serverCatch = client.guilds.cache.get("815919809379172354");
+        if (!serverCatch) throw new Error("Server not found");
+
+        const logchannel = serverCatch.channels.cache.get("1263436406655680513");
+        if (!logchannel) throw new Error("Log channel not found");
+
+        const thread = logchannel.threads.cache.get(threadID);
+        if (!thread) throw new Error("Thread not found");
+
+        await thread.send({ embeds: [embed] });
+        console.log("Log message sent successfully.");
+    } catch (error) {
+        console.error(`Failed to send log: ${error.message}`);
+    }
 }
+
 
 module.exports = { client }
 
