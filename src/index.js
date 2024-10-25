@@ -341,41 +341,38 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
 });
 
-    client.on('ready', async () => {
-      
-        const onlineEmbed = new EmbedBuilder()
-            .setTitle('`🟢` | BOT ONLINE')
-            .setDescription(`> **${client.user.displayName}** ist jetzt online.`)
-            .setColor('Green')
-            .setTimestamp();
-      
-        await sendLog(ThreadIDs.ONLINE, onlineEmbed);
-        
-      });
-      
-      client.on('disconnect', async () => {
-      
-        const offlineEmbed = new EmbedBuilder()
-            .setTitle('`🔴` | BOT OFFLINE')
-            .setDescription(`> **${client.user.displayName}** ist offline.`)
-            .setColor('Red')
-            .setTimestamp();
-      
-        await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
-        
-      });
-      
-      client.on('error', async (error) => {
+client.on('ready', async (ready) => {
 
-        const errorEmbed = new EmbedBuilder()
-            .setTitle('`❌` | FEHLER BEI BOT')
-            .setDescription(`\`\`\`${error.message}\`\`\``)
-            .setColor('Orange')
-            .setTimestamp();
-      
-        await sendLog(ThreadIDs.ERROR, errorEmbed);
-        
-      });
+    const onlineEmbed = new EmbedBuilder()
+        .setTitle('`🟢` | BOT ONLINE')
+        .setDescription(`> **\`${client.user.displayName}\`** ist jetzt online.`)
+        .setColor('Green')
+        .setTimestamp();
+
+    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+});
+
+client.on('disconnect', async (disconnect) => {
+
+    const offlineEmbed = new EmbedBuilder()
+        .setTitle('`🔴` | BOT OFFLINE')
+        .setDescription(`> **\`${client.user.displayName}\`** ist offline.`)
+        .setColor('Red')
+        .setTimestamp();
+
+    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+});
+
+client.on('error', async (error) => {
+
+    const errorEmbed = new EmbedBuilder()
+        .setTitle('`❌` | FEHLER BEI BOT')
+        .setDescription(`\`\`\`${error.message}\`\`\``)
+        .setColor('Orange')
+        .setTimestamp();
+
+    await sendLog(ThreadIDs.ERROR, errorEmbed);
+});
 
 // Birthday System
 const ageRoles = {
