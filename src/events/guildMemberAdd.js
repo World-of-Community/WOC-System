@@ -3,8 +3,7 @@ const client = require('../index');
 const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
-const file = fs.readFileSync('src/json/config.json', 'utf-8');
-const config = JSON.parse(file);
+const { willkommen } = require('../json/config.json');
 
 module.exports = {
     name: Events.GuildMemberAdd,
@@ -33,11 +32,9 @@ module.exports = {
 
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
         if (member.user.bot) return; 
-        if (serverData.deactivated.includes("willkommensnachrichten")) { return };
+        if (serverData.deactivated.includes("willkommensnachrichten")) return;
         
-        const file = fs.readFileSync('src/json/config.json', 'utf-8');
-        const config = JSON.parse(file);
-        const welcomeChannel = await member.guild.channels.cache.get(config.willkommen)
+        const welcomeChannel = await member.guild.channels.cache.get(willkommen)
 
         const contents = [
             `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **ist gerade auf den Server geschlittert** <a:winken:1086560167442796544>`,
