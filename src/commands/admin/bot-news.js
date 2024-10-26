@@ -41,7 +41,7 @@ module.exports = {
         const kategorie = await interaction.options.getString('kategorie')
         const emoji = await interaction.options.getString('emoji')
         const update = await interaction.options.getString('update')
-        const serverData = await serverdb.findOne({ guildID: interaction.guildId })
+        let serverData = await serverdb.findOne({ guildID: interaction.guildId })
         if (!serverData) return;
         const channel = await interaction.client.channels.cache.get(config.changelog)
 
@@ -67,8 +67,6 @@ module.exports = {
 
                 const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
                 const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
-
-                console.log(serverData)
 
                 const updateEmbed = new EmbedBuilder()
                     .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${serverData.updateWeek}]`)
