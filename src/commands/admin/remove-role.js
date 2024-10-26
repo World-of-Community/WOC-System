@@ -30,8 +30,7 @@ async execute(interaction) {
 
         await logchannel.threads.cache.get("1269998221518831721").send({embeds: [removerole]});
     } catch (error) {
-        console.error('Fehler beim Entfernen der Rolle:', error);
-        await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Entfernen der Rolle.', ephemeral: true });
+        await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`, ephemeral: true });
     } 
 },
 };
