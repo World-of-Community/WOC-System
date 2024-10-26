@@ -85,22 +85,8 @@ module.exports = {
                 }
 
                 if (!serverData.partner || !serverData.partner.msg || !serverData.partner.channel) {
-                    const newEmbed = new EmbedBuilder()
-                        .setTitle('Unsere Partnerliste')
-                        .setColor('Blurple')
-                        .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
-                        .setFooter({ text: `» Maximal 15 Server-Partner`, iconURL: `${interaction.guild.iconURL()}` });
+                    const newEmbed = createPartnerListEmbed(serverData, interaction)
 
-                        if(kategorie === "Kooperation") {
-                            newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
-                            } else {
-                                newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
-                            }
-                                    if(kategorie === "Normale Partner") {
-                                        newEmbed.addFields({ name: kategorie, value: `\`1.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
-                                        } else {
-                                            newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });
-                                        }
                     const channel = interaction.channel;
                     const sentMessage = await channel.send({ embeds: [newEmbed] });
 
@@ -118,21 +104,7 @@ module.exports = {
                         sentMessage = await channel.messages.fetch(serverData.partner.msg);
                     } catch (error) {
                         console.error('Fehler beim Abrufen des Kanals oder der Nachricht:', error);
-                        const newEmbed = new EmbedBuilder()
-                            .setTitle('Unsere Partnerliste')
-                            .setColor('Blurple')
-                            .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
-
-                            if(kategorie === "Kooperation") {
-                                newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
-                                } else {
-                                    newEmbed.addFields({ name: "Kooperation", value: `> \`❌\` » Kein Eintrag`, inline: false });   
-                                }
-                                        if(kategorie === "Normale Partner") {
-                                            newEmbed.addFields({ name: kategorie, value: `\`${index + 1}.\` [${name}](${invite}) (${owner}) (${owner.username})`, inline: false });
-                                            } else {
-                                                newEmbed.addFields({ name: "Normale Partner", value: `> \`❌\` » Kein Eintrag`, inline: false });   
-                                            }
+                        const newEmbed = createPartnerListEmbed(serverData, interaction)
 
                         channel = interaction.channel;
                         sentMessage = await channel.send({ embeds: [newEmbed] });
@@ -237,34 +209,7 @@ module.exports = {
                     const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
                     const sentMessage = await channel.messages.fetch(serverData.partner.msg);
 
-                    const newEmbed = new EmbedBuilder()
-                        .setTitle('Unsere Partnerliste')
-                        .setColor('Blurple')
-                        .setDescription('» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.')
-                        .setFooter({ text: `» Maximal 15 Server-Partner`, iconURL: `${interaction.guild.iconURL()}` });
-
-                    const cooperationPartners = serverData.partner.partners.filter(partner => partner.category === 'Kooperation');
-                    const normalPartners = serverData.partner.partners.filter(partner => partner.category === 'Normale Partner');
-
-                    if (cooperationPartners.length > 0) {
-                        newEmbed.addFields({
-                            name: 'Kooperation',
-                            value: cooperationPartners.map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n'),
-                            inline: false,
-                        });
-                    } else {
-                        newEmbed.addFields({ name: 'Kooperation', value: '> `❌` » Kein Eintrag', inline: false });
-                    }
-
-                    if (normalPartners.length > 0) {
-                        newEmbed.addFields({
-                            name: 'Normale Partner',
-                            value: normalPartners.map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)})`).join('\n'),
-                            inline: false,
-                        });
-                    } else {
-                        newEmbed.addFields({ name: 'Normale Partner', value: '> `❌` » Kein Eintrag', inline: false });
-                    }
+                    const newEmbed = createPartnerListEmbed(serverData, interaction)
 
                     // Update the message with the new embed
                     await sentMessage.edit({ embeds: [newEmbed] });
@@ -283,4 +228,35 @@ module.exports = {
 function isValidInviteLink(link) {
     const inviteRegex = /^(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|plus)\/|discordapp\.com\/invite\/)([a-zA-Z0-9]{2,32})\/?$/;
     return inviteRegex.test(link);
+}
+
+function createPartnerListEmbed(serverData, interaction) {
+    let description = '» Hier findest du alles über unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest schau in <#1172819623935221810> vorbei.\n\n';
+
+    const newEmbed = new EmbedBuilder()
+    .setTitle('Unsere Partnerliste')
+    .setColor('Blurple')
+    .setFooter({ text: `» Maximal 15 Server-Partner`, iconURL: `${interaction.guild.iconURL()}` });
+
+    const cooperationPartners = serverData.partner.partners.filter(partner => partner.category === 'Kooperation');
+    const normalPartners = serverData.partner.partners.filter(partner => partner.category === 'Normale Partner');
+
+    if (cooperationPartners.length > 0) {
+        description += "**Kooperation**\n"
+        description += cooperationPartners.map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)}) (${interaction.guild.members.cache.get(partner.ownerID).user.username})`).join('\n')
+        description += '\n\n'
+    } else {
+        description += "**Kooperation**\n> `❌` » Kein Eintrag\n\n"
+    }
+
+    if (normalPartners.length > 0) {
+        description += "**Normale Partner**\n"
+        description += normalPartners.map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)}) (${interaction.guild.members.cache.get(partner.ownerID).user.username})`).join('\n')
+    } else {
+        description += "**Normale Partner**\n> `❌` » Kein Eintrag"
+    }
+
+    newEmbed.setDescription(description)
+
+    return newEmbed
 }
