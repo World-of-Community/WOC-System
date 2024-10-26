@@ -41,7 +41,7 @@ module.exports = {
         const kategorie = await interaction.options.getString('kategorie')
         const emoji = await interaction.options.getString('emoji')
         const update = await interaction.options.getString('update')
-        const serverData = await serverdb.findOne({ guildID: interaction.guildId })
+        let serverData = await serverdb.findOne({ guildID: interaction.guildId })
         if (!serverData) return;
         const channel = await interaction.client.channels.cache.get(config.changelog)
 
