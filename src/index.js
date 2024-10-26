@@ -464,11 +464,9 @@ cron.schedule('0 0 * * *', async () => {
     try {
         const birthdayUsers = await userdb.find({ "birthday.tag": day, "birthday.monat": month });
         const birthdayRole2 = await guild.roles.fetch("1244945910262399046");
-        guild.members.cache.forEach(async member => {
+        birthdayRole2.members.forEach(async member => {
             try {
-                    if (member.roles.cache.has(birthdayRole2)) {
-                        await member.roles.remove(birthdayRole2);
-                    }
+                await member.roles.remove(birthdayRole2);
             } catch (removeError) {
                 console.error(`Fehler beim Entfernen der Rollen von Mitglied ${member.id}:`, removeError);
             }
