@@ -19,16 +19,18 @@ module.exports = {
             const bans = await interaction.guild.bans.fetch();
             const role = interaction.guild.roles.cache.find((r) => r.id === roleID);
             const rolemember = role.members
+            //console.log(interaction.guild.bans.cache)
 
-            rolemember.forEach(async member => {
+            rolemember.map(async member => {
                 try {
                     const banData = await bandb.findOne({ user: member.id })
-                    list.push(`${member.username} - ${member.displayName} (${member}) (${banData.reason})`)
+                    console.log(member)
+                    list.push(`${member.user.username} - ${member.user.displayName} (${member}) (${banData?.reason || 'Kein Grund angegeben'})`)
                 } catch (error) {
                     console.log(error.message)
                 }
+            })
 
-            });
             console.log(list)
             return list;
         }

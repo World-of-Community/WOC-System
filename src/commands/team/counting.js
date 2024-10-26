@@ -17,7 +17,6 @@ module.exports = {
             countingData = await CountingModel.create({
                 guildId,
                 channelId: selectedChannel.id,
-                highestCount: 0,
                 currentCount: 0,
                 lastUserId: null
             });
@@ -26,7 +25,6 @@ module.exports = {
         countingData.channelId = selectedChannel.id;
         countingData.currentCount = 0;
         countingData.lastUserId = null;
-        await countingData.save();
 
         await interaction.reply({ content: `> \`✅\` » Der Zählkanal wurde auf <#${selectedChannel.id}> eingestellt.`, ephemeral: true });
 
@@ -38,39 +36,9 @@ module.exports = {
             .setTimestamp();
 
         const countingEmbedMessage = await selectedChannel.send({ embeds: [countingEmbed] });
+        countingData.messageId = countingEmbedMessage.id;
         await countingEmbedMessage.pin();
 
-        const filter = (m) => m.channel.id === selectedChannel.id && !m.author.bot;
-        const collector = selectedChannel.createMessageCollector({ filter });
-
-        collector.on('collect', async (message) => {
-            const userNumber = parseInt(message.content);
-
-            if (!isNaN(userNumber)) {
-                if (userNumber === countingData.currentCount + 1) {
-                    if (message.author.id === countingData.lastUserId) {
-                        await selectedChannel.send(`> \`❗\` » ${message.member} hat die Reihe bei **1** zerstört! Die nächste Zahl ist **1**. **Du darfst nicht zweimal hintereinander zählen!**`);
-                        countingData.currentCount = 0;
-                        countingData.lastUserId = null;
-                    } else {
-                        countingData.currentCount++;
-                        countingData.lastUserId = message.author.id;
-                        await message.react('✅');
-
-                        if (countingData.currentCount > countingData.highestCount) {
-                            countingData.highestCount = countingData.currentCount;
-                            await selectedChannel.send(`> \`🎉\` » **Neuer Rekord!** ${message.member} hat die höchste Zahl **${countingData.highestCount}** erreicht!`);
-                        }
-                    }
-                } else {
-                    await message.react('❌');
-                    await selectedChannel.send(`> \`❗\` » ${message.member}, falsche Zahl! Das Spiel wird zurückgesetzt. Die nächste Zahl ist **1**.`);
-                    countingData.currentCount = 0;
-                    countingData.lastUserId = null;
-                }
-
-                await countingData.save();
-            }
-        });
+        await countingData.save();
     }
 };

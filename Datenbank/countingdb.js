@@ -3,9 +3,13 @@ const mongoose = require('mongoose');
 const countingSchema = new mongoose.Schema({
     guildId: String,
     channelId: String,
-    highestCount: Number,
+    messageId: String,
+    highestCount: {
+        type: Number,
+        default: 0
+    },
     currentCount: Number,
     lastUserId: String
 });
 
-const CountingModel = mongoose.model('Counting', countingSchema);
+module.exports = mongoose.model('Counting', countingSchema);
