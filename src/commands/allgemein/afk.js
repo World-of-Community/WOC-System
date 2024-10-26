@@ -26,9 +26,7 @@ module.exports = {
         userData.afkReason = grund
         userData.afkStamp = discordTimestamp
         await userData.save()
-        await interaction.reply({
-            content: `<:AFK:1021086267557023775> | ${interaction.user} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund.replace("*", "")}`
-        })
+        await interaction.reply({ content: `<:AFK:1021086267557023775> | ${interaction.user} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund.replace("*", "")}` })
         await interaction.member.setNickname(`AFK | ${interaction.member.displayName}`).catch((err) => { })
     }
 }

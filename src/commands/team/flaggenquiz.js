@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 
 // flaggenquiz.json noch hier hinzufügen inkl. datenbank
 
@@ -6,9 +6,8 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('flaggenquiz')
     .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt')
-    .addChannelOption(option =>
-      option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true)
-    ),
+    .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true))
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const channel = interaction.options.getChannel('kanal');

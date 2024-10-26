@@ -3,7 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, Butt
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('lock')
-        .setDescription('Sperre einen bestimmten Kanal. 🔒')
+        .setDescription('» Sperre einen bestimmten Kanal. 🔒')
         .addChannelOption(option =>  option.setName('kanal').setDescription('Der Kanal, der gesperrt werden soll.').setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 

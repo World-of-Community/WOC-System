@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 const ms = require('ms');
 
 module.exports = {
@@ -7,7 +7,8 @@ module.exports = {
         .setDescription('» Sende eine Info Event Nachricht. 💬')
         .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true))
         .addStringOption(option => option.setName('nachricht').setDescription('Die Nachricht, die gesendet werden soll').setRequired(true))
-        .addStringOption(option => option.setName('starten').setDescription('Wann soll die Nachricht gesendet werden? (z.B. 5s, 10m, 1h)').setRequired(false)),
+        .addStringOption(option => option.setName('starten').setDescription('Wann soll die Nachricht gesendet werden? (z.B. 5s, 10m, 1h)').setRequired(false))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     
     async execute(interaction) {
         const channel = interaction.options.getChannel('kanal');

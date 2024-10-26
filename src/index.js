@@ -64,6 +64,27 @@ const readCommands = (dir, table) => {
     }
 };
 
+//const duplicateCommands = new Set();
+
+//commandFiles.forEach(file => {
+//    const command = require(`${commandPath}/${file}`);
+
+    // Überprüfen, ob der Command-Name bereits existiert
+//    if (commands.has(command.name)) {
+        // Wenn ein doppelter Command gefunden wird, füge ihn der Set-Liste hinzu
+//        duplicateCommands.add(command.name);
+//    } else {
+//        commands.set(command.name, command);
+//    }
+//});
+
+// Wenn doppelte Commands gefunden wurden, automatisch in der Konsole ausgeben
+//if (duplicateCommands.size > 0) {
+//    console.log(`Doppelte Commands gefunden: ${[...duplicateCommands].join(', ')}`);
+//} else {
+//    console.log('Keine doppelten Commands gefunden.');
+//}
+
 let table = new AsciiTable()
     .setHeading('Slash Commands', 'Status')
     .setBorder('|', '=', '0', '0');
@@ -156,10 +177,9 @@ const ThreadIDs = {
     SERVER: "1269998220440895510",
     MODERATION: "1269998219266490538",
     INVITE: "1269998218264055818",
-
-    OFFLINE: "",
-    ONLINE: "",
-    ERROR: ""
+    OFFLINE: "1296391117507399763",
+    ONLINE: "1296391117507399763",
+    ERROR: "1296391118723878932"
 };
 
 client.on('guildMemberAdd', async member => {
@@ -321,131 +341,37 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
 });
 
-// Error & Online/Offline Log
-const colors = {
-    info: 'Blurple',  // Info-Farbe (Online-Status)
-    warn: 'Yellow',   // Warn-Farbe (Offline-Status)
-    error: 'Red',     // Error-Farbe (Fehler)
-    debug: 'Grey'     // Debug-Farbe (optional für zukünftige Log-Typen)
-};
+client.on('ready', async (ready) => {
 
-// Log-Kanal Namen
-const onlineLogChannelName = '1295742887388254278';  // Kanal für Online-Logs
-const offlineLogChannelName = '1295742887388254278';  // Kanal für Offline-Logs
-const errorLogChannelName = '1295742887388254278';  // Kanal für Error-Logs
+    const onlineEmbed = new EmbedBuilder()
+        .setTitle('`🟢` | BOT ONLINE')
+        .setDescription(`> **\`${client.user.displayName}\`** ist jetzt online.`)
+        .setColor('Green')
+        .setTimestamp();
 
-// Funktion: Überprüfen und Erstellen von Kanälen, wenn sie nicht existieren
-async function ensureLogChannels(guild) {
-    let onlineLogChannel = guild.channels.cache.find(channel => channel.id === onlineLogChannelName);
-    let offlineLogChannel = guild.channels.cache.find(channel => channel.id === offlineLogChannelName);
-    let errorLogChannel = guild.channels.cache.find(channel => channel.id === errorLogChannelName);
+    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+});
 
-    // Falls der Online-Log-Kanal nicht existiert, erstelle ihn
-    if (!onlineLogChannel) {
-        onlineLogChannel = await guild.channels.create({
-            name: onlineLogChannelName,
-            type: 4,
-            topic: '🟢 » Online Log',
-            permissionOverwrites: [
-                {
-                    id: guild.id, // Everyone role
-                    deny: ['SEND_MESSAGES'], // Nur Lesen erlaubt
-                },
-            ],
-        });
-    }
+client.on('disconnect', async (disconnect) => {
 
-    // Falls der Offline-Log-Kanal nicht existiert, erstelle ihn
-    if (!offlineLogChannel) {
-        offlineLogChannel = await guild.channels.create({
-            name: offlineLogChannelName,
-            type: 4,
-            topic: '🔴 » Offline Log',
-            permissionOverwrites: [
-                {
-                    id: guild.id, // Everyone role
-                    deny: ['SEND_MESSAGES'], // Nur Lesen erlaubt
-                },
-            ],
-        });
-    }
+    const offlineEmbed = new EmbedBuilder()
+        .setTitle('`🔴` | BOT OFFLINE')
+        .setDescription(`> **\`${client.user.displayName}\`** ist offline.`)
+        .setColor('Red')
+        .setTimestamp();
 
-    // Falls der Error-Log-Kanal nicht existiert, erstelle ihn
-    if (!errorLogChannel) {
-        errorLogChannel = await guild.channels.create({
-            name: errorLogChannelName,
-            type: 4,
-            topic: '⚠️ » Error Log',
-            permissionOverwrites: [
-                {
-                    id: guild.id, // Everyone role
-                    deny: ['SEND_MESSAGES'], // Nur Lesen erlaubt
-                },
-            ],
-        });
-    }
+    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+});
 
-    return { onlineLogChannel, offlineLogChannel, errorLogChannel };
-}
+client.on('error', async (error) => {
 
-// Event: Bot bereit
-client.on('ready', async () => {
-    const guild = client.guilds.cache.get('815919809379172354'); // Füge hier deine Gilde hinzu
+    const errorEmbed = new EmbedBuilder()
+        .setTitle('`❌` | FEHLER BEI BOT')
+        .setDescription(`\`\`\`${error.message}\`\`\``)
+        .setColor('Orange')
+        .setTimestamp();
 
-    // Prüfe, ob die Log-Kanäle existieren, und erstelle sie, falls nötig
-    const { onlineLogChannel, offlineLogChannel, errorLogChannel } = await ensureLogChannels(guild);
-
-    // Event: Bot wird online (Shard bereit)
-    client.on('shardReady', (id) => {
-        const botId = client.user.id; // Bot-ID
-
-        const onlineEmbed = new EmbedBuilder()
-            .setTitle('`🟢` | BOT ONLINE')
-            .setDescription(`> Shard: ${id}\nBot: **${client.user.displayName}** (${botId}) ist jetzt online.`)
-            .setColor(colors.info)
-            .setTimestamp();
-
-        onlineLogChannel.send({ embeds: [onlineEmbed] });
-    });
-
-    // Event: Bot wird offline (Shard getrennt)
-    client.on('shardDisconnect', (event, id) => {
-        const botId = client.user.id; // Bot-ID
-
-        const offlineEmbed = new EmbedBuilder()
-            .setColor(colors.warn) // Verwende die Warn-Farbe
-            .setTitle('`🔴` | BOT OFFLINE')
-            .setDescription(`> Shard: ${id}\nBot: **${client.user.tag}** (${botId}) ist offline.`)
-            .setTimestamp();
-
-        offlineLogChannel.send({ embeds: [offlineEmbed] });
-    });
-
-    // Event: Allgemeiner Bot-Fehler
-    client.on('error', (error) => {
-        const botId = client.user.id; // Bot-ID
-
-        const errorEmbed = new EmbedBuilder()
-            .setColor(colors.error) // Verwende die Error-Farbe
-            .setTitle('`❌` | FEHLER BEI BOT')
-            .setDescription(`> Bot: **${client.user.displayName}** (${botId})\nFehlermeldung: \`\`\`${error.message}\`\`\``)
-            .setTimestamp();
-
-        errorLogChannel.send({ embeds: [errorEmbed] });
-    });
-
-    // Event: Fehler auf einem bestimmten Shard
-    client.on('shardError', (error, shardId) => {
-        const botId = client.user.id; // Bot-ID
-
-        const shardErrorEmbed = new EmbedBuilder()
-            .setColor(colors.error) // Verwende die Error-Farbe
-            .setTitle('`❌` | SHARD FEHLER')
-            .setDescription(`> Shard: ${shardId}\nBot: **${client.user.displayName}** (${botId})\nFehlermeldung: \`\`\`${error.message}\`\`\``)
-            .setTimestamp();
-
-        errorLogChannel.send({ embeds: [shardErrorEmbed] });
-    });
+    await sendLog(ThreadIDs.ERROR, errorEmbed);
 });
 
 // Birthday System
@@ -710,7 +636,7 @@ cron.schedule('0 18 * * 0', async () => {
 
 });
 
-//====================[Giveaway]====================
+//====================[Giveaway]==================== noch in giveaway.js machen
 
 setInterval(async () => {
     const currentTime = new Date();
@@ -892,12 +818,31 @@ process.on('unhandledRejection', error => {
     console.log(error)
 });
 
-async function sendLog(threadID, embed) {
-    const serverCatch = client.guilds.cache.get("815919809379172354")
-    const logchannel = await serverCatch.channels.cache.get("1263436406655680513");
+//async function sendLog(threadID, embed) {
+//    const serverCatch = client.guilds.cache.get("815919809379172354")
+//    const logchannel = await serverCatch.channels.cache.get("1263436406655680513");
 
-    await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
+//    await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
+//}
+
+async function sendLog(threadID, embed) {
+    try {
+        const serverCatch = client.guilds.cache.get("815919809379172354");
+        if (!serverCatch) throw new Error("Server not found");
+
+        const logchannel = serverCatch.channels.cache.get("1263436406655680513");
+        if (!logchannel) throw new Error("Log channel not found");
+
+        const thread = logchannel.threads.cache.get(threadID);
+        if (!thread) throw new Error("Thread not found");
+
+        await thread.send({ embeds: [embed] });
+        console.log("Log message sent successfully.");
+    } catch (error) {
+        console.error(`Failed to send log: ${error.message}`);
+    }
 }
+
 
 module.exports = { client }
 
@@ -905,6 +850,21 @@ module.exports = { client }
 client.login(config.token)
 
 /*
+    // Bot-Status
+    const logchannel = client.channels.cache.get("1295742887388254278")
+    logchannel.threads.create({
+        name: '📌 » Online & Offline Logs', message: { content: `» In diesen Log Kanal werden alle \`Online & Offline Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    logchannel.threads.create({
+        name: '❗ » Error Logs', message: { content: `» In diesen Log Kanal werden alle \`Error Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+
+/*
+    // Server Logs
     const channel = client.channels.cache.get("1263436406655680513")
     channel.threads.create({
       name: '📁 » Kanal Logs', message: { content: `» In diesen Log Kanal werden alle \`Kanal Logs\` gepostet` }, reason: 'System' })

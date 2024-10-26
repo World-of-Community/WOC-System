@@ -148,7 +148,7 @@ module.exports = {
 
     setInterval(async () => {
       await updateLeaderboardEmbeds();
-    }, 60000); 
+    }, 60000);
 
     cron.schedule('0 0 1 * *', async () => {
         console.log('Zurücksetzen des monatlichen Leaderboards gestartet.');

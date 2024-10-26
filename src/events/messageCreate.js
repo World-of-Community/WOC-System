@@ -21,14 +21,8 @@ module.exports = {
         if(!message.guild) return
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        if (message.channel.id === '1250047970116636756' && !message.user.id === "1020023299448786955") {
-            try {
-                await message.react('<a:wocheartbeat:1250054562912538724>');
-            } catch (error) {
-                console.error('Fehler beim Hinzufügen der Reaktion:', error);
-            }
-        }
 
+        // Teammitglied erwähnen Bot gibt Info Ticket Support
         if (!message.author.bot) {
 
             if(message.member.roles.cache.some(role => TeamRoleIds.includes(role.id))) {
@@ -60,6 +54,7 @@ module.exports = {
         }
     }
 
+        // afk System
         if (!message.author.bot) { 
         
         const uD = await userdb.findOne({ userID: message.author.id });
@@ -91,7 +86,6 @@ module.exports = {
         //}
 
         // Bump System (geht noch nicht)
-
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
 

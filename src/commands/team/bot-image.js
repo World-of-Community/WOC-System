@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ChannelType, EmbedBuilder, PermissionbitField } = require('discord.js');
+const { SlashCommandBuilder, ChannelType, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,7 +6,8 @@ module.exports = {
         .setDescription('» Sende ein Bild mit dem Bot in einen Kanal. 📌')
         .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den das Bild gesendet werden soll').addChannelTypes(ChannelType.GuildText).setRequired(true))
         .addStringOption(option => option.setName('image').setDescription('» URL des Bildes, das hinzugefügt werden soll').setRequired(true))
-        .addStringOption(option => option.setName('starten_in').setDescription('Wann soll es gesendet werden? (z.B. 10s, 5m, 2h, 1d)').setRequired(false)),
+        .addStringOption(option => option.setName('starten_in').setDescription('Wann soll es gesendet werden? (z.B. 10s, 5m, 2h, 1d)').setRequired(false))
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction, client) {
         const kanal = interaction.options.getChannel('kanal');
