@@ -341,38 +341,38 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
 });
 
-client.on('ready', async (ready) => {
+//client.on('ready', async (ready) => {
 
-    const onlineEmbed = new EmbedBuilder()
-        .setTitle('`🟢` | BOT ONLINE')
-        .setDescription(`> **\`${client.user.displayName}\`** ist jetzt online.`)
-        .setColor('Green')
-        .setTimestamp();
+//    const onlineEmbed = new EmbedBuilder()
+//        .setTitle('`🟢` | BOT ONLINE')
+//        .setDescription(`> **\`${client.user.displayName}\`** ist jetzt online.`)
+//        .setColor('Green')
+//        .setTimestamp();
 
-    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
-});
+//    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+//});
 
-client.on('disconnect', async (disconnect) => {
+//client.on('disconnect', async (disconnect) => {
 
-    const offlineEmbed = new EmbedBuilder()
-        .setTitle('`🔴` | BOT OFFLINE')
-        .setDescription(`> **\`${client.user.displayName}\`** ist offline.`)
-        .setColor('Red')
-        .setTimestamp();
+//    const offlineEmbed = new EmbedBuilder()
+//        .setTitle('`🔴` | BOT OFFLINE')
+//        .setDescription(`> **\`${client.user.displayName}\`** ist offline.`)
+//        .setColor('Red')
+//        .setTimestamp();
 
-    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
-});
+//    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+//});
 
-client.on('error', async (error) => {
+//client.on('error', async (error) => {
 
-    const errorEmbed = new EmbedBuilder()
-        .setTitle('`❌` | FEHLER BEI BOT')
-        .setDescription(`\`\`\`${error.message}\`\`\``)
-        .setColor('Orange')
-        .setTimestamp();
+//    const errorEmbed = new EmbedBuilder()
+//        .setTitle('`❌` | FEHLER BEI BOT')
+//        .setDescription(`\`\`\`${error.message}\`\`\``)
+//        .setColor('Orange')
+//        .setTimestamp();
 
-    await sendLog(ThreadIDs.ERROR, errorEmbed);
-});
+//    await sendLog(ThreadIDs.ERROR, errorEmbed);
+//});
 
 // Birthday System
 const ageRoles = {
@@ -828,13 +828,13 @@ process.on('unhandledRejection', error => {
 async function sendLog(threadID, embed) {
     try {
         const serverCatch = client.guilds.cache.get("815919809379172354");
-        if (!serverCatch) throw new Error("Server not found");
+        if (!serverCatch) throw new Error("Server nicht gefunden");
 
         const logchannel = serverCatch.channels.cache.get("1263436406655680513");
-        if (!logchannel) throw new Error("Log channel not found");
+        if (!logchannel) throw new Error("Log Kanal nicht gefunden");
 
         const thread = logchannel.threads.cache.get(threadID);
-        if (!thread) throw new Error("Thread not found");
+        if (!thread) throw new Error("Thread nicht gefunden");
 
         await thread.send({ embeds: [embed] });
         console.log("Log message sent successfully.");
