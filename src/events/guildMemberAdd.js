@@ -34,7 +34,7 @@ module.exports = {
         if (member.user.bot) return; 
         if (serverData.deactivated.includes("willkommensnachrichten")) return;
         
-        const welcomeChannel = await member.guild.channels.cache.get(config.willkommen)
+        const welcomeChannel = await member.guild.channels.cache.get(willkommen)
 
         const contents = [
             `<a:Join:978633410992021524> ${member} (\`#${member.guild.memberCount}\`) **ist gerade auf den Server geschlittert** <a:winken:1086560167442796544>`,
