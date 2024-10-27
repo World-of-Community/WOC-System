@@ -9,7 +9,7 @@ module.exports = {
     async execute(interaction) {
         const mitglied = await interaction.options.getUser('user')
 
-        // Überprüfen, ob der Benutzer versucht, sich selbst zu auszulachen
+        // Überprüfen, ob der Benutzer versucht, sich selbst zu umarmen
         if (mitglied.id === interaction.user.id) {
             return interaction.reply({ content: "> `✅` - **Keine Umarmung?** Will dich niemand umarmen? Na komm, ich umarme dich 🤗" });
         }
