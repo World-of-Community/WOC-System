@@ -79,6 +79,7 @@ module.exports = {
             '1273369483951734866', // League of Legends
             '1232066632491208704', // Valorant
             '1232070141127426058', // Fortnite
+            '1300487353990647881', // Clash of Clans
         ];
 
         const PingRoleIDs = [
