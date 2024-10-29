@@ -8,7 +8,7 @@ const userDB = require("../../../Datenbank/userdb");
 
 module.exports = {
   data: new SlashCommandBuilder()
-  .setName("giveaway")
+  .setName("gw")
   .setDescription("Gewinnspiel")
   .addSubcommand((command) =>
     command
