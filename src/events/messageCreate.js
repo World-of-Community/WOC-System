@@ -54,7 +54,7 @@ module.exports = {
         }
     }
 
-        // afk System
+        // AFK System
         if (!message.author.bot) { 
         
         const uD = await userdb.findOne({ userID: message.author.id });
