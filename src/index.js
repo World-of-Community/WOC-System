@@ -843,7 +843,6 @@ async function sendLog(threadID, embed) {
     }
 }
 
-
 module.exports = { client }
 
 // Bot Start
