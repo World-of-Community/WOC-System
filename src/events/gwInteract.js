@@ -32,7 +32,8 @@ module.exports = {
                 serverData = await serverdb.findOne({ guildID: interaction.guild.id });
             }
 
-            if (serverData.roleBypass.length > 0) {
+
+            if (serverData.roleBypass?.length > 0) {
                 if (serverData.roleBypass.some(roleId => interaction.member.roles.cache.has(roleId))) {
                     if (giveawayData.teilnehmer.includes(interaction.user.id)) {
 
