@@ -14,8 +14,6 @@ const parser = new Parser();
 const FeedManager = require("../FeedManager");
 const { processRSSFeed } = FeedManager;
 
-client.setMaxListeners(20); // Sets the limit to 20 listeners
-
 const userdb = require('../../Datenbank/userdb');
 const leaderboarddb = require('../../Datenbank/leaderboarddb');
 const RoleID = '1150753421339676722';

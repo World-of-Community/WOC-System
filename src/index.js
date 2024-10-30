@@ -37,6 +37,8 @@ const userdb = require('../Datenbank/userdb');
 const { deployCommands } = require('./deployCommands');
 let invites = new Map();
 
+client.setMaxListeners(20); // Sets the limit to 20 listeners
+
 // Lade Commands
 deployCommands();
 client.commands = new Collection();
