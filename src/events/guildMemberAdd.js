@@ -9,27 +9,6 @@ module.exports = {
     name: Events.GuildMemberAdd,
     async execute(member) {
 
-        const logchannel = await member.guild.channels.cache.get("1263436406655680513");
-
-        const join = new EmbedBuilder()
-            .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
-            .setDescription(`**${member.user.displayName}** ist dem Server beigetreten.\n\n\`📌\` | **INFORMATIONEN**\n> Username: ${member.user.username}\n> Anzeigename: ${member.user.displayName} (${member})\n> Server beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
-            .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
-            .setColor('Green')
-            .setTimestamp();
-
-        await logchannel.threads.cache.get("1269998215512457259").send({embeds: [join]});
-
-        const neuesMitglied = await member.guild.roles.cache.get('1222122625594294272'); 
-        const mitglied = await member.guild.roles.cache.get('815920703067914290'); 
-
-        try {
-            await member.roles.add(neuesMitglied);
-            await member.roles.add(mitglied);
-        } catch (error) {
-            console.error('Fehler beim Hinzufügen der Rolle:', error);
-        }
-
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
         if (member.user.bot) return; 
         if (serverData.deactivated.includes("willkommensnachrichten")) return;
@@ -61,6 +40,28 @@ module.exports = {
 
         await welcomeChannel.send({ content: `${contents[rndContent]}` })
 
+        const logchannel = await member.guild.channels.cache.get("1263436406655680513");
+
+        const join = new EmbedBuilder()
+            .setTitle('<:user_join:1228329348470407198> | NUTZER BEIGETRETEN')
+            .setDescription(`**${member.user.displayName}** ist dem Server beigetreten.\n\n\`📌\` | **INFORMATIONEN**\n> Username: ${member.user.username}\n> Anzeigename: ${member.user.displayName} (${member})\n> Server beigetreten: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
+            .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
+            .setColor('Green')
+            .setTimestamp();
+
+        await logchannel.threads.cache.get("1269998215512457259").send({embeds: [join]});
+
+        const neuesMitglied = await member.guild.roles.cache.get('1222122625594294272'); 
+        const mitglied = await member.guild.roles.cache.get('815920703067914290'); 
+
+        try {
+            await member.roles.add(neuesMitglied);
+            await member.roles.add(mitglied);
+        } catch (error) {
+            console.error('Fehler beim Hinzufügen der Rolle:', error);
+        }
+
+        // Server Regeln Ping
         const channel = member.guild.channels.cache.get('815922286502346773');
         if (!channel) return console.error('Kanal wurde nicht gefunden.');
 
