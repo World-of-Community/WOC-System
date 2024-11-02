@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const cron = require('node-cron');
 const userdb = require('../../../Datenbank/userdb');
 const leaderboarddb = require('../../../Datenbank/leaderboarddb');
-const RoleID = '1150753421339676722';
+const RoleID = '1150753421339676722'; // Minenarbeiter (Event) Rolle
 
 function getCurrentMonth() {
     const monthNames = [
@@ -27,7 +27,6 @@ module.exports = {
 
         await interaction.reply({ content: `> \`⏳\` » Bitte **5 Sekunden** warten, während das Leaderboard generiert wird. (Ablaufzeit: <t:${timestampAfter5Seconds}:R>)`, ephemeral: true });
 
-        // 5 Sekunden warten
         await new Promise(resolve => setTimeout(resolve, 5000));
 
         let leaderboardMessage;
@@ -91,7 +90,6 @@ module.exports = {
                     .setFooter({ text: '» Zuletzt aktualisiert', iconURL: 'https://cdn.discordapp.com/attachments/1269339944766144574/1286773912977408011/image.png' })
                     .setTimestamp();
 
-                // Füge Thumbnails für den ersten Platz hinzu
                 if (topMessagesMembers[0]?.member) {
                     messageEmbed.setThumbnail(topMessagesMembers[0].member.displayAvatarURL({ dynamic: true }));
                 }
@@ -100,49 +98,45 @@ module.exports = {
                     voiceEmbed.setThumbnail(topVoiceMembers[0].member.displayAvatarURL({ dynamic: true }));
                 }
 
-                // Bearbeite beide Embeds zusammen oder sende sie, wenn sie noch nicht existieren
                 if (leaderboardMessage) {
                     await leaderboardMessage.edit({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
                 } else {
                     leaderboardMessage = await interaction.channel.send({ embeds: [InfoEmbed, messageEmbed, voiceEmbed] });
                     await leaderboarddb.updateOne({}, { messageId: leaderboardMessage.id }, { upsert: true });
                 }
-
-                // Rolle entfernen von allen Mitgliedern, die sie vorher hatten
-                const role = await interaction.guild.roles.fetch(RoleID);
-                if (role) {
-                    const membersWithRole = await interaction.guild.members.fetch({ role: RoleID });
-                    membersWithRole.forEach(member => {
-                        member.roles.remove(role).catch(err => console.error(`Fehler beim Entfernen der Rolle: ${err}`));
-                    });
-                }
-
-                // Vergibt die Rolle an die Top 3 in Nachrichten und Voice
-                const roleAssignments = [...topMessagesMembers.slice(0, 3), ...topVoiceMembers.slice(0, 3)].map(async user => {
-                    if (user.member) {
-                        await user.member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
-                    }
-                });
-                await Promise.all(roleAssignments);
-
             } catch (error) {
                 console.error('Fehler beim Aktualisieren des Leaderboards:', error);
             }
         };
 
-        // Starte den Cron-Job, um die Embeds jede Minute zu aktualisieren
         cron.schedule('* * * * *', updateLeaderboardEmbeds);
-        updateLeaderboardEmbeds(); // Update aufrufen
+        updateLeaderboardEmbeds();
 
-        // Monatliches Zurücksetzen
         cron.schedule('0 0 1 * *', async () => {
             console.log('Zurücksetzen des monatlichen Leaderboards gestartet.');
             await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
-            console.log('Leaderboard wurde monatlich zurückgesetzt.');
+
+            const role = await interaction.guild.roles.fetch(RoleID);
+            if (role) {
+                const membersWithRole = await interaction.guild.members.fetch({ role: RoleID });
+                membersWithRole.forEach(member => {
+                    member.roles.remove(role).catch(err => console.error(`Fehler beim Entfernen der Rolle: ${err}`));
+                });
+
+                const topMessagesMembers = await userdb.find().sort({ "stats.messages": -1 }).limit(3);
+                const topVoiceMembers = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(3);
+
+                const roleAssignments = [...topMessagesMembers, ...topVoiceMembers].map(async user => {
+                    const member = await interaction.guild.members.fetch(user.userID).catch(() => null);
+                    if (member) {
+                        await member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
+                    }
+                });
+                await Promise.all(roleAssignments);
+            }
+
+            console.log('Leaderboard wurde monatlich zurückgesetzt und die Rolle wurde an die Top 3 Mitglieder vergeben.');
             await updateLeaderboardEmbeds();
         });
-
-        // Initialisiere das Leaderboard beim Start
-        await updateLeaderboardEmbeds();
     }
 };
