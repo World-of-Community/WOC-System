@@ -839,9 +839,8 @@ async function sendLog(threadID, embed) {
         if (!thread) throw new Error("Thread nicht gefunden");
 
         await thread.send({ embeds: [embed] });
-        console.log("Log message sent successfully.");
     } catch (error) {
-        console.error(`Failed to send log: ${error.message}`);
+        console.error(`Fehler beim Senden des Logs: ${error.message}`);
     }
 }
 
