@@ -346,13 +346,12 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 // Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
 async function sendLog(threadID, embed) {
     try {
-        const thread = await bot.channels.fetch(threadID);
+        const thread = await client.channels.fetch(threadID);
         if (!thread || thread.type !== ChannelType.PublicThread) {
             return console.error("Thread nicht gefunden oder falscher Typ.");
         }
 
         await thread.send({ embeds: [embed] });
-        console.log(`Log in Thread ${threadID} erfolgreich gesendet.`);
     } catch (error) {
         console.error(`Fehler beim Senden des Logs:`, error);
     }
