@@ -365,7 +365,7 @@ client.on('ready', async () => {
         .setColor('Green')
         .setTimestamp();
 
-    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+    await sendLog('1296391117507399763', onlineEmbed);
 });
 
 // Event, wenn der Bot offline geht
@@ -376,7 +376,7 @@ client.on('disconnect', async () => {
         .setColor('Red')
         .setTimestamp();
 
-    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+    await sendLog('1296391117507399763', offlineEmbed);
 });
 
 // Event, wenn ein Fehler auftritt
@@ -387,7 +387,7 @@ client.on('error', async (error) => {
         .setColor('Orange')
         .setTimestamp();
 
-    await sendLog(ThreadIDs.ERROR, errorEmbed);
+    await sendLog('1296391118723878932', errorEmbed);
 });
 
 // Birthday System
