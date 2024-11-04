@@ -184,6 +184,53 @@ const ThreadIDs = {
     ERROR: "1296391118723878932"
 };
 
+// Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
+async function sendLog(ThreadID, embed) {
+    try {
+        const thread = await client.channels.fetch(ThreadID);
+        if (!thread || thread.type !== ChannelType.PublicThread) {
+            return console.error("Thread nicht gefunden oder falscher Typ.");
+        }
+
+        await thread.send({ embeds: [embed] });
+    } catch (error) {
+        console.error(`Fehler beim Senden des Logs:`, error);
+    }
+}
+
+// Event, wenn der Bot bereit ist
+client.on('ready', async () => {
+    const onlineEmbed = new EmbedBuilder()
+        .setTitle('`🟢` | BOT ONLINE')
+        .setDescription(`> **\`${client.user.username}\`** ist jetzt online.`)
+        .setColor('Green')
+        .setTimestamp();
+
+    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+});
+
+// Event, wenn der Bot offline geht
+client.on('disconnect', async () => {
+    const offlineEmbed = new EmbedBuilder()
+        .setTitle('`🔴` | BOT OFFLINE')
+        .setDescription(`> **\`${client.user.username}\`** ist offline.`)
+        .setColor('Red')
+        .setTimestamp();
+
+    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+});
+
+// Event, wenn ein Fehler auftritt
+client.on('error', async (error) => {
+    const errorEmbed = new EmbedBuilder()
+        .setTitle('`❌` | FEHLER BEI BOT')
+        .setDescription(`\`\`\`${error.message}\`\`\``)
+        .setColor('Orange')
+        .setTimestamp();
+
+    await sendLog(ThreadIDs.ERROR, errorEmbed);
+});
+
 client.on('guildMemberAdd', async member => {
     if (member.guild.id !== "815919809379172354") return;
 
@@ -341,53 +388,6 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         .setTimestamp();
 
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
-});
-
-// Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
-async function sendLog(ThreadIDs, embed) {
-    try {
-        const thread = await client.channels.fetch(ThreadIDs);
-        if (!thread || thread.type !== ChannelType.PublicThread) {
-            return console.error("Thread nicht gefunden oder falscher Typ.");
-        }
-
-        await thread.send({ embeds: [embed] });
-    } catch (error) {
-        console.error(`Fehler beim Senden des Logs:`, error);
-    }
-}
-
-// Event, wenn der Bot bereit ist
-client.on('ready', async () => {
-    const onlineEmbed = new EmbedBuilder()
-        .setTitle('`🟢` | BOT ONLINE')
-        .setDescription(`> **\`${client.user.username}\`** ist jetzt online.`)
-        .setColor('Green')
-        .setTimestamp();
-
-    await sendLog('1296391117507399763', onlineEmbed);
-});
-
-// Event, wenn der Bot offline geht
-client.on('disconnect', async () => {
-    const offlineEmbed = new EmbedBuilder()
-        .setTitle('`🔴` | BOT OFFLINE')
-        .setDescription(`> **\`${client.user.username}\`** ist offline.`)
-        .setColor('Red')
-        .setTimestamp();
-
-    await sendLog('1296391117507399763', offlineEmbed);
-});
-
-// Event, wenn ein Fehler auftritt
-client.on('error', async (error) => {
-    const errorEmbed = new EmbedBuilder()
-        .setTitle('`❌` | FEHLER BEI BOT')
-        .setDescription(`\`\`\`${error.message}\`\`\``)
-        .setColor('Orange')
-        .setTimestamp();
-
-    await sendLog('1296391118723878932', errorEmbed);
 });
 
 // Birthday System
