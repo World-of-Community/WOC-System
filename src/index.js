@@ -225,7 +225,7 @@ client.on('ready', async () => {
         .setColor('Green')
         .setTimestamp();
 
-    await sendLog(ThreadID.ONLINE, onlineEmbed);
+    await sendLog(threadID.ONLINE, onlineEmbed);
 });
 
 // Event, wenn der Bot offline geht
@@ -236,7 +236,7 @@ client.on('disconnect', async () => {
         .setColor('Red')
         .setTimestamp();
 
-    await sendLog(ThreadID.OFFLINE, offlineEmbed);
+    await sendLog(threadID.OFFLINE, offlineEmbed);
 });
 
 // Event, wenn ein Fehler auftritt
@@ -247,7 +247,7 @@ client.on('error', async (error) => {
         .setColor('Orange')
         .setTimestamp();
 
-    await sendLog(ThreadID.ERROR, errorEmbed);
+    await sendLog(threadID.ERROR, errorEmbed);
 });
 
 client.on('guildMemberAdd', async member => {
