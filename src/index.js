@@ -193,7 +193,7 @@ let startTime;
 // Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
 async function sendLog(ThreadID, embed) {
     try {
-        const thread = await client.channels.fetch(ThreadID);
+        const thread = await client.channels.get(ThreadID);
         if (!thread || thread.type !== ChannelType.PublicThread) {
             return console.error("Thread nicht gefunden oder falscher Typ.");
         }
