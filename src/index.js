@@ -187,6 +187,9 @@ const ThreadID = {
     ERROR: "1296391118723878932",
 };
 
+// Store the bot's start time when it logs in
+let startTime;
+
 // Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
 async function sendLog(ThreadID, embed) {
     try {
@@ -203,24 +206,27 @@ async function sendLog(ThreadID, embed) {
 
 // Event, wenn der Bot bereit ist
 client.on('ready', async () => {
+    startTime = Date.now(); // Store start time in milliseconds
+    const uptime = Math.floor((Date.now() - startTime) / 1000); // Uptime in seconds
+
     const onlineEmbed = new EmbedBuilder()
-        .setTitle('`🟢` | BOT ONLINE')
-        .setDescription(`> **\`${client.user.username}\`** ist jetzt online.`)
+        .setTitle('Bot Status - Update')
+        .setDescription(`> \`🟢\` » **\`${client.user.username}\`** ist jetzt online.\n\n> \`🕒\` » <t:${Math.floor(Date.now() / 1000)}:F>`)
         .setColor('Green')
         .setTimestamp();
 
-    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+    await sendLog(ThreadID.ONLINE, onlineEmbed);
 });
 
 // Event, wenn der Bot offline geht
 client.on('disconnect', async () => {
     const offlineEmbed = new EmbedBuilder()
-        .setTitle('`🔴` | BOT OFFLINE')
-        .setDescription(`> **\`${client.user.username}\`** ist offline.`)
+        .setTitle('Bot Status - Update')
+        .setDescription(`> \`🔴\` » **\`${client.user.username}\`** ist offline.`)
         .setColor('Red')
         .setTimestamp();
 
-    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+    await sendLog(ThreadID.OFFLINE, offlineEmbed);
 });
 
 // Event, wenn ein Fehler auftritt
@@ -231,7 +237,7 @@ client.on('error', async (error) => {
         .setColor('Orange')
         .setTimestamp();
 
-    await sendLog(ThreadIDs.ERROR, errorEmbed);
+    await sendLog(ThreadID.ERROR, errorEmbed);
 });
 
 client.on('guildMemberAdd', async member => {
