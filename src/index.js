@@ -361,7 +361,7 @@ async function sendLog(threadID, embed) {
 client.on('ready', async () => {
     const onlineEmbed = new EmbedBuilder()
         .setTitle('`🟢` | BOT ONLINE')
-        .setDescription(`> **\`${bot.user.username}\`** ist jetzt online.`)
+        .setDescription(`> **\`${client.user.username}\`** ist jetzt online.`)
         .setColor('Green')
         .setTimestamp();
 
@@ -372,7 +372,7 @@ client.on('ready', async () => {
 client.on('disconnect', async () => {
     const offlineEmbed = new EmbedBuilder()
         .setTitle('`🔴` | BOT OFFLINE')
-        .setDescription(`> **\`${bot.user.username}\`** ist offline.`)
+        .setDescription(`> **\`${client.user.username}\`** ist offline.`)
         .setColor('Red')
         .setTimestamp();
 
