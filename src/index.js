@@ -179,9 +179,12 @@ const ThreadIDs = {
     SERVER: "1269998220440895510",
     MODERATION: "1269998219266490538",
     INVITE: "1269998218264055818",
+};
+
+const ThreadID = {
     OFFLINE: "1296391117507399763",
     ONLINE: "1296391117507399763",
-    ERROR: "1296391118723878932"
+    ERROR: "1296391118723878932",
 };
 
 // Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
