@@ -344,9 +344,9 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 });
 
 // Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
-async function sendLog(threadID, embed) {
+async function sendLog(ThreadIDs, embed) {
     try {
-        const thread = await client.channels.fetch(threadID);
+        const thread = await client.channels.fetch(ThreadIDs);
         if (!thread || thread.type !== ChannelType.PublicThread) {
             return console.error("Thread nicht gefunden oder falscher Typ.");
         }
