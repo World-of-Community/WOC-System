@@ -343,38 +343,53 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
 });
 
-//client.on('ready', async (ready) => {
+// Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
+async function sendLog(threadID, embed) {
+    try {
+        const thread = await bot.channels.fetch(threadID);
+        if (!thread || thread.type !== ChannelType.PublicThread) {
+            return console.error("Thread nicht gefunden oder falscher Typ.");
+        }
 
-//    const onlineEmbed = new EmbedBuilder()
-//        .setTitle('`🟢` | BOT ONLINE')
-//        .setDescription(`> **\`${client.user.displayName}\`** ist jetzt online.`)
-//        .setColor('Green')
-//        .setTimestamp();
+        await thread.send({ embeds: [embed] });
+        console.log(`Log in Thread ${threadID} erfolgreich gesendet.`);
+    } catch (error) {
+        console.error(`Fehler beim Senden des Logs:`, error);
+    }
+}
 
-//    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
-//});
+// Event, wenn der Bot bereit ist
+client.on('ready', async () => {
+    const onlineEmbed = new EmbedBuilder()
+        .setTitle('`🟢` | BOT ONLINE')
+        .setDescription(`> **\`${bot.user.username}\`** ist jetzt online.`)
+        .setColor('Green')
+        .setTimestamp();
 
-//client.on('disconnect', async (disconnect) => {
+    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+});
 
-//    const offlineEmbed = new EmbedBuilder()
-//        .setTitle('`🔴` | BOT OFFLINE')
-//        .setDescription(`> **\`${client.user.displayName}\`** ist offline.`)
-//        .setColor('Red')
-//        .setTimestamp();
+// Event, wenn der Bot offline geht
+client.on('disconnect', async () => {
+    const offlineEmbed = new EmbedBuilder()
+        .setTitle('`🔴` | BOT OFFLINE')
+        .setDescription(`> **\`${bot.user.username}\`** ist offline.`)
+        .setColor('Red')
+        .setTimestamp();
 
-//    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
-//});
+    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+});
 
-//client.on('error', async (error) => {
+// Event, wenn ein Fehler auftritt
+client.on('error', async (error) => {
+    const errorEmbed = new EmbedBuilder()
+        .setTitle('`❌` | FEHLER BEI BOT')
+        .setDescription(`\`\`\`${error.message}\`\`\``)
+        .setColor('Orange')
+        .setTimestamp();
 
-//    const errorEmbed = new EmbedBuilder()
-//        .setTitle('`❌` | FEHLER BEI BOT')
-//        .setDescription(`\`\`\`${error.message}\`\`\``)
-//        .setColor('Orange')
-//        .setTimestamp();
-
-//    await sendLog(ThreadIDs.ERROR, errorEmbed);
-//});
+    await sendLog(ThreadIDs.ERROR, errorEmbed);
+});
 
 // Birthday System
 const ageRoles = {
