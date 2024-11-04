@@ -82,7 +82,9 @@ module.exports = {
                 // Mitgliederanzahl mit Punkt als Tausendertrennzeichen formatieren
                 const formattedCount = guild.memberCount.toLocaleString('de-DE');
                 channel.send(`🎉 Der Server hat nun die **${formattedCount} Mitglieder** erreicht! Vielen Dank an die Community! 🎉`);
-            } 
+            } else {
+                console.log('Kanal mit der angegebenen ID wurde nicht gefunden. (Glückwunsch-System 1000+ Mitglieder)');
+              }
         }
 
         const userData = await userdb.findOne({ userID: member.id })
