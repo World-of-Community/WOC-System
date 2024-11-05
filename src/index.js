@@ -865,8 +865,11 @@ async function sendLog(threadID, embed) {
         const serverCatch = client.guilds.cache.get("815919809379172354");
         if (!serverCatch) throw new Error("Server nicht gefunden");
 
-        const logchannel = serverCatch.channels.cache.get("1263436406655680513");
+        const logchannel = serverCatch.channels.cache.get("1263436406655680513"); // Server Logs
         if (!logchannel) throw new Error("Log Kanal nicht gefunden");
+
+        const logchannel2 = serverCatch.channels.cache.get('1295742887388254278');
+        if (!logchannel2) throw new Error ("Log Kanal nicht gefunden"); // Bot Status
 
         const thread = logchannel.threads.cache.get(threadID);
         if (!thread) throw new Error("Thread nicht gefunden");
