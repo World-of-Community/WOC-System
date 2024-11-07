@@ -75,6 +75,9 @@ module.exports = {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
 
+        // Meilenstein 1.000+ Mitglieder erreicht
+        const guild = member.guild;
+
         // Prüfen, ob die Mitgliederanzahl ein Vielfaches von 1000 ist
         if (guild.memberCount % 1000 === 0) {
             const channel = guild.channels.cache.get('981190525774336020'); // Neuigkeiten Kanal
