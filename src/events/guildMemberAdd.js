@@ -75,6 +75,21 @@ module.exports = {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
 
+        // Meilenstein 1.000+ Mitglieder erreicht
+        const guild = member.guild;
+
+        // Prüfen, ob die Mitgliederanzahl ein Vielfaches von 1000 ist
+        if (guild.memberCount % 1000 === 0) {
+            const channel = guild.channels.cache.get('981190525774336020'); // Neuigkeiten Kanal
+            if (channel) {
+                // Mitgliederanzahl mit Punkt als Tausendertrennzeichen formatieren
+                const formattedCount = guild.memberCount.toLocaleString('de-DE');
+                channel.send(`🎉 Der Server hat nun die **${formattedCount} Mitglieder** erreicht! Vielen Dank an die Community! 🎉`);
+            } else {
+                console.log('Kanal mit der angegebenen ID wurde nicht gefunden. (Glückwunsch-System 1000+ Mitglieder)');
+              }
+        }
+
         const userData = await userdb.findOne({ userID: member.id })
         if (!userData) {
             const newUser = new userdb({

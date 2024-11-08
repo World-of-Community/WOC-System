@@ -6,7 +6,7 @@ const afktexte = [
     'Lädt sich ein Update fürs Real Life herunter! <a:Ladevorgang:1077295605501661375>',
     'Mal schauen was der Tag so von sich bringt. <a:drink:967313385127542854>',
     'Ich bin eingeschlafen! Glaube ich... <:pepesleeping:1280964663391031397>'
-]
+];
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,18 +15,36 @@ module.exports = {
         .addStringOption(option => option.setName('grund').setDescription('Setze einen Grund dafür, dass du AFK bist!').setRequired(false)),
 
     async execute(interaction) {
-        
-        const timestamp = Math.floor(interaction.createdTimestamp / 1000); // Zeitstempel im UNIX-Zeitformat
-        const discordTimestamp = `<t:${timestamp}:R>`;
-        const grund = await interaction.options.getString("grund") ?? afktexte[Math.floor(Math.random() * afktexte.length)];
-        const userData = await userdb.findOne({ userID: interaction.user.id }, { upsert: true, new: true })
-        if (!userData) { return await interaction.reply({ content: "> `❌` » Fehler, Falls dieser Fehler sich wiederholt, Melde dies bitte im Support (<#819555839362072606>) ", ephemeral: true }) }
-        if (userData.afk) { return await interaction.reply({ content: "> `❌` » Du bist bereits AFK!", ephemeral: true }) }
-        userData.afk = true
-        userData.afkReason = grund
-        userData.afkStamp = discordTimestamp
-        await userData.save()
-        await interaction.reply({ content: `<:AFK:1021086267557023775> | ${interaction.user} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund.replace("*", "")}` })
-        await interaction.member.setNickname(`AFK | ${interaction.member.displayName}`).catch((err) => { })
+        try {
+            const timestamp = Math.floor(Date.now() / 1000); // Aktueller Zeitstempel in Sekunden
+            const grund = interaction.options.getString("grund") || afktexte[Math.floor(Math.random() * afktexte.length)];
+            
+            // Datenbankabfrage oder Erstellung eines neuen Eintrags
+            let userData = await userdb.findOne({ userID: interaction.user.id });
+            if (!userData) {
+                userData = new userdb({
+                    userID: interaction.user.id,
+                    afk: true,
+                    afkReason: grund,
+                    afkStamp: timestamp
+                });
+            } else if (userData.afk) {
+                return await interaction.reply({ content: "> `❌` » Du bist bereits AFK!", ephemeral: true });
+            } else {
+                userData.afk = true;
+                userData.afkReason = grund;
+                userData.afkStamp = timestamp;
+            }
+            
+            await userData.save();
+
+            await interaction.reply({ content: `<:AFK:1021086267557023775> | ${interaction.user} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund.replace("*", "")}` });
+
+            await interaction.member.setNickname(`AFK | ${interaction.member.displayName}`).catch(() => {});
+
+        } catch (error) {
+            console.error("Fehler beim AFK-Setzen:", error);
+            await interaction.reply({ content: "> `❌` » Fehler, Falls dieser Fehler sich wiederholt, Melde dies bitte im Support (<#819555839362072606>) ", ephemeral: true });
+        }
     }
-}
+};

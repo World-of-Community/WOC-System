@@ -179,10 +179,76 @@ const ThreadIDs = {
     SERVER: "1269998220440895510",
     MODERATION: "1269998219266490538",
     INVITE: "1269998218264055818",
+};
+
+const threadID = {
     OFFLINE: "1296391117507399763",
     ONLINE: "1296391117507399763",
-    ERROR: "1296391118723878932"
+    ERROR: "1296391118723878932",
 };
+
+// Store the bot's start time when it logs in
+let startTime;
+
+// Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
+async function sendLog(threadID, embed) {
+    try {
+        const thread = await client.channels.fetch(threadID);
+        
+        // Check if the thread was successfully fetched
+        if (!thread) {
+            console.error("Thread nicht gefunden.");
+            return;
+        }
+        
+        // Optionally check the thread type, or remove this check if unsure
+        if (thread.type !== ChannelType.PublicThread) {
+            console.error("Falscher Typ für den gefundenen Thread.");
+            return;
+        }
+
+        await thread.send({ embeds: [embed] });
+        console.log(`Log erfolgreich in Thread ${threadID} gesendet.`);
+    } catch (error) {
+        console.error(`Fehler beim Senden des Logs:`, error);
+    }
+}
+
+// Event, wenn der Bot bereit ist
+client.on('ready', async () => {
+    startTime = Date.now(); // Store start time in milliseconds
+    const uptime = Math.floor((Date.now() - startTime) / 1000); // Uptime in seconds
+
+    const onlineEmbed = new EmbedBuilder()
+        .setTitle('Bot Status - Update')
+        .setDescription(`> \`🟢\` » **\`${client.user.username}\`** ist jetzt online.\n\n> \`🕒\` » <t:${Math.floor(Date.now() / 1000)}:F>`)
+        .setColor('Green')
+        .setTimestamp();
+
+    await sendLog(threadID.ONLINE, onlineEmbed);
+});
+
+// Event, wenn der Bot offline geht
+client.on('disconnect', async () => {
+    const offlineEmbed = new EmbedBuilder()
+        .setTitle('Bot Status - Update')
+        .setDescription(`> \`🔴\` » **\`${client.user.username}\`** ist offline.`)
+        .setColor('Red')
+        .setTimestamp();
+
+    await sendLog(threadID.OFFLINE, offlineEmbed);
+});
+
+// Event, wenn ein Fehler auftritt
+client.on('error', async (error) => {
+    const errorEmbed = new EmbedBuilder()
+        .setTitle('`❌` | FEHLER BEI BOT')
+        .setDescription(`\`\`\`${error.message}\`\`\``)
+        .setColor('Orange')
+        .setTimestamp();
+
+    await sendLog(threadID.ERROR, errorEmbed);
+});
 
 client.on('guildMemberAdd', async member => {
     if (member.guild.id !== "815919809379172354") return;
@@ -342,39 +408,6 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 
         await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
 });
-
-//client.on('ready', async (ready) => {
-
-//    const onlineEmbed = new EmbedBuilder()
-//        .setTitle('`🟢` | BOT ONLINE')
-//        .setDescription(`> **\`${client.user.displayName}\`** ist jetzt online.`)
-//        .setColor('Green')
-//        .setTimestamp();
-
-//    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
-//});
-
-//client.on('disconnect', async (disconnect) => {
-
-//    const offlineEmbed = new EmbedBuilder()
-//        .setTitle('`🔴` | BOT OFFLINE')
-//        .setDescription(`> **\`${client.user.displayName}\`** ist offline.`)
-//        .setColor('Red')
-//        .setTimestamp();
-
-//    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
-//});
-
-//client.on('error', async (error) => {
-
-//    const errorEmbed = new EmbedBuilder()
-//        .setTitle('`❌` | FEHLER BEI BOT')
-//        .setDescription(`\`\`\`${error.message}\`\`\``)
-//        .setColor('Orange')
-//        .setTimestamp();
-
-//    await sendLog(ThreadIDs.ERROR, errorEmbed);
-//});
 
 // Birthday System
 const ageRoles = {
@@ -832,8 +865,11 @@ async function sendLog(threadID, embed) {
         const serverCatch = client.guilds.cache.get("815919809379172354");
         if (!serverCatch) throw new Error("Server nicht gefunden");
 
-        const logchannel = serverCatch.channels.cache.get("1263436406655680513");
+        const logchannel = serverCatch.channels.cache.get("1263436406655680513"); // Server Logs
         if (!logchannel) throw new Error("Log Kanal nicht gefunden");
+
+        const logchannel2 = serverCatch.channels.cache.get('1295742887388254278'); // Bot Status
+        if (!logchannel2) throw new Error ("Log Kanal nicht gefunden");
 
         const thread = logchannel.threads.cache.get(threadID);
         if (!thread) throw new Error("Thread nicht gefunden");
