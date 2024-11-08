@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     userID: {
-        type: String,
-        required: true,
+        type: String
     },
     donation: Number,
     birthday: {
@@ -42,39 +41,35 @@ const userSchema = new mongoose.Schema({
     },
     giveaway: {
         eventWins: {
-            type: Number,
-            required: true,
+            type: Number
         },
     
         toggledm: {
-            type: Boolean,
-            required: true,
+            type: Boolean
         },
     
         messages: {
             type: Number,
-            required: true,
+            default: 0
         },
     
         voiceTime: {
-            type: Number,
-            required: true,
+            type: Number
         },
     
         startTime: {
-            type: Number,
-            required: true,
+            type: Number
         },
     },
     stats: {
         messages: {
             type: Number,
-            required: true,
+            default: 0
         },
     
         voiceTime: {
             type: Number,
-            required: true,
+            default: 0
         },
     }
 });
