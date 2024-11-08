@@ -75,6 +75,6 @@ module.exports = {
 
             await logchannel.threads.cache.get("1269998219266490538").send({embeds: [embed]});
 
-        await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\n**Information:**\n\n» Grund: \`${grund}\`\n» Dauer: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true })
+        await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\n**Information:**\n» Grund: \`${grund}\`\n» Endet: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true })
     }
 }
