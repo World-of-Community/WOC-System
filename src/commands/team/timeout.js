@@ -53,7 +53,7 @@ module.exports = {
         const timeoutTime = new Date(Date.now() + zeitInMilliseconds);
         const userdm = new EmbedBuilder()
             .setTitle("`🔴` - Time-Out erhalten!")
-            .setDescription(`**Du hast gerade auf dem Server \`${interaction.guild.name}\` einen Time-Out erhalten.\n\n» Grund: ${grund}\n» Dauer: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n\n<a:warnung:1066110628705615914> » **ÄNDERE DEIN VERHALTEN!**\n» Du hast einen Time-Out erhalten und kannst dadurch nicht mehr auf unserem Server chatten, reagieren oder reden. Überdenke deine Verhaltensweise, um so etwas in Zukunft zu vermeiden.`)
+            .setDescription(`Du hast gerade auf dem Server \`${interaction.guild.name}\` einen Time-Out erhalten.\n\n» Grund: ${grund}\n» Endet: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n\n<a:warnung:1066110628705615914> » **ÄNDERE DEIN VERHALTEN!**\n» Du hast einen Time-Out erhalten und kannst dadurch nicht mehr auf unserem Server chatten, reagieren oder reden. Überdenke deine Verhaltensweise, um so etwas in Zukunft zu vermeiden.`)
             .setColor("Red")
             .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1304377493964197948/timeout.png?ex=672f2bb4&is=672dda34&hm=173069c9cdf0e19d175ed572f40dfad7b2f9a425a7eb64a490d9b794c7be0f0f&')
             .setFooter({ text: `» ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
