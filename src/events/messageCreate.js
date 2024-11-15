@@ -79,12 +79,6 @@ module.exports = {
             }
         }
 
-        //if (message.channelId === config.willkommen) {
-        //    const messageData = await messagedb.findOne({ guildID: config.server })
-        //    messageData.messages = parseInt(messageData.messages) + 1
-        //    await messageData.save()
-        //}
-
         // Bump System (geht noch nicht)
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
