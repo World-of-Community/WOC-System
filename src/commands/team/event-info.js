@@ -38,7 +38,7 @@ module.exports = {
             const timestamp = Math.floor(endDate / 1000);
 
             await interaction.reply({ 
-                content: `> \`⏳\` » Die Nachricht wird <t:${timestamp}:R> gesendet.`, 
+                content: `> \`⏳\` » Die Nachricht wird <t:${timestamp}:R> in ${channel} gesendet.`, 
                 ephemeral: true 
             });
 
@@ -46,7 +46,7 @@ module.exports = {
                 try {
                     await channel.send(message);
                     await interaction.editReply({ 
-                        content: `> \`✅\` » Die Nachricht wurde erfolgreich gesendet.`, 
+                        content: `> \`✅\` » Die Nachricht wurde erfolgreich in ${channel} gesendet.`,
                         ephemeral: true 
                     });
                 } catch (error) {
