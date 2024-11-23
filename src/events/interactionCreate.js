@@ -468,7 +468,7 @@ module.exports = {
             }
         }
 
-        if(interaction.isChatInputCommand()) {
+        if(interaction.isChatInputCommand() || interaction.type === 2 || interaction.type === 3) {
 
         const command = client.commands.get(interaction.commandName)
 
