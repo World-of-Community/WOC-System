@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('event-system')
-        .setDescription('Schickt das Event System'),
+        .setDescription('Schickt das Event System')
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
     
     async execute(interaction) {
         
