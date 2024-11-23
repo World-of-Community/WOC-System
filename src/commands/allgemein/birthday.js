@@ -135,7 +135,7 @@ module.exports = {
             case 'next':
                 const pageSize = 10; // Anzahl der Einträge pro Seite
 
-                const upcomingBirthdays = await userDB.find({
+                let upcomingBirthdays = await userDB.find({
                     'birthday.tag': { $exists: true, $ne: null }, // Ensures 'tag' (day) is defined
                     'birthday.monat': { $exists: true, $ne: null }, // Ensures 'monat' (month) is defined
                 }).sort({
@@ -144,6 +144,8 @@ module.exports = {
                     'birthday.jahr': 1   // Sort by year, optional (those without year will be last)
                  });
 
+                upcomingBirthdays = upcomingBirthdays.filter(birthday => birthday.birthday.tag !== 0)
+
                 if (upcomingBirthdays.length === 0) {
                     return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
                 }
@@ -151,26 +153,25 @@ module.exports = {
                 let currentPage = 1;
                 const totalPages = Math.ceil(upcomingBirthdays.length / pageSize);
 
-                const createBirthdayEmbed = (birthdays, page) => {
+                function createBirthdayEmbed (birthdays, page) {
                     const startIndex = (page - 1) * pageSize;
                     const endIndex = Math.min(page * pageSize, birthdays.length);
                     const pageBirthdays = birthdays.slice(startIndex, endIndex);
 
                     let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
-                    pageBirthdays.forEach(birthday => {
+                    for(const birthday of pageBirthdays) {
                         const { userID, birthday: { tag, monat, jahr } } = birthday;
                         const member = interaction.guild.members.cache.get(userID);
-                        if(!member) return;
+                        if(!member) continue;
 
                         // Füge führende Nullen hinzu
                         const formattedTag = tag.toString().padStart(2, '0');
                         const formattedMonat = monat.toString().padStart(2, '0');
-                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
+                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}`;
 
                         description += `${member} - ${formattedDate}\n`;
-
-                    });                   
+                    }                  
 
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
