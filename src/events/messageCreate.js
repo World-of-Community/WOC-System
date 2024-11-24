@@ -134,7 +134,7 @@ module.exports = {
     // Muster zur Erkennung von Discord-Links
     const discordLinkPattern = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
 
-    if (discordLinkPattern.test(message.content)) {
+    if (discordLinkPattern(message.content)) {
         try {
             // Lösche die Nachricht
             await message.delete();
