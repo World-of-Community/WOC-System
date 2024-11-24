@@ -168,7 +168,7 @@ module.exports = {
                         // Füge führende Nullen hinzu
                         const formattedTag = tag.toString().padStart(2, '0');
                         const formattedMonat = monat.toString().padStart(2, '0');
-                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}`;
+                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
 
                         description += `${member} - ${formattedDate}\n`;
                     }                  
