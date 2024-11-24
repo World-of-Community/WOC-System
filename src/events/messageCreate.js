@@ -115,41 +115,49 @@ module.exports = {
         }
     }
 
-        // Discord Server Links im Haupt Chat & andere Chats löschen
-        const CHANNEL_IDS = [
-            '815922756918181898', // Haupt Chat
-            '896743941813207081', // Spielersuche 
-            '1250047970116636756', // Vorstellung 
-            '886140608039747614', // Bilder und Videos
-        ]; // Nicht erlaubte Kanäle
-        const ALLOWED_CHANNEL_IDS = [
-            '1172920281526960238' // Werbung für alle
-        ]; // Liste der erlaubten Kanäle
 
+    // Konfiguration der Kanäle
+    const CHANNEL_IDS = [
+        '815922756918181898', // Haupt Chat
+        '896743941813207081', // Spielersuche
+        '1250047970116636756', // Vorstellung
+        '886140608039747614', // Bilder und Videos
+    ]; // Nicht erlaubte Kanäle
 
-        if (CHANNEL_IDS.includes(message.channel.id) && !message.author.bot) {
-            const discordLinkPattern = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
-            if (discordLinkPattern.test(message.content)) {
-                try {
-                    await message.delete();
+    const ALLOWED_CHANNEL_IDS = [
+        '1172920281526960238', // Werbung für alle
+    ]; // Liste der erlaubten Kanäle
 
-                    const allowedChannelsMention = ALLOWED_CHANNEL_IDS.map(id => `<#${id}>`).join(', ');
+        // Ignoriere Bots und überprüfe ob der Kanal nicht erlaubt ist
+    if (!CHANNEL_IDS.includes(message.channel.id) || message.author.bot) return;
 
-                    const WarnEmbed = new EmbedBuilder()
-                    .setTitle('⚠️ | WARNUNG')
-                    .setDescription(`> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n> (<#${message.channel.id}>) nicht erlaubt.\n\n> Bitte nutze die erlaubten Kanäle wie z.b.\n> ${allowedChannelsMention}`)
-                    .setColor('Red')
-                    .setTimestamp();
+    // Muster zur Erkennung von Discord-Links
+    const discordLinkPattern = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
 
-                    try {
-                        await message.author.send({ embeds: [WarnEmbed] });
-                    } catch (error) {
-                        console.error(`Konnte DM nicht senden: ${error}`);
-                    }
-                } catch (error) {
-                    console.error(`Konnte Nachricht nicht löschen: ${error}`);
-                }
+    if (discordLinkPattern.test(message.content)) {
+        try {
+            // Lösche die Nachricht
+            await message.delete();
+
+            // Erstelle eine Erwähnungsliste der erlaubten Kanäle
+            const allowedChannelsMention = ALLOWED_CHANNEL_IDS.map(id => `<#${id}>`).join(', ');
+
+            // Erstelle das Warn-Embed
+            const WarnEmbed = new EmbedBuilder()
+                .setTitle('⚠️ | WARNUNG')
+                .setDescription(`> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n> (<#${message.channel.id}>) nicht erlaubt.\n\n> Bitte nutze die erlaubten Kanäle wie z.B.\n> ${allowedChannelsMention}`)
+                .setColor('Red')
+                .setTimestamp();
+
+            // Versuche, dem Nutzer die Warnung als DM zu senden
+            try {
+                await message.author.send({ embeds: [WarnEmbed] });
+            } catch (error) {
+                console.error(`Konnte DM nicht senden: ${error}`);
             }
+        } catch (error) {
+            console.error(`Konnte Nachricht nicht löschen: ${error}`);
         }
+    }
     }
 }
