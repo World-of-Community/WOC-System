@@ -69,19 +69,28 @@ module.exports = {
     if (interaction.isChatInputCommand()) {
       // Buttons erstellen
       const rows = [];
-      for (let i = 1; i <= maxDay; i += 5) {
-        const row = new ActionRowBuilder();
-        for (let j = i; j < i + 5 && j <= maxDay; j++) {
-          const buttonData = buttonConfig[j] || {}; // Standardwerte für Button
-          row.addComponents(
-            new ButtonBuilder()
-              .setCustomId(`advent_${j}`)
-              .setLabel(buttonData.label || j.toString()) // Button-Label anpassen
-              .setStyle(buttonData.style || ButtonStyle.Primary) // Button-Style anpassen
-              .setDisabled(j > currentDay) // Zukünftige Tage deaktivieren
-          );
+      let currentRow = new ActionRowBuilder();
+      
+      for (let i = 1; i <= maxDay; i++) {
+        const buttonData = buttonConfig[i] || {}; // Standardwerte für Button
+        currentRow.addComponents(
+          new ButtonBuilder()
+            .setCustomId(`advent_${i}`)
+            .setLabel(buttonData.label || i.toString()) // Button-Label anpassen
+            .setStyle(buttonData.style || ButtonStyle.Primary) // Button-Style anpassen
+            .setDisabled(i > currentDay) // Zukünftige Tage deaktivieren
+        );
+
+        // Wenn 5 Buttons in der Reihe sind, füge sie der rows-Liste hinzu und starte eine neue Reihe
+        if (currentRow.components.length === 5) {
+          rows.push(currentRow);
+          currentRow = new ActionRowBuilder(); // Neue Reihe starten
         }
-        rows.push(row);
+      }
+
+      // Füge die letzte Reihe hinzu, falls sie weniger als 5 Buttons enthält
+      if (currentRow.components.length > 0) {
+        rows.push(currentRow);
       }
 
       // Adventskalender Embed erstellen
@@ -92,7 +101,7 @@ module.exports = {
         .setFooter({ text: `${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
 
       // Sende Embed mit Buttons
-      await interaction.channel.send({ embeds: [Adventskalender], components: [rows] });
+      await interaction.channel.send({ embeds: [Adventskalender], components: rows });
       await interaction.reply({ text: '> ✅ » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
     }
 
@@ -127,7 +136,6 @@ module.exports = {
       switch (reward?.type) {
         case 'coins':
           rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> Öffne ein Ticket im Support um deine Belohnung abzuholen.`;
-          // Logik für Coins (z. B. in einer Datenbank speichern)
           break;
 
         case 'role':
