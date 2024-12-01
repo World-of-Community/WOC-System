@@ -101,8 +101,9 @@ module.exports = {
         .setFooter({ text: `${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
 
       // Sende Embed mit Buttons
+      await interaction.deferReply(); // Antwort verzögern
       await interaction.channel.send({ embeds: [Adventskalender], components: rows });
-      await interaction.reply({ text: '> ✅ » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
+      await interaction.editReply({ content: '> ✅ » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
     }
 
     // Button-Interaktion verarbeiten
@@ -130,30 +131,31 @@ module.exports = {
       userData.openedDays.push(dayNumber);
       await userData.save();
 
-      let rewardMessage;
+      let rewardMessage = ''; // Sicherstellen, dass rewardMessage immer einen Wert hat
+
       const reward = rewards[dayNumber];
 
       switch (reward?.type) {
         case 'coins':
-          rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> Öffne ein Ticket im Support um deine Belohnung abzuholen.`;
+          rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
           break;
 
         case 'role':
           const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
           if (role) {
             await interaction.member.roles.add(role);
-            rewardMessage = `> \`🎉\` » Du hast die Rolle **${reward.value}** erhalten!`;
+            rewardMessage = `> \`🎉\` » Du hast die Rolle **${role.name}** erhalten!`;
           } else {
             rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
           }
           break;
 
         case 'custom':
-          rewardMessage = reward.value;
+          rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'; // Sicherstellen, dass keine leere Nachricht gesendet wird
           break;
 
         default:
-          rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** geöffnet.`;
+          rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** geöffnet.`; // Standardnachricht
       }
 
       // Antwort mit der Belohnung
