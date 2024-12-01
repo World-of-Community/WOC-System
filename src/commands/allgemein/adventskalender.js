@@ -85,7 +85,7 @@ module.exports = {
       }
 
       // Adventskalender Embed erstellen
-      const embed = new EmbedBuilder()
+      const Adventskalender = new EmbedBuilder()
         .setTitle('🎄 Adventskalender')
         .setDescription(`Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${currentDay}. Dezember**.`)
         .setColor('Green')
