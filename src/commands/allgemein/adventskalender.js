@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
-const Advent = require('./models/Advent'); // Datenbank-Modell
+const Advent = require('./models/Advent'); // Beispiel-Datenbankmodell
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -7,61 +7,70 @@ module.exports = {
     .setDescription('» Öffne deinen Adventskalender! 🎁'),
 
   async execute(interaction) {
+    // Kalender anzeigen
     if (interaction.isChatInputCommand()) {
       const currentDay = new Date().getDate();
       const maxDay = 24;
 
-      // Datenbankabfrage
-      let userData = await Advent.findOne({ userId: interaction.user.id });
-      if (!userData) {
-        userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
+      // Buttons erstellen
+      const rows = [];
+      for (let i = 1; i <= maxDay; i += 5) {
+        const row = new ActionRowBuilder();
+        for (let j = i; j < i + 5 && j <= maxDay; j++) {
+          row.addComponents(
+            new ButtonBuilder()
+              .setCustomId(`advent_${j}`)
+              .setLabel(j.toString())
+              .setStyle(ButtonStyle.Primary)
+              .setDisabled(j > currentDay) // Zukünftige Tage deaktivieren
+          );
+        }
+        rows.push(row);
       }
 
-      // Kalender-Buttons erstellen
-      const row = new ActionRowBuilder();
-      for (let i = 1; i <= maxDay; i++) {
-        row.addComponents(
-          new ButtonBuilder()
-            .setCustomId(`advent_${i}`)
-            .setLabel(i.toString())
-            .setStyle(userData.openedDays.includes(i) ? ButtonStyle.Secondary : ButtonStyle.Primary)
-            .setDisabled(i > currentDay)
-        );
-      }
-
+      // Embed erstellen
       const embed = new EmbedBuilder()
         .setTitle('🎄 Adventskalender 🎁')
-        .setDescription('Klicke auf den Tag, um deine Belohnung zu erhalten!')
-        .setFooter({ text: `Heute ist der ${currentDay}. Dezember` });
+        .setDescription(
+          'Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\n' +
+          '🔒 Zukünftige Tage sind deaktiviert.\n\n' +
+          `Heute ist der **${currentDay}. Dezember**.`
+        )
+        .setColor('#FF0000')
+        .setFooter({ text: 'Frohe Weihnachten!' });
 
-      return await interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
+      // Antwort mit Embed und Buttons
+      await interaction.reply({ embeds: [embed], components: rows, ephemeral: true });
     }
 
-    if (interaction.isButton()) {
-      const [type, day] = interaction.customId.split('_');
-      if (type !== 'advent') return;
-
+    // Button-Interaktion verarbeiten
+    if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
+      const [, day] = interaction.customId.split('_');
       const currentDay = new Date().getDate();
+      const dayNumber = parseInt(day);
 
-      if (parseInt(day) > currentDay) {
-        return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
-      }
-
+      // Datenbank überprüfen oder initialisieren
       let userData = await Advent.findOne({ userId: interaction.user.id });
       if (!userData) {
         userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
       }
 
-      if (userData.openedDays.includes(parseInt(day))) {
+      // Validierung: Tag schon geöffnet?
+      if (userData.openedDays.includes(dayNumber)) {
         return interaction.reply({ content: '> `❗` » Du hast diesen Tag bereits geöffnet!', ephemeral: true });
       }
 
+      // Validierung: Zukünftige Tage
+      if (dayNumber > currentDay) {
+        return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
+      }
+
       // Belohnung vergeben
-      userData.openedDays.push(parseInt(day));
+      userData.openedDays.push(dayNumber);
       await userData.save();
 
-      // Belohnungslogik (z. B. Rolle, Punkte)
-      const reward = `🎉 Du hast die Belohnung für den ${day}. Dezember erhalten!`;
+      // Belohnungslogik (z. B. Punkte, Rolle)
+      const reward = `🎉 Du hast die Belohnung für den **${dayNumber}. Dezember** erhalten!`;
       return interaction.reply({ content: reward, ephemeral: true });
     }
   },
