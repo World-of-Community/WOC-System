@@ -5,4 +5,4 @@ const adventSchema = new mongoose.Schema({
   openedDays: { type: [Number], default: [] },
 });
 
-module.exports = mongoose.model('Advent', adventSchema);
+module.exports = mongoose.model('advent', adventSchema);

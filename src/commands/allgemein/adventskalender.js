@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
-const Advent = require('./models/Advent'); // Beispiel-Datenbankmodell
+const advent = require("../../../Datenbank/adventdb");
 
 module.exports = {
   data: new SlashCommandBuilder()
