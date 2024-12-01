@@ -101,7 +101,6 @@ module.exports = {
         .setFooter({ text: `${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
 
       // Sende Embed mit Buttons
-      await interaction.deferReply(); // Antwort verzögern
       await interaction.channel.send({ embeds: [Adventskalender], components: rows });
       await interaction.editReply({ content: '> ✅ » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
     }
