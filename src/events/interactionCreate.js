@@ -260,11 +260,13 @@ module.exports = {
           return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
         }
     
-        const userData = await Advent.findOne({ userId: interaction.user.id });
+        // Überprüfen, ob der Benutzer bereits existiert
+        let userData = await Advent.findOne({ userId: interaction.user.id });
         if (!userData) {
-          await Advent.create({ userId: interaction.user.id, openedDays: [] });
+          userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
         }
     
+        // Überprüfen, ob der Tag bereits geöffnet wurde
         if (userData.openedDays.includes(parseInt(day))) {
           return interaction.reply({ content: '> `❗` » Du hast diesen Tag bereits geöffnet!', ephemeral: true });
         }
