@@ -34,28 +34,5 @@ module.exports = {
       .setFooter({ text: `Heute ist der ${currentDay}. Dezember` });
 
     await interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
-
-    if (!interaction.isButton()) return;
-
-    const [type, day] = interaction.customId.split('_');
-    if (type !== 'advent') return;
-
-    const currentDay = new Date().getDate();
-    if (parseInt(day) > currentDay) {
-      return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
-    }
-
-    const userData = await Advent.findOne({ userId: interaction.user.id });
-    if (userData.openedDays.includes(parseInt(day))) {
-      return interaction.reply({ content: '> `❗` » Du hast diesen Tag bereits geöffnet!', ephemeral: true });
-    }
-
-    // Belohnung vergeben
-    userData.openedDays.push(parseInt(day));
-    await userData.save();
-
-    // Belohnungslogik (z. B. Rolle, Punkte)
-    const reward = `🎉 Du hast die Belohnung für den ${day}. Dezember erhalten!`;
-    await interaction.reply({ content: reward, ephemeral: true });
   },
 };
