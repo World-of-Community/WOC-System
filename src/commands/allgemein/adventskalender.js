@@ -31,7 +31,7 @@ const buttonConfig = {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('adventskalender')
-    .setDescription('» Öffne deinen Adventskalender! 🎁'),
+    .setDescription('» Schickt den Adventskalender. 🎁'),
 
   async execute(interaction) {
     const currentDay = new Date().getDate();
@@ -74,7 +74,7 @@ module.exports = {
       // Sende Embed mit Buttons
       await interaction.deferReply({ ephemeral: true }); // Antwort verzögern
       await interaction.channel.send({ embeds: [Adventskalender], components: rows });
-      await interaction.editReply({ content: '> ✅ » Der Adventskalender wurde erfolgreich gesendet.' });
+      await interaction.editReply({ content: '> ✅ » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
     }
   },
 };
