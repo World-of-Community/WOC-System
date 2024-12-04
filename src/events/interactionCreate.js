@@ -2,10 +2,96 @@ const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, Bu
 const userdb = require("../../Datenbank/userdb");
 const config = require("../json/config.json")
 const vorschlagEmitter = require('../custom_events/vorschlag');
+const Advent = require("../../Datenbank/adventdb");
+
+// Belohnungen definieren
+const rewards = {
+    1: { type: 'coins', value: 100 },
+    2: { type: 'coins', value: 320 },
+    3: { type: 'coins', value: 220 },
+    4: { type: 'coins', value: 140 },
+    5: { type: 'coins', value: 230 },
+    6: { type: 'role', value: '1312780135530889326' },
+    7: { type: 'coins', value: 270 },
+    8: { type: 'coins', value: 800 },
+    9: { type: 'coins', value: 400 },
+    10: { type: 'coins', value: 210 },
+    11: { type: 'coins', value: 290 },
+    12: { type: 'coins', value: 120 },
+    13: { type: 'coins', value: 740 },
+    14: { type: 'coins', value: 380 },
+    15: { type: 'coins', value: 640 },
+    16: { type: 'coins', value: 180 },
+    17: { type: 'coins', value: 230 },
+    18: { type: 'coins', value: 250 },
+    19: { type: 'coins', value: 330 },
+    20: { type: 'coins', value: 340 },
+    21: { type: 'coins', value: 500 },
+    22: { type: 'coins', value: 760 },
+    23: { type: 'coins', value: 2500 },
+    24: { type: 'coins', value: 5000 },
+  };
 
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+        // Button-Interaktion verarbeiten
+        if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
+            const currentDay = new Date().getDate();
+            const [, day] = interaction.customId.split('_');
+            const dayNumber = parseInt(day);
+    
+            // Datenbankeintrag prüfen
+            let userData = await Advent.findOne({ userId: interaction.user.id });
+            if (!userData) {
+            userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
+            }
+    
+            // Überprüfen, ob der Tag bereits geöffnet wurde
+            if (userData.openedDays.includes(dayNumber)) {
+            return interaction.reply({ content: '> `❗` » Du hast diesen Tag bereits geöffnet!', ephemeral: true });
+            }
+    
+            // Überprüfen, ob der Tag in der Zukunft liegt
+            if (dayNumber > currentDay) {
+            return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
+            }
+    
+            // Belohnungssystem verarbeiten
+            userData.openedDays.push(dayNumber);
+            await userData.save();
+    
+            let rewardMessage = ''; // Sicherstellen, dass rewardMessage immer einen Wert hat
+    
+            const reward = rewards[dayNumber];
+    
+            switch (reward?.type) {
+            case 'coins':
+                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
+                break;
+    
+            case 'role':
+                const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
+                if (role) {
+                await interaction.member.roles.add(role);
+                rewardMessage = `> \`🎉\` » Du hast die Rolle **${role.name}** erhalten!`;
+                } else {
+                rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
+                }
+                break;
+    
+            case 'custom':
+                rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'; // Sicherstellen, dass keine leere Nachricht gesendet wird
+                break;
+    
+            default:
+                rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** geöffnet.`; // Standardnachricht
+            }
+    
+            // Antwort mit der Belohnung
+            return interaction.reply({ content: rewardMessage, ephemeral: true });
+        }
+
         const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
 
