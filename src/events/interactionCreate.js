@@ -67,14 +67,14 @@ module.exports = {
     
             switch (reward?.type) {
             case 'coins':
-                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
+                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`🎫\` » Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
                 break;
     
             case 'role':
                 const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
                 if (role) {
                 await interaction.member.roles.add(role);
-                rewardMessage = `> \`🎉\` » Du hast die Rolle **${role.name}** erhalten!`;
+                rewardMessage = `> \`🎉\` » Du hast die Rolle **${role.id}** erhalten!`;
                 } else {
                 rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
                 }
@@ -85,7 +85,7 @@ module.exports = {
                 break;
     
             default:
-                rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** geöffnet.`; // Standardnachricht
+                rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`; // Standardnachricht
             }
     
             // Antwort mit der Belohnung
