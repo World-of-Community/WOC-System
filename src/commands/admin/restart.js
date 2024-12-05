@@ -1,33 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, Client, GatewayIntentBits } = require('discord.js');
 
-// Globale Variablen zum Speichern der Kanal- und Nachrichten-ID
-let lastChannelId = null;
-let lastMessageId = null;
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-client.once('ready', async () => {
-    console.log(`${client.user.tag} ist online!`);
-
-    // Bearbeite die Nachricht, dass der Bot wieder online ist
-    if (lastChannelId && lastMessageId) {
-        try {
-            const channel = await client.channels.fetch(lastChannelId);
-            const message = await channel.messages.fetch(lastMessageId);
-
-            if (message) {
-                await message.edit({ content: '> `✅` » Der Bot ist wieder online und einsatzbereit.', ephemeral: true });
-            }
-        } catch (error) {
-            console.error('Fehler beim Bearbeiten der Wieder-Online-Nachricht:', error);
-        }
-
-        // Variablen zurücksetzen
-        lastChannelId = null;
-        lastMessageId = null;
-    }
-});
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('restart')
