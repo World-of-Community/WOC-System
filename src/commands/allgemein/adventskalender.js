@@ -38,6 +38,51 @@ module.exports = {
     const currentDay = new Date().getDate();
     const maxDay = 24;
 
+    // Buttons erstellen
+    const rows = [];
+    let currentRow = new ActionRowBuilder();
+    
+    for (let i = 1; i <= maxDay; i++) {
+      const buttonData = buttonConfig[i] || {};
+      currentRow.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`advent_${i}`)
+          .setLabel(buttonData.label || i.toString())
+          .setStyle(buttonData.style || ButtonStyle.Primary)
+          .setDisabled(i > currentDay) // Zukünftige Tage deaktivieren
+      );
+
+      if (currentRow.components.length === 5) {
+        rows.push(currentRow);
+        currentRow = new ActionRowBuilder();
+      }
+    }
+    if (currentRow.components.length > 0) rows.push(currentRow);
+
+    // Adventskalender Embed erstellen
+    const Adventskalender = new EmbedBuilder()
+      .setTitle('🎄 Adventskalender')
+      .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${currentDay}. Dezember**.`)
+      .setColor('Green')
+      .setFooter({ text: `» ${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
+
+    await interaction.reply({ content: '> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
+    await interaction.channel.send({ embeds: [Adventskalender], components: rows });
+
+  },
+};
+
+//
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('adventskalender')
+    .setDescription('» Schickt den Adventskalender. 🎁'),
+
+  async execute(interaction) {
+    const currentDay = new Date().getDate();
+    const maxDay = 24;
+
     if (interaction.isChatInputCommand()) {
       // Buttons erstellen
       const rows = [];
@@ -77,25 +122,6 @@ module.exports = {
       await interaction.channel.send({ embeds: [Adventskalender], components: rows });
       await interaction.editReply({ content: '> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
 
-      // Tägliche Mitternachtsnachricht
-      const now = new Date();
-      const nextMidnight = new Date();
-      nextMidnight.setHours(24, 0, 0, 0); // Setze auf Mitternacht
-      const delay = nextMidnight - now;
-
-      // Warte bis Mitternacht und starte den täglichen Ablauf
-      setTimeout(async () => {
-        setInterval(async () => {
-          const newDay = new Date().getDate();
-
-          const reminderMessage = await interaction.channel.send({
-            content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${newDay}. Dezember**.`,
-          });
-
-          // Nachricht nach 5 Minuten löschen
-          setTimeout(() => reminderMessage.delete(), 5 * 60 * 1000);
-        }, 24 * 60 * 60 * 1000); // Alle 24 Stunden
-      }, delay);
     }
   },
 };
