@@ -68,14 +68,14 @@ module.exports = {
       // Adventskalender Embed erstellen
       const Adventskalender = new EmbedBuilder()
         .setTitle('🎄 Adventskalender')
-        .setDescription(`Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${currentDay}. Dezember**.`)
+        .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${currentDay}. Dezember**.`)
         .setColor('Green')
         .setFooter({ text: `${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
 
       // Sende Embed mit Buttons
       await interaction.deferReply({ ephemeral: true }); // Antwort verzögern
       await interaction.channel.send({ embeds: [Adventskalender], components: rows });
-      await interaction.editReply({ content: '> ✅ » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
+      await interaction.editReply({ content: '> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
 
       // Tägliches Update
       const intervalTime = 24 * 60 * 60 * 1000; // 24 Stunden
