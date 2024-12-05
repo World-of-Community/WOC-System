@@ -1,5 +1,8 @@
 const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 
+let lastChannelId = null; // Zum Speichern der Kanal-ID
+let lastMessageId = null; // Zum Speichern der Nachrichten-ID
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('restart')
