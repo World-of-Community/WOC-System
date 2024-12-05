@@ -2,26 +2,29 @@ const { SlashCommandBuilder, PermissionFlagsBits, Client, GatewayIntentBits } = 
 
 // Globale Variablen zum Speichern der Kanal- und Nachrichten-ID
 let lastChannelId = null;
+let lastMessageId = null;
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once('ready', async () => {
     console.log(`${client.user.tag} ist online!`);
 
-    // Sende die Nachricht, dass der Bot wieder online ist
-    if (lastChannelId) {
+    // Bearbeite die Nachricht, dass der Bot wieder online ist
+    if (lastChannelId && lastMessageId) {
         try {
             const channel = await client.channels.fetch(lastChannelId);
+            const message = await channel.messages.fetch(lastMessageId);
 
-            if (channel) {
-                await channel.send('> `✅` » Der Bot ist wieder online und einsatzbereit.');
+            if (message) {
+                await message.edit('> `✅` » Der Bot ist wieder online und einsatzbereit.');
             }
         } catch (error) {
-            console.error('Fehler beim Senden der Wieder-Online-Nachricht:', error);
+            console.error('Fehler beim Bearbeiten der Wieder-Online-Nachricht:', error);
         }
 
         // Variablen zurücksetzen
         lastChannelId = null;
+        lastMessageId = null;
     }
 });
 
@@ -42,10 +45,10 @@ module.exports = {
             return interaction.reply({ content: '> `❗` » Du musst mit "ja" bestätigen, um den Bot neu zu starten.', ephemeral: true });
         }
 
-        // Speichere die Kanal-ID für die spätere Verwendung
+        // Sende die Nachricht und speichere Kanal- und Nachrichten-ID
+        const message = await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...', fetchReply: true });
         lastChannelId = interaction.channel.id;
-
-        await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...', ephemeral: true });
+        lastMessageId = message.id;
 
         // Beende den Prozess nach einer kurzen Verzögerung
         setTimeout(() => {
