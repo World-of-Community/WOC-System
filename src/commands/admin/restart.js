@@ -13,12 +13,15 @@ module.exports = {
     async execute(interaction) {
         const confirmation = interaction.options.getString('bestätigung');
 
+        // Aktuellen Unix-Timestamp generieren
+        const timestamp = Math.floor(Date.now() / 1000);
+
         if (confirmation !== 'ja') {
             return interaction.reply({ content: '> `❗` » Du musst mit "ja" bestätigen, um den Bot neu zu starten.', ephemeral: true });
         }
 
         // Sende die Nachricht und speichere Kanal- und Nachrichten-ID
-        const message = await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...', fetchReply: true, ephemeral: true });
+        const message = await interaction.reply({ content: `> \`🕒\` » Der Bot wird neu gestartet... (<t:${timestamp}:R>)`, fetchReply: true, ephemeral: true });
         lastChannelId = interaction.channel.id;
         lastMessageId = message.id;
 
@@ -29,7 +32,7 @@ module.exports = {
                 const message = await channel.messages.fetch(lastMessageId);
 
                 if (message) {
-                    await message.edit({ content: '> `✅` » Der Bot ist wieder online und einsatzbereit.', ephemeral: true });
+                    await message.edit({ content: `> \`✅\` » Der Bot ist wieder online und einsatzbereit. (<t:${timestamp}:R>)`, ephemeral: true });
                 }
             } catch (error) {
                 console.error('Fehler beim Bearbeiten der Wieder-Online-Nachricht:', error);
