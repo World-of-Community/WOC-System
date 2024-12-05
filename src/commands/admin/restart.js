@@ -50,6 +50,24 @@ module.exports = {
         lastChannelId = interaction.channel.id;
         lastMessageId = message.id;
 
+        // Bearbeite die Nachricht, dass der Bot wieder online ist
+        if (lastChannelId && lastMessageId) {
+            try {
+                const channel = await client.channels.fetch(lastChannelId);
+                const message = await channel.messages.fetch(lastMessageId);
+
+                if (message) {
+                    await message.edit({ content: '> `✅` » Der Bot ist wieder online und einsatzbereit.', ephemeral: true });
+                }
+            } catch (error) {
+                console.error('Fehler beim Bearbeiten der Wieder-Online-Nachricht:', error);
+            }
+
+            // Variablen zurücksetzen
+            //lastChannelId = null;
+            //lastMessageId = null;
+        }
+
         // Beende den Prozess nach einer kurzen Verzögerung
         setTimeout(() => {
             process.exit(); // Beendet den Prozess
