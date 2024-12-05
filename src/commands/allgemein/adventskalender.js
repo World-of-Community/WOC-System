@@ -77,19 +77,25 @@ module.exports = {
       await interaction.channel.send({ embeds: [Adventskalender], components: rows });
       await interaction.editReply({ content: '> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
 
-      // Tägliches Update
-      const intervalTime = 24 * 60 * 60 * 1000; // 24 Stunden
-      const updateTime = new Date();
-      updateTime.setHours(0, 0, 0, 0); // Auf Mitternacht setzen
+      // Tägliche Mitternachtsnachricht
+      const now = new Date();
+      const nextMidnight = new Date();
+      nextMidnight.setHours(24, 0, 0, 0); // Setze auf Mitternacht
+      const delay = nextMidnight - now;
 
-      const delay = updateTime - new Date();
-      if (delay > 0) await setTimeout(delay); // Warte bis Mitternacht
+      // Warte bis Mitternacht und starte den täglichen Ablauf
+      setTimeout(async () => {
+        setInterval(async () => {
+          const newDay = new Date().getDate();
 
-      setInterval(async () => {
-        const updatedDay = new Date().getDate();
-        const { embed: updatedEmbed, rows: updatedRows } = generateAdventskalender(updatedDay);
-        await message.edit({ embeds: [updatedEmbed], components: updatedRows });
-      }, intervalTime);
+          const reminderMessage = await interaction.channel.send({
+            content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${newDay}. Dezember**.`,
+          });
+
+          // Nachricht nach 5 Minuten löschen
+          setTimeout(() => reminderMessage.delete(), 5 * 60 * 1000);
+        }, 24 * 60 * 60 * 1000); // Alle 24 Stunden
+      }, delay);
     }
   },
 };
