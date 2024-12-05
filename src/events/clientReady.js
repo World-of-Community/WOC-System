@@ -132,6 +132,25 @@ module.exports = {
       await message.edit({ embeds: [bannembed] });
     }, 30000);
 
+    client.once('ready', () => {
+      console.log(`${client.user.name} ist online!`);
+  
+      // Nachricht senden, dass der Bot online ist
+      const channelId = '1296391117507399763'; // // Thread-ID
+      const guild = client.guilds.cache.get('815919809379172354'); // Server-ID
+  
+      if (guild) {
+          const channel = guild.channels.cache.get(channelId);
+          if (channel) {
+              channel.send(`> \`✅\` » **${client.user.name}** ist wieder online!`);
+          } else {
+              console.error('Kanal nicht gefunden.');
+          }
+      } else {
+          console.error('Guild nicht gefunden.');
+      }
+    });
+
     cron.schedule("0 0 * * *", async () => {
       const channel = await client.channels.fetch("896743941813207081");
 
