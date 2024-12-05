@@ -16,7 +16,7 @@ client.once('ready', async () => {
             const message = await channel.messages.fetch(lastMessageId);
 
             if (message) {
-                await message.edit('> `✅` » Der Bot ist wieder online und einsatzbereit.');
+                await message.edit({ content: '> `✅` » Der Bot ist wieder online und einsatzbereit.', ephemeral: true });
             }
         } catch (error) {
             console.error('Fehler beim Bearbeiten der Wieder-Online-Nachricht:', error);
@@ -46,7 +46,7 @@ module.exports = {
         }
 
         // Sende die Nachricht und speichere Kanal- und Nachrichten-ID
-        const message = await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...', fetchReply: true });
+        const message = await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...', fetchReply: true, ephemeral: true });
         lastChannelId = interaction.channel.id;
         lastMessageId = message.id;
 
