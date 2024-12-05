@@ -3,7 +3,7 @@ const translator = require("open-google-translator");
 
 module.exports = {
     data: new ContextMenuCommandBuilder()
-        .setName('Übersetzen')
+        .setName('Nachricht übersetzen')
         .setType(ApplicationCommandType.Message),
     
     async execute(interaction) {

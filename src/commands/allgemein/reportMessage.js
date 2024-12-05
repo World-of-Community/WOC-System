@@ -2,7 +2,7 @@ const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder, time } 
 
 module.exports = {
     data: new ContextMenuCommandBuilder()
-        .setName('Melden')
+        .setName('Nachricht melden')
         .setType(ApplicationCommandType.Message),
     
     async execute(interaction) {
