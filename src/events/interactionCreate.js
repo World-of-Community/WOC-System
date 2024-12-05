@@ -35,7 +35,8 @@ const rewards = {
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        // Button-Interaktion verarbeiten
+
+        // Button-Interaktion verarbeiten (Adventskalender System)
         if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
             const currentDay = new Date().getDate();
             const [, day] = interaction.customId.split('_');
@@ -49,7 +50,7 @@ module.exports = {
     
             // Überprüfen, ob der Tag bereits geöffnet wurde
             if (userData.openedDays.includes(dayNumber)) {
-            return interaction.reply({ content: '> `❗` » Du hast diesen Tag bereits geöffnet!', ephemeral: true });
+            return interaction.reply({ content: `> \`❗\` » Du hast diesen Tag (${dayNumber}. Dezember) bereits geöffnet!`, ephemeral: true });
             }
     
             // Überprüfen, ob der Tag in der Zukunft liegt
