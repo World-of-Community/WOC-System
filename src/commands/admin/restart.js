@@ -1,7 +1,29 @@
-const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, Client, GatewayIntentBits } = require('discord.js');
 
-let lastChannelId = null; // Zum Speichern der Kanal-ID
-let lastMessageId = null; // Zum Speichern der Nachrichten-ID
+// Globale Variablen zum Speichern der Kanal- und Nachrichten-ID
+let lastChannelId = null;
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+client.once('ready', async () => {
+    console.log(`${client.user.tag} ist online!`);
+
+    // Sende die Nachricht, dass der Bot wieder online ist
+    if (lastChannelId) {
+        try {
+            const channel = await client.channels.fetch(lastChannelId);
+
+            if (channel) {
+                await channel.send('> `✅` » Der Bot ist wieder online und einsatzbereit.');
+            }
+        } catch (error) {
+            console.error('Fehler beim Senden der Wieder-Online-Nachricht:', error);
+        }
+
+        // Variablen zurücksetzen
+        lastChannelId = null;
+    }
+});
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,9 +42,12 @@ module.exports = {
             return interaction.reply({ content: '> `❗` » Du musst mit "ja" bestätigen, um den Bot neu zu starten.', ephemeral: true });
         }
 
-        await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...', ephemeral: true });
+        // Speichere die Kanal-ID für die spätere Verwendung
+        lastChannelId = interaction.channel.id;
 
-        // Warte kurz, um sicherzustellen, dass die Antwort gesendet wurde
+        await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...' });
+
+        // Beende den Prozess nach einer kurzen Verzögerung
         setTimeout(() => {
             process.exit(); // Beendet den Prozess
         }, 2000);
