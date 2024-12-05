@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const { setTimeout } = require('timers/promises');
 
 // Anpassbare Buttons
 const buttonConfig = {
@@ -75,6 +76,20 @@ module.exports = {
       await interaction.deferReply({ ephemeral: true }); // Antwort verzögern
       await interaction.channel.send({ embeds: [Adventskalender], components: rows });
       await interaction.editReply({ content: '> ✅ » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
+
+      // Tägliches Update
+      const intervalTime = 24 * 60 * 60 * 1000; // 24 Stunden
+      const updateTime = new Date();
+      updateTime.setHours(0, 0, 0, 0); // Auf Mitternacht setzen
+
+      const delay = updateTime - new Date();
+      if (delay > 0) await setTimeout(delay); // Warte bis Mitternacht
+
+      setInterval(async () => {
+        const updatedDay = new Date().getDate();
+        const { embed: updatedEmbed, rows: updatedRows } = generateAdventskalender(updatedDay);
+        await message.edit({ embeds: [updatedEmbed], components: updatedRows });
+      }, intervalTime);
     }
   },
 };
