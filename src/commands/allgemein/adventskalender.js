@@ -70,7 +70,7 @@ module.exports = {
         .setTitle('🎄 Adventskalender')
         .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${currentDay}. Dezember**.`)
         .setColor('Green')
-        .setFooter({ text: `${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
+        .setFooter({ text: `» ${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
 
       // Sende Embed mit Buttons
       await interaction.deferReply({ ephemeral: true }); // Antwort verzögern
