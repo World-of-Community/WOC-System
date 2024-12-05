@@ -45,7 +45,7 @@ module.exports = {
         // Speichere die Kanal-ID für die spätere Verwendung
         lastChannelId = interaction.channel.id;
 
-        await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...' });
+        await interaction.reply({ content: '> `🕒` » Der Bot wird neu gestartet...', ephemeral: true });
 
         // Beende den Prozess nach einer kurzen Verzögerung
         setTimeout(() => {
