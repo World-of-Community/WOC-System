@@ -68,53 +68,5 @@ module.exports = {
 
     await interaction.reply({ content: '> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
     await interaction.channel.send({ embeds: [Adventskalender], components: rows });
-
-    // Täglich um Mitternacht
-cron.schedule('44 0 * * *', async () => {
-  const currentDay = new Date().getDate();
-  const maxDay = 24;
-
-  // IDs der Zielkanäle und Nachrichten
-  const channelId = '1312772215791685743'; // Ersetze durch deine Kanal-ID
-  const messageId = '1314368948229111819'; // Ersetze durch die Nachricht-ID des Embeds
-
-  try {
-    // Kanal und Nachricht abrufen
-    const channel = await client.channels.fetch(channelId);
-    if (!channel) throw new Error('Kanal nicht gefunden!');
-
-    const message = await channel.messages.fetch(messageId);
-    if (!message) throw new Error('Nachricht nicht gefunden!');
-
-    // Neue Button-Logik
-    const rows = [];
-    let currentRow = new ActionRowBuilder();
-
-    for (let i = 1; i <= maxDay; i++) {
-      currentRow.addComponents(
-        new ButtonBuilder()
-          .setCustomId(`advent_${i}`)
-          .setLabel(i.toString())
-          .setStyle(ButtonStyle.Primary)
-          .setDisabled(i > currentDay) // Zukünftige Tage deaktivieren
-      );
-
-      if (currentRow.components.length === 5) {
-        rows.push(currentRow);
-        currentRow = new ActionRowBuilder();
-      }
-    }
-    if (currentRow.components.length > 0) rows.push(currentRow);
-
-    // Aktualisiertes Embed
-    const updatedEmbed = EmbedBuilder.from(message.embeds[0]);
-
-    // Nachricht bearbeiten
-    await message.edit({ embeds: [updatedEmbed], components: rows });
-    console.log(`Adventskalener-Embed erfolgreich aktualisiert: Heute ist der ${currentDay}. Dezember`);
-  } catch (error) {
-    console.error('Fehler beim Bearbeiten des Embeds:', error);
-  }
-});
   },
 };
