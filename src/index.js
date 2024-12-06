@@ -136,13 +136,13 @@ const pingMessages = [
 ];
 
 // Täglich um Mitternacht
-cron.schedule('40 0 * * *', async () => {
+cron.schedule('42 0 * * *', async () => {
     const currentDay = new Date().getDate();
     const maxDay = 24;
 
     // IDs der Zielkanäle und Nachrichten
     const channelId = '1312772215791685743'; // Ersetze durch deine Kanal-ID
-    const messageId = '1314184011874177057'; // Ersetze durch die Nachricht-ID des Embeds
+    const messageId = '1314368948229111819'; // Ersetze durch die Nachricht-ID des Embeds
 
     try {
       // Kanal und Nachricht abrufen
