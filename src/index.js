@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder } = require('discord.js')
+const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
