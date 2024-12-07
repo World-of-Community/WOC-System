@@ -145,7 +145,7 @@ mongoose.connection.on('error', (err) => {
 });
 
     // Täglich um Mitternacht
-    cron.schedule('46 0 * * *', async () => {
+    cron.schedule('17 1 * * *', async () => {
         const currentDay = new Date().getDate();
         const maxDay = 24;
       
