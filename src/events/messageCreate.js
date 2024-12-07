@@ -79,6 +79,21 @@ module.exports = {
             }
         }
 
+        // Doppelte Buchstaben erkennen
+        // Stelle sicher, dass die Nachricht nicht vom Bot stammt
+        if (message.author.bot) return;
+
+        // RegEx, um doppelte Buchstaben (mindestens 3 Wiederholungen) zu finden
+        const duplicateLetterPattern = /(.)\1{2,}/;
+
+        if (duplicateLetterPattern.test(message.content)) {
+            // Nachricht löschen
+            await message.delete().catch(console.error);
+
+            // Warnung senden
+            message.channel.send(`Buchstaben sind keine Rudeltiere, ${message.author}!`);
+        }
+
         // Bump System (geht noch nicht)
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
