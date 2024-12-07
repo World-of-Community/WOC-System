@@ -91,7 +91,14 @@ module.exports = {
             await message.delete().catch(console.error);
 
             // Warnung senden
-            message.channel.send(`Buchstaben sind keine Rudeltiere, ${message.author}!`);
+            const warningMessage = await message.channel.send(
+                `Buchstaben sind keine Rudeltiere, ${message.author}!`
+            );
+
+            // Warnung nach 3 Sekunden löschen
+            setTimeout(() => {
+                warningMessage.delete().catch(console.error);
+            }, 3000);
         }
 
         // Bump System (geht noch nicht)
