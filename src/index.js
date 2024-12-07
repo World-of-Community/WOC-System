@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder } = require('discord.js')
+const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -145,7 +145,7 @@ mongoose.connection.on('error', (err) => {
 });
 
     // Täglich um Mitternacht
-    cron.schedule('17 1 * * *', async () => {
+    cron.schedule('19 1 * * *', async () => {
         const currentDay = new Date().getDate();
         const maxDay = 24;
       
