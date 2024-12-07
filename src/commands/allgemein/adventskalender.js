@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const { setTimeout } = require('timers/promises');
+const serverdb = require('../../../Datenbank/serverdb');
 
 // Anpassbare Buttons
 const buttonConfig = {
@@ -35,6 +36,8 @@ module.exports = {
     .setDescription('» Schickt den Adventskalender. 🎁'),
 
   async execute(interaction) {
+    const server = await serverdb.findOne({ guildID: '815919809379172354' });
+    if(!server) return interaction.reply({ content: ":x: Fehler: Server nicht gefunden", ephemeral: true });
     const currentDay = new Date().getDate();
     const maxDay = 24;
 
@@ -67,6 +70,12 @@ module.exports = {
       .setFooter({ text: `» ${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
 
     await interaction.reply({ content: '> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
-    await interaction.channel.send({ embeds: [Adventskalender], components: rows });
+    const kalenderMessage = await interaction.channel.send({ embeds: [Adventskalender], components: rows });
+    console.log(kalenderMessage.id)
+    server.adventskalender = {
+      messageId: kalenderMessage.id,
+      channelId: kalenderMessage.channelId
+    }
+    await server.save()
   },
 };

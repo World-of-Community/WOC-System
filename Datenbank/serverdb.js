@@ -6,6 +6,14 @@ const serverSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    adventskalender: {
+        messageId: {
+            type: String
+        },
+        channelId: {
+            type: String
+        }
+    },
     partner: {
         msg: {
             type: String,
