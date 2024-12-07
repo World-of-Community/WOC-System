@@ -144,7 +144,7 @@ mongoose.connection.on('error', (err) => {
     console.error(`Verbindungsfehler: ${err.message}`);
 });
 
-    // Täglich um Mitternacht
+    // Täglich um Mitternacht (Adventskalender)
     cron.schedule('0 0 * * *', async () => {
         const currentDay = new Date().getDate();
         const maxDay = 24;
