@@ -225,9 +225,6 @@ const ThreadIDs = {
     SERVER: "1269998220440895510",
     MODERATION: "1269998219266490538",
     INVITE: "1269998218264055818",
-};
-
-const threadID = {
     OFFLINE: "1296391117507399763",
     ONLINE: "1296391117507399763",
     ERROR: "1296391118723878932",
@@ -237,9 +234,9 @@ const threadID = {
 let startTime;
 
 // Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
-async function sendLog(threadID, embed) {
+async function sendLog(ThreadIDs, embed) {
     try {
-        const thread = await client.channels.fetch(threadID);
+        const thread = await client.channels.fetch(ThreadIDs);
         
         // Check if the thread was successfully fetched
         if (!thread) {
@@ -269,7 +266,7 @@ const onlineEmbed = new EmbedBuilder()
     .setTimestamp();
 
 try {
-    await sendLog(threadID.ONLINE, onlineEmbed);
+    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
 } catch (error) {
     console.error('Fehler beim Senden des Online-Logs:', error);
 }
@@ -284,7 +281,7 @@ const offlineEmbed = new EmbedBuilder()
     .setTimestamp();
 
 try {
-    await sendLog(threadID.OFFLINE, offlineEmbed);
+    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
 } catch (error) {
     console.error('Fehler beim Senden des Offline-Logs:', error);
 }
@@ -299,17 +296,17 @@ const errorEmbed = new EmbedBuilder()
     .setTimestamp();
 
 try {
-    await sendLog(threadID.ERROR, errorEmbed);
+    await sendLog(ThreadIDs.ERROR, errorEmbed);
 } catch (sendError) {
     console.error('Fehler beim Senden des Error-Logs:', sendError);
 }
 });
 
 // Funktion zum Senden von Logs an Threads
-async function sendLog(threadID, embed) {
-const thread = await client.channels.fetch(threadID).catch(() => null);
-if (!thread) throw new Error(`Thread mit ID ${threadID} nicht gefunden.`);
-if (!thread.isTextBased()) throw new Error(`Thread mit ID ${threadID} ist kein Textkanal.`);
+async function sendLog(ThreadIDs, embed) {
+const thread = await client.channels.fetch(ThreadIDs).catch(() => null);
+if (!thread) throw new Error(`Thread mit ID ${ThreadIDs} nicht gefunden.`);
+if (!thread.isTextBased()) throw new Error(`Thread mit ID ${ThreadIDs} ist kein Textkanal.`);
 await thread.send({ embeds: [embed] });
 }
 
