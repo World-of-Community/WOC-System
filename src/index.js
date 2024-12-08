@@ -260,38 +260,7 @@ const ThreadIDs = {
     ERROR: "1296391118723878932",
 };
 
-// Store the bot's start time when it logs in
-let startTime;
-
-<<<<<<< HEAD
 // Event, wenn der Bot bereit ist
-=======
-// Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
-async function sendLog(ThreadIDs, embed) {
-    try {
-        const thread = await client.channels.fetch(ThreadIDs);
-        
-        // Check if the thread was successfully fetched
-        if (!thread) {
-            console.error("Thread nicht gefunden.");
-            return;
-        }
-        
-        // Optionally check the thread type, or remove this check if unsure
-        if (thread.type !== ChannelType.PublicThread) {
-            console.error("Falscher Typ für den gefundenen Thread.");
-            return;
-        }
-
-        await thread.send({ embeds: [embed] });
-        console.log(`Log erfolgreich in Thread ${threadID} gesendet.`);
-    } catch (error) {
-        console.error(`Fehler beim Senden des Logs:`, error);
-    }
-}
-
-  // Event, wenn der Bot bereit ist
->>>>>>> 6a37bafd00c124c399783b5be095e6b624ebe348
 client.on('ready', async () => {
 const onlineEmbed = new EmbedBuilder()
     .setTitle('Bot Status - Update')
