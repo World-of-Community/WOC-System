@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles } = require('discord.js');
 const { setTimeout } = require('timers/promises');
 const serverdb = require('../../../Datenbank/serverdb');
 
@@ -38,6 +38,7 @@ module.exports = {
   async execute(interaction) {
     const server = await serverdb.findOne({ guildID: '815919809379172354' });
     if(!server) return interaction.reply({ content: ":x: Fehler: Server nicht gefunden", ephemeral: true });
+    const currenrDate = new Date();
     const currentDay = new Date().getDate();
     const maxDay = 24;
 
@@ -65,7 +66,7 @@ module.exports = {
     // Adventskalender Embed erstellen
     const Adventskalender = new EmbedBuilder()
       .setTitle('🎄 Adventskalender')
-      .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${currentDay}. Dezember**.`)
+      .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`)
       .setColor('Green')
       .setFooter({ text: `» ${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
 

@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
+const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -25,6 +25,33 @@ const client = new Client({
         Partials.Reaction
     ],
 });
+
+const buttonConfig = {
+    1: { label: '1🎁', style: ButtonStyle.Primary },
+    2: { label: '2🌨️', style: ButtonStyle.Primary },
+    3: { label: '3🎄', style: ButtonStyle.Primary },
+    4: { label: '4⛄', style: ButtonStyle.Primary },
+    5: { label: '5⭐', style: ButtonStyle.Primary },
+    6: { label: '6❄️', style: ButtonStyle.Primary },
+    7: { label: '7✨', style: ButtonStyle.Primary },
+    8: { label: '8🎄', style: ButtonStyle.Primary },
+    9: { label: '9☃️', style: ButtonStyle.Primary },
+    10: { label: '10🎁', style: ButtonStyle.Primary },
+    11: { label: '11⭐', style: ButtonStyle.Primary },
+    12: { label: '12❄️', style: ButtonStyle.Primary },
+    13: { label: '13🌨️', style: ButtonStyle.Primary },
+    14: { label: '14🎄', style: ButtonStyle.Primary },
+    15: { label: '15⭐', style: ButtonStyle.Primary },
+    16: { label: '16✨', style: ButtonStyle.Primary },
+    17: { label: '17❄️', style: ButtonStyle.Primary },
+    18: { label: '18🎄', style: ButtonStyle.Primary },
+    19: { label: '19🧸', style: ButtonStyle.Primary },
+    20: { label: '20🦌', style: ButtonStyle.Primary },
+    21: { label: '21✨', style: ButtonStyle.Primary },
+    22: { label: '22🎉', style: ButtonStyle.Primary },
+    23: { label: '23🎁', style: ButtonStyle.Primary },
+    24: { label: '24🎅', style: ButtonStyle.Primary },
+  };
 
 // Modules and Files
 const mongoose = require('mongoose');
@@ -148,6 +175,7 @@ mongoose.connection.on('error', (err) => {
 cron.schedule('00 00 * * *', async () => {
     const server = await serverdb.findOne({ guildID: '815919809379172354' });
     if(!server) return;
+    const currentDate = new Date();
     const currentDay = new Date().getDate();
     const maxDay = 24;
     
@@ -164,12 +192,13 @@ cron.schedule('00 00 * * *', async () => {
         let currentRow = new ActionRowBuilder();
     
         for (let i = 1; i <= maxDay; i++) {
-        currentRow.addComponents(
-            new ButtonBuilder()
-            .setCustomId(`advent_${i}`)
-            .setLabel(i.toString())
-            .setStyle(ButtonStyle.Primary)
-            .setDisabled(i > currentDay) // Zukünftige Tage deaktivieren
+            const buttonData = buttonConfig[i] || {};
+            currentRow.addComponents(
+                new ButtonBuilder()
+                .setCustomId(`advent_${i}`)
+                .setLabel(buttonData.label || i.toString())
+                .setStyle(buttonData.style || ButtonStyle.Primary)
+                .setDisabled(i > currentDay) // Zukünftige Tage deaktivieren
         );
     
         if (currentRow.components.length === 5) {
@@ -180,7 +209,8 @@ cron.schedule('00 00 * * *', async () => {
         if (currentRow.components.length > 0) rows.push(currentRow);
     
         // Aktualisiertes Embed
-        const updatedEmbed = EmbedBuilder.from(message.embeds[0]);
+        const updatedEmbed = EmbedBuilder.from(message.embeds[0])
+        .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`);
     
         // Nachricht bearbeiten
         await message.edit({ embeds: [updatedEmbed], components: rows });
