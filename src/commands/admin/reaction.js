@@ -3,7 +3,7 @@ const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('reaction')
-        .setDescription('» Fügt Reaktionen zu einer Nachricht hinzu. 😎')
+        .setDescription('» Fügt Reaktionen zu einer Nachricht hinzu. 📌')
         .addStringOption(option => 
             option.setName('messageid')
                 .setDescription('Die ID der Nachricht, zu der Reaktionen hinzugefügt werden sollen.')
