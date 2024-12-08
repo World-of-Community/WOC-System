@@ -104,14 +104,25 @@ module.exports = {
 
         setTimeout(async () => {
             setInterval(async () => {
-              const newDay = new Date().getDate();
-    
-              const reminderMessage = await interaction.channel.send({
-                content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${newDay}. Dezember**.`,
-              });
-    
-              // Nachricht nach 5 Minuten löschen
-              setTimeout(() => reminderMessage.delete(), 5 * 60 * 1000);
+              try {
+                const newDay = new Date().getDate();
+          
+                const channelId = '1312772215791685743'; // Adventskalender
+                const channel = await interaction.client.channels.fetch(channelId);
+                if (!channel || !channel.isTextBased()) {
+                  console.error('Kanal konnte nicht gefunden oder ist kein Textkanal.');
+                  return;
+                }
+          
+                const reminderMessage = await channel.send({
+                  content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`,
+                });
+          
+                // Nachricht nach 5 Minuten löschen
+                setTimeout(() => reminderMessage.delete(), 5 * 60 * 1000);
+              } catch (error) {
+                console.error('Fehler beim Senden der Nachricht:', error);
+              }
             }, 24 * 60 * 60 * 1000); // Alle 24 Stunden
           }, delay);
 
