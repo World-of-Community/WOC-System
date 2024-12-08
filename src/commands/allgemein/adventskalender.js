@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles } = require('discord.js');
+=======
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+>>>>>>> 6a37bafd00c124c399783b5be095e6b624ebe348
 const { setTimeout } = require('timers/promises');
 const serverdb = require('../../../Datenbank/serverdb');
 
@@ -33,12 +37,17 @@ const buttonConfig = {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('adventskalender')
-    .setDescription('» Schickt den Adventskalender. 🎁'),
+    .setDescription('» Schickt den Adventskalender. 🎁')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const server = await serverdb.findOne({ guildID: '815919809379172354' });
+<<<<<<< HEAD
     if(!server) return interaction.reply({ content: ":x: Fehler: Server nicht gefunden", ephemeral: true });
     const currenrDate = new Date();
+=======
+    if(!server) return interaction.reply({ content: "> `❌` » Fehler: Server nicht gefunden", ephemeral: true });
+>>>>>>> 6a37bafd00c124c399783b5be095e6b624ebe348
     const currentDay = new Date().getDate();
     const maxDay = 24;
 

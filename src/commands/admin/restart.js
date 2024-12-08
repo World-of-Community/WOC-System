@@ -34,7 +34,7 @@ client.once('ready', async () => {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('restart')
-        .setDescription('» Startet den Bot neu.')
+        .setDescription('» Startet den Bot neu. (Admin/Dev Only)')
         .addStringOption(option =>
             option.setName('bestätigung')
                 .setDescription('Bestätige mit "ja"')

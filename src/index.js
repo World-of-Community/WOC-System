@@ -255,9 +255,6 @@ const ThreadIDs = {
     SERVER: "1269998220440895510",
     MODERATION: "1269998219266490538",
     INVITE: "1269998218264055818",
-};
-
-const threadID = {
     OFFLINE: "1296391117507399763",
     ONLINE: "1296391117507399763",
     ERROR: "1296391118723878932",
@@ -266,41 +263,86 @@ const threadID = {
 // Store the bot's start time when it logs in
 let startTime;
 
+<<<<<<< HEAD
 // Event, wenn der Bot bereit ist
+=======
+// Definiere die sendLog-Funktion, die das Embed in den entsprechenden Thread sendet
+async function sendLog(ThreadIDs, embed) {
+    try {
+        const thread = await client.channels.fetch(ThreadIDs);
+        
+        // Check if the thread was successfully fetched
+        if (!thread) {
+            console.error("Thread nicht gefunden.");
+            return;
+        }
+        
+        // Optionally check the thread type, or remove this check if unsure
+        if (thread.type !== ChannelType.PublicThread) {
+            console.error("Falscher Typ für den gefundenen Thread.");
+            return;
+        }
+
+        await thread.send({ embeds: [embed] });
+        console.log(`Log erfolgreich in Thread ${threadID} gesendet.`);
+    } catch (error) {
+        console.error(`Fehler beim Senden des Logs:`, error);
+    }
+}
+
+  // Event, wenn der Bot bereit ist
+>>>>>>> 6a37bafd00c124c399783b5be095e6b624ebe348
 client.on('ready', async () => {
-    startTime = Date.now(); // Store start time in milliseconds
-    const uptime = Math.floor((Date.now() - startTime) / 1000); // Uptime in seconds
+const onlineEmbed = new EmbedBuilder()
+    .setTitle('Bot Status - Update')
+    .setDescription(`> \`🟢\` » **\`${client.user.username}\`** ist jetzt online.\n\n> \`🕒\` » <t:${Math.floor(client.readyTimestamp / 1000)}:F>`)
+    .setColor('Green')
+    .setTimestamp();
 
-    const onlineEmbed = new EmbedBuilder()
-        .setTitle('Bot Status - Update')
-        .setDescription(`> \`🟢\` » **\`${client.user.username}\`** ist jetzt online.\n\n> \`🕒\` » <t:${Math.floor(Date.now() / 1000)}:F>`)
-        .setColor('Green')
-        .setTimestamp();
-
-    await sendLog(threadID.ONLINE, onlineEmbed);
+try {
+    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+} catch (error) {
+    console.error('Fehler beim Senden des Online-Logs:', error);
+}
 });
 
-// Event, wenn der Bot offline geht
-client.on('disconnect', async () => {
-    const offlineEmbed = new EmbedBuilder()
-        .setTitle('Bot Status - Update')
-        .setDescription(`> \`🔴\` » **\`${client.user.username}\`** ist offline.`)
-        .setColor('Red')
-        .setTimestamp();
+// Event, wenn der Shard getrennt wird (offline)
+client.on('shardDisconnect', async (event, shardId) => {
+const offlineEmbed = new EmbedBuilder()
+    .setTitle('Bot Status - Update')
+    .setDescription(`> \`🔴\` » **\`${client.user.username}\`** ist offline.`)
+    .setColor('Red')
+    .setTimestamp();
 
-    await sendLog(threadID.OFFLINE, offlineEmbed);
+try {
+    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+} catch (error) {
+    console.error('Fehler beim Senden des Offline-Logs:', error);
+}
 });
 
 // Event, wenn ein Fehler auftritt
 client.on('error', async (error) => {
-    const errorEmbed = new EmbedBuilder()
-        .setTitle('`❌` | FEHLER BEI BOT')
-        .setDescription(`\`\`\`${error.message}\`\`\``)
-        .setColor('Orange')
-        .setTimestamp();
+const errorEmbed = new EmbedBuilder()
+    .setTitle('`❌` | FEHLER BEI BOT')
+    .setDescription(`\`\`\`${error.message}\`\`\``)
+    .setColor('Orange')
+    .setTimestamp();
 
-    await sendLog(threadID.ERROR, errorEmbed);
+try {
+    await sendLog(ThreadIDs.ERROR, errorEmbed);
+} catch (sendError) {
+    console.error('Fehler beim Senden des Error-Logs:', sendError);
+}
 });
+
+// Funktion zum Senden von Logs an Threads
+async function sendLog(ThreadIDs, embed) {
+const thread = await client.channels.fetch(ThreadIDs).catch(() => null);
+if (!thread) throw new Error(`Thread mit ID ${ThreadIDs} nicht gefunden.`);
+if (!thread.isTextBased()) throw new Error(`Thread mit ID ${ThreadIDs} ist kein Textkanal.`);
+await thread.send({ embeds: [embed] });
+}
 
 client.on('guildMemberAdd', async member => {
     if (member.guild.id !== "815919809379172354") return;
