@@ -102,30 +102,6 @@ module.exports = {
         nextMidnight.setHours(24, 0, 0, 0); // Setze auf Mitternacht
         const delay = nextMidnight - now;
 
-        setTimeout(async () => {
-            setInterval(async () => {
-              try {
-                const newDay = new Date().getDate();
-          
-                const channelId = '1312772215791685743'; // Adventskalender
-                const channel = await interaction.client.channels.fetch(channelId);
-                if (!channel || !channel.isTextBased()) {
-                  console.error('Kanal konnte nicht gefunden oder ist kein Textkanal.');
-                  return;
-                }
-          
-                const reminderMessage = await channel.send({
-                  content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`,
-                });
-          
-                // Nachricht nach 5 Minuten löschen
-                setTimeout(() => reminderMessage.delete(), 5 * 60 * 1000);
-              } catch (error) {
-                console.error('Fehler beim Senden der Nachricht:', error);
-              }
-            }, 24 * 60 * 60 * 1000); // Alle 24 Stunden
-          }, delay);
-
         // Ränge Menu
         if (interaction.customId === 'ränge-menu') {
             switch (interaction.values[0]) {
