@@ -172,7 +172,7 @@ mongoose.connection.on('error', (err) => {
 });
 
 // Täglich um Mitternacht (Adventskalender)
-cron.schedule('00 00 * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
     const server = await serverdb.findOne({ guildID: '815919809379172354' });
     if(!server) return;
     const currentDate = new Date();
@@ -478,7 +478,7 @@ const ageRoles = {
     "18": "1199786814051979344",
 };
 
-cron.schedule('11 0 * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
     const today = new Date();
     const day = today.getDate();
     const month = today.getMonth() + 1;
