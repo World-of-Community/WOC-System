@@ -220,7 +220,8 @@ cron.schedule('0 0 * * *', async () => {
     }
     });
 
-    cron.schedule('17 0 * * *', async () => {
+    // Nachricht wenn ein neues Türchen geöffnet werden kann
+    cron.schedule('0 0 * * *', async () => {
         try {
           const currentDate = new Date();
           const channelId = '1312772215791685743'; // Adventskalender-Kanal-ID
@@ -235,7 +236,7 @@ cron.schedule('0 0 * * *', async () => {
             content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`,
           });
   
-          // Nachricht nach 5 Minuten löschen
+          // Nachricht nach 3 Minuten löschen
           setTimeout(() => reminderMessage.delete(), 3 * 60 * 1000);
         } catch (error) {
           console.error('Fehler beim Senden der Nachricht:', error);
