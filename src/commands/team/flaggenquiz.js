@@ -1,6 +1,72 @@
-const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const flags = [
+  {
+    country: "Deutschland",
+    imageUrl: "https://www.worldometers.info/img/flags/gm-flag.gif",
+  },
+  {
+    country: "Frankreich",
+    imageUrl: "https://www.worldometers.info/img/flags/fr-flag.gif",
+  },
+  {
+    country: "Vereinigte Staaten",
+    imageUrl: "https://www.worldometers.info/img/flags/us-flag.gif",
+  },
+  {
+    country: "Kanada",
+    imageUrl: "https://www.worldometers.info/img/flags/ca-flag.gif",
+  },
+  {
+    country: "Brasilien",
+    imageUrl: "https://www.worldometers.info/img/flags/br-flag.gif",
+  },
+  {
+    country: "Japan",
+    imageUrl: "https://www.worldometers.info/img/flags/ja-flag.gif",
+  },
+  {
+    country: "Indien",
+    imageUrl: "https://www.worldometers.info/img/flags/in-flag.gif",
+  },
+  {
+    country: "Australien",
+    imageUrl: "https://www.worldometers.info/img/flags/as-flag.gif",
+  },
+  {
+    country: "Vereinigtes Königreich",
+    imageUrl: "https://www.worldometers.info/img/flags/uk-flag.gif",
+  },
+  {
+    country: "China",
+    imageUrl: "https://www.worldometers.info/img/flags/ch-flag.gif",
+  },
+  {
+    country: "Russland",
+    imageUrl: "https://www.worldometers.info/img/flags/rs-flag.gif",
+  },
+  {
+    country: "Südkorea",
+    imageUrl: "https://www.worldometers.info/img/flags/ks-flag.gif",
+  },
+  {
+    country: "Italien",
+    imageUrl: "https://www.worldometers.info/img/flags/it-flag.gif",
+  },
+  {
+    country: "Spanien",
+    imageUrl: "https://www.worldometers.info/img/flags/sp-flag.gif",
+  },
+  {
+    country: "Mexiko",
+    imageUrl: "https://www.worldometers.info/img/flags/mx-flag.gif",
+  }
+  // Weitere Flaggen können hier hinzugefügt werden
+];
+
 
 // flaggenquiz.json noch hier hinzufügen inkl. datenbank
+
+
 
 module.exports = {
   data: new SlashCommandBuilder()
