@@ -10,18 +10,12 @@ module.exports = {
   async execute(interaction) {
     let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
-    // Hilfsfunktion für Unix-Timestamp
-    const formatUnixTimestamp = (dateStr) => {
-      const date = new Date(dateStr);
-      return Math.floor(date.getTime() / 1000); // Unix-Timestamp in Sekunden
-    };
-
     // Embeds für verschiedene Events
     const eventEmbeds = {
       ostern: {
         embed: new EmbedBuilder()
           .setTitle('🌸 Oster-Event 🌸')
-          .setDescription('**Dieses Event startet erst zwischen den Monaten `März` und `April!**')
+          .setDescription('**Dieses Event startet erst zwischen den Monaten `März` und `April!`**')
           .setColor('Green'),
         startDate: '2024-04-01T00:00:00Z',
         endDate: '2024-04-30T23:59:59Z',
@@ -91,7 +85,7 @@ module.exports = {
             .setImage(details.embed.data.image.url)
             .setColor(details.embed.data.color)
             .setFooter({
-              text: `Start: ${formatUnixTimestamp(details.startDate)} | Ende: ${formatUnixTimestamp(details.endDate)}`,
+              text: `Start: ${startDate.toLocaleString()} | Ende: ${endDate.toLocaleString()}`, // Start und Ende als Datum
             });
           break;
         }
