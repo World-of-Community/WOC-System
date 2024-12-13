@@ -9,16 +9,12 @@ module.exports = {
     // Aktuelles Event setzen (kann dynamisch angepasst werden)
     const aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!'; // Beispiel: 'Halloween - 31. Oktober'
 
-    // hier soll ein system hin wo zwischen den events gewechselt werden soll
-    // oder ein system wo die events dynamisch erstellt werden sollen
-
-    // Haupt-Embed
-    const embed = new EmbedBuilder()
+    const SeasonEmbed = new EmbedBuilder()
       .setTitle('💛 Season-Events 💛')
       .setDescription(`**Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\``)
       .setColor('Blurple')
-      .setImage('https://example.com/main-event-image.png') // Optionales Bild
-      .setFooter({ text: 'World Of Community | Bleibt Gesund 💛' });
+      .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png?ex=675dbbb7&is=675c6a37&hm=260c2aefd648ecdb6cd69ec1fcb0efbd1aa5c1aa3cc4964985702ae8a708b0ea&') // Optionales Bild
+      .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 💛`, iconURL: `${interaction.guild.iconURL()}` });
 
     // Action Rows mit Buttons
     const firstRow = new ActionRowBuilder().addComponents(
