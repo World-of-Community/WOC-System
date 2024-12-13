@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('season-events')
-    .setDescription('Zeigt die aktuellen Season-Events an'),
+    .setDescription('» Zeigt die aktuellen Season-Events an. 🧡')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
