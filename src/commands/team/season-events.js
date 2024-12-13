@@ -115,7 +115,73 @@ module.exports = {
         }
       } else if (buttonInteraction.customId === 'collect-event-item') {
         await buttonInteraction.reply({ content: '> `🎁` » Du hast ein Event-Item eingesammelt!', ephemeral: true });
+      } else if (buttonInteraction.customId === 'collect-event-item') {
+        const eventItemEmbed = new EmbedBuilder()
+          .setTitle('🎁 Du hast ein Event-Item eingesammelt!')
+          .setDescription('**Du hast erfolgreich ein Event-Item gesammelt. Viel Spaß beim nächsten Event!**')
+          .setColor('Gold')
+          .setFooter({ text: 'Bleibt gesund und viel Spaß!' });
+
+          await buttonInteraction.reply({ embeds: [eventItemEmbed], ephemeral: true });
       }
     });
   },
 };
+
+// Button-Interaktion verarbeiten (Season Event System)
+if (interaction.isButton() && interaction.customId.startsWith('season_event_')) {
+  const currentDate = new Date();
+  const currentDay = currentDate.getDate();
+  const currentMonth = currentDate.getMonth() + 1; // Monate sind 0-basiert, daher +1
+  const [, eventType] = interaction.customId.split('_'); // Extrahiert den Event-Typ
+  
+  // Datenbankeintrag für den Benutzer überprüfen
+  let userData = await SeasonEvents.findOne({ userId: interaction.user.id });
+  if (!userData) {
+      userData = await SeasonEvents.create({ userId: interaction.user.id, participatedEvents: [] });
+  }
+
+  // Überprüfen, ob der Benutzer bereits am Event teilgenommen hat
+  if (userData.participatedEvents.includes(eventType)) {
+      return interaction.reply({ content: `> \`❗\` » Du hast bereits am **${eventType}** Event teilgenommen!`, ephemeral: true });
+  }
+
+  // Belohnung für das Event
+  let rewardMessage = '';
+  const eventRewards = seasonEventRewards[eventType]; // Belohnungen für das Event holen
+  
+  if (!eventRewards) {
+      return interaction.reply({ content: `> \`❌\` » Das Event **${eventType}** ist zurzeit nicht verfügbar!`, ephemeral: true });
+  }
+
+  // Belohnungssystem verarbeiten
+  userData.participatedEvents.push(eventType);
+  await userData.save();
+
+  // Belohnung für das Event definieren
+  switch (eventRewards.type) {
+      case 'coins':
+          rewardMessage = `> \`🎉\` » Du hast **${eventRewards.value} Coins** erhalten!`;
+          break;
+      
+      case 'role':
+          const role = interaction.guild.roles.cache.find(r => r.id === eventRewards.value);
+          if (role) {
+              await interaction.member.roles.add(role);
+              rewardMessage = `> \`🎉\` » Du hast die Rolle **<@&${role.id}>** erhalten!`;
+          } else {
+              rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
+          }
+          break;
+
+      case 'custom':
+          rewardMessage = eventRewards.value || '> `🎁` » Keine spezifische Belohnung verfügbar.';
+          break;
+
+      default:
+          rewardMessage = `> \`🎁\` » Keine Belohnung für das Event **${eventType}** verfügbar.`;
+  }
+
+  // Antwort mit der Belohnung
+  return interaction.reply({ content: rewardMessage, ephemeral: true });
+}
