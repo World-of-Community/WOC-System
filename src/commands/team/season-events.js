@@ -44,7 +44,7 @@ module.exports = {
         startDate: '2024-12-27T00:00:00Z',
         endDate: '2024-01-02T23:59:59Z',
       },
-      default: {
+      collector: { // Wenn kein Season event stattfindet
         embed: new EmbedBuilder()
           .setDescription('**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
           .setColor('Red'),
