@@ -42,65 +42,110 @@ module.exports = {
         .setLabel('Eventitem einsammeln')
         .setStyle(ButtonStyle.Success)
     );
+  }}
 
-    if (!interaction.isButton()) return;
+//
 
-  // Embeds für die jeweiligen Events
-  const eventEmbeds = {
-    'event-ostern': new EmbedBuilder()
-      .setTitle('🌸 Ostern Event 🌸')
-      .setDescription('Das Ostern-Event findet am **9. April** statt.')
-      .setColor('Green')
-      .setImage('https://example.com/easter-image.png') // Beispielbild
-      .setFooter({ text: 'World Of Community | Frohe Ostern!' }),
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 
-    'event-halloween': new EmbedBuilder()
-      .setTitle('🎃 Halloween Event 🎃')
-      .setDescription('Das Halloween-Event findet am **31. Oktober** statt.')
-      .setColor('Orange')
-      .setImage('https://example.com/halloween-image.png')
-      .setFooter({ text: 'World Of Community | Happy Halloween!' }),
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('season-events')
+    .setDescription('Zeigt die aktuellen Season-Events an'),
 
-    'event-weihnachten': new EmbedBuilder()
-      .setTitle('🎄 Weihnachts-Event 🎄')
-      .setDescription('Das Weihnachts-Event beginnt am **24. Dezember**.')
-      .setColor('Red')
-      .setImage('https://example.com/christmas-image.png')
-      .setFooter({ text: 'World Of Community | Frohe Weihnachten!' }),
+  async execute(interaction) {
+    let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
-    'event-silvester': new EmbedBuilder()
-      .setTitle('🎆 Silvester-Event 🎆')
-      .setDescription('Das Silvester-Event findet am **31. Dezember** statt.')
-      .setColor('Blue')
-      .setImage('https://example.com/newyear-image.png')
-      .setFooter({ text: 'World Of Community | Guten Rutsch ins neue Jahr!' }),
-  };
+    // Embeds für verschiedene Events
+    const eventEmbeds = {
+      ostern: new EmbedBuilder()
+        .setTitle('🌸 Ostern-Event 🌸')
+        .setDescription('Feiere Ostern mit uns und sammle Ostereier!')
+        .setColor('Yellow')
+        .setImage('https://example.com/ostern-image.png'),
 
-  // Interaktion basierend auf Button-ID
-  if (eventEmbeds[interaction.customId]) {
-    // Neues Embed senden, wenn ein Event-Button gedrückt wird
-    await interaction.reply({
-      embeds: [eventEmbeds[interaction.customId]],
-      ephemeral: true, // Nur für den klickenden User sichtbar
+      halloween: new EmbedBuilder()
+        .setTitle('🎃 Halloween-Event 🎃')
+        .setDescription('Das gruseligste Event des Jahres ist hier!')
+        .setColor('Orange')
+        .setImage('https://example.com/halloween-image.png'),
+
+      weihnachten: new EmbedBuilder()
+        .setTitle('🎄 Weihnachts-Event 🎄')
+        .setDescription('Genieße die festliche Zeit mit Geschenken und Überraschungen!')
+        .setColor('Green')
+        .setImage('https://example.com/weihnachten-image.png'),
+
+      silvester: new EmbedBuilder()
+        .setTitle('🎆 Silvester-Event 🎆')
+        .setDescription('Feiere den Jahreswechsel mit einem großen Feuerwerk!')
+        .setColor('Blue')
+        .setImage('https://example.com/silvester-image.png')
+    };
+
+    // Haupt-Embed
+    const mainEmbed = new EmbedBuilder()
+      .setTitle('💛 Season-Events 💛')
+      .setDescription(`**Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\``)
+      .setColor('Blurple')
+      .setImage('https://example.com/main-event-image.png')
+      .setFooter({ text: 'World Of Community | Bleibt Gesund 💛' });
+
+    // Buttons
+    const firstRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('event-ostern')
+        .setLabel('» Ostern')
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId('event-halloween')
+        .setLabel('» Halloween')
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId('event-weihnachten')
+        .setLabel('🎄 » Weihnachten')
+        .setStyle(ButtonStyle.Success),
+      new ButtonBuilder()
+        .setCustomId('event-silvester')
+        .setLabel('🎆 » Silvester')
+        .setStyle(ButtonStyle.Secondary)
+    );
+
+    const secondRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('collect-event-item')
+        .setLabel('Eventitem einsammeln')
+        .setStyle(ButtonStyle.Success)
+    );
+
+    await interaction.reply({ embeds: [mainEmbed], components: [firstRow, secondRow] });
+
+    const collector = interaction.channel.createMessageComponentCollector({ time: 60000 });
+
+    collector.on('collect', async (buttonInteraction) => {
+      if (!buttonInteraction.isButton()) return;
+
+      const eventKey = buttonInteraction.customId.replace('event-', '');
+      if (eventEmbeds[eventKey]) {
+        aktuellesEvent = eventKey.charAt(0).toUpperCase() + eventKey.slice(1);
+
+        const updatedEmbed = new EmbedBuilder()
+          .setTitle('💛 Season-Events 💛')
+          .setDescription(`**Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\``)
+          .setColor('Blurple')
+          .setImage(eventEmbeds[eventKey].data.image.url)
+          .setFooter({ text: 'World Of Community | Bleibt Gesund 💛' });
+
+        await buttonInteraction.update({ embeds: [updatedEmbed] });
+      }
     });
-  } else if (interaction.customId === 'collect-event-item') {
-    // Eventitem einsammeln
-    await interaction.reply({
-      content: 'Du hast erfolgreich dein Eventitem eingesammelt!',
-      ephemeral: true,
-    });
-  } else {
-    // Unbekannter Button
-    await interaction.reply({
-      content: 'Unbekannter Button!',
-      ephemeral: true,
+
+    collector.on('end', () => {
+      // Optional: Buttons deaktivieren, wenn der Collector endet
+      firstRow.components.forEach((button) => button.setDisabled(true));
+      secondRow.components.forEach((button) => button.setDisabled(true));
+      interaction.editReply({ components: [firstRow, secondRow] });
     });
   }
-
-    // Nachricht senden
-    await interaction.reply({
-      embeds: [embed],
-      components: [firstRow, secondRow],
-    });
-  },
 };
+
