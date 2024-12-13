@@ -44,7 +44,7 @@ module.exports = {
         startDate: '2024-12-27T00:00:00Z',
         endDate: '2024-01-02T23:59:59Z',
       },
-      collector: { // Wenn kein Season event stattfindet
+      collector: {
         embed: new EmbedBuilder()
           .setDescription('**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
           .setColor('Red'),
@@ -106,7 +106,12 @@ module.exports = {
       if (buttonInteraction.customId.startsWith('event-')) {
         const eventKey = buttonInteraction.customId.replace('event-', '');
         if (eventEmbeds[eventKey]) {
-          await buttonInteraction.reply({ embeds: [eventEmbeds[eventKey].embed], ephemeral: true });
+          // Wenn kein Event aktiv ist, die 'kein Event' Nachricht senden
+          if (aktuellesEvent === 'Aktuell findet kein "Season-Event" statt!') {
+            await buttonInteraction.reply({ embeds: [eventEmbeds.collector.embed], ephemeral: true });
+          } else {
+            await buttonInteraction.reply({ embeds: [eventEmbeds[eventKey].embed], ephemeral: true });
+          }
         }
       } else if (buttonInteraction.customId === 'collect-event-item') {
         await buttonInteraction.reply({ content: '> `🎁` » Du hast ein Event-Item eingesammelt!', ephemeral: true });
