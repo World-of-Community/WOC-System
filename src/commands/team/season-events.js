@@ -10,41 +10,43 @@ module.exports = {
   async execute(interaction) {
     let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
+    // Hilfsfunktion für Unix-Timestamp
+    const formatUnixTimestamp = (dateStr) => {
+      const date = new Date(dateStr);
+      return Math.floor(date.getTime() / 1000); // Unix-Timestamp in Sekunden
+    };
+
     // Embeds für verschiedene Events
     const eventEmbeds = {
       ostern: {
         embed: new EmbedBuilder()
           .setTitle('🌸 Oster-Event 🌸')
-          .setDescription('Feiere Ostern mit uns und sammle Ostereier!')
-          .setColor('Green')
-          .setImage('https://example.com/ostern.png'),
+          .setDescription('**Dieses Event startet erst zwischen den Monaten `März` und `April!**')
+          .setColor('Green'),
         startDate: '2024-04-01T00:00:00Z',
         endDate: '2024-04-30T23:59:59Z',
       },
       halloween: {
         embed: new EmbedBuilder()
           .setTitle('🎃 Halloween-Event 🎃')
-          .setDescription('Das gruseligste Event des Jahres ist hier!')
-          .setColor('Orange')
-          .setImage('https://example.com/halloween.png'),
+          .setDescription('**Dieses Event findet erst zwischen dem `27.Oktober` und dem `02.November` statt!**')
+          .setColor('Orange'),
         startDate: '2024-10-01T00:00:00Z',
         endDate: '2024-10-31T23:59:59Z',
       },
       weihnachten: {
         embed: new EmbedBuilder()
           .setTitle('🎄 Weihnachts-Event 🎄')
-          .setDescription('Genieße die festliche Zeit mit Geschenken und Überraschungen!')
-          .setColor('Green')
-          .setImage('https://example.com/weihnachten.png'),
+          .setDescription('**Dieses Event findet erst zwischen dem `20.Dezember` und dem `26.Dezember` statt!**')
+          .setColor('Green'),
         startDate: '2024-12-01T00:00:00Z',
         endDate: '2024-12-31T23:59:59Z',
       },
       silvester: {
         embed: new EmbedBuilder()
           .setTitle('🎆 Silvester-Event 🎆')
-          .setDescription('Feiere den Jahreswechsel mit einem großen Feuerwerk!')
-          .setColor('Blue')
-          .setImage('https://example.com/silvester.png'),
+          .setDescription('**Dieses Event findet erst zwischen dem `27.Dezember` und dem `02.Januar` statt!**')
+          .setColor('Blue'),
         startDate: '2024-12-31T00:00:00Z',
         endDate: '2024-12-31T23:59:59Z',
       },
@@ -84,10 +86,13 @@ module.exports = {
         const endDate = new Date(details.endDate);
 
         if (now >= startDate && now <= endDate) {
-          aktuellesEvent = details.embed.data.title;
+          aktuellesEvent = details.embed.data.title; // Nur den Titel des Events übernehmen
           SeasonEmbed.setDescription(`> **Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\``)
             .setImage(details.embed.data.image.url)
-            .setColor(details.embed.data.color);
+            .setColor(details.embed.data.color)
+            .setFooter({
+              text: `Start: ${formatUnixTimestamp(details.startDate)} | Ende: ${formatUnixTimestamp(details.endDate)}`,
+            });
           break;
         }
       }
