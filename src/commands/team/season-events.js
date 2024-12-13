@@ -47,17 +47,7 @@ module.exports = {
         .setStyle(ButtonStyle.Success)
     );
 
-    // Nachricht senden
-    await interaction.reply({
-      embeds: [embed],
-      components: [firstRow, secondRow],
-    });
-  },
-};
-
-// Event Interaktion
-client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isButton()) return;
+    if (!interaction.isButton()) return;
 
   // Embeds für die jeweiligen Events
   const eventEmbeds = {
@@ -110,4 +100,11 @@ client.on('interactionCreate', async (interaction) => {
       ephemeral: true,
     });
   }
-});
+
+    // Nachricht senden
+    await interaction.reply({
+      embeds: [embed],
+      components: [firstRow, secondRow],
+    });
+  },
+};
