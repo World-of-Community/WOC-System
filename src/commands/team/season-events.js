@@ -66,7 +66,8 @@ module.exports = {
         .setStyle(ButtonStyle.Success)
     );
 
-    await interaction.reply({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
+    await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] })
+    await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
     const collector = interaction.channel.createMessageComponentCollector({ time: 60000 });
 
