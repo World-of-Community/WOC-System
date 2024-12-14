@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const cron = require('node-cron'); // Cron-Modul einbinden
+const cron = require('node-cron');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,7 +10,6 @@ module.exports = {
   async execute(interaction) {
     let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
-    // Embeds für verschiedene Events
     const eventEmbeds = {
       ostern: {
         embed: new EmbedBuilder()
@@ -19,6 +18,7 @@ module.exports = {
           .setColor('Green'),
         startDate: '2024-03-01T00:00:00Z',
         endDate: '2024-04-30T23:59:59Z',
+        rewards: { type: 'coins', value: 150 },
       },
       halloween: {
         embed: new EmbedBuilder()
@@ -27,31 +27,16 @@ module.exports = {
           .setColor('Orange'),
         startDate: '2024-10-27T00:00:00Z',
         endDate: '2024-11-02T23:59:59Z',
+        rewards: { type: 'role', value: '123456789012345678' }, // Beispiel-Rollen-ID
       },
-      weihnachten: {
-        embed: new EmbedBuilder()
-          .setTitle('`🎄` Weihnachts-Event `🎄`')
-          .setDescription('**Dieses Event findet erst zwischen dem `20.Dezember` und dem `26.Dezember` statt!**')
-          .setColor('Green'),
-        startDate: '2024-12-20T00:00:00Z',
-        endDate: '2024-12-26T23:59:59Z',
-      },
-      silvester: {
-        embed: new EmbedBuilder()
-          .setTitle('`🎆` Silvester-Event `🎆`')
-          .setDescription('**Dieses Event findet erst zwischen dem `27.Dezember` und dem `02.Januar` statt!**')
-          .setColor('Blue'),
-        startDate: '2024-12-27T00:00:00Z',
-        endDate: '2024-01-02T23:59:59Z',
-      },
-      collector: {
+      default: {
         embed: new EmbedBuilder()
           .setDescription('**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
           .setColor('Red'),
+        rewards: null,
       },
     };
 
-    // Haupt-Embed
     const SeasonEmbed = new EmbedBuilder()
       .setTitle('🧡 Season-Events 🧡')
       .setDescription(`> **Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\``)
@@ -59,12 +44,9 @@ module.exports = {
       .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png')
       .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 🧡`, iconURL: interaction.guild.iconURL() });
 
-    // Buttons
     const firstRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId('event-ostern').setLabel('🐇 » Ostern').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId('event-halloween').setLabel('🎃 » Halloween').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId('event-weihnachten').setLabel('🎄 » Weihnachten').setStyle(ButtonStyle.Success),
-      new ButtonBuilder().setCustomId('event-silvester').setLabel('🎆 » Silvester').setStyle(ButtonStyle.Secondary)
+      new ButtonBuilder().setCustomId('event-halloween').setLabel('🎃 » Halloween').setStyle(ButtonStyle.Primary)
     );
 
     const secondRow = new ActionRowBuilder().addComponents(
@@ -74,24 +56,19 @@ module.exports = {
     await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
     const sentMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
 
-    // Cron-Job für tägliches Update um 0 Uhr
     cron.schedule('0 0 * * *', () => {
       const now = new Date();
       aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
-      // Überprüfen, welches Event gerade aktiv ist
       for (const [key, details] of Object.entries(eventEmbeds)) {
         const startDate = new Date(details.startDate);
         const endDate = new Date(details.endDate);
 
         if (now >= startDate && now <= endDate) {
-          aktuellesEvent = details.embed.data.title; // Nur den Titel des Events übernehmen
+          aktuellesEvent = details.embed.data.title;
           SeasonEmbed.setDescription(`> **Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\``)
-            .setImage(details.embed.data.image.url)
-            .setColor(details.embed.data.color)
-            .setFooter({
-              text: `Start: ${startDate.toLocaleString()} | Ende: ${endDate.toLocaleString()}`, // Start und Ende als Datum
-            });
+            .setImage(details.embed.data.image?.url || null)
+            .setColor(details.embed.data.color);
           break;
         }
       }
@@ -99,89 +76,52 @@ module.exports = {
       sentMessage.edit({ embeds: [SeasonEmbed] });
     });
 
-    // Eventhandler für Buttons
     const collector = sentMessage.createMessageComponentCollector();
 
     collector.on('collect', async (buttonInteraction) => {
-      if (buttonInteraction.customId.startsWith('event-')) {
-        const eventKey = buttonInteraction.customId.replace('event-', '');
-        if (eventEmbeds[eventKey]) {
-          // Wenn kein Event aktiv ist, die 'kein Event' Nachricht senden
-          if (aktuellesEvent === 'Aktuell findet kein "Season-Event" statt!') {
-            await buttonInteraction.reply({ embeds: [eventEmbeds.collector.embed], ephemeral: true });
-          } else {
-            await buttonInteraction.reply({ embeds: [eventEmbeds[eventKey].embed], ephemeral: true });
+      const eventKey = buttonInteraction.customId.replace('event-', '');
+
+      if (eventEmbeds[eventKey]) {
+        const eventDetails = eventEmbeds[eventKey];
+        const now = new Date();
+        const startDate = new Date(eventDetails.startDate);
+        const endDate = new Date(eventDetails.endDate);
+
+        if (now >= startDate && now <= endDate) {
+          const eventRewards = eventDetails.rewards;
+          let rewardMessage;
+
+          switch (eventRewards.type) {
+            case 'coins':
+              rewardMessage = `> \`🎉\` » Du hast **${eventRewards.value} Coins** für das Event **${eventKey}** erhalten!`;
+              break;
+
+            case 'role':
+              const role = interaction.guild.roles.cache.find(r => r.id === eventRewards.value);
+              if (role) {
+                await buttonInteraction.member.roles.add(role);
+                rewardMessage = `> \`🎉\` » Du hast die Rolle **<@&${role.id}>** für das Event **${eventKey}** erhalten!`;
+              } else {
+                rewardMessage = '> \`❗\` » Die Rolle wurde nicht gefunden. Bitte melde dich im Support.';
+              }
+              break;
+
+            default:
+              rewardMessage = `> \`🎁\` » Keine Belohnung für das Event **${eventKey}** verfügbar.`;
           }
+
+          await buttonInteraction.reply({ content: rewardMessage, ephemeral: true });
+        } else {
+          
+          const Eventitem = newEmbedBuilder()
+            .setDescription('> \`❌\` » Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!')
+            .setColor('Red')
+
+            await interaction.reply({ embeds: [Eventitem], ephemeral: true });
         }
       } else if (buttonInteraction.customId === 'collect-event-item') {
-        await buttonInteraction.reply({ content: '> `🎁` » Du hast ein Event-Item eingesammelt!', ephemeral: true });
-      } else if (buttonInteraction.customId === 'collect-event-item') {
-        const eventItemEmbed = new EmbedBuilder()
-          .setTitle('🎁 Du hast ein Event-Item eingesammelt!')
-          .setDescription('**Du hast erfolgreich ein Event-Item gesammelt. Viel Spaß beim nächsten Event!**')
-          .setColor('Gold')
-          .setFooter({ text: 'Bleibt gesund und viel Spaß!' });
-
-          await buttonInteraction.reply({ embeds: [eventItemEmbed], ephemeral: true });
+        await buttonInteraction.reply({ content: '> \`🎁\` » Du hast ein Event-Item eingesammelt!', ephemeral: true });
       }
     });
   },
 };
-
-// Button-Interaktion verarbeiten (Season Event System)
-if (interaction.isButton() && interaction.customId.startsWith('season_event_')) {
-  const currentDate = new Date();
-  const currentDay = currentDate.getDate();
-  const currentMonth = currentDate.getMonth() + 1; // Monate sind 0-basiert, daher +1
-  const [, eventType] = interaction.customId.split('_'); // Extrahiert den Event-Typ
-  
-  // Datenbankeintrag für den Benutzer überprüfen
-  let userData = await SeasonEvents.findOne({ userId: interaction.user.id });
-  if (!userData) {
-      userData = await SeasonEvents.create({ userId: interaction.user.id, participatedEvents: [] });
-  }
-
-  // Überprüfen, ob der Benutzer bereits am Event teilgenommen hat
-  if (userData.participatedEvents.includes(eventType)) {
-      return interaction.reply({ content: `> \`❗\` » Du hast bereits am **${eventType}** Event teilgenommen!`, ephemeral: true });
-  }
-
-  // Belohnung für das Event
-  let rewardMessage = '';
-  const eventRewards = seasonEventRewards[eventType]; // Belohnungen für das Event holen
-  
-  if (!eventRewards) {
-      return interaction.reply({ content: `> \`❌\` » Das Event **${eventType}** ist zurzeit nicht verfügbar!`, ephemeral: true });
-  }
-
-  // Belohnungssystem verarbeiten
-  userData.participatedEvents.push(eventType);
-  await userData.save();
-
-  // Belohnung für das Event definieren
-  switch (eventRewards.type) {
-      case 'coins':
-          rewardMessage = `> \`🎉\` » Du hast **${eventRewards.value} Coins** erhalten!`;
-          break;
-      
-      case 'role':
-          const role = interaction.guild.roles.cache.find(r => r.id === eventRewards.value);
-          if (role) {
-              await interaction.member.roles.add(role);
-              rewardMessage = `> \`🎉\` » Du hast die Rolle **<@&${role.id}>** erhalten!`;
-          } else {
-              rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
-          }
-          break;
-
-      case 'custom':
-          rewardMessage = eventRewards.value || '> `🎁` » Keine spezifische Belohnung verfügbar.';
-          break;
-
-      default:
-          rewardMessage = `> \`🎁\` » Keine Belohnung für das Event **${eventType}** verfügbar.`;
-  }
-
-  // Antwort mit der Belohnung
-  return interaction.reply({ content: rewardMessage, ephemeral: true });
-}
