@@ -96,7 +96,7 @@ module.exports = {
       } else if (buttonInteraction.customId === 'collect-event-item') {
         const isEventActive = aktuellesEvent !== 'Aktuell findet kein "Season-Event" statt!';
         const eventItemEmbed = new EmbedBuilder()
-          .setDescription(isEventActive ? '`🎁` » Du hast ein Event-Item eingesammelt!' : '`❌` » **Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
+          .setDescription(isEventActive ? 'Du hast ein Event-Item eingesammelt!' : '**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
           .setColor(isEventActive ? 'Green' : 'Red');
 
         await buttonInteraction.reply({ embeds: [eventItemEmbed], ephemeral: true });
