@@ -90,16 +90,18 @@ module.exports = {
 
     collector.on('collect', async (buttonInteraction) => {
       const eventKey = buttonInteraction.customId.replace('event-', '');
+
       if (eventEmbeds[eventKey]) {
         await buttonInteraction.reply({ embeds: [eventEmbeds[eventKey].embed], ephemeral: true });
       } else if (buttonInteraction.customId === 'collect-event-item') {
+        const isEventActive = aktuellesEvent !== 'Aktuell findet kein "Season-Event" statt!';
         const eventItemEmbed = new EmbedBuilder()
-          .setTitle('🎁 Du hast ein Event-Item eingesammelt!')
-          .setDescription('**Du hast erfolgreich ein Event-Item gesammelt. Viel Spaß beim nächsten Event!**')
-          .setColor('Gold')
-          .setFooter({ text: 'Bleibt gesund und viel Spaß!' });
+          .setDescription(isEventActive ? '> `🎁` » Du hast ein Event-Item eingesammelt!' : '> `❌` » **Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
+          .setColor(isEventActive ? 'Green' : 'Red');
 
         await buttonInteraction.reply({ embeds: [eventItemEmbed], ephemeral: true });
+      } else {
+        await buttonInteraction.reply({ content: '> `❓` » Unbekannte Aktion.', ephemeral: true });
       }
     });
   },
