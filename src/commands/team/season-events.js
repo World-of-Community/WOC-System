@@ -8,16 +8,8 @@ let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 const eventEmbeds = {
   ostern: {
     embed: new EmbedBuilder()
-      .setTitle('`🌸` Oster-Event `🌸`')
-      .setDescription('**Dieses Event startet erst zwischen den Monaten `März` und `April!`**')
-      .setColor('Green'),
-    startDate: '2024-03-01T00:00:00Z',
-    endDate: '2024-04-30T23:59:59Z',
-  },
-  ostern: {
-    embed: new EmbedBuilder()
       .setTitle('🌸 Oster-Event 🌸')
-      .setDescription('**Dieses Event startet erst zwischen den Monaten März und April!**')
+      .setDescription('**Dieses Event startet zwischen März und April!**')
       .setColor('Green'),
     startDate: '2024-03-01T00:00:00Z',
     endDate: '2024-04-30T23:59:59Z',
@@ -25,7 +17,7 @@ const eventEmbeds = {
   halloween: {
     embed: new EmbedBuilder()
       .setTitle('🎃 Halloween-Event 🎃')
-      .setDescription('**Dieses Event findet erst zwischen dem 27.Oktober und dem 02.November statt!**')
+      .setDescription('**Dieses Event findet zwischen dem 27. Oktober und dem 2. November statt!**')
       .setColor('Orange'),
     startDate: '2024-10-27T00:00:00Z',
     endDate: '2024-11-02T23:59:59Z',
@@ -33,7 +25,7 @@ const eventEmbeds = {
   weihnachten: {
     embed: new EmbedBuilder()
       .setTitle('🎄 Weihnachts-Event 🎄')
-      .setDescription('**Dieses Event findet erst zwischen dem 20.Dezember und dem 26.Dezember statt!**')
+      .setDescription('**Dieses Event findet zwischen dem 20. und 26. Dezember statt!**')
       .setColor('Green'),
     startDate: '2024-12-20T00:00:00Z',
     endDate: '2024-12-26T23:59:59Z',
@@ -41,7 +33,7 @@ const eventEmbeds = {
   silvester: {
     embed: new EmbedBuilder()
       .setTitle('🎆 Silvester-Event 🎆')
-      .setDescription('**Dieses Event findet erst zwischen dem 27.Dezember und dem 02.Januar statt!**')
+      .setDescription('**Dieses Event findet zwischen dem 27. Dezember und dem 2. Januar statt!**')
       .setColor('Blue'),
     startDate: '2024-12-27T00:00:00Z',
     endDate: '2024-01-02T23:59:59Z',
@@ -64,19 +56,24 @@ module.exports = {
 
     const firstRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId('event-ostern').setLabel('🐇 » Ostern').setStyle(ButtonStyle.Primary),
-      // Other buttons remain unchanged
+      new ButtonBuilder().setCustomId('event-halloween').setLabel('🎃 » Halloween').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('event-weihnachten').setLabel('🎄 » Weihnachten').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('event-silvester').setLabel('🎆 » Silvester').setStyle(ButtonStyle.Primary),
     );
 
     const secondRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('collect-event-item').setLabel('🎁 » Eventitem einsammeln').setStyle(ButtonStyle.Success)
+      new ButtonBuilder()
+        .setCustomId('collect-event-item')
+        .setLabel('🎁 » Eventitem einsammeln')
+        .setStyle(ButtonStyle.Success)
     );
 
     await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
+
     activeMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
 
-    // Cron-Job for Daily Updates
     if (!cronInitialized) {
-      cron.schedule('0 0 * * *', () => {
+      cron.schedule('0 0 * * *', async () => {
         const now = new Date();
         aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
@@ -91,7 +88,13 @@ module.exports = {
           }
         }
 
-        activeMessage.edit({ embeds: [SeasonEmbed] });
+        if (activeMessage) {
+          try {
+            await activeMessage.edit({ embeds: [SeasonEmbed] });
+          } catch (error) {
+            console.error('Fehler beim Bearbeiten der Nachricht:', error);
+          }
+        }
       });
 
       cronInitialized = true;
@@ -108,7 +111,11 @@ module.exports = {
     } else if (interaction.customId === 'collect-event-item') {
       const isEventActive = aktuellesEvent !== 'Aktuell findet kein "Season-Event" statt!';
       const eventItemEmbed = new EmbedBuilder()
-        .setDescription(isEventActive ? '> `🎁` » Du hast ein Event-Item eingesammelt!' : '> `❌` » **Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
+        .setDescription(
+          isEventActive
+            ? '> `🎁` » Du hast ein Event-Item eingesammelt!'
+            : '> `❌` » **Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**'
+        )
         .setColor(isEventActive ? 'Green' : 'Red');
 
       await interaction.reply({ embeds: [eventItemEmbed], ephemeral: true });
