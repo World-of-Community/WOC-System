@@ -18,7 +18,6 @@ module.exports = {
           .setColor('Green'),
         startDate: '2024-03-01T00:00:00Z',
         endDate: '2024-04-30T23:59:59Z',
-        rewards: { type: 'coins', value: 150 },
       },
       halloween: {
         embed: new EmbedBuilder()
@@ -27,7 +26,22 @@ module.exports = {
           .setColor('Orange'),
         startDate: '2024-10-27T00:00:00Z',
         endDate: '2024-11-02T23:59:59Z',
-        rewards: { type: 'role', value: '123456789012345678' }, // Beispiel-Rollen-ID
+      },
+      weihnachten: {
+        embed: new EmbedBuilder()
+          .setTitle('`🎄` Weihnachts-Event `🎄`')
+          .setDescription('**Dieses Event findet erst zwischen dem `20.Dezember` und dem `26.Dezember` statt!**')
+          .setColor('Green'),
+        startDate: '2024-12-20T00:00:00Z',
+        endDate: '2024-12-26T23:59:59Z',
+      },
+      silvester: {
+        embed: new EmbedBuilder()
+          .setTitle('`🎆` Silvester-Event `🎆`')
+          .setDescription('**Dieses Event findet erst zwischen dem `27.Dezember` und dem `02.Januar` statt!**')
+          .setColor('Blue'),
+        startDate: '2024-12-27T00:00:00Z',
+        endDate: '2024-01-02T23:59:59Z',
       },
       default: {
         embed: new EmbedBuilder()
