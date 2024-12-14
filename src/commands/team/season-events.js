@@ -14,7 +14,38 @@ const eventEmbeds = {
     startDate: '2024-03-01T00:00:00Z',
     endDate: '2024-04-30T23:59:59Z',
   },
-  // Other events remain unchanged
+  ostern: {
+    embed: new EmbedBuilder()
+      .setTitle('🌸 Oster-Event 🌸')
+      .setDescription('**Dieses Event startet erst zwischen den Monaten März und April!**')
+      .setColor('Green'),
+    startDate: '2024-03-01T00:00:00Z',
+    endDate: '2024-04-30T23:59:59Z',
+  },
+  halloween: {
+    embed: new EmbedBuilder()
+      .setTitle('🎃 Halloween-Event 🎃')
+      .setDescription('**Dieses Event findet erst zwischen dem 27.Oktober und dem 02.November statt!**')
+      .setColor('Orange'),
+    startDate: '2024-10-27T00:00:00Z',
+    endDate: '2024-11-02T23:59:59Z',
+  },
+  weihnachten: {
+    embed: new EmbedBuilder()
+      .setTitle('🎄 Weihnachts-Event 🎄')
+      .setDescription('**Dieses Event findet erst zwischen dem 20.Dezember und dem 26.Dezember statt!**')
+      .setColor('Green'),
+    startDate: '2024-12-20T00:00:00Z',
+    endDate: '2024-12-26T23:59:59Z',
+  },
+  silvester: {
+    embed: new EmbedBuilder()
+      .setTitle('🎆 Silvester-Event 🎆')
+      .setDescription('**Dieses Event findet erst zwischen dem 27.Dezember und dem 02.Januar statt!**')
+      .setColor('Blue'),
+    startDate: '2024-12-27T00:00:00Z',
+    endDate: '2024-01-02T23:59:59Z',
+  },
 };
 
 module.exports = {
