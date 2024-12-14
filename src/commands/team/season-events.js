@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const cron = require('node-cron');
-const fs = require('fs'); // Für die Speicherung der Nachricht-ID
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,7 +9,6 @@ module.exports = {
 
   async execute(interaction) {
     let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
-    const messageIdFile = './seasonMessageId.json'; // Datei zur Speicherung der Nachricht-ID
 
     // Embeds für verschiedene Events
     const eventEmbeds = {
@@ -66,23 +64,13 @@ module.exports = {
       new ButtonBuilder().setCustomId('collect-event-item').setLabel('🎁 » Eventitem einsammeln').setStyle(ButtonStyle.Success)
     );
 
-    let sentMessage;
-
     // Überprüfen, ob die Nachricht bereits existiert
-    if (fs.existsSync(messageIdFile)) {
-      const savedData = JSON.parse(fs.readFileSync(messageIdFile, 'utf-8'));
-      try {
-        sentMessage = await interaction.channel.messages.fetch(savedData.messageId);
-      } catch {
-        // Nachricht existiert nicht mehr
-        sentMessage = null;
-      }
-    }
+    const messages = await interaction.channel.messages.fetch({ limit: 100 });
+    let sentMessage = messages.find(msg => msg.embeds[0]?.title === '🧡 Season-Events 🧡');
 
     if (!sentMessage) {
-      // Sende neue Nachricht und speichere die ID
+      // Sende neue Nachricht
       sentMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
-      fs.writeFileSync(messageIdFile, JSON.stringify({ messageId: sentMessage.id }));
     }
 
     await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich aktualisiert.', ephemeral: true });
@@ -104,26 +92,6 @@ module.exports = {
       }
 
       sentMessage.edit({ embeds: [SeasonEmbed] });
-    });
-
-    // Button-Collector
-    const collector = sentMessage.createMessageComponentCollector();
-
-    collector.on('collect', async (buttonInteraction) => {
-      const eventKey = buttonInteraction.customId.replace('event-', '');
-
-      if (eventEmbeds[eventKey]) {
-        await buttonInteraction.reply({ embeds: [eventEmbeds[eventKey].embed], ephemeral: true });
-      } else if (buttonInteraction.customId === 'collect-event-item') {
-        const isEventActive = aktuellesEvent !== 'Aktuell findet kein "Season-Event" statt!';
-        const eventItemEmbed = new EmbedBuilder()
-          .setDescription(isEventActive ? 'Du hast ein Event-Item eingesammelt!' : '**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
-          .setColor(isEventActive ? 'Green' : 'Red');
-
-        await buttonInteraction.reply({ embeds: [eventItemEmbed], ephemeral: true });
-      } else {
-        await buttonInteraction.reply({ content: '> `❓` » Unbekannte Aktion.', ephemeral: true });
-      }
     });
   },
 };
