@@ -113,7 +113,7 @@ module.exports = {
           await buttonInteraction.reply({ content: rewardMessage, ephemeral: true });
         } else {
           
-          const Eventitem = newEmbedBuilder()
+          const Eventitem = new EmbedBuilder()
             .setDescription('> \`❌\` » Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!')
             .setColor('Red')
 
