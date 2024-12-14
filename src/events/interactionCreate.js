@@ -36,23 +36,6 @@ module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
 
-        if (interaction.isCommand()) {
-            const command = client.commands.get(interaction.commandName);
-            if (command) {
-              try {
-                await command.execute(interaction);
-              } catch (error) {
-                console.error(error);
-                await interaction.reply({ content: 'Beim Ausführen des Befehls ist ein Fehler aufgetreten.', ephemeral: true });
-              }
-            }
-          } else if (interaction.isButton()) {
-            const command = client.commands.get('season-events');
-            if (command) {
-              await command.handleInteraction(interaction);
-            }
-          }
-
         // Button-Interaktion verarbeiten (Adventskalender System)
         if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
             const currentDay = new Date().getDate();
