@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const cron = require('node-cron');
+const fs = require('fs'); // Für die Speicherung der Nachricht-ID
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,6 +10,7 @@ module.exports = {
 
   async execute(interaction) {
     let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
+    const messageIdFile = './seasonMessageId.json'; // Datei zur Speicherung der Nachricht-ID
 
     // Embeds für verschiedene Events
     const eventEmbeds = {
@@ -64,11 +66,29 @@ module.exports = {
       new ButtonBuilder().setCustomId('collect-event-item').setLabel('🎁 » Eventitem einsammeln').setStyle(ButtonStyle.Success)
     );
 
-    await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
-    const sentMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
+    let sentMessage;
+
+    // Überprüfen, ob die Nachricht bereits existiert
+    if (fs.existsSync(messageIdFile)) {
+      const savedData = JSON.parse(fs.readFileSync(messageIdFile, 'utf-8'));
+      try {
+        sentMessage = await interaction.channel.messages.fetch(savedData.messageId);
+      } catch {
+        // Nachricht existiert nicht mehr
+        sentMessage = null;
+      }
+    }
+
+    if (!sentMessage) {
+      // Sende neue Nachricht und speichere die ID
+      sentMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
+      fs.writeFileSync(messageIdFile, JSON.stringify({ messageId: sentMessage.id }));
+    }
+
+    await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich aktualisiert.', ephemeral: true });
 
     // Cron-Job für tägliches Update
-    cron.schedule('0 0 * * *', () => {
+    cron.schedule('0 0 * * *', async () => {
       const now = new Date();
       aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
@@ -86,6 +106,7 @@ module.exports = {
       sentMessage.edit({ embeds: [SeasonEmbed] });
     });
 
+    // Button-Collector
     const collector = sentMessage.createMessageComponentCollector();
 
     collector.on('collect', async (buttonInteraction) => {
