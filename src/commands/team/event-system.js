@@ -33,13 +33,17 @@ module.exports = {
                     .setCustomId('newyear_event')
                     .setLabel('🎆 » Silvester')
                     .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('collect_event')
-                    .setLabel('Eventitem einsammeln')
-                    .setStyle(ButtonStyle.Success)
             );
+
+        const buttons2 = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+            .setCustomId('collect_event')
+            .setLabel('Eventitem einsammeln')
+            .setStyle(ButtonStyle.Success)
+        )
  
-        await interaction.channel.send({ embeds: [eventEmbed], components: [buttons] })
+        await interaction.channel.send({ embeds: [eventEmbed], components: [buttons, buttons2] })
         await interaction.reply({ content: '> `✅` » Das `Event-Embed` wurde erfolgreich gesendet', ephemeral: true });
     },
 };
