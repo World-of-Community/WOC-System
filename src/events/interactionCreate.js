@@ -102,13 +102,6 @@ module.exports = {
                   await interaction.followUp({ content: '> `✅` » Du hast erfolgreich ein Event-Item eingesammelt!', ephemeral: true });
                 }
                 break;
-          
-              default:
-                await interaction.reply({
-                  content: '> `❌` » Dieser Button wird aktuell nicht unterstützt!',
-                  ephemeral: true,
-                });
-                break;
             }
           }                 
 
