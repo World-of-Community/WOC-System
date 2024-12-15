@@ -5,41 +5,6 @@ let cronInitialized = false;
 let activeMessage; 
 let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
-//const eventEmbeds = {
-//  ostern: {
-//    embed: new EmbedBuilder()
-//      .setTitle('🌸 Oster-Event 🌸')
-//      .setDescription('**Dieses Event startet zwischen März und April!**')
-//      .setColor('Green'),
-//    startDate: '2024-03-01T00:00:00Z',
-//    endDate: '2024-04-30T23:59:59Z',
-//  },
-//  halloween: {
-//    embed: new EmbedBuilder()
-//      .setTitle('🎃 Halloween-Event 🎃')
-//      .setDescription('**Dieses Event findet zwischen dem 27. Oktober und dem 2. November statt!**')
-//      .setColor('Orange'),
-//    startDate: '2024-10-27T00:00:00Z',
-//    endDate: '2024-11-02T23:59:59Z',
-//  },
-//  weihnachten: {
-//    embed: new EmbedBuilder()
-//      .setTitle('🎄 Weihnachts-Event 🎄')
-//      .setDescription('**Dieses Event findet zwischen dem 20. und 26. Dezember statt!**')
-//      .setColor('Green'),
-//    startDate: '2024-12-20T00:00:00Z',
-//    endDate: '2024-12-26T23:59:59Z',
-//  },
-//  silvester: {
-//    embed: new EmbedBuilder()
-//      .setTitle('🎆 Silvester-Event 🎆')
-//      .setDescription('**Dieses Event findet zwischen dem 27. Dezember und dem 2. Januar statt!**')
-//      .setColor('Blue'),
-//    startDate: '2024-12-27T00:00:00Z',
-//    endDate: '2024-01-02T23:59:59Z',
-//  },
-//};
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('season-events')
@@ -55,15 +20,15 @@ module.exports = {
       .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 🧡`, iconURL: interaction.guild.iconURL() });
 
     const firstRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('event-ostern').setLabel('🐇 » Ostern').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId('event-halloween').setLabel('🎃 » Halloween').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId('event-weihnachten').setLabel('🎄 » Weihnachten').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId('event-silvester').setLabel('🎆 » Silvester').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('easter_event').setLabel('🐇 » Ostern').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('halloween_event').setLabel('🎃 » Halloween').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('christmas_event').setLabel('🎄 » Weihnachten').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('newyear_event').setLabel('🎆 » Silvester').setStyle(ButtonStyle.Primary),
     );
 
     const secondRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId('collect-event-item')
+        .setCustomId('collect_event')
         .setLabel('🎁 » Eventitem einsammeln')
         .setStyle(ButtonStyle.Success)
     );
@@ -101,3 +66,38 @@ module.exports = {
     }
   },
 };
+
+//const eventEmbeds = {
+//  ostern: {
+//    embed: new EmbedBuilder()
+//      .setTitle('🌸 Oster-Event 🌸')
+//      .setDescription('**Dieses Event startet zwischen März und April!**')
+//      .setColor('Green'),
+//    startDate: '2024-03-01T00:00:00Z',
+//    endDate: '2024-04-30T23:59:59Z',
+//  },
+//  halloween: {
+//    embed: new EmbedBuilder()
+//      .setTitle('🎃 Halloween-Event 🎃')
+//      .setDescription('**Dieses Event findet zwischen dem 27. Oktober und dem 2. November statt!**')
+//      .setColor('Orange'),
+//    startDate: '2024-10-27T00:00:00Z',
+//    endDate: '2024-11-02T23:59:59Z',
+//  },
+//  weihnachten: {
+//    embed: new EmbedBuilder()
+//      .setTitle('🎄 Weihnachts-Event 🎄')
+//      .setDescription('**Dieses Event findet zwischen dem 20. und 26. Dezember statt!**')
+//      .setColor('Green'),
+//    startDate: '2024-12-20T00:00:00Z',
+//    endDate: '2024-12-26T23:59:59Z',
+//  },
+//  silvester: {
+//    embed: new EmbedBuilder()
+//      .setTitle('🎆 Silvester-Event 🎆')
+//      .setDescription('**Dieses Event findet zwischen dem 27. Dezember und dem 2. Januar statt!**')
+//      .setColor('Blue'),
+//    startDate: '2024-12-27T00:00:00Z',
+//    endDate: '2024-01-02T23:59:59Z',
+//  },
+//};

@@ -38,76 +38,79 @@ module.exports = {
 
         if (interaction.isButton()) {
             const now = new Date();
-        
+          
             // Event-Zeitspannen
             const eventPeriods = {
-                easter: { start: new Date('2024-03-01T00:00:00Z'), end: new Date('2024-04-30T23:59:59Z') },
-                halloween: { start: new Date('2024-10-27T00:00:00Z'), end: new Date('2024-11-02T23:59:59Z') },
-                christmas: { start: new Date('2024-12-20T00:00:00Z'), end: new Date('2024-12-26T23:59:59Z') },
-                newyear: { start: new Date('2024-12-27T00:00:00Z'), end: new Date('2025-01-02T23:59:59Z') },
+              easter: { start: new Date('2024-03-01T00:00:00Z'), end: new Date('2024-04-30T23:59:59Z') },
+              halloween: { start: new Date('2024-10-27T00:00:00Z'), end: new Date('2024-11-02T23:59:59Z') },
+              christmas: { start: new Date('2024-12-20T00:00:00Z'), end: new Date('2024-12-26T23:59:59Z') },
+              newyear: { start: new Date('2024-12-27T00:00:00Z'), end: new Date('2025-01-02T23:59:59Z') },
             };
-        
+          
             // Aktuelle Event-Prüfung
             const isEventActive = (event) => now >= event.start && now <= event.end;
-        
+          
             switch (interaction.customId) {
-                case 'easter_event':
-                    const OsterEmbed = new EmbedBuilder()
-                        .setTitle('`🐇` Oster Event `🐇`')
-                        .setDescription(isEventActive(eventPeriods.easter) ? 'Das Oster-Event ist aktuell aktiv! Viel Spaß beim Sammeln der Oster-Eier!' : '**Dieses Event startet erst zwischen den Monaten `März` und `April`!')
-                        .setColor(isEventActive(eventPeriods.easter) ? 'Green' : 'Red');
-
-                    await interaction.reply({ embeds: [OsterEmbed], ephemeral: true });
-                    
-                    break;
-        
-                case 'halloween_event':
-                    const HalloweenEmbed = new EmbedBuilder()
-                        .setTitle('`🎃` Halloween Event `🎃`')
-                        .setDescription(isEventActive(eventPeriods.halloween) ? 'Das Halloween-Event ist aktiv! Viel Spaß beim Gruseln!' : 'Dieses Event findet erst zwischen dem `27. Oktober` und dem `02. November` statt!')
-                        .setColor(isEventActive(eventPeriods.halloween) ? 'Orange' : 'Red');
-                    
-                    await interaction.reply({ embeds: [HalloweenEmbed], ephemeral: true });
-                    
-                    break;
-        
-                case 'christmas_event':
-                    const WeihnachtsEmbed = new EmbedBuilder()
-                        .setTitle('`🎄` Weihnachts-Event `🎄`')
-                        .setDescription(isEventActive(eventPeriods.christmas) ? 'Das Weihnachts-Event ist aktiv! Genieße die festliche Stimmung!' : 'Dieses Event findet erst zwischen dem `20. Dezember` und dem `26. Dezember` statt!')
-                        .setColor(isEventActive(eventPeriods.christmas) ? 'Green' : 'Red');
-                    
-                    await interaction.reply({ embeds: [WeihnachtsEmbed], ephemeral: true });
-
-                    break;
-        
-                case 'newyear_event':
-                    const SilvesterEmbed = new EmbedBuilder()
-                        .setTitle('`🎆` Silvester Event `🎆`')
-                        .setDescription(isEventActive(eventPeriods.newyear) ? 'Das Silvester-Event ist aktiv! Feiere das neue Jahr mit uns!' : '**Dieses Event findet erst zwischen dem `27. Dezember` und dem `02. Januar` statt!')
-                        .setColor(isEventActive(eventPeriods.newyear) ? 'Blue' : 'Red');
-
-                    await interaction.reply({ embeds: [SilvesterEmbed], ephemeral: true });
-
-                    break;
-        
-                case 'collect_event':
-                    const activeEvent = Object.keys(eventPeriods).find((key) =>
-                        isEventActive(eventPeriods[key])
-                    );
-        
-                    const eventItemEmbed = new EmbedBuilder()
-                        .setDescription(activeEvent ? `**Du hast ein Item aus dem aktuellen Event (${activeEvent.toUpperCase()}-Event) eingesammelt!**` : '**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
-                        .setColor(activeEvent ? 'Green' : 'Red');
-        
-                    await interaction.reply({ embeds: [eventItemEmbed], ephemeral: true });
-        
-                    if (activeEvent) {
-                        await interaction.followUp({ content: '> `✅` » Du hast erfolgreich ein Event-Item eingesammelt!', ephemeral: true });
-                    }
-                    break;
+              case 'easter_event':
+                const OsterEmbed = new EmbedBuilder()
+                  .setTitle('`🐇` Oster Event `🐇`')
+                  .setDescription(isEventActive(eventPeriods.easter) ? 'Das Oster-Event ist aktuell aktiv! Viel Spaß beim Sammeln der Oster-Eier!' : '**Dieses Event startet erst zwischen den Monaten `März` und `April`!**')
+                  .setColor(isEventActive(eventPeriods.easter) ? 'Green' : 'Red');
+          
+                await interaction.reply({ embeds: [OsterEmbed], ephemeral: true });
+                break;
+          
+              case 'halloween_event':
+                const HalloweenEmbed = new EmbedBuilder()
+                  .setTitle('`🎃` Halloween Event `🎃`')
+                  .setDescription(isEventActive(eventPeriods.halloween) ? 'Das Halloween-Event ist aktiv! Viel Spaß beim Gruseln!' : 'Dieses Event findet erst zwischen dem `27. Oktober` und dem `02. November` statt!')
+                  .setColor(isEventActive(eventPeriods.halloween) ? 'Orange' : 'Red');
+          
+                await interaction.reply({ embeds: [HalloweenEmbed], ephemeral: true });
+                break;
+          
+              case 'christmas_event':
+                const WeihnachtsEmbed = new EmbedBuilder()
+                  .setTitle('`🎄` Weihnachts-Event `🎄`')
+                  .setDescription(isEventActive(eventPeriods.christmas) ? 'Das Weihnachts-Event ist aktiv! Genieße die festliche Stimmung!' : 'Dieses Event findet erst zwischen dem `20. Dezember` und dem `26. Dezember` statt!')
+                  .setColor(isEventActive(eventPeriods.christmas) ? 'Green' : 'Red');
+          
+                await interaction.reply({ embeds: [WeihnachtsEmbed], ephemeral: true });
+                break;
+          
+              case 'newyear_event':
+                const SilvesterEmbed = new EmbedBuilder()
+                  .setTitle('`🎆` Silvester Event `🎆`')
+                  .setDescription(isEventActive(eventPeriods.newyear) ? 'Das Silvester-Event ist aktiv! Feiere das neue Jahr mit uns!' : '**Dieses Event findet erst zwischen dem `27. Dezember` und dem `02. Januar` statt!**')
+                  .setColor(isEventActive(eventPeriods.newyear) ? 'Blue' : 'Red');
+          
+                await interaction.reply({ embeds: [SilvesterEmbed], ephemeral: true });
+                break;
+          
+              case 'collect_event':
+                const activeEvent = Object.keys(eventPeriods).find((key) =>
+                  isEventActive(eventPeriods[key])
+                );
+          
+                const eventItemEmbed = new EmbedBuilder()
+                  .setDescription(activeEvent ? `**Du hast ein Item aus dem aktuellen Event (${activeEvent.toUpperCase()}-Event) eingesammelt!**` : '**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
+                  .setColor(activeEvent ? 'Green' : 'Red');
+          
+                await interaction.reply({ embeds: [eventItemEmbed], ephemeral: true });
+          
+                if (activeEvent) {
+                  await interaction.followUp({ content: '> `✅` » Du hast erfolgreich ein Event-Item eingesammelt!', ephemeral: true });
+                }
+                break;
+          
+              default:
+                await interaction.reply({
+                  content: '> `❌` » Dieser Button wird aktuell nicht unterstützt!',
+                  ephemeral: true,
+                });
+                break;
             }
-        }        
+          }                 
 
         if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
             const currentDay = new Date().getDate();
