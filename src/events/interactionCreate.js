@@ -82,7 +82,7 @@ module.exports = {
                 const SilvesterEmbed = new EmbedBuilder()
                   .setTitle('`🎆` Silvester Event `🎆`')
                   .setDescription(isEventActive(eventPeriods.newyear) ? '**Das Silvester-Event ist aktiv! Feiere das neue Jahr mit uns!**' : '**Dieses Event findet erst zwischen dem `27. Dezember` und dem `02. Januar` statt!**')
-                  .setColor(isEventActive(eventPeriods.newyear) ? 'Gray' : 'Gray');
+                  .setColor(isEventActive(eventPeriods.newyear) ? 'Grey' : 'Grey');
           
                 await interaction.reply({ embeds: [SilvesterEmbed], ephemeral: true });
                 break;
