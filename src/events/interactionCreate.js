@@ -37,6 +37,48 @@ module.exports = {
     async execute(interaction) {
 
         // Button-Interaktion verarbeiten (Adventskalender System)
+        if(interaction.isButton()) {
+            switch (interaction.customId) {
+                case 'easter_event':
+                    const OsterEmbed = new EmbedBuilder()
+                        .setTitle('🐇 Oster Event')
+                        .setDescription('**Dieses Event startet erst zwischen den Monaten `März` und `April`!**')
+                        .setColor('Green')
+    
+                        await interaction.reply({ embeds: [OsterEmbed], ephemeral: true });
+                    break;
+    
+                case 'halloween_event':
+                    const HalloweenEmbed = new EmbedBuilder()
+                        .setTitle('🎃 Halloween Event')
+                        .setDescription('**Dieses Event findet erst zwischen dem `27. Oktober` und dem `02. November` statt!**')
+                        .setColor('Orange')
+    
+                        await interaction.reply({ embeds: [HalloweenEmbed], ephemeral: true });
+                    break;
+    
+                case 'christmas_event':
+                    const WeihnachtsEmbed = new EmbedBuilder()
+                        .setTitle('🎄 Weihnachten Event')
+                        .setDescription('**Dieses Event findet erst zwischen dem `20. Dezember` und dem `26. Dezember` statt!**')
+                        .setColor('Green')
+    
+                        await interaction.reply({ embeds: [WeihnachtsEmbed], ephemeral: true });
+                    break;
+    
+                case 'newyear_event':
+                    const SilvesterEmbed = new EmbedBuilder()
+                        .setTitle('🎆 Silvester Event')
+                        .setDescription('**Dieses Event findet erst zwischen dem `27. Dezember` und dem `02. Januar` statt!**')
+                        .setColor('Grey')
+    
+                        await interaction.reply({ embeds: [SilvesterEmbed], ephemeral: true });
+                    break;
+    
+                case 'collect_event':
+                    await interaction.reply({ content: 'Eventitem erfolgreich eingesammelt!', ephemeral: true });
+            }
+        }
         if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
             const currentDay = new Date().getDate();
             const [, day] = interaction.customId.split('_');
