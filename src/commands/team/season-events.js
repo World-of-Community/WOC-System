@@ -100,23 +100,4 @@ module.exports = {
       cronInitialized = true;
     }
   },
-
-  async handleInteraction(interaction) {
-    if (!interaction.isButton()) return;
-
-    const eventKey = interaction.customId.replace('event-', '');
-
-    if (eventEmbeds[eventKey]) {
-      await interaction.reply({ embeds: [eventEmbeds[eventKey].embed], ephemeral: true });
-    } else if (interaction.customId === 'collect-event-item') {
-      const isEventActive = aktuellesEvent !== 'Aktuell findet kein "Season-Event" statt!';
-      const eventItemEmbed = new EmbedBuilder()
-        .setDescription(isEventActive ? 'Du hast ein Event-Item eingesammelt!' : '**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
-        .setColor(isEventActive ? 'Green' : 'Red');
-
-      await interaction.reply({ embeds: [eventItemEmbed], ephemeral: true });
-    } else {
-      await interaction.reply({ content: '> Unbekannte Aktion!', ephemeral: true });
-    }
-  },
 };

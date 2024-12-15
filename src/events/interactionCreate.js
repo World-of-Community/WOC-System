@@ -54,7 +54,7 @@ module.exports = {
                 case 'easter_event':
                     const OsterEmbed = new EmbedBuilder()
                         .setTitle('`🐇` Oster Event `🐇`')
-                        .setDescription(isEventActive(eventPeriods.easter) ? '**Das Oster-Event ist aktuell aktiv! Viel Spaß beim Sammeln der Eier!**' : '**Dieses Event startet erst zwischen den Monaten `März` und `April`!**')
+                        .setDescription(isEventActive(eventPeriods.easter) ? 'Das Oster-Event ist aktuell aktiv! Viel Spaß beim Sammeln der Oster-Eier!' : '**Dieses Event startet erst zwischen den Monaten `März` und `April`!')
                         .setColor(isEventActive(eventPeriods.easter) ? 'Green' : 'Red');
 
                     await interaction.reply({ embeds: [OsterEmbed], ephemeral: true });
@@ -64,7 +64,7 @@ module.exports = {
                 case 'halloween_event':
                     const HalloweenEmbed = new EmbedBuilder()
                         .setTitle('`🎃` Halloween Event `🎃`')
-                        .setDescription(isEventActive(eventPeriods.halloween) ? '**Das Halloween-Event ist aktiv! Viel Spaß beim Gruseln!**' : '**Dieses Event findet erst zwischen dem `27. Oktober` und dem `02. November` statt!**')
+                        .setDescription(isEventActive(eventPeriods.halloween) ? 'Das Halloween-Event ist aktiv! Viel Spaß beim Gruseln!' : 'Dieses Event findet erst zwischen dem `27. Oktober` und dem `02. November` statt!')
                         .setColor(isEventActive(eventPeriods.halloween) ? 'Orange' : 'Red');
                     
                     await interaction.reply({ embeds: [HalloweenEmbed], ephemeral: true });
@@ -74,7 +74,7 @@ module.exports = {
                 case 'christmas_event':
                     const WeihnachtsEmbed = new EmbedBuilder()
                         .setTitle('`🎄` Weihnachts-Event `🎄`')
-                        .setDescription(isEventActive(eventPeriods.christmas) ? '**Das Weihnachts-Event ist aktiv! Genieße die festliche Stimmung!**' : '**Dieses Event findet erst zwischen dem `20. Dezember` und dem `26. Dezember` statt!**')
+                        .setDescription(isEventActive(eventPeriods.christmas) ? 'Das Weihnachts-Event ist aktiv! Genieße die festliche Stimmung!' : 'Dieses Event findet erst zwischen dem `20. Dezember` und dem `26. Dezember` statt!')
                         .setColor(isEventActive(eventPeriods.christmas) ? 'Green' : 'Red');
                     
                     await interaction.reply({ embeds: [WeihnachtsEmbed], ephemeral: true });
@@ -84,8 +84,8 @@ module.exports = {
                 case 'newyear_event':
                     const SilvesterEmbed = new EmbedBuilder()
                         .setTitle('`🎆` Silvester Event `🎆`')
-                        .setDescription(isEventActive(eventPeriods.newyear) ? '**Das Silvester-Event ist aktiv! Feiere das neue Jahr mit uns!**' : '**Dieses Event findet erst zwischen dem `27. Dezember` und dem `02. Januar` statt!**')
-                        .setColor(isEventActive(eventPeriods.newyear) ? 'Grey' : 'Red');
+                        .setDescription(isEventActive(eventPeriods.newyear) ? 'Das Silvester-Event ist aktiv! Feiere das neue Jahr mit uns!' : '**Dieses Event findet erst zwischen dem `27. Dezember` und dem `02. Januar` statt!')
+                        .setColor(isEventActive(eventPeriods.newyear) ? 'Blue' : 'Red');
 
                     await interaction.reply({ embeds: [SilvesterEmbed], ephemeral: true });
 
@@ -103,7 +103,7 @@ module.exports = {
                     await interaction.reply({ embeds: [eventItemEmbed], ephemeral: true });
         
                     if (activeEvent) {
-                        await interaction.followUp({ content: 'Du hast erfolgreich ein Event-Item eingesammelt!', ephemeral: true });
+                        await interaction.followUp({ content: '> `✅` » Du hast erfolgreich ein Event-Item eingesammelt!', ephemeral: true });
                     }
                     break;
             }
