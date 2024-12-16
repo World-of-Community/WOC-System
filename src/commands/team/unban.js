@@ -33,7 +33,7 @@ module.exports = {
             member.roles.add("815920703067914290")
             member.roles.remove("886989738244964362")
 
-        const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
+        const logchannel = await interaction.guild.channels.cache.get("1269998219266490538");
 
         await logchannel.threads.cache.get("1269998219266490538").send({embeds: [unbanLogEmbed]});
         await interaction.reply({ content: `> \`✅\` » Du hast ${member} erfolgreich entbannt.`, ephemeral: true })
