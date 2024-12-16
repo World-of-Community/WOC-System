@@ -153,8 +153,8 @@ module.exports = {
                 rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'; // Sicherstellen, dass keine leere Nachricht gesendet wird
                 break;
     
-            default:
-                rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`; // Standardnachricht
+            //default:
+            //    rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`; // Standardnachricht
             }
     
             // Antwort mit der Belohnung
