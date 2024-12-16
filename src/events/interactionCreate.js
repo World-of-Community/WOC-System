@@ -103,63 +103,82 @@ module.exports = {
                 }
                 break;
             }
-          }                 
+          }
 
-        if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
+          if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
             const currentDay = new Date().getDate();
             const [, day] = interaction.customId.split('_');
             const dayNumber = parseInt(day);
-    
+        
             // Datenbankeintrag prüfen
             let userData = await Advent.findOne({ userId: interaction.user.id });
             if (!userData) {
-            userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
+                userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
             }
-    
+        
             // Überprüfen, ob der Tag bereits geöffnet wurde
             if (userData.openedDays.includes(dayNumber)) {
-            return interaction.reply({ content: `> \`❗\` » Du hast diesen Tag (${dayNumber}. Dezember) bereits geöffnet!`, ephemeral: true });
+                return await interaction.reply({
+                    content: `> \`❗\` » Du hast diesen Tag (${dayNumber}. Dezember) bereits geöffnet!`,
+                    ephemeral: true,
+                });
             }
-    
+        
             // Überprüfen, ob der Tag in der Zukunft liegt
             if (dayNumber > currentDay) {
-            return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
+                return await interaction.reply({
+                    content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!',
+                    ephemeral: true,
+                });
             }
-    
+        
             // Belohnungssystem verarbeiten
             userData.openedDays.push(dayNumber);
             await userData.save();
-    
-            let rewardMessage = ''; // Sicherstellen, dass rewardMessage immer einen Wert hat
-    
+        
+            let rewardMessage = '> `🎁` » Keine spezifische Belohnung verfügbar.';
             const reward = rewards[dayNumber];
-    
-            switch (reward?.type) {
-            case 'coins':
-                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`🎫\` » Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
-                break;
-    
-            case 'role':
-                const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
-                if (role) {
-                await interaction.member.roles.add(role);
-                rewardMessage = `> \`🎉\` » Du hast die Rolle **<@&${role.id}>** erhalten!`;
-                } else {
-                rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
-                }
-                break;
-    
-            case 'custom':
-                rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'; // Sicherstellen, dass keine leere Nachricht gesendet wird
-                break;
-    
-            //default:
-            //    rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`; // Standardnachricht
+        
+            if (!reward) {
+                return await interaction.reply({
+                    content: `> \`🎁\` » Für den ${dayNumber}. Dezember wurde keine Belohnung festgelegt.`,
+                    ephemeral: true,
+                });
             }
-    
+        
+            switch (reward?.type) {
+                case 'coins':
+                    rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`🎫\` » Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
+                    break;
+        
+                case 'role':
+                    const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
+                    if (role) {
+                        if (!interaction.member.roles.cache.has(role.id)) {
+                            await interaction.member.roles.add(role);
+                            rewardMessage = `> \`🎉\` » Du hast die Rolle **<@&${role.id}>** erhalten!`;
+                        } else {
+                            rewardMessage = `> \`ℹ️\` » Du hast die Rolle **<@&${role.id}>** bereits erhalten!`;
+                        }
+                    } else {
+                        console.error(`Rolle mit der ID ${reward.value} wurde nicht gefunden.`);
+                        rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
+                    }
+                    break;
+        
+                case 'custom':
+                    rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.';
+                    break;
+        
+                default:
+                    rewardMessage = `> \`🎁\` » Keine spezifische Belohnung festgelegt für diesen Tag.`;
+            }
+        
             // Antwort mit der Belohnung
-            return interaction.reply({ content: rewardMessage, ephemeral: true });
-        }
+            return await interaction.reply({ content: rewardMessage, ephemeral: true });
+        }        
+          
+        //
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
