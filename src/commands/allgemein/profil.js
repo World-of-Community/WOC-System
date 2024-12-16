@@ -154,9 +154,6 @@ module.exports = {
             }
         });
 
-        // Formatierte Anzeige der Nationalitäten
-        userNationalitäten = userNationalitäten.length > 0 ? userNationalitäten.join(' / ') : '❓';
-
         // Hole die Einladungen des Mitglieds
         const invites = await interaction.guild.invites.fetch();
         const userInvites = invites.filter(invite => invite.inviter && invite.inviter.id === member.id);
