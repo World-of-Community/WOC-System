@@ -75,7 +75,7 @@ module.exports = {
             await newBan.save()
         }
 
-        const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
+        const logchannel = await interaction.guild.channels.cache.get("1269998219266490538");
 
         await logchannel.threads.cache.get("1269998219266490538").send({embeds: [banLogEmbed]});
         await interaction.reply({ content: `> \`✅\` » Du hast ${member} erfolgreich gebannt, er ist nun im **Bann-Bereich.**`, ephemeral: true })
