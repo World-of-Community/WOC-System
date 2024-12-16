@@ -175,7 +175,7 @@ module.exports = {
                 .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
                 .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteUses}** User eingeladen.\n(\`${inviteUses}\` Gesamt, \`${totalBonus}\` Bonus & \`${totalLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
                 .setColor('Blurple')
-                .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 256 }))
+                .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 512 }))
                 .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
                 .setTimestamp();
 
