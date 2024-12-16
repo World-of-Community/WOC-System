@@ -162,7 +162,16 @@ module.exports = {
         const totalBonus = inviteUses - totalLeft;
 
         // Hole die User-Daten
-        const userData = await userdb.findOne({ userID: member.id });
+        //const userData = await userdb.findOne({ userID: member.id });
+
+        // User-Daten abrufen
+        const userData = await userdb.findOne({ userID: member.id }) || {
+            giveaway: {
+                eventWins: 0,
+                messages: 0,
+                voiceTime: 0
+            }
+        };
 
         if (userData) {
             const embed = new EmbedBuilder()
@@ -174,8 +183,8 @@ module.exports = {
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed], ephemeral: true });
-        } //else {
-        //    await interaction.reply({ content: `> \`❌\` » Ich konnte keine Statistiken über ${member} finden.`, ephemeral: true });
-        //}
+        } else {
+            await interaction.reply({ content: `> \`❌\` » Ich konnte keine Statistiken über ${member} finden.`, ephemeral: true });
+        }
     },
 };
