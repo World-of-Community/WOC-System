@@ -174,8 +174,8 @@ module.exports = {
                 .setTimestamp();
 
             await interaction.reply({ embeds: [embed], ephemeral: true });
-        } else {
-            await interaction.reply({ content: `> \`❌\` » Ich konnte keine Statistiken über ${member} finden.`, ephemeral: true });
-        }
+        } //else {
+        //    await interaction.reply({ content: `> \`❌\` » Ich konnte keine Statistiken über ${member} finden.`, ephemeral: true });
+        //}
     },
 };
