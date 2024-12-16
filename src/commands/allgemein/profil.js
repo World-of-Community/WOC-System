@@ -161,9 +161,6 @@ module.exports = {
         const totalLeft = userInvites.reduce((acc, invite) => acc + (invite.maxUses - invite.uses), 0);
         const totalBonus = inviteUses - totalLeft;
 
-        // Hole die User-Daten
-        //const userData = await userdb.findOne({ userID: member.id });
-
         // User-Daten abrufen
         const userData = await userdb.findOne({ userID: member.id }) || {
             giveaway: {
