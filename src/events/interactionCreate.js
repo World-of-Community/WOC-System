@@ -176,9 +176,7 @@ module.exports = {
         
             // Antwort mit der Belohnung
             return await interaction.reply({ content: rewardMessage, ephemeral: true });
-        }        
-          
-        //
+        }
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
