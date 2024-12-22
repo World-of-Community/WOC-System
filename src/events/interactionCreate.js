@@ -157,7 +157,7 @@ if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
             break;
 
         default:
-            rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** geöffnet.`; // Standardnachricht
+            rewardMessage = `> \`❗\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`; // Standardnachricht
     }
 
     // Antwort mit der Belohnung
