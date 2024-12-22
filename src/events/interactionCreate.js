@@ -105,61 +105,64 @@ module.exports = {
             }
           }
 
-        // Button-Interaktion verarbeiten
-        if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
-            const [, day] = interaction.customId.split('_');
-            const dayNumber = parseInt(day);
-  
-            // Datenbankeintrag prüfen
-            let userData = await Advent.findOne({ userId: interaction.user.id });
-            if (!userData) {
-              userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
+        // Aktuelles Datum holen
+const currentDay = new Date().getDate(); // Gibt den aktuellen Tag des Monats zurück
+
+// Button-Interaktion verarbeiten
+if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
+    const [, day] = interaction.customId.split('_');
+    const dayNumber = parseInt(day);
+
+    // Datenbankeintrag prüfen
+    let userData = await Advent.findOne({ userId: interaction.user.id });
+    if (!userData) {
+        userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
+    }
+
+    // Überprüfen, ob der Tag bereits geöffnet wurde
+    if (userData.openedDays.includes(dayNumber)) {
+        return interaction.reply({ content: '> `❗` » Du hast diesen Tag bereits geöffnet!', ephemeral: true });
+    }
+
+    // Überprüfen, ob der Tag in der Zukunft liegt
+    if (dayNumber > currentDay) {
+        return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
+    }
+
+    // Belohnungssystem verarbeiten
+    userData.openedDays.push(dayNumber);
+    await userData.save();
+
+    let rewardMessage = ''; // Sicherstellen, dass rewardMessage immer einen Wert hat
+
+    const reward = rewards[dayNumber];
+
+    switch (reward?.type) {
+        case 'coins':
+            rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
+            break;
+
+        case 'role':
+            const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
+            if (role) {
+                await interaction.member.roles.add(role);
+                rewardMessage = `> \`🎉\` » Du hast die Rolle **${role.name}** erhalten!`;
+            } else {
+                rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
             }
-  
-            // Überprüfen, ob der Tag bereits geöffnet wurde
-            if (userData.openedDays.includes(dayNumber)) {
-              return interaction.reply({ content: '> `❗` » Du hast diesen Tag bereits geöffnet!', ephemeral: true });
-            }
-  
-            // Überprüfen, ob der Tag in der Zukunft liegt
-            if (dayNumber > currentDay) {
-              return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
-            }
-  
-            // Belohnungssystem verarbeiten
-            userData.openedDays.push(dayNumber);
-            await userData.save();
-  
-            let rewardMessage = ''; // Sicherstellen, dass rewardMessage immer einen Wert hat
-  
-            const reward = rewards[dayNumber];
-  
-            switch (reward?.type) {
-              case 'coins':
-                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
-                break;
-  
-              case 'role':
-                const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
-                if (role) {
-                  await interaction.member.roles.add(role);
-                  rewardMessage = `> \`🎉\` » Du hast die Rolle **${role.name}** erhalten!`;
-                } else {
-                  rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
-                }
-                break;
-  
-              case 'custom':
-                rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'; // Sicherstellen, dass keine leere Nachricht gesendet wird
-                break;
-  
-              default:
-                rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** geöffnet.`; // Standardnachricht
-            }
-  
-            // Antwort mit der Belohnung
-            return interaction.reply({ content: rewardMessage, ephemeral: true });
-        }
+            break;
+
+        case 'custom':
+            rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'; // Sicherstellen, dass keine leere Nachricht gesendet wird
+            break;
+
+        default:
+            rewardMessage = `> \`🎁\` » Du hast den **${dayNumber}. Dezember** geöffnet.`; // Standardnachricht
+    }
+
+    // Antwort mit der Belohnung
+    return interaction.reply({ content: rewardMessage, ephemeral: true });
+}
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
