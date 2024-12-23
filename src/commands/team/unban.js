@@ -19,26 +19,36 @@ module.exports = {
         const reason = interaction.options.getString('grund');
 
         try {
+            // Check if the user is banned
+            const banList = await interaction.guild.bans.fetch();
+            const isBanned = banList.has(user.id);
+
+            if (!isBanned) {
+                return interaction.reply({ content: `> \`❌\` » ${user.tag} ist nicht gebannt.`, ephemeral: true });
+            }
+
+            // Unban the user
             await interaction.guild.members.unban(user.id, reason);
 
             // Embed for unban log
             const unbanLogEmbed = new EmbedBuilder()
-                .setTitle(`\`✅\` - ${user.displayName} wurde entbannt.`)
+                .setTitle(`\`✅\` - ${user.tag} wurde entbannt.`)
                 .setDescription(`${user} wurde von ${interaction.user} entbannt.\n\n> \`👤\` - **BENUTZER INFORMATIONEN**\n> Entbannungs-Grund: \`${reason}\`\n> Benutzername: **${user.username}** (\`${user.id}\`) (${user})`)
                 .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png' }))
                 .setColor('Green')
                 .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: interaction.guild.iconURL() });
 
+            // Log to channel
             const logChannel = interaction.guild.channels.cache.get("1269998219266490538");
             if (logChannel) {
                 await logChannel.send({ embeds: [unbanLogEmbed] });
             }
 
             // Confirm unban to the command issuer
-            await interaction.reply({ content: `> \`✅\` » Du hast ${user.displayName} erfolgreich entbannt.`, ephemeral: true });
+            await interaction.reply({ content: `> \`✅\` » Du hast ${user.tag} erfolgreich entbannt.`, ephemeral: true });
         } catch (error) {
             console.error(error);
-            await interaction.reply({ content: `> \`❌\` » Fehler beim Entbannen von ${user.displayName}.`, ephemeral: true });
+            await interaction.reply({ content: `> \`❌\` » Fehler beim Entbannen von ${user.tag}.`, ephemeral: true });
         }
     }
 };
