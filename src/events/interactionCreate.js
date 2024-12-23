@@ -139,7 +139,7 @@ if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
 
     switch (reward?.type) {
         case 'coins':
-            rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
+            rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`🎫\` » Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
             break;
 
         case 'role':
