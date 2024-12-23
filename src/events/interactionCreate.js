@@ -121,7 +121,7 @@ if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
 
     // Überprüfen, ob der Tag bereits geöffnet wurde
     if (userData.openedDays.includes(dayNumber)) {
-        return interaction.reply({ content: `> \`❗\` » Du hast diesen Tag (${dayNumber}) bereits geöffnet!`, ephemeral: true });
+        return interaction.reply({ content: `> \`❗\` » Du hast diesen Tag (${dayNumber}. Dezember) bereits geöffnet!`, ephemeral: true });
     }
 
     // Überprüfen, ob der Tag in der Zukunft liegt
