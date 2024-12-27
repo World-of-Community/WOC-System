@@ -40,23 +40,33 @@ module.exports = {
                 });
             }
 
-            const thread = logchannel.threads.cache.get("1269998221518831721");
+            const thread = await logchannel.threads.fetch("1269998221518831721").catch(() => null);
             if (!thread) {
-                return interaction.followUp({ content: '> `❌` » Thread nicht gefunden.', ephemeral: true });
+                return interaction.followUp({
+                    content: '> `❌` » Thread nicht gefunden oder ungültig.',
+                    ephemeral: true,
+                });
             }
 
             // Embed erstellen und im Thread senden
             const giverole = new EmbedBuilder()
                 .setTitle('Info zum `/give-role` Befehl')
-                .setDescription(`${interaction.user} hat den \`/give-role\` Befehl benutzt und ${member} die ${role} Rolle gegeben.`)
-                .setThumbnail(member.user.displayAvatarURL({ format: 'png', dynamic: true, size: 256 }))
+                .setDescription(
+                    `${interaction.user} hat den \`/give-role\` Befehl benutzt und ${member} die ${role} Rolle gegeben.`
+                )
+                .setThumbnail(
+                    member.user.displayAvatarURL({ format: 'png', dynamic: true, size: 256 })
+                )
                 .setColor('Blurple')
                 .setTimestamp();
 
             await thread.send({ embeds: [giverole] });
         } catch (error) {
             console.error('Fehler beim Hinzufügen der Rolle:', error);
-            interaction.reply({ content: '> `❌` » Ein Fehler ist aufgetreten.', ephemeral: true });
+            interaction.reply({
+                content: '> `❌` » Ein Fehler ist aufgetreten.',
+                ephemeral: true,
+            });
         }
     },
 };
