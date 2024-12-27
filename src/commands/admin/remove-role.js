@@ -66,22 +66,22 @@ module.exports = {
             });
         }
 
-        // Rollen im Embed anzeigen (mit Erwähnung)
+        // Rollen im Embed anzeigen
         const embed = new EmbedBuilder()
             .setTitle(`${member.user.displayName} - Rollenübersicht`)
             .setDescription(`> Wähle eine Rolle aus, die von ${member} entfernt werden soll:`)
             .setColor('Blurple')
             .setTimestamp();
 
-        // Erstelle das Auswahlmenü mit den Rollen und Erwähnung
+        // Erstelle das Auswahlmenü mit den Rollen
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId('remove-role-select')
             .setPlaceholder('Wähle eine Rolle aus, die entfernt werden soll.')
             .addOptions(
                 limitedRoles.map(role => ({
-                    label: role.name,
-                    value: role.id,
-                    description: `<@&${role}>`,  // Rolle mit Erwähnung im Auswahlmenü anzeigen
+                    label: role.name,           // Anzeigen des Rollennamens
+                    value: role.id,             // Speichern der Roll-ID
+                    description: `Entferne die Rolle: ${role.name}`, // Beschreibung der Rolle
                     emoji: '📌'
                 }))
             );
@@ -105,7 +105,10 @@ module.exports = {
 
         try {
             await member.roles.remove(selectedRole);
-            await selectInteraction.update({ content: `> \`✅\` » Die Rolle ${selectedRole.toString()} wurde erfolgreich von ${member} entfernt.`, components: [] });
+            await selectInteraction.update({
+                content: `> \`✅\` » Die Rolle ${selectedRole.toString()} wurde erfolgreich von ${member} entfernt.`,
+                components: []
+            });
 
             // Log-Nachricht
             const logChannel = member.guild.channels.cache.get("1263436406655680513");
