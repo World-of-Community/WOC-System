@@ -56,33 +56,39 @@ module.exports = {
         // Filter für Rollen: Entferne @everyone
         const roles = member.roles.cache.filter(role => role.id !== interaction.guild.id);
 
-        // Beschränke die Rollen auf maximal 25
-        const limitedRoles = roles.size > 25 ? roles.first(25) : roles;
-
-        if (limitedRoles.size === 0) {
+        if (roles.size === 0) {
             return interaction.reply({
                 content: `> \`❌\` » ${member} hat keine Rollen, die entfernt werden können.`,
                 ephemeral: true
             });
         }
 
-        // Erstelle das Auswahlmenü mit den gefilterten Rollen
+        // Rollen im Embed anzeigen (mit Erwähnung)
+        const embed = new EmbedBuilder()
+            .setTitle(`${member.user.username} - Rollenübersicht`)
+            .setDescription(`> Wähle eine Rolle aus, die von ${member} entfernt werden soll:`)
+            .setColor('Blurple')
+            .setTimestamp();
+
+        // Erstelle das Auswahlmenü mit den Rollen und Erwähnung
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId('remove-role-select')
             .setPlaceholder('Wähle eine Rolle aus, die entfernt werden soll.')
             .addOptions(
-                limitedRoles.map(role => ({
+                roles.map(role => ({
                     label: role.name,
                     description: `ID: ${role.id}`,
-                    value: role.id
+                    value: role.id,
+                    // Rolle mit Erwähnung im Auswahlmenü anzeigen
+                    emoji: '❌'
                 }))
             );
 
         const row = new ActionRowBuilder().addComponents(selectMenu);
 
-        // Antwort mit dem Auswahlmenü
+        // Sende das Embed und Auswahlmenü
         await interaction.reply({
-            content: `> \`⚙️\` » Wähle eine Rolle aus, die von ${member} entfernt werden soll:`,
+            embeds: [embed],
             components: [row],
             ephemeral: true
         });
@@ -98,21 +104,21 @@ module.exports = {
         try {
             await member.roles.remove(selectedRole);
             await selectInteraction.update({
-                content: `> \`✅\` » Die Rolle ${selectedRole} wurde erfolgreich von ${member} entfernt.`,
+                content: `> \`✅\` » Die Rolle ${selectedRole.toString()} wurde erfolgreich von ${member} entfernt.`,
                 components: []
             });
 
             // Log-Nachricht
             const logChannel = member.guild.channels.cache.get("1263436406655680513");
             if (logChannel) {
-                const embed = new EmbedBuilder()
+                const logEmbed = new EmbedBuilder()
                     .setTitle('Rolle entfernt')
-                    .setDescription(`${interaction.user} hat die Rolle ${selectedRole} von ${member} entfernt.`)
+                    .setDescription(`${interaction.user} hat die Rolle ${selectedRole.toString()} von ${member} entfernt.`)
                     .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
                     .setColor('Blurple')
                     .setTimestamp();
 
-                logChannel.send({ embeds: [embed] });
+                logChannel.send({ embeds: [logEmbed] });
             }
         } catch (error) {
             await selectInteraction.update({
