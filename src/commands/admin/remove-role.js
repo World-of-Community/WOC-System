@@ -56,7 +56,10 @@ module.exports = {
         // Filter für Rollen: Entferne @everyone
         const roles = member.roles.cache.filter(role => role.id !== interaction.guild.id);
 
-        if (roles.size === 0) {
+        // Begrenze auf maximal 25 Rollen
+        const limitedRoles = roles.size > 25 ? roles.first(25) : roles;
+
+        if (limitedRoles.size === 0) {
             return interaction.reply({
                 content: `> \`❌\` » ${member} hat keine Rollen, die entfernt werden können.`,
                 ephemeral: true
@@ -75,7 +78,7 @@ module.exports = {
             .setCustomId('remove-role-select')
             .setPlaceholder('Wähle eine Rolle aus, die entfernt werden soll.')
             .addOptions(
-                roles.map(role => ({
+                limitedRoles.map(role => ({
                     label: role.name,
                     description: `ID: ${role.id}`,
                     value: role.id,
