@@ -58,7 +58,7 @@ module.exports = (client) => {
                         .setDescription('`💕`**-lichen Glückwunsch zu diesem Erfolg!** Das war bestimmt ein steiniger Weg, aber endlich hast du dir diesen Erfolg mehr als verdient!\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💖〢 1 Jahr Server-Mitglied`\n<:PfeilBlau:1119711275014955080> Stell dir vor, heute vor exakt einem Jahr bist du unserer Community beigetreten! Dafür wollten wir uns bei dir bedanken. ❤️')
                         .setColor("Green")
                         .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&')
-                        .setFooter({ text: `» Erfolg freigeschaltet auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+                        .setFooter({ text: `» Erfolg freigeschaltet auf ${guild.name}`, iconURL: `${guild.iconURL()}` })
                         .setTimestamp();
 
                         member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [oneYearEmbed] });
@@ -101,7 +101,7 @@ module.exports = (client) => {
               .setDescription('» `💕`**-lichen Glückwunsch zu diesem Erfolg!**\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💡〢 Informant (10 Server-Ideen)`\n<:PfeilBlau:1119711275014955080> Vielen Dank dass du den Server und uns dabei unterstützt mit deinen Kreativen Ideen!\n\n<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: https://discord.com/channels/815919809379172354/872063101640532008')
               .setColor('Green')
               .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&')
-              .setFooter({ text: `» Erfolg freigeschaltet auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
+              .setFooter({ text: `» Erfolg freigeschaltet auf ${guild.name}`, iconURL: `${guild.iconURL()}` })
               .setTimestamp();
           user.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] });
         }
@@ -160,7 +160,7 @@ module.exports = (client) => {
         .setDescription("» `💕`**-lichen Glückwunsch zum Gewinn des Gewinnspiels!**\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `☘️ 〢 Glückspilz (Event-Gewinner)`\n<:PfeilBlau:1119711275014955080> Vielen Dank für deine Teilnahme und viel Glück beim nächsten Mal!\n\n<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: https://discord.com/channels/815919809379172354/872063101640532008")
         .setColor("Green")
         .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&')
-        .setFooter({ text: `» Erfolg freigeschaltet auf ${inter.guild.name}`, iconURL: `${inter.guild.iconURL()}` });
+        .setFooter({ text: `» Erfolg freigeschaltet auf ${guild.name}`, iconURL: `${guild.iconURL()}` });
         await user.send({ content: "<a:Cool:915211628755169301> **GEWINNSPIEL ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] });
       }
      }
