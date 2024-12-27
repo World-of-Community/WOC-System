@@ -1,36 +1,110 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+//const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+
+//module.exports = {
+//    data: new SlashCommandBuilder()
+//        .setName('remove-role')
+//        .setDescription('» Entferne eine Rolle eines Nutzers. ❌')
+//        .addUserOption(option => option.setName('user').setDescription('» Der Nutzer, von dem die Rolle entfernt werden soll.').setRequired(true))
+//        .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, die entfernt werden soll.').setRequired(true))
+//        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
+//async execute(interaction) {
+
+//    const member = interaction.options.getMember('user') || interaction.member;
+//    const role = interaction.options.getRole('role');
+
+//    try {
+//        // Entferne die angegebene Rolle vom Mitglied
+//        await member.roles.remove(role);
+//        await interaction.reply({ content: `> \`✅\` » Die Rolle <@&${role.id}> wurde von ${member} **entfernt**.`, ephemeral: true });
+
+//        // Remove Role Log
+//        const logchannel = await member.guild.channels.cache.get("1263436406655680513");
+
+//        const removerole = new EmbedBuilder()
+//            .setTitle('Info zum `/remove-role` Befehl')
+//            .setDescription(`${member} hat den \`/remove-role\` benutzt und ${member} die ${role} Rolle entnommen.`)
+//            .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
+//            .setColor('Blurple')
+//            .setTimestamp();
+
+//        await logchannel.threads.cache.get("1269998221518831721").send({embeds: [removerole]});
+//    } catch (error) {
+//        await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`, ephemeral: true });
+//    } 
+//},
+//};
+
+//
+
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('remove-role')
         .setDescription('» Entferne eine Rolle eines Nutzers. ❌')
-        .addUserOption(option => option.setName('user').setDescription('» Der Nutzer, von dem die Rolle entfernt werden soll.').setRequired(true))
-        .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, die entfernt werden soll.').setRequired(true))
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('» Der Nutzer, von dem die Rolle entfernt werden soll.')
+                .setRequired(true)
+        )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-async execute(interaction) {
+    async execute(interaction) {
+        const member = interaction.options.getMember('user');
 
-    const member = interaction.options.getMember('user') || interaction.member;
-    const role = interaction.options.getRole('role');
+        // Filter für Rollen: Entferne @everyone
+        const roles = member.roles.cache.filter(role => role.id !== interaction.guild.id);
+        if (roles.size === 0) {
+            return interaction.reply({
+                content: `> \`❌\` » ${member} hat keine Rollen, die entfernt werden können.`,
+                ephemeral: true
+            });
+        }
 
-    try {
-        // Entferne die angegebene Rolle vom Mitglied
-        await member.roles.remove(role);
-        await interaction.reply({ content: `> \`✅\` » Die Rolle <@&${role.id}> wurde von ${member} **entfernt**.`, ephemeral: true });
+        // Erstelle das Auswahlmenü mit den Rollen
+        const selectMenu = new StringSelectMenuBuilder()
+            .setCustomId('remove-role-select')
+            .setPlaceholder('Wähle eine Rolle aus, die entfernt werden soll.')
+            .addOptions(
+                roles.map(role => ({
+                    label: role.name,
+                    description: `ID: ${role.id}`,
+                    value: role.id
+                }))
+            );
 
-        // Remove Role Log
-        const logchannel = await member.guild.channels.cache.get("1263436406655680513");
+        const row = new ActionRowBuilder().addComponents(selectMenu);
 
-        const removerole = new EmbedBuilder()
-            .setTitle('Info zum `/remove-role` Befehl')
-            .setDescription(`${member} hat den \`/befehl\` benutzt und ${member} die ${role} Rolle entnommen.`)
-            .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
-            .setColor('Blurple')
-            .setTimestamp();
+        // Antwort mit dem Auswahlmenü
+        await interaction.reply({ content: `> \`⚙️\` » Wähle eine Rolle aus, die von ${member} entfernt werden soll:`, components: [row], ephemeral: true });
 
-        await logchannel.threads.cache.get("1269998221518831721").send({embeds: [removerole]});
-    } catch (error) {
-        await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`, ephemeral: true });
-    } 
-},
+        // Warte auf die Auswahl des Nutzers (keine Zeitbegrenzung)
+        const filter = i => i.customId === 'remove-role-select' && i.user.id === interaction.user.id;
+        const selectInteraction = await interaction.channel.awaitMessageComponent({ filter });
+
+        // Rolle entfernen
+        const selectedRoleId = selectInteraction.values[0];
+        const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
+
+        try {
+            await member.roles.remove(selectedRole);
+            await selectInteraction.update({ content: `> \`✅\` » Die Rolle ${selectedRole} wurde erfolgreich von ${member} entfernt.`, components: [] });
+
+            // Log-Nachricht
+            const logChannel = member.guild.channels.cache.get("1263436406655680513");
+            if (logChannel) {
+                const embed = new EmbedBuilder()
+                    .setTitle('Rolle entfernt')
+                    .setDescription(`${interaction.user} hat die Rolle ${selectedRole} von ${member} entfernt.`)
+                    .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
+                    .setColor('Blurple')
+                    .setTimestamp();
+
+                logChannel.send({ embeds: [embed] });
+            }
+        } catch (error) {
+            await selectInteraction.update({ content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`, components: [] });
+        }
+    },
 };
