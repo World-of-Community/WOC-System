@@ -55,19 +55,23 @@ module.exports = {
 
         // Filter für Rollen: Entferne @everyone
         const roles = member.roles.cache.filter(role => role.id !== interaction.guild.id);
-        if (roles.size === 0) {
+
+        // Beschränke die Rollen auf maximal 25
+        const limitedRoles = roles.size > 25 ? roles.first(25) : roles;
+
+        if (limitedRoles.size === 0) {
             return interaction.reply({
                 content: `> \`❌\` » ${member} hat keine Rollen, die entfernt werden können.`,
                 ephemeral: true
             });
         }
 
-        // Erstelle das Auswahlmenü mit den Rollen
+        // Erstelle das Auswahlmenü mit den gefilterten Rollen
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId('remove-role-select')
             .setPlaceholder('Wähle eine Rolle aus, die entfernt werden soll.')
             .addOptions(
-                roles.map(role => ({
+                limitedRoles.map(role => ({
                     label: role.name,
                     description: `ID: ${role.id}`,
                     value: role.id
@@ -77,7 +81,11 @@ module.exports = {
         const row = new ActionRowBuilder().addComponents(selectMenu);
 
         // Antwort mit dem Auswahlmenü
-        await interaction.reply({ content: `> \`⚙️\` » Wähle eine Rolle aus, die von ${member} entfernt werden soll:`, components: [row], ephemeral: true });
+        await interaction.reply({
+            content: `> \`⚙️\` » Wähle eine Rolle aus, die von ${member} entfernt werden soll:`,
+            components: [row],
+            ephemeral: true
+        });
 
         // Warte auf die Auswahl des Nutzers (keine Zeitbegrenzung)
         const filter = i => i.customId === 'remove-role-select' && i.user.id === interaction.user.id;
@@ -89,7 +97,10 @@ module.exports = {
 
         try {
             await member.roles.remove(selectedRole);
-            await selectInteraction.update({ content: `> \`✅\` » Die Rolle ${selectedRole} wurde erfolgreich von ${member} entfernt.`, components: [] });
+            await selectInteraction.update({
+                content: `> \`✅\` » Die Rolle ${selectedRole} wurde erfolgreich von ${member} entfernt.`,
+                components: []
+            });
 
             // Log-Nachricht
             const logChannel = member.guild.channels.cache.get("1263436406655680513");
@@ -104,7 +115,10 @@ module.exports = {
                 logChannel.send({ embeds: [embed] });
             }
         } catch (error) {
-            await selectInteraction.update({ content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`, components: [] });
+            await selectInteraction.update({
+                content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`,
+                components: []
+            });
         }
     },
 };
