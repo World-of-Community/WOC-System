@@ -68,7 +68,7 @@ module.exports = {
 
         // Rollen im Embed anzeigen (mit Erwähnung)
         const embed = new EmbedBuilder()
-            .setTitle(`${member.user.username} - Rollenübersicht`)
+            .setTitle(`${member.user.displayName} - Rollenübersicht`)
             .setDescription(`> Wähle eine Rolle aus, die von ${member} entfernt werden soll:`)
             .setColor('Blurple')
             .setTimestamp();
@@ -81,7 +81,7 @@ module.exports = {
                 limitedRoles.map(role => ({
                     label: role.name,
                     value: role.id,
-                    description: `<@&${role.id}>`,  // Rolle mit Erwähnung im Auswahlmenü anzeigen
+                    description: `<@&${role}>`,  // Rolle mit Erwähnung im Auswahlmenü anzeigen
                     emoji: '📌'
                 }))
             );
@@ -105,10 +105,7 @@ module.exports = {
 
         try {
             await member.roles.remove(selectedRole);
-            await selectInteraction.update({
-                content: `> \`✅\` » Die Rolle ${selectedRole.toString()} wurde erfolgreich von ${member} entfernt.`,
-                components: []
-            });
+            await selectInteraction.update({ content: `> \`✅\` » Die Rolle ${selectedRole.toString()} wurde erfolgreich von ${member} entfernt.`, components: [] });
 
             // Log-Nachricht
             const logChannel = member.guild.channels.cache.get("1263436406655680513");
