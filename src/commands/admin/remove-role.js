@@ -79,7 +79,7 @@ module.exports = {
             .setPlaceholder('Wähle eine Rolle aus, die entfernt werden soll.')
             .addOptions(
                 limitedRoles.map(role => ({
-                    label: role.name,
+                    label: `@&${role.id}`,
                     description: `ID: ${role.id}`,
                     value: role.id,
                     // Rolle mit Erwähnung im Auswahlmenü anzeigen
