@@ -30,9 +30,10 @@ module.exports = {
 
         const banRole = interaction.guild.roles.cache.get("886989738244964362");
         const memberRole = interaction.guild.roles.cache.get("815920703067914290");
-        const logChannel = interaction.guild.channels.cache.get("1269998219266490538");
+        const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
+        const thread = logChannel.threads.cache.get("1269998219266490538");
 
-        if (!banRole || !memberRole || !logChannel) {
+        if (!banRole || !memberRole || !thread) {
             return interaction.reply({ content: '> \`❌\` » Rollen oder Log-Kanal konnten nicht gefunden werden.', ephemeral: true });
         }
 
@@ -68,7 +69,7 @@ module.exports = {
         }
 
         // Send Logs and Reply
-        await logChannel.send({ embeds: [banEmbed] });
+        await thread.send({ embeds: [banEmbed] });
         await interaction.reply({ content: `> \`✅\` » ${member} wurde erfolgreich gebannt.`, ephemeral: true });
     }
 };

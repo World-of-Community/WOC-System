@@ -39,9 +39,10 @@ module.exports = {
                 .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: interaction.guild.iconURL() });
 
             // Log to channel
-            const logChannel = interaction.guild.channels.cache.get("1269998219266490538");
-            if (logChannel) {
-                await logChannel.send({ embeds: [unbanLogEmbed] });
+            const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
+            const thread = logChannel.threads.cache.get("1269998219266490538");
+            if (thread) {
+                await thread.send({ embeds: [unbanLogEmbed] });
             }
 
             // Confirm unban to the command issuer
