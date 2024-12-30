@@ -1,13 +1,20 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const mongoose = require('mongoose');
 const coindb = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('coins-add')
     .setDescription('» Verwalte Coins eines Benutzers.')
-    .addUserOption(option => option.setName('user').setDescription('Der Benutzer, dem Coins hinzugefügt werden sollen').setRequired(true))
-    .addIntegerOption(option => option.setName('amount').setDescription('Die Anzahl der Coins, die hinzugefügt werden sollen').setRequired(true))
+    .addUserOption(option => 
+      option.setName('user')
+        .setDescription('Der Benutzer, dem Coins hinzugefügt werden sollen')
+        .setRequired(true)
+    )
+    .addIntegerOption(option => 
+      option.setName('amount')
+        .setDescription('Die Anzahl der Coins, die hinzugefügt werden sollen')
+        .setRequired(true)
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
@@ -25,11 +32,11 @@ module.exports = {
     }
 
     // Suche nach den Coins des Benutzers in der Datenbank
-    let userCoins = await Coin.findOne({ userId: user.id });
+    let userCoins = await coindb.findOne({ userId: user.id });
     
     if (!userCoins) {
       // Wenn der Benutzer keine Coins hat, erstelle einen neuen Eintrag
-      userCoins = new Coin({ userId: user.id, coins: 0 });
+      userCoins = new coindb({ userId: user.id, coins: 0 });
     }
 
     // Füge die Coins hinzu
@@ -38,8 +45,8 @@ module.exports = {
 
     // Erstelle das Embed
     const CoinEmbed = new EmbedBuilder()
-      .setTitle(`\`👤\` × ${user.displayName}'s Coins wurden aktualisiert`)
-      .setDescription(`${user.displayName} hat **${amount} Coins** erhalten.\n\n» Der Benutzer hat jetzt insgesamt **${userCoins.coins} Coins**.`)
+      .setTitle(`\`👤\` × ${user.username}'s Coins wurden aktualisiert`)
+      .setDescription(`${user.username} hat **${amount} Coins** erhalten.\n\n» Der Benutzer hat jetzt insgesamt **${userCoins.coins} Coins**.`)
       .setColor('Green')
       .setFooter({ text: `» ${interaction.guild.name} Coin-System`, iconURL: `${interaction.guild.iconURL()}` });
 
