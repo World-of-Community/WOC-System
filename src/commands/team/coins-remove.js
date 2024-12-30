@@ -46,7 +46,7 @@ module.exports = {
     // Embed erstellen
     const CoinEmbed = new EmbedBuilder()
       .setTitle(`\`👤\` × ${user.displayName}'s Coins wurden aktualisiert`)
-      .setDescription(`**${amount} Coins** wurden von ${user} entfernt.\n\nAktueller Stand: **${userCoins.coins} Coins**.`)
+      .setDescription(`» **${amount} Coins** wurden von ${user} entfernt.\n\n» Aktueller Stand: **${userCoins.coins} Coins**.`)
       .setColor('Red')
       .setThumbnail(user.displayAvatarURL())
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })
