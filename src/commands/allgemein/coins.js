@@ -21,7 +21,7 @@ module.exports = {
 
     // Erstelle das Embed
     const CoinEmbed = new EmbedBuilder()
-      .setTitle(` × ${user.displayName}'s Coins`)
+      .setTitle(`<:coin:1316865013528526908> × ${user.displayName}'s Coins`)
       .setDescription(`${user} hat aktuell **${userCoins.coins} Coins**.\n\n» Du kannst die Coins im Ticket-Support einlösen und erhältst diese dann auf dem Minecraft-Server.`)
       .setColor('Blurple')
       .setThumbnail(user.displayAvatarURL())
