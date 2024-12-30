@@ -24,10 +24,13 @@ module.exports = {
       await userCoins.save();
     }
 
+    // Formatierung der Coins mit Tausendertrennzeichen
+    const formattedCoins = userCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
+
     // Erstelle das Embed
     const CoinEmbed = new EmbedBuilder()
       .setTitle(`<:coin:1316865013528526908> × ${user.displayName}'s Coins`)
-      .setDescription(`» ${user} hat aktuell **${userCoins.coins} Coins**.\n\n» Du kannst die Coins im Ticket-Support einlösen und erhältst diese dann auf dem Minecraft-Server.`)
+      .setDescription(`» ${user} hat aktuell **${formattedCoins} Coins**.\n\n» Du kannst die Coins im Ticket-Support einlösen und erhältst diese dann auf dem Minecraft-Server.`)
       .setColor('Blurple')
       .setThumbnail(user.displayAvatarURL())
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })

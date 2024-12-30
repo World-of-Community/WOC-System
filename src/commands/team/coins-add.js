@@ -43,10 +43,13 @@ module.exports = {
     userCoins.coins += amount;
     await userCoins.save();
 
+    // Formatierung der Coins mit Tausendertrennzeichen
+    const formattedCoins = userCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
+
     // Erstelle das Embed
     const CoinEmbed = new EmbedBuilder()
       .setTitle(`\`👤\` × ${user.displayName}'s Coins wurden aktualisiert`)
-      .setDescription(`» ${user} hat **${amount} Coins** erhalten.\n\n» ${user.displayName} hat jetzt insgesamt **${userCoins.coins} Coins**.`)
+      .setDescription(`» ${user} hat **${amount} Coins** erhalten.\n\n» ${user.displayName} hat jetzt insgesamt **${formattedCoins} Coins**.`) // Hier wird der formatierte Wert angezeigt
       .setColor('Green')
       .setThumbnail(user.displayAvatarURL())
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: `${interaction.guild.iconURL()}` })

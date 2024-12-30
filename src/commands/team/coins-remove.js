@@ -22,7 +22,7 @@ module.exports = {
     // Überprüfe, ob der Benutzer ein Bot ist
     if (user.bot) {
         return interaction.reply({ content: '> `❌` » Bots können keine Coins haben.', ephemeral: true });
-      }
+    }
 
     // Validierung der Menge
     if (amount <= 0) {
@@ -42,10 +42,13 @@ module.exports = {
     if (userCoins.coins < 0) userCoins.coins = 0; // Verhindert negative Coins
     await userCoins.save();
 
+    // Formatierung der Coins mit Tausendertrennzeichen
+    const formattedCoins = userCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
+
     // Embed erstellen
     const CoinEmbed = new EmbedBuilder()
       .setTitle(`\`👤\` × ${user.displayName}'s Coins wurden aktualisiert`)
-      .setDescription(`» **${amount} Coins** wurden von ${user} entfernt.\n\n» Aktueller Stand: **${userCoins.coins} Coins**.`)
+      .setDescription(`» **${amount} Coins** wurden von ${user} entfernt.\n\n» Aktueller Stand: **${formattedCoins} Coins**.`) // Hier wird der formatierte Wert angezeigt
       .setColor('Red')
       .setThumbnail(user.displayAvatarURL())
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })
