@@ -24,7 +24,7 @@ module.exports = {
             const isBanned = banList.has(user.id);
 
             if (!isBanned) {
-                return interaction.reply({ content: `> \`❌\` » ${user.tag} ist nicht gebannt.`, ephemeral: true });
+                return interaction.reply({ content: `> \`❌\` » ${user.displayName} ist nicht gebannt.`, ephemeral: true });
             }
 
             // Unban the user
@@ -46,10 +46,10 @@ module.exports = {
             }
 
             // Confirm unban to the command issuer
-            await interaction.reply({ content: `> \`✅\` » Du hast ${user.tag} erfolgreich entbannt.`, ephemeral: true });
+            await interaction.reply({ content: `> \`✅\` » Du hast ${user.displayName} erfolgreich entbannt.`, ephemeral: true });
         } catch (error) {
             console.error(error);
-            await interaction.reply({ content: `> \`❌\` » Fehler beim Entbannen von ${user.tag}.`, ephemeral: true });
+            await interaction.reply({ content: `> \`❌\` » Fehler beim Entbannen von ${user.displayName}.`, ephemeral: true });
         }
     }
 };
