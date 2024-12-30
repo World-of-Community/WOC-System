@@ -12,7 +12,7 @@ module.exports = {
     const user = interaction.options.getUser('user') || interaction.user;
 
     // Suche nach den Coins des Benutzers in der Datenbank
-    let userCoins = await userCoin.findOne({ userId: user.id });
+    let userCoins = await userCoins.findOne({ userId: user.id });
     
     if (!userCoins) {
       // Wenn der Benutzer keine Coins hat, erstelle einen neuen Eintrag
