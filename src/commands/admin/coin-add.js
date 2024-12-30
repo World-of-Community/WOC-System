@@ -4,7 +4,7 @@ const coindb = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('coin')
+    .setName('coin-add')
     .setDescription('» Verwalte Coins eines Benutzers.')
     .addUserOption(option => option.setName('user').setDescription('Der Benutzer, dem Coins hinzugefügt werden sollen').setRequired(true))
     .addIntegerOption(option => option.setName('amount').setDescription('Die Anzahl der Coins, die hinzugefügt werden sollen').setRequired(true))
