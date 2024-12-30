@@ -3,8 +3,8 @@ const coindb = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('coin')
-    .setDescription('Zeigt die aktuellen Coins eines Benutzers an.')
+    .setName('coins')
+    .setDescription('» Zeigt die aktuellen Coins eines Benutzers an.')
     .addUserOption(option => option.setName('user').setDescription('Der Benutzer, dessen Coins angezeigt werden sollen')),
 
   async execute(interaction) {
@@ -21,11 +21,11 @@ module.exports = {
 
     // Erstelle das Embed
     const CoinEmbed = new EmbedBuilder()
-      .setTitle(`${user.displayName}'s Coins`)
+      .setTitle(` × ${user.displayName}'s Coins`)
       .setDescription(`${user} hat aktuell **${userCoins.coins} Coins**.\n\n» Du kannst die Coins im Ticket-Support einlösen und erhältst diese dann auf dem Minecraft-Server.`)
       .setColor('Blurple')
       .setThumbnail(user.displayAvatarURL())
-      .setFooter({ text: `» ${interaction.guild.name} Coin-System`, iconURL: interaction.guild.iconURL() })
+      .setFooter({ text: `» ${interaction.guild.name} - Coin-System`, iconURL: interaction.guild.iconURL() })
       .setTimestamp();
 
     await interaction.reply({ embeds: [CoinEmbed], ephemeral: true });

@@ -4,7 +4,7 @@ const coindb = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('coin-add')
+    .setName('coins-add')
     .setDescription('» Verwalte Coins eines Benutzers.')
     .addUserOption(option => option.setName('user').setDescription('Der Benutzer, dem Coins hinzugefügt werden sollen').setRequired(true))
     .addIntegerOption(option => option.setName('amount').setDescription('Die Anzahl der Coins, die hinzugefügt werden sollen').setRequired(true))
@@ -16,7 +16,7 @@ module.exports = {
 
     // Überprüfe, ob die angegebene Menge gültig ist
     if (amount <= 0) {
-      return interaction.reply('> `❗` » Die Anzahl der Coins muss eine positive Zahl sein.');
+      return interaction.reply({ content: '> `❗` » Die Anzahl der Coins muss eine positive Zahl sein.', ephemeral: true });
     }
 
     // Suche nach den Coins des Benutzers in der Datenbank
@@ -33,11 +33,11 @@ module.exports = {
 
     // Erstelle das Embed
     const CoinEmbed = new EmbedBuilder()
-      .setTitle(`${user.displayName}'s Coins wurden aktualisiert`)
+      .setTitle(`\`👤\` × ${user.displayName}'s Coins wurden aktualisiert`)
       .setDescription(`${user.displayName} hat **${amount} Coins** erhalten.\n\n» Der Benutzer hat jetzt insgesamt **${userCoins.coins} Coins**.`)
       .setColor('Green')
       .setFooter({ text: `» ${interaction.guild.name} Coin-System`, iconURL: `${interaction.guild.iconURL()}` });
 
-    await interaction.reply({ embeds: [CoinEmbed] });
+    await interaction.reply({ embeds: [CoinEmbed], ephemeral: true });
   },
 };
