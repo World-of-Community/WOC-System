@@ -49,7 +49,7 @@ module.exports = {
       .setDescription(`**${amount} Coins** wurden von ${user} entfernt.\n\nAktueller Stand: **${userCoins.coins} Coins**.`)
       .setColor('Red')
       .setThumbnail(user.displayAvatarURL())
-      .setFooter({ text: `» ${interaction.guild.name} Coin-System`, iconURL: interaction.guild.iconURL() });
+      .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() });
 
     // Antwort senden
     await interaction.reply({ embeds: [CoinEmbed], ephemeral: true });

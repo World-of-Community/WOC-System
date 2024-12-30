@@ -45,10 +45,10 @@ module.exports = {
 
     // Erstelle das Embed
     const CoinEmbed = new EmbedBuilder()
-      .setTitle(`\`👤\` × ${user.username}'s Coins wurden aktualisiert`)
-      .setDescription(`${user.username} hat **${amount} Coins** erhalten.\n\n» Der Benutzer hat jetzt insgesamt **${userCoins.coins} Coins**.`)
+      .setTitle(`\`👤\` × ${user.displayName}'s Coins wurden aktualisiert`)
+      .setDescription(`${user} hat **${amount} Coins** erhalten.\n\n» ${user.displayName} hat jetzt insgesamt **${userCoins.coins} Coins**.`)
       .setColor('Green')
-      .setFooter({ text: `» ${interaction.guild.name} Coin-System`, iconURL: `${interaction.guild.iconURL()}` });
+      .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: `${interaction.guild.iconURL()}` });
 
     await interaction.reply({ embeds: [CoinEmbed], ephemeral: true });
   },
