@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const coindb = require("../../../Datenbank/coindb");
+const Coin = require("../../../Datenbank/coindb"); // Korrigierter Import
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -32,11 +32,11 @@ module.exports = {
     }
 
     // Suche nach den Coins des Benutzers in der Datenbank
-    let userCoins = await coindb.findOne({ userId: user.id });
+    let userCoins = await Coin.findOne({ userId: user.id });
     
     if (!userCoins) {
       // Wenn der Benutzer keine Coins hat, erstelle einen neuen Eintrag
-      userCoins = new coindb({ userId: user.id, coins: 0 });
+      userCoins = new Coin({ userId: user.id, coins: 0 });
     }
 
     // Füge die Coins hinzu
