@@ -14,6 +14,11 @@ module.exports = {
     const user = interaction.options.getUser('user');
     const amount = interaction.options.getInteger('amount');
 
+    // Überprüfe, ob der Benutzer ein Bot ist
+    if (user.bot) {
+      return interaction.reply({ content: '> `❌` » Bots können keine Coins erhalten.', ephemeral: true });
+    }
+
     // Überprüfe, ob die angegebene Menge gültig ist
     if (amount <= 0) {
       return interaction.reply({ content: '> `❗` » Die Anzahl der Coins muss eine positive Zahl sein.', ephemeral: true });

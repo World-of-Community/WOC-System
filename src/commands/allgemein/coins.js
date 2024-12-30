@@ -12,6 +12,11 @@ module.exports = {
 
     // Suche nach den Coins des Benutzers in der Datenbank
     let userCoins = await coindb.findOne({ userId: user.id });
+
+    // Bots ignorieren
+    if (user.bot) {
+      return interaction.reply({ content: '> `❌` » Bots können keine Coins haben.', ephemeral: true });
+    }
     
     if (!userCoins) {
       // Wenn der Benutzer keine Coins hat, erstelle einen neuen Eintrag
