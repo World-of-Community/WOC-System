@@ -4,17 +4,16 @@ const coindb = require("../../../Datenbank/coindb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('coins-remove')
-    .setDescription('Verwalte Coins eines Benutzers.')
+    .setDescription('» Verwalte Coins eines Benutzers.')
     .addUserOption(option => 
-      option.setName('user')
+       option.setName('user')
         .setDescription('Der Benutzer, dessen Coins reduziert werden sollen')
-        .setRequired(true)
-    )
+        .setRequired(true))
     .addIntegerOption(option => 
-      option.setName('amount')
-        .setDescription('Die Anzahl der Coins, die entfernt werden sollen')
-        .setRequired(true)
-    ),
+       option.setName('amount')
+       .setDescription('Die Anzahl der Coins, die entfernt werden sollen')
+       .setRequired(true))
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const user = interaction.options.getUser('user');

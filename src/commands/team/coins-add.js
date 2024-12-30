@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const Coin = require("../../../Datenbank/coindb"); // Korrigierter Import
+const Coin = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
