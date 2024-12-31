@@ -4,7 +4,7 @@ const coindb = require("../../../Datenbank/coindb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('coins')
-    .setDescription('» Zeigt die aktuellen Coins eines Benutzers an.')
+    .setDescription('» Zeigt die aktuellen Coins eines Benutzers an. 🪙')
     .addUserOption(option => option.setName('user').setDescription('Der Benutzer, dessen Coins angezeigt werden sollen')),
 
   async execute(interaction) {
