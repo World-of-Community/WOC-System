@@ -90,6 +90,54 @@ module.exports = {
               }
         }
 
+    // Fake Bot Account System
+    const suspiciousRoleID = '886989738244964362'; // Bann Rolle
+    const threadID = '1269998219266490538'; // ID des Moderation Logs
+
+
+    const username = member.user.username.toLowerCase();
+    const joinedRecently = (Date.now() - member.user.createdTimestamp) < 7 * 24 * 60 * 60 * 1000; // Account jünger als 7 Tage
+    const noAvatar = member.user.displayAvatarURL().includes('default');
+
+    // Kriterien für verdächtige Fake-Bots
+    const isSuspicious = !member.user.bot && // Keine echten Bots
+        (username.includes('bot') || username.includes('assistant')) && // Verdächtige Namen
+        (joinedRecently || noAvatar); // Kürzlich erstellt oder Standard-Avatar
+
+    if (isSuspicious) {
+        try {
+            // Rolle zuweisen
+            const role = member.guild.roles.cache.get(suspiciousRoleID);
+            if (role) {
+                await member.roles.add(role);
+                console.log(`Rolle "Gebannt" zugewiesen an: ${member.user.tag}`);
+            } else {
+                console.error('Die Rolle "Verdächtig" wurde nicht gefunden.');
+            }
+
+            // Embed erstellen
+            const embed = new EmbedBuilder()
+                .setTitle('⚠️ Verdächtiger Account erkannt')
+                .setDescription(`Ein verdächtiger Account wurde erkannt und markiert.\n\nBenutzername: ${member.user.tag} (${member.user.displayName})\nBenutzer-ID: ${member.id}\nErstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
+                .setColor('RED')
+                .setThumbnail(member.user.displayAvatarURL())
+                .setFooter({ text: 'Überprüfe den Account und treffe geeignete Maßnahmen.' })
+                .setTimestamp();
+
+            // Thread abrufen
+            const thread = await member.guild.channels.fetch(threadID);
+            if (thread && thread.isThread()) {
+                // Embed in den Thread senden
+                await thread.send({ embeds: [embed] });
+                console.log(`Embed in Thread gesendet: ${thread.name}`);
+            } else {
+                console.error('Thread mit der angegebenen ID wurde nicht gefunden oder ist kein Thread.');
+            }
+        } catch (error) {
+            console.error(`Fehler bei der Verarbeitung von ${member.user.tag}:`, error);
+        }
+    }
+
         const userData = await userdb.findOne({ userID: member.id })
         if (!userData) {
             const newUser = new userdb({
