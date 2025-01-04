@@ -112,7 +112,7 @@ module.exports = {
                 await member.roles.add(role);
                 console.log(`Rolle "Gebannt" zugewiesen an: ${member.user.tag}`);
             } else {
-                console.error('Die Rolle "Verdächtig" wurde nicht gefunden.');
+                console.error('Die Rolle "Gebannt" wurde nicht gefunden.');
             }
 
             // Embed erstellen
