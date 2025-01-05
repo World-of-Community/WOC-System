@@ -172,11 +172,12 @@ mongoose.connection.on('error', (err) => {
 });
 
 // Täglich um Mitternacht (Adventskalender)
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('43 16 * * *', async () => {
     const server = await serverdb.findOne({ guildID: '815919809379172354' });
     if(!server) return;
     const currentDate = new Date();
     const currentDay = new Date().getDate();
+    const currentMonth = currentDate.getMonth();
     const maxDay = 24;
     
     try {
@@ -198,7 +199,7 @@ cron.schedule('0 0 * * *', async () => {
                 .setCustomId(`advent_${i}`)
                 .setLabel(buttonData.label || i.toString())
                 .setStyle(buttonData.style || ButtonStyle.Primary)
-                .setDisabled(i > currentDay) // Zukünftige Tage deaktivieren
+                .setDisabled(i > currentDay || currentMonth !== 11) // Zukünftige Tage deaktivieren
         );
     
         if (currentRow.components.length === 5) {
