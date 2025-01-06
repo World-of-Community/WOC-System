@@ -2,10 +2,6 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitFie
 const fs = require('fs');
 const bandb = require("../../../Datenbank/bandb");
 
-// Folgende Punkte abarbeiten
-// Nutzer untereinander auflisten hinter den Namen in klammern also @User (Test) den banngrund wenn man bei /ban command ausführt
-// Embed aktualiseren (bearbeiten) sobald man jemanden bannt
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('banliste')

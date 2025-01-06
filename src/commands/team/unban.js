@@ -24,7 +24,7 @@ module.exports = {
             const isBanned = banList.has(user.id);
 
             if (!isBanned) {
-                return interaction.reply({ content: `> \`❌\` » ${user.displayName} ist nicht gebannt.`, ephemeral: true });
+                return interaction.reply({ content: `> \`❌\` » ${user} (${user.username} - ${user.displayName}) ist nicht gebannt.`, ephemeral: true });
             }
 
             // Unban the user
