@@ -44,7 +44,7 @@ module.exports = {
             try {
                 const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
                 if (!serverData || !serverData.partner || !serverData.partner.partners) {
-                    await interaction.respond([{ name: '❌ » Kein Partner gefunden', value: 'error' }]);
+                    await interaction.respond([{ name: '`❌` » Kein Partner gefunden', value: 'error' }]);
                     return;
                 }
 
@@ -54,7 +54,7 @@ module.exports = {
                     .slice(0, 25);
 
                 if (filtered.length === 0) {
-                    filtered.push({ name: '❌ » Kein Eintrag', value: 'Kein Eintrag' });
+                    filtered.push({ name: '`❌` » Kein Eintrag', value: 'Kein Eintrag' });
                 }
 
                 await interaction.respond(
@@ -79,7 +79,7 @@ module.exports = {
                 const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
 
                 if (!isValidInviteLink(invite)) {
-                    await interaction.reply({ content: '❌ » Der angegebene Einladungslink ist ungültig.', ephemeral: true });
+                    await interaction.reply({ content: '`❌` » Der angegebene Einladungslink ist ungültig.', ephemeral: true });
                     return;
                 }
 
@@ -92,10 +92,10 @@ module.exports = {
 
                 try {
                     await serverData.save();
-                    await interaction.reply({ content: `✅ » Der Server-Partner **${name}** (${owner}) wurde im Bereich **${kategorie}** erfolgreich hinzugefügt!`, ephemeral: true });
+                    await interaction.reply({ content: `> \`✅\` » Der Server-Partner **${name}** (${owner}) wurde im Bereich **${kategorie}** erfolgreich hinzugefügt!`, ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Speichern der Partnerdaten:', error);
-                    await interaction.reply({ content: '❌ » Fehler beim Speichern der Partnerdaten.', ephemeral: true });
+                    await interaction.reply({ content: '`❌` » Fehler beim Speichern der Partnerdaten.', ephemeral: true });
                 }
 
                 break;
@@ -108,7 +108,7 @@ module.exports = {
                     const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
 
                     if (!serverData || !serverData.partner || !serverData.partner.partners) {
-                        await interaction.reply({ content: '❌ » Keine Server-Partner zum Löschen gefunden.', ephemeral: true });
+                        await interaction.reply({ content: '`❌` » Keine Server-Partner zum Löschen gefunden.', ephemeral: true });
                         return;
                     }
 
@@ -117,17 +117,17 @@ module.exports = {
                     );
 
                     if (partnerIndex === -1) {
-                        await interaction.reply({ content: '❌ » Der angegebene Server-Partner wurde nicht gefunden.', ephemeral: true });
+                        await interaction.reply({ content: '`❌` » Der angegebene Server-Partner wurde nicht gefunden.', ephemeral: true });
                         return;
                     }
 
                     serverData.partner.partners.splice(partnerIndex, 1);
                     await serverData.save();
 
-                    await interaction.reply({ content: `✅ » Server-Partner **${partnerNameToDelete}** wurde erfolgreich gelöscht.`, ephemeral: true });
+                    await interaction.reply({ content: `> \`✅\` » Server-Partner **${partnerNameToDelete}** wurde erfolgreich gelöscht.`, ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Löschen des Partners:', error);
-                    await interaction.reply({ content: '❌ » Fehler beim Löschen des Partners.', ephemeral: true });
+                    await interaction.reply({ content: '`❌` » Fehler beim Löschen des Partners.', ephemeral: true });
                 }
 
                 break;
@@ -138,7 +138,7 @@ module.exports = {
                     const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
 
                     if (!serverData || !serverData.partner || !serverData.partner.partners || serverData.partner.partners.length === 0) {
-                        await interaction.reply({ content: '❌ » Keine Server-Partner zum Aktualisieren gefunden.', ephemeral: true });
+                        await interaction.reply({ content: '> `❌` » Keine Server-Partner zum Aktualisieren gefunden.', ephemeral: true });
                         return;
                     }
 
@@ -147,10 +147,10 @@ module.exports = {
                     const sentMessage = await channel.messages.fetch(serverData.partner.msg);
 
                     await sentMessage.edit({ embeds: [newEmbed] });
-                    await interaction.reply({ content: '✅ » Die Partnerliste wurde erfolgreich aktualisiert!', ephemeral: true });
+                    await interaction.reply({ content: '> `✅` » Die Partnerliste wurde erfolgreich aktualisiert!', ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Aktualisieren der Partnerliste:', error);
-                    await interaction.reply({ content: '❌ » Fehler beim Aktualisieren der Partnerliste.', ephemeral: true });
+                    await interaction.reply({ content: '> `❌` » Fehler beim Aktualisieren der Partnerliste.', ephemeral: true });
                 }
 
                 break;
@@ -172,7 +172,7 @@ function createPartnerListEmbed(serverData, interaction) {
 
     const description = serverData.partner.partners.length > 0
         ? serverData.partner.partners
-            .map((partner, index) => `${index + 1}. [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)?.user.username || 'Unbekannt'})`)
+            .map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)?.user.username || 'Unbekannt'})`)
             .join('\n')
         : '❌ » Keine Partner eingetragen';
 
