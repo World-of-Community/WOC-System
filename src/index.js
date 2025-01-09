@@ -172,7 +172,7 @@ mongoose.connection.on('error', (err) => {
 });
 
 // Täglich um Mitternacht (Adventskalender)
-cron.schedule('43 16 * * *', async () => {
+cron.schedule('00 00 * * *', async () => {
     const server = await serverdb.findOne({ guildID: '815919809379172354' });
     if(!server) return;
     const currentDate = new Date();
