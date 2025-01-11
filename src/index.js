@@ -1,8 +1,10 @@
 const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
-const file = fs.readFileSync('src/json/config.json', 'utf-8');
-const config = JSON.parse(file);
+const config = require('../src/json/config.json')
+const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
+const { ApiClient } = require('@twurple/api');
+const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
 const client = new Client({
     intents: [
@@ -25,6 +27,18 @@ const client = new Client({
         Partials.Reaction
     ],
 });
+
+/*
+const authProvider = new StaticAuthProvider({ clientId: config.twitch.clientId, clientSecret: config.twitch.clientSecret });
+const apiClient = new ApiClient({ authProvider });
+const listener = new EventSubWsListener({ apiClient });
+
+listener.start();
+
+listener.onStreamOnline('727437860', async (handler) => {
+    console.log(handler)
+})
+    */
 
 const buttonConfig = {
     1: { label: '1🎁', style: ButtonStyle.Primary },
