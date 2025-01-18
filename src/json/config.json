@@ -35,8 +35,8 @@
     ],
 
     "twitch": {
-        "clientId": "",
-        "clientSecret": "",
+        "clientId": "cyqewlruf64cb71xhbjmf6n9tdk1ab",
+        "clientSecret": "jnyvkcpopl4bnigh9kp83a09gx7pel",
         "clientToken": ""
     }
 }

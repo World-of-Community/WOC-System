@@ -88,19 +88,25 @@ module.exports = {
             }
         }
 
-        // Bump System (geht noch nicht)
+        // Bump System (überarbeitet)
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
 
         // Überprüfen, ob die Nachricht vom Disboard-Bot stammt und den erfolgreichen Bump bestätigt
-        if (message.author.id === disboardBotId && message.embeds.length > 0) {
+    if (message.author.id === disboardBotId && message.embeds.length > 0) {
         const embed = message.embeds[0];
 
         if (embed.description && embed.description.includes('Bump done')) {
-            // Benutzer, der den Bump ausgeführt hat
-            const member = message.guild.members.cache.get(message.interaction.user.id);
+            // Der Benutzer wird nicht direkt durch die Disboard-Bot-Nachricht identifiziert
+            const bumpUserId = embed.description.match(/<@!?(\d+)>/)?.[1]; // Extrahiere User-ID aus der Nachricht
+            if (!bumpUserId) {
+                return message.channel.send('> `❗` » Konnte den Benutzer, der den Bump ausgeführt hat, nicht ermitteln.');
+            }
 
-            if (!member) return;
+            const member = message.guild.members.cache.get(bumpUserId);
+            if (!member) {
+                return message.channel.send('> `❗` » Benutzer konnte nicht gefunden werden.');
+            }
 
             const role = message.guild.roles.cache.get(roleId);
             if (!role) {
@@ -114,16 +120,19 @@ module.exports = {
 
                 // Rolle nach 2 Stunden entfernen
                 setTimeout(async () => {
-                    await member.roles.remove(role);
-                    member.send({ content: `> \`❗\` » Deine Rolle ${role} ist gerade abgelaufen (Du hattest die Rolle für: \`2 Stunden\`)`, ephemeral: true });
+                    try {
+                        await member.roles.remove(role);
+                        member.send({ content: `> \`❗\` » Deine Rolle ${role} ist gerade abgelaufen (Du hattest die Rolle für: \`2 Stunden\`)`, ephemeral: true });
+                    } catch (error) {
+                        console.error(`Fehler beim Entfernen der Rolle: ${error}`);
+                    }
                 }, 7200000); // 2 Stunden in Millisekunden
             } catch (error) {
-                console.error(error);
-                message.channel.send({ content: '> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.', ephemeral: true });
+                console.error(`Fehler beim Zuweisen der Rolle: ${error}`);
+                message.channel.send('> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.');
             }
         }
     }
-
 
     // Konfiguration der Kanäle
     const CHANNEL_IDS = [
