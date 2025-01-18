@@ -4,6 +4,7 @@ const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
 const teamdb = require("../../Datenbank/teamdb");
+const bumpdb = require("../../Datenbank/bumpdb");
 
 const TeamRoleIds = [
     '959869691529154631', // Admin
@@ -21,6 +22,14 @@ module.exports = {
         if(!message.guild) return
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
+
+        if(
+            message.interaction?.commandName === 'bump' &&
+            message.applicationId === '302050872383242240' &&
+            message.guildId === '815919809379172354'
+        ) {
+            //// BUMP HANDLER
+        }
 
         // Teammitglied erwähnen Bot gibt Info Ticket Support
         if (!message.author.bot) {
