@@ -75,6 +75,24 @@ module.exports = {
             console.error('Fehler beim Senden der Nachricht:', err);
         }
 
+        try {
+            // Embed-Nachricht erstellen
+            const WillkommenDMEmbed = new EmbedBuilder()
+                .setTitle('`💖`-lich Willkommen!')
+                .setDescription(`Hallo ${member.user.username}, herzlich Willkommen auf **${member.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern? Kein Problem! benutze den Befehl \`/birthday set\` und trage dein Geburtstag ein.\n\nDu willst ein Regelbrecher melden der sich nicht an die Regeln hält? Benutze: \`/report <user> <grund>\`\n\nBitte verifiziere dich noch bei den <#815922286502346773> damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstigen Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>`)
+                .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Orange')
+                .setFooter({ text: 'Viel Spaß auf dem Server!', iconURL: member.guild.iconURL({ dynamic: true }) })
+                .setTimestamp();
+
+            // Sende die DM an den User
+            await member.send({ embeds: [WillkommenDMEmbed] });
+
+            console.log(`DM mit Willkommens-Embed an ${member.user.tag} gesendet.`);
+        } catch (error) {
+            console.error(`Konnte kein Willkommens-Embed DM an ${member.user.tag} senden:`, error);
+        }
+
         // Meilenstein 1.000+ Mitglieder erreicht
         const guild = member.guild;
 
@@ -135,24 +153,6 @@ module.exports = {
             }
         } catch (error) {
             console.error(`Fehler bei der Verarbeitung von ${member.user.tag}:`, error);
-        }
-
-        try {
-            // Embed-Nachricht erstellen
-            const WillkommenDMEmbed = new EmbedBuilder()
-                .setTitle('`💖`-lich Willkommen!')
-                .setDescription(`Hallo ${member.user.username}, herzlich Willkommen auf **${member.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern? Kein Problem! benutze den Befehl \`/birthday set\` und trage dein Geburtstag ein.\n\nDu willst ein Regelbrecher melden der sich nicht an die Regeln hält? Benutze: \`/report <user> <grund>\`\n\nBitte verifiziere dich noch bei den <#815922286502346773> damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstigen Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>`)
-                .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-                .setColor('Orange')
-                .setFooter({ text: 'Viel Spaß auf dem Server!', iconURL: member.guild.iconURL({ dynamic: true }) })
-                .setTimestamp();
-
-            // Sende die DM an den User
-            await member.send({ embeds: [WillkommenDMEmbed] });
-
-            console.log(`DM mit Willkommens-Embed an ${member.user.tag} gesendet.`);
-        } catch (error) {
-            console.error(`Konnte kein Willkommens-Embed DM an ${member.user.tag} senden:`, error);
         }
     }
 
