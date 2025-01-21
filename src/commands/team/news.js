@@ -64,7 +64,7 @@ module.exports = {
       });
 
       // Bestätigung der Interaktion
-      await interaction.reply({ content: 'Die Neuigkeiten wurden an dich gesendet!', ephemeral: true });
+      await interaction.reply({ content: '> `📰` » Die Neuigkeiten wurden an dich gesendet!', ephemeral: true });
     } catch (error) {
       console.error(`Fehler beim Senden der DM an ${interaction.user.username}:`, error);
       await interaction.reply({ content: 'Es gab einen Fehler beim Senden der Nachricht per DM.', ephemeral: true });
@@ -80,8 +80,10 @@ module.exports.buttonInteraction = async (interaction) => {
       // Hier könnte eine Liste oder Datenbank verwendet werden, um den Status zu speichern
       console.log(`${interaction.user.username} hat die Neuigkeiten deaktiviert.`);
 
-      await interaction.reply({
+      // Antwort auf die Button-Interaktion
+      await interaction.update({
         content: 'Du wirst keine weiteren Neuigkeiten per DM erhalten.',
+        components: [], // Entferne die Buttons
         ephemeral: true,
       });
     } catch (error) {
@@ -96,8 +98,10 @@ module.exports.buttonInteraction = async (interaction) => {
       // Hier könnte eine Funktion zum Wiederaktivieren der Neuigkeiten aufgerufen werden
       console.log(`${interaction.user.username} hat die Neuigkeiten wieder aktiviert.`);
 
-      await interaction.reply({
+      // Antwort auf die Button-Interaktion
+      await interaction.update({
         content: 'Du wirst wieder Neuigkeiten per DM erhalten.',
+        components: [], // Entferne die Buttons
         ephemeral: true,
       });
     } catch (error) {
@@ -106,3 +110,4 @@ module.exports.buttonInteraction = async (interaction) => {
     }
   }
 };
+
