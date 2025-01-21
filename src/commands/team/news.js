@@ -35,7 +35,7 @@ module.exports = {
 
     // Wenn der Benutzer die Nachrichten deaktiviert hat, sende keine DM
     if (newsStatus && !newsStatus.isNewsEnabled) {
-      await interaction.reply({ content: '> Du hast die Neuigkeiten deaktiviert und wirst keine DMs mehr erhalten.', ephemeral: true });
+      await interaction.reply({ content: '> `🔕` » Du hast die Neuigkeiten deaktiviert und wirst keine DMs mehr erhalten.', ephemeral: true });
       return;
     }
 
@@ -43,6 +43,7 @@ module.exports = {
       .setTitle(title) // Setzt den Titel der Nachricht
       .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
       .setColor('Orange')
+      .setFooter({ text: `${interaction.guild.name} - Neuigkeiten System`, iconURL: `${interaction.guild.iconURL()}`})
       .setTimestamp();
 
     // Sende Nachricht im angegebenen Kanal
