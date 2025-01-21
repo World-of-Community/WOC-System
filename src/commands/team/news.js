@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, PermissionFlagsBits, ChannelType } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
-const NewsStatus = require("../../../Datenbank/newsdb");
+const { NewsStatus } = require("../../../Datenbank/newsdb");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -28,6 +28,17 @@ module.exports = {
     const title = interaction.options.getString('title');
     const nachricht = interaction.options.getString('nachricht');
     const kanal = interaction.options.getChannel('kanal');
+    
+    // Hole den News-Status des Benutzers aus der DB
+    const userId = interaction.user.id;
+    const newsStatus = await NewsStatus.findOne({ userId });
+
+    // Wenn der Benutzer die Nachrichten deaktiviert hat, sende keine DM
+    if (newsStatus && !newsStatus.isNewsEnabled) {
+      await interaction.reply({ content: '> Du hast die Neuigkeiten deaktiviert und wirst keine DMs mehr erhalten.', ephemeral: true });
+      return;
+    }
+
     const embed = new EmbedBuilder()
       .setTitle(title) // Setzt den Titel der Nachricht
       .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
