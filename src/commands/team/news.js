@@ -30,7 +30,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle(title) // Setzt den Titel der Nachricht
       .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
-      .setColor('#0099ff')
+      .setColor('Orange')
       .setTimestamp();
 
     // Sende Nachricht im angegebenen Kanal
