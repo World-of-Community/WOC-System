@@ -61,7 +61,7 @@ module.exports = {
         // Versuche, das Embed per DM zu senden
         try {
             await interaction.user.send({ embeds: [embedToSend] });
-            await interaction.reply({ content: 'Das Test-Embed wurde dir per DM gesendet.', ephemeral: true });
+            await interaction.reply({ content: '> `✅` » Das Test-Embed wurde dir per DM gesendet.', ephemeral: true });
         } catch (error) {
             console.error('Fehler beim Senden der DM:', error);
             await interaction.reply({ content: 'Es gab einen Fehler beim Senden der DM.', ephemeral: true });
