@@ -4,7 +4,12 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('news')
-    .setDescription('Sendet eine Nachricht im Kanal und per DM an alle Mitglieder.')
+    .setDescription('Sendet eine Nachricht mit einem Titel im Kanal und per DM an alle Mitglieder.')
+    .addStringOption(option => 
+      option.setName('title')
+        .setDescription('Der Titel der Nachricht')
+        .setRequired(true)
+    )
     .addStringOption(option => 
       option.setName('nachricht')
         .setDescription('Die Nachricht, die gesendet werden soll')
@@ -19,10 +24,11 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Erforderliche Berechtigungen
 
   async execute(interaction) {
+    const title = interaction.options.getString('title');
     const nachricht = interaction.options.getString('nachricht');
     const kanal = interaction.options.getChannel('kanal');
     const embed = new EmbedBuilder()
-      .setTitle('Neuigkeiten')
+      .setTitle(title) // Setzt den Titel der Nachricht
       .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
       .setColor('#0099ff')
       .setTimestamp();
