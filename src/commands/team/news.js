@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, PermissionFlagsBits, ChannelType } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
+const NewsStatus = require("../../../Datenbank/newsdb");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -30,7 +31,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle(title) // Setzt den Titel der Nachricht
       .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
-      .setColor('#0099ff')
+      .setColor('Orange')
       .setTimestamp();
 
     // Sende Nachricht im angegebenen Kanal
@@ -39,12 +40,14 @@ module.exports = {
     // Button für die Deaktivierung der Benachrichtigungen
     const disableButton = new ButtonBuilder()
       .setCustomId('disable_news')
-      .setLabel('Deaktivieren der Neuigkeiten')
+      .setLabel('Neuigkeiten Deaktivieren')
+      .setEmoji('🔕')
       .setStyle(ButtonStyle.Danger); // Danger-Stil für den Button
 
     const enableButton = new ButtonBuilder()
       .setCustomId('enable_news')
       .setLabel('Neuigkeiten Aktivieren')
+      .setEmoji('🔔')
       .setStyle(ButtonStyle.Success); // Success-Stil für den Button
 
     const row = new ActionRowBuilder().addComponents(disableButton, enableButton);
@@ -55,7 +58,7 @@ module.exports = {
       const embedToSend = new EmbedBuilder()
         .setTitle(title) // Setzt den Titel der Nachricht
         .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
-        .setColor('#0099ff')
+        .setColor('Orange')
         .setTimestamp();
 
       await dmChannel.send({
@@ -67,47 +70,43 @@ module.exports = {
       await interaction.reply({ content: '> `📰` » Die Neuigkeiten wurden an dich gesendet!', ephemeral: true });
     } catch (error) {
       console.error(`Fehler beim Senden der DM an ${interaction.user.username}:`, error);
-      await interaction.reply({ content: 'Es gab einen Fehler beim Senden der Nachricht per DM.', ephemeral: true });
+      await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Senden der Nachricht per DM.', ephemeral: true });
     }
   },
 };
 
 // Interaktion für den Button
 module.exports.buttonInteraction = async (interaction) => {
-  if (interaction.customId === 'disable_news') {
-    try {
-      const userId = interaction.user.id;
-      // Hier könnte eine Liste oder Datenbank verwendet werden, um den Status zu speichern
-      console.log(`${interaction.user.username} hat die Neuigkeiten deaktiviert.`);
+  const userId = interaction.user.id;
+  try {
+    // Hole den News-Status des Benutzers aus der DB
+    const newsStatus = await NewsStatus.findOne({ userId });
 
-      // Antwort auf die Button-Interaktion
-      await interaction.update({
-        content: 'Du wirst keine weiteren Neuigkeiten per DM erhalten.',
-        components: [], // Entferne die Buttons
-        ephemeral: true,
-      });
-    } catch (error) {
-      console.error('Fehler bei der Deaktivierung der Neuigkeiten:', error);
-      await interaction.reply({ content: 'Es gab einen Fehler beim Deaktivieren der Neuigkeiten.', ephemeral: true });
+    if (interaction.customId === 'disable_news') {
+      if (newsStatus) {
+        newsStatus.isNewsEnabled = false;
+        await newsStatus.save(); // Speichere den Status in der DB
+      } else {
+        // Wenn der Benutzer noch keinen Eintrag hat, erstelle einen
+        await NewsStatus.create({ userId, isNewsEnabled: false });
+      }
+
+      await interaction.reply({ content: '> `🔕` » Du wirst keine weiteren Neuigkeiten per DM erhalten.', ephemeral: true });
     }
-  }
 
-  if (interaction.customId === 'enable_news') {
-    try {
-      const userId = interaction.user.id;
-      // Hier könnte eine Funktion zum Wiederaktivieren der Neuigkeiten aufgerufen werden
-      console.log(`${interaction.user.username} hat die Neuigkeiten wieder aktiviert.`);
+    if (interaction.customId === 'enable_news') {
+      if (newsStatus) {
+        newsStatus.isNewsEnabled = true;
+        await newsStatus.save(); // Speichere den Status in der DB
+      } else {
+        // Wenn der Benutzer noch keinen Eintrag hat, erstelle einen
+        await NewsStatus.create({ userId, isNewsEnabled: true });
+      }
 
-      // Antwort auf die Button-Interaktion
-      await interaction.update({
-        content: 'Du wirst wieder Neuigkeiten per DM erhalten.',
-        components: [], // Entferne die Buttons
-        ephemeral: true,
-      });
-    } catch (error) {
-      console.error('Fehler bei der Aktivierung der Neuigkeiten:', error);
-      await interaction.reply({ content: 'Es gab einen Fehler beim Aktivieren der Neuigkeiten.', ephemeral: true });
+      await interaction.reply({ content: '> `🔔` » Du wirst wieder Neuigkeiten per DM erhalten.', ephemeral: true });
     }
+  } catch (error) {
+    console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error);
+    await interaction.reply({ content: '> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.', ephemeral: true });
   }
 };
-
