@@ -54,7 +54,7 @@ module.exports = {
       .setCustomId('disable_news')
       .setLabel('Neuigkeiten Deaktivieren')
       .setEmoji('🔕')
-      .setStyle(ButtonStyle.Danger); // Danger-Stil für den Button
+      .setStyle(ButtonStyle.Secondary); // Danger-Stil für den Button
 
     const enableButton = new ButtonBuilder()
       .setCustomId('enable_news')
