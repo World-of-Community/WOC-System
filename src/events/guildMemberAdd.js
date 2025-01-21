@@ -3,10 +3,12 @@ const client = require('../index');
 const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
+const { once } = require("events");
 //const { welcomechannel } = require('../json/config.json');
 
 module.exports = {
     name: Events.GuildMemberAdd,
+    once: false,
     async execute(member) {
 
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
