@@ -3,6 +3,7 @@ const userdb = require("../../Datenbank/userdb");
 const config = require("../json/config.json")
 const vorschlagEmitter = require('../custom_events/vorschlag');
 const Advent = require("../../Datenbank/adventdb");
+const NewsStatus = require("../../../Datenbank/newsdb");
 
 // Belohnungen definieren
 const rewards = {
@@ -39,37 +40,38 @@ module.exports = {
         if (interaction.isButton()) {
 
             const userId = interaction.user.id;
-            try {
-              // Hole den News-Status des Benutzers aus der DB
-              const newsStatus = await NewsStatus.findOne({ userId });
+  
+  try {
+    // Hole den News-Status des Benutzers aus der DB
+    const newsStatus = await NewsStatus.findOne({ userId });
 
-            if (interaction.customId === 'disable_news') {
-                if (newsStatus) {
-                  newsStatus.isNewsEnabled = false;
-                  await newsStatus.save(); // Speichere den Status in der DB
-                } else {
-                // Wenn der Benutzer noch keinen Eintrag hat, erstelle einen
-                await NewsStatus.create({ userId, isNewsEnabled: false });
-                }
+    if (interaction.customId === 'disable_news') {
+      if (newsStatus) {
+        newsStatus.isNewsEnabled = false;
+        await newsStatus.save(); // Speichere den Status in der DB
+      } else {
+        // Wenn der Benutzer noch keinen Eintrag hat, erstelle einen
+        await NewsStatus.create({ userId, isNewsEnabled: false });
+      }
 
-                await interaction.reply({ content: '> `🔕` » Du wirst keine weiteren Neuigkeiten per DM erhalten.', ephemeral: true });
-            }
+      await interaction.reply({ content: '> `🔕` » Du wirst keine weiteren Neuigkeiten per DM erhalten.', ephemeral: true });
+    }
 
-            if (interaction.customId === 'enable_news') {
-              if (newsStatus) {
-                newsStatus.isNewsEnabled = true;
-                await newsStatus.save(); // Speichere den Status in der DB
-                } else {
-                // Wenn der Benutzer noch keinen Eintrag hat, erstelle einen
-                await NewsStatus.create({ userId, isNewsEnabled: true });
-            }
+    if (interaction.customId === 'enable_news') {
+      if (newsStatus) {
+        newsStatus.isNewsEnabled = true;
+        await newsStatus.save(); // Speichere den Status in der DB
+      } else {
+        // Wenn der Benutzer noch keinen Eintrag hat, erstelle einen
+        await NewsStatus.create({ userId, isNewsEnabled: true });
+      }
 
-            await interaction.reply({ content: '> `🔔` » Du wirst wieder Neuigkeiten per DM erhalten.', ephemeral: true });
-            }
-            } catch (error) {
-              console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error);
-              await interaction.reply({ content: '> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.', ephemeral: true });
-            }
+      await interaction.reply({ content: '> `🔔` » Du wirst wieder Neuigkeiten per DM erhalten.', ephemeral: true });
+    }
+  } catch (error) {
+    console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error); // Logge den Fehler mit Details
+    await interaction.reply({ content: '> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.', ephemeral: true });
+  }
 
             const now = new Date();
           
