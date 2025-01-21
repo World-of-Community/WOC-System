@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, PermissionFlagsBits, ChannelType } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
-const { NewsStatus } = require("../../../Datenbank/newsdb");
+const NewsStatus = require("../../../Datenbank/newsdb");
 
 module.exports = {
   data: new SlashCommandBuilder()
