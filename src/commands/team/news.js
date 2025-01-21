@@ -40,7 +40,7 @@ module.exports = {
     const disableButton = new ButtonBuilder()
       .setCustomId('disable_news')
       .setLabel('Deaktivieren der Neuigkeiten')
-      .setStyle(ButtonStyle.Danger); // Danger-Stil für den Button
+      .setStyle(ButtonStyle.Secondary); // Danger-Stil für den Button
 
     const row = new ActionRowBuilder().addComponents(disableButton);
 
