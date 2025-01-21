@@ -3,7 +3,7 @@ const userdb = require("../../Datenbank/userdb");
 const config = require("../json/config.json")
 const vorschlagEmitter = require('../custom_events/vorschlag');
 const Advent = require("../../Datenbank/adventdb");
-const NewsStatus = require("../../../Datenbank/newsdb");
+const NewsStatus = require("../../Datenbank/newsdb");
 
 // Belohnungen definieren
 const rewards = {
