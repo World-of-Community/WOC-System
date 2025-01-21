@@ -71,6 +71,7 @@ module.exports = {
         .setTitle(title) // Setzt den Titel der Nachricht
         .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
         .setColor('Orange')
+        .setFooter({ text: `${interaction.guild.name} - Neuigkeiten System`, iconURL: `${interaction.guild.iconURL()}`})
         .setTimestamp();
 
       await dmChannel.send({
