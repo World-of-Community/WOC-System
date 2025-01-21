@@ -5,6 +5,12 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('news')
     .setDescription('Sendet eine Nachricht mit einem Titel im Kanal und per DM an alle Mitglieder.')
+    .addChannelOption(option =>
+        option.setName('kanal')
+          .setDescription('Der Kanal, in dem die Nachricht gesendet werden soll')
+          .setRequired(true)
+          .addChannelTypes(ChannelType.GuildText) // Nur Textkanäle auswählen
+      )
     .addStringOption(option => 
       option.setName('title')
         .setDescription('Der Titel der Nachricht')
@@ -15,18 +21,12 @@ module.exports = {
         .setDescription('Die Nachricht, die gesendet werden soll')
         .setRequired(true)
     )
-    .addChannelOption(option =>
-      option.setName('kanal')
-        .setDescription('Der Kanal, in dem die Nachricht gesendet werden soll')
-        .setRequired(true)
-        .addChannelTypes(ChannelType.GuildText) // Nur Textkanäle auswählen
-    )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Erforderliche Berechtigungen
 
   async execute(interaction) {
+    const kanal = interaction.options.getChannel('kanal');
     const title = interaction.options.getString('title');
     const nachricht = interaction.options.getString('nachricht');
-    const kanal = interaction.options.getChannel('kanal');
     const embed = new EmbedBuilder()
       .setTitle(title) // Setzt den Titel der Nachricht
       .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
