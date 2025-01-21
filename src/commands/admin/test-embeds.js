@@ -21,10 +21,10 @@ module.exports = {
         // Erstellen der Embeds für die Auswahl
         const WillkommenDMEmbed = new EmbedBuilder()
                 .setTitle('`💖`-lich Willkommen!')
-                .setDescription(`Hallo ${member.user.username}, herzlich Willkommen auf **${member.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern? Kein Problem! benutze den Befehl \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\nDu willst ein Regelbrecher melden der sich nicht an die Regeln hält? Benutze: \`/report <user> <grund>\`\n» Das ausnutzen des Report Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#815922286502346773> damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstigen Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>`)
-                .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+                .setDescription(`Hallo ${interaction.user.username}, herzlich Willkommen auf **${interaction.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern? Kein Problem! benutze den Befehl \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\nDu willst ein Regelbrecher melden der sich nicht an die Regeln hält? Benutze: \`/report <user> <grund>\`\n» Das ausnutzen des Report Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#815922286502346773> damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstigen Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>`)
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setColor('Orange')
-                .setFooter({ text: 'Viel Spaß auf dem Server!', iconURL: member.guild.iconURL({ dynamic: true }) })
+                .setFooter({ text: 'Viel Spaß auf dem Server!', iconURL: interaction.guild.iconURL({ dynamic: true }) })
                 .setTimestamp();
 
         const InfoDMEmbed = new EmbedBuilder()
@@ -68,4 +68,3 @@ module.exports = {
         }
     },
 };
-
