@@ -11,6 +11,24 @@ module.exports = {
     once: false,
     async execute(member) {
 
+        try {
+            // Embed-Nachricht erstellen
+            const WillkommenDMEmbed = new EmbedBuilder()
+                .setTitle('`💖`-lich Willkommen!')
+                .setDescription(`Hallo ${member.user.username}, herzlich Willkommen auf **${member.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern? Kein Problem! benutze den Befehl \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\nDu willst ein Regelbrecher melden der sich nicht an die Regeln hält? Benutze: \`/report <user> <grund>\`\n» Das ausnutzen des Report Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#815922286502346773> damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstigen Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>`)
+                .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Orange')
+                .setFooter({ text: 'Viel Spaß auf dem Server!', iconURL: member.guild.iconURL({ dynamic: true }) })
+                .setTimestamp();
+
+            // Sende die DM an den User
+            await member.send({ embeds: [WillkommenDMEmbed] });
+
+            console.log(`DM mit Willkommens-Embed an ${member.user.tag} gesendet.`);
+        } catch (error) {
+            console.error(`Konnte kein Willkommens-Embed DM an ${member.user.tag} senden:`, error);
+        }
+
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
         if (member.user.bot) return; 
         if (serverData.deactivated.includes("willkommensnachrichten")) return;
@@ -61,38 +79,6 @@ module.exports = {
             await member.roles.add(mitglied);
         } catch (error) {
             console.error('Fehler beim Hinzufügen der Rolle:', error);
-        }
-
-        // Server Regeln Ping
-        const channel = member.guild.channels.cache.get('815922286502346773');
-        if (!channel) return console.error('Kanal wurde nicht gefunden.');
-
-        try {
-            const message = await channel.send(`Willkommen auf unserem Discord-Server, ${member}! Bitte Verifiziere dich bei den Server-Regeln`);
-
-            setTimeout(() => {
-                message.delete();
-            }, 5 * 60 * 1000); 
-        } catch (err) {
-            console.error('Fehler beim Senden der Nachricht:', err);
-        }
-
-        try {
-            // Embed-Nachricht erstellen
-            const WillkommenDMEmbed = new EmbedBuilder()
-                .setTitle('`💖`-lich Willkommen!')
-                .setDescription(`Hallo ${member.user.username}, herzlich Willkommen auf **${member.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern? Kein Problem! benutze den Befehl \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\nDu willst ein Regelbrecher melden der sich nicht an die Regeln hält? Benutze: \`/report <user> <grund>\`\n» Das ausnutzen des Report Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#815922286502346773> damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstigen Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>`)
-                .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-                .setColor('Orange')
-                .setFooter({ text: 'Viel Spaß auf dem Server!', iconURL: member.guild.iconURL({ dynamic: true }) })
-                .setTimestamp();
-
-            // Sende die DM an den User
-            await member.send({ embeds: [WillkommenDMEmbed] });
-
-            console.log(`DM mit Willkommens-Embed an ${member.user.tag} gesendet.`);
-        } catch (error) {
-            console.error(`Konnte kein Willkommens-Embed DM an ${member.user.tag} senden:`, error);
         }
 
         // Meilenstein 1.000+ Mitglieder erreicht
