@@ -589,15 +589,15 @@ cron.schedule('0 0 * * *', async () => {
             await birthdaymessage.react("<a:herzen:974633994840854608>");
             await birthdaymessage.react("<a:Cool:915211628755169301>");
 
-        } else {
-            const birthdayChannel = client.channels.cache.get("1243964646449483788");
-            const message = await birthdayChannel.send({
-                content: "<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*",
-            });
+        } //else {
+          //  const birthdayChannel = client.channels.cache.get("1243964646449483788");
+          //  const message = await birthdayChannel.send({
+          //      content: "<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*",
+          //  });
 
-            await message.react("<a:herzen:974633994840854608>");
-            await message.react("<a:Cool:915211628755169301>");
-        }
+          //  await message.react("<a:herzen:974633994840854608>");
+          //  await message.react("<a:Cool:915211628755169301>");
+        //}
     } catch (error) {
         console.error("Fehler beim Verarbeiten der Geburtstage:", error);
     }
