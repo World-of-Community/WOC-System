@@ -53,7 +53,7 @@ module.exports = {
 
         const serverEmbed = new EmbedBuilder()
             .setTitle(`${interaction.guild.name} - Server Information`)
-            .setDescription(`> \`⏰\` » **Server Erstellt:** ${createdAt} (${joinedAt})\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount.toLocaleString()}\`\n> \`👤\` » **User:** \`${userCount.toLocaleString()}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers.toLocaleString()}\`\n> \`📈\` » **Erreichte Useranzahl:** \`${serverData.highestUserCount.toLocaleString()}\`\n\n> <a:nitro:1186636151335944283> » Boost Level: **${guild.premiumTier}** (**${interaction.guild.premiumSubscriptionCount}** Boosts)\n> \`💖\` » **Server Booster:** ${boosterMentions}\n\n> \`🎭\` » Wir haben aktuell **${emojiCount}** Emotes.`)
+            .setDescription(`> \`⏰\` » **Server Erstellt:** ${createdAt} (${joinedAt})\n> \`👥\` » **Mitglieder:** \`${interaction.guild.memberCount.toLocaleString("de-DE")}\`\n> \`👤\` » **User:** \`${userCount.toLocaleString("de-DE")}\`\n> \`⚙️\` » **Bots:** \`${botCount}\`\n> \`🟢\` » **Online:** \`${onlineMembers.toLocaleString("de-DE")}\`\n> \`📈\` » **Erreichte Useranzahl:** \`${serverData.highestUserCount.toLocaleString("de-DE")}\`\n\n> <a:nitro:1186636151335944283> » Boost Level: **${guild.premiumTier}** (**${interaction.guild.premiumSubscriptionCount}** Boosts)\n> \`💖\` » **Server Booster:** ${boosterMentions}\n\n> \`🎭\` » Wir haben aktuell **${emojiCount}** Emotes.`)
             .setColor('Blurple')
             .setThumbnail(guild.iconURL({ dynamic: true }))
             .setFooter({ text: `${interaction.guild.name} | Server Information`, iconURL: `${interaction.guild.iconURL()}` });
