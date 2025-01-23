@@ -603,6 +603,81 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 
+// Free Games
+
+// Zum Speichern der letzten kostenlosen Spiele
+const previousGames = { epic: [], steam: [] };
+
+// Funktion, um die kostenlosen Spiele von Epic Games zu bekommen
+async function getEpicGamesFreebies() {
+    const response = await fetch('https://www.freemegames.io/api/epic');
+    const data = await response.json();
+    return data;
+}
+
+// Funktion, um die kostenlosen Spiele von Steam zu bekommen
+async function getSteamFreeGames() {
+    const url = 'https://api.steampowered.com/ISteamApps/GetAppList/v2/';
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // Filterung der kostenlosen Spiele (Free-to-Play)
+    const freeGames = data.applist.apps.filter(app => app.free);
+    return freeGames;
+}
+
+// Funktion zum Vergleichen und Senden des Embeds
+async function checkAndSendFreeGames(channel) {
+    const epicGamesFreebies = await getEpicGamesFreebies();
+    const steamFreeGames = await getSteamFreeGames();
+
+    let newEpicGames = epicGamesFreebies.filter(game => !previousGames.epic.includes(game));
+    let newSteamGames = steamFreeGames.filter(game => !previousGames.steam.includes(game));
+
+    // Wenn neue Spiele von Epic Games verfügbar sind
+    if (newEpicGames.length) {
+        const epicEmbed = new EmbedBuilder()
+            .setColor(0x00AE86)
+            .setTitle('🎮 Neue Gratis Spiele auf Epic Games!')
+            .setDescription('Hier sind die aktuellen kostenlosen Spiele von Epic Games:')
+            .addFields(
+                { name: 'Epic Games', value: newEpicGames.join('\n'), inline: false }
+            )
+            .setFooter({ text: 'Genieße das Spielen!' })
+            .setTimestamp();
+
+        await channel.send({ embeds: [epicEmbed] });
+        previousGames.epic = [...previousGames.epic, ...newEpicGames];
+    }
+
+    // Wenn neue Spiele von Steam verfügbar sind
+    if (newSteamGames.length) {
+        const steamEmbed = new EmbedBuilder()
+            .setColor(0x00AE86)
+            .setTitle('🎮 Neue Gratis Spiele auf Steam!')
+            .setDescription('Hier sind die aktuellen kostenlosen Spiele von Steam:')
+            .addFields(
+                { name: 'Steam', value: newSteamGames.map(game => game.name).join('\n'), inline: false }
+            )
+            .setFooter({ text: 'Genieße das Spielen!' })
+            .setTimestamp();
+
+        await channel.send({ embeds: [steamEmbed] });
+        previousGames.steam = [...previousGames.steam, ...newSteamGames];
+    }
+}
+
+    // Überprüfung alle 1 Stunde (kann angepasst werden)
+    setInterval(async () => {
+        const channel = client.channels.cache.get('1332119668697202783'); // Channel-ID hier einfügen
+        if (channel) {
+            await checkAndSendFreeGames(channel);
+        } else {
+            console.log("Channel nicht gefunden.");
+        }
+    }, 1 * 60 * 60 * 1000); // Alle 1 Stunden
+
+
 // Werbung
 setInterval( async () => {
     try {
