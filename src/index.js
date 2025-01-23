@@ -620,14 +620,20 @@ async function getSteamFreeGames() {
     const url = 'https://api.steampowered.com/ISteamApps/GetAppList/v2/';
     const response = await fetch(url);
     const data = await response.json();
-    
-    // Filterung der kostenlosen Spiele (Free-to-Play)
+
+    // Hier holen wir uns Details der Spiele, die kostenlos sind
     const freeGames = data.applist.apps.filter(app => app.free);
-    return freeGames;
+    const steamGameDetails = await Promise.all(freeGames.map(async (game) => {
+        const gameInfo = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.appid}`);
+        const gameData = await gameInfo.json();
+        return gameData[game.appid].data;
+    }));
+
+    return steamGameDetails;
 }
 
 // Funktion zum Vergleichen und Senden des Embeds
-async function checkAndSendFreeGames(channel) {
+async function checkAndSendFreeGames(channel, guild) {
     const epicGamesFreebies = await getEpicGamesFreebies();
     const steamFreeGames = await getSteamFreeGames();
 
@@ -637,13 +643,24 @@ async function checkAndSendFreeGames(channel) {
     // Wenn neue Spiele von Epic Games verfügbar sind
     if (newEpicGames.length) {
         const epicEmbed = new EmbedBuilder()
-            .setColor(0x00AE86)
-            .setTitle('🎮 Neue Gratis Spiele auf Epic Games!')
+            .setAuthor({ name: 'Erhältlich bei Epic Games', iconURL: 'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg' })
+            .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${newEpicGames[0].name}](https://www.epicgames.com/store/de/p/${newEpicGames[0].id})`) // Hyperlink zum Spiel
             .setDescription('Hier sind die aktuellen kostenlosen Spiele von Epic Games:')
             .addFields(
-                { name: 'Epic Games', value: newEpicGames.join('\n'), inline: false }
+                {
+                    name: '💰 𑁉 **DAS ANGEBOT**',
+                    value: `> <:Pfeil:1119709908540076124> ${newEpicGames[0].description}\n- **Kosten:** ~${newEpicGames[0].original_price}~ - GRATIS!\n- **Angebot endet:** ${new Date(newEpicGames[0].offer_end_timestamp * 1000).toLocaleString()}`,
+                    inline: true
+                },
+                {
+                    name: '🎮 𑁉 **SPIEL DETAILS**',
+                    value: `- **Bewertung:** ${newEpicGames[0].recommended_reviews || 'Keine Bewertung'}`,
+                    inline: true
+                }
             )
-            .setFooter({ text: 'Genieße das Spielen!' })
+            .setColor(Math.floor(Math.random() * 16777215)) // Zufällige Farbe
+            .setImage(newEpicGames[0].image_url) // Das Bild des Spiels
+            .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & freestuffbot.xyz!', iconURL: `${guild.iconURL()}` })
             .setTimestamp();
 
         await channel.send({ embeds: [epicEmbed] });
@@ -653,13 +670,24 @@ async function checkAndSendFreeGames(channel) {
     // Wenn neue Spiele von Steam verfügbar sind
     if (newSteamGames.length) {
         const steamEmbed = new EmbedBuilder()
-            .setColor(0x00AE86)
-            .setTitle('🎮 Neue Gratis Spiele auf Steam!')
-            .setDescription('Hier sind die aktuellen kostenlosen Spiele von Steam:')
+            .setAuthor({ name: 'Erhältlich bei Steam', iconURL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/1024px-Steam_icon_logo.svg.png' })
+            .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${newSteamGames[0].name}](https://store.steampowered.com/app/${newSteamGames[0].steam_appid})`) // Hyperlink zum Spiel
+            .setDescription(`> <:Pfeil:1119709908540076124> ${newSteamGames[0].short_description || 'Keine Beschreibung verfügbar.'}`)
             .addFields(
-                { name: 'Steam', value: newSteamGames.map(game => game.name).join('\n'), inline: false }
+                {
+                    name: '💰 𑁉 **DAS ANGEBOT**',
+                    value: `- **Kosten:** ~${newSteamGames[0].price_overview ? newSteamGames[0].price_overview.final / 100 : 'Keine Angabe'}€~ - **GRATIS!**\n- **Angebot endet:** ${new Date(newSteamGames[0].due_date * 1000).toLocaleString()}`,
+                    inline: true
+                },
+                {
+                    name: '🎮 𑁉 **SPIEL DETAILS**',
+                    value: `- **Bewertung:** ${newSteamGames[0].recommended_reviews || 'Keine Bewertung'}`,
+                    inline: true
+                }
             )
-            .setFooter({ text: 'Genieße das Spielen!' })
+            .setColor(Math.floor(Math.random() * 16777215)) // Zufällige Farbe
+            .setImage(newSteamGames[0].header_image) // Das Bild des Spiels
+            .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & freestuffbot.xyz!', iconURL: `${guild.iconURL()}` })
             .setTimestamp();
 
         await channel.send({ embeds: [steamEmbed] });
@@ -667,16 +695,16 @@ async function checkAndSendFreeGames(channel) {
     }
 }
 
-    // Überprüfung alle 1 Stunde (kann angepasst werden)
-    setInterval(async () => {
-        const channel = client.channels.cache.get('1332119668697202783'); // Channel-ID hier einfügen
-        if (channel) {
-            await checkAndSendFreeGames(channel);
-        } else {
-            console.log("Channel nicht gefunden.");
-        }
-    }, 1 * 60 * 60 * 1000); // Alle 1 Stunden
-
+// Überprüfung alle 1 Stunde (kann angepasst werden)
+setInterval(async () => {
+    const channel = client.channels.cache.get('1332119668697202783'); // Channel-ID hier einfügen
+    const guild = client.guilds.cache.get('815919809379172354'); // Stelle sicher, dass du die Guild-Instanz hast
+    if (channel) {
+        await checkAndSendFreeGames(channel, guild);
+    } else {
+        console.log("Channel nicht gefunden.");
+    }
+}, 1 * 60 * 60 * 1000); // Alle 1 Stunde
 
 // Werbung
 setInterval( async () => {
