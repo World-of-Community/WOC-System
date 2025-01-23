@@ -645,11 +645,11 @@ async function checkAndSendFreeGames(channel, guild) {
         const epicEmbed = new EmbedBuilder()
             .setAuthor({ name: 'Erhältlich bei Epic Games', iconURL: 'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg' })
             .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${newEpicGames[0].name}](https://www.epicgames.com/store/de/p/${newEpicGames[0].id})`) // Hyperlink zum Spiel
-            .setDescription('Hier sind die aktuellen kostenlosen Spiele von Epic Games:')
+            .setDescription(`> <:Pfeil:1119709908540076124> ${newEpicGames[0].description}`)
             .addFields(
                 {
                     name: '💰 𑁉 **DAS ANGEBOT**',
-                    value: `> <:Pfeil:1119709908540076124> ${newEpicGames[0].description}\n- **Kosten:** ~${newEpicGames[0].original_price}~ - GRATIS!\n- **Angebot endet:** ${new Date(newEpicGames[0].offer_end_timestamp * 1000).toLocaleString()}`,
+                    value: `- **Kosten:** ~${newEpicGames[0].original_price}~ - GRATIS!\n- **Angebot endet:** ${new Date(newEpicGames[0].offer_end_timestamp * 1000).toLocaleString()}`,
                     inline: true
                 },
                 {
