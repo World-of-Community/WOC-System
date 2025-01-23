@@ -663,7 +663,20 @@ async function checkAndSendFreeGames(channel, guild) {
             .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & freestuffbot.xyz!', iconURL: `${guild.iconURL()}` })
             .setTimestamp();
 
-        await channel.send({ content: `<a:guthaben:1186636139281530970> 𑁉  [https://www.epicgames.com/store/de/p/${newEpicGames[0].id}](Epic Games) Bietet ein neues **Gratis Spiel!** <@&1230568420240527462>`, embeds: [epicEmbed] });
+        // Button erstellen, der den Benutzer zum Spiel weiterleitet
+        const epicButton = new ButtonBuilder()
+            .setLabel(`<a:guthaben:1186636139281530970> » ${newEpicGames[0].name} beanspruchen`)  // Spielname als Button-Text
+            .setStyle(ButtonStyle.Link)
+            .setURL(`https://www.epicgames.com/store/de/p/${newEpicGames[0].id}`);
+
+        // ActionRow für den Button
+        const epicRow = new ActionRowBuilder().addComponents(epicButton);
+
+        await channel.send({
+            content: `<a:guthaben:1186636139281530970> 𑁉  [https://www.epicgames.com/store/de/p/${newEpicGames[0].id}](Epic Games) Bietet ein neues **Gratis Spiel!** <@&1230568420240527462>`,
+            embeds: [epicEmbed],
+            components: [epicRow]
+        });
         previousGames.epic = [...previousGames.epic, ...newEpicGames];
     }
 
@@ -690,7 +703,20 @@ async function checkAndSendFreeGames(channel, guild) {
             .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & freestuffbot.xyz!', iconURL: `${guild.iconURL()}` })
             .setTimestamp();
 
-        await channel.send({ content: `<a:guthaben:1186636139281530970> 𑁉  [https://store.steampowered.com/app/${newSteamGames[0].steam_appid}](Steam) Bietet ein neues **Gratis Spiel!** <@&1230568420240527462>`, embeds: [steamEmbed] });
+        // Button erstellen, der den Benutzer zum Spiel weiterleitet
+        const steamButton = new ButtonBuilder()
+            .setLabel(`<a:guthaben:1186636139281530970> » ${newSteamGames[0].name} beanspruchen`)  // Spielname als Button-Text
+            .setStyle(ButtonStyle.Link)
+            .setURL(`https://store.steampowered.com/app/${newSteamGames[0].steam_appid}`);
+
+        // ActionRow für den Button
+        const steamRow = new ActionRowBuilder().addComponents(steamButton);
+
+        await channel.send({
+            content: `<a:guthaben:1186636139281530970> 𑁉  [https://store.steampowered.com/app/${newSteamGames[0].steam_appid}](Steam) Bietet ein neues **Gratis Spiel!** <@&1230568420240527462>`,
+            embeds: [steamEmbed],
+            components: [steamRow]
+        });
         previousGames.steam = [...previousGames.steam, ...newSteamGames];
     }
 }
