@@ -654,7 +654,7 @@ async function checkAndSendFreeGames(channel, guild) {
                 },
                 {
                     name: '🎮 𑁉 **SPIEL DETAILS**',
-                    value: `- **Bewertung:** ${newEpicGames[0].recommended_reviews || 'Keine Bewertung'}`,
+                    value: `- **Bewertung:** ${newEpicGames[0].recommended_reviews ? `${newEpicGames[0].recommended_reviews}/10⭐` : 'Keine Bewertung'}`,
                     inline: true
                 }
             )
@@ -665,7 +665,7 @@ async function checkAndSendFreeGames(channel, guild) {
 
         // Button erstellen, der den Benutzer zum Spiel weiterleitet
         const epicButton = new ButtonBuilder()
-            .setLabel(`<a:guthaben:1186636139281530970> » ${newEpicGames[0].name} beanspruchen`)  // Spielname als Button-Text
+            .setLabel(`${newEpicGames[0].name}`)  // Spielname als Button-Text
             .setStyle(ButtonStyle.Link)
             .setURL(`https://www.epicgames.com/store/de/p/${newEpicGames[0].id}`);
 
@@ -694,7 +694,7 @@ async function checkAndSendFreeGames(channel, guild) {
                 },
                 {
                     name: '🎮 𑁉 **SPIEL DETAILS**',
-                    value: `- **Bewertung:** ${newSteamGames[0].recommended_reviews || 'Keine Bewertung'}`,
+                    value: `- **Bewertung:** ${newSteamGames[0].recommendations ? `${newSteamGames[0].recommendations.total / 1000}/10⭐` : 'Keine Bewertung'}`,
                     inline: true
                 }
             )
@@ -705,7 +705,7 @@ async function checkAndSendFreeGames(channel, guild) {
 
         // Button erstellen, der den Benutzer zum Spiel weiterleitet
         const steamButton = new ButtonBuilder()
-            .setLabel(`<a:guthaben:1186636139281530970> » ${newSteamGames[0].name} beanspruchen`)  // Spielname als Button-Text
+            .setLabel(`${newSteamGames[0].name}`)  // Spielname als Button-Text
             .setStyle(ButtonStyle.Link)
             .setURL(`https://store.steampowered.com/app/${newSteamGames[0].steam_appid}`);
 
