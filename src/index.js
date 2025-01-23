@@ -663,7 +663,7 @@ async function checkAndSendFreeGames(channel, guild) {
             .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & freestuffbot.xyz!', iconURL: `${guild.iconURL()}` })
             .setTimestamp();
 
-        await channel.send({ embeds: [epicEmbed] });
+        await channel.send({ content: `<a:guthaben:1186636139281530970> 𑁉  [https://www.epicgames.com/store/de/p/${newEpicGames[0].id}](Epic Games) Bietet ein neues **Gratis Spiel!** <@&1230568420240527462>`, embeds: [epicEmbed] });
         previousGames.epic = [...previousGames.epic, ...newEpicGames];
     }
 
@@ -690,7 +690,7 @@ async function checkAndSendFreeGames(channel, guild) {
             .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & freestuffbot.xyz!', iconURL: `${guild.iconURL()}` })
             .setTimestamp();
 
-        await channel.send({ embeds: [steamEmbed] });
+        await channel.send({ content: `<a:guthaben:1186636139281530970> 𑁉  [https://store.steampowered.com/app/${newSteamGames[0].steam_appid}](Steam) Bietet ein neues **Gratis Spiel!** <@&1230568420240527462>`, embeds: [steamEmbed] });
         previousGames.steam = [...previousGames.steam, ...newSteamGames];
     }
 }
