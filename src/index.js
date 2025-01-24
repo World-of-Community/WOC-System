@@ -603,6 +603,8 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 
+/* Noch beheben
+
 // Free Games
 
 // Zum Speichern der letzten kostenlosen Spiele
@@ -731,6 +733,7 @@ setInterval(async () => {
         console.log("Channel nicht gefunden.");
     }
 }, 30 * 60 * 1000); // Alle 30 Minuten
+*/
 
 // Werbung
 setInterval( async () => {
