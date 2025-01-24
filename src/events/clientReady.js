@@ -43,7 +43,8 @@ module.exports = {
     setInterval(async () => {
       processRSSFeed(client, lastEntries);
     }, 60000);
-
+    
+    /*
     const embed1 = new EmbedBuilder()
     .setTitle('`💕`-LICH WILLKOMMEN IM FEEDBACK SYSTEM!')
     .setColor("Aqua")
@@ -58,9 +59,10 @@ module.exports = {
 
     const channel = client.channels.cache.get("1275350879054200943")
     channel.threads.create({
-      name: 'Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Feedback System' })
+      name: 'Einführung & Informationen (FAQ)', message: { embeds: [embed1, embed2] }, reason: 'Feedback System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
+    */
 
     // Wechsel Status
     setInterval(async () => {
