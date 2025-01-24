@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const feedbackEmitter = require('../../custom_events/feedback');
 
 module.exports = (client) => {
     client.feedback = async () => {
