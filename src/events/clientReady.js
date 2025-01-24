@@ -44,7 +44,7 @@ module.exports = {
       processRSSFeed(client, lastEntries);
     }, 60000);
     
-    /*
+    /* Muss noch gesendet werden
     const embed1 = new EmbedBuilder()
     .setTitle('`💕`-LICH WILLKOMMEN IM FEEDBACK SYSTEM!')
     .setColor("Aqua")
