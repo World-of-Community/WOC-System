@@ -1,3 +1,4 @@
+/*
 const { EmbedBuilder } = require('discord.js');
 const feedbackEmitter = require('../../custom_events/feedback');
 
@@ -164,8 +165,9 @@ module.exports = (client) => {
 }
     };
 };
+/*
 
-
+    /*
     const embed1 = new EmbedBuilder()
     .setTitle('`💕`-LICH WILLKOMMEN IM FEEDBACK SYSTEM!')
     .setColor("Aqua")
@@ -183,4 +185,5 @@ module.exports = (client) => {
       name: 'Einführung & Informationen (FAQ)', message: {  embeds: [embed1, embed2] }, reason: 'Feedback System' })
     .then(threadChannel => console.log(threadChannel))
     .catch(console.error);
+    */
     
