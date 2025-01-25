@@ -146,9 +146,6 @@ module.exports = {
                     const channel = interaction.guild.channels.cache.get(serverData.partner.channel);
                     const sentMessage = await channel.messages.fetch(serverData.partner.msg);
 
-                    const previousDescription = sentMessage.embeds[0]?.description || '';
-                    newEmbed.setDescription(previousDescription + '\n\n' + newEmbed.data.description);
-
                     await sentMessage.edit({ embeds: [newEmbed] });
                     await interaction.reply({ content: '> `✅` » Die Partnerliste wurde erfolgreich aktualisiert!', ephemeral: true });
                 } catch (error) {
