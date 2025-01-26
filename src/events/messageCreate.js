@@ -152,6 +152,7 @@ module.exports = {
     // Muster zur Erkennung von Discord-Links
     const discordLinkPattern = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
 
+    // Überprüfe, ob die Nachricht einen Discord-Link enthält
     if (discordLinkPattern.test(message.content)) {
         try {
             // Lösche die Nachricht
@@ -163,7 +164,9 @@ module.exports = {
             // Erstelle das Warn-Embed
             const WarnEmbed = new EmbedBuilder()
                 .setTitle('⚠️ | WARNUNG')
-                .setDescription(`> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n> (<#${message.channel.id}>) nicht erlaubt.\n\n> Bitte nutze die erlaubten Kanäle wie z.B.\n> ${allowedChannelsMention}`)
+                .setDescription(
+                    `> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n> (<#${message.channel.id}>) nicht erlaubt.\n\n> Bitte nutze die erlaubten Kanäle wie z.B.\n> ${allowedChannelsMention}`
+                )
                 .setColor('Red')
                 .setTimestamp();
 
@@ -172,6 +175,15 @@ module.exports = {
                 await message.author.send({ embeds: [WarnEmbed] });
             } catch (error) {
                 console.error(`Konnte DM nicht senden: ${error}`);
+
+                // Sende das Embed im Kanal und erwähne den Benutzer (nur sichtbar für ihn)
+                const channelWarning = await message.channel.send({
+                    content: `${message.author}, du kannst keine Server-Links in diesem Kanal teilen.`,
+                    embeds: [WarnEmbed],
+                });
+
+                // Lösche die Nachricht nach 10 Sekunden
+                setTimeout(() => channelWarning.delete().catch(console.error), 10000);
             }
         } catch (error) {
             console.error(`Konnte Nachricht nicht löschen: ${error}`);
