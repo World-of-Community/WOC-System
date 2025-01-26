@@ -152,6 +152,12 @@ module.exports = {
     // Muster zur Erkennung von Discord-Links
     const discordLinkPattern = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
 
+    // Regex zur Erkennung von unerwünschten Links
+    //const forbiddenLinkPattern = /(?:https?:\/\/)?(?:www\.)?(?:discord\.gg|discordapp\.com\/invite|pornhub\.com|xvideos\.com|xnxx\.com|redtube\.com|unsichere-website\.com|other-bad-domain\.com)\/[^\s]+/;
+
+    // Regex zur Erkennung von Pornoseiten und verdächtigen Inhalten
+    //const forbiddenLinkPattern = /(?:https?:\/\/)?(?:www\.)?(?:porn|sex|xxx|xvideos|xnxx|redtube|youjizz|spankbang|brazzers|youporn|hentai|rule34|cumshot|erotic|nsfw|deepfake|gxgroovy|amateur|onlyfans)\.[^\s]+/i;
+
     // Überprüfe, ob die Nachricht einen Discord-Link enthält
     if (discordLinkPattern.test(message.content)) {
         try {
