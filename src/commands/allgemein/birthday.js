@@ -166,24 +166,29 @@ module.exports = {
                 upcomingBirthdays.unshift(nextBirthday); // Fügt den nächsten Geburtstag an den Anfang
 
                 function createBirthdayEmbed (birthdays, page) {
-                    const startIndex = (page - 1) * pageSize;
+                    birthdays = birthdays.sort((a, b) => {
+                        if (a.birthday.monat !== b.birthday.monat) {
+                          return a.birthday.monat - b.birthday.monat;
+                        }
+
+                        return a.birthday.tag - b.birthday.tag;
+                    });
+
+                    let startIndex = (page - 1) * pageSize;
                     const endIndex = Math.min(page * pageSize, birthdays.length);
-                    const pageBirthdays = birthdays.slice(startIndex, endIndex);
 
                     let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
-                    for (const birthday of pageBirthdays) {
-                        const { userID, birthday: { tag, monat, jahr } } = birthday;
-                        const member = interaction.guild.members.cache.get(userID);
-                        if(!member) continue;
+                    if(page === 1) {
+                        startIndex++;
+                        const formattedTag = birthdays[0].birthday.tag.toString().padStart(2, '0');
+                        const formattedMonat = birthdays[0].birthday.monat.toString().padStart(2, '0');
+                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${birthdays[0].birthday.jahr}` : `${formattedTag}.${formattedMonat}.`;
 
-                    // Füge führende Nullen hinzu
-                        const formattedTag = tag.toString().padStart(2, '0');
-                        const formattedMonat = monat.toString().padStart(2, '0');
-                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
-
-                        description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n${member} - ${formattedDate}\n`;
+                        description += `**Nächster Geburtstag:** <@${birthdays[0].userID}> - ${formattedDate}\n\n`
                     }
+                    
+                    const pageBirthdays = birthdays.slice(startIndex, endIndex);
 
                     // Alle anderen Geburtstagsdaten
                     for (const birthday of pageBirthdays) {
