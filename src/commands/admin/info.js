@@ -16,7 +16,7 @@ module.exports = {
         }
 
         // Erstelle die Liste der Mitglieder mit der Rolle
-        const memberList = membersWithRole.map(member => member.toString()).join('\n');  // Verwende .toString() für die Erwähnung
+        const memberList = membersWithRole.map(member => member.toString()).join('\n>');  // Verwende .toString() für die Erwähnung
 
         // Erstelle das Embed mit den Mitgliedern
         const InfoEmbed = new EmbedBuilder()
