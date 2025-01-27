@@ -184,16 +184,6 @@ module.exports = {
 
                     //    description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n${member} - ${formattedDate}\n`;
                     //}
-                    
-                    // Der nächste Geburtstag wird hervorgehoben
-                    const { userID, birthday: { tag, monat, jahr } } = nextBirthday;
-                    const member = interaction.guild.members.cache.get(userID);
-                    if (member) {
-                        const formattedTag = tag.toString().padStart(2, '0');
-                        const formattedMonat = monat.toString().padStart(2, '0');
-                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
-                        description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n`;
-                    }
 
                     // Alle anderen Geburtstagsdaten
                     //for (const birthday of pageBirthdays) {
