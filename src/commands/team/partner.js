@@ -168,7 +168,8 @@ function createPartnerListEmbed(serverData, interaction) {
     const embed = new EmbedBuilder()
         .setTitle('Unsere Partnerliste')
         .setColor('Blurple')
-        .setFooter({ text: 'Maximal 15 Server-Partner', iconURL: interaction.guild.iconURL() });
+        .setFooter({ text: 'Maximal 15 Server-Partner - Zuletzt aktualisiert:', iconURL: interaction.guild.iconURL() })
+        .setTimestamp();
 
     
     const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst ein\n> Server-Partner werden möchtest,\n> schau bei <#1172819623935221810> vorbei.\n\n";
