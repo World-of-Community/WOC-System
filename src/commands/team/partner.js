@@ -171,7 +171,7 @@ function createPartnerListEmbed(serverData, interaction) {
         .setFooter({ text: 'Maximal 15 Server-Partner', iconURL: interaction.guild.iconURL() });
 
     
-    const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst ein Server-Partner werden möchtest, schau bei <#1172819623935221810> vorbei.\n\n";
+    const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst ein\nServer-Partner werden möchtest, schau bei <#1172819623935221810> vorbei.\n\n";
 
     const description = serverData.partner.partners.length > 0
         ? serverData.partner.partners
