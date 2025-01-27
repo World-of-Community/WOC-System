@@ -217,10 +217,10 @@ module.exports = {
 
                     // Alle Geburtstagsdaten für das aktuelle Jahr umwandeln
                     upcomingBirthdays = upcomingBirthdays.map(birthday => {
-                        const { tag, monat } = birthday.birthday;
+                        const { tag, monat } = birthday.birthday || {}; // Sicherstellen, dass birthday existiert
                         const birthdayDate = { tag, monat };
                         return { ...birthday, birthdayDate }; // Fügt Tag und Monat hinzu
-                    });
+                    }).filter(Boolean); // Entferne ungültige Einträge (die null zurückgeben)
 
                     // Sortiere alle Geburtstagsdaten nach Monat und Tag
                     upcomingBirthdays.sort((a, b) => {
