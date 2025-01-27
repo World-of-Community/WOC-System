@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageEmbed } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,7 +17,7 @@ module.exports = {
 
         const memberList = membersWithRole.map(member => member.user.username).join('\n');
 
-        const InfoEmbed = new MessageEmbed()
+        const InfoEmbed = new EmbedBuilder()
             .setTitle(`Benutzer mit der Rolle: ${role}`)
             .setDescription(memberList || 'Keine Benutzer gefunden.')
             .setColor('Blurple')
