@@ -12,7 +12,7 @@ module.exports = {
         const membersWithRole = interaction.guild.members.cache.filter(member => member.roles.cache.has(role.id));
 
         if (membersWithRole.size === 0) {
-            return interaction.reply({ content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role.name}`, ephemeral: true });
+            return interaction.reply({ content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role}`, ephemeral: true });
         }
 
         // Erstelle die Liste der Mitglieder mit der Rolle
