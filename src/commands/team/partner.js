@@ -170,12 +170,15 @@ function createPartnerListEmbed(serverData, interaction) {
         .setColor('Blurple')
         .setFooter({ text: 'Maximal 15 Server-Partner', iconURL: interaction.guild.iconURL() });
 
+    
+    const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst ein Server-Partner werden möchtest, schau bei <#1172819623935221810> vorbei.\n\n";
+
     const description = serverData.partner.partners.length > 0
         ? serverData.partner.partners
             .map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)?.user.username || 'Unbekannt'})`)
             .join('\n')
         : '❌ » Keine Partner eingetragen';
 
-    embed.setDescription(description);
+    embed.setDescription(Info + description);
     return embed;
 }
