@@ -207,7 +207,7 @@ function createPartnerListEmbed(serverData, interaction) {
     });
 
     embed.setDescription(
-        additionalInfo +
+        Info +
         `**Kooperation Partner:**\n${cooperationList}\n\n` +
         `**Normale Partner:**\n${normalList}`
     ).setFooter({ text: `Maximal 15 Server-Partner | Aktualisiert am: ${formattedTime}`, iconURL: interaction.guild.iconURL() });
