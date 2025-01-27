@@ -174,11 +174,29 @@ function createPartnerListEmbed(serverData, interaction) {
     
     const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst\n> ein Server-Partner werden möchtest, schau\n> bei <#1172819623935221810> vorbei.\n\n";
 
-    const description = serverData.partner.partners.length > 0
-        ? serverData.partner.partners
+    // Partner nach Kategorien sortieren
+    const cooperationPartners = serverData.partner.partners.filter(partner => partner.category === 'Kooperation');
+    const normalPartners = serverData.partner.partners.filter(partner => partner.category === 'Normale Partner');
+
+    // Kooperation Partner
+    const cooperationList = cooperationPartners.length > 0
+        ? cooperationPartners
             .map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)?.user.username || 'Unbekannt'})`)
             .join('\n')
         : '❌ » Keine Partner eingetragen';
+
+    // Normale Partner
+    const normalList = normalPartners.length > 0
+        ? normalPartners
+            .map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)?.user.username || 'Unbekannt'})`)
+            .join('\n')
+        : '❌ » Keine Partner eingetragen';
+
+    //const description = serverData.partner.partners.length > 0
+    //    ? serverData.partner.partners
+    //        .map((partner, index) => `\`${index + 1}.\` [${partner.name}](${partner.invite}) (${interaction.guild.members.cache.get(partner.ownerID)?.user.username || 'Unbekannt'})`)
+    //        .join('\n')
+    //    : '❌ » Keine Partner eingetragen';
 
     const currentTime = new Date(); // Aktuelle Zeit abrufen
     const formattedTime = currentTime.toLocaleDateString('de-DE', {
@@ -188,8 +206,11 @@ function createPartnerListEmbed(serverData, interaction) {
         year: 'numeric',   // 2025
     });
 
-    embed.setDescription(Info + description)
-         .setFooter({ text: `Maximal 15 Server-Partner | Zuletzt Aktualisiert: ${formattedTime}`, iconURL: interaction.guild.iconURL() });
+    embed.setDescription(
+        additionalInfo +
+        `**Kooperation Partner:**\n${cooperationList}\n\n` +
+        `**Normale Partner:**\n${normalList}`
+    ).setFooter({ text: `Maximal 15 Server-Partner | Aktualisiert am: ${formattedTime}`, iconURL: interaction.guild.iconURL() });
 
     return embed;
 }
