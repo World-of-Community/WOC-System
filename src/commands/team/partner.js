@@ -181,14 +181,15 @@ function createPartnerListEmbed(serverData, interaction) {
         : '❌ » Keine Partner eingetragen';
 
     const currentTime = new Date(); // Aktuelle Zeit abrufen
-    const formattedTime = currentTime.toLocaleString('de-DE', {
-        timeZone: 'Europe/Berlin', // Setze die Zeitzone
-        hour: '2-digit',
-        minute: '2-digit',
+    const formattedTime = currentTime.toLocaleDateString('de-DE', {
+        weekday: 'long',   // Montag, Dienstag etc.
+        day: '2-digit',    // 01, 02, 03 ...
+        month: 'long',     // Januar, Februar etc.
+        year: 'numeric',   // 2025
     });
 
     embed.setDescription(Info + description)
-         .setFooter({ text: `Zuletzt Aktualisiert: ${formattedTime} Uhr`, iconURL: interaction.guild.iconURL() });
+         .setFooter({ text: `Maximal 15 Server-Partner | Zuletzt Aktualisiert: ${formattedTime}`, iconURL: interaction.guild.iconURL() });
 
     return embed;
 }
