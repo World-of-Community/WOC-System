@@ -215,32 +215,17 @@ module.exports = {
                     const currentMonth = today.getMonth() + 1; // Monat ist 0-basiert, daher +1
                     const currentDay = today.getDate();
 
-                    // Alle Geburtstagsdaten für das aktuelle Jahr umwandeln
-                    upcomingBirthdays = upcomingBirthdays.map(birthday => {
-                        const { tag, monat } = birthday.birthday || {}; // Sicherstellen, dass birthday existiert
-                        const birthdayDate = { tag, monat };
-                        return { ...birthday, birthdayDate }; // Fügt Tag und Monat hinzu
-                    }).filter(Boolean); // Entferne ungültige Einträge (die null zurückgeben)
-
-                    // Sortiere alle Geburtstagsdaten nach Monat und Tag
-                    upcomingBirthdays.sort((a, b) => {
-                        if (a.birthdayDate.monat === b.birthdayDate.monat) {
-                            return a.birthdayDate.tag - b.birthdayDate.tag;
-                        }
-                        return a.birthdayDate.monat - b.birthdayDate.monat;
+                    // Nächsten Geburtstag ermitteln
+                    const today = new Date();
+                    const currentYear = today.getFullYear();
+                    const nextBirthdayIndex = upcomingBirthdays.findIndex(birthday => {
+                        const { tag, monat, jahr } = birthday.birthday;
+                        const birthdayDate = new Date(currentYear, monat - 1, tag); // Monat wird hier 0-basiert übergeben
+                        return birthdayDate >= today; // Nächster Geburtstag
                     });
 
-                    // Überprüfen, ob der nächste Geburtstag im Jahr bereits vergangen ist
-                    if (upcomingBirthdays[0].birthdayDate < today) {
-                        // Falls der nächste Geburtstag bereits vergangen ist, füge das nächste Jahr hinzu
-                        upcomingBirthdays.forEach(birthday => {
-                            if (birthday.birthdayDate < today) {
-                                birthday.birthdayDate.setFullYear(currentYear + 1);
-                            }
-                        });
-                    // Sortiere nach dem neuen Jahr
-                    upcomingBirthdays.sort((a, b) => a.birthdayDate - b.birthdayDate);
-                    }
+                    const nextBirthday = upcomingBirthdays.splice(nextBirthdayIndex, 1)[0]; // Entfernt den nächsten Geburtstag und speichert ihn
+                    upcomingBirthdays.unshift(nextBirthday); // Fügt den nächsten Geburtstag an den Anfang der Liste
 
                     function createBirthdayEmbed(birthdays, page) {
                         const startIndex = (page - 1) * pageSize;
@@ -249,29 +234,32 @@ module.exports = {
                 
                         let description = 'Hier sind die nächsten Geburtstage:\n\n';
                 
-                        // Füge den nächsten Geburtstag hinzu und markiere ihn
-                        const nextBirthday = pageBirthdays.shift(); // Entfernt den ersten (nächsten) Geburtstag
-                        const { userID, birthday: { tag, monat } } = nextBirthday;
-                        const member = interaction.guild.members.cache.get(userID);
-                        if (member) {
-                            const formattedTag = tag.toString().padStart(2, '0');
-                            const formattedMonat = monat.toString().padStart(2, '0');
-                            const formattedDate = `${formattedTag}.${formattedMonat}.`;
-                            description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n`;
-                        }
-                
-                        // Füge die restlichen Geburtstagsmitglieder hinzu
-                        for (const birthday of pageBirthdays) {
-                            const { userID, birthday: { tag, monat } } = birthday;
+                        // Den nächsten Geburtstag oben anzeigen
+                        const nextBirthday = pageBirthdays[0]; // Der erste Geburtstag in der Liste
+                        if (nextBirthday) {
+                            const { userID, birthday: { tag, monat } } = nextBirthday;
                             const member = interaction.guild.members.cache.get(userID);
-                            if (!member) continue;
-                
-                            const formattedTag = tag.toString().padStart(2, '0');
-                            const formattedMonat = monat.toString().padStart(2, '0');
-                            const formattedDate = `${formattedTag}.${formattedMonat}.`;
-                
-                            description += `${member} - ${formattedDate}\n`;
-                        }}
+                            if (member) {
+                                const formattedTag = tag.toString().padStart(2, '0');
+                                const formattedMonat = monat.toString().padStart(2, '0');
+                                const formattedDate = `${formattedTag}.${formattedMonat}.`;
+                                description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n`;
+                            }
+                        }
+                    }
+
+                    // Die restlichen Geburtstagsmitglieder anzeigen
+        for (const birthday of pageBirthdays.slice(1)) {  // Startet bei 1, um den nächsten Geburtstag nicht doppelt anzuzeigen
+            const { userID, birthday: { tag, monat } } = birthday;
+            const member = interaction.guild.members.cache.get(userID);
+            if (!member) continue;
+
+            const formattedTag = tag.toString().padStart(2, '0');
+            const formattedMonat = monat.toString().padStart(2, '0');
+            const formattedDate = `${formattedTag}.${formattedMonat}.`;
+
+            description += `${member} - ${formattedDate}\n`;
+        }
 
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
