@@ -15,12 +15,11 @@ module.exports = {
             return interaction.reply({ content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role}`, ephemeral: true });
         }
 
-        const memberList = membersWithRole.map(member => member.user.username).join('\n');
+        const memberList = membersWithRole.map(member => member.toString()).join('\n');  // Verwende .toString() für die Erwähnung
 
         const InfoEmbed = new EmbedBuilder()
-            .setTitle(`Benutzer mit der Rolle: ${role}`)
-            .setDescription(memberList || 'Keine Benutzer gefunden.')
-            .setColor('Blurple')
+            .setDescription(`**Benutzer mit der Rolle:** ${role}\n\n> ${memberList || 'Keine Benutzer gefunden.'}`)
+            .setColor('Blurple');
 
         return interaction.reply({ embeds: [InfoEmbed], ephemeral: true });
     },
