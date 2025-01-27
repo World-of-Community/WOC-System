@@ -169,10 +169,10 @@ function createPartnerListEmbed(serverData, interaction) {
         .setTitle('Unsere Partnerliste')
         .setColor('Blurple')
         //.setFooter({ text: 'Maximal 15 Server-Partner - Zuletzt aktualisiert:', iconURL: interaction.guild.iconURL() })
-        .setTimestamp();
+        //.setTimestamp();
 
     
-    const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst\n>ein Server-Partner werden möchtest,\n> schau bei <#1172819623935221810> vorbei.\n\n";
+    const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst\n> ein Server-Partner werden möchtest,\n> schau bei <#1172819623935221810> vorbei.\n\n";
 
     const description = serverData.partner.partners.length > 0
         ? serverData.partner.partners
@@ -185,11 +185,10 @@ function createPartnerListEmbed(serverData, interaction) {
         timeZone: 'Europe/Berlin', // Setze die Zeitzone
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit',
     });
 
     embed.setDescription(Info + description)
-         .setFooter({ text: `Zuletzt Aktualisiert: ${formattedTime}`, iconURL: interaction.guild.iconURL() });
-         
+         .setFooter({ text: `Zuletzt Aktualisiert: ${formattedTime} Uhr`, iconURL: interaction.guild.iconURL() });
+
     return embed;
 }
