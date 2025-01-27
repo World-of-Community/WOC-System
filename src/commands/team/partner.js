@@ -172,7 +172,7 @@ function createPartnerListEmbed(serverData, interaction) {
         //.setTimestamp();
 
     
-    const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst\n> ein Server-Partner werden möchtest, schau\n> bei <#1172819623935221810> vorbei.\n\n";
+    const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst\n> ein Server-Partner werden möchtest, schau bei\n> <#1172819623935221810> vorbei.\n\n";
 
     // Partner nach Kategorien sortieren
     const cooperationPartners = serverData.partner.partners.filter(partner => partner.category === 'Kooperation');
