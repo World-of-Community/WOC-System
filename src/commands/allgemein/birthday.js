@@ -172,18 +172,41 @@ module.exports = {
 
                     let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
-                    for(const birthday of pageBirthdays) {
-                        const { userID, birthday: { tag, monat, jahr } } = birthday;
-                        const member = interaction.guild.members.cache.get(userID);
-                        if(!member) continue;
+                    //for(const birthday of pageBirthdays) {
+                    //    const { userID, birthday: { tag, monat, jahr } } = birthday;
+                    //    const member = interaction.guild.members.cache.get(userID);
+                    //    if(!member) continue;
 
                         // Füge führende Nullen hinzu
+                    //    const formattedTag = tag.toString().padStart(2, '0');
+                    //    const formattedMonat = monat.toString().padStart(2, '0');
+                    //    const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
+
+                    //    description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n${member} - ${formattedDate}\n`;
+                    //}
+                    
+                    // Der nächste Geburtstag wird hervorgehoben
+                    const { userID, birthday: { tag, monat, jahr } } = nextBirthday;
+                    const member = interaction.guild.members.cache.get(userID);
+                    if (member) {
+                        const formattedTag = tag.toString().padStart(2, '0');
+                        const formattedMonat = monat.toString().padStart(2, '0');
+                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
+                        description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n`;
+                    }
+
+                    // Alle anderen Geburtstagsdaten
+                    for (const birthday of pageBirthdays) {
+                        const { userID, birthday: { tag, monat, jahr } } = birthday;
+                        const member = interaction.guild.members.cache.get(userID);
+                        if (!member) continue;
+
                         const formattedTag = tag.toString().padStart(2, '0');
                         const formattedMonat = monat.toString().padStart(2, '0');
                         const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
 
                         description += `${member} - ${formattedDate}\n`;
-                    }                  
+                    }
 
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
