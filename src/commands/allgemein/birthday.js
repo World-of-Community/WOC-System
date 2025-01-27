@@ -172,79 +172,31 @@ module.exports = {
 
                     let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
-                    //for(const birthday of pageBirthdays) {
-                    //    const { userID, birthday: { tag, monat, jahr } } = birthday;
-                    //    const member = interaction.guild.members.cache.get(userID);
-                    //    if(!member) continue;
+                    for (const birthday of pageBirthdays) {
+                        const { userID, birthday: { tag, monat, jahr } } = birthday;
+                        const member = interaction.guild.members.cache.get(userID);
+                        if(!member) continue;
 
-                        // Füge führende Nullen hinzu
-                    //    const formattedTag = tag.toString().padStart(2, '0');
-                    //    const formattedMonat = monat.toString().padStart(2, '0');
-                    //    const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
+                    // Füge führende Nullen hinzu
+                        const formattedTag = tag.toString().padStart(2, '0');
+                        const formattedMonat = monat.toString().padStart(2, '0');
+                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
 
-                    //    description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n${member} - ${formattedDate}\n`;
-                    //}
-
-                    // Alle anderen Geburtstagsdaten
-                    //for (const birthday of pageBirthdays) {
-                    //    const { userID, birthday: { tag, monat, jahr } } = birthday;
-                    //    const member = interaction.guild.members.cache.get(userID);
-                    //    if (!member) continue;
-
-                    //    const formattedTag = tag.toString().padStart(2, '0');
-                    //    const formattedMonat = monat.toString().padStart(2, '0');
-                    //    const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
-
-                    //    description += `${member} - ${formattedDate}\n`;
-                    //}
-
-                    // test
-
-                    // Nächsten Geburtstag ermitteln
-                    const today = new Date();
-                    const currentYear = today.getFullYear();
-                    const nextBirthdayIndex = upcomingBirthdays.findIndex(birthday => {
-                        const { tag, monat, jahr } = birthday.birthday;
-                        const birthdayDate = new Date(currentYear, monat - 1, tag); // Monat wird hier 0-basiert übergeben
-                        return birthdayDate >= today; // Nächster Geburtstag
-                    });
-
-                    const nextBirthday = upcomingBirthdays.splice(nextBirthdayIndex, 1)[0]; // Entfernt den nächsten Geburtstag und speichert ihn
-                    upcomingBirthdays.unshift(nextBirthday); // Fügt den nächsten Geburtstag an den Anfang der Liste
-
-                    function createBirthdayEmbed(birthdays, page) {
-                        const startIndex = (page - 1) * pageSize;
-                        const endIndex = Math.min(page * pageSize, birthdays.length);
-                        const pageBirthdays = birthdays.slice(startIndex, endIndex);
-                
-                        let description = 'Hier sind die nächsten Geburtstage:\n\n';
-                
-                        // Den nächsten Geburtstag oben anzeigen
-                        const nextBirthday = pageBirthdays[0]; // Der erste Geburtstag in der Liste
-                        if (nextBirthday) {
-                            const { userID, birthday: { tag, monat } } = nextBirthday;
-                            const member = interaction.guild.members.cache.get(userID);
-                            if (member) {
-                                const formattedTag = tag.toString().padStart(2, '0');
-                                const formattedMonat = monat.toString().padStart(2, '0');
-                                const formattedDate = `${formattedTag}.${formattedMonat}.`;
-                                description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n`;
-                            }
-                        }
+                        description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n${member} - ${formattedDate}\n`;
                     }
 
-                    // Die restlichen Geburtstagsmitglieder anzeigen
-        for (const birthday of pageBirthdays.slice(1)) {  // Startet bei 1, um den nächsten Geburtstag nicht doppelt anzuzeigen
-            const { userID, birthday: { tag, monat } } = birthday;
-            const member = interaction.guild.members.cache.get(userID);
-            if (!member) continue;
+                    // Alle anderen Geburtstagsdaten
+                    for (const birthday of pageBirthdays) {
+                        const { userID, birthday: { tag, monat, jahr } } = birthday;
+                        const member = interaction.guild.members.cache.get(userID);
+                        if (!member) continue;
 
-            const formattedTag = tag.toString().padStart(2, '0');
-            const formattedMonat = monat.toString().padStart(2, '0');
-            const formattedDate = `${formattedTag}.${formattedMonat}.`;
+                        const formattedTag = tag.toString().padStart(2, '0');
+                        const formattedMonat = monat.toString().padStart(2, '0');
+                        const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
 
-            description += `${member} - ${formattedDate}\n`;
-        }
+                        description += `${member} - ${formattedDate}\n`;
+                    }
 
                     const embed = new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
