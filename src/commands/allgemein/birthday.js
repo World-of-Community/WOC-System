@@ -136,12 +136,12 @@ module.exports = {
                 const pageSize = 10; // Anzahl der Einträge pro Seite
 
                 let upcomingBirthdays = await userDB.find({
-                    'birthday.tag': { $exists: true, $ne: null }, // Ensures 'tag' (day) is defined
-                    'birthday.monat': { $exists: true, $ne: null }, // Ensures 'monat' (month) is defined
+                    'birthday.tag': { $exists: true, $ne: null },
+                    'birthday.monat': { $exists: true, $ne: null },
                 }).sort({
-                    'birthday.tag': 1,   // Sort by day
-                    'birthday.monat': 1, // Sort by month
-                    'birthday.jahr': 1   // Sort by year, optional (those without year will be last)
+                    'birthday.tag': 1,   // Dann nach Tag
+                    'birthday.monat': 1, // Zuerst nach Monat
+                    'birthday.jahr': 1   // Und nach Jahr (falls vorhanden)
                  });
 
                 upcomingBirthdays = upcomingBirthdays.filter(birthday => birthday.birthday.tag !== 0)
@@ -152,6 +152,18 @@ module.exports = {
             
                 let currentPage = 1;
                 const totalPages = Math.ceil(upcomingBirthdays.length / pageSize);
+
+                // Nächsten Geburtstag ermitteln
+                const today = new Date();
+                const currentYear = today.getFullYear();
+                const nextBirthdayIndex = upcomingBirthdays.findIndex(birthday => {
+                    const { tag, monat, jahr } = birthday.birthday;
+                    const birthdayDate = new Date(currentYear, monat - 1, tag); // Monat wird hier 0-basiert übergeben
+                    return birthdayDate >= today; // Nächster Geburtstag
+                });
+
+                const nextBirthday = upcomingBirthdays.splice(nextBirthdayIndex, 1)[0]; // Entfernt den nächsten Geburtstag und speichert ihn
+                upcomingBirthdays.unshift(nextBirthday); // Fügt den nächsten Geburtstag an den Anfang
 
                 function createBirthdayEmbed (birthdays, page) {
                     const startIndex = (page - 1) * pageSize;
