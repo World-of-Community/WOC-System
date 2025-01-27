@@ -210,11 +210,6 @@ module.exports = {
 
                     // test
 
-                    // Nächsten Geburtstag ermitteln anhand von Tag und Monat
-                    const today = new Date();
-                    const currentMonth = today.getMonth() + 1; // Monat ist 0-basiert, daher +1
-                    const currentDay = today.getDate();
-
                     // Nächsten Geburtstag ermitteln
                     const today = new Date();
                     const currentYear = today.getFullYear();
