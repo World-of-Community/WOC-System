@@ -210,19 +210,25 @@ module.exports = {
 
                     // test
 
-                    // Nächsten Geburtstag ermitteln
+                    // Nächsten Geburtstag ermitteln anhand von Tag und Monat
                     const today = new Date();
-                    const currentYear = today.getFullYear();
+                    const currentMonth = today.getMonth() + 1; // Monat ist 0-basiert, daher +1
+                    const currentDay = today.getDate();
 
-                    // Alle Geburtstagsdaten für das aktuelle Jahr umwandeln und mit dem heutigen Datum vergleichen
+                    // Alle Geburtstagsdaten für das aktuelle Jahr umwandeln
                     upcomingBirthdays = upcomingBirthdays.map(birthday => {
-                        const { tag, monat, jahr } = birthday.birthday;
-                        const birthdayDate = new Date(currentYear, monat - 1, tag);
-                        return { ...birthday, birthdayDate }; // Fügt das Datum des Geburtstags hinzu
+                        const { tag, monat } = birthday.birthday;
+                        const birthdayDate = { tag, monat };
+                        return { ...birthday, birthdayDate }; // Fügt Tag und Monat hinzu
                     });
 
-                    // Sortiere alle Geburtstagsdaten basierend auf dem Datum
-                    upcomingBirthdays.sort((a, b) => a.birthdayDate - b.birthdayDate);
+                    // Sortiere alle Geburtstagsdaten nach Monat und Tag
+                    upcomingBirthdays.sort((a, b) => {
+                        if (a.birthdayDate.monat === b.birthdayDate.monat) {
+                            return a.birthdayDate.tag - b.birthdayDate.tag;
+                        }
+                        return a.birthdayDate.monat - b.birthdayDate.monat;
+                    });
 
                     // Überprüfen, ob der nächste Geburtstag im Jahr bereits vergangen ist
                     if (upcomingBirthdays[0].birthdayDate < today) {
@@ -240,30 +246,30 @@ module.exports = {
                         const startIndex = (page - 1) * pageSize;
                         const endIndex = Math.min(page * pageSize, birthdays.length);
                         const pageBirthdays = birthdays.slice(startIndex, endIndex);
-
+                
                         let description = 'Hier sind die nächsten Geburtstage:\n\n';
-
+                
                         // Füge den nächsten Geburtstag hinzu und markiere ihn
                         const nextBirthday = pageBirthdays.shift(); // Entfernt den ersten (nächsten) Geburtstag
-                        const { userID, birthday: { tag, monat, jahr } } = nextBirthday;
+                        const { userID, birthday: { tag, monat } } = nextBirthday;
                         const member = interaction.guild.members.cache.get(userID);
                         if (member) {
                             const formattedTag = tag.toString().padStart(2, '0');
                             const formattedMonat = monat.toString().padStart(2, '0');
-                            const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
+                            const formattedDate = `${formattedTag}.${formattedMonat}.`;
                             description += `**Nächster Geburtstag:** ${member} - ${formattedDate}\n\n`;
                         }
-
+                
                         // Füge die restlichen Geburtstagsmitglieder hinzu
                         for (const birthday of pageBirthdays) {
-                            const { userID, birthday: { tag, monat, jahr } } = birthday;
+                            const { userID, birthday: { tag, monat } } = birthday;
                             const member = interaction.guild.members.cache.get(userID);
                             if (!member) continue;
-
+                
                             const formattedTag = tag.toString().padStart(2, '0');
                             const formattedMonat = monat.toString().padStart(2, '0');
-                            const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
-
+                            const formattedDate = `${formattedTag}.${formattedMonat}.`;
+                
                             description += `${member} - ${formattedDate}\n`;
                         }}
 
