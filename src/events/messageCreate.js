@@ -65,29 +65,35 @@ module.exports = {
 
         // AFK System
         if (!message.author.bot) { 
+            const uD = await userdb.findOne({ userID: message.author.id });
+            if (uD && uD.afk && uD.afkStamp) {
+                const afkSeit = uD.afkStamp; // Bereits gespeicherter Unix-Timestamp
         
-        const uD = await userdb.findOne({ userID: message.author.id });
-        if (uD) {
-            if (uD.afk) {
-                const afkDauer = Math.floor(Date.now() / 1000) - uD.afkStamp; // Unix-Zeitpunkt in Sekunden
-
-                const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: <t:${afkDauer}:R>)*`)
-                uD.afk = false
-                uD.afkReason = ""
-                uD.afkStamp = ""
-                await uD.save()
+                // Nachricht senden
+                const m = await message.reply(
+                    `<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: <t:${afkSeit}:R>)*`
+                );
+        
+                // AFK-Status entfernen
+                uD.afk = false;
+                uD.afkReason = "";
+                uD.afkStamp = ""; // Optional: besser `null` statt leeren String
+                await uD.save();
+        
+                // Nachricht nach 5 Sekunden löschen
                 setTimeout(async () => {
                     try {
-                        await m.delete()
-                    } catch (error) {
-
-                    }
-                }, 5000)
-
-                await message.member.setNickname(`${message.member.displayName.replace("AFK | ", "")}`).catch((err) => { })
-            }
+                        await m.delete();
+                    } catch (error) {}
+                }, 5000);
+        
+                // Nickname anpassen
+                await message.member.setNickname(
+                    message.member.displayName.replace("AFK | ", "")
+                ).catch(() => {});
             }
         }
+
 
         // Bump System (überarbeitet)
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
