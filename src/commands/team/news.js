@@ -5,7 +5,7 @@ const NewsStatus = require("../../../Datenbank/newsdb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('news')
-    .setDescription('Sendet eine Nachricht mit einem Titel im Kanal und per DM an den auslösenden Benutzer.')
+    .setDescription('» Sendet eine Nachricht mit einem Titel im Kanal und per DM an alle Mitglieder. 📰')
     .addStringOption(option => 
       option.setName('title')
         .setDescription('Der Titel der Nachricht')
@@ -22,68 +22,63 @@ module.exports = {
         .setRequired(true)
         .addChannelTypes(ChannelType.GuildText) // Nur Textkanäle auswählen
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Erforderliche Berechtigungen
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const title = interaction.options.getString('title');
     const nachricht = interaction.options.getString('nachricht');
     const kanal = interaction.options.getChannel('kanal');
-    
-    // Hole den News-Status des Benutzers aus der DB
-    const userId = interaction.user.id;
-    const newsStatus = await NewsStatus.findOne({ userId });
-
-    // Wenn der Benutzer die Nachrichten deaktiviert hat, sende keine DM
-    if (newsStatus && !newsStatus.isNewsEnabled) {
-      await interaction.reply({ content: '> `🔕` » Du hast die Neuigkeiten deaktiviert und wirst keine DMs mehr erhalten.', ephemeral: true });
-      return;
-    }
+    const guild = interaction.guild;
 
     const embed = new EmbedBuilder()
-      .setTitle(title) // Setzt den Titel der Nachricht
-      .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
+      .setTitle(title)
+      .setDescription(nachricht.replace(/\\n/g, '\n'))
       .setColor('Orange')
-      .setFooter({ text: `${interaction.guild.name} - Neuigkeiten System`, iconURL: `${interaction.guild.iconURL()}`})
+      .setFooter({ text: `${guild.name} - Neuigkeiten System`, iconURL: `${guild.iconURL()}`})
       .setTimestamp();
 
-    // Sende Nachricht im angegebenen Kanal
+    // Nachricht im Kanal senden
     await kanal.send({ embeds: [embed] });
 
-    // Button für die Deaktivierung der Benachrichtigungen
+    // Button für das Deaktivieren/Aktivieren von News
     const disableButton = new ButtonBuilder()
       .setCustomId('disable_news')
       .setLabel('Neuigkeiten Deaktivieren')
       .setEmoji('🔕')
-      .setStyle(ButtonStyle.Secondary); // Danger-Stil für den Button
+      .setStyle(ButtonStyle.Secondary);
 
     const enableButton = new ButtonBuilder()
       .setCustomId('enable_news')
       .setLabel('Neuigkeiten Aktivieren')
       .setEmoji('🔔')
-      .setStyle(ButtonStyle.Success); // Success-Stil für den Button
+      .setStyle(ButtonStyle.Success);
 
     const row = new ActionRowBuilder().addComponents(disableButton, enableButton);
 
-    // Sende DM nur an den Benutzer, der den Befehl ausführt
-    try {
-      const dmChannel = await interaction.user.createDM();
-      const embedToSend = new EmbedBuilder()
-        .setTitle(title) // Setzt den Titel der Nachricht
-        .setDescription(nachricht.replace(/\\n/g, '\n')) // Ersetze \n mit echten Zeilenumbrüchen
-        .setColor('Orange')
-        .setFooter({ text: `${interaction.guild.name} - Neuigkeiten System`, iconURL: `${interaction.guild.iconURL()}`})
-        .setTimestamp();
+    // Nachricht per DM an alle Mitglieder senden
+    const members = await guild.members.fetch();
+    let dmSentCount = 0;
+    let dmFailedCount = 0;
 
-      await dmChannel.send({
-        embeds: [embedToSend],
-        components: [row], // Beide Buttons (Deaktivieren/Aktivieren) hinzufügen
-      });
+    for (const member of members.values()) {
+      if (member.user.bot) continue; // Keine Bots anschreiben
+      
+      const newsStatus = await NewsStatus.findOne({ userId: member.id });
+      if (newsStatus && !newsStatus.isNewsEnabled) continue; // Überspringe, falls deaktiviert
 
-      // Bestätigung der Interaktion
-      await interaction.reply({ content: '> `📰` » Die Neuigkeiten wurden an dich gesendet!', ephemeral: true });
-    } catch (error) {
-      console.error(`Fehler beim Senden der DM an ${interaction.user.username}:`, error);
-      await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Senden der Nachricht per DM.', ephemeral: true });
+      try {
+        const dmChannel = await member.user.createDM();
+        await dmChannel.send({ embeds: [embed], components: [row] });
+        dmSentCount++;
+      } catch (error) {
+        console.error(`Fehler beim Senden der DM an ${member.user.username}:`, error);
+        dmFailedCount++;
+      }
     }
+
+    await interaction.reply({ 
+      content: `> \`📰\` » Die Neuigkeiten wurden an \`${dmSentCount}👥\` Mitglieder gesendet. An \`${dmFailedCount}👥\` konnten nicht erreicht werden.`,
+      ephemeral: true 
+    });
   },
 };
