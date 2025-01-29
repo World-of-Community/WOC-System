@@ -69,8 +69,9 @@ module.exports = {
         const uD = await userdb.findOne({ userID: message.author.id });
         if (uD) {
             if (uD.afk) {
+                const afkDauer = Math.floor(Date.now() / 1000) - uD.afkStamp; // Unix-Zeitpunkt in Sekunden
 
-                const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: ${uD.afkStamp})*`)
+                const m = await message.reply(`<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: <t:${afkDauer}:R>)*`)
                 uD.afk = false
                 uD.afkReason = ""
                 uD.afkStamp = ""
