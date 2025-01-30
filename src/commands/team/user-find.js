@@ -29,7 +29,7 @@ module.exports = {
         .setDescription(`Der Benutzer mit der ID \`${memberId}\` ist **${member.user.username}**.\n\n- Nutzer: ${member.user.displayName}`)
         .setColor('Green')
         .setThumbnail(member.user.displayAvatarURL())
-        .setFooter({ text: 'Benutzerabfrage' })
+        .setFooter({ text: 'Benutzerabfrage', iconURL: interaction.guild.iconURL() })
         .setTimestamp();
 
       await interaction.editReply({ content: '> `✅` » Ich habe den Nutzer erfolgreich gefunden.', embeds: [UserFindEmbed], ephemeral: true });
@@ -41,7 +41,7 @@ module.exports = {
         .setTitle('Benutzer nicht gefunden')
         .setDescription('Benutzer konnte nicht gefunden werden.')
         .setColor('Red')
-        .setFooter({ text: 'Benutzerabfrage' })
+        .setFooter({ text: 'Benutzerabfrage', iconURL: interaction.guild.iconURL() })
         .setTimestamp();
 
       await interaction.editReply({ content: '> `❌` » Ich konnte den Nutzer nicht finden.', embeds: [ErrorEmbed], ephemeral: true });
