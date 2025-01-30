@@ -41,7 +41,7 @@ const teamSchema = new mongoose.Schema({
     teaminfo: {
         userName: {  // Speichere den Namen des Nutzers
           type: String,
-          required: [true, 'userName ist erforderlich.'],
+          required: false,  // optional, nicht mehr erforderlich
         },
         bereich: {
           type: String,
@@ -55,7 +55,7 @@ const teamSchema = new mongoose.Schema({
         role: {
           type: String,
         },
-      },  
+      },        
 });
 
 module.exports = mongoose.model('team-data', teamSchema);
