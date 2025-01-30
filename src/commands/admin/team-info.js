@@ -118,7 +118,7 @@ module.exports = {
 
 async function updateTeamEmbed(interaction) {
     const teamMembers = await TeamMember.find({});
-    let embedDescription = teamMembers.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n\n') || 'Keine Teammitglieder gelistet.';
+    let embedDescription = teamMembers.map(member => `- **${member}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n\n') || 'Keine Teammitglieder gelistet.';
 
     const TeamEmbed = new EmbedBuilder()
         .setTitle('WOC Server-Team')
