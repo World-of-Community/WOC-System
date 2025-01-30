@@ -52,8 +52,11 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
-                .setDescription('Sendet das Team Info Embed.')
-        ),
+                .setDescription('Sendet das Team Info Embed.'))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('refresh')
+                .setDescription('Aktualisiere das Team Info Embed.')),
     
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
@@ -110,31 +113,35 @@ module.exports = {
                 await interaction.reply({ content: `> \`❗\` » ${user} ist kein Teammitglied.`, ephemeral: true });
             }
         }
-        else if (subcommand === 'list') {
-            await sendTeamEmbed(interaction);
+        //else if (subcommand === 'list') {
+        //    await sendTeamEmbed(interaction);
+        //}
+        else if (subcommand === 'refresh') {
+            await updateTeamEmbed(interaction);
+            await interaction.reply({ content: '> \`✅\` » Das Team Info Embed wurde aktualisiert.', ephemeral: true });
         }
     },
 };
 
-async function updateTeamEmbed(interaction) {
-    const teamMembers = await TeamMember.find({});
-    let embedDescription = teamMembers.map(member => `- **${member}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n\n') || 'Keine Teammitglieder gelistet.';
-
-    const TeamEmbed = new EmbedBuilder()
-        .setTitle('WOC Server-Team')
-        .setDescription(embedDescription)
-        .setColor('Orange')
-        .setTimestamp();
-
-    try {
-        const channel = interaction.guild.channels.cache.get('1291421526238822481');
-        const messageId = '1293559329961803950';
-        const message = await channel.messages.fetch(messageId);
-        await message.edit({ embeds: [TeamEmbed] });
-    } catch (error) {
-        console.error('Fehler beim Aktualisieren des Team-Embeds:', error);
-    }
-}
+//async function updateTeamEmbed(interaction) {
+//    const teamMembers = await TeamMember.find({});
+//    let embedDescription = teamMembers.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n\n') || 'Keine Teammitglieder gelistet.';
+//
+//    const TeamEmbed = new EmbedBuilder()
+//        .setTitle('WOC Server-Team')
+//        .setDescription(embedDescription)
+//        .setColor('Orange')
+//        .setTimestamp();
+//
+//    try {
+//        const channel = interaction.guild.channels.cache.get('1291421526238822481');
+//        const messageId = '1293559329961803950';
+//        const message = await channel.messages.fetch(messageId);
+//        await message.edit({ embeds: [TeamEmbed] });
+//    } catch (error) {
+//        console.error('Fehler beim Aktualisieren des Team-Embeds:', error);
+//    }
+//}
 
 async function sendTeamEmbed(interaction) {
     const teamMembers = await TeamMember.find({});
