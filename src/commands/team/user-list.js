@@ -40,7 +40,7 @@ module.exports = {
 
         return new EmbedBuilder()
           .setTitle(`\`👥\` × Alle Server-Mitglieder (${members.size.toLocaleString('de-DE')})`)
-          .setDescription(`${searchName ? `Hier sind die Gesuchten Ergebnisse für: **${searchName}**\n\n` : ''}${pageMembers || 'Keine Mitglieder auf dieser Seite.'}`)
+          .setDescription(`${searchName ? `Hier sind die Gesuchten Ergebnisse für **${searchName}**\n\n` : ''}${pageMembers || 'Keine Mitglieder auf dieser Seite.'}`)
           .setColor('Blurple')
           .setFooter({ text: `» ${interaction.guild.name} - Seite ${page + 1} von ${totalPages}`, iconURL: interaction.guild.iconURL() })
           .setTimestamp();
