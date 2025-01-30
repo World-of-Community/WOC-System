@@ -145,7 +145,7 @@ async function updateTeamEmbed(interaction) {
             embedDescription += `**${bereich.name}:**\n` +
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `**${bereich.name}:**\nAktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `**${bereich.name}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
