@@ -8,7 +8,7 @@ module.exports = {
       option.setName('id')
         .setDescription('Die ID des Benutzers, den du suchen möchtest.')
         .setRequired(true))
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Nur für Mitglieder mit der Berechtigung "Manage Roles"
 
   async execute(interaction) {
     const userId = interaction.options.getString('id');
@@ -21,18 +21,17 @@ module.exports = {
       await new Promise(resolve => setTimeout(resolve, 3000));
 
       // Benutzer anhand der ID abrufen
-      const user = await interaction.guild.members.fetch(userId);
+      const member = await interaction.guild.members.fetch(userId);
 
       // Embed-Nachricht erstellen
       const UserFindEmbed = new EmbedBuilder()
         .setTitle('Benutzer gefunden')
-        .setDescription(`Der Benutzer mit der ID \`${userId}\` ist **${user.user.username}**.\n\n- Nutzer: ${member}`)
+        .setDescription(`Der Benutzer mit der ID \`${userId}\` ist **${member.user.username}**.\n\n- Nutzer: ${member.user.tag}`)
         .setColor('Green')
         .setThumbnail(user.user.displayAvatarURL())
         .setFooter({ text: 'Benutzerabfrage' })
         .setTimestamp();
 
-      // Embed-Nachricht senden
       await interaction.editReply({ content: '> `✅` » Ich habe den Nutzer erfolgreich gefunden.', embeds: [UserFindEmbed], ephemeral: true });
     } catch (error) {
       console.error('Fehler beim Abrufen des Benutzers:', error);
