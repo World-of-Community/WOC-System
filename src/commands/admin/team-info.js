@@ -143,10 +143,10 @@ async function updateTeamEmbed(interaction) {
     bereiche.forEach(bereich => {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `**${bereich.id}:**\n` +
+            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n` +  // Erwähnung der Rolle
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `**${bereich.name}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
@@ -158,7 +158,7 @@ async function updateTeamEmbed(interaction) {
 
     try {
         const channel = interaction.guild.channels.cache.get('1291421526238822481'); // Channel ID anpassen
-        const messageId = '1293559329961803950'; // Die Message-ID hier anpassen
+        const messageId = 'DEINE_MESSAGE_ID'; // Die Message-ID hier anpassen
 
         const message = await channel.messages.fetch(messageId);
 
@@ -186,10 +186,10 @@ async function sendTeamEmbed(interaction) {
     bereiche.forEach(bereich => {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `**${bereich.name}:**\n` +
+            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n` +  // Erwähnung der Rolle
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `**${bereich.name}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
