@@ -8,26 +8,32 @@ module.exports = {
       option.setName('id')
         .setDescription('Die ID des Benutzers, den du suchen möchtest.')
         .setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const userId = interaction.options.getString('id');
 
+    // Initiale Nachricht, dass der Bot nach dem Benutzer sucht
+    await interaction.reply('Ich suche nach dem Nutzer, einen Augenblick bitte...');
+
     try {
+      // Warten für 3 Sekunden
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
       // Benutzer anhand der ID abrufen
       const user = await interaction.guild.members.fetch(userId);
 
       // Embed-Nachricht erstellen
       const UserFindEmbed = new EmbedBuilder()
         .setTitle('Benutzer gefunden')
-        .setDescription(`Der Benutzer mit der ID **${userId}** ist **${user.user.username}**.`)
-        .setColor('Blurple')
+        .setDescription(`Der Benutzer mit der ID \`${userId}\` ist **${user.user.username}**.`)
+        .setColor('Green')
         .setThumbnail(user.user.displayAvatarURL())
         .setFooter({ text: 'Benutzerabfrage' })
         .setTimestamp();
 
       // Embed-Nachricht senden
-      await interaction.reply({ embeds: [UserFindEmbed], ephemeral: true });
+      await interaction.editReply({ content: ' ', embeds: [UserFindEmbed], ephemeral: true });
     } catch (error) {
       console.error('Fehler beim Abrufen des Benutzers:', error);
 
@@ -35,11 +41,11 @@ module.exports = {
       const ErrorEmbed = new EmbedBuilder()
         .setTitle('Benutzer nicht gefunden')
         .setDescription('Benutzer konnte nicht gefunden werden.')
-        .setColor('Blurple')
+        .setColor('Red')
         .setFooter({ text: 'Benutzerabfrage' })
         .setTimestamp();
 
-      await interaction.reply({ embeds: [ErrorEmbed], ephemeral: true });
+      await interaction.editReply({ content: ' ', embeds: [ErrorEmbed], ephemeral: true });
     }
   },
 };
