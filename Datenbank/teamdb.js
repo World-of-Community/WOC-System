@@ -39,17 +39,14 @@ const teamSchema = new mongoose.Schema({
         },
     },
     teaminfo: {
-        userID: {
+        userName: {  // Speichere den Namen des Nutzers
           type: String,
-          required: true, // Pflichtfeld
+          required: [true, 'userName ist erforderlich.'],
         },
         bereich: {
           type: String,
         },
         beschreibung: {
-          type: String,
-        },
-        name: {
           type: String,
         },
         alter: {
@@ -58,7 +55,7 @@ const teamSchema = new mongoose.Schema({
         role: {
           type: String,
         },
-      },   
+      },  
 });
 
 module.exports = mongoose.model('team-data', teamSchema);
