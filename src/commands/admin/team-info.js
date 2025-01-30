@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const mongoose = require('mongoose');
 const TeamMember = require('../../../Datenbank/teamdb');
+const UserDB = require('../../../Datenbank/userdb');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -38,7 +39,7 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('alter')
-                        .setDescription('Alter des Teammitglieds')
+                        .setDescription('Alter des Teammitglieds (Optional, wird sonst automatisch berechnet)')
                         .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
@@ -62,7 +63,28 @@ module.exports = {
             const user = interaction.options.getUser('user');
             const name = interaction.options.getString('name');
             const beschreibung = interaction.options.getString('beschreibung');
-            const alter = interaction.options.getString('alter') || 'Nicht angegeben';
+            let alter = interaction.options.getString('alter');
+
+            if (!alter) {
+                const userData = await UserDB.findOne({ userId: user.id });
+
+                if (userData && userData.birthday && userData.birthday.jahr) {
+                    const aktuellesDatum = new Date();
+                    const aktuellesJahr = aktuellesDatum.getFullYear();
+                    let berechnetesAlter = aktuellesJahr - userData.birthday.jahr;
+
+                    if (
+                        userData.birthday.monat > (aktuellesDatum.getMonth() + 1) || 
+                        (userData.birthday.monat === (aktuellesDatum.getMonth() + 1) && userData.birthday.tag > aktuellesDatum.getDate())
+                    ) {
+                        berechnetesAlter--;
+                    }
+
+                    alter = berechnetesAlter;
+                } else {
+                    alter = 'Nicht angegeben';
+                }
+            }
 
             const newMember = new TeamMember({
                 userID: user.id,
@@ -105,8 +127,8 @@ async function updateTeamEmbed(interaction) {
         .setTimestamp();
 
     try {
-        const channel = interaction.guild.channels.cache.get('1291421526238822481'); // Hier richtige Kanal-ID einfügen
-        const messageId = '1293559329961803950'; // Diese ID sollte in der DB gespeichert werden
+        const channel = interaction.guild.channels.cache.get('1291421526238822481');
+        const messageId = '1293559329961803950';
         const message = await channel.messages.fetch(messageId);
         await message.edit({ embeds: [TeamEmbed] });
     } catch (error) {
