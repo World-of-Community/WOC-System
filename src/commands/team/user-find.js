@@ -23,10 +23,13 @@ module.exports = {
       // Benutzer anhand der ID abrufen
       const member = await interaction.guild.members.fetch(memberId);
 
+      // Prüfen, ob der Nutzer erwähnbar ist
+      const mentionStatus = member.permissions.has(PermissionFlagsBits.SendMessages) ? `${member}` : '`❌` Nicht erwähnbar';
+
       // Embed-Nachricht erstellen
       const UserFindEmbed = new EmbedBuilder()
         .setTitle('Benutzer gefunden')
-        .setDescription(`Der Benutzer mit der ID \`${memberId}\` ist **${member.user.username}**.\n\n- Nutzer: ${member.user.displayName}\n- Erwähnung: ${member}`)
+        .setDescription(`Der Benutzer mit der ID \`${memberId}\` ist **${member.user.username}**.\n\n- Nutzer: ${member.user.displayName}\n- Erwähnung: ${mentionStatus}`)
         .setColor('Green')
         .setThumbnail(member.user.displayAvatarURL())
         .setFooter({ text: 'Benutzerabfrage', iconURL: interaction.guild.iconURL() })
