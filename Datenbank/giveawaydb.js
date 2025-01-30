@@ -54,6 +54,11 @@ const giveawaySchema = new mongoose.Schema({
         type: Number,
         required: false,
         default: 1
+    },
+    voiceTime: {
+        type: Number,
+        required: false,
+        default: 0
     }
 });
 
