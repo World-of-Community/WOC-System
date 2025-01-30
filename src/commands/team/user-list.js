@@ -4,14 +4,24 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('user-list')
     .setDescription('» Listet alle Mitglieder des Servers mit ID auf (20 pro Seite). 🔍')
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Nur für Mitglieder mit "Manage Roles"
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles) // Nur für Mitglieder mit "Manage Roles"
+    .addStringOption(option =>
+      option.setName('name')
+        .setDescription('Name des Nutzers, nach dem gesucht werden soll')
+        .setRequired(false)
+    ),
 
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true }); // Verzögerte Antwort, falls es länger dauert
 
     try {
+      const searchName = interaction.options.getString('name'); // Optionaler Name-Parameter
       const members = await interaction.guild.members.fetch(); // Alle Mitglieder abrufen
-      const memberArray = members.map(member => `🆔 \`${member.id}\` | **${member.user.username}** | ${member}`);
+
+      // Filtere Mitglieder nach dem angegebenen Namen, falls ein Name angegeben wurde
+      const memberArray = members
+        .filter(member => !searchName || member.user.username.toLowerCase().includes(searchName.toLowerCase()))
+        .map(member => `🆔 \`${member.id}\` | **${member.user.username}** | ${member}`);
 
       // Falls keine Mitglieder gefunden wurden
       if (memberArray.length === 0) {
