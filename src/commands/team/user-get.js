@@ -29,10 +29,10 @@ module.exports = {
         const pageMembers = memberArray.slice(start, end).join('\n');
 
         return new EmbedBuilder()
-          .setTitle(`👥 Server-Mitglieder (${members.size})`)
+          .setTitle(`\`👥\` × Server-Mitglieder (${members.size.toLocaleString('de-DE')})`)
           .setDescription(pageMembers || 'Keine Mitglieder auf dieser Seite.')
           .setColor('Blue')
-          .setFooter({ text: `Seite ${page + 1} von ${totalPages}`, iconURL: interaction.guild.iconURL() })
+          .setFooter({ text: `» ${interaction.guild.name} - Seite ${page + 1} von ${totalPages}`, iconURL: interaction.guild.iconURL() })
           .setTimestamp();
       };
 
@@ -41,14 +41,14 @@ module.exports = {
         return new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId('prev')
-            .setLabel('vorherige Seite')
-            .setEmoji('◀️')
+            .setLabel('Vorherige Seite')
+            .setEmoji('⬅️')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(page === 0), // Deaktiviert, wenn es die erste Seite ist
           new ButtonBuilder()
             .setCustomId('next')
-            .setLabel('nächste Seite')
-            .setEmoji('▶️')
+            .setLabel('Nächste Seite')
+            .setEmoji('➡️')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(page === totalPages - 1) // Deaktiviert, wenn es die letzte Seite ist
         );
