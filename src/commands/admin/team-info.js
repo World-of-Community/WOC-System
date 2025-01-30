@@ -114,6 +114,7 @@ module.exports = {
             }
         }
         else if (subcommand === 'list') {
+            // Nur das neue Embed senden
             await sendTeamEmbed(interaction);
         }
         else if (subcommand === 'refresh') {
@@ -126,19 +127,25 @@ module.exports = {
 async function updateTeamEmbed(interaction) {
     const teamMembers = await TeamMember.find({});
     const bereiche = [
-        'Admin', 'Team-Leitung', 'Developer', 'Sr-Moderator', 'Moderator', 'Supporter', 'Builder'
+        { name: 'Admin', id: '959869691529154631' },
+        { name: 'Team-Leitung', id: '893423428558782465' },
+        { name: 'Developer', id: '929349039433056276' },
+        { name: 'Sr-Moderator', id: '816985466230145044' },
+        { name: 'Moderator', id: '815920052385480754' },
+        { name: 'Supporter', id: '815920170371383366' },
+        { name: 'Builder', id: '1263645368441241700' }
     ];
 
     let embedDescription = '';
-    
+
     // Für jeden Bereich prüfen, ob Mitglieder vorhanden sind
     bereiche.forEach(bereich => {
-        const membersInArea = teamMembers.filter(member => member.bereich === bereich);
+        const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `**${bereich}:**\n` +
+            embedDescription += `**${bereich.name}:**\n` +
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `**${bereich}:**\nAktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `**${bereich.name}:**\nAktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
@@ -150,30 +157,34 @@ async function updateTeamEmbed(interaction) {
 
     try {
         const channel = interaction.guild.channels.cache.get('1291421526238822481');
-        const messageId = '1293559329961803950';
-        const message = await channel.messages.fetch(messageId);
-        await message.edit({ embeds: [TeamEmbed] });
+        await channel.send({ embeds: [TeamEmbed] });
     } catch (error) {
-        console.error('Fehler beim Aktualisieren des Team-Embeds:', error);
+        console.error('Fehler beim Senden des Team-Embeds:', error);
     }
 }
 
 async function sendTeamEmbed(interaction) {
     const teamMembers = await TeamMember.find({});
     const bereiche = [
-        'Admin', 'Team-Leitung', 'Developer', 'Sr-Moderator', 'Moderator', 'Supporter', 'Builder'
+        { name: 'Admin', id: '959869691529154631' },
+        { name: 'Team-Leitung', id: '893423428558782465' },
+        { name: 'Developer', id: '929349039433056276' },
+        { name: 'Sr-Moderator', id: '816985466230145044' },
+        { name: 'Moderator', id: '815920052385480754' },
+        { name: 'Supporter', id: '815920170371383366' },
+        { name: 'Builder', id: '1263645368441241700' }
     ];
 
     let embedDescription = '';
-    
+
     // Für jeden Bereich prüfen, ob Mitglieder vorhanden sind
     bereiche.forEach(bereich => {
-        const membersInArea = teamMembers.filter(member => member.bereich === bereich);
+        const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `**${bereich}:**\n` +
+            embedDescription += `**${bereich.name}:**\n` +
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `**${bereich}:**\nAktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `**${bereich.name}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
@@ -183,5 +194,5 @@ async function sendTeamEmbed(interaction) {
         .setColor('Orange')
         .setTimestamp();
 
-    await interaction.channel.send({ embeds: [TeamEmbed] });
+    await interaction.reply({ embeds: [TeamEmbed] });
 }
