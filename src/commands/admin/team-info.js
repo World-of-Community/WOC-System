@@ -100,8 +100,10 @@ module.exports = {
             });
 
             await newMember.save();
+
+            // Direkt nach dem Hinzufügen des Mitglieds das Team-Embed aktualisieren
             await interaction.reply({ content: `> \`✅\` » ${user} wurde dem Team hinzugefügt im Bereich ${bereich}.`, ephemeral: true });
-            await updateTeamEmbed(interaction);
+            await updateTeamEmbed(interaction); // Embed sofort aktualisieren
         }
         else if (subcommand === 'remove') {
             const user = interaction.options.getUser('user');
@@ -109,7 +111,7 @@ module.exports = {
 
             if (member) {
                 await interaction.reply({ content: `> \`❌\` » ${user} wurde aus dem Team entfernt.`, ephemeral: true });
-                await updateTeamEmbed(interaction);
+                await updateTeamEmbed(interaction); // Embed sofort aktualisieren
             } else {
                 await interaction.reply({ content: `> \`❗\` » ${user} ist kein Teammitglied.`, ephemeral: true });
             }
@@ -119,7 +121,7 @@ module.exports = {
             await sendTeamEmbed(interaction);
         }
         else if (subcommand === 'refresh') {
-            await updateTeamEmbed(interaction);
+            await updateTeamEmbed(interaction); // Embed sofort aktualisieren
             await interaction.reply({ content: '> \`✅\` » Das Team Info Embed wurde aktualisiert.', ephemeral: true });
         }
     },
@@ -143,10 +145,10 @@ async function updateTeamEmbed(interaction) {
     bereiche.forEach(bereich => {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n` +  // Erwähnung der Rolle
+            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n` +  // Erwähnung der Rolle
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
@@ -186,10 +188,10 @@ async function sendTeamEmbed(interaction) {
     bereiche.forEach(bereich => {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n` +  // Erwähnung der Rolle
+            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n` +  // Erwähnung der Rolle
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
