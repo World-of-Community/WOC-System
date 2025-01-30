@@ -1,31 +1,91 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('user-get')
-    .setDescription('» Listet alle Mitglieder des Servers mit ID auf. 🔍')
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Nur für Mitglieder mit der Berechtigung "Manage Roles"
+    .setDescription('» Listet alle Mitglieder des Servers mit ID auf (20 pro Seite). 🔍')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Nur für Mitglieder mit "Manage Roles"
 
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true }); // Verzögerte Antwort, falls es länger dauert
 
     try {
       const members = await interaction.guild.members.fetch(); // Alle Mitglieder abrufen
-      const memberList = members.map(member => `> 🆔 \`${member.id}\` | 👤 **${member.user.username}** | ${member}`).join('\n');
+      const memberArray = members.map(member => `🆔 \`${member.id}\` | **${member.user.username}** | ${member}`);
 
-      if (memberList.length > 4000) {
-        return interaction.editReply({ content: '> `⚠️` » Die Mitgliederliste ist zu lang, um sie hier anzuzeigen!', ephemeral: true });
+      // Falls keine Mitglieder gefunden wurden
+      if (memberArray.length === 0) {
+        return interaction.editReply({ content: '> `⚠️` » Keine Mitglieder gefunden.', ephemeral: true });
       }
 
-      // Embed mit allen Mitgliedern
-      const UserListEmbed = new EmbedBuilder()
-        .setTitle(`👥 Server-Mitglieder (${members.size})`)
-        .setDescription(memberList || 'Keine Mitglieder gefunden.')
-        .setColor('Blue')
-        .setFooter({ text: 'Benutzerabfrage', iconURL: interaction.guild.iconURL() })
-        .setTimestamp();
+      const pageSize = 20; // Maximal 20 Mitglieder pro Seite
+      let currentPage = 0;
+      const totalPages = Math.ceil(memberArray.length / pageSize);
 
-      await interaction.editReply({ embeds: [UserListEmbed] });
+      // Funktion zum Erstellen des Embeds basierend auf der Seite
+      const generateEmbed = (page) => {
+        const start = page * pageSize;
+        const end = start + pageSize;
+        const pageMembers = memberArray.slice(start, end).join('\n');
+
+        return new EmbedBuilder()
+          .setTitle(`👥 Server-Mitglieder (${members.size})`)
+          .setDescription(pageMembers || 'Keine Mitglieder auf dieser Seite.')
+          .setColor('Blue')
+          .setFooter({ text: `Seite ${page + 1} von ${totalPages}`, iconURL: interaction.guild.iconURL() })
+          .setTimestamp();
+      };
+
+      // Funktion zum Erstellen der Buttons
+      const generateButtons = (page) => {
+        return new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('prev')
+            .setLabel('vorherige Seite')
+            .setEmoji('◀️')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(page === 0), // Deaktiviert, wenn es die erste Seite ist
+          new ButtonBuilder()
+            .setCustomId('next')
+            .setLabel('nächste Seite')
+            .setEmoji('▶️')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(page === totalPages - 1) // Deaktiviert, wenn es die letzte Seite ist
+        );
+      };
+
+      const reply = await interaction.editReply({
+        embeds: [generateEmbed(currentPage)],
+        components: totalPages > 1 ? [generateButtons(currentPage)] : [], // Buttons nur anzeigen, wenn mehrere Seiten existieren
+        ephemeral: true
+      });
+
+      if (totalPages === 1) return; // Falls nur eine Seite, keine Interaktion nötig
+
+      // Listener für Button-Klicks
+      const collector = reply.createMessageComponentCollector({ time: 60000 });
+
+      collector.on('collect', async (btnInteraction) => {
+        if (btnInteraction.user.id !== interaction.user.id) {
+          return btnInteraction.reply({ content: 'Nur der ursprüngliche Nutzer kann blättern.', ephemeral: true });
+        }
+
+        if (btnInteraction.customId === 'prev' && currentPage > 0) {
+          currentPage--;
+        } else if (btnInteraction.customId === 'next' && currentPage < totalPages - 1) {
+          currentPage++;
+        }
+
+        await btnInteraction.update({
+          embeds: [generateEmbed(currentPage)],
+          components: [generateButtons(currentPage)]
+        });
+      });
+
+      collector.on('end', async () => {
+        await interaction.editReply({ components: [] }).catch(() => {});
+      });
+
     } catch (error) {
       console.error('Fehler beim Abrufen der Mitglieder:', error);
       await interaction.editReply({ content: '> `❌` » Es gab einen Fehler beim Abrufen der Mitglieder.', ephemeral: true });
