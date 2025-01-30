@@ -14,7 +14,7 @@ module.exports = {
     const userId = interaction.options.getString('id');
 
     // Initiale Nachricht, dass der Bot nach dem Benutzer sucht
-    await interaction.reply('Ich suche nach dem Nutzer, einen Augenblick bitte...');
+    await interaction.reply({ content: '> `🔍` » Ich suche nach dem Nutzer, einen Augenblick bitte...', ephemeral: true });
 
     try {
       // Warten für 3 Sekunden
