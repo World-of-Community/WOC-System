@@ -26,7 +26,7 @@ module.exports = {
       // Embed-Nachricht erstellen
       const UserFindEmbed = new EmbedBuilder()
         .setTitle('Benutzer gefunden')
-        .setDescription(`Der Benutzer mit der ID \`${memberId}\` ist **${member.user.username}**.\n\n- Nutzer: ${member.user.tag}`)
+        .setDescription(`Der Benutzer mit der ID \`${memberId}\` ist **${member.user.username}**.\n\n- Nutzer: ${member.user.displayName}`)
         .setColor('Green')
         .setThumbnail(member.user.displayAvatarURL())
         .setFooter({ text: 'Benutzerabfrage' })
