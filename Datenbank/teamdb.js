@@ -39,26 +39,26 @@ const teamSchema = new mongoose.Schema({
         },
     },
     teaminfo: {
-        userID: { // Großbuchstaben "ID"
-            type: String,
-            required: true, // Falls es verpflichtend sein soll
+        userID: {
+          type: String,
+          required: true, // Pflichtfeld
         },
         bereich: {
-            type: String,
+          type: String,
         },
         beschreibung: {
-            type: String,
+          type: String,
         },
         name: {
-            type: String,
+          type: String,
         },
         alter: {
-            type: String,
+          type: String,
         },
         role: {
-            type: String,
+          type: String,
         },
-    }    
+      },   
 });
 
 module.exports = mongoose.model('team-data', teamSchema);
