@@ -11,7 +11,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Nur für Mitglieder mit der Berechtigung "Manage Roles"
 
   async execute(interaction) {
-    const userId = interaction.options.getString('id');
+    const memberId = interaction.options.getString('id');
 
     // Initiale Nachricht, dass der Bot nach dem Benutzer sucht
     await interaction.reply({ content: '> `🔍` » Ich suche nach dem Nutzer, einen Augenblick bitte...', ephemeral: true });
@@ -21,14 +21,14 @@ module.exports = {
       await new Promise(resolve => setTimeout(resolve, 3000));
 
       // Benutzer anhand der ID abrufen
-      const member = await interaction.guild.members.fetch(userId);
+      const member = await interaction.guild.members.fetch(memberId);
 
       // Embed-Nachricht erstellen
       const UserFindEmbed = new EmbedBuilder()
         .setTitle('Benutzer gefunden')
-        .setDescription(`Der Benutzer mit der ID \`${userId}\` ist **${member.user.username}**.\n\n- Nutzer: ${member.user.tag}`)
+        .setDescription(`Der Benutzer mit der ID \`${memberId}\` ist **${member.user.username}**.\n\n- Nutzer: ${member.user.tag}`)
         .setColor('Green')
-        .setThumbnail(user.user.displayAvatarURL())
+        .setThumbnail(member.user.displayAvatarURL())
         .setFooter({ text: 'Benutzerabfrage' })
         .setTimestamp();
 
