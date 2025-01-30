@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, Butt
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('user-get')
+    .setName('user-list')
     .setDescription('» Listet alle Mitglieder des Servers mit ID auf (20 pro Seite). 🔍')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles), // Nur für Mitglieder mit "Manage Roles"
 
@@ -63,7 +63,7 @@ module.exports = {
       if (totalPages === 1) return; // Falls nur eine Seite, keine Interaktion nötig
 
       // Listener für Button-Klicks
-      const collector = reply.createMessageComponentCollector({ time: 60000 });
+      const collector = reply.createMessageComponentCollector();
 
       collector.on('collect', async (btnInteraction) => {
         if (btnInteraction.user.id !== interaction.user.id) {
