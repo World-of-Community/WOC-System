@@ -39,8 +39,9 @@ const teamSchema = new mongoose.Schema({
         },
     },
     teaminfo: {
-        userId: {
+        userID: { // Großbuchstaben "ID"
             type: String,
+            required: true, // Falls es verpflichtend sein soll
         },
         bereich: {
             type: String,
@@ -57,7 +58,7 @@ const teamSchema = new mongoose.Schema({
         role: {
             type: String,
         },
-    }
+    }    
 });
 
 module.exports = mongoose.model('team-data', teamSchema);
