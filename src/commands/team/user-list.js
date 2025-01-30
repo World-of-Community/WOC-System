@@ -31,7 +31,7 @@ module.exports = {
         return new EmbedBuilder()
           .setTitle(`\`👥\` × Alle Server-Mitglieder (${members.size.toLocaleString('de-DE')})`)
           .setDescription(pageMembers || 'Keine Mitglieder auf dieser Seite.')
-          .setColor('Blue')
+          .setColor('Blurple')
           .setFooter({ text: `» ${interaction.guild.name} - Seite ${page + 1} von ${totalPages}`, iconURL: interaction.guild.iconURL() })
           .setTimestamp();
       };
