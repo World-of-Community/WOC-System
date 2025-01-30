@@ -158,7 +158,7 @@ async function updateTeamEmbed(interaction) {
 
     try {
         const channel = interaction.guild.channels.cache.get('1291421526238822481'); // Channel ID anpassen
-        const messageId = 'DEINE_MESSAGE_ID'; // Die Message-ID hier anpassen
+        const messageId = '1293559329961803950'; // Die Message-ID hier anpassen
 
         const message = await channel.messages.fetch(messageId);
 
