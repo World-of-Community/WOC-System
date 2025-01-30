@@ -26,14 +26,14 @@ module.exports = {
       // Embed-Nachricht erstellen
       const UserFindEmbed = new EmbedBuilder()
         .setTitle('Benutzer gefunden')
-        .setDescription(`Der Benutzer mit der ID \`${userId}\` ist **${user.user.username}**.`)
+        .setDescription(`Der Benutzer mit der ID \`${userId}\` ist **${user.user.username}**.\n\n- Nutzer: ${member}`)
         .setColor('Green')
         .setThumbnail(user.user.displayAvatarURL())
         .setFooter({ text: 'Benutzerabfrage' })
         .setTimestamp();
 
       // Embed-Nachricht senden
-      await interaction.editReply({ content: ' ', embeds: [UserFindEmbed], ephemeral: true });
+      await interaction.editReply({ content: '> `✅` » Ich habe den Nutzer erfolgreich gefunden.', embeds: [UserFindEmbed], ephemeral: true });
     } catch (error) {
       console.error('Fehler beim Abrufen des Benutzers:', error);
 
@@ -45,7 +45,7 @@ module.exports = {
         .setFooter({ text: 'Benutzerabfrage' })
         .setTimestamp();
 
-      await interaction.editReply({ content: ' ', embeds: [ErrorEmbed], ephemeral: true });
+      await interaction.editReply({ content: '> `❌` » Ich konnte den Nutzer nicht finden.', embeds: [ErrorEmbed], ephemeral: true });
     }
   },
 };
