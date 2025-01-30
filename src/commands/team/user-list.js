@@ -51,14 +51,12 @@ module.exports = {
         return new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId('prev')
-            .setLabel('Vorherige Seite')
-            .setEmoji('`⬅️`')
+            .setLabel('⬅️ Vorherige Seite')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(page === 0), // Deaktiviert, wenn es die erste Seite ist
           new ButtonBuilder()
             .setCustomId('next')
-            .setLabel('Nächste Seite')
-            .setEmoji('`➡️`')
+            .setLabel('➡️ Nächste Seite')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(page === totalPages - 1) // Deaktiviert, wenn es die letzte Seite ist
         );
