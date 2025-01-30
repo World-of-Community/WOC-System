@@ -57,7 +57,7 @@ module.exports = {
             subcommand
                 .setName('refresh')
                 .setDescription('Aktualisiere das Team Info Embed.')),
-    
+
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
 
@@ -125,11 +125,26 @@ module.exports = {
 
 async function updateTeamEmbed(interaction) {
     const teamMembers = await TeamMember.find({});
-    let embedDescription = teamMembers.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n\n') || 'Keine Teammitglieder gelistet.';
+    const bereiche = [
+        'Admin', 'Team-Leitung', 'Developer', 'Sr-Moderator', 'Moderator', 'Supporter', 'Builder'
+    ];
+
+    let embedDescription = '';
+    
+    // Für jeden Bereich prüfen, ob Mitglieder vorhanden sind
+    bereiche.forEach(bereich => {
+        const membersInArea = teamMembers.filter(member => member.bereich === bereich);
+        if (membersInArea.length > 0) {
+            embedDescription += `**${bereich}:**\n` +
+                membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
+        } else {
+            embedDescription += `**${bereich}:**\nAktuell kein Teammitglied in diesem Bereich.\n\n`;
+        }
+    });
 
     const TeamEmbed = new EmbedBuilder()
         .setTitle('WOC Server-Team')
-        .setDescription(embedDescription)
+        .setDescription(embedDescription || 'Keine Teammitglieder gelistet.')
         .setColor('Orange')
         .setTimestamp();
 
@@ -145,11 +160,26 @@ async function updateTeamEmbed(interaction) {
 
 async function sendTeamEmbed(interaction) {
     const teamMembers = await TeamMember.find({});
-    let embedDescription = teamMembers.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n\n') || 'Keine Teammitglieder gelistet.';
+    const bereiche = [
+        'Admin', 'Team-Leitung', 'Developer', 'Sr-Moderator', 'Moderator', 'Supporter', 'Builder'
+    ];
+
+    let embedDescription = '';
+    
+    // Für jeden Bereich prüfen, ob Mitglieder vorhanden sind
+    bereiche.forEach(bereich => {
+        const membersInArea = teamMembers.filter(member => member.bereich === bereich);
+        if (membersInArea.length > 0) {
+            embedDescription += `**${bereich}:**\n` +
+                membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
+        } else {
+            embedDescription += `**${bereich}:**\nAktuell kein Teammitglied in diesem Bereich.\n\n`;
+        }
+    });
 
     const TeamEmbed = new EmbedBuilder()
         .setTitle('WOC Server-Team')
-        .setDescription(embedDescription)
+        .setDescription(embedDescription || 'Keine Teammitglieder gelistet.')
         .setColor('Orange')
         .setTimestamp();
 
