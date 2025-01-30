@@ -39,8 +39,8 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('alter')
-                        .setDescription('Alter des Teammitglieds (Optional, wird sonst automatisch berechnet)'))
-        )
+                        .setDescription('Alter des Teammitglieds (Optional, wird sonst automatisch berechnet)')
+                        .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('remove')
@@ -48,8 +48,7 @@ module.exports = {
                 .addUserOption(option =>
                     option.setName('user')
                         .setDescription('Welches Teammitglied soll entfernt werden?')
-                        .setRequired(true))
-        )
+                        .setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
@@ -101,7 +100,9 @@ module.exports = {
 
             await newMember.save();
 
-            // Direkt nach dem Hinzufügen des Mitglieds das Team-Embed aktualisieren
+            // Überprüfen, ob das Teammitglied korrekt gespeichert wurde
+            console.log("Neues Teammitglied gespeichert:", newMember);
+
             await interaction.reply({ content: `> \`✅\` » ${user} wurde dem Team hinzugefügt im Bereich ${bereich}.`, ephemeral: true });
             await updateTeamEmbed(interaction); // Embed sofort aktualisieren
         }
@@ -111,7 +112,7 @@ module.exports = {
 
             if (member) {
                 await interaction.reply({ content: `> \`❌\` » ${user} wurde aus dem Team entfernt.`, ephemeral: true });
-                await updateTeamEmbed(interaction); // Embed sofort aktualisieren
+                await updateTeamEmbed(interaction); // Embed aktualisieren
             } else {
                 await interaction.reply({ content: `> \`❗\` » ${user} ist kein Teammitglied.`, ephemeral: true });
             }
@@ -121,7 +122,7 @@ module.exports = {
             await sendTeamEmbed(interaction);
         }
         else if (subcommand === 'refresh') {
-            await updateTeamEmbed(interaction); // Embed sofort aktualisieren
+            await updateTeamEmbed(interaction);
             await interaction.reply({ content: '> \`✅\` » Das Team Info Embed wurde aktualisiert.', ephemeral: true });
         }
     },
@@ -144,9 +145,10 @@ async function updateTeamEmbed(interaction) {
     // Für jeden Bereich prüfen, ob Mitglieder vorhanden sind
     bereiche.forEach(bereich => {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
+        console.log(`Mitglieder im Bereich ${bereich.name}:`, membersInArea);  // Ausgabe für Debugging
         if (membersInArea.length > 0) {
             embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n` +  // Erwähnung der Rolle
-                membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
+                membersInArea.map(member => `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
             embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
@@ -189,7 +191,7 @@ async function sendTeamEmbed(interaction) {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
             embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n` +  // Erwähnung der Rolle
-                membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
+                membersInArea.map(member => `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
             embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
