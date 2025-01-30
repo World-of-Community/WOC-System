@@ -52,13 +52,13 @@ module.exports = {
           new ButtonBuilder()
             .setCustomId('prev')
             .setLabel('Vorherige Seite')
-            .setEmoji('⬅️')
+            .setEmoji('`⬅️`')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(page === 0), // Deaktiviert, wenn es die erste Seite ist
           new ButtonBuilder()
             .setCustomId('next')
             .setLabel('Nächste Seite')
-            .setEmoji('➡️')
+            .setEmoji('`➡️`')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(page === totalPages - 1) // Deaktiviert, wenn es die letzte Seite ist
         );
@@ -77,7 +77,7 @@ module.exports = {
 
       collector.on('collect', async (btnInteraction) => {
         if (btnInteraction.user.id !== interaction.user.id) {
-          return btnInteraction.reply({ content: 'Nur der ursprüngliche Nutzer kann blättern.', ephemeral: true });
+          return btnInteraction.reply({ content: '> `❗` » Nur der ursprüngliche Nutzer kann blättern.', ephemeral: true });
         }
 
         if (btnInteraction.customId === 'prev' && currentPage > 0) {
