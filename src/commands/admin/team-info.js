@@ -39,8 +39,8 @@ module.exports = {
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('alter')
-                        .setDescription('Alter des Teammitglieds (Optional, wird sonst automatisch berechnet)')
-                        .setRequired(false)))
+                        .setDescription('Alter des Teammitglieds (Optional, wird sonst automatisch berechnet)'))
+        )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('remove')
@@ -48,7 +48,8 @@ module.exports = {
                 .addUserOption(option =>
                     option.setName('user')
                         .setDescription('Welches Teammitglied soll entfernt werden?')
-                        .setRequired(true)))
+                        .setRequired(true))
+        )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
@@ -156,10 +157,14 @@ async function updateTeamEmbed(interaction) {
         .setTimestamp();
 
     try {
-        const channel = interaction.guild.channels.cache.get('1291421526238822481');
-        await channel.send({ embeds: [TeamEmbed] });
+        const channel = interaction.guild.channels.cache.get('1291421526238822481'); // Channel ID anpassen
+        const messageId = '1293559329961803950'; // Die Message-ID hier anpassen
+
+        const message = await channel.messages.fetch(messageId);
+
+        await message.edit({ embeds: [TeamEmbed] });
     } catch (error) {
-        console.error('Fehler beim Senden des Team-Embeds:', error);
+        console.error('Fehler beim Aktualisieren des Team-Embeds:', error);
     }
 }
 
