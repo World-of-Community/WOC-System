@@ -29,7 +29,7 @@ module.exports = {
         const pageMembers = memberArray.slice(start, end).join('\n');
 
         return new EmbedBuilder()
-          .setTitle(`\`👥\` × Server-Mitglieder (${members.size.toLocaleString('de-DE')})`)
+          .setTitle(`\`👥\` × Alle Server-Mitglieder (${members.size.toLocaleString('de-DE')})`)
           .setDescription(pageMembers || 'Keine Mitglieder auf dieser Seite.')
           .setColor('Blue')
           .setFooter({ text: `» ${interaction.guild.name} - Seite ${page + 1} von ${totalPages}`, iconURL: interaction.guild.iconURL() })
