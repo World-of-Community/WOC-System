@@ -143,7 +143,7 @@ async function updateTeamEmbed(interaction) {
     bereiche.forEach(bereich => {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `**${bereich.name}:**\n` +
+            embedDescription += `**${bereich.id}:**\n` +
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
             embedDescription += `**${bereich.name}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
