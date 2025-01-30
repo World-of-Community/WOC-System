@@ -145,10 +145,10 @@ async function updateTeamEmbed(interaction) {
     bereiche.forEach(bereich => {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n` +  // Erwähnung der Rolle
+            embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n` +  // Erwähnung der Rolle
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
@@ -188,10 +188,10 @@ async function sendTeamEmbed(interaction) {
     bereiche.forEach(bereich => {
         const membersInArea = teamMembers.filter(member => member.bereich === bereich.name);
         if (membersInArea.length > 0) {
-            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n` +  // Erwähnung der Rolle
+            embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n` +  // Erwähnung der Rolle
                 membersInArea.map(member => `- **${member.name}** (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
-            embedDescription += `**${bereich.name} ${interaction.guild.roles.cache.get(bereich.id).toString()}:**\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `${interaction.guild.roles.cache.get(bereich.id).toString()}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
