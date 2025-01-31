@@ -107,7 +107,7 @@ module.exports = {
             await guild.channels.cache.get(config.category3).setName(`(⚡) - [ADS] - (PARTNER: ${count})`)
             await guild.channels.cache.get(config.category4).setName(`(📰) - [NEWS] - (ABOS: ${totalChannels})`)
             await guild.channels.cache.get(config.category5).setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
-        }, 30000);
+        }, 60000); // 1 Minute
 
     // Hauptchat Beschreibung
     setInterval(async () => {
