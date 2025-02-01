@@ -1036,17 +1036,17 @@ client.on('messageCreate', async (message) => {
         
         if(!message?.content) return;
         const stringsWithProbabilities = [
-            { string: '1 Level', probability: 0.8 }, // 0.8 = 80%
-            { string: '2 Level', probability: 0.7 }, 
-            { string: '3 Level', probability: 0.6 },
-            { string: '4 Level', probability: 0.5 },
-            { string: '5 Level', probability: 0.4 },
-            { string: '200 EXP', probability: 0.2 },
-            { string: '400 EXP', probability: 0.15 },
-            { string: '500 EXP', probability: 0.1 },
-            { string: '1.000 EXP', probability: 0.01 },
-            { string: '10.000 Coins', probability: 0.01 },
-        ];
+            { string: '1 Level', probability: 0.25 },  // 25%
+            { string: '2 Level', probability: 0.2 },   // 20%
+            { string: '3 Level', probability: 0.15 },  // 15%
+            { string: '4 Level', probability: 0.12 },  // 12%
+            { string: '5 Level', probability: 0.1 },   // 10%
+            { string: '200 EXP', probability: 0.08 },  // 8%
+            { string: '400 EXP', probability: 0.05 },  // 5%
+            { string: '500 EXP', probability: 0.03 },  // 3%
+            { string: '1.000 EXP', probability: 0.01 }, // 1%
+            { string: '10.000 Coins', probability: 0.01 } // 1%
+        ];        
 
         function getRandomString() {
             const randomValue = Math.random();
