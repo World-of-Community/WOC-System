@@ -118,7 +118,7 @@ module.exports = {
             .setTitle('Information zu den Gebannten Nutzern')
             .setDescription(`Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`):\n\n${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
             .setColor('Red')
-            .setFooter({ content: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
+            .setFooter({ Text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
 
         try {
             const message = await interaction.channel.messages.fetch(BANLISTE_MESSAGE_ID);
