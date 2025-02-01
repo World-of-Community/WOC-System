@@ -1069,7 +1069,7 @@ client.on('messageCreate', async (message) => {
            .setCustomId('newbieClaim_button')
         )
 
-        const msg = await message.channel.send({ 
+        const msg = await message.reply({ 
             content: `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\nHey ${message.author},\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch! \n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, 
             components: [buttons], 
             ephemeral: true 
