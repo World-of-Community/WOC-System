@@ -99,13 +99,13 @@ module.exports = {
             })
         );
 
-        const gebannt = interaction.guild.roles.cache.get('886989738244964362'); // Bann Rolle
-        if (!gebannt) {
-            return interaction.reply({
-                content: "> `❌` » Die Rolle für gebannte Nutzer wurde nicht gefunden.",
-                ephemeral: true,
-            });
-        }
+        //const gebannt = interaction.guild.roles.cache.get('886989738244964362'); // Bann Rolle
+        //if (!gebannt) {
+        //    return interaction.reply({
+        //        content: "> `❌` » Die Rolle für gebannte Nutzer wurde nicht gefunden.",
+        //        ephemeral: true,
+        //    });
+        //}
 
         const currentTime = new Date().toLocaleDateString('de-DE', {
             weekday: 'long',
