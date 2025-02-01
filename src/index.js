@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles } = require('discord.js')
+const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles, ComponentType } = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const config = require('../src/json/config.json')
@@ -1026,12 +1026,79 @@ client.on('messageCreate', async (message) => {
                 voiceTime: 0
             }
         });
-        await userData.save();
     } else {
         userData.giveaway.messages += 1;
         userData.stats.messages += 1;
-        await userData.save();
     }
+
+    if(!userData.firstMessage && !message.author.bot) {
+        userData.firstMessage = true;
+        
+        if(!message?.content) return;
+        const stringsWithProbabilities = [
+            { string: '1 Level', probability: 0.4 },
+            { string: '200 EXP', probability: 0.2 },
+            { string: '3 Banner', probability: 0.15 },
+            { string: '1 Logo', probability: 0.1 },
+            { string: '100.000 Casino Cash', probability: 0.14 },
+            { string: 'Premium Version von einem beliebigen Bot von uns', probability: 0.01 },
+        ];
+
+        function getRandomString() {
+            const randomValue = Math.random();
+            let cumulativeProbability = 0;
+
+            for (const option of stringsWithProbabilities) {
+                cumulativeProbability += option.probability;
+
+                if (randomValue <= cumulativeProbability) {
+                    return option;
+                }
+            }
+        }
+
+       
+       
+       const buttons = new ActionRowBuilder()
+       .addComponents(
+           new ButtonBuilder()
+           .setLabel('Belohnung abholen')
+           .setStyle('Success')
+           .setCustomId('newbieClaim_button')
+        )
+
+const msg = await message.channel.send({ content: `<:discordnewbie:1172935206584467497> | **Herzlich Willkommen**\n\nHey ${message.author},\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch! \n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:gift_animated:1051164693500284983>`, components: [buttons] })
+
+
+const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button, time: 1800000 });
+
+
+collector.on('collect', async i => {
+if (i.customId === "newbieClaim_button") {
+if(i.user.id !== message.author.id) return i.reply({ content: "Das ist nicht für dich!", ephemeral: true });
+buttons.components[0].setDisabled(true)
+buttons.components[0].setLabel("Belohnung abgeholt")
+
+i.message.edit({ components: [buttons]}).catch(error => {
+   console.log(error)
+})
+const gewinn = getRandomString();
+i.reply({ content: `<:wumpus_gift:1127954664093130802> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.` });
+
+
+collector.stop()
+} 
+});
+collector.on('end', i => {
+if(buttons.components[0].disabled == false) {
+buttons.components[0].setDisabled(true)
+buttons.components[0].setStyle("Danger")
+msg.edit({ components: [buttons]})
+}
+})
+    }
+
+    await userData.save();
 });
 
 client.on('voiceStateUpdate', async (oldState, newState) => {

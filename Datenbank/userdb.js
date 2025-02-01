@@ -71,6 +71,10 @@ const userSchema = new mongoose.Schema({
             type: Number,
             default: 0
         },
+    },
+    firstMessage: {
+        type: Boolean,
+        default: false
     }
 });
 
