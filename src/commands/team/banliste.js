@@ -91,7 +91,7 @@ module.exports = {
             gebannt.members.map(async (member) => {
                 try {
                     const banData = await bandb.findOne({ user: member.id });
-                    return `${member} - ${member.user.username} (${banData?.reason || 'Kein Grund angegeben'})`;
+                    return `${member} - ${member.user.username} (\`${banData?.reason || 'Kein Grund angegeben'}\`)`;
                 } catch (error) {
                     console.error(`Fehler beim Abrufen der Bann-Daten für ${member.user.tag}: ${error.message}`);
                     return `${member} - ${member.user.username} (Fehler beim Laden)`;
