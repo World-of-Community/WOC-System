@@ -43,19 +43,21 @@ module.exports = {
         const roleCountg = gebannt.members.size;
         const bans = await getMemberList(gebannt.id);
 
+        const currentTime = new Date(); // Aktuelle Zeit abrufen
+        const formattedTime = currentTime.toLocaleDateString('de-DE', {
+            weekday: 'long',   // Montag, Dienstag etc.
+            day: '2-digit',    // 01, 02, 03 ...
+            month: 'long',     // Januar, Februar etc.
+            year: 'numeric',   // 2025
+        });
+
         const bannembed = new EmbedBuilder()
             .setTitle('Information zu den Gebannten Nutzern')
-            .setDescription(
-                `Hier ist eine Liste der gebannten Nutzer (\`${bans.length}👥\`):\n\n${
-                    bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"
-                }`
-            )
-            .setColor('Red');
+            .setDescription(`Hier ist eine Liste der gebannten Nutzer (\`${bans.length}👥\`):\n\n${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
+            .setColor('Red')
+            .setFooter({ text: `» Bann System - Aktualisiert am: ${formattedTime}`, iconURL: `${interaction.guild.iconURL()}` });
 
         await interaction.channel.send({ embeds: [bannembed] });
-        await interaction.reply({
-            content: "> `✅` » Das Embed wurde gesendet.",
-            ephemeral: true,
-        });
+        await interaction.reply({ content: "> `✅` » Das Embed wurde gesendet.", ephemeral: true });
     },
 };
