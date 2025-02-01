@@ -116,6 +116,8 @@ async function updateLeaderboard(client) {
 async function resetLeaderboardStats(client) {
     await userdb.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
     const guild = await client.guilds.cache.get('815919809379172354');
+    const savedMessage = await leaderboarddb.findOne({ guildId: guild.id });
+    const leaderboardChannel = await guild.channels.cache.get(savedMessage.channelId);
 
     const role = await guild.roles.fetch(RoleID);
     if (role) {
@@ -130,7 +132,9 @@ async function resetLeaderboardStats(client) {
         const roleAssignments = [...topMessagesMembers, ...topVoiceMembers].map(async user => {
             const member = await guild.members.fetch(user.userID).catch(() => null);
             if (member) {
-                await member.roles.add(role).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
+                await member.roles.add(role).then(r => {
+                    leaderboardChannel.send({ content: `${member} hat für die hohe Aktivität, die ${role} Rolle erhalten` })
+                }).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
             }
         });
         await Promise.all(roleAssignments);
