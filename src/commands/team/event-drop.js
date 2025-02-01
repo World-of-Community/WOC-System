@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const EventDropAndUser = require("../../../Datenbank/EventDropAndUserdb");
+const EventDropAndUser = require("../../../Datenbank/EventDropAndUserdb");  // Das kombinierte EventDropAndUser Schema
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -56,39 +56,63 @@ module.exports = {
       return interaction.reply({ content: '> `❗` » Bitte wähle einen Textkanal aus.', ephemeral: true });
     }
 
-    if (subcommand === 'start') {
-      // Aktivieren der Event-Drops im ausgewählten Kanal
-      await EventDrop.findOneAndUpdate({ event: 'active' }, { status: 'active', channelId: selectedChannel.id }, { upsert: true });
-      return interaction.reply({ content: `> \`✅\` » Die Gewinn-Drops wurden **gestartet** im Kanal ${selectedChannel.name}!`, ephemeral: true });
-    }
-
-    if (subcommand === 'stop') {
-      // Deaktivieren der Event-Drops im ausgewählten Kanal
-      await EventDrop.findOneAndUpdate({ event: 'active' }, { status: 'inactive', channelId: selectedChannel.id });
-      return interaction.reply({ content: `> \`✅\` » Die Gewinn-Drops wurden **gestoppt** im Kanal ${selectedChannel.name}!`, ephemeral: true });
-    }
-
-    if (subcommand === 'check') {
-      // Zeige die gesammelten Gewinne des Benutzers an
-      const user = await User.findOne({ userId: interaction.user.id });
-      if (!user || !user.eventDrops || user.eventDrops.length === 0) {
-        return interaction.reply({ content: '> `❌` » Du hast noch keine Gewinne gesammelt.', ephemeral: true });
-      }
-      return interaction.reply({ content: `> \`📌\` » Deine gesammelten Gewinne: ${user.eventDrops.join(', ')}`, ephemeral: true });
-    }
-
-    if (subcommand === 'reset') {
-      // Gewinne des Benutzers zurücksetzen
-      const targetUser = interaction.options.getUser('user');
-      const userToReset = await User.findOne({ userId: targetUser.id });
-
-      if (!userToReset || !userToReset.eventDrops || userToReset.eventDrops.length === 0) {
-        return interaction.reply({ content: '> `❌` » Dieser Benutzer hat keine Gewinne zu resetten.', ephemeral: true });
+    try {
+      if (subcommand === 'start') {
+        // Aktivieren der Event-Drops im ausgewählten Kanal
+        await EventDropAndUser.findOneAndUpdate(
+          { event: 'active' },
+          { status: 'active', channelId: selectedChannel.id },
+          { upsert: true }
+        );
+        return interaction.reply({ content: `> \`✅\` » Die Gewinn-Drops wurden **gestartet** im Kanal ${selectedChannel.name}!`, ephemeral: true });
       }
 
-      userToReset.eventDrops = [];
-      await userToReset.save();
-      return interaction.reply({ content: `> \`✅\` » Die gesammelten Gewinne von ${targetUser.tag} wurden erfolgreich zurückgesetzt.`, ephemeral: true });
+      if (subcommand === 'stop') {
+        // Deaktivieren der Event-Drops im ausgewählten Kanal
+        await EventDropAndUser.findOneAndUpdate(
+          { event: 'active' },
+          { status: 'inactive', channelId: selectedChannel.id }
+        );
+        return interaction.reply({ content: `> \`✅\` » Die Gewinn-Drops wurden **gestoppt** im Kanal ${selectedChannel.name}!`, ephemeral: true });
+      }
+
+      if (subcommand === 'check') {
+        // Zeige die gesammelten Gewinne des Benutzers an
+        const eventData = await EventDropAndUser.findOne({ event: 'active' });
+        if (!eventData) {
+          return interaction.reply({ content: '> `❌` » Es läuft aktuell kein Event-Drop.', ephemeral: true });
+        }
+
+        const user = eventData.users.find(u => u.userId === interaction.user.id);
+        if (!user || !user.eventDrops || user.eventDrops.length === 0) {
+          return interaction.reply({ content: '> `❌` » Du hast noch keine Gewinne gesammelt.', ephemeral: true });
+        }
+
+        return interaction.reply({ content: `> \`📌\` » Deine gesammelten Gewinne: ${user.eventDrops.join(', ')}`, ephemeral: true });
+      }
+
+      if (subcommand === 'reset') {
+        // Gewinne des Benutzers zurücksetzen
+        const targetUser = interaction.options.getUser('user');
+        const eventData = await EventDropAndUser.findOne({ event: 'active' });
+
+        if (!eventData) {
+          return interaction.reply({ content: '> `❌` » Es läuft aktuell kein Event-Drop.', ephemeral: true });
+        }
+
+        const userToReset = eventData.users.find(u => u.userId === targetUser.id);
+        if (!userToReset || !userToReset.eventDrops || userToReset.eventDrops.length === 0) {
+          return interaction.reply({ content: '> `❌` » Dieser Benutzer hat keine Gewinne zu resetten.', ephemeral: true });
+        }
+
+        // Gewinne zurücksetzen
+        userToReset.eventDrops = [];
+        await eventData.save();
+        return interaction.reply({ content: `> \`✅\` » Die gesammelten Gewinne von ${targetUser.tag} wurden erfolgreich zurückgesetzt.`, ephemeral: true });
+      }
+    } catch (err) {
+      console.error(err);
+      return interaction.reply({ content: '> `❌` » Ein Fehler ist aufgetreten. Bitte versuche es später noch einmal.', ephemeral: true });
     }
   },
 };
