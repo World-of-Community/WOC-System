@@ -1082,20 +1082,17 @@ buttons.components[0].setDisabled(true)
 buttons.components[0].setLabel("Belohnung abgeholt")
 buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>")
 
-i.message.edit({ components: [buttons]}).catch(error => {
-   console.log(error)
-})
+i.message.edit({ components: [buttons]}).catch(error => { console.log(error) })
 const gewinn = getRandomString();
 i.reply({ content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.` });
-
 
 collector.stop()
 } 
 });
 collector.on('end', i => {
-if(buttons.components[0].disabled == false) {
-buttons.components[0].setDisabled(true)
-buttons.components[0].setStyle("Danger")
+if (buttons.components[0].disabled == false) { 
+    buttons.components[0].setDisabled(true)
+    buttons.components[0].setStyle("Danger")
 msg.edit({ components: [buttons]})
 }
 })
