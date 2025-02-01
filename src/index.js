@@ -1079,7 +1079,7 @@ collector.on('collect', async i => {
 if (i.customId === "newbieClaim_button") {
 if (i.user.id !== message.author.id) return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
 buttons.components[0].setDisabled(true)
-buttons.components[0].setLabel("Belohnung abgeholt")
+buttons.components[0].setLabel("<:wumpusgifted:1335338403176386560> Belohnung abgeholt")
 
 i.message.edit({ components: [buttons]}).catch(error => {
    console.log(error)
