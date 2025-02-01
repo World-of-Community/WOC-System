@@ -1069,31 +1069,36 @@ client.on('messageCreate', async (message) => {
            .setCustomId('newbieClaim_button')
         )
 
-const msg = await message.channel.send({ content: `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\nHey ${message.author},\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch! \n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, components: [buttons], ephemeral: true })
+        const msg = await message.channel.send({ 
+            content: `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\nHey ${message.author},\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch! \n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, 
+            components: [buttons], 
+            ephemeral: true 
+        });
 
-const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button, time: 1800000 });
+        const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button, time: 1800000 });
 
-collector.on('collect', async i => {
-if (i.customId === "newbieClaim_button") {
-if (i.user.id !== message.author.id) return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
-buttons.components[0].setDisabled(true)
-buttons.components[0].setLabel("Belohnung abgeholt")
-buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>")
+        collector.on('collect', async i => {
+            if (i.customId === "newbieClaim_button") {
+                if (i.user.id !== message.author.id) return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
+                buttons.components[0].setDisabled(true);
+                buttons.components[0].setLabel("Belohnung abgeholt");
+                buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
 
-i.message.edit({ components: [buttons]}).catch(error => { console.log(error) })
-const gewinn = getRandomString();
-i.reply({ content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n\n> \`🎫\` » Öffne ein Ticket im Ticket-Support um deine Belohnung abzuholen.`, ephemeral: true });
+                i.message.edit({ components: [buttons]}).catch(error => { console.log(error) });
+                const gewinn = getRandomString();
+                i.reply({ content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n\n> \`🎫\` » Öffne ein Ticket im Ticket-Support um deine Belohnung abzuholen.`, ephemeral: true });
 
-collector.stop()
-} 
-});
-collector.on('end', i => {
-if (buttons.components[0].disabled == false) { 
-    buttons.components[0].setDisabled(true)
-    buttons.components[0].setStyle("Danger")
-msg.edit({ components: [buttons]})
-}
-})
+                collector.stop();
+            } 
+        });
+
+        collector.on('end', i => {
+            if (buttons.components[0].disabled == false) { 
+                buttons.components[0].setDisabled(true);
+                buttons.components[0].setStyle("Danger");
+                msg.edit({ components: [buttons]});
+            }
+        });
     }
 
     await userData.save();
