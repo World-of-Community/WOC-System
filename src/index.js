@@ -1071,9 +1071,7 @@ client.on('messageCreate', async (message) => {
 
 const msg = await message.channel.send({ content: `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\nHey ${message.author},\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch! \n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, components: [buttons], ephemeral: true })
 
-
 const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button, time: 1800000 });
-
 
 collector.on('collect', async i => {
 if (i.customId === "newbieClaim_button") {
