@@ -137,7 +137,7 @@ async function resetLeaderboardStats(client) {
     }
 
     console.log('Leaderboard wurde monatlich zurückgesetzt und die Rolle wurde an die Top 3 Mitglieder vergeben.');
-    await updateLeaderboardEmbeds();
+    await createLeaderboardMessage();
 }
 
 module.exports = {
