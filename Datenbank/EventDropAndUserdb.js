@@ -1,20 +1,29 @@
-// models/EventDropAndUser.js
 const mongoose = require('mongoose');
 
+// Schema für das EventDropAndUser-Modell
 const eventDropAndUserSchema = new mongoose.Schema({
-  event: {
-    type: String,
-    required: true,
-    enum: ['active', 'inactive'],
+  event: { 
+    type: String, 
+    required: true, 
+    enum: ['active', 'inactive'] // Das Event ist entweder aktiv oder inaktiv
   },
-  channelId: {
-    type: String,
-    required: true,
+  channelId: { 
+    type: String 
   },
-  users: [{
-    userId: { type: String, required: true },
-    eventDrops: { type: [String], default: [] },
-  }]
-}, { timestamps: true });
+  users: [
+    {
+      userId: { 
+        type: String, 
+        required: true // Die ID des Benutzers, der die Gewinne hat
+      },
+      eventDrops: { 
+        type: [String], 
+        default: [] // Array der gesammelten Gewinne (Level)
+      }
+    }
+  ]
+});
 
-module.exports = mongoose.model('EventDropAndUser', eventDropAndUserSchema);
+const EventDropAndUser = mongoose.model('EventDropAndUser', eventDropAndUserSchema);
+
+module.exports = EventDropAndUser;
