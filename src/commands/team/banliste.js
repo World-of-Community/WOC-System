@@ -67,7 +67,7 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 const bandb = require("../../../Datenbank/bandb");
 
-const BANLISTE_MESSAGE_ID = "1298680434347081730"; // HIER die ID der Bannliste-Nachricht eintragen
+const BANLISTE_MESSAGE_ID = "1298680434347081730"; // Falls du es automatisch speichern willst, sag Bescheid!
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -84,7 +84,7 @@ module.exports = {
             });
         }
 
-        // Schnelle Zwischenantwort senden
+        // Schnelle Antwort senden
         await interaction.reply({ content: "> `🔄` » Lade Bannliste...", ephemeral: true });
 
         const bans = await Promise.all(
@@ -99,14 +99,6 @@ module.exports = {
             })
         );
 
-        //const gebannt = interaction.guild.roles.cache.get('886989738244964362'); // Bann Rolle
-        //if (!gebannt) {
-        //    return interaction.reply({
-        //        content: "> `❌` » Die Rolle für gebannte Nutzer wurde nicht gefunden.",
-        //        ephemeral: true,
-        //    });
-        //}
-
         const currentTime = new Date().toLocaleDateString('de-DE', {
             weekday: 'long',
             day: '2-digit',
@@ -118,11 +110,10 @@ module.exports = {
             .setTitle('Information zu den Gebannten Nutzern')
             .setDescription(`Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`):\n\n${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
             .setColor('Red')
-            .setFooter({ Text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
+            .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
 
         try {
             const message = await interaction.channel.messages.fetch(BANLISTE_MESSAGE_ID);
-
             if (message) {
                 await message.edit({ embeds: [bannembed] });
                 await interaction.editReply({ content: "> `✅` » Die Bannliste wurde aktualisiert." });
@@ -132,9 +123,7 @@ module.exports = {
             const newMessage = await interaction.channel.send({ embeds: [bannembed] });
             await interaction.editReply({ content: "> `✅` » Die Bannliste wurde erstellt." });
 
-            // Hier kannst du die neue Nachrichten-ID speichern (z. B. in einer Datenbank oder Konfigurationsdatei)
             console.log(`Neue Banliste-ID: ${newMessage.id}`);
         }
     },
 };
-
