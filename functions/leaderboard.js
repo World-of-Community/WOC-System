@@ -47,7 +47,7 @@ async function createLeaderboardMessage(guild) {
             .filter(user => user.member)
             .map((user, index) => {
                 const memberMention = user.member ? user.member.toString() : 'Unbekannt';
-                return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.messages} Nachrichten\``;
+                return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.username}**\n> \`${user.messages} Nachrichten\``;
             })
             .join('\n').slice(0, 1024);
 
@@ -55,7 +55,7 @@ async function createLeaderboardMessage(guild) {
             .filter(user => user.member)
             .map((user, index) => {
                 const memberMention = user.member ? user.member.toString() : 'Unbekannt';
-                return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.globalName}**\n> \`${user.timeText}\``;
+                return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.username}**\n> \`${user.timeText}\``;
             })
             .join('\n').slice(0, 1024);
 
