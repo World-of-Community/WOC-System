@@ -997,6 +997,8 @@ function determineEmoji(priceInput) {
     }
 }
 
+const { ActionRowBuilder, ButtonBuilder, ComponentType } = require('discord.js');
+
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     if (message.guild.id !== config.server) return; 
@@ -1031,19 +1033,20 @@ client.on('messageCreate', async (message) => {
         userData.stats.messages += 1;
     }
 
-    if(!userData.firstMessage && !message.author.bot) {
+    if (!userData.firstMessage && !message.author.bot) {
         userData.firstMessage = true;
         
-        if(!message?.content) return;
+        if (!message?.content) return;
+        
         const stringsWithProbabilities = [
-            { string: '1 Level', probability: 0.25 },  // 25%
-            { string: '2 Level', probability: 0.2 },   // 20%
-            { string: '3 Level', probability: 0.15 },  // 15%
-            { string: '4 Level', probability: 0.12 },  // 12%
-            { string: '5 Level', probability: 0.1 },   // 10%
-            { string: '200 EXP', probability: 0.08 },  // 8%
-            { string: '400 EXP', probability: 0.05 },  // 5%
-            { string: '500 EXP', probability: 0.03 },  // 3%
+            { string: '1 Level', probability: 0.25 }, // 25%
+            { string: '2 Level', probability: 0.2 }, // 20%
+            { string: '3 Level', probability: 0.15 }, // 15%
+            { string: '4 Level', probability: 0.12 }, // 12%
+            { string: '5 Level', probability: 0.1 }, // 10%
+            { string: '200 EXP', probability: 0.08 }, // 7%
+            { string: '400 EXP', probability: 0.05 }, // 5%
+            { string: '500 EXP', probability: 0.03 }, // 3%
             { string: '1.000 EXP', probability: 0.01 }, // 1%
             { string: '10.000 Coins', probability: 0.01 } // 1%
         ];        
@@ -1054,23 +1057,22 @@ client.on('messageCreate', async (message) => {
 
             for (const option of stringsWithProbabilities) {
                 cumulativeProbability += option.probability;
-
                 if (randomValue <= cumulativeProbability) {
                     return option;
                 }
             }
         }
        
-       const buttons = new ActionRowBuilder()
-       .addComponents(
-           new ButtonBuilder()
-           .setLabel('Belohnung abholen')
-           .setStyle('Success')
-           .setCustomId('newbieClaim_button')
-        )
+        const buttons = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setLabel('Belohnung abholen')
+                    .setStyle('Success')
+                    .setCustomId('newbieClaim_button')
+            );
 
-        const msg = await message.reply({ 
-            content: `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\nHey ${message.author},\nDu hast so eben deine **erste Nachricht** geschrieben, Glückwunsch! \n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, 
+        const msg = await message.channel.send({ 
+            content: `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\nHey ${message.author},\nDu hast soeben deine **erste Nachricht** geschrieben, Glückwunsch! \n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, 
             components: [buttons], 
             ephemeral: true 
         });
@@ -1079,24 +1081,32 @@ client.on('messageCreate', async (message) => {
 
         collector.on('collect', async i => {
             if (i.customId === "newbieClaim_button") {
-                if (i.user.id !== message.author.id) return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
+                if (i.user.id !== message.author.id) {
+                    return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
+                }
+
                 buttons.components[0].setDisabled(true);
                 buttons.components[0].setLabel("Belohnung abgeholt");
                 buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
 
-                i.message.edit({ components: [buttons]}).catch(error => { console.log(error) });
+                await i.message.edit({ components: [buttons] }).catch(console.error);
+                
                 const gewinn = getRandomString();
-                i.reply({ content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n\n> \`🎫\` » Öffne ein Ticket im Ticket-Support um deine Belohnung abzuholen.`, ephemeral: true });
+                await i.reply({ 
+                    content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n\n> \`🎫\` » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`, 
+                    ephemeral: true 
+                });
 
                 collector.stop();
+                msg.delete().catch(error => console.log("Nachricht konnte nicht gelöscht werden:", error)); 
             } 
         });
 
-        collector.on('end', i => {
-            if (buttons.components[0].disabled == false) { 
+        collector.on('end', () => {
+            if (!buttons.components[0].disabled) { 
                 buttons.components[0].setDisabled(true);
                 buttons.components[0].setStyle("Danger");
-                msg.edit({ components: [buttons]});
+                msg.edit({ components: [buttons] }).catch(console.error);
             }
         });
     }
