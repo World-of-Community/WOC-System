@@ -131,7 +131,7 @@ module.exports = {
         rolemember.forEach(async (member) => {
           try {
             const banData = await bandb.findOne({ user: member.id });
-            list.push(`${member} - ${member.username} (\`${banData.reason}\`)`);
+            list.push(`${member} - ${member.user.username} (\`${banData.reason}\`)`);
           } catch (error) {}
         });
         return list;
