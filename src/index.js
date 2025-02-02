@@ -997,8 +997,6 @@ function determineEmoji(priceInput) {
     }
 }
 
-const { ActionRowBuilder, ButtonBuilder, ComponentType } = require('discord.js');
-
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     if (message.guild.id !== config.server) return; 
