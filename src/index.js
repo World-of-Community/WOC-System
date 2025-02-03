@@ -1075,7 +1075,7 @@ client.on('messageCreate', async (message) => {
             ephemeral: true 
         });
 
-        const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button, time: 1800000 });
+        const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button });
 
         collector.on('collect', async i => {
             if (i.customId === "newbieClaim_button") {
