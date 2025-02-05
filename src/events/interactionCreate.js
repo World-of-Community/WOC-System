@@ -601,13 +601,13 @@ module.exports = {
                     )
                     .setColor("Red")
                     .addFields(
-                        { name: '`👤` » Antragsteller', value: `<@${user.id}>`, inline: true },
+                        { name: '`👤` » Antragsteller', value: `<@${member.id}>`, inline: true },
                         { name: '`📅` » Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
                     )
-                    .setThumbnail(user.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
-                    .setFooter({ text: `Antrag von ${user.tag}`, iconURL: user.displayAvatarURL() });
+                    .setThumbnail(member.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
+                    .setFooter({ text: `» Antrag von ${member.username}`, iconURL: member.displayAvatarURL() });
 
-                    channel.send({ content: `> User: ${interaction.user} | Team: <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
+                    channel.send({ content: `> User: ${interaction.member} | Team: <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
 
                         const InfoBannEmbed = new EmbedBuilder()
                             .setDescription(`\`✅\` » Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen hier erreichen: ${channel}`)
