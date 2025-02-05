@@ -23,6 +23,7 @@ module.exports = {
         new ButtonBuilder()
           .setCustomId('create_feedback_ticket')
           .setLabel('Feedback')
+          .setEmoji('🗳️')
           .setStyle(ButtonStyle.Primary)
       );
 
