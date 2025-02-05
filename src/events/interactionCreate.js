@@ -602,7 +602,7 @@ module.exports = {
                     .setColor("Red")
                     .addFields(
                         { name: '`👤` » Antragsteller', value: `<@${user.id}>`, inline: true },
-                        { name: '`📅` Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+                        { name: '`📅` » Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
                     )
                     .setThumbnail(user.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
                     .setFooter({ text: `Antrag von ${user.tag}`, iconURL: user.displayAvatarURL() });
