@@ -596,13 +596,13 @@ module.exports = {
                     .setTitle("`⛔` 𑁉 Entbannungsantrag")
                     .setDescription(
                         `Ein neuer Entbannungsantrag wurde erstellt.\n\n` +
-                        `> \`📝\` » **Banngrund:**\n> \`${banngrund}\`\n\n` +
-                        `> \`📄\` » **Entbannungs-Beschreibung:**\n> ${banDescription}`
+                        `> \`📝\` » **Banngrund:**\n> \`${bannInfo}\`\n\n` +
+                        `> \`📄\` » **Entbannungs-Beschreibung:**\n> ${bannDescription}`
                     )
                     .setColor("Red")
                     .addFields(
                         { name: '`👤` » Antragsteller', value: `<@${user.id}>`, inline: true },
-                        { name: '📅 Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+                        { name: '`📅` Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
                     )
                     .setThumbnail(user.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
                     .setFooter({ text: `Antrag von ${user.tag}`, iconURL: user.displayAvatarURL() });
