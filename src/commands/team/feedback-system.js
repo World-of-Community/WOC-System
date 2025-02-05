@@ -16,6 +16,7 @@ module.exports = {
       .setTitle('Feedback')
       .setDescription('Du hast einen Verbesserungsvorschlag oder eine Idee, welche du loswerden willst? Dann bist du hier genau richtig!')
       .setColor('Aqua')
+      .setImage('https://images-ext-1.discordapp.net/external/FXl45Y5BGOgY0JGxnjCg5pK0J7wFF-m2qjyp-u0_q-Y/https/imgur.com/kekDug7.png?format=webp&quality=lossless&width=1260&height=6')
       .setFooter({ text: '» Wir schätzen dein Feedback und deine Unterstützung!', iconURL: interaction.guild.iconURL() });
 
     const FeedbackButton = new ActionRowBuilder()
