@@ -106,5 +106,3 @@ module.exports = {
         await interaction.reply({ content: `> \`✅\` » Das **${title}**-Embed erfolgreich gesendet!`, ephemeral: true });
     }
 };
-
-
