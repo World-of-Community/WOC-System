@@ -1,9 +1,10 @@
-const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, ModalBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
-  data: {
-    name: 'feedback'
-  },
+  data: new SlashCommandBuilder()
+  .setName('feedback')
+  .setDescription('» Schickt das Feedback System')
+  .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
   async execute(interaction) {
 
     const FeedbackBild = new EmbedBuilder()
