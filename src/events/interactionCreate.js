@@ -594,7 +594,7 @@ module.exports = {
                         
                     const bannEmbed = new EmbedBuilder()
                     .setTitle("Entbannungsantrag")
-                    .setDescription("Es wurde erfolgreich ein Ticket für einen Entbannungsantrag erstellt. Hier sind einige Infos:")
+                    .setDescription("Es wurde erfolgreich ein Ticket für einen Entbannungsantrag erstellt.\nHier sind einige Infos:")
                     .setColor("Red")
                     .addFields(
                         {
@@ -607,7 +607,12 @@ module.exports = {
                         }
                     )
                     channel.send({ content: `${interaction.user} | <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
-                        interaction.reply({ content: `Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen **[hier](${channel})** finden.`, ephemeral: true })
+
+                        const InfoBannEmbed = new EmbedBuilder()
+                            .setDescription(`> \`✅\` » Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen **[hier](${channel})** finden.`)
+                            .setColor('Green');
+
+                        interaction.reply({ embeds: [InfoBannEmbed], ephemeral: true })
                     })
                 })
             }}
