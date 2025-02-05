@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ModalBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -24,7 +24,7 @@ module.exports = {
         new ButtonBuilder()
           .setCustomId('create_feedback_ticket')
           .setLabel('Feedback')
-          .setStyle('PRIMARY')
+          .setStyle(ButtonStyle.Primary)
       );
 
     await interaction.reply({
@@ -57,7 +57,7 @@ module.exports = {
           .setLabel('Detaillierte Beschreibung')
           .setPlaceholder('Beschreibe hier das problem oder dein Feedback genauer.')
           .setMinLength(5)
-          .setMaxLength(4000)
+          .setMaxLength(1024)
           .setStyle(TextInputStyle.Paragraph)
           .setRequired(true)
       );
