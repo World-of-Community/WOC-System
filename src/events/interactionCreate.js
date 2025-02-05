@@ -609,7 +609,7 @@ module.exports = {
                     channel.send({ content: `${interaction.user} | <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
 
                         const InfoBannEmbed = new EmbedBuilder()
-                            .setDescription(`> \`✅\` » Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen **[hier](${channel})** finden.`)
+                            .setDescription(`\`✅\` » Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen **[hier](<#${channel.id}>)** finden.`)
                             .setColor('Green');
 
                         interaction.reply({ embeds: [InfoBannEmbed], ephemeral: true })
