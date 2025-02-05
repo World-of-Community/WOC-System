@@ -450,10 +450,47 @@ module.exports = {
                 });
             });
         }
+
+        // Feedback Button
+        if (interaction.isButton()) {
+            if (interaction.customId === 'create_feedback_ticket') {
+                // Erstelle das Modal für Feedback
+                const feedbackModal = new ModalBuilder()
+                  .setTitle('Feedback einreichen')
+                  .setCustomId('feedback-modal');
+          
+                // Eingabefeld für den Kurztitel
+                const titleInput = new ActionRowBuilder().addComponents(
+                  new TextInputBuilder()
+                    .setCustomId('feedback-title')
+                    .setLabel('Kurztitel des Themas')
+                    .setPlaceholder('z.b. "Spielmodi", "Event-Idee" , "Feature-Wunsch"')
+                    .setStyle(TextInputStyle.Short)
+                    .setRequired(true)
+                );
+          
+                // Eingabefeld für detaillierte Beschreibung
+                const descriptionInput = new ActionRowBuilder().addComponents(
+                  new TextInputBuilder()
+                    .setCustomId('feedback-description')
+                    .setLabel('Detaillierte Beschreibung')
+                    .setPlaceholder('Beschreibe hier das problem oder dein Feedback genauer.')
+                    .setMinLength(5)
+                    .setMaxLength(1024)
+                    .setStyle(TextInputStyle.Paragraph)
+                    .setRequired(true)
+                );
+          
+                feedbackModal.addComponents(titleInput, descriptionInput);
+          
+                // Zeige das Modal an
+                await interaction.showModal(feedbackModal);
+              }
+        }
         
         // Bann Button
          if (interaction.isButton()) {
-            if(interaction.customId === 'ticket_erledigt') {
+            if (interaction.customId === 'ticket_erledigt') {
                 const mention = interaction.message.content
                 const embed = new EmbedBuilder()
                 .setColor("Green")
@@ -461,14 +498,14 @@ module.exports = {
                 
                 interaction.reply({ content: mention, embeds: [embed] })
             }
-            else if(interaction.customId === 'ticket_close_deny') {
+            else if (interaction.customId === 'ticket_close_deny') {
                 const embed = new EmbedBuilder()
                 .setColor("Red")
                 .setDescription(`${interaction.user} hat sich dazu entschieden nicht das Ticket zu schließen`)
                 
                 interaction.update({ embeds: [embed], components: [] })
             }
-            else if(interaction.customId === 'ticket_close_accept') {
+            else if (interaction.customId === 'ticket_close_accept') {
                 const embed = new EmbedBuilder()
                 .setColor("Red")
                 .setDescription(`Das Ticket wird in \`5 Sekunden\` geschlossen.`)
@@ -478,7 +515,7 @@ module.exports = {
                     await interaction.channel.delete();
                 }, 5000);
             }
-            else if(interaction.customId === 'ticket_schliessen') {
+            else if (interaction.customId === 'ticket_schliessen') {
                 const mention = interaction.message.content
                 const embed = new EmbedBuilder()
                 .setColor("Blurple")
@@ -531,7 +568,7 @@ module.exports = {
         }
         
         if (interaction.isModalSubmit()) {
-            if(interaction.customId === "bann-modal") {
+            if (interaction.customId === "bann-modal") {
                 const bannInfo = await interaction.fields.getTextInputValue('banngrund');
                 const bannDescription = await interaction.fields.getTextInputValue('entbannungsbeschreibung');
                 
