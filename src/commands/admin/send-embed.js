@@ -5,7 +5,7 @@ module.exports = {
         .setName("send-embed")
         .setDescription('» Hier können die verschienden Embeds gesendet werden. 📋')
         .addStringOption(option => option.setName('embed').setDescription('Welches Embed?').setRequired(true)
-        .addChoices({ name: 'Ränge Info (Rollen Info)', value: 'ränge-info' }, { name: 'Regelwerk (Server-regeln)', value: 'regelwerk' }, { name: 'Partner (Partner werden)', value: 'partner' }))
+        .addChoices({ name: 'Ränge Info (Rollen Info)', value: 'ränge-info' }, { name: 'Regelwerk (Server-regeln)', value: 'regelwerk' }, { name: 'Partner (Partner werden)', value: 'partner' }, { name: 'Bann-Bereich Embed (Gebannt)', value: 'gebannt' }))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
@@ -106,9 +106,28 @@ module.exports = {
                 )
             await msg.edit({ embeds: [partnerEmbed], components: [partnerButton] })
 
+        } else if (embedType === 'gebannt') {
+            const channel = interaction.guild.channels.cache.get("886989426583044117"); // Channel ID
+            const msg = await channel.messages.fetch("1208816459535482961"); // Nachricht ID
+
+            const gebanntEmbed = new EmbedBuilder()
+                .setTitle('⠀⠀ ⠀⠀⠀⠀ ⠀⠀ ⛔ Du wurdest vom Server gebannt!  ⛔⠀⠀ ⠀⠀⠀⠀ ⠀⠀')
+                .setDescription('Anscheinend wurdest du vom **Server Gebannt** und bist nun im **Bann-Bereich.**\n\n> » Falls dies eine **Falsche Entscheidung** gewesen ist, **melde dich** bei **einem Teammitglied** und gebe deine **Unschuld** an.\n\n> Öffne ein Ticket für den Bann-Support.')
+                .setColor('Red')
+                .setFooter({ text: `© ${interaction.guild.name} | Bann-System`, iconURL: interaction.guild.iconURL() })
+
+            const gebanntButton = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('gebannt')
+                        .setLabel('⛔ » Bann Ticket')
+                        .setStyle(ButtonStyle.Primary)
+                )
+            await msg.edit({ embeds: [gebanntEmbed], components: [gebanntButton] })
+
         } else {
             await interaction.reply({ content: `> \`❌\` - Embed wurde nicht gefunden.`, ephemeral: true });
-        }
+        } 
 
         await interaction.reply({ content: `> \`✅\` - das \`${embedType}\`-Embed wurde gesendet oder bearbeitet.`, ephemeral: true })
     }

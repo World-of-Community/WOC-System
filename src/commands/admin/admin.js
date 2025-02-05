@@ -66,6 +66,7 @@ module.exports = {
                 .addIntegerOption(option => option.setName('amount').setDescription('» Gib den Betrag der Spende ein.').setMinValue(1).setRequired(true))
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        
     async execute(interaction, client) {
         const member = interaction.options.getMember('user');
         const role = interaction.options.getRole('role');
