@@ -12,7 +12,7 @@ module.exports = {
       .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1280172685694996572/WOC_Banner_Information_Feedback.jpg?ex=67a4c738&is=67a375b8&hm=ed8af1095ccc443555be6401fd3f7215442952b99925a039b491512945004e54&')
 
     // Erster Embed - Bild und Feedback Beschreibung
-    const feedbackEmbed = new EmbedBuilder()
+    const FeedbackEmbed = new EmbedBuilder()
       .setTitle('Feedback')
       .setDescription('Du hast einen Verbesserungsvorschlag oder eine Idee, welche du loswerden willst? Dann bist du hier genau richtig!')
       .setColor('Aqua')
@@ -28,7 +28,7 @@ module.exports = {
       );
 
     await interaction.reply({
-      embeds: [feedbackEmbed],
+      embeds: [FeedbackBild, FeedbackEmbed],
       components: [FeedbackButton]
     });
   },
