@@ -605,7 +605,7 @@ module.exports = {
                         { name: '`📅` » Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
                     )
                     .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
-                    .setFooter({ text: `» Antrag von ${interaction.user.username}`, iconURL: user.displayAvatarURL() });
+                    .setFooter({ text: `» Antrag von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
 
                     channel.send({ content: `> User: ${interaction.user} | Team: <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
 
