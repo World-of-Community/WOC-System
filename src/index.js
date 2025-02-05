@@ -174,6 +174,10 @@ const pingMessages = [
     'Ja? <:Moin:915211924164210738>',
     'Was gibt es? <a:what:1119708325962055720>',
     'Grüße dich! <a:winken:1086560167442796544>',
+    'Ich sorge für Recht und Ordnung! `📚`',
+    'An mir kommt keiner vorbei. `😎`',
+    'Legt euch lieber nicht mit mir an! `😈`',
+    'Ich bin sehr Aufmerksam! `❗`'
 ];
 
 // MongoDB
