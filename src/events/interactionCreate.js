@@ -596,7 +596,7 @@ module.exports = {
                     .setTitle("`⛔` 𑁉 Entbannungsantrag")
                     .setDescription(
                         `Ein neuer Entbannungsantrag wurde erstellt.\n\n` +
-                        `> \`📝\` » **Banngrund:**\n> \`${banReason}\`\n\n` +
+                        `> \`📝\` » **Banngrund:**\n> \`${banngrund}\`\n\n` +
                         `> \`📄\` » **Entbannungs-Beschreibung:**\n> ${banDescription}`
                     )
                     .setColor("Red")
