@@ -119,16 +119,16 @@ module.exports = {
             const gebanntButton = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
-                        .setCustomId('gebannt')
+                        .setCustomId('bann-ticket')
                         .setLabel('⛔ » Bann Ticket')
                         .setStyle(ButtonStyle.Primary)
                 )
             await msg.edit({ embeds: [gebanntEmbed], components: [gebanntButton] })
 
         } else {
-            await interaction.reply({ content: `> \`❌\` - Embed wurde nicht gefunden.`, ephemeral: true });
+            await interaction.reply({ content: `> \`❌\` » Embed wurde nicht gefunden.`, ephemeral: true });
         } 
 
-        await interaction.reply({ content: `> \`✅\` - das \`${embedType}\`-Embed wurde gesendet oder bearbeitet.`, ephemeral: true })
+        await interaction.reply({ content: `> \`✅\` » das \`${embedType}\`-Embed wurde gesendet oder bearbeitet.`, ephemeral: true })
     }
 }
