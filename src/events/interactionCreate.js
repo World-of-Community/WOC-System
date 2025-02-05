@@ -582,31 +582,32 @@ module.exports = {
                     .addComponents(
                         new ButtonBuilder()
                         .setCustomId('ticket_erledigt')
-                        .setLabel('Erledigt')
+                        .setLabel('✅ Erledigt')
                         .setStyle(ButtonStyle.Success),
                         new ButtonBuilder()
                         .setCustomId('ticket_schliessen')
-                        .setLabel('Schließen')
+                        .setLabel('❌ Schließen')
                         .setStyle(ButtonStyle.Danger)
                     )
                     
                     const bannsupport = await interaction.guild.roles.cache.get('1209101841015504916')
                         
                     const bannEmbed = new EmbedBuilder()
-                    .setTitle("Entbannungsantrag")
-                    .setDescription("Es wurde erfolgreich ein Ticket für einen Entbannungsantrag erstellt.\nHier sind einige Infos:")
+                    .setTitle("`⛔` 𑁉 Entbannungsantrag")
+                    .setDescription(
+                        `Ein neuer Entbannungsantrag wurde erstellt.\n\n` +
+                        `> \`📝\` » **Banngrund:**\n> \`${banReason}\`\n\n` +
+                        `> \`📄\` » **Entbannungs-Beschreibung:**\n> ${banDescription}`
+                    )
                     .setColor("Red")
                     .addFields(
-                        {
-                        	name: "Banngrund-Info",
-                            value: `\`${bannInfo}\``
-                    	},
-                        {
-                            name: "Entbannungs-Beschreibung",
-                            value: `\`${bannDescription}\``
-                        }
+                        { name: '`👤` » Antragsteller', value: `<@${user.id}>`, inline: true },
+                        { name: '📅 Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
                     )
-                    channel.send({ content: `User: ${interaction.user} | Team: <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
+                    .setThumbnail(user.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
+                    .setFooter({ text: `Antrag von ${user.tag}`, iconURL: user.displayAvatarURL() });
+
+                    channel.send({ content: `> User: ${interaction.user} | Team: <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
 
                         const InfoBannEmbed = new EmbedBuilder()
                             .setDescription(`\`✅\` » Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen hier erreichen: ${channel}`)
