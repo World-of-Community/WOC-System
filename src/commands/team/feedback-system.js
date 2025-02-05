@@ -28,7 +28,7 @@ module.exports = {
       );
 
     await interaction.channel.send({ embeds: [FeedbackBild, FeedbackEmbed], components: [FeedbackButton] })
-    await interaction.reply({ content: `> \`✅\` » Das **${setTitle}**-Embed wurde erfolgreich gesendet.`, ephemeral: true });
+    await interaction.reply({ content: `> \`✅\` » Das **Feedback**-Embed wurde erfolgreich gesendet.`, ephemeral: true });
   },
 
   async buttonHandler(interaction) {
