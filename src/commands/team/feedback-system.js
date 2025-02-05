@@ -31,40 +31,4 @@ module.exports = {
     await interaction.channel.send({ embeds: [FeedbackBild, FeedbackEmbed], components: [FeedbackButton] })
     await interaction.reply({ content: `> \`✅\` » Das **Feedback**-Embed wurde erfolgreich gesendet.`, ephemeral: true });
   },
-
-  //async buttonHandler(interaction) {
-  //  if (interaction.customId === 'create_feedback_ticket') {
-  //    // Erstelle das Modal für Feedback
-  //    const feedbackModal = new ModalBuilder()
-  //      .setTitle('Feedback einreichen')
-  //      .setCustomId('feedback-modal');
-//
-  //    // Eingabefeld für den Kurztitel
-  //    const titleInput = new ActionRowBuilder().addComponents(
-  //      new TextInputBuilder()
-  //        .setCustomId('feedback-title')
-  //        .setLabel('Kurztitel des Themas')
-  //        .setPlaceholder('z.b. "Spielmodi", "Event-Idee" , "Feature-Wunsch"')
-  //        .setStyle(TextInputStyle.Short)
-  //        .setRequired(true)
-  //    );
-//
-  //    // Eingabefeld für detaillierte Beschreibung
-  //    const descriptionInput = new ActionRowBuilder().addComponents(
-  //      new TextInputBuilder()
-  //        .setCustomId('feedback-description')
-  //        .setLabel('Detaillierte Beschreibung')
-  //        .setPlaceholder('Beschreibe hier das problem oder dein Feedback genauer.')
-  //        .setMinLength(5)
-  //        .setMaxLength(1024)
-  //        .setStyle(TextInputStyle.Paragraph)
-  //        .setRequired(true)
-  //    );
-//
-  //    feedbackModal.addComponents(titleInput, descriptionInput);
-//
-  //    // Zeige das Modal an
-  //    await interaction.showModal(feedbackModal);
-  //  }
-  //}
 };
