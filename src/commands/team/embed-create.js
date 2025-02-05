@@ -103,7 +103,7 @@ module.exports = {
         }
 
         await channel.send({ embeds: [EmbedCreate] });
-        await interaction.reply({ content: `> \`✅\` » Das **${Title}**-Embed erfolgreich gesendet!`, ephemeral: true });
+        await interaction.reply({ content: `> \`✅\` » Das **${title}**-Embed erfolgreich gesendet!`, ephemeral: true });
     }
 };
 
