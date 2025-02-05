@@ -601,11 +601,11 @@ module.exports = {
                     )
                     .setColor("Red")
                     .addFields(
-                        { name: '`👤` » Antragsteller', value: `<@${user.id}>`, inline: true },
+                        { name: '`👤` » Antragsteller', value: `<@${interaction.user.id}>`, inline: true },
                         { name: '`📅` » Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
                     )
-                    .setThumbnail(user.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
-                    .setFooter({ text: `» Antrag von ${user.username}`, iconURL: user.displayAvatarURL() });
+                    .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
+                    .setFooter({ text: `» Antrag von ${interaction.user.username}`, iconURL: user.displayAvatarURL() });
 
                     channel.send({ content: `> User: ${interaction.user} | Team: <@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
 
