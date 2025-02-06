@@ -47,12 +47,10 @@ module.exports = {
             }
             
             // Überprüfung, ob der User die "Gebannt"-Rolle hat
-            //const member = await interaction.guild.members.fetch(user.id).catch(() => null);
             if (member?.roles.cache.has(BANNED_ROLE_ID)) {
                 banned = true;
                 banReason = '';
             }
-
 
             const timeoutCount = await Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
             const warnCount = await Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
@@ -66,12 +64,12 @@ module.exports = {
                     
                     > \`⏰\` » Account erstellt am: ${createdAt}
                     > \`⏰\` » Beigetreten am: ${joinedAt}
-
+                
                     **Server Informationen**
-                    > \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'}${banned ? ` (Grund: \`${banReason}\`)` : ''}
+                    > \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'}${banned ? `(Grund: \`${banReason}\`)` : ''}
                     > \`🔇\` » Timeouts: \`${timeoutCount}\`
                     > \`❗\` » Warnungen: \`${warnCount}\`
-                `)
+                `)                
                 .setColor('Blurple')
                 .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
                 .setFooter({ text: `${interaction.guild.name} | User Information`, iconURL: `${interaction.guild.iconURL()}` })
