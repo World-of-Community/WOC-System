@@ -518,7 +518,7 @@ module.exports = {
             else if (interaction.customId === 'ticket_schliessen') {
                 const embed = new EmbedBuilder()
                 .setColor("Blurple")
-                .setTitle("Schließ Anfrage")
+                .setTitle("`❓` » Schließ Anfrage")
                 .setDescription(`${interaction.user} hat das Schließen dieses Tickets angefordert.\n\nBitte akzeptiere oder verweigere mit den untenstehenden Schaltflächen.`)
                 
                 const buttons = new ActionRowBuilder()
@@ -533,7 +533,7 @@ module.exports = {
                         .setStyle(ButtonStyle.Secondary)
                     )
                 
-                interaction.reply({ embeds: [embed], components: [buttons] })
+                interaction.reply({ content: `<@${userID}>`, embeds: [embed], components: [buttons] })
             }
             else if (interaction.customId === 'bann-ticket') {
                 const bannModal = new ModalBuilder()
