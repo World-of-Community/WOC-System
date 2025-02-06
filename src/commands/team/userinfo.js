@@ -26,7 +26,7 @@ module.exports = {
             
             let banned = false;
             let banReason = 'Nicht gebannt';
-            
+
             // Falls Bann in der DB gespeichert ist
             if (userData?.ban) {
                 banned = true;
@@ -45,12 +45,6 @@ module.exports = {
                     }
                 }
             }
-            
-            // Überprüfung, ob der User die "Gebannt"-Rolle hat
-            if (member?.roles.cache.has(BANNED_ROLE_ID)) {
-                banned = true;
-                banReason = '';
-            }
 
             const timeoutCount = await Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
             const warnCount = await Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
@@ -67,7 +61,6 @@ module.exports = {
                 
                     **Server Informationen**
                     > \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'} ${banned ? ` (Grund: \`${banReason}\`) ` : ''}
-                    
                     > \`🔇\` » Timeouts: \`${timeoutCount}\`
                     > \`❗\` » Warnungen: \`${warnCount}\`
                 `)                
