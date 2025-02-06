@@ -595,7 +595,7 @@ module.exports = {
                     const bannEmbed = new EmbedBuilder()
                     .setTitle("`⛔` 𑁉 Entbannungsantrag")
                     .setDescription(
-                        `Ein neuer Entbannungsantrag wurde erstellt.\n\n`
+                        `Ein neuer Entbannungsantrag wurde erstellt.\n\n` +
                         `> \`📝\` » **Banngrund**\n${bannInfo}\n\n` +
                         `> \`📄\` » **Entbannungsbeschreibung**\n${bannDescription}\n\n` +
                         `> \`👤\` » **Antragsteller**\n<@${interaction.user.id}>\n\n` +
