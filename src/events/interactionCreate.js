@@ -358,9 +358,6 @@ module.exports = {
                     const admin = await interaction.guild.roles.cache.get('959869691529154631')
                     const roleCountadmin = admin.members.size
 
-                    //const leitung = await interaction.guild.roles.cache.get('893423428558782465')
-                    //const roleCountleitung = leitung.members.size
-
                     const developer = await interaction.guild.roles.cache.get('929349039433056276')
                     const roleCountdeveloper = developer.members.size
 
