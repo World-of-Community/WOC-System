@@ -14,7 +14,7 @@ module.exports = {
         const user = interaction.options.getUser('user');
 
         try {
-            //const member = await interaction.guild.members.fetch(user.id).catch(() => null);
+            const member = await interaction.guild.members.fetch(user.id).catch(() => null);
             const createdAt = `<t:${Math.round(user.createdTimestamp / 1000)}>`;
             const joinedAt = member?.joinedTimestamp ? `<t:${Math.round(member.joinedTimestamp / 1000)}>` : 'N/A';
 
@@ -47,7 +47,7 @@ module.exports = {
             }
             
             // Überprüfung, ob der User die "Gebannt"-Rolle hat
-            const member = await interaction.guild.members.fetch(user.id).catch(() => null);
+            //const member = await interaction.guild.members.fetch(user.id).catch(() => null);
             if (member?.roles.cache.has(BANNED_ROLE_ID)) {
                 banned = true;
                 banReason = '';
