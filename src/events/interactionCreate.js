@@ -533,7 +533,7 @@ module.exports = {
                         .setStyle(ButtonStyle.Secondary)
                     )
                 
-                interaction.reply({ content: `<@${userID}>`, embeds: [embed], components: [buttons] })
+                interaction.reply({ content: `<@${interaction.user.id}>`, embeds: [embed], components: [buttons] })
             }
             else if (interaction.customId === 'bann-ticket') {
                 const bannModal = new ModalBuilder()
