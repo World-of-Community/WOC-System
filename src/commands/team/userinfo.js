@@ -25,8 +25,8 @@ module.exports = {
             const userData = await bandb.findOne({ userId: user.id });
             
             let banned = false;
-            let banReason = 'Nicht gebannt';
-
+            let reason = 'Nicht gebannt';
+            
             // Falls Bann in der DB gespeichert ist
             if (userData?.ban) {
                 banned = true;
@@ -44,6 +44,12 @@ module.exports = {
                         console.error('Fehler beim Abrufen der Bann-Informationen:', err);
                     }
                 }
+            }
+            
+            // Überprüfung, ob der User die "Gebannt"-Rolle hat
+            if (member?.roles.cache.has(BANNED_ROLE_ID)) {
+                banned = true;
+                banReason = '';
             }
 
             const timeoutCount = await Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
