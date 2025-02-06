@@ -594,16 +594,16 @@ module.exports = {
                         
                     const bannEmbed = new EmbedBuilder()
                     .setTitle("`⛔` 𑁉 Entbannungsantrag")
-                    .setDescription(`Ein neuer Entbannungsantrag wurde erstellt.`)
-                    .setColor("Red")
-                    .addFields(
-                        { name: '`📝` » Banngrund', value: `${bannInfo}`, inline: true },
-                        { name: '`📄` » Entbannungsbeschreibung', value: `${bannDescription}`, inline: true },
-                        { name: '`👤` » Antragsteller', value: `<@${interaction.user.id}>`, inline: true },
-                        { name: '`📅` » Erstellungsdatum', value: `<t:${Math.floor(Date.now() / 1000)}:F>`, inline: true }
+                    .setDescription(
+                        `Ein neuer Entbannungsantrag wurde erstellt.\n\n`
+                        `> \`📝\` » **Banngrund**\n${bannInfo}\n\n` +
+                        `> \`📄\` » **Entbannungsbeschreibung**\n${bannDescription}\n\n` +
+                        `> \`👤\` » **Antragsteller**\n<@${interaction.user.id}>\n\n` +
+                        `> \`📅\` » **Erstellungsdatum**\n<t:${Math.floor(Date.now() / 1000)}:F>`
                     )
+                    .setColor("Red")
                     .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true })) // Profilbild des Users hinzufügen
-                    .setFooter({ text: `» Antrag von ${interaction.user.username} (${interaction.user.id})`, iconURL: interaction.user.displayAvatarURL() });
+                    .setFooter({ text: `» Antrag von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
 
                     channel.send({ content: `<@&${bannsupport.id}>`, embeds: [bannEmbed], components: [buttons] }).then(async msg => {
 
