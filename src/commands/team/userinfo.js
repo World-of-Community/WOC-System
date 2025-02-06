@@ -66,7 +66,7 @@ module.exports = {
                     > \`⏰\` » Beigetreten am: ${joinedAt}
                 
                     **Server Informationen**
-                    > \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'}${banned ? `(Grund: \`${banReason}\`)` : ''}
+                    > \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'}${banned ? `(Grund: \`${banReason}\`) ` : ''}
                     > \`🔇\` » Timeouts: \`${timeoutCount}\`
                     > \`❗\` » Warnungen: \`${warnCount}\`
                 `)                
