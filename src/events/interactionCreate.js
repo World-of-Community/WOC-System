@@ -596,8 +596,8 @@ module.exports = {
                     .setTitle("`⛔` 𑁉 Entbannungsantrag")
                     .setDescription(
                         `Ein neuer Entbannungsantrag wurde erstellt.\n\n` +
-                        `> \`📝\` » **Banngrund**\n${bannInfo}\n\n` +
-                        `> \`📄\` » **Entbannungsbeschreibung**\n${bannDescription}\n\n` +
+                        `> \`📄\` » **Banngrund**\n${bannInfo}\n\n` +
+                        `> \`📝\` » **Entbannungsbeschreibung**\n${bannDescription}\n\n` +
                         `> \`👤\` » **Antragsteller**\n<@${interaction.user.id}>\n\n` +
                         `> \`📅\` » **Erstellungsdatum**\n<t:${Math.floor(Date.now() / 1000)}:F>`
                     )
