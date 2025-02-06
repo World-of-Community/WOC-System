@@ -18,17 +18,22 @@ module.exports = {
             const createdAt = `<t:${Math.round(user.createdTimestamp / 1000)}>`;
             const joinedAt = member?.joinedTimestamp ? `<t:${Math.round(member.joinedTimestamp / 1000)}>` : 'N/A';
 
+            // ID der "Gebannt"-Rolle eintragen
+            const BANNED_ROLE_ID = "886989738244964362";
+            
             // Überprüfung, ob der User in der Datenbank gebannt ist
             const userData = await bandb.findOne({ userId: user.id });
-
+            
             let banned = false;
             let banReason = 'Nicht gebannt';
-
-            if (userData?.ban) {  // Falls Bann in der DB gespeichert ist
+            
+            // Falls Bann in der DB gespeichert ist
+            if (userData?.ban) {
                 banned = true;
                 banReason = userData.ban.reason || 'Keine Angabe';
             } else {
                 try {
+                    // Überprüfung, ob der User per Discord-Ban gebannt ist
                     const banInfo = await interaction.guild.bans.fetch(user.id);
                     if (banInfo) {
                         banned = true;
@@ -40,6 +45,14 @@ module.exports = {
                     }
                 }
             }
+            
+            // Überprüfung, ob der User die "Gebannt"-Rolle hat
+            const member = await interaction.guild.members.fetch(user.id).catch(() => null);
+            if (member?.roles.cache.has(BANNED_ROLE_ID)) {
+                banned = true;
+                banReason = '';
+            }
+
 
             const timeoutCount = await Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
             const warnCount = await Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
