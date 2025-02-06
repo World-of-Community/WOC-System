@@ -516,7 +516,6 @@ module.exports = {
                 }, 5000);
             }
             else if (interaction.customId === 'ticket_schliessen') {
-                const mention = interaction.message.content
                 const embed = new EmbedBuilder()
                 .setColor("Blurple")
                 .setTitle("Schließ Anfrage")
@@ -534,7 +533,7 @@ module.exports = {
                         .setStyle(ButtonStyle.Secondary)
                     )
                 
-                interaction.reply({ content: mention, embeds: [embed], components: [buttons] })
+                interaction.reply({ embeds: [embed], components: [buttons] })
             }
             else if (interaction.customId === 'bann-ticket') {
                 const bannModal = new ModalBuilder()
