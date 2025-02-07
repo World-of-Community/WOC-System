@@ -2,37 +2,27 @@ const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('setactivity')
-        .setDescription('Setzt die Aktivität des Bots')
+        .setName('setcustomstatus')
+        .setDescription('Setzt eine benutzerdefinierte Statusnachricht für den Bot')
         .addStringOption(option => 
-            option.setName('type')
-                .setDescription('Der Aktivitätstyp (PLAYING, STREAMING, LISTENING, WATCHING, COMPETING)')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Spielt', value: 'PLAYING' },
-                    { name: 'Streamt', value: 'STREAMING' },
-                    { name: 'Hört zu', value: 'LISTENING' },
-                    { name: 'Schaut', value: 'WATCHING' },
-                    { name: 'Wettkämpft', value: 'COMPETING' }
-                )
-        )
-        .addStringOption(option =>
-            option.setName('name')
-                .setDescription('Name der Aktivität')
+            option.setName('status')
+                .setDescription('Die Statusnachricht, die angezeigt werden soll')
                 .setRequired(true)
         ),
     
     async execute(interaction) {
-        const type = interaction.options.getString('type');
-        const name = interaction.options.getString('name');
+        const status = interaction.options.getString('status');
 
         try {
-            await interaction.client.user.setActivity(name, { type });
+            await interaction.client.user.setPresence({
+                activities: [{ name: status, type: 4 }], // Typ 4 = benutzerdefinierter Status
+                status: 'online' // Kann auf 'idle', 'dnd' oder 'invisible' gesetzt werden
+            });
 
-            await interaction.reply({ content: `Die Aktivität wurde auf **${type.toLowerCase()} ${name}** gesetzt.`, ephemeral: true });
+            await interaction.reply({ content: `Benutzerdefinierter Status gesetzt: **${status}**`, ephemeral: true });
         } catch (error) {
             console.error(error);
-            await interaction.reply({ content: 'Fehler beim Setzen der Aktivität.', ephemeral: true });
+            await interaction.reply({ content: 'Fehler beim Setzen des benutzerdefinierten Status.', ephemeral: true });
         }
     },
 };
