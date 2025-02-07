@@ -28,14 +28,15 @@ module.exports = {
             // Alle 60 Sekunden das Embed aktualisieren
             setInterval(async () => {
                 const updatedEmbed = await getYouTubeEmbed(); // Hole das aktualisierte Embed
-                const time = new Date().toLocaleString();
+                const YouTubeRolle = '1337362885101359146'
 
                 // Bearbeite die Nachricht und aktualisiere das Embed
                 sentMessage.edit({
-                    content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`,
+                    content: `> \`🔴\` » <@&${YouTubeRolle}> Hier ist das neueste YouTube-Video!`,
                     embeds: [
                         new EmbedBuilder(updatedEmbed)
-                            .setFooter({ text: `Zuletzt aktualisiert: ${time}` }) // Fügt den Footer hinzu
+                            .setFooter({ text: 'Zuletzt aktualisiert:' }) // Fügt den Footer hinzu
+                            .setTimestamp()
                     ],
                 });
 
