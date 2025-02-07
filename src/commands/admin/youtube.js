@@ -25,7 +25,7 @@ module.exports = {
             updateMessage(YouTubeEmbed, message);
 
             await interaction.channel.send({ embeds: [YouTubeEmbed] })
-            await interaction.reply({ content: `> Das ${YouTubeEmbed}-Embed wurde erfolgreich gesendet.`, ephemeral: true })
+            await interaction.reply({ content: '> Das **YouTube**-Embed wurde erfolgreich gesendet.', ephemeral: true })
 
         } catch (error) {
             await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
