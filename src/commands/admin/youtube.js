@@ -19,7 +19,7 @@ module.exports = {
             const embed = await getYouTubeEmbed();
 
             // Sende das Embed als Antwort auf den Befehl
-            const YouTubeEmbed = await interaction.reply({ content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`, embeds: [YouTubeEmbed], fetchReply: true });
+            const YouTubeEmbed = await interaction.reply({ content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`, embeds: [embed], fetchReply: true });
 
             // Speichere die Nachricht für spätere Updates
             updateMessage(YouTubeEmbed, message);
