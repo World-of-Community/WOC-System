@@ -15,17 +15,26 @@ module.exports = {
 
     async execute(interaction) {
         try {
-            // Rufe das neueste Video ab
-            const embed = await getYouTubeEmbed();
+            const YouTubeEmbed = await getYouTubeEmbed(); // Hole das Embed sofort
 
-            // Sende das Embed als Antwort auf den Befehl
-            const YouTubeEmbed = await interaction.reply({ content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`, embeds: [embed], fetchReply: true });
+            // Sende das Embed
+            const sentMessage = await interaction.channel.send({ embeds: [YouTubeEmbed] });
+            await interaction.reply({ content: '> Das **YouTube**-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
-            // Speichere die Nachricht für spätere Updates
-            updateMessage(YouTubeEmbed, message);
+            // Alle 60 Sekunden das Embed aktualisieren
+            setInterval(async () => {
+                const updatedEmbed = await getYouTubeEmbed(); // Hole das aktualisierte Embed
+                const time = new Date().toLocaleString();
 
-            await interaction.channel.send({ embeds: [YouTubeEmbed] })
-            await interaction.reply({ content: '> Das **YouTube**-Embed wurde erfolgreich gesendet.', ephemeral: true })
+                // Bearbeite die Nachricht und aktualisiere das Embed
+                sentMessage.edit({
+                    content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`,
+                    embeds: [
+                        new EmbedBuilder(updatedEmbed)
+                            .setFooter({ text: `Zuletzt aktualisiert: ${time}` }) // Fügt den Footer hinzu
+                    ],
+                });
+            }, 60000); // Alle 60 Sekunden (1 Minute) das Embed aktualisieren
 
         } catch (error) {
             await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
@@ -33,7 +42,7 @@ module.exports = {
     },
 };
 
-// Funktion zum Abrufen der YouTube-Daten und Erstellen des Embeds
+// Funktion zum Abrufen der neuesten YouTube-Videos
 async function getYouTubeEmbed() {
     const db = mongoose.connection.db;
     const collection = db.collection('youtube_channels');
@@ -42,11 +51,11 @@ async function getYouTubeEmbed() {
     let latestVideos = [];
 
     for (const { channelId, lastVideoId } of channels) {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
+        const url = `https://www.googleapis.com/youtube/v3/search?key=${process.env.YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
         const response = await axios.get(url);
         const latestVideo = response.data.items[0];
 
-        // Wenn ein neues Video vorhanden ist, aktualisiere die Datenbank
+        // Wenn ein neues Video gefunden wird, aktualisiere die Datenbank
         if (latestVideo.id.videoId !== lastVideoId) {
             await collection.updateOne({ channelId }, { $set: { lastVideoId: latestVideo.id.videoId } });
 
@@ -62,23 +71,23 @@ async function getYouTubeEmbed() {
         }
     }
 
-    // Wenn keine neuen Videos gefunden wurden, füge einen Platzhalter hinzu
+    // Wenn keine neuen Videos, füge ein Platzhalter-Embed hinzu
     if (latestVideos.length === 0) {
         return new EmbedBuilder()
             .setTitle('Noch kein Video verfügbar')
             .setDescription('Sobald ein neues Video hochgeladen wird, erscheint es hier!')
             .setColor('Red')
-            .setImage('https://example.com/placeholder-image.png')
+            .setImage('https://example.com/placeholder-image.png') // Ersetze mit tatsächlichem Platzhalter
             .setURL('https://www.youtube.com');
     }
 
-    // Erstelle das Embed mit den neuesten Videos
+    // Embed mit den neuesten Video-Daten
     const embed = new EmbedBuilder()
         .setAuthor({ name: latestVideos[0].channelName || 'YouTube' })
         .setTitle(latestVideos[0].title || 'Noch kein Video verfügbar')
         .setDescription(latestVideos[0].description || 'Sobald ein neues Video hochgeladen wird, erscheint es hier!')
         .setColor('Red')
-        .setImage(latestVideos[0].thumbnail || PLACEHOLDER_IMAGE)
+        .setImage(latestVideos[0].thumbnail || 'https://example.com/placeholder-image.png') // Stelle sicher, dass dies der korrekte Platzhalter ist
         .setURL(latestVideos[0].url || 'https://www.youtube.com');
 
     return embed;
