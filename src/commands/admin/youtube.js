@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('disc
 const mongoose = require('mongoose');
 const axios = require('axios');
 const YouTubeChannel = require("../../../Datenbank/youtubedb");
+const PLACEHOLDER_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/d/d6/KeinBildVorhanden.jpg'; // Ersetze mit einer echten URL
 
 // YouTube API Key
 const YT_API_KEY = 'AIzaSyCvg3Nd7BkHQzLqbHDObsyNlX_fOzoU2-4'; // Deinen YouTube API Key hier einfügen
@@ -18,14 +19,13 @@ module.exports = {
             const embed = await getYouTubeEmbed();
 
             // Sende das Embed als Antwort auf den Befehl
-            const message = await interaction.reply({
-                content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`,
-                embeds: [embed],
-                fetchReply: true, // Stelle sicher, dass das Antwortobjekt zurückgegeben wird
-            });
+            const YouTubeEmbed = await interaction.reply({ content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`, embeds: [YouTubeEmbed], fetchReply: true });
 
             // Speichere die Nachricht für spätere Updates
-            updateMessage(embed, message);
+            updateMessage(YouTubeEmbed, message);
+
+            await interaction.channel.send({ embeds: [YouTubeEmbed] })
+            await interaction.reply({ content: `> Das ${YouTubeEmbed}-Embed wurde erfolgreich gesendet.`, ephemeral: true })
 
         } catch (error) {
             await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
@@ -78,7 +78,7 @@ async function getYouTubeEmbed() {
         .setTitle(latestVideos[0].title || 'Noch kein Video verfügbar')
         .setDescription(latestVideos[0].description || 'Sobald ein neues Video hochgeladen wird, erscheint es hier!')
         .setColor('Red')
-        .setImage(latestVideos[0].thumbnail || 'https://example.com/placeholder-image.png')
+        .setImage(latestVideos[0].thumbnail || PLACEHOLDER_IMAGE)
         .setURL(latestVideos[0].url || 'https://www.youtube.com');
 
     return embed;
