@@ -99,6 +99,116 @@ async function updateMessage(embed, message) {
 
 /*
 
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const mongoose = require('mongoose');
+const axios = require('axios');
+const YouTubeChannel = require("../../../Datenbank/youtubedb");
+const PLACEHOLDER_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/d/d6/KeinBildVorhanden.jpg'; // Ersetze mit einer echten URL
+
+// YouTube API Key
+const YT_API_KEY = 'Dein_Youtube_API_Schlüssel'; // Deinen YouTube API Key hier einfügen
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('youtube')
+        .setDescription('» Schickt das YouTube-Embed. 🔴')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
+    async execute(interaction) {
+        try {
+            // Rufe das neueste Video ab
+            const embed = await getYouTubeEmbed();
+
+            // Sende das Embed als Antwort auf den Befehl
+            const YouTubeEmbed = await interaction.reply({ content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`, embeds: [embed], fetchReply: true });
+
+            // Speichere die Nachricht für spätere Updates
+            updateMessage(YouTubeEmbed, message);
+
+            await interaction.channel.send({ embeds: [YouTubeEmbed] })
+            await interaction.reply({ content: '> Das **YouTube**-Embed wurde erfolgreich gesendet.', ephemeral: true })
+
+        } catch (error) {
+            await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
+        }
+    },
+};
+
+// Funktion zum Abrufen der YouTube-Daten und Erstellen des Embeds
+async function getYouTubeEmbed() {
+    const db = mongoose.connection.db;
+    const collection = db.collection('youtube_channels');
+    const channels = await collection.find().toArray();
+
+    let latestVideos = [];
+
+    for (const { channelId, lastVideoId } of channels) {
+        const url = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
+        const response = await axios.get(url);
+        const latestVideo = response.data.items[0];
+
+        // Wenn ein neues Video vorhanden ist, aktualisiere die Datenbank
+        if (latestVideo.id.videoId !== lastVideoId) {
+            await collection.updateOne({ channelId }, { $set: { lastVideoId: latestVideo.id.videoId } });
+
+            const videoData = {
+                title: latestVideo.snippet.title,
+                description: latestVideo.snippet.description,
+                url: `https://www.youtube.com/watch?v=${latestVideo.id.videoId}`,
+                thumbnail: latestVideo.snippet.thumbnails.medium.url,
+                channelName: latestVideo.snippet.channelTitle,
+                channelId: latestVideo.snippet.channelId // Kanal-ID für das Profilbild
+            };
+
+            // Hole das Profilbild des YouTube-Kanals
+            const channelInfoUrl = `https://www.googleapis.com/youtube/v3/channels?key=${YT_API_KEY}&id=${videoData.channelId}&part=snippet`;
+            const channelResponse = await axios.get(channelInfoUrl);
+            const channelInfo = channelResponse.data.items[0];
+            const channelThumbnail = channelInfo.snippet.thumbnails.high.url;
+
+            // Erstelle das Embed
+            const embed = new EmbedBuilder()
+                .setAuthor({ name: videoData.channelName || 'YouTube', iconURL: channelThumbnail || PLACEHOLDER_IMAGE })
+                .setTitle(videoData.title || 'Noch kein Video verfügbar')
+                .setDescription(videoData.description || 'Sobald ein neues Video hochgeladen wird, erscheint es hier!')
+                .setColor('Red')
+                .setImage(videoData.thumbnail || PLACEHOLDER_IMAGE)
+                .setURL(videoData.url || 'https://www.youtube.com');
+
+            latestVideos.push(embed);
+        }
+    }
+
+    // Wenn keine neuen Videos gefunden wurden, füge einen Platzhalter hinzu
+    if (latestVideos.length === 0) {
+        return new EmbedBuilder()
+            .setTitle('Noch kein Video verfügbar')
+            .setDescription('Sobald ein neues Video hochgeladen wird, erscheint es hier!')
+            .setColor('Red')
+            .setImage('https://example.com/placeholder-image.png')
+            .setURL('https://www.youtube.com');
+    }
+
+    return latestVideos[0];
+}
+
+// Funktion, um das Embed später zu aktualisieren
+async function updateMessage(embed, message) {
+    setInterval(async () => {
+        const updatedEmbed = await getYouTubeEmbed();
+        
+        // Bearbeite die Nachricht und aktualisiere das Embed
+        message.edit({
+            content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`,
+            embeds: [updatedEmbed],
+        });
+    }, 60000); // Alle 60 Sekunden (1 Minute) das Embed aktualisieren
+}
+
+*/
+
+/*
+
 const axios = require('axios');
 require('discordjs').config();
 const mongoose = require('mongoose');
