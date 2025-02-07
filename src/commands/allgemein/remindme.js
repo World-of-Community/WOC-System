@@ -97,7 +97,7 @@ module.exports = {
                 }
 
                 const reminderList = reminders.get(userId).map((reminder, index) => 
-                    `${index + 1}. **${reminder.reminder}** - <t:${reminder.timestamp}:R>`
+                    `\`${index + 1}.\` **${reminder.reminder}** - <t:${reminder.timestamp}:R>`
                 ).join('\n');
 
                 const listEmbed = new EmbedBuilder()
