@@ -4,53 +4,97 @@ const axios = require('axios');
 const YouTubeChannel = require("../../../Datenbank/youtubedb");
 
 // YouTube API Key
-const YT_API_KEY = 'Dein_Youtube_API_Schlüssel'; // Deinen YouTube API Key hier einfügen
+const YT_API_KEY = 'AIzaSyCvg3Nd7BkHQzLqbHDObsyNlX_fOzoU2-4'; // Deinen YouTube API Key hier einfügen
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('youtube-update')
-        .setDescription('» Überprüfe auf neue YouTube-Videos und benachrichtige den Benutzer.')
+        .setName('youtube')
+        .setDescription('» Schickt das YouTube-Embed. 🔴')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
-        const member = interaction.member;
         try {
-            // Überprüfen, ob es neue Videos gibt
-            await checkYouTubeUpdates(member);
+            // Rufe das neueste Video ab
+            const embed = await getYouTubeEmbed();
 
-            await interaction.reply({ content: `> \`✅\` » Die YouTube-Updates wurden erfolgreich überprüft!`, ephemeral: true });
+            // Sende das Embed als Antwort auf den Befehl
+            const message = await interaction.reply({
+                content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`,
+                embeds: [embed],
+                fetchReply: true, // Stelle sicher, dass das Antwortobjekt zurückgegeben wird
+            });
+
+            // Speichere die Nachricht für spätere Updates
+            updateMessage(embed, message);
 
         } catch (error) {
-            await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler bei der Überprüfung der YouTube-Updates.\n\n**${error.message}**`, ephemeral: true });
+            await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
         }
     },
 };
 
-// YouTube-Daten prüfen und eine Nachricht senden, wenn ein Update verfügbar ist
-async function checkYouTubeUpdates(member) {
+// Funktion zum Abrufen der YouTube-Daten und Erstellen des Embeds
+async function getYouTubeEmbed() {
     const db = mongoose.connection.db;
     const collection = db.collection('youtube_channels');
     const channels = await collection.find().toArray();
+
+    let latestVideos = [];
 
     for (const { channelId, lastVideoId } of channels) {
         const url = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
         const response = await axios.get(url);
         const latestVideo = response.data.items[0];
 
+        // Wenn ein neues Video vorhanden ist, aktualisiere die Datenbank
         if (latestVideo.id.videoId !== lastVideoId) {
-            // Wenn ein neues Video vorhanden ist, sende eine Nachricht
             await collection.updateOne({ channelId }, { $set: { lastVideoId: latestVideo.id.videoId } });
-            const videoEmbed = new EmbedBuilder()
-                .setTitle(latestVideo.snippet.title)
-                .setDescription(latestVideo.snippet.description)
-                .setURL(`https://www.youtube.com/watch?v=${latestVideo.id.videoId}`)
-                .setImage(latestVideo.snippet.thumbnails.medium.url)
-                .setAuthor({ name: latestVideo.snippet.channelTitle });
 
-            // Überprüfe, ob der Benutzer YouTube-Updates haben möchte und sende das Video
-            await member.send({ content: `Ein neues Video von deinem YouTube-Kanal ist verfügbar!`, embeds: [videoEmbed] });
+            const videoData = {
+                title: latestVideo.snippet.title,
+                description: latestVideo.snippet.description,
+                url: `https://www.youtube.com/watch?v=${latestVideo.id.videoId}`,
+                thumbnail: latestVideo.snippet.thumbnails.medium.url,
+                channelName: latestVideo.snippet.channelTitle,
+            };
+
+            latestVideos.push(videoData);
         }
     }
+
+    // Wenn keine neuen Videos gefunden wurden, füge einen Platzhalter hinzu
+    if (latestVideos.length === 0) {
+        return new EmbedBuilder()
+            .setTitle('Noch kein Video verfügbar')
+            .setDescription('Sobald ein neues Video hochgeladen wird, erscheint es hier!')
+            .setColor('Red')
+            .setImage('https://example.com/placeholder-image.png')
+            .setURL('https://www.youtube.com');
+    }
+
+    // Erstelle das Embed mit den neuesten Videos
+    const embed = new EmbedBuilder()
+        .setAuthor({ name: latestVideos[0].channelName || 'YouTube' })
+        .setTitle(latestVideos[0].title || 'Noch kein Video verfügbar')
+        .setDescription(latestVideos[0].description || 'Sobald ein neues Video hochgeladen wird, erscheint es hier!')
+        .setColor('Red')
+        .setImage(latestVideos[0].thumbnail || 'https://example.com/placeholder-image.png')
+        .setURL(latestVideos[0].url || 'https://www.youtube.com');
+
+    return embed;
+}
+
+// Funktion, um das Embed später zu aktualisieren
+async function updateMessage(embed, message) {
+    setInterval(async () => {
+        const updatedEmbed = await getYouTubeEmbed();
+        
+        // Bearbeite die Nachricht und aktualisiere das Embed
+        message.edit({
+            content: `> \`🔴\` » Hier ist das neueste YouTube-Video!`,
+            embeds: [updatedEmbed],
+        });
+    }, 60000); // Alle 60 Sekunden (1 Minute) das Embed aktualisieren
 }
 
 /*
