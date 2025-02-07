@@ -37,7 +37,7 @@ module.exports = {
                 }
 
                 try {
-                    if(jahr) {
+                    if (jahr) {
                         await userDB.findOneAndUpdate(
                             { userID: interaction.user.id },
                             { 
@@ -57,7 +57,7 @@ module.exports = {
                             { upsert: true, new: true }
                         );
                     }
-                    await interaction.reply({ content: '> `✅` » Dein Geburtstag wurde gespeichert!', ephemeral: true });
+                    await interaction.reply({ content: '> `✅` » Danke dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>', ephemeral: true });
                 } catch (error) {
                     console.error(error);
                     await interaction.reply({ content: '> `❌` » Es gab einen Fehler beim Speichern deines Geburtstags. Bitte melde dich beim Ticket Support.', ephemeral: true });
@@ -105,7 +105,7 @@ module.exports = {
                 }
 
                 try {
-                    if(jahr) {
+                    if (jahr) {
                         await userDB.findOneAndUpdate(
                             { userID: interaction.user.id },
                             { 
@@ -179,7 +179,7 @@ module.exports = {
 
                     let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
-                    if(page === 1) {
+                    if (page === 1) {
                         startIndex++;
                         const formattedTag = birthdays[0].birthday.tag.toString().padStart(2, '0');
                         const formattedMonat = birthdays[0].birthday.monat.toString().padStart(2, '0');
