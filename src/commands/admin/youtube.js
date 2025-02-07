@@ -15,10 +15,14 @@ module.exports = {
 
     async execute(interaction) {
         try {
-            const YouTubeEmbed = await getYouTubeEmbed(); // Hole das Embed sofort
+            const YouTubeEmbed = await getYouTubeEmbed(); // Hole das Embed
 
-            // Sende das Embed
+            // Sende das Embed und crossposte die Nachricht sofort, wenn sie gesendet wurde
             const sentMessage = await interaction.channel.send({ embeds: [YouTubeEmbed] });
+
+            // Wenn es sich um einen Ankündigungskanal handelt, poste automatisch
+            sentMessage.crosspost();
+
             await interaction.reply({ content: '> Das **YouTube**-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
             // Alle 60 Sekunden das Embed aktualisieren
@@ -34,6 +38,9 @@ module.exports = {
                             .setFooter({ text: `Zuletzt aktualisiert: ${time}` }) // Fügt den Footer hinzu
                     ],
                 });
+
+                // Crossposte erneut, wenn es ein Ankündigungskanal ist
+                sentMessage.crosspost();
             }, 60000); // Alle 60 Sekunden (1 Minute) das Embed aktualisieren
 
         } catch (error) {
