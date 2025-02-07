@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, PermissionFlagsBits } = require('discord.js');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const YouTubeChannel = require("../../../Datenbank/youtubedb");
@@ -16,22 +16,23 @@ module.exports = {
     async execute(interaction) {
         try {
             const YouTubeEmbed = await getYouTubeEmbed(); // Hole das Embed
-
-            // Sende das Embed und crossposte die Nachricht sofort, wenn sie gesendet wurde
-            const sentMessage = await interaction.channel.send({ embeds: [YouTubeEmbed] });
+            const embedMessage = await interaction.channel.send({
+                embeds: [YouTubeEmbed],
+                components: [createActionRow()] // Fügt die Buttons hinzu
+            });
 
             // Wenn es sich um einen Ankündigungskanal handelt, poste automatisch
-            sentMessage.crosspost();
+            embedMessage.crosspost();
 
             await interaction.reply({ content: '> Das **YouTube**-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
             // Alle 60 Sekunden das Embed aktualisieren
             setInterval(async () => {
                 const updatedEmbed = await getYouTubeEmbed(); // Hole das aktualisierte Embed
-                const YouTubeRolle = '1337362885101359146'
+                const YouTubeRolle = '1337362885101359146';
 
                 // Bearbeite die Nachricht und aktualisiere das Embed
-                sentMessage.edit({
+                embedMessage.edit({
                     content: `> \`🔴\` » <@&${YouTubeRolle}> Hier ist das neueste YouTube-Video!`,
                     embeds: [
                         new EmbedBuilder(updatedEmbed)
@@ -56,7 +57,7 @@ async function getYouTubeEmbed() {
     let latestVideos = [];
 
     for (const { channelId, lastVideoId } of channels) {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=${process.env.YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
+        const url = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
         const response = await axios.get(url);
         const latestVideo = response.data.items[0];
 
@@ -82,7 +83,7 @@ async function getYouTubeEmbed() {
             .setTitle('Noch kein Video verfügbar')
             .setDescription('Sobald ein neues Video hochgeladen wird, erscheint es hier!')
             .setColor('Red')
-            .setImage('https://example.com/placeholder-image.png') // Ersetze mit tatsächlichem Platzhalter
+            .setImage(PLACEHOLDER_IMAGE)
             .setURL('https://www.youtube.com');
     }
 
@@ -92,10 +93,25 @@ async function getYouTubeEmbed() {
         .setTitle(latestVideos[0].title || 'Noch kein Video verfügbar')
         .setDescription(latestVideos[0].description || 'Sobald ein neues Video hochgeladen wird, erscheint es hier!')
         .setColor('Red')
-        .setImage(latestVideos[0].thumbnail || 'https://example.com/placeholder-image.png') // Stelle sicher, dass dies der korrekte Platzhalter ist
+        .setImage(latestVideos[0].thumbnail || PLACEHOLDER_IMAGE)
         .setURL(latestVideos[0].url || 'https://www.youtube.com');
 
     return embed;
+}
+
+// Funktion, um die ActionRow mit Buttons zu erstellen
+function createActionRow() {
+    const notificationButton = new ButtonBuilder()
+        .setCustomId('toggle-notification')
+        .setLabel('Benachrichtigung an/aus')
+        .setStyle('PRIMARY');
+
+    const watchButton = new ButtonBuilder()
+        .setLabel('Jetzt anschauen')
+        .setURL('https://www.youtube.com')
+        .setStyle('LINK');
+
+    return new ActionRowBuilder().addComponents(notificationButton, watchButton);
 }
 
 // Funktion, um das Embed später zu aktualisieren
