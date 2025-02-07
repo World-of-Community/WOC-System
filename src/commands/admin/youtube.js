@@ -103,7 +103,7 @@ async function getYouTubeEmbed() {
 function createActionRow() {
     return new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-            .setLabel('Mehr ansehen')
+            .setLabel('Jetzt ansehen')
             .setStyle('Link')
             .setURL('https://www.youtube.com')
     );
