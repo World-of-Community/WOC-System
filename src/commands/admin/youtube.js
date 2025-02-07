@@ -39,9 +39,6 @@ module.exports = {
                             .setTimestamp()
                     ],
                 });
-
-                // Crossposte erneut, wenn es ein Ankündigungskanal ist
-                sentMessage.crosspost();
             }, 60000); // Alle 60 Sekunden (1 Minute) das Embed aktualisieren
 
         } catch (error) {
