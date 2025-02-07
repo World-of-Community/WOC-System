@@ -908,7 +908,7 @@ cron.schedule('0 18 * * 0', async () => {
 
 });
 
-//====================[Giveaway]==================== noch in giveaway.js machen
+//====================[Giveaway]==================== noch in giveaway.js oder gwInteract.js machen
 
 setInterval(async () => {
     const currentTime = new Date();
