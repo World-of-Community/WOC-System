@@ -25,12 +25,12 @@ module.exports = {
 
     async execute(interaction) {
         const selectedEmbed = interaction.options.getString('embed');
-        const targetUser = interaction.options.getUser('user') || interaction.user;
+        const member = interaction.options.getUser('user') || interaction.user;
 
         const WillkommenDMEmbed = new EmbedBuilder()
             .setTitle('Herzlich Willkommen!')
-            .setDescription(`Hallo ${targetUser.username}, \`💖\`-lich Willkommen auf **${interaction.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern?\nKein Problem! Besuche den Kanal <#979431125053227068> und benutze: \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\n:information_source: | Du möchtest ein Mitglied melden?\n» Benutze: \`/report <user> <grund>\`\n» Das Ausnutzen des Report-Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#815922286502346773>, damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstige Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>.`)
-            .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
+            .setDescription(`Hallo ${member.displayName}, \`💖\`-lich Willkommen auf **${interaction.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern?\nKein Problem! Besuche den Kanal <#979431125053227068> und benutze: \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\n:information_source: | Du möchtest ein Mitglied melden?\n» Benutze: \`/report <user> <grund>\`\n» Das Ausnutzen des Report-Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#815922286502346773>, damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstige Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>.`)
+            .setThumbnail(member.displayAvatarURL({ dynamic: true }))
             .setColor('Orange')
             .setFooter({ text: 'Viel Spaß auf dem Server!', iconURL: interaction.guild.iconURL({ dynamic: true }) })
             .setTimestamp();
@@ -63,11 +63,11 @@ module.exports = {
         }
 
         try {
-            await targetUser.send({ embeds: [embedToSend] });
-            await interaction.reply({ content: `> \`✅\` » Das Test-Embed wurde an **${targetUser.username}** (${user}) per DM gesendet.`, ephemeral: true });
+            await member.send({ embeds: [embedToSend] });
+            await interaction.reply({ content: `> \`✅\` » Das Test-Embed wurde an **${member.username}** (${member}) per DM gesendet.`, ephemeral: true });
         } catch (error) {
             console.error('Fehler beim Senden der DM:', error);
-            await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Senden der DM an **${targetUser.username}**.`, ephemeral: true });
+            await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Senden der DM an **${member.username}**.`, ephemeral: true });
         }
     },
 };
