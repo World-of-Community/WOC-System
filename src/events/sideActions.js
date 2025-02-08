@@ -46,24 +46,34 @@ module.exports = {
 
             // Reaktions basierend auf den Channel ID'S
             switch (message.channel.id) {
-                case '896743941813207081':
+                case '896743941813207081': // Spielersuche
                     await message.react('🔍');
+
                     break;
+
                 case '1172920281526960238':
+
                     const customEmoji = message.guild.emojis.cache.get("1236232439022616658");
                     if (customEmoji) {
                         await message.react(customEmoji);
                     }
+
                     break;
+
                 case '1243964646449483788':
-                    await message.react('<a:herzen:974633994840854608>');
-                    await message.react('<a:Cool:915211628755169301>');
+                    await message.react('<a:herzen:974633994840854608>'); // Geburtstage
+                    await message.react('<a:Cool:915211628755169301>'); // Geburtstage
+                    
                     break;
+
                 case '1250047970116636756':
+
                     if (message.author.id !== "1020023299448786955") {
-                        await message.react('<a:wocheartbeat:1250054562912538724>');
+                        await message.react('<a:wocheartbeat:1250054562912538724>'); // Vorstellung
                     }
+
                     break;
+
                 default:
                     break;
             }
