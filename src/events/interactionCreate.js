@@ -72,7 +72,6 @@ module.exports = {
     console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error); // Logge den Fehler mit Details
     await interaction.reply({ content: '> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.', ephemeral: true });
   }
-
             const now = new Date();
           
             // Event-Zeitspannen
@@ -87,7 +86,7 @@ module.exports = {
             const isEventActive = (event) => now >= event.start && now <= event.end;
           
             switch (interaction.customId) {
-              case 'easter_event':
+               case 'easter_event':
                 const OsterEmbed = new EmbedBuilder()
                   .setTitle('`🐇` Oster Event `🐇`')
                   .setDescription(isEventActive(eventPeriods.easter) ? '**Das Oster-Event ist aktuell aktiv! Viel Spaß beim Sammeln der Oster-Eier!**' : '**Dieses Event startet erst zwischen den Monaten `März` und `April`!**')
@@ -196,8 +195,7 @@ module.exports = {
                 rewardMessage = `> \`❗\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`; // Standardnachricht
         }
 
-        // Antwort mit der Belohnung
-        return interaction.reply({ content: rewardMessage, ephemeral: true });
+        return interaction.reply({ content: rewardMessage, ephemeral: true }); // Antwort mit der Belohnung
     }
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
@@ -451,12 +449,10 @@ module.exports = {
         // Feedback Button
         if (interaction.isButton()) {
             if (interaction.customId === 'create_feedback_ticket') {
-                // Erstelle das Modal für Feedback
                 const feedbackModal = new ModalBuilder()
                   .setTitle('Feedback einreichen')
                   .setCustomId('feedback-modal');
           
-                // Eingabefeld für den Kurztitel
                 const titleInput = new ActionRowBuilder().addComponents(
                   new TextInputBuilder()
                     .setCustomId('feedback-title')
@@ -466,7 +462,6 @@ module.exports = {
                     .setRequired(true)
                 );
           
-                // Eingabefeld für detaillierte Beschreibung
                 const descriptionInput = new ActionRowBuilder().addComponents(
                   new TextInputBuilder()
                     .setCustomId('feedback-description')
@@ -480,7 +475,6 @@ module.exports = {
           
                 feedbackModal.addComponents(titleInput, descriptionInput);
           
-                // Zeige das Modal an
                 await interaction.showModal(feedbackModal);
               }
         }
@@ -708,7 +702,7 @@ module.exports = {
             }
         }
 
-        if(interaction.isChatInputCommand() || interaction.type === 2 || interaction.type === 3) {
+        if (interaction.isChatInputCommand() || interaction.type === 2 || interaction.type === 3) {
 
         const command = client.commands.get(interaction.commandName)
 
@@ -730,7 +724,7 @@ module.exports = {
         } else if (interaction.isAutocomplete()) {
                 const command = interaction.client.commands.get(interaction.commandName);
               
-                if(!command) return;
+                if (!command) return;
               
                 try {
                   await command.autocomplete(interaction);

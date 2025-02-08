@@ -21,7 +21,7 @@ module.exports = {
             await logchannel.threads.cache.get("1269998215512457259").send({ embeds: [leave] });
 
         const userData = await userdb.findOne({ userID: member.user.id })  
-        if(!userData) return
+        if (!userData) return
         await userData.deleteOne()
 
         const CHANNEL_ID = '1172920281526960238'; 

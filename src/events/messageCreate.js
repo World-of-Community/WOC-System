@@ -18,12 +18,13 @@ const TeamRoleIds = [
 
 module.exports = {
     name: Events.MessageCreate,
-    async execute(message) {        
-        if(!message.guild) return
+    async execute(message) {
+            
+        if (!message.guild) return
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
 
-        if(
+        if (
             message.interaction?.commandName === 'bump' &&
             message.applicationId === '302050872383242240' &&
             message.guildId === '815919809379172354'

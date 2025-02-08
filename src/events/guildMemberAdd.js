@@ -11,7 +11,6 @@ module.exports = {
     async execute(member) {
 
         try {
-            // Embed-Nachricht erstellen
             const WillkommenDMEmbed = new EmbedBuilder()
                 .setTitle('Herzlich Willkommen!')
                 .setDescription(`Hallo ${member.displayName}, \`💖\`-lich Willkommen auf **${member.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern?\nKein Problem! Besuche den Kanal <#979431125053227068> und Benutze: \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\n:information_source: | Du möchtest ein Mitglied melden?\n» Benutze: \`/report <user> <grund>\`\n» Das ausnutzen des Report Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#815922286502346773> damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstigen Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>`)
@@ -20,8 +19,7 @@ module.exports = {
                 .setFooter({ text: 'Viel Spaß auf dem Server!', iconURL: guild.iconURL({ dynamic: true }) })
                 .setTimestamp();
 
-            // Sende die DM an den User
-            await member.send({ embeds: [WillkommenDMEmbed] });
+            await member.send({ embeds: [WillkommenDMEmbed] }); // Sende die DM an den User
 
             console.log(`DM mit Willkommens-Embed an ${member.user.tag} gesendet.`);
         } catch (error) {
@@ -80,25 +78,9 @@ module.exports = {
             console.error('Fehler beim Hinzufügen der Rolle:', error);
         }
 
-        // Meilenstein 1.000+ Mitglieder erreicht
-        const guild = member.guild;
-
-        // Prüfen, ob die Mitgliederanzahl ein Vielfaches von 1000 ist
-        if (guild.memberCount % 1000 === 0) {
-            const channel = guild.channels.cache.get('981190525774336020'); // Neuigkeiten Kanal
-            if (channel) {
-                // Mitgliederanzahl mit Punkt als Tausendertrennzeichen formatieren
-                const formattedCount = guild.memberCount.toLocaleString('de-DE');
-                channel.send(`🎉 Der Server hat nun die **${formattedCount} Mitglieder** erreicht! Vielen Dank an die Community! 🎉`);
-            } else {
-                console.log('Kanal mit der angegebenen ID wurde nicht gefunden. (Glückwunsch-System 1000+ Mitglieder)');
-              }
-        }
-
     // Fake Bot Account System
     const suspiciousRoleID = '886989738244964362'; // Bann Rolle
     const threadID = '1269998219266490538'; // ID des Moderation Logs
-
 
     const username = member.user.username.toLowerCase();
     const joinedRecently = (Date.now() - member.user.createdTimestamp) < 7 * 24 * 60 * 60 * 1000; // Account jünger als 7 Tage
@@ -120,7 +102,6 @@ module.exports = {
                 console.error('Die Rolle "Gebannt" wurde nicht gefunden.');
             }
 
-            // Embed erstellen
             const embed = new EmbedBuilder()
                 .setTitle('⚠️ Verdächtiger Account erkannt')
                 .setDescription(`Ein verdächtiger Account wurde erkannt und markiert.\n\nBenutzername: ${member.user.tag} (${member.user.displayName})\nBenutzer-ID: ${member.id}\nErstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)

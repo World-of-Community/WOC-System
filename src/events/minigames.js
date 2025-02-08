@@ -4,32 +4,34 @@ const countingSchema = require('../../Datenbank/countingdb');
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
-        if(message.author.bot) return;
-        if(!message.guild) return;
+
+        if (message.author.bot) return;
+        if (!message.guild) return;
 
         const countingdb = await countingSchema.findOne({ guildId: '815919809379172354' });
 
-        switch(message.channel.id) {
+        switch (message.channel.id) {
             case countingdb?.channelId:
                 counting(message, countingdb)
                 break;
-            case '1269568224295391233':
-                //Flaggen
+            case '1269568224295391233': // Flaggen
+                
                 break;
-            case '1269568327127269466':
-                //Emoji
+
+            case '1269568327127269466': // Emoji
+                
                 break;
         }
     }
 }
 
 async function counting(message, counting) {
-    if(message.author.id === counting.lastUserId) {
+    if (message.author.id === counting.lastUserId) {
         counting.lastUserId = null;
         counting.currentCount = 0;
         message.reply({ content: `**Falsch!** Du darfst nicht 2x hintereinander hochzählen.` })
         message.react('❌')
-    } else if(message.content != counting.currentCount + 1) {
+    } else if (message.content != counting.currentCount + 1) {
         counting.lastUserId = null;
         counting.currentCount = 0;
         message.reply({ content: `**Falsch!** Die richtige Zahl wäre \`${counting.currentCount + 1}\` gewesen.` })
@@ -37,7 +39,7 @@ async function counting(message, counting) {
     } else {
         counting.currentCount++
         counting.lastUserId = message.author.id
-        if(counting.currentCount > counting.highestCount) {
+        if (counting.currentCount > counting.highestCount) {
             counting.highestCount = counting.currentCount;
 
             const countingEmbed = await message.channel.messages.fetch(counting.messageId);
@@ -48,6 +50,6 @@ async function counting(message, counting) {
         }
         message.react('✅')
     }
-
+    
     await counting.save()
 }

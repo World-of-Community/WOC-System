@@ -3,7 +3,8 @@ const { Events } = require("discord.js");
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
-        if(!message.guild) return
+        
+        if (!message.guild) return
         const channel = message.guild.channels.cache.get("815922756918181898");
         if (message.author.id === "339254240012664832" && message.channelId === "1221819093100007465") {
             let mention = message.mentions.users.first();

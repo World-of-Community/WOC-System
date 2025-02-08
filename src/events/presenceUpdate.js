@@ -3,7 +3,8 @@ const fs = require('fs')
 
 module.exports = {
     name: Events.PresenceUpdate,
-    async execute(oldPresence, newPresence) {
+    async execute (oldPresence, newPresence) {
+        
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
         if (newPresence.guild.id !== config.server) return;
