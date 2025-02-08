@@ -7,6 +7,7 @@ const serverdb = require("../../Datenbank/serverdb");
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+        
         if (!interaction.isButton()) return;
         const client = interaction.client;
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
