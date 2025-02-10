@@ -9,7 +9,23 @@ module.exports = {
         .addUserOption(option =>
             option.setName('user').setDescription('» Welcher User soll gebannt werden?').setRequired(true))
         .addStringOption(option =>
-            option.setName('grund').setDescription('» Gebe einen Grund an').setRequired(true))
+            option.setName('grund')
+                .setDescription('» Wähle einen Grund oder gebe einen eigenen an')
+                .addChoices(
+                    { name: 'Beleidigung', value: 'Beleidigung' },
+                    { name: 'Spam', value: 'Spam' },
+                    { name: 'Rassismus', value: 'Rassismus' },
+                    { name: 'Regelbruch', value: 'Regelbruch' },
+                    { name: 'An Verdächtiger Spam Aktivität beteiligt', value: 'An Verdächtiger Spam Aktivität beteiligt' },
+                    { name: 'Verdächtiger oder Spam Account', value: 'Verdächtiger oder Spam Account' },
+                    { name: 'Gefährdeter oder Gehackter Account', value: 'Gefährdeter oder Gehackter Account' },
+                    { name: 'Gegen Serverregeln verstoßen', value: 'Gegen Serverregeln verstoßen' },
+                )
+                .setRequired(false))
+        .addStringOption(option =>
+            option.setName('eigener-grund')
+                .setDescription('» Alternativ: Eigenen Grund eingeben')
+                .setRequired(false))
         .addStringOption(option =>
             option.setName('dauer').setDescription('» Gebe eine Dauer an (z.B. 5d 30m)')
                 .addChoices(
@@ -25,7 +41,9 @@ module.exports = {
 
     async execute(interaction) {
         const member = interaction.options.getMember('user');
-        const reason = interaction.options.getString('grund');
+        const selectedReason = interaction.options.getString('grund');
+        const customReason = interaction.options.getString('eigener_grund');
+        const reason = customReason || selectedReason || 'Kein Grund angegeben';
         const durationInput = interaction.options.getString('dauer') || 'PERMANENT';
 
         const banRole = interaction.guild.roles.cache.get("886989738244964362");
