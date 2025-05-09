@@ -513,7 +513,8 @@ module.exports = {
                 .setTitle(`🗳️ Feedback von ${interaction.user.displayName}`)
                 .setDescription(`Kurztitel:\n${title}\n\nBeschreibung:\n${description}`)
                 .setColor('Aqua')
-                .setFooter({ text: `${interaction.user.username}`, iconURL: `${interaction.user.displayAvatarURL()}` });
+                .setFooter({ text: `${interaction.user.username}`, iconURL: `${interaction.user.displayAvatarURL()}` })
+                .setTimestamp();
         
             const closeButtonRow = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
