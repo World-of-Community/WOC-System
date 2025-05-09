@@ -447,7 +447,7 @@ module.exports = {
         }
 
         // Feedback System
-        if (interaction.isModalSubmit() && interaction.customId === 'feedback-modal') {
+        if (interaction.isModalSubmit() && interaction.customId === 'create_feedback_ticket') {
             const title = interaction.fields.getTextInputValue('feedback-title');
             const description = interaction.fields.getTextInputValue('feedback-description');
         
