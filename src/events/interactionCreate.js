@@ -446,38 +446,48 @@ module.exports = {
             });
         }
 
-        // Feedback Button
-        if (interaction.isButton()) {
-            if (interaction.customId === 'create_feedback_ticket') {
-                const feedbackModal = new ModalBuilder()
-                  .setTitle('Feedback einreichen')
-                  .setCustomId('feedback-modal');
-          
-                const titleInput = new ActionRowBuilder().addComponents(
-                  new TextInputBuilder()
-                    .setCustomId('feedback-title')
-                    .setLabel('Kurztitel des Themas')
-                    .setPlaceholder('z.b. "Spielmodi", "Event-Idee" , "Feature-Wunsch"')
-                    .setStyle(TextInputStyle.Short)
-                    .setRequired(true)
-                );
-          
-                const descriptionInput = new ActionRowBuilder().addComponents(
-                  new TextInputBuilder()
-                    .setCustomId('feedback-description')
-                    .setLabel('Detaillierte Beschreibung')
-                    .setPlaceholder('Beschreibe hier das problem oder dein Feedback genauer.')
-                    .setMinLength(5)
-                    .setMaxLength(1024)
-                    .setStyle(TextInputStyle.Paragraph)
-                    .setRequired(true)
-                );
-          
-                feedbackModal.addComponents(titleInput, descriptionInput);
-          
-                await interaction.showModal(feedbackModal);
-              }
-        }
+        // Feedback System
+        if (interaction.isModalSubmit() && interaction.customId === 'feedback-modal') {
+            const title = interaction.fields.getTextInputValue('feedback-title');
+            const description = interaction.fields.getTextInputValue('feedback-description');
+        
+            const ticketName = `feedback-${interaction.user.username.toLowerCase()}`;
+            const categoryId = '886985648714682439'; // Feedback-Kategorie
+            const supportRoleId = '1011207481357238272'; // Dein Team-Rollen-ID
+        
+            const existingChannel = interaction.guild.channels.cache.find(c => c.name === ticketName);
+            if (existingChannel) {
+                return interaction.reply({ content: '> ⚠️ Du hast bereits ein offenes Feedback-Ticket.', ephemeral: true });
+            }
+        
+            const ticketChannel = await interaction.guild.channels.create({
+                name: ticketName,
+                type: ChannelType.GuildText,
+                parent: categoryId,
+                permissionOverwrites: [
+                    {
+                        id: interaction.guild.id,
+                        deny: [PermissionFlagsBits.ViewChannel],
+                    },
+                    {
+                        id: interaction.user.id,
+                        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.AttachFiles],
+                    },
+                    {
+                        id: supportRoleId,
+                        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages],
+                    },
+                ],
+            });
+        
+            const ticketEmbed = new EmbedBuilder()
+                .setTitle(`🗳️ Feedback von ${interaction.user.tag}`)
+                .setDescription(`Kurztitel\n${title}\n\nBeschreibung:\n${description}`)
+                .setColor('Aqua');
+        
+            await ticketChannel.send({ content: `> User: <@${interaction.user.id}> | Team: <@${supportRoleId}>`, embeds: [ticketEmbed] });
+            await interaction.reply({ content: `> ✅ Dein **Feedback-Ticket** wurde erstellt: ${ticketChannel}`, ephemeral: true });
+        }    
         
         // Bann Button
          if (interaction.isButton()) {
