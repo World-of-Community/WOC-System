@@ -550,8 +550,7 @@ module.exports = {
                     .setStyle(ButtonStyle.Secondary)
             );
         
-            await interaction.reply({ 
-                content: `<@${ticketData.userID}>`, 
+            await interaction.reply({  
                 embeds: [decisionEmbed],
                 components: [decisionButtons],
                 ephemeral: false
