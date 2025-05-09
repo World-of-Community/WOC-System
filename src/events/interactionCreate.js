@@ -547,13 +547,14 @@ module.exports = {
                     .setCustomId('feedback_reject_open')
                     .setLabel('Ablehnen & offen lassen')
                     .setEmoji("❌")
-                    .setStyle(ButtonStyle.Danger)
+                    .setStyle(ButtonStyle.Secondary)
             );
         
-            await interaction.reply({
+            await interaction.reply({ 
+                content: `<@${ticketData.userID}>`, 
                 embeds: [decisionEmbed],
                 components: [decisionButtons],
-                ephemeral: true
+                ephemeral: false
             });
         }
         
