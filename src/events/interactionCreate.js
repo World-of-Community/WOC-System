@@ -446,7 +446,6 @@ module.exports = {
             });
         }
 
-        // Feedback System
         if (interaction.isButton() && interaction.customId === 'create_feedback_ticket') {
             const feedbackModal = new ModalBuilder()
                 .setTitle('Feedback einreichen')
@@ -476,13 +475,14 @@ module.exports = {
             await interaction.showModal(feedbackModal);
         }
 
+        // Modal wurde abgeschickt
         if (interaction.isModalSubmit() && interaction.customId === 'feedback-modal') {
             const title = interaction.fields.getTextInputValue('feedback-title');
             const description = interaction.fields.getTextInputValue('feedback-description');
         
             const ticketName = `feedback-${interaction.user.username.toLowerCase()}`;
             const categoryId = '886985648714682439'; // Feedback-Kategorie
-            const supportRoleId = '1011207481357238272'; // Dein Team-Rollen-ID
+            const supportRoleId = '1011207481357238272'; // Team-Rolle
         
             const existingChannel = interaction.guild.channels.cache.find(c => c.name === ticketName);
             if (existingChannel) {
@@ -511,11 +511,80 @@ module.exports = {
         
             const ticketEmbed = new EmbedBuilder()
                 .setTitle(`🗳️ Feedback von ${interaction.user.tag}`)
-                .setDescription(`Kurztitel\n${title}\n\nBeschreibung:\n${description}`)
+                .setDescription(`Kurztitel:\n${title}\n\nBeschreibung:\n${description}`)
                 .setColor('Aqua');
         
-            await ticketChannel.send({ content: `> User: <@${interaction.user.id}> | Team: <@${supportRoleId}>`, embeds: [ticketEmbed] });
-            await interaction.reply({ content: `> ✅ Dein **Feedback-Ticket** wurde erstellt: ${ticketChannel}`, ephemeral: true });
+            const closeButtonRow = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId('close_feedback_ticket')
+                    .setLabel('📩 Ticket schließen')
+                    .setStyle(ButtonStyle.Secondary)
+            );
+        
+            await ticketChannel.send({
+                content: `> User: <@${interaction.user.id}> | Team: <@&${supportRoleId}>`,
+                embeds: [ticketEmbed],
+                components: [closeButtonRow]
+            });
+        
+            await interaction.reply({ content: `> \`✅\` » Dein **Feedback-Ticket** wurde erstellt: ${ticketChannel}`, ephemeral: true });
+        }
+        
+        // Ticket schließen Button
+        if (interaction.isButton() && interaction.customId === 'close_feedback_ticket') {
+            const decisionEmbed = new EmbedBuilder()
+                .setTitle('`❓` » Schließ-Anfrage')
+                .setDescription(`${interaction.user} hat das Schließen dieses Tickets angefordert.\n\nBitte akzeptiere oder verweigere mit den untenstehenden Schaltflächen.`)
+                .setColor('Blurple');
+        
+            const decisionButtons = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId('feedback_accept_close')
+                    .setLabel('Akzeptieren & schließen')
+                    .setEmoji("☑️")
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                    .setCustomId('feedback_reject_open')
+                    .setLabel('Ablehnen & offen lassen')
+                    .setEmoji("❌")
+                    .setStyle(ButtonStyle.Danger)
+            );
+        
+            await interaction.reply({
+                embeds: [decisionEmbed],
+                components: [decisionButtons],
+                ephemeral: true
+            });
+        }
+        
+        // Akzeptieren & Ticket schließen
+        if (interaction.isButton() && interaction.customId === 'feedback_accept_close') {
+            const acceptEmbed = new EmbedBuilder()
+                .setTitle('`🗑️` » Ticket wird geschlossen')
+                .setDescription('Dieses Ticket wird in **5 Sekunden** geschlossen.')
+                .setColor('Green');
+        
+            await interaction.update({
+                embeds: [acceptEmbed],
+                components: []
+            });
+        
+            setTimeout(() => {
+                interaction.channel.delete().catch(console.error);
+            }, 5000);
+        }
+        
+        // Ablehnen & Ticket bleibt offen
+        if (interaction.isButton() && interaction.customId === 'feedback_reject_open') {
+            const rejectEmbed = new EmbedBuilder()
+                .setTitle('`🔓` » Ticket bleibt weiterhin offen')
+                .setDescription('Das Ticket bleibt weiterhin geöffnet.')
+                .setColor('Red');
+        
+            await interaction.update({
+                embeds: [rejectEmbed],
+                components: []
+            });
         }    
         
         // Bann Button
