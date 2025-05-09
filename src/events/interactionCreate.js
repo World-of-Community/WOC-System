@@ -552,7 +552,7 @@ module.exports = {
             );
         
             await interaction.reply({
-                content: `<@${interaction.userID}>`,
+                content: `<@${userId}>`,
                 embeds: [decisionEmbed],
                 components: [decisionButtons],
                 ephemeral: false
