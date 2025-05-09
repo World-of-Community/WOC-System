@@ -1,4 +1,4 @@
-const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType } = require("discord.js");
+const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType, PermissionFlagsBits } = require("discord.js");
 const userdb = require("../../Datenbank/userdb");
 const config = require("../json/config.json")
 const vorschlagEmitter = require('../custom_events/vorschlag');
