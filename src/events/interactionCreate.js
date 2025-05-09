@@ -510,19 +510,19 @@ module.exports = {
             });
         
             const ticketEmbed = new EmbedBuilder()
-                .setTitle(`🗳️ Feedback von ${interaction.user.tag}`)
+                .setTitle(`🗳️ Feedback von ${interaction.user.displayName}`)
                 .setDescription(`Kurztitel:\n${title}\n\nBeschreibung:\n${description}`)
-                .setColor('Aqua');
+                .setColor('Aqua')
+                .setFooter({ text: `${interaction.user.username}`, iconURL: `${interaction.user.displayAvatarURL()}` });
         
             const closeButtonRow = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
                     .setCustomId('close_feedback_ticket')
-                    .setLabel('📩 Ticket schließen')
+                    .setLabel('❌ Ticket schließen')
                     .setStyle(ButtonStyle.Secondary)
             );
         
             await ticketChannel.send({
-                content: `> User: <@${interaction.user.id}> | Team: <@&${supportRoleId}>`,
                 embeds: [ticketEmbed],
                 components: [closeButtonRow]
             });
