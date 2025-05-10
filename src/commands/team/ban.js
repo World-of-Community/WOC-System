@@ -56,9 +56,9 @@ module.exports = {
         const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
         const thread = logChannel?.threads.cache.get("1269998219266490538");
 
-        if (!banRole || !memberRole || !newmemberRole || !thread) {
-            return interaction.reply({ content: '> `❌` » Rollen oder Log-Kanal konnten nicht gefunden werden.', ephemeral: true });
-        }
+        //if (!banRole || !memberRole || !newmemberRole || !thread) {
+        //    return interaction.reply({ content: '> `❌` » Rollen oder Log-Kanal konnten nicht gefunden werden.', ephemeral: true });
+        //}
 
         const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
         const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
