@@ -48,10 +48,11 @@ module.exports = {
 
         const banRole = interaction.guild.roles.cache.get("886989738244964362");
         const memberRole = interaction.guild.roles.cache.get("815920703067914290");
+        const newmemberRole = interaction.guild.roles.cache.get("1222122625594294272");
         const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
         const thread = logChannel.threads.cache.get("1269998219266490538");
 
-        if (!banRole || !memberRole || !thread) {
+        if (!banRole || !memberRole || !newmemberRole || !thread) {
             return interaction.reply({ content: '> \`❌\` » Rollen oder Log-Kanal konnten nicht gefunden werden.', ephemeral: true });
         }
 
@@ -62,7 +63,7 @@ module.exports = {
 
         // Apply Roles
         await member.roles.add(banRole);
-        await member.roles.remove(memberRole);
+        await member.roles.remove(memberRole || newmemberRole);
 
         // Create Embed
         const banEmbed = new EmbedBuilder()
@@ -70,7 +71,7 @@ module.exports = {
             .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` **Benutzer Informationen:**\n> **Grund:** \`${reason}\`\n> **Dauer:** \`${durationInput === 'PERMANENT' ? 'Permanent' : ms(durationMs, { long: true })}\`\n> **Benutzername:** ${member.user.username} (\`${member.id}\`)\n> **Account erstellt am:** ${createdAt}\n> **Beigetreten am:** ${joinedAt}`)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .setColor('Red')
-            .setFooter({ text: `©️ ${interaction.guild.name} | Bann-System`, iconURL: interaction.client.user.displayAvatarURL() });
+            .setFooter({ text: `© ${interaction.guild.name} | Bann-System`, iconURL: interaction.client.user.displayAvatarURL() });
 
         // Save Ban to Database
         try {
