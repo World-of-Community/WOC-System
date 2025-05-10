@@ -42,18 +42,22 @@ module.exports = {
     async execute(interaction) {
         const member = interaction.options.getMember('user');
         const selectedReason = interaction.options.getString('grund');
-        const customReason = interaction.options.getString('eigener_grund');
+        const customReason = interaction.options.getString('eigener-grund');
         const reason = customReason || selectedReason || 'Kein Grund angegeben';
         const durationInput = interaction.options.getString('dauer') || 'PERMANENT';
+
+        if (!member) {
+            return interaction.reply({ content: '> `❌` » Der Benutzer konnte nicht gefunden werden.', ephemeral: true });
+        }
 
         const banRole = interaction.guild.roles.cache.get("886989738244964362");
         const memberRole = interaction.guild.roles.cache.get("815920703067914290");
         const newmemberRole = interaction.guild.roles.cache.get("1222122625594294272");
         const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
-        const thread = logChannel.threads.cache.get("1269998219266490538");
+        const thread = logChannel?.threads.cache.get("1269998219266490538");
 
         if (!banRole || !memberRole || !newmemberRole || !thread) {
-            return interaction.reply({ content: '> \`❌\` » Rollen oder Log-Kanal konnten nicht gefunden werden.', ephemeral: true });
+            return interaction.reply({ content: '> `❌` » Rollen oder Log-Kanal konnten nicht gefunden werden.', ephemeral: true });
         }
 
         const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
@@ -61,11 +65,15 @@ module.exports = {
         const durationMs = durationInput !== 'PERMANENT' ? ms(durationInput) : null;
         const endTime = durationMs ? new Date(Date.now() + durationMs) : null;
 
-        // Apply Roles
-        await member.roles.add(banRole);
-        await member.roles.remove(memberRole || newmemberRole);
+        // Rollenverwaltung
+        try {
+            await member.roles.add(banRole);
+            if (memberRole) await member.roles.remove(memberRole).catch(() => {});
+            if (newmemberRole) await member.roles.remove(newmemberRole).catch(() => {});
+        } catch (err) {
+            return interaction.reply({ content: '> `❌` » Fehler beim Zuweisen oder Entfernen von Rollen.', ephemeral: true });
+        }
 
-        // Create Embed
         const banEmbed = new EmbedBuilder()
             .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
             .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` **Benutzer Informationen:**\n> **Grund:** \`${reason}\`\n> **Dauer:** \`${durationInput === 'PERMANENT' ? 'Permanent' : ms(durationMs, { long: true })}\`\n> **Benutzername:** ${member.user.username} (\`${member.id}\`)\n> **Account erstellt am:** ${createdAt}\n> **Beigetreten am:** ${joinedAt}`)
@@ -73,21 +81,20 @@ module.exports = {
             .setColor('Red')
             .setFooter({ text: `© ${interaction.guild.name} | Bann-System`, iconURL: interaction.client.user.displayAvatarURL() });
 
-        // Save Ban to Database
+        // In DB speichern
         try {
             await new bandb({
                 creator: interaction.user.id,
                 user: member.id,
                 reason,
-                duration: durationInput === 'PERMANENT' ? null : durationMs,
+                duration: durationInput === 'PERMANENT' ? 'PERMANENT' : durationMs,
                 startTime: new Date(),
                 endTime,
             }).save();
         } catch (err) {
-            return interaction.reply({ content: '> \`❌\` » Fehler beim Speichern des Banns in der Datenbank.', ephemeral: true });
+            return interaction.reply({ content: '> `❌` » Fehler beim Speichern des Banns in der Datenbank.', ephemeral: true });
         }
 
-        // Send Logs and Reply
         await thread.send({ embeds: [banEmbed] });
         await interaction.reply({ content: `> \`✅\` » ${member} wurde erfolgreich gebannt.`, ephemeral: true });
     }
