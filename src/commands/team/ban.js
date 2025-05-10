@@ -50,11 +50,11 @@ module.exports = {
             return interaction.reply({ content: '> `❌` » Der Benutzer konnte nicht gefunden werden.', ephemeral: true });
         }
 
-        const banRole = interaction.guild.roles.cache.fetch("886989738244964362");
-        const memberRole = interaction.guild.roles.cache.fetch("815920703067914290");
-        const newmemberRole = interaction.guild.roles.cache.fetch("1222122625594294272");
-        const logChannel = interaction.guild.channels.cache.fetch("1263436406655680513");
-        const thread = logChannel?.threads.cache.fetch("1269998219266490538");
+        const banRole = interaction.guild.roles.cache.get("886989738244964362");
+        const memberRole = interaction.guild.roles.cache.get("815920703067914290");
+        const newmemberRole = interaction.guild.roles.cache.get("1222122625594294272");
+        const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
+        const thread = logChannel?.threads.cache.get("1269998219266490538");
 
         if (!banRole || !memberRole || !newmemberRole || !thread) {
             return interaction.reply({ content: '> `❌` » Rollen oder Log-Kanal konnten nicht gefunden werden.', ephemeral: true });
