@@ -114,7 +114,6 @@ module.exports = {
                 .setTitle('⠀⠀ ⠀⠀⠀⠀ ⠀⠀ ⛔ Du wurdest vom Server gebannt!  ⛔⠀⠀ ⠀⠀⠀⠀ ⠀⠀')
                 .setDescription('Anscheinend wurdest du vom **Server Gebannt** und bist nun im **Bann-Bereich.**\n\n> » Falls dies eine **Falsche Entscheidung** gewesen ist, **melde dich** bei **einem Teammitglied** und gebe deine **Unschuld** an.\n\n> Öffne ein Ticket für den Bann-Support.')
                 .setColor('Red')
-                .setFooter({ text: `© ${interaction.guild.name} | Bann-System`, iconURL: interaction.guild.iconURL() })
 
             const gebanntButton = new ActionRowBuilder()
                 .addComponents(
