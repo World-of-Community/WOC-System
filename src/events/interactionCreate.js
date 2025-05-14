@@ -510,9 +510,14 @@ module.exports = {
             });
         
             const ticketEmbed = new EmbedBuilder()
-                .setTitle(`🗳️ Feedback von ${interaction.user.displayName}`)
-                .setDescription(`Kurztitel:\n${title}\n\nBeschreibung:\n${description}`)
+                .setDescription(`**Hey ${interaction.user.displayName}!**\n\nDanke für dein Feedback!\nDein Ticket wird zeitnah von unserem Server-Team bearbeitet.`)
                 .setColor('Aqua')
+                .setImage('https://imgur.com/kekDug7.png')
+
+            const ticketEmbed2 = new EmbedBuilder()
+                .setDescription(`**Kurztitel des Themas**\n${title}\n\n**Detaillierte Beschreibung**\n${description}`)
+                .setColor('Aqua')
+                .setImage('https://imgur.com/kekDug7.png')
                 .setFooter({ text: `${interaction.user.username}`, iconURL: `${interaction.user.displayAvatarURL()}` })
                 .setTimestamp();
         
@@ -524,7 +529,7 @@ module.exports = {
             );
         
             await ticketChannel.send({
-                embeds: [ticketEmbed],
+                embeds: [ticketEmbed, ticketEmbed2],
                 components: [closeButtonRow]
             });
         
