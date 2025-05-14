@@ -465,7 +465,7 @@ module.exports = {
                     .setCustomId('feedback-description')
                     .setLabel('Detaillierte Beschreibung')
                     .setPlaceholder('Beschreibe hier dein Feedback ausführlich...')
-                    .setMinLength(5)
+                    .setMinLength(50)
                     .setMaxLength(4000)
                     .setStyle(TextInputStyle.Paragraph)
                     .setRequired(true)
