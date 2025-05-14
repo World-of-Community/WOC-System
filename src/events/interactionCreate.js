@@ -518,8 +518,6 @@ module.exports = {
                 .setDescription(`**Kurztitel des Themas**\n${title}\n\n**Detaillierte Beschreibung**\n${description}`)
                 .setColor('Aqua')
                 .setImage('https://imgur.com/kekDug7.png')
-                .setFooter({ text: `${interaction.user.username}`, iconURL: `${interaction.user.displayAvatarURL()}` })
-                .setTimestamp();
         
             const closeButtonRow = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
