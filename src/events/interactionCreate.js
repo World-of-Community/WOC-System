@@ -510,7 +510,7 @@ module.exports = {
             });
         
             const ticketEmbed = new EmbedBuilder()
-                .setDescription(`**Hey ${interaction.user.displayName}!**\n\nDanke für dein Feedback!\nDein Ticket wird zeitnah von unserem Server-Team bearbeitet.`)
+                .setDescription(`**Hey ${interaction.displayName}!**\n\nDanke für dein Feedback!\nDein Ticket wird zeitnah von unserem Server-Team bearbeitet.`)
                 .setColor('Aqua')
                 .setImage('https://imgur.com/kekDug7.png')
 
