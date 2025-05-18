@@ -41,6 +41,7 @@ module.exports = {
                             new ButtonBuilder()
                             .setCustomId(`giveaway-leave-${giveawayData.msgID}`)
                             .setLabel(`» Teilnahme zurückziehen`)
+                            .setEmoji('↩️')
                             .setStyle(ButtonStyle.Danger)
                         );
                         return await interaction.reply({ content: '> `❌` » Du nimmst bereits am Gewinnspiel teil!', components: [row], ephemeral: true });
@@ -98,6 +99,7 @@ module.exports = {
                     new ButtonBuilder()
                     .setCustomId(`giveaway-leave-${giveawayData.msgID}`)
                     .setLabel('» Teilnahme zurückziehen')
+                    .setEmoji('↩️')
                     .setStyle(ButtonStyle.Danger)
                 );
                 return await interaction.reply({ content: '> `❌` » Du nimmst bereits am Gewinnspiel teil!', components: [row], ephemeral: true });
