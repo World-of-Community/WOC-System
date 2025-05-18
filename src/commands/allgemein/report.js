@@ -32,7 +32,7 @@ module.exports = {
             .setTitle(`\`📝\` | Neuer Report von ${interaction.user.displayName}`)
             .setDescription(`${reportedUser} wurde von ${interaction.user} gemeldet.\n\n> \`👤\` - **BENUTZER INFORMATIONEN**\n\`✍️\` » Report-Grund: ${grund}\n\`📌\` » Server: ${server === 'discord' ? 'Discord Server' : 'Minecraft Server'}\n\`📌\` » Benutzername: ${reportedUser.displayName} (\`${reportedUser.id}\`) (${reportedUser})\n\n\`⏰\` » Account erstellt am: ${createdAt}\n\`⏰\` » Beigetreten am: ${joinedAt}`)
             .setColor('Red')
-            .setFooter({ text: `©️ ${interaction.guild.name} - Report System`, iconURL: `${interaction.guild.iconURL()}` })
+            .setFooter({ text: `© ${interaction.guild.name} - Report System`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
 
         const modChannel = await interaction.guild.channels.fetch(reportchannel);

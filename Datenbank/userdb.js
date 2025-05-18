@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
     userID: {
         type: String
     },
+
     donation: Number,
     birthday: {
         tag: {
@@ -19,26 +20,32 @@ const userSchema = new mongoose.Schema({
             required: false,
         },
     },
+
     reactions: {
         type: Object,
         required: false,
     },
+
     afk: {
         type: Boolean,
         required: false,
     },
+
     afkReason: {
         type: String,
         required: false,
     },
+
     afkStamp: {
         type: String,
         required: false,
     },
+
     vorstellungID: {
         type: String,
         required: false,
     },
+
     giveaway: {
         eventWins: {
             type: Number
@@ -62,6 +69,7 @@ const userSchema = new mongoose.Schema({
             type: Number
         },
     },
+
     stats: {
         messages: {
             type: Number,
@@ -73,10 +81,26 @@ const userSchema = new mongoose.Schema({
             default: 0
         },
     },
+
     firstMessage: {
         type: Boolean,
         default: false
-    }
+    },
+    
+    invites: {
+        invites: {
+            type: Number,
+            default: 0
+        },
+        left: {
+            type: Number,
+            default: 0
+        },
+        bonus: {
+            type: Number,
+            default: 0
+        }
+    },
 });
 
 module.exports = mongoose.model('user-data', userSchema)

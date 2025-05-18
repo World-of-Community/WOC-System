@@ -24,6 +24,12 @@ module.exports = {
         if (!userData) return
         await userData.deleteOne()
 
+        // Invite System
+        await User.findOneAndUpdate(
+            { userID: inviterId },
+            { $inc: { 'invites.left': 1 } }
+        );
+
         const CHANNEL_ID = '1172920281526960238'; 
         const channel = member.guild.channels.cache.get(CHANNEL_ID);
         if (!channel) return console.log('Kanal nicht gefunden.');

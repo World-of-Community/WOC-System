@@ -26,6 +26,42 @@ module.exports = {
         //    console.error(`Konnte kein Willkommens-Embed DM an ${member.user.tag} senden:`, error);
         //}
 
+        // Invite System
+
+        // Invite-Daten vom Discord-API holen
+        const newInvites = await member.guild.invites.fetch();
+      
+        // Lade alten Cache aus DB
+        let inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
+      
+        if (!inviteCache) {
+          // Wenn noch kein Cache, speichern und zurück
+          await InviteCache.create({
+            guildID: member.guild.id,
+            invites: newInvites.map(i => ({ code: i.code, uses: i.uses }))
+          });
+          return;
+        }
+      
+        // Finde die Einladung mit geänderter Nutzungszahl
+        const usedInvite = newInvites.find(i => {
+          const cachedInvite = inviteCache.invites.find(c => c.code === i.code);
+          return cachedInvite && i.uses > cachedInvite.uses;
+        });
+      
+        if (!usedInvite) return;
+      
+        // Aktualisiere Cache in DB
+        inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));
+        await inviteCache.save();
+      
+        // Update Einladungs-Statistik im User-Dokument
+        await User.findOneAndUpdate(
+          { userID: usedInvite.inviter.id },
+          { $inc: { 'invites.invites': 1 } },
+          { upsert: true }
+        );
+
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
         if (member.user.bot) return; 
         if (serverData.deactivated.includes("willkommensnachrichten")) return;

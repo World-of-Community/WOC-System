@@ -383,6 +383,7 @@ client.on('guildMemberAdd', async member => {
         invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
     }
 });
+
 const typeMap = {
     0: "TEXT",
     2: "VOICE",

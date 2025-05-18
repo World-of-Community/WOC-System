@@ -154,12 +154,19 @@ module.exports = {
             }
         });
 
-        // Hole die Einladungen des Mitglieds
-        const invites = await interaction.guild.invites.fetch();
-        const userInvites = invites.filter(invite => invite.inviter && invite.inviter.id === member.id);
-        const inviteUses = userInvites.reduce((acc, invite) => acc + invite.uses, 0);
-        const totalLeft = userInvites.reduce((acc, invite) => acc + (invite.maxUses - invite.uses), 0);
-        const totalBonus = inviteUses - totalLeft;
+        // Invite System
+        
+        await User.findOneAndUpdate(
+            { userID: target.id },
+            { $inc: { 'invites.bonus': 1 } }
+        );
+
+        const userData = await User.findOne({ userID: member.user.id }) || {};
+        const invites = userData.invites || { invites: 0, left: 0, bonus: 0 };
+        const inviteUses = invites.invites;
+        const totalBonus = invites.bonus;
+        const totalLeft = invites.left;
+        const totalInvites = inviteUses + totalBonus - totalLeft;
 
         // User-Daten abrufen
         const userData = await userdb.findOne({ userID: member.id }) || {
