@@ -8,11 +8,11 @@ const userSchema = new mongoose.Schema({
     birthday: {
         tag: {
             type: Number,
-            required: false ,
+            required: false,
         },
         monat: {
             type: Number,
-            required: false ,
+            required: false,
         },
         jahr: {
             type: Number,
@@ -54,7 +54,8 @@ const userSchema = new mongoose.Schema({
         },
     
         voiceTime: {
-            type: Number
+            type: Number,
+            default: 0,
         },
     
         startTime: {
