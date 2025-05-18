@@ -154,8 +154,16 @@ module.exports = {
             }
         });
 
-        // Invite System
+        // User-Daten abrufen
+        const userData = await userdb.findOne({ userID: member.id }) || {
+            giveaway: {
+                eventWins: 0,
+                messages: 0,
+                voiceTime: 0
+            }
+        };
 
+        // Invite System
         await userdb.findOneAndUpdate(
             { userID: member.id },
             { $inc: { 'invites.bonus': 1 } }
@@ -166,15 +174,6 @@ module.exports = {
         const totalBonus = invites.bonus;
         const totalLeft = invites.left;
         const totalInvites = inviteUses + totalBonus - totalLeft;
-
-        // User-Daten abrufen
-        const userData = await userdb.findOne({ userID: member.id }) || {
-            giveaway: {
-                eventWins: 0,
-                messages: 0,
-                voiceTime: 0
-            }
-        };
 
         if (userData) {
             const embed = new EmbedBuilder()
