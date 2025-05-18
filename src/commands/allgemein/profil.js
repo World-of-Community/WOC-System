@@ -155,13 +155,12 @@ module.exports = {
         });
 
         // Invite System
-        
+
         await User.findOneAndUpdate(
             { userID: target.id },
             { $inc: { 'invites.bonus': 1 } }
         );
 
-        const userData = await User.findOne({ userID: member.user.id }) || {};
         const invites = userData.invites || { invites: 0, left: 0, bonus: 0 };
         const inviteUses = invites.invites;
         const totalBonus = invites.bonus;
