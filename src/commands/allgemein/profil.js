@@ -156,8 +156,8 @@ module.exports = {
 
         // Invite System
 
-        await userData.findOneAndUpdate(
-            { userID: target.id },
+        await userdb.findOneAndUpdate(
+            { userID: member.id },
             { $inc: { 'invites.bonus': 1 } }
         );
 
