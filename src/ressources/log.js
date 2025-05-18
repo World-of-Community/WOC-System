@@ -14,7 +14,7 @@ async function sendLog(threadName, embed) {
 
     const threadID = ThreadIDs[threadName.toUpperCase()];
     if (!threadID) {
-        throw new Error(`Thread name "${threadName}" is not defined.`);
+        throw new Error(`Thread name "${threadName}" ist nicht definiert.`);
     }
 
     await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
