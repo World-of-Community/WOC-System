@@ -33,12 +33,40 @@ module.exports = {
         if (isStreaming) {
             if (!member.roles.cache.has(streamer_role.id)) {
                 await member.roles.add(streamer_role);
+                const now = new Date();
+
+                const tage = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+                const tagName = tage[now.getDay()];
+                
+                const tag = now.getDate().toString().padStart(2, '0');
+                const monat = (now.getMonth() + 1).toString().padStart(2, '0');
+                const jahr = now.getFullYear();
+                
+                const stunde = now.getHours().toString().padStart(2, '0');
+                const minute = now.getMinutes().toString().padStart(2, '0');
+                
+                const datumUhrzeit = `${tagName}, ${tag}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
                 console.log(`Streamer-Rolle hinzugefügt zu ${member.user.displayName} (${member.user.username})`);
+                console.log(`Datum: ${datumUhrzeit}`);
             }
         } else {
             if (member.roles.cache.has(streamer_role.id)) {
                 await member.roles.remove(streamer_role);
+                const now = new Date();
+
+                const tage = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+                const tagName = tage[now.getDay()];
+                
+                const tag = now.getDate().toString().padStart(2, '0');
+                const monat = (now.getMonth() + 1).toString().padStart(2, '0');
+                const jahr = now.getFullYear();
+                
+                const stunde = now.getHours().toString().padStart(2, '0');
+                const minute = now.getMinutes().toString().padStart(2, '0');
+                
+                const datumUhrzeit = `${tagName}, ${tag}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
                 console.log(`Streamer-Rolle entfernt von ${member.user.displayName} (${member.user.username})`);
+                console.log(`Datum: ${datumUhrzeit}`);
             }
         }
     }

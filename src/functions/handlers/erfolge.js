@@ -63,7 +63,21 @@ module.exports = (client) => {
 
                         member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [oneYearEmbed] });
                         
+                        const now = new Date();
+
+                        const tage = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+                        const tagName = tage[now.getDay()];
+                        
+                        const tag = now.getDate().toString().padStart(2, '0');
+                        const monat = (now.getMonth() + 1).toString().padStart(2, '0');
+                        const jahr = now.getFullYear();
+                        
+                        const stunde = now.getHours().toString().padStart(2, '0');
+                        const minute = now.getMinutes().toString().padStart(2, '0');
+                        
+                        const datumUhrzeit = `${tagName}, ${tag}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
                         console.log(`Rolle hinzugefügt zu ${member.user.displayName} - ${member.user.username}`);
+                        console.log(`Datum: ${datumUhrzeit}`);
                     }).catch(console.error);
                 }
             });
