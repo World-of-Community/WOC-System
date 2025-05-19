@@ -100,7 +100,21 @@ module.exports = {
       );
     }, 1000 * 60 * 5);
 
-    setInterval(async () => {
+
+    // Ban Liste
+    function scheduleBanUpdate() {
+  const now = new Date();
+  const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+
+  setTimeout(() => {
+    runBanUpdate(); // Update einmal direkt zur vollen Minute starten
+
+    // Ab jetzt jede Minute synchron laufen lassen
+    setInterval(runBanUpdate, 60 * 1000);
+  }, msUntilNextMinute);
+}
+
+async function runBanUpdate() {
   try {
     const server = await client.guilds.fetch("815919809379172354");
 
@@ -137,27 +151,30 @@ module.exports = {
     if (!message) return console.log("Keine Nachricht gefunden zum Bearbeiten.");
 
     const currentTime = new Date().toLocaleDateString('de-DE', {
-            weekday: 'long',
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-        });
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
 
     const bannembed = new EmbedBuilder()
       .setTitle("Information zu den Gebannten Nutzern")
       .setDescription(
         `Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`)\n\n` +
-        (bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden.")
+          (bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden.")
       )
       .setColor("Red")
-      .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: guild.iconURL() })
+      .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: server.iconURL() })
       .setTimestamp();
 
     await message.edit({ embeds: [bannembed] });
   } catch (error) {
     console.error("Fehler im Bann-Update:", error);
   }
-}, 30000);
+}
+
+// Timer starten
+scheduleBanUpdate();
 
     // Globale Variablen zum Speichern von Kanal- und Nachrichten-IDs
     let lastChannelId = null;
