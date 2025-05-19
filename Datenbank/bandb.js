@@ -22,7 +22,6 @@ const banSchema = new mongoose.Schema({
         type: Number,
         required: false,
     },
-
     endTime: {
         type: Number,
         required: false,
