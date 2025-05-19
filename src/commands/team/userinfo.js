@@ -93,15 +93,14 @@ module.exports = {
     }
 };
 
-// Funktion zur Ermittlung des Ban-Status & Ban-Grunds
 async function getBanStatus(interaction, userId, member) {
     try {
-        // Datenbank-Check
+        // Datenbank-Check mit korrektem Feldnamen 'userId'
         const userData = await bandb.findOne({ userId: userId });
-        if (userData?.ban) {
+        if (userData) {
             return {
                 banned: true,
-                reason: userData.ban.reason?.trim() || 'Keine Angabe',
+                reason: userData.reason?.trim() || 'Keine Angabe',
             };
         }
 
@@ -117,7 +116,7 @@ async function getBanStatus(interaction, userId, member) {
             };
         }
 
-        // Check ob User Rolle "Banned" hat
+        // Rolle "Banned" prüfen
         if (member?.roles.cache.has(BANNED_ROLE_ID)) {
             return {
                 banned: true,
