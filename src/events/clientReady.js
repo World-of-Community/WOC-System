@@ -43,26 +43,6 @@ module.exports = {
     setInterval(async () => {
       processRSSFeed(client, lastEntries);
     }, 60000);
-    
-    /* Muss noch gesendet werden
-    const embed1 = new EmbedBuilder()
-    .setTitle('`💕`-LICH WILLKOMMEN IM FEEDBACK SYSTEM!')
-    .setColor("Aqua")
-    .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1280172685694996572/WOC_Banner_Information_Feedback.jpg?ex=6793a3b8&is=67925238&hm=ca17eef329f5fb72c4fb315aa57f96fdb84e4776d7288ed39c2476af4b8934e2&');
-
-    const embed2 = new EmbedBuilder()
-    .setTitle('<a:pin:1119708768326914100> - INFORMATIONEN (FAQ)')
-    .setColor("Aqua")
-    .setDescription('» In diesem Kanal kannst du **eigene Posts** für **dein Feedback** erstellen, um World Of Community zu unterstützen. Wir bedanken uns bei jedem Feedback - ihr helft uns damit enorm! `💕`\n\n> `❓` - **__WIE REICHE ICH EIN FEEDBACK EIN?__**\n» Tippe oben auf "Neuer Post" ein. Füge dann eine **Beschreibung** hinzu und klicke anschließend auf \"Post\".\n\n> `❓` - **__WELCHEN TAG MUSS ICH WÄHLEN?__**\n» Du musst von deiner Idee oder deinem Vorschlag **einen Tag wählen**. Wähle den Tag, der **deine Idee am besten beschreibt**. Hier sind ein paar Beispiele dazu:\n\n𑁉 **Info:** `Team-Info` | **Tag:** <:Team:915212337860968481> `Feedback zum Team`\n𑁉 **Info:** `Server` | **Tag:** <:WOC_Orange:1019565644041166869> `Feedback zum Server`\n𑁉 **Info:** `Support-Team` | **Tag:** <:Supporter:953359782847332362> `Feedback zum Support`\n\n> `📌` - **__SONST NOCH FRAGEN?__**\n» Solltest du noch **Fragen** haben, zögere nicht und Öffne ein Ticket in ⁠<#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.')
-    .setFooter({ text: '» Wir danken jedem für sein Feedback!', iconURL: 'https://cdn.discordapp.com/attachments/815983648574275584/1202182432506523648/WOC_Orange.png?ex=66a8b123&is=66a75fa3&hm=c1153e75f4971748e8ff2acb4d7f4e86572a2c976bc4661723af16163c0984a6&' })
-    .setThumbnail('https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b5a468&is=66b452e8&hm=6849696a3f0e4fe5c35349cbe5d38f6a17c4d83ab03eeabe704f274ede9c7220&');
-
-    const channel = client.channels.cache.get("1275350879054200943")
-    channel.threads.create({
-      name: 'Einführung & Informationen (FAQ)', message: { embeds: [embed1, embed2] }, reason: 'Feedback System' })
-    .then(threadChannel => console.log(threadChannel))
-    .catch(console.error);
-    */
 
     // Wechsel Status
     setInterval(async () => {
@@ -120,37 +100,55 @@ module.exports = {
       );
     }, 1000 * 60 * 5);
 
-    // Bann Liste
     setInterval(async () => {
-      const server = await client.guilds.fetch("815919809379172354");
-      async function getMemberList(server, roleID) {
-        var list = [];
-        const role = await server.roles.cache.find((r) => r.id === roleID);
-        const rolemember = role.members;
+  try {
+    const server = await client.guilds.fetch("815919809379172354");
 
-        rolemember.forEach(async (member) => {
-          try {
-            const banData = await bandb.findOne({ user: member.id });
+    async function getMemberList(server, roleID) {
+      const list = [];
+      const role = server.roles.cache.get(roleID);
+      if (!role) return list;
+
+      for (const member of role.members.values()) {
+        try {
+          const banData = await bandb.findOne({ user: member.id });
+          if (banData) {
             list.push(`${member} - ${member.user.username} (\`${banData.reason}\`)`);
-          } catch (error) {}
-        });
-        return list;
+          } else {
+            list.push(`${member} - ${member.user.username} (\`Kein Grund angegeben\`)`);
+          }
+        } catch (error) {
+          console.error(`Fehler bei Ban-Daten für ${member.id}:`, error);
+        }
       }
+      return list;
+    }
 
-      const gebannt = await server.roles.cache.get("886989738244964362");
-      const roleCountg = gebannt.members.size;
+    const gebannt = server.roles.cache.get("886989738244964362");
+    if (!gebannt) return console.log("Rolle für Gebannte nicht gefunden.");
 
-      const bans = await getMemberList(server, gebannt.id);
-      const channel = await server.channels.fetch("1217020305671983205");
-      const messages = await channel.messages.fetch();
-      const message = await messages.first();
-      const bannembed = new EmbedBuilder()
-        .setTitle("Information zu den Gebannten Nutzern")
-        .setDescription(`Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`)\n\n ${bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden."}`)
-        .setColor("Red");
+    const bans = await getMemberList(server, gebannt.id);
 
-      await message.edit({ embeds: [bannembed] });
-    }, 30000);
+    const channel = await server.channels.fetch("1217020305671983205");
+    if (!channel) return console.log("Kanal nicht gefunden.");
+
+    const messages = await channel.messages.fetch({ limit: 1 });
+    const message = messages.first();
+    if (!message) return console.log("Keine Nachricht gefunden zum Bearbeiten.");
+
+    const bannembed = new EmbedBuilder()
+      .setTitle("Information zu den Gebannten Nutzern")
+      .setDescription(
+        `Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`)\n\n` +
+        (bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden.")
+      )
+      .setColor("Red");
+
+    await message.edit({ embeds: [bannembed] });
+  } catch (error) {
+    console.error("Fehler im Bann-Update:", error);
+  }
+}, 30000);
 
     // Globale Variablen zum Speichern von Kanal- und Nachrichten-IDs
     let lastChannelId = null;
