@@ -25,7 +25,7 @@ module.exports = {
         await userData.deleteOne()
 
         // Invite System
-        await User.findOneAndUpdate(
+        await userData.findOneAndUpdate(
             { userID: inviterId },
             { $inc: { 'invites.left': 1 } }
         );
