@@ -37,7 +37,7 @@ module.exports = {
                 : '`Nicht auf dem Server`';
 
             // Ban-Status und Grund ermitteln
-            const banData = await getBanStatus(interaction, user.id, member, banReason);
+            const banData = await getBanStatus(interaction, user.id, member);
 
             // Anzahl Timeouts und Warnungen (0 als Fallback)
             const [timeoutCount, warnCount] = await Promise.all([
@@ -86,7 +86,7 @@ module.exports = {
         } catch (error) {
             console.error('Fehler beim Abrufen der Benutzerdaten:', error);
             await interaction.reply({
-                content: '> ❌ Ein Fehler ist beim Abrufen der Benutzerdaten aufgetreten.',
+                content: '> `❌` » Ein Fehler ist beim Abrufen der Benutzerdaten aufgetreten.',
                 ephemeral: true
             });
         }
