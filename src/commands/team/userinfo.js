@@ -34,20 +34,18 @@ module.exports = {
                 ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
                 : '`Nicht auf dem Server`';
 
-            // ⛔ Bann-Status prüfen
+            // Bannstatus ermitteln
             const banData = await getBanStatus(interaction, user.id, member);
 
-            // 📊 Moderationsdaten abrufen
+            // Timeout- und Warnanzahl mit Fallback auf 0
             const [timeoutCount, warnCount] = await Promise.all([
-                Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }),
-                Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id })
+                Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }).catch(() => 0),
+                Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }).catch(() => 0)
             ]);
 
-            // 🟢 oder 🔴 Statusfarbe + Emoji
             const banColor = banData.banned ? 0xED4245 : 0x57F287;
             const banEmoji = banData.banned ? '`🔴`' : '`🟢`';
 
-            // 📎 Embed aufbauen
             const embed = new EmbedBuilder()
                 .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
                 .setColor(banColor)
@@ -63,13 +61,13 @@ module.exports = {
                     `**\`🔒\` Moderation**\n` +
                     `> \`⛔\` » Bannstatus: ${banEmoji} ${banData.banned ? '**Gebannt**' : 'Nicht gebannt'}\n` +
                     `${banData.banned ? `> \`📄\` » Grund: \`${banData.reason}\`\n` : ''}` +
-                    `> \`🔇\` » Timeouts: \`${timeoutCount || 0}\`\n` +
-                    `> \`❗\` » Warnungen: \`${warnCount || 0}\``
+                    `> \`🔇\` » Timeouts: \`${timeoutCount}\`\n` +
+                    `> \`❗\` » Warnungen: \`${warnCount}\``
                 )
                 .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                 .setTimestamp();
 
-            // 🎛️ Komponenten (Button nur bei Bann)
+            // Button nur anzeigen, wenn gebannt
             const components = banData.banned ? [
                 new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
@@ -79,7 +77,6 @@ module.exports = {
                 )
             ] : [];
 
-            // ✅ Antwort senden
             await interaction.reply({ embeds: [embed], components, ephemeral: true });
 
         } catch (err) {
@@ -92,19 +89,23 @@ module.exports = {
     }
 };
 
-// 🔍 Bannstatus prüfen (DB & Discord)
+/**
+ * Prüft, ob der User gebannt ist, und liefert Bannstatus plus Grund.
+ * Prüft DB, Discord-Ban und Rolle.
+ */
 async function getBanStatus(interaction, userId, member) {
     try {
         const userData = await bandb.findOne({ userId });
 
         if (userData?.ban) {
+            // Bann aus DB mit Grund
             return {
                 banned: true,
-                reason: userData.ban.reason || 'Keine Angabe'
+                reason: userData.ban.reason?.trim() || 'Keine Angabe'
             };
         }
 
-        // Prüfen, ob User per Discord-Ban gebannt ist
+        // Discord Bann prüfen
         const banInfo = await interaction.guild.bans.fetch(userId).catch(err => {
             if (err.code !== 10026) console.error('Bann-Fehler:', err);
             return null;
@@ -113,22 +114,22 @@ async function getBanStatus(interaction, userId, member) {
         if (banInfo) {
             return {
                 banned: true,
-                reason: banInfo.reason || 'Keine Angabe'
+                reason: banInfo.reason?.trim() || 'Keine Angabe'
             };
         }
 
-        // Rolle prüfen, wenn keine Ban-Daten gefunden
+        // Rolle prüfen als letzten Schritt
         if (member?.roles.cache.has(BANNED_ROLE_ID)) {
             return {
                 banned: true,
                 reason: 'Keine Angabe'
             };
         }
-
     } catch (err) {
         console.error('Fehler beim Banncheck:', err);
     }
 
+    // Nicht gebannt
     return {
         banned: false,
         reason: 'Nicht gebannt'

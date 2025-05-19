@@ -452,7 +452,7 @@ module.exports = {
             const targetId = interaction.customId.split('_')[1];
 
             if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-                return interaction.reply({ content: '❌ Du hast keine Berechtigung dazu.', ephemeral: true });
+                return interaction.reply({ content: '> `❌` » Du hast keine Berechtigung dazu.', ephemeral: true });
             }
 
             const modal = new ModalBuilder()
@@ -488,7 +488,7 @@ module.exports = {
             await userData.save();
 
             await interaction.reply({
-                content: `✅ Ban-Grund für <@${userId}> wurde aktualisiert:\n> \`${newReason}\``,
+                content: `> \`✅\` Ban-Grund für <@${userId}> wurde aktualisiert:\n> \`${newReason}\``,
                 ephemeral: true
             });
         }
