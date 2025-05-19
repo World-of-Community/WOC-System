@@ -97,7 +97,7 @@ module.exports = {
 async function getBanStatus(interaction, userId, member) {
     try {
         // Datenbank-Check
-        const userData = await bandb.findOne({ user: userId });
+        const userData = await bandb.findOne({ userId: userId });
         if (userData?.ban) {
             return {
                 banned: true,
