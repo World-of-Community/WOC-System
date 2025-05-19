@@ -446,6 +446,52 @@ module.exports = {
             });
         }
 
+        // Button: Ban-Grund ändern
+        if (interaction.isButton() && interaction.customId.startsWith('editBanReason_')) {
+            const targetId = interaction.customId.split('_')[1];
+
+            if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
+                return interaction.reply({ content: '❌ Du hast keine Berechtigung dazu.', ephemeral: true });
+            }
+
+            const modal = new ModalBuilder()
+                .setCustomId(`submitBanReason_${targetId}`)
+                .setTitle('📝 Bann-Grund ändern');
+
+            const input = new TextInputBuilder()
+                .setCustomId('reason')
+                .setLabel('Neuer Bann-Grund')
+                .setStyle(TextInputStyle.Paragraph)
+                .setPlaceholder('Beispiel: Regelverstoß: Spam/Beleidigung')
+                .setRequired(true);
+
+            const row = new ActionRowBuilder().addComponents(input);
+            modal.addComponents(row);
+
+            await interaction.showModal(modal);
+        }
+
+        // Modal-Auswertung
+        if (interaction.isModalSubmit() && interaction.customId.startsWith('submitBanReason_')) {
+            const userId = interaction.customId.split('_')[1];
+            const newReason = interaction.fields.getTextInputValue('reason');
+
+            let userData = await bandb.findOne({ userId });
+            if (!userData) userData = new bandb({ userId });
+
+            userData.ban = {
+                reason: newReason,
+                date: new Date(),
+            };
+
+            await userData.save();
+
+            await interaction.reply({
+                content: `✅ Ban-Grund für <@${userId}> wurde aktualisiert:\n> \`${newReason}\``,
+                ephemeral: true
+            });
+        }
+
         if (interaction.isButton() && interaction.customId === 'create_feedback_ticket') {
             const feedbackModal = new ModalBuilder()
                 .setTitle('Feedback einreichen')
