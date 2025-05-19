@@ -132,7 +132,7 @@ async function runBanUpdate() {
             list.push(`${member} - ${member.user.username} (\`Kein Grund angegeben\`)`);
           }
         } catch (error) {
-          console.error(`Fehler bei Ban-Daten für ${userId}:`, error);
+          console.error(`Fehler bei Ban-Daten für ${member.id}:`, error);
         }
       }
       return list;
