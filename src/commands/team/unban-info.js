@@ -39,8 +39,7 @@ module.exports = {
           `**Lieber Nutzer,**\n\n` +
           `du hast jetzt die Möglichkeit einen Antrag auf **Entbannung** zu stellen.\n` +
           `Bitte beachte dabei unbedingt unsere **inhaltlichen Kriterien**, welche du vor der Ticketerstellung in ⁠<#819555839362072606> bestätigt hast.\n\n` +
-          `Bitte sende uns bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) einen Antrag auf Entbannung zu,\n` +
-          `ansonsten werden wir diesen **automatisch ablehnen**.`
+          `Bitte sende uns bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) einen Antrag auf Entbannung zu, ansonsten werden wir diesen automatisch ablehnen.`
         )
         .setColor('Orange')
         .setFooter({ text: interaction.guild.name, iconURL: interaction.client.user.displayAvatarURL() })
