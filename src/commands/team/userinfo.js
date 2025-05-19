@@ -1,11 +1,4 @@
-const {
-    SlashCommandBuilder,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle
-} = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 const Timeout = require('../../../Datenbank/timeoutdb');
 const Warn = require('../../../Datenbank/warndb');
@@ -95,13 +88,14 @@ module.exports = {
  */
 async function getBanStatus(interaction, userId, member) {
     try {
-        const userData = await bandb.findOne({ userId });
+        // Suche nach Ban-Eintrag in DB (user: userId, nicht userId: userId)
+        const userData = await bandb.findOne({ user: userId });
 
-        if (userData?.ban) {
-            // Bann aus DB mit Grund
+        if (userData) {
+            // Bann aus DB mit Grund (reason liegt direkt in userData)
             return {
                 banned: true,
-                reason: userData.ban.reason?.trim() || 'Keine Angabe'
+                reason: userData.reason?.trim() || 'Keine Angabe'
             };
         }
 
