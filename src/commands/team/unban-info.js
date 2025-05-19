@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,7 +19,8 @@ module.exports = {
         .setRequired(true)
         .setMinValue(1)
         .setMaxValue(30)
-    ),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const typ = interaction.options.getString('typ');
