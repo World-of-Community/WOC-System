@@ -56,7 +56,7 @@ module.exports = {
 
     const InviteEmbed = new EmbedBuilder()
       .setTitle('📨 Einladungen aktualisiert')
-      .setDescription(`> \`👤\` » Benutzer: ${user} (\`${user.id}\`)\n> \`📩\` » Normale Einladungen (jetzt): **${joinsCount}**\n> \`🎁\` » Bonus-Einladungen (jetzt): **${bonusCount}**\n> > \`❌\` » Verlorene Einladungen (jetzt): **${leftCount}**\n> \`📊\` » Gesamt-Einladungen: **${total}**`)
+      .setDescription(`> \`👤\` » Benutzer: ${user} (\`${user.id}\`)\n> \`📩\` » Normale Einladungen (jetzt): **${joinsCount}**\n> \`🎁\` » Bonus-Einladungen (jetzt): **${bonusCount}**\n> \`❌\` » Verlorene Einladungen (jetzt): **${leftCount}**\n> \`📊\` » Gesamt-Einladungen: **${total}**`)
       .setColor('Blurple')
       .setFooter({ text: `Aktualisiert von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
       .setTimestamp();

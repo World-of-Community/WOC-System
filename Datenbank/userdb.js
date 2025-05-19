@@ -88,19 +88,10 @@ const userSchema = new mongoose.Schema({
     },
     
     invites: {
-        invites: {
-            type: Number,
-            default: 0
-        },
-        left: {
-            type: Number,
-            default: 0
-        },
-        bonus: {
-            type: Number,
-            default: 0
-        }
-    },
+    joins: { type: Number, default: 0 },
+    bonus: { type: Number, default: 0 },
+    left: { type: Number, default: 0 }
+  },
 });
 
 module.exports = mongoose.model('user-data', userSchema)
