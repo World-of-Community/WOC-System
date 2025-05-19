@@ -13,7 +13,7 @@ module.exports = {
     .addIntegerOption(option =>
       option.setName('joins')
         .setDescription('Wie viele normale Einladungen sollen hinzugefügt oder entfernt werden? (positiv oder negativ)')
-        .setRequired(true)
+        .setRequired(false)
     )
     .addIntegerOption(option =>
       option.setName('bonus')
