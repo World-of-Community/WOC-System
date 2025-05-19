@@ -4,59 +4,63 @@ const userdb = require("../../../Datenbank/userdb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('invites-add')
-    .setDescription('Fügt einem Benutzer manuell Einladungen hinzu')
+    .setDescription('Fügt einem Benutzer manuell Einladungen hinzu oder entfernt sie')
     .addUserOption(option =>
       option.setName('user')
-        .setDescription('Der Benutzer, dem du Einladungen hinzufügen willst')
+        .setDescription('Der Benutzer, dem du Einladungen hinzufügen oder entfernen willst')
         .setRequired(true)
     )
     .addIntegerOption(option =>
       option.setName('joins')
-        .setDescription('Wie viele normale Einladungen sollen hinzugefügt werden? (positiv oder negativ)')
+        .setDescription('Wie viele normale Einladungen sollen hinzugefügt oder entfernt werden? (positiv oder negativ)')
         .setRequired(true)
     )
     .addIntegerOption(option =>
       option.setName('bonus')
-        .setDescription('Wie viele Bonus-Einladungen sollen hinzugefügt werden? (optional)')
+        .setDescription('Wie viele Bonus-Einladungen sollen hinzugefügt oder entfernt werden? (optional)')
         .setRequired(false)
     )
     .addIntegerOption(option =>
       option.setName('left')
-        .setDescription('Wie viele Einladungen sollen abgezogen werden? (optional)')
+        .setDescription('Wie viele Einladungen sollen als "verloren" hinzugefügt oder entfernt werden? (optional)')
         .setRequired(false)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const user = interaction.options.getUser('user');
-    const joins = interaction.options.getInteger('joins'); // Kann auch negativ sein, um abzuziehen
-    const bonus = interaction.options.getInteger('bonus') || 0;
-    const left = interaction.options.getInteger('left') || 0;
+    const joinsChange = interaction.options.getInteger('joins'); // positiv oder negativ
+    const bonusChange = interaction.options.getInteger('bonus') || 0;
+    const leftChange = interaction.options.getInteger('left') || 0;
 
-    // Update in der Datenbank: joins, bonus, left erhöhen/vermindern
+    // Aktuelle Daten holen
+    const userData = await userdb.findOne({ userID: user.id }) || {
+      invites: { joins: 0, bonus: 0, left: 0 }
+    };
+
+    // Neue Werte berechnen und nicht unter 0 fallen lassen
+    const newJoins = Math.max(0, (userData.invites.joins || 0) + joinsChange);
+    const newBonus = Math.max(0, (userData.invites.bonus || 0) + bonusChange);
+    const newLeft = Math.max(0, (userData.invites.left || 0) + leftChange);
+
+    // Daten in DB updaten (überschreiben mit den neuen Werten)
     await userdb.findOneAndUpdate(
       { userID: user.id },
       {
-        $inc: {
-          'invites.joins': joins,
-          'invites.bonus': bonus,
-          'invites.left': left
+        $set: {
+          'invites.joins': newJoins,
+          'invites.bonus': newBonus,
+          'invites.left': newLeft
         }
       },
       { upsert: true }
     );
 
-    // Hol aktuellen Stand aus DB, um Gesamt anzeigen zu können
-    const userData = await userdb.findOne({ userID: user.id });
-
-    const joinsCount = userData?.invites?.joins || 0;
-    const bonusCount = userData?.invites?.bonus || 0;
-    const leftCount = userData?.invites?.left || 0;
-    const total = joinsCount + bonusCount - leftCount;
+    const total = newJoins + newBonus - newLeft;
 
     const InviteEmbed = new EmbedBuilder()
       .setTitle('📨 Einladungen aktualisiert')
-      .setDescription(`> \`👤\` » Benutzer: ${user} (\`${user.id}\`)\n> \`📩\` » Normale Einladungen (jetzt): **${joinsCount}**\n> \`🎁\` » Bonus-Einladungen (jetzt): **${bonusCount}**\n> \`❌\` » Verlorene Einladungen (jetzt): **${leftCount}**\n> \`📊\` » Gesamt-Einladungen: **${total}**`)
+      .setDescription(`> \`👤\` » Benutzer: ${user} (\`${user.id}\`)\n> \`📩\` » Normale Einladungen (jetzt): **${newJoins}**\n> \`🎁\` » Bonus-Einladungen (jetzt): **${newBonus}**\n> \`❌\` » Verlorene Einladungen (jetzt): **${newLeft}**\n> \`📊\` » Gesamt-Einladungen: **${total}**`)
       .setColor('Blurple')
       .setFooter({ text: `Aktualisiert von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
       .setTimestamp();
