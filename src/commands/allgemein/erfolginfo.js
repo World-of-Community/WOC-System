@@ -123,9 +123,9 @@ module.exports = {
       }
 
       listerfolge =
-        `\`💡〢 Informant\`: **${userData.erfolge?.informant ?? 0}** akzeptierte Ideen\n` +
-        `\`📢〢 Teil des Rats\`: **${userData.erfolge?.umfragen ?? 0}** Umfragen teilgenommen\n` +
-        `\`☘️〢 Glückspilz\`: **${userData.erfolge?.glueckspilz ?? 0}** Server-Events gewonnen`;
+        `\`💡〢 Informant\`: Hat **${userData.erfolge?.informant ?? 0}** akzeptierte Ideen\n` +
+        `\`📢〢 Teil des Rats\`: An **${userData.erfolge?.umfragen ?? 0}** Umfragen teilgenommen\n` +
+        `\`☘️〢 Glückspilz\`: Hat **${userData.erfolge?.glueckspilz ?? 0}** Server-Events gewonnen`;
     }
 
     // Embed bauen
