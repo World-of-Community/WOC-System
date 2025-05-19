@@ -94,22 +94,53 @@ module.exports = {
     // Preis zufällig aus den Levels 1 bis 5 auswählen
     if (subcommand === 'event') {
       const levels = ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'];
-      const randomLevel = levels[Math.floor(Math.random() * levels.length)];
-      const user = await EventDropAndUser.findOne({ userId: interaction.user.id });
-
-      // Gewinne speichern
-      if (!user) {
-        const newUser = new EventDropAndUser({
+      const gibLevel = Math.random() < 0.5; // 50 % Chance auf Level, 50 % auf Coins
+    
+      const nutzer = await EventDropAndUser.findOne({ userId: interaction.user.id });
+    
+      if (!nutzer) {
+        const neuerNutzer = new EventDropAndUser({
           userId: interaction.user.id,
-          eventDrops: [randomLevel],
+          eventDrops: [],
+          coins: 0
         });
-        await newUser.save();
+    
+        if (gibLevel) {
+          const zufälligesLevel = levels[Math.floor(Math.random() * levels.length)];
+          neuerNutzer.eventDrops.push(zufälligesLevel);
+          await neuerNutzer.save();
+          return interaction.reply({
+            content: `> \`🏆\` » Du hast **${zufälligesLevel}** gewonnen!`,
+            ephemeral: true
+          });
+        } else {
+          const zufälligeCoins = Math.floor(Math.random() * (5000 - 10 + 1)) + 10;
+          neuerNutzer.coins = zufälligeCoins;
+          await neuerNutzer.save();
+          return interaction.reply({
+            content: `> \`🪙\` » Du hast **${zufälligeCoins.toLocaleString('de-DE')} Coins** gewonnen!`,
+            ephemeral: true
+          });
+        }
       } else {
-        user.eventDrops.push(randomLevel);
-        await user.save();
+        if (gibLevel) {
+          const zufälligesLevel = levels[Math.floor(Math.random() * levels.length)];
+          nutzer.eventDrops.push(zufälligesLevel);
+          await nutzer.save();
+          return interaction.reply({
+            content: `> \`🏆\` » Du hast **${zufälligesLevel}** gewonnen!`,
+            ephemeral: true
+          });
+        } else {
+          const zufälligeCoins = Math.floor(Math.random() * (5000 - 10 + 1)) + 10;
+          nutzer.coins = (nutzer.coins || 0) + zufälligeCoins;
+          await nutzer.save();
+          return interaction.reply({
+            content: `> \`🪙\` » Du hast **${zufälligeCoins.toLocaleString('de-DE')} Coins** gewonnen!`,
+            ephemeral: true
+          });
+        }
       }
-
-      return interaction.reply({ content: `> \`🏆\` » Du hast **${randomLevel}** gewonnen!`, ephemeral: true });
     }
   },
 };
