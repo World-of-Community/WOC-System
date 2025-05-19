@@ -1,13 +1,17 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 const Timeout = require('../../../Datenbank/timeoutdb');
 const Warn = require('../../../Datenbank/warndb');
-const bandb = require('../../../Datenbank/bandb'); // Stelle sicher, dass dies die richtige Datenbank ist
+const bandb = require('../../../Datenbank/bandb');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('userinfo')
         .setDescription('» Rufe Informationen über einen User ab. 👤')
-        .addUserOption(option => option.setName("user").setDescription("» Wähle einen User aus").setRequired(true))
+        .addUserOption(option =>
+            option.setName("user")
+                .setDescription("» Wähle einen User aus")
+                .setRequired(true)
+        )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
@@ -15,71 +19,65 @@ module.exports = {
 
         try {
             const member = await interaction.guild.members.fetch(user.id).catch(() => null);
-            const createdAt = `<t:${Math.round(user.createdTimestamp / 1000)}>`;
-            const joinedAt = member?.joinedTimestamp ? `<t:${Math.round(member.joinedTimestamp / 1000)}>` : 'N/A';
+            const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
+            const joinedAt = member?.joinedTimestamp
+                ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
+                : '`Nicht auf dem Server`';
 
-            // ID der "Gebannt"-Rolle eintragen
             const BANNED_ROLE_ID = "886989738244964362";
-            
-            // Überprüfung, ob der User in der Datenbank gebannt ist
-            const userData = await bandb.findOne({ userId: user.id });
-            
+
+            // Bannstatus
             let banned = false;
-            let reason = 'Nicht gebannt';
-            
-            // Falls Bann in der DB gespeichert ist
+            let banReason = 'Nicht gebannt';
+
+            const userData = await bandb.findOne({ userId: user.id });
+
             if (userData?.ban) {
                 banned = true;
                 banReason = userData.ban.reason || 'Keine Angabe';
             } else {
                 try {
-                    // Überprüfung, ob der User per Discord-Ban gebannt ist
                     const banInfo = await interaction.guild.bans.fetch(user.id);
                     if (banInfo) {
                         banned = true;
                         banReason = banInfo.reason || 'Keine Angabe';
                     }
                 } catch (err) {
-                    if (err.code !== 10026) { // Fehler 10026 ignorieren (User nicht gebannt)
+                    if (err.code !== 10026) {
                         console.error('Fehler beim Abrufen der Bann-Informationen:', err);
                     }
                 }
             }
-            
-            // Überprüfung, ob der User die "Gebannt"-Rolle hat
+
             if (member?.roles.cache.has(BANNED_ROLE_ID)) {
                 banned = true;
-                banReason = '';
+                if (banReason === 'Nicht gebannt') banReason = 'Rolle "Gebannt" vorhanden';
             }
 
+            // Farbwahl & Symbol je nach Bannstatus
+            const banColor = banned ? 0xED4245 : 0x57F287; // Rot oder Grün
+            const banEmoji = banned ? '🔴' : '🟢';
+
+            // Timeout- & Warnzählung
             const timeoutCount = await Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
             const warnCount = await Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }) || 0;
 
-            const userEmbed = new EmbedBuilder()
-                .setTitle(`\`👤\` | Informationen über \`${member?.displayName || user.username}\``)
-                .setDescription(`
-                    **Account Informationen**
-                    > \`📌\` » Benutzername: ${user.username} (\`${user.id}\`)
-                    > \`📌\` » Anzeigename: ${member?.displayName || 'N/A'}
-                    
-                    > \`⏰\` » Account erstellt am: ${createdAt}
-                    > \`⏰\` » Beigetreten am: ${joinedAt}
-                
-                    **Server Informationen**
-                    > \`⛔\` » Gebannt: ${banned ? '**Ja** (`❗`)' : '**Nein** (`✅`)'} ${banned ? ` (Grund: \`${banReason}\`) ` : ''}
-                    > \`🔇\` » Timeouts: \`${timeoutCount}\`
-                    > \`❗\` » Warnungen: \`${warnCount}\`
-                `)                
-                .setColor('Blurple')
-                .setThumbnail(user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
-                .setFooter({ text: `${interaction.guild.name} | User Information`, iconURL: `${interaction.guild.iconURL()}` })
+            const embed = new EmbedBuilder()
+                .setTitle(`👤 Informationen über ${member?.displayName || user.username}`)
+                .setColor(banColor)
+                .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+                .setDescription(`**📌 Benutzerinformationen**\n> \`👤\` » Benutzername: \`${user.username}\`\n> \`🆔\` » Benutzer-ID: \`${user.id}\`\n> \`🏷️\` » Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n**⏰ Mitglied Seit**\n> \`📅\` » Erstellt: ${createdAt}\n> \`📅\` » Beigetreten: ${joinedAt}\n\n**🔒 Moderation**\n> \`⛔\` » Bannstatus: ${banEmoji} ${banned ? '**Gebannt**' : 'Nicht gebannt'}\n${banned ? `> \`📄\` » Grund: \`${banReason}\`` : ''}\n> \`🔇\` » Timeouts: \`${timeoutCount}\`\n> \`❗\` » Warnungen: \`${warnCount}\``)
+                .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                 .setTimestamp();
 
-            await interaction.reply({ embeds: [userEmbed], ephemeral: true });
+            await interaction.reply({ embeds: [embed], ephemeral: true });
 
         } catch (err) {
             console.error('Fehler beim Abrufen der Benutzerdaten:', err);
-            await interaction.reply({ content: '> `❌fi` » Ein Fehler ist aufgetreten beim Abrufen der Benutzerdaten.', ephemeral: true });
+            await interaction.reply({
+                content: '> `❌` » Ein Fehler ist aufgetreten beim Abrufen der Benutzerdaten.',
+                ephemeral: true
+            });
         }
     }
 };
