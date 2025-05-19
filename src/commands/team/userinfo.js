@@ -1,4 +1,14 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+    SlashCommandBuilder,
+    EmbedBuilder,
+    PermissionFlagsBits,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle,
+} = require("discord.js");
 
 const Timeout = require('../../../Datenbank/timeoutdb');
 const Warn = require('../../../Datenbank/warndb');
@@ -38,50 +48,6 @@ module.exports = {
 
             const banColor = banData.banned ? 0xED4245 : 0x57F287;
             const banEmoji = banData.banned ? '`🔴`' : '`🟢`';
-
-            async function getBanStatus(interaction, userId, member) {
-                try {
-                    // Suche nach Ban-Eintrag in DB (user: userId, nicht userId: userId)
-                    const userData = await bandb.findOne({ user: userId });
-            
-                    if (userData) {
-                        // Bann aus DB mit Grund (reason liegt direkt in userData)
-                        return {
-                            banned: true,
-                            reason: userData.reason?.trim() || 'Keine Angabe'
-                        };
-                    }
-            
-                    // Discord Bann prüfen
-                    const banInfo = await interaction.guild.bans.fetch(userId).catch(err => {
-                        if (err.code !== 10026) console.error('Bann-Fehler:', err);
-                        return null;
-                    });
-            
-                    if (banInfo) {
-                        return {
-                            banned: true,
-                            reason: banInfo.reason?.trim() || 'Keine Angabe'
-                        };
-                    }
-            
-                    // Rolle prüfen als letzten Schritt
-                    if (member?.roles.cache.has(BANNED_ROLE_ID)) {
-                        return {
-                            banned: true,
-                            reason: 'Keine Angabe'
-                        };
-                    }
-                } catch (err) {
-                    console.error('Fehler beim Banncheck:', err);
-                }
-            
-                // Nicht gebannt
-                return {
-                    banned: false,
-                    reason: 'Nicht gebannt'
-                };
-            }
 
             const embed = new EmbedBuilder()
                 .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
@@ -125,3 +91,42 @@ module.exports = {
         }
     }
 };
+
+async function getBanStatus(interaction, userId, member) {
+    try {
+        const userData = await bandb.findOne({ user: userId });
+
+        if (userData?.ban) {
+            return {
+                banned: true,
+                reason: userData.ban.reason?.trim() || 'Keine Angabe'
+            };
+        }
+
+        const banInfo = await interaction.guild.bans.fetch(userId).catch(err => {
+            if (err.code !== 10026) console.error('Bann-Fehler:', err);
+            return null;
+        });
+
+        if (banInfo) {
+            return {
+                banned: true,
+                reason: banInfo.reason?.trim() || 'Keine Angabe'
+            };
+        }
+
+        if (member?.roles.cache.has(BANNED_ROLE_ID)) {
+            return {
+                banned: true,
+                reason: 'Keine Angabe'
+            };
+        }
+    } catch (err) {
+        console.error('Fehler beim Banncheck:', err);
+    }
+
+    return {
+        banned: false,
+        reason: 'Nicht gebannt'
+    };
+}
