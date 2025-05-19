@@ -164,11 +164,6 @@ module.exports = {
         };
 
         // Invite System
-        //await userdb.findOneAndUpdate(
-        //    { userID: member.id },
-        //    { $inc: { 'invites.bonus': 1 } }
-        //);
-
         const invites = userData.invites || { joins: 0, left: 0, bonus: 0 };
         const inviteJoins = invites.joins || 0;
         const inviteBonus = invites.bonus || 0;
