@@ -58,7 +58,7 @@ module.exports = {
                     `**\`⏰\` Mitglied Seit**\n` +
                     `> \`📅\` » Erstellt: ${createdAt}\n` +
                     `> \`📅\` » Beigetreten: ${joinedAt}\n\n` +
-                    `**\`🔒\` Moderation**\n` +
+                    `**\`👮\` Moderation**\n` +
                     `> \`⛔\` » Bannstatus: ${banEmoji} ${banData.banned ? '**Gebannt**' : 'Nicht gebannt'}\n` +
                     `${banData.banned ? `> \`📄\` » Grund: \`${banData.reason}\`\n` : ''}` +
                     `> \`🔇\` » Timeouts: \`${timeoutCount}\`\n` +
