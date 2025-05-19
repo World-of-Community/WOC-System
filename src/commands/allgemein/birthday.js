@@ -196,7 +196,7 @@ module.exports = {
 
             // Trennlinie, wenn Monatswechsel von hoch zu niedrig (z.B. 12 → 1)
             if (previousMonth !== null && monat < previousMonth) {
-                description += '\n──────────────\n\n';
+                description += '\n──────────────\n';
             }
             previousMonth = monat;
 
