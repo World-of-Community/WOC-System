@@ -130,11 +130,11 @@ module.exports = {
 
     // Embed bauen
     const ErfolgEmbed = new EmbedBuilder()
-      .setTitle(`${targetUser.username}'s Fortschritt`)
+      .setTitle(`\`✨\` × ${targetUser.username}'s Fortschritt`)
       .setDescription(
         `<:PfeilBlau:1119711275014955080> Mit **Erfolgen** kannst du **vor deinen Freunden** angeben und hast die Chance, in unserem Server **einzigartige Ränge freizuschalten!**\n` +
         `<:Pfeil:1119709908540076124> **Mehr Infos:** <#872063101640532008>\n\n` +
-        `> **WIE SIEHT MEIN FORTSCHRITT AUS?**\n` +
+        `> \`🌍\` × **WIE SIEHT MEIN FORTSCHRITT AUS?**\n` +
         `<:PfeilBlau:1119711275014955080> **Beachte:** du kannst in diesem Befehl nur deinen Fortschritt von allen Erfolgen sehen, welche gelevelt werden können.\n\n` +
         `${listerfolge}\n\n` +
         `> \`❓\` **- BEI MIR STEHT 0 - WARUM?**\n` +
