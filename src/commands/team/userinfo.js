@@ -5,9 +5,6 @@ const {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    ModalBuilder,
-    TextInputBuilder,
-    TextInputStyle,
 } = require("discord.js");
 
 const Timeout = require('../../../Datenbank/timeoutdb');
@@ -32,45 +29,49 @@ module.exports = {
 
         try {
             const member = await interaction.guild.members.fetch(user.id).catch(() => null);
+
+            // Zeitstempel formatieren
             const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
             const joinedAt = member?.joinedTimestamp
                 ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
                 : '`Nicht auf dem Server`';
 
-            // Bannstatus ermitteln
+            // Ban-Status und Grund ermitteln
             const banData = await getBanStatus(interaction, user.id, member);
 
-            // Timeout- und Warnanzahl mit Fallback auf 0
+            // Anzahl Timeouts und Warnungen (0 als Fallback)
             const [timeoutCount, warnCount] = await Promise.all([
                 Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }).catch(() => 0),
                 Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }).catch(() => 0)
             ]);
 
+            // Embed-Farben und Emoji je nach Ban-Status
             const banColor = banData.banned ? 0xED4245 : 0x57F287;
-            const banEmoji = banData.banned ? '`🔴`' : '`🟢`';
+            const banEmoji = banData.banned ? '🔴' : '🟢';
 
+            // Embed bauen
             const embed = new EmbedBuilder()
-                .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
+                .setTitle(`👤 Informationen über ${member?.displayName || user.username}`)
                 .setColor(banColor)
                 .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
                 .setDescription(
-                    `**\`📌\` Benutzerinformationen**\n` +
-                    `> \`👤\` » Benutzername: \`${user.username}\`\n` +
-                    `> \`🆔\` » Benutzer-ID: \`${user.id}\`\n` +
-                    `> \`🏷️\` » Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n` +
-                    `**\`⏰\` Mitglied Seit**\n` +
-                    `> \`📅\` » Erstellt: ${createdAt}\n` +
-                    `> \`📅\` » Beigetreten: ${joinedAt}\n\n` +
-                    `**\`👮\` Moderation**\n` +
-                    `> \`⛔\` » Bannstatus: ${banEmoji} ${banData.banned ? '**Gebannt**' : 'Nicht gebannt'}\n` +
-                    `${banData.banned ? `> \`📄\` » Grund: \`${banData.reason}\`\n` : ''}` +
-                    `> \`🔇\` » Timeouts: \`${timeoutCount}\`\n` +
-                    `> \`❗\` » Warnungen: \`${warnCount}\``
+                    `**📌 Benutzerinformationen**\n` +
+                    `> 👤 Benutzername: \`${user.username}\`\n` +
+                    `> 🆔 Benutzer-ID: \`${user.id}\`\n` +
+                    `> 🏷️ Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n` +
+                    `**⏰ Mitglied Seit**\n` +
+                    `> 📅 Erstellt: ${createdAt}\n` +
+                    `> 📅 Beigetreten: ${joinedAt}\n\n` +
+                    `**👮 Moderation**\n` +
+                    `> ⛔ Bannstatus: ${banEmoji} ${banData.banned ? '**Gebannt**' : 'Nicht gebannt'}\n` +
+                    (banData.banned ? `> 📄 Grund: \`${banData.reason}\`\n` : '') +
+                    `> 🔇 Timeouts: \`${timeoutCount}\`\n` +
+                    `> ❗ Warnungen: \`${warnCount}\``
                 )
                 .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                 .setTimestamp();
 
-            // Button nur anzeigen, wenn gebannt
+            // Button nur wenn gebannt (optional, falls du das möchtest)
             const components = banData.banned ? [
                 new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
@@ -82,43 +83,45 @@ module.exports = {
 
             await interaction.reply({ embeds: [embed], components, ephemeral: true });
 
-        } catch (err) {
-            console.error('Fehler beim Abrufen der Benutzerdaten:', err);
+        } catch (error) {
+            console.error('Fehler beim Abrufen der Benutzerdaten:', error);
             await interaction.reply({
-                content: '> `❌` » Ein Fehler ist aufgetreten beim Abrufen der Benutzerdaten.',
+                content: '> ❌ Ein Fehler ist beim Abrufen der Benutzerdaten aufgetreten.',
                 ephemeral: true
             });
         }
     }
 };
 
+// Funktion zur Ermittlung des Ban-Status & Ban-Grunds
 async function getBanStatus(interaction, userId, member) {
     try {
+        // Datenbank-Check
         const userData = await bandb.findOne({ user: userId });
-
         if (userData?.ban) {
             return {
                 banned: true,
-                reason: userData.ban.reason?.trim() || 'Keine Angabe'
+                reason: userData.ban.reason?.trim() || 'Keine Angabe',
             };
         }
 
+        // Server-Ban-Check
         const banInfo = await interaction.guild.bans.fetch(userId).catch(err => {
             if (err.code !== 10026) console.error('Bann-Fehler:', err);
             return null;
         });
-
         if (banInfo) {
             return {
                 banned: true,
-                reason: banInfo.reason?.trim() || 'Keine Angabe'
+                reason: banInfo.reason?.trim() || 'Keine Angabe',
             };
         }
 
+        // Check ob User Rolle "Banned" hat
         if (member?.roles.cache.has(BANNED_ROLE_ID)) {
             return {
                 banned: true,
-                reason: 'Keine Angabe'
+                reason: 'Keine Angabe',
             };
         }
     } catch (err) {
@@ -127,6 +130,6 @@ async function getBanStatus(interaction, userId, member) {
 
     return {
         banned: false,
-        reason: 'Nicht gebannt'
+        reason: 'Nicht gebannt',
     };
 }
