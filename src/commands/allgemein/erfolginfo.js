@@ -91,6 +91,6 @@ module.exports = {
       embed.setDescription('❌ Dieser Benutzer hat aktuell keine **Rollen-Erfolge**.');
     }
 
-    await interaction.reply({ embeds: [embed], ephemeral: false });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 };
