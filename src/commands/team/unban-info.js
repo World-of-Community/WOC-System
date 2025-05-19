@@ -36,9 +36,9 @@ module.exports = {
       embed = new EmbedBuilder()
         .setTitle('`🟠` Statusupdate – Entbannung')
         .setDescription(
-          `**Lieber Nutzer,**\n\n` +
-          `du hast jetzt die Möglichkeit einen Antrag auf **Entbannung** zu stellen.\n` +
-          `Bitte beachte dabei unbedingt unsere **inhaltlichen Kriterien**, welche du vor der Ticketerstellung in ⁠<#819555839362072606> bestätigt hast.\n\n` +
+          `Lieber Nutzer,\n\n` +
+          `du hast jetzt die Möglichkeit einen Antrag auf Entbannung zu stellen.\n` +
+          `Bitte beachte dabei unbedingt unsere inhaltlichen Kriterien, welche du vor der Ticketerstellung in <#819555839362072606> bestätigt hast.\n\n` +
           `Bitte sende uns bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) einen Antrag auf Entbannung zu, ansonsten werden wir diesen automatisch ablehnen.`
         )
         .setColor('Orange')
@@ -49,9 +49,9 @@ module.exports = {
       embed = new EmbedBuilder()
         .setTitle('`❗` Wichtiger Hinweis')
         .setDescription(
-          `**Lieber Nutzer,**\n\n` +
-          `wir haben deinen Antrag geprüft und festgestellt, dass dieser **nicht unseren inhaltlichen Kriterien entspricht**.\n` +
-          `Du findest im Kanal ⁠<#819555839362072606> entsprechende Informationen und Vorgaben.\n\n` +
+          `Lieber Nutzer,\n\n` +
+          `wir haben deinen Antrag geprüft und festgestellt, dass dieser **nicht** unseren inhaltlichen Kriterien entspricht.\n` +
+          `Du findest im Kanal <#819555839362072606> entsprechende Informationen und Vorgaben.\n\n` +
           `Wir geben dir nun noch einmal die Gelegenheit, deinen Antrag bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) ` +
           `entsprechend überarbeitet erneut zu senden.`
         )
@@ -62,7 +62,7 @@ module.exports = {
     await interaction.channel.send({ embeds: [embed] });
 
     await interaction.reply({
-      content: `> Die Nachricht wurde erfolgreich im Kanal gesendet (Gültigkeit: ${dauer} Tage).`,
+      content: `> Die Nachricht wurde erfolgreich im Kanal gesendet (**Gültigkeit: ${dauer} Tage**).`,
       ephemeral: true
     });
   }
