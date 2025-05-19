@@ -35,7 +35,7 @@ module.exports = {
     ];
 
     // Daten aus der DB laden
-    let userData = await userDataModel.findOne({ userID: user.id });
+    let userData = await userdb.findOne({ userID: user.id });
     if (!userData) {
       userData = {
         erfolge: {
