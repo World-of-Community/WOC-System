@@ -173,6 +173,7 @@ module.exports = {
 
         let description = 'Hier sind die nächsten Geburtstage:\n\n';
 
+        // Nur auf Seite 1 den nächsten Geburtstag oben anzeigen
         if (page === 1 && birthdays.length > 0) {
             const next = birthdays[0];
             const formattedTag = next.birthday.tag.toString().padStart(2, '0');
@@ -186,10 +187,18 @@ module.exports = {
 
         const pageBirthdays = birthdays.slice(startIndex, endIndex);
 
+        let previousMonth = null; // Für die Trennung der Jahre/Monate
+
         for (const birthday of pageBirthdays) {
             const { userID, birthday: { tag, monat, jahr } } = birthday;
             const member = interaction.guild.members.cache.get(userID);
             if (!member) continue;
+
+            // Trennlinie, wenn Monatswechsel von hoch zu niedrig (z.B. 12 → 1)
+            if (previousMonth !== null && monat < previousMonth) {
+                description += '\n──────────────\n\n';
+            }
+            previousMonth = monat;
 
             const formattedTag = tag.toString().padStart(2, '0');
             const formattedMonat = monat.toString().padStart(2, '0');
@@ -245,7 +254,8 @@ module.exports = {
     collector.on('end', () => {
         message.edit({ components: [] });
     });
-            }
+}
+
             //
             
 
