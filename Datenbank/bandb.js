@@ -6,7 +6,7 @@ const banSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    user: {
+    userId: {
         type: String,
         required: true,
     },
