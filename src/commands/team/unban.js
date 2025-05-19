@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
-const bandb = require("../../../Datenbank/bandb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,15 +15,47 @@ module.exports = {
             return interaction.reply({ content: '> `❌` » Der Benutzer wurde nicht gefunden.', ephemeral: true });
         }
 
-        const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
-        const thread = logChannel?.threads.cache.get("1269998219266490538");
+        // Log-Kanal und Thread IDs
+        const logChannelId = "1263436406655680513";
+        const threadId = "1269998219266490538";
 
-        if (!logChannel || !thread) {
-            return interaction.reply({ content: '> `❌` » Log-Kanal oder Thread konnte nicht gefunden werden.', ephemeral: true });
+        // Log-Kanal holen
+        const logChannel = interaction.guild.channels.cache.get(logChannelId);
+        if (!logChannel) {
+            return interaction.reply({ content: '> `❌` » Log-Kanal konnte nicht gefunden werden.', ephemeral: true });
+        }
+
+        // Thread versuchen aus Cache zu holen
+        let thread = logChannel.threads.cache.get(threadId);
+
+        // Wenn nicht im Cache, versuche ihn zu laden
+        if (!thread) {
+            try {
+                thread = await interaction.client.channels.fetch(threadId);
+            } catch (error) {
+                console.error('Thread konnte nicht geladen werden:', error);
+                return interaction.reply({ content: '> `❌` » Thread konnte nicht geladen werden.', ephemeral: true });
+            }
+        }
+
+        // Thread Status prüfen
+        if (thread.archived) {
+            return interaction.reply({ content: '> `❌` » Der Thread ist archiviert und kann keine Nachrichten empfangen.', ephemeral: true });
+        }
+        if (thread.locked) {
+            return interaction.reply({ content: '> `❌` » Der Thread ist gesperrt und kann keine Nachrichten empfangen.', ephemeral: true });
+        }
+
+        // Rechte des Bots im Thread prüfen
+        const botMember = interaction.guild.members.me;
+        const perms = thread.permissionsFor(botMember);
+
+        if (!perms || !perms.has("SendMessages")) {
+            return interaction.reply({ content: '> `❌` » Ich habe keine Rechte, um im Thread zu schreiben.', ephemeral: true });
         }
 
         try {
-            // Entbannen des Benutzers
+            // User entbannen
             await interaction.guild.members.unban(user.id);
 
             // Embed erstellen
@@ -35,11 +66,12 @@ module.exports = {
                 .setColor('Green')
                 .setFooter({ text: `©️ ${interaction.guild.name} | Unban-System`, iconURL: interaction.client.user.displayAvatarURL() });
 
-            // Loggen im Thread
+            // Embed im Thread senden
             await thread.send({ embeds: [unbanEmbed] });
 
-            // Antwort an Interaktionsaufrufer
+            // Erfolgsmeldung an den Interaktionsstarter
             await interaction.reply({ content: `> \`✅\` » ${user} wurde erfolgreich entbannt.`, ephemeral: true });
+
         } catch (error) {
             console.error("Fehler beim Entbannen:", error);
             return interaction.reply({ content: '> `❌` » Fehler beim Entbannen des Benutzers.', ephemeral: true });
