@@ -57,7 +57,7 @@ module.exports = {
 
                 const remindEmbed = new EmbedBuilder()
                     .setTitle('Du hast eine Erinnerung erstellt')
-                    .setDescription(`\`⏰\` » Ich werde dich <t:${timestamp}:R> an \`${reminder}\` erinnern.`)
+                    .setDescription(`\`⏰\` » Ich werde dich <t:${timestamp}:R> an ${reminder} erinnern.`)
                     .setColor('Blurple')
                     .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
                     .setTimestamp();

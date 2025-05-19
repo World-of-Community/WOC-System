@@ -82,6 +82,21 @@ const userSchema = new mongoose.Schema({
         },
     },
 
+    erfolge: {
+        informant: {
+            type: Number,
+            default: 0,
+        },
+        umfragen: {
+            type: Number,
+            default: 0,
+        },
+        glueckspilz: {
+            type: Number,
+            default: 0,
+        }
+    },
+
     firstMessage: {
         type: Boolean,
         default: false

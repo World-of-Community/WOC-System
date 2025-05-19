@@ -242,23 +242,27 @@ cron.schedule('00 00 * * *', async () => {
     // Nachricht wenn ein neues Türchen geöffnet werden kann
     cron.schedule('0 0 * * *', async () => {
         try {
-          const currentDate = new Date();
-          const channelId = '1312772215791685743'; // Adventskalender-Kanal-ID
-          const channel = await client.channels.fetch(channelId);
-  
-          if (!channel || !channel.isTextBased()) {
-            console.error('Kanal konnte nicht gefunden oder ist kein Textkanal.');
-            return;
-          }
-  
-          const reminderMessage = await channel.send({
-            content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`,
-          });
-  
-          // Nachricht nach 3 Minuten löschen
-          setTimeout(() => reminderMessage.delete(), 3 * 60 * 1000);
+            const currentDate = new Date();
+    
+            // Nur im Dezember ausführen
+            if (currentDate.getMonth() !== 11) return;
+    
+            const channelId = '1312772215791685743'; // Adventskalender-Kanal-ID
+            const channel = await client.channels.fetch(channelId);
+    
+            if (!channel || !channel.isTextBased()) {
+                console.error('Kanal konnte nicht gefunden oder ist kein Textkanal.');
+                return;
+            }
+    
+            const reminderMessage = await channel.send({
+                content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`,
+            });
+    
+            // Nachricht nach 3 Minuten löschen
+            setTimeout(() => reminderMessage.delete(), 3 * 60 * 1000);
         } catch (error) {
-          console.error('Fehler beim Senden der Nachricht:', error);
+            console.error('Fehler beim Senden der Nachricht:', error);
         }
     });
 
