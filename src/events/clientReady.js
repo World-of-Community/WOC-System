@@ -136,13 +136,21 @@ module.exports = {
     const message = messages.first();
     if (!message) return console.log("Keine Nachricht gefunden zum Bearbeiten.");
 
+    const currentTime = new Date().toLocaleDateString('de-DE', {
+            weekday: 'long',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+        });
+
     const bannembed = new EmbedBuilder()
       .setTitle("Information zu den Gebannten Nutzern")
       .setDescription(
         `Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`)\n\n` +
         (bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden.")
       )
-      .setColor("Red");
+      .setColor("Red")
+      .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
 
     await message.edit({ embeds: [bannembed] });
   } catch (error) {
