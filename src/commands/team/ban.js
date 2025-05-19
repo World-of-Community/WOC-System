@@ -70,7 +70,12 @@ module.exports = {
         }
 
         const durationMs = durationInput !== 'PERMANENT' ? ms(durationInput) : null;
-        const endTime = durationMs ? new Date(Date.now() + durationMs) : null;
+
+        // Dauer als Number speichern: -1 = Permanent
+        const durationToSave = durationMs !== null ? durationMs : -1;
+
+        const startTime = Date.now();
+        const endTime = durationToSave !== -1 ? startTime + durationToSave : null;
 
         try {
             await member.roles.add(banRole);
@@ -82,7 +87,7 @@ module.exports = {
 
         const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
         const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
-        const durationText = durationInput === 'PERMANENT' ? 'Permanent' : (durationMs ? ms(durationMs, { long: true }) : 'Unbekannt');
+        const durationText = durationToSave === -1 ? 'Permanent' : ms(durationToSave, { long: true });
 
         const banEmbed = new EmbedBuilder()
             .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
@@ -94,14 +99,15 @@ module.exports = {
         try {
             await new bandb({
                 creator: interaction.user.id,
-                user: member.id,
+                userId: member.id,
                 reason,
-                duration: durationInput === 'PERMANENT' ? 'PERMANENT' : durationMs,
-                startTime: new Date(),
-                endTime,
+                duration: durationToSave,
+                startTime: startTime,
+                endTime: endTime,
             }).save();
         } catch (err) {
-            return interaction.reply({ content: '> `❌` » Fehler beim Speichern des Banns in der Datenbank.', ephemeral: true });
+            console.error("Fehler beim Speichern des Banns in der Datenbank:", err);
+            return interaction.reply({ content: '> `❌` » Fehler beim Speichern des Banns in der Datenbank. Details in der Konsole.', ephemeral: true });
         }
 
         await thread.send({ embeds: [banEmbed] });

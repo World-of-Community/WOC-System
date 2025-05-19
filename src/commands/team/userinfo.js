@@ -37,7 +37,7 @@ module.exports = {
                 : '`Nicht auf dem Server`';
 
             // Ban-Status und Grund ermitteln
-            const banData = await getBanStatus(interaction, user.id, member);
+            const banData = await getBanStatus(interaction, user.id, member, banReason);
 
             // Anzahl Timeouts und Warnungen (0 als Fallback)
             const [timeoutCount, warnCount] = await Promise.all([
@@ -47,11 +47,11 @@ module.exports = {
 
             // Embed-Farben und Emoji je nach Ban-Status
             const banColor = banData.banned ? 0xED4245 : 0x57F287;
-            const banEmoji = banData.banned ? '🔴' : '🟢';
+            const banEmoji = banData.banned ? '`🔴`' : '`🟢`';
 
             // Embed bauen
             const embed = new EmbedBuilder()
-                .setTitle(`👤 Informationen über ${member?.displayName || user.username}`)
+                .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
                 .setColor(banColor)
                 .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
                 .setDescription(
