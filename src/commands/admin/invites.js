@@ -31,7 +31,6 @@ module.exports = {
       { userID: user.id },
       {
         $inc: {
-          'invites.total': amount + bonus,
           'invites.joins': amount,
           'invites.bonus': bonus
         }
@@ -39,9 +38,11 @@ module.exports = {
       { upsert: true }
     );
 
+    const total = amount + bonus;
+
     const InviteEmbed = new EmbedBuilder()
       .setTitle('📨 Einladungen hinzugefügt')
-      .setDescription(`> \`👤\` » Benutzer: ${user} (${user.id})\n> \`📩\` » Normale Einladungen: **${amount}**\n> \`🎁\` » Bonus-Einladungen: **${bonus}**\n> \`📊\` » Gesamt: **${amount + bonus}**`)
+      .setDescription(`> \`👤\` » Benutzer: ${user} (\`${user.id}\`)\n> \`📩\` » Normale Einladungen: **${amount}**\n> \`🎁\` » Bonus-Einladungen: **${bonus}**\n> \`📊\` » Gesamt: **${total}**`)
       .setColor('Blurple')
       .setFooter({ text: `Hinzugefügt von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
       .setTimestamp();
