@@ -41,14 +41,18 @@ module.exports = {
 
     async execute(interaction) {
         const member = interaction.options.getMember('user');
+        if (!member) {
+            return interaction.reply({ content: '> `❌` » Der Benutzer konnte nicht gefunden werden.', ephemeral: true });
+        }
+
+        if (!member.bannable) {
+            return interaction.reply({ content: '> `❌` » Ich kann diesen Benutzer nicht bannen.', ephemeral: true });
+        }
+
         const selectedReason = interaction.options.getString('grund');
         const customReason = interaction.options.getString('eigener-grund');
         const reason = customReason || selectedReason || 'Kein Grund angegeben';
         const durationInput = interaction.options.getString('dauer') || 'PERMANENT';
-
-        if (!member) {
-            return interaction.reply({ content: '> `❌` » Der Benutzer konnte nicht gefunden werden.', ephemeral: true });
-        }
 
         const banRole = interaction.guild.roles.cache.get("886989738244964362");
         const memberRole = interaction.guild.roles.cache.get("815920703067914290");
@@ -56,32 +60,37 @@ module.exports = {
         const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
         const thread = logChannel?.threads.cache.get("1269998219266490538");
 
-        if (!banRole || !memberRole || !newmemberRole || !thread) {
-            return interaction.reply({ content: '> `❌` » Rollen oder Log-Kanal konnten nicht gefunden werden.', ephemeral: true });
+        const missing = [];
+        if (!banRole) missing.push('Ban-Rolle');
+        if (!memberRole) missing.push('Mitglieder-Rolle');
+        if (!newmemberRole) missing.push('Neue Mitglieder-Rolle');
+        if (!thread) missing.push('Log-Thread');
+        if (missing.length > 0) {
+            return interaction.reply({ content: `> \`❌\` » Folgendes wurde nicht gefunden: ${missing.join(', ')}`, ephemeral: true });
         }
 
-        const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
-        const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
         const durationMs = durationInput !== 'PERMANENT' ? ms(durationInput) : null;
         const endTime = durationMs ? new Date(Date.now() + durationMs) : null;
 
-        // Rollenverwaltung
         try {
             await member.roles.add(banRole);
-            if (memberRole) await member.roles.remove(memberRole).catch(() => {});
-            if (newmemberRole) await member.roles.remove(newmemberRole).catch(() => {});
+            await member.roles.remove(memberRole).catch(() => { });
+            await member.roles.remove(newmemberRole).catch(() => { });
         } catch (err) {
             return interaction.reply({ content: '> `❌` » Fehler beim Zuweisen oder Entfernen von Rollen.', ephemeral: true });
         }
 
+        const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
+        const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
+        const durationText = durationInput === 'PERMANENT' ? 'Permanent' : (durationMs ? ms(durationMs, { long: true }) : 'Unbekannt');
+
         const banEmbed = new EmbedBuilder()
             .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
-            .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` **Benutzer Informationen:**\n> **Grund:** \`${reason}\`\n> **Dauer:** \`${durationInput === 'PERMANENT' ? 'Permanent' : ms(durationMs, { long: true })}\`\n> **Benutzername:** ${member.user.username} (\`${member.id}\`)\n> **Account erstellt am:** ${createdAt}\n> **Beigetreten am:** ${joinedAt}`)
+            .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` **Benutzer Informationen:**\n> **Grund:** \`${reason}\`\n> **Dauer:** \`${durationText}\`\n> **Benutzername:** ${member.user.tag} (\`${member.id}\`)\n> **Account erstellt am:** ${createdAt}\n> **Beigetreten am:** ${joinedAt}`)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
             .setColor('Red')
             .setFooter({ text: `© ${interaction.guild.name} | Bann-System`, iconURL: interaction.client.user.displayAvatarURL() });
 
-        // In DB speichern
         try {
             await new bandb({
                 creator: interaction.user.id,
