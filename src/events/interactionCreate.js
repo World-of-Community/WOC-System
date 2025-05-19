@@ -4,7 +4,9 @@ const config = require("../json/config.json")
 const vorschlagEmitter = require('../custom_events/vorschlag');
 const Advent = require("../../Datenbank/adventdb");
 const NewsStatus = require("../../Datenbank/newsdb");
-const bandb = require('../../Datenbank/bandb');
+const Timeout = require('../../../Datenbank/timeoutdb');
+const Warn = require('../../../Datenbank/warndb');
+const bandb = require('../../../Datenbank/bandb');
 
 // Belohnungen definieren
 const rewards = {
