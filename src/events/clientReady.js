@@ -125,7 +125,7 @@ async function runBanUpdate() {
 
       for (const member of role.members.values()) {
         try {
-          const banData = await bandb.findOne({ user: userId });
+          const banData = await bandb.findOne({ userId: user });
           if (banData) {
             list.push(`${member} - ${member.user.username} (\`${banData.reason}\`)`);
           } else {
