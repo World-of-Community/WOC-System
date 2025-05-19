@@ -3,7 +3,7 @@ const userdb = require("../../../Datenbank/userdb");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('invites-add')
+    .setName('invites-manage')
     .setDescription('Fügt einem Benutzer manuell Einladungen hinzu oder entfernt sie')
     .addUserOption(option =>
       option.setName('user')
