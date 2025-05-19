@@ -475,7 +475,7 @@ module.exports = {
             const newReason = interaction.fields.getTextInputValue('banReasonInput');
 
             // Datenbank aktualisieren
-            let userData = await bandb.findOne({ user: userId });
+            let userData = await bandb.findOne({ userId: userId });
             if (!userData) {
                 userData = new bandb({
                     user: userId,
