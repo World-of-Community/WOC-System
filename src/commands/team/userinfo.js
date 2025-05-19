@@ -55,18 +55,18 @@ module.exports = {
                 .setColor(banColor)
                 .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
                 .setDescription(
-                    `**📌 Benutzerinformationen**\n` +
-                    `> 👤 Benutzername: \`${user.username}\`\n` +
-                    `> 🆔 Benutzer-ID: \`${user.id}\`\n` +
-                    `> 🏷️ Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n` +
-                    `**⏰ Mitglied Seit**\n` +
-                    `> 📅 Erstellt: ${createdAt}\n` +
-                    `> 📅 Beigetreten: ${joinedAt}\n\n` +
-                    `**👮 Moderation**\n` +
-                    `> ⛔ Bannstatus: ${banEmoji} ${banData.banned ? '**Gebannt**' : 'Nicht gebannt'}\n` +
-                    (banData.banned ? `> 📄 Grund: \`${banData.reason}\`\n` : '') +
-                    `> 🔇 Timeouts: \`${timeoutCount}\`\n` +
-                    `> ❗ Warnungen: \`${warnCount}\``
+                    `**\`📌\` Benutzerinformationen**\n` +
+                    `> \`👤\` Benutzername: \`${user.username}\`\n` +
+                    `> \`🆔\` Benutzer-ID: \`${user.id}\`\n` +
+                    `> \`🏷️\` Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n` +
+                    `**\`⏰\` Mitglied Seit**\n` +
+                    `> \`📅\` Erstellt: ${createdAt}\n` +
+                    `> \`📅\` Beigetreten: ${joinedAt}\n\n` +
+                    `**\`👮\` Moderation**\n` +
+                    `> \`⛔\` Bannstatus: ${banEmoji} ${banData.banned ? '**Gebannt**' : 'Nicht gebannt'}\n` +
+                    (banData.banned ? `> \`📄\` Grund: \`${banData.reason}\`\n` : '') +
+                    `> \`🔇\` Timeouts: \`${timeoutCount}\`\n` +
+                    `> \`❗\` Warnungen: \`${warnCount}\``
                 )
                 .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                 .setTimestamp();
