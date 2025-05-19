@@ -150,7 +150,7 @@ module.exports = {
         (bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden.")
       )
       .setColor("Red")
-      .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
+      .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: guild.iconURL() });
 
     await message.edit({ embeds: [bannembed] });
   } catch (error) {
