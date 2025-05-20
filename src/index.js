@@ -728,7 +728,7 @@ async function checkAndSendFreeGames(channel, guild) {
     }
 }
 
-// Automatische Prüfung alle 30 Minuten
+// Automatische Prüfung alle 1 Minute
 setInterval(async () => {
     const channel = client.channels.cache.get('1332119668697202783'); // Dein Channel
     const guild = client.guilds.cache.get('815919809379172354'); // Deine Guild
@@ -737,7 +737,7 @@ setInterval(async () => {
     } else {
         console.log("Channel oder Guild nicht gefunden.");
     }
-}, 30 * 60 * 1000);
+}, 60 * 1000); // Alle 1 Minute
 
 // Werbung
 setInterval( async () => {
