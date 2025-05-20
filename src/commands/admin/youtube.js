@@ -14,12 +14,12 @@ module.exports = {
 
     async execute(interaction) {
         try {
-            const { embed, videoUrl } = await getYouTubeEmbed();
+            const { embed, videoUrl, videoId, channelName } = await getYouTubeEmbed();
 
             const row = createActionRow(videoUrl);
 
             const embedMessage = await interaction.channel.send({
-                content: `> <@&${YOUTUBE_ROLE_ID}> Hier ist das neuste YouTube-Video!`,
+                content: `> YouTube: https://www.youtube.com/@Red3405YT`,
                 embeds: [embed],
                 components: [row]
             });
@@ -39,10 +39,10 @@ module.exports = {
 
                     if (existing) {
                         await collection.deleteOne({ userId });
-                        await i.reply({ content: '> 🔕 Du hast YouTube-Benachrichtigungen **deaktiviert**.', ephemeral: true });
+                        await i.reply({ content: '> `🔕` Du hast YouTube-Benachrichtigungen **deaktiviert**.', ephemeral: true });
                     } else {
                         await collection.insertOne({ userId });
-                        await i.reply({ content: '> 🔔 Du hast YouTube-Benachrichtigungen **aktiviert**.', ephemeral: true });
+                        await i.reply({ content: '> `🔔` Du hast YouTube-Benachrichtigungen **aktiviert**.', ephemeral: true });
                     }
                 }
             });
@@ -50,11 +50,41 @@ module.exports = {
             // Embed alle 60 Sekunden aktualisieren
             setInterval(async () => {
                 try {
-                    const { embed: updatedEmbed, videoUrl } = await getYouTubeEmbed();
-                    const updatedRow = createActionRow(videoUrl);
+                    const { embed: updatedEmbed, videoUrl: updatedVideoUrl, videoId: updatedVideoId, channelName: updatedChannelName, isNewVideo, previousVideo } = await getYouTubeEmbed();
+
+                    const updatedRow = createActionRow(updatedVideoUrl);
+
+                    if (isNewVideo) {
+                        // Sende Nachricht für das neue Video
+                        const newVideoMessage = await interaction.channel.send({
+                            content: `> <@&${YOUTUBE_ROLE_ID}> Ein neues Video von **${updatedChannelName}** ist verfügbar!`,
+                            embeds: [updatedEmbed],
+                            components: [updatedRow]
+                        });
+
+                        // Erstelle Thread für das vorherige Video
+                        if (previousVideo) {
+                            const threadName = `Diskussion: ${previousVideo.title}`;
+                            const thread = await interaction.channel.threads.create({
+                                name: threadName,
+                                autoArchiveDuration: 60,
+                                reason: 'Diskussion zum vorherigen Video'
+                            });
+
+                            const previousEmbed = new EmbedBuilder()
+                                .setAuthor({ name: previousVideo.channelName || 'YouTube' })
+                                .setTitle(previousVideo.title || 'Vorheriges Video')
+                                .setDescription(previousVideo.description || 'Beschreibung nicht verfügbar.')
+                                .setColor('Red')
+                                .setImage(previousVideo.thumbnail || PLACEHOLDER_IMAGE)
+                                .setURL(previousVideo.url || 'https://www.youtube.com');
+
+                            await thread.send({ embeds: [previousEmbed] });
+                        }
+                    }
 
                     await embedMessage.edit({
-                        content: `> <@&${YOUTUBE_ROLE_ID}> Hier ist das neuste YouTube-Video!`,
+                        content: `> <@&${YOUTUBE_ROLE_ID}> Hier ist das neueste YouTube-Video!`,
                         embeds: [
                             updatedEmbed.setFooter({ text: 'Zuletzt aktualisiert:' }).setTimestamp()
                         ],
@@ -90,29 +120,42 @@ async function getYouTubeEmbed() {
 
             const videoId = latestVideo.id.videoId;
 
+            const videoData = {
+                title: latestVideo.snippet.title,
+                description: latestVideo.snippet.description,
+                url: `https://www.youtube.com/watch?v=${videoId}`,
+                thumbnail: latestVideo.snippet.thumbnails.medium.url,
+                channelName: latestVideo.snippet.channelTitle,
+                videoId: videoId
+            };
+
+            let isNewVideo = false;
+            let previousVideo = null;
+
             if (videoId !== lastVideoId) {
+                isNewVideo = true;
+
+                // Hole Daten des vorherigen Videos
+                if (lastVideoId) {
+                    const previousUrl = `https://www.googleapis.com/youtube/v3/videos?key=${YT_API_KEY}&id=${lastVideoId}&part=snippet`;
+                    const previousResponse = await axios.get(previousUrl);
+                    const previousVideoData = previousResponse.data.items[0];
+
+                    if (previousVideoData) {
+                        previousVideo = {
+                            title: previousVideoData.snippet.title,
+                            description: previousVideoData.snippet.description,
+                            url: `https://www.youtube.com/watch?v=${lastVideoId}`,
+                            thumbnail: previousVideoData.snippet.thumbnails.medium.url,
+                            channelName: previousVideoData.snippet.channelTitle
+                        };
+                    }
+                }
+
                 await collection.updateOne({ channelId }, { $set: { lastVideoId: videoId } });
-
-                const videoData = {
-                    title: latestVideo.snippet.title,
-                    description: latestVideo.snippet.description,
-                    url: `https://www.youtube.com/watch?v=${videoId}`,
-                    thumbnail: latestVideo.snippet.thumbnails.medium.url,
-                    channelName: latestVideo.snippet.channelTitle,
-                };
-
-                latestVideos.push(videoData);
-            } else {
-                const videoData = {
-                    title: latestVideo.snippet.title,
-                    description: latestVideo.snippet.description,
-                    url: `https://www.youtube.com/watch?v=${videoId}`,
-                    thumbnail: latestVideo.snippet.thumbnails.medium.url,
-                    channelName: latestVideo.snippet.channelTitle,
-                };
-
-                latestVideos.push(videoData);
             }
+
+            latestVideos.push({ ...videoData, isNewVideo, previousVideo });
         } catch (error) {
             console.error(`Fehler beim Abrufen der Videos von Kanal ${channelId}:`, error);
         }
@@ -126,7 +169,11 @@ async function getYouTubeEmbed() {
                 .setColor('Red')
                 .setImage(PLACEHOLDER_IMAGE)
                 .setURL('https://www.youtube.com'),
-            videoUrl: 'https://www.youtube.com'
+            videoUrl: 'https://www.youtube.com',
+            videoId: null,
+            channelName: null,
+            isNewVideo: false,
+            previousVideo: null
         };
     }
 
@@ -140,19 +187,26 @@ async function getYouTubeEmbed() {
         .setImage(video.thumbnail || PLACEHOLDER_IMAGE)
         .setURL(video.url || 'https://www.youtube.com');
 
-    return { embed, videoUrl: video.url };
+    return {
+        embed,
+        videoUrl: video.url,
+        videoId: video.videoId,
+        channelName: video.channelName,
+        isNewVideo: video.isNewVideo,
+        previousVideo: video.previousVideo
+    };
 }
 
 function createActionRow(videoUrl) {
     return new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-            .setLabel('Jetzt ansehen')
-            .setStyle(ButtonStyle.Link)
-            .setURL(videoUrl || 'https://www.youtube.com'),
-        new ButtonBuilder()
             .setCustomId('toggle_notify')
             .setLabel('Benachrichtigung an/aus')
-            .setStyle(ButtonStyle.Secondary)
+            .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+            .setLabel('Jetzt ansehen')
+            .setStyle(ButtonStyle.Link)
+            .setURL(videoUrl || 'https://www.youtube.com')
     );
 }
 
