@@ -49,8 +49,7 @@ module.exports = {
         .setDescription('Erstellt ein Embed mit Titel, Beschreibung, Farbe, Bild und Footer')
         .addChannelOption(option => 
             option.setName('channel')
-                .setDescription('Der Textkanal, in den das Embed gesendet wird')
-                .addChannelTypes(ChannelType.GuildText)
+                .setDescription('Der kanal, in den das Embed gesendet wird')
                 .setRequired(true))
         .addStringOption(option => 
             option.setName('title')
