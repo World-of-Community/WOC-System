@@ -5,7 +5,7 @@ const path = require('path');
 const config = require('../../json/config.json');
 
 const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
-const twitchconfig = require(twitchStatusPath);
+const twitchconfig = require('../../json/twitchStatus.json');
 
 let accessToken = '';
 let statusMessageId = null;
@@ -42,7 +42,7 @@ module.exports = {
 
 // Holt den Access Token von Twitch
 async function getAccessToken() {
-  const res = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitchClientId}&client_secret=${twitchconfig.twitchClientSecret}&grant_type=client_credentials`, {
+  const res = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitch.twitchClientId}&client_secret=${twitchconfig.twitch.twitchClientSecret}&grant_type=client_credentials`, {
     method: 'POST'
   });
   const data = await res.json();
