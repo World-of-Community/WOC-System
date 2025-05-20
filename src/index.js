@@ -630,31 +630,42 @@ async function getFreeGamesFromGamerPower() {
     }
 }
 
+// Plattform-Icons
+const platformIcons = {
+    steam: 'https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg',
+    'epic games': 'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo.jpg',
+    gog: 'https://upload.wikimedia.org/wikipedia/commons/1/10/GOG.com_Logo_2018.svg',
+    origin: 'https://upload.wikimedia.org/wikipedia/commons/d/db/Origin_logo.svg',
+    ubisoft: 'https://upload.wikimedia.org/wikipedia/en/9/95/Ubisoft_Logo_2017.svg'
+};
+
 // Hauptfunktion: checkt neue Spiele und sendet sie in den Channel
 async function checkAndSendFreeGames(channel, guild) {
     const giveaways = await getFreeGamesFromGamerPower();
 
-    // Nur Spiele mit Plattform-Angabe als String
+    // Erlaubte Plattformen (kleingeschrieben, für includes-Vergleich)
+    const allowedPlatforms = ['steam', 'epic', 'gog', 'origin', 'ubisoft'];
+
+    // Nur relevante Spiele filtern
     const filteredGames = giveaways.filter(g =>
         typeof g.platforms === 'string' &&
-        (g.platforms.includes('Steam') || g.platforms.includes('Epic Games Store')) &&
+        allowedPlatforms.some(p => g.platforms.toLowerCase().includes(p)) &&
         g.worth === "$0.00" &&
         g.type?.toLowerCase() === "game" &&
         !previousGames.has(g.id)
     );
 
     for (const game of filteredGames) {
-        const platform = game.platforms.includes('Steam') ? 'Steam' : 'Epic Games';
-        const url = game.open_giveaway_url;
+        const matchedPlatform = allowedPlatforms.find(p => game.platforms.toLowerCase().includes(p)) || 'Unbekannt';
+        const platformName = matchedPlatform.charAt(0).toUpperCase() + matchedPlatform.slice(1);
+        const iconURL = platformIcons[matchedPlatform] || guild.iconURL();
 
         const embed = new EmbedBuilder()
             .setAuthor({
-                name: `Erhältlich bei ${platform}`,
-                iconURL: platform === 'Steam'
-                    ? 'https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg'
-                    : 'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo.jpg'
+                name: `Erhältlich bei ${platformName}`,
+                iconURL
             })
-            .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${game.title}](${url})`)
+            .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${game.title}](${game.open_giveaway_url})`)
             .setDescription(`> <:Pfeil:1119709908540076124> ${game.description || 'Keine Beschreibung verfügbar.'}`)
             .addFields(
                 {
@@ -679,17 +690,16 @@ async function checkAndSendFreeGames(channel, guild) {
         const button = new ButtonBuilder()
             .setLabel('Zum Angebot')
             .setStyle(ButtonStyle.Link)
-            .setURL(url);
+            .setURL(game.open_giveaway_url);
 
         const row = new ActionRowBuilder().addComponents(button);
 
         await channel.send({
-            content: `<a:guthaben:1186636139281530970> 𑁉  **Neues Gratis-Spiel bei ${platform}!** <@&1230568420240527462>`,
+            content: `<a:guthaben:1186636139281530970> 𑁉  **Neues Gratis-Spiel bei ${platformName}!** <@&1230568420240527462>`,
             embeds: [embed],
             components: [row]
         });
 
-        // Spiel als gesendet markieren
         previousGames.add(game.id);
     }
 }
@@ -709,6 +719,7 @@ setInterval(async () => {
         console.log("Kanal oder Server nicht gefunden.");
     }
 }, 60 * 1000);
+
 
 // Werbung
 setInterval( async () => {
