@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRow
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
-const config = require('../../../json/config.json');
+const config = require('../../json/config.json');
 
 const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
 
