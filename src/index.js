@@ -634,13 +634,16 @@ async function getFreeGamesFromGamerPower() {
 async function checkAndSendFreeGames(channel, guild) {
     const giveaways = await getFreeGamesFromGamerPower();
 
-    // Filter: Nur Epic Games Store und Steam Spiele
-    const epicGames = giveaways.filter(g => g.platforms.includes('Epic Games Store'));
-    const steamGames = giveaways.filter(g => g.platforms.includes('Steam'));
+    // Nur Spiele mit Plattform-Angabe als String
+    const filteredGames = giveaways.filter(g =>
+        typeof g.platforms === 'string' &&
+        (g.platforms.includes('Steam') || g.platforms.includes('Epic Games Store')) &&
+        g.worth === "$0.00" &&
+        g.type?.toLowerCase() === "game" &&
+        !previousGames.has(g.id)
+    );
 
-    const newGames = [...epicGames, ...steamGames].filter(g => !previousGames.has(g.id));
-
-    for (const game of newGames) {
+    for (const game of filteredGames) {
         const platform = game.platforms.includes('Steam') ? 'Steam' : 'Epic Games';
         const url = game.open_giveaway_url;
 
@@ -661,13 +664,16 @@ async function checkAndSendFreeGames(channel, guild) {
                 },
                 {
                     name: '🎮 𑁉 **SPIEL DETAILS**',
-                    value: `- **Typ:** ${game.type || 'Unbekannt'}\n- **Plattform:** ${game.platforms.join(', ') || 'Unbekannt'}`,
+                    value: `- **Typ:** ${game.type || 'Unbekannt'}\n- **Plattform:** ${game.platforms || 'Unbekannt'}`,
                     inline: false
                 }
             )
             .setColor(Math.floor(Math.random() * 16777215))
             .setImage(game.thumbnail)
-            .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & gamerpower.com!', iconURL: guild.iconURL() })
+            .setFooter({
+                text: 'Mehr Gratisspiele auf: World Of Community & gamerpower.com!',
+                iconURL: guild.iconURL()
+            })
             .setTimestamp();
 
         const button = new ButtonBuilder()
@@ -689,20 +695,20 @@ async function checkAndSendFreeGames(channel, guild) {
 }
 
 // Alle 1 Minute neue Spiele checken
-    setInterval(async () => {
-        const channel = client.channels.cache.get('1332119668697202783'); // ID anpassen
-        const guild = client.guilds.cache.get('815919809379172354'); // ID anpassen
-        if (channel && guild) {
-            try {
-                await checkAndSendFreeGames(channel, guild);
-            } catch (err) {
-                console.error("Fehler beim Senden der Spiele:", err);
-            }
-        } else {
-            console.log("Kanal oder Server nicht gefunden.");
-        }
-    }, 60 * 1000);
+setInterval(async () => {
+    const channel = client.channels.cache.get('1332119668697202783'); // Channel-ID anpassen
+    const guild = client.guilds.cache.get('815919809379172354'); // Server-ID anpassen
 
+    if (channel && guild) {
+        try {
+            await checkAndSendFreeGames(channel, guild);
+        } catch (err) {
+            console.error("Fehler beim Senden der Spiele:", err);
+        }
+    } else {
+        console.log("Kanal oder Server nicht gefunden.");
+    }
+}, 60 * 1000);
 
 // Werbung
 setInterval( async () => {
