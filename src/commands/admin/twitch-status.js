@@ -2,15 +2,14 @@ const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRow
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
-const config = require('../../../../config.json');
+const config = require('../../../config.json');
 
 const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
 
 let accessToken = '';
-let isLive = false;
-
-// Lade bestehende statusMessageId, wenn vorhanden
 let statusMessageId = null;
+
+// Versuche, die gespeicherte Nachricht-ID zu laden
 if (fs.existsSync(twitchStatusPath)) {
   try {
     const data = fs.readFileSync(twitchStatusPath, 'utf-8');
@@ -31,38 +30,40 @@ module.exports = {
 
     try {
       await getAccessToken();
-      await checkStream(interaction.client);
-      await interaction.editReply({ content: '✅ Twitch-Status erfolgreich gesendet oder aktualisiert.' });
+      await updateTwitchStatus(interaction.client);
+      await interaction.editReply({ content: '✅ Twitch-Status erfolgreich aktualisiert.' });
     } catch (err) {
-      console.error('Fehler beim Senden des Twitch-Status:', err);
+      console.error('Fehler beim Ausführen von /twitch-status:', err);
       await interaction.editReply({ content: '❌ Fehler beim Senden des Twitch-Status.' });
     }
   }
 };
 
-// Auth holen
+// Holt den Access Token von Twitch
 async function getAccessToken() {
   const res = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${config.twitchClientId}&client_secret=${config.twitchClientSecret}&grant_type=client_credentials`, {
     method: 'POST'
   });
   const data = await res.json();
+  if (!data.access_token) throw new Error('Konnte Access Token nicht abrufen');
   accessToken = data.access_token;
 }
 
-// Embeds & Button
+// Erstellt das Embed für Offline-Status
 function createOfflineEmbed() {
   return new EmbedBuilder()
-    .setTitle('Offline!')
+    .setTitle('🔴 Stream Offline')
     .setURL(`https://twitch.tv/${config.twitchUser}`)
     .addFields(
-      { name: '- Titel', value: '?', inline: false },
-      { name: '- Kategorie', value: '?', inline: false },
-      { name: '- Zuschauer', value: '0', inline: false }
+      { name: '- Titel', value: '**?**', inline: false },
+      { name: '- Kategorie', value: '**?**', inline: false },
+      { name: '- Zuschauer', value: '**?**', inline: false }
     )
     .setColor('Red')
     .setTimestamp();
 }
 
+// Erstellt das Embed für Live-Status
 function createLiveEmbed(stream) {
   return new EmbedBuilder()
     .setTitle(`${stream.user_name} streamt!`)
@@ -77,17 +78,18 @@ function createLiveEmbed(stream) {
     .setTimestamp();
 }
 
+// Erstellt den Button
 function createButton() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setLabel('Zum Stream')
+      .setLabel('➡️ Zum Stream')
       .setStyle(ButtonStyle.Link)
       .setURL(`https://twitch.tv/${config.twitchUser}`)
   );
 }
 
-// Hauptlogik
-async function checkStream(client) {
+// Hauptlogik zur Aktualisierung oder Erstellung der Statusnachricht
+async function updateTwitchStatus(client) {
   const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${config.twitchUser}`, {
     headers: {
       'Client-ID': config.twitchClientId,
@@ -96,59 +98,31 @@ async function checkStream(client) {
   });
 
   const data = await res.json();
-  const stream = data.data[0];
+  const stream = data.data && data.data.length > 0 ? data.data[0] : null;
+
   const channel = await client.channels.fetch(config.channelId);
-  if (!channel) throw new Error('Kanal nicht gefunden');
+  if (!channel || !channel.isTextBased()) throw new Error('Konnte Kanal nicht finden oder ist kein Textkanal.');
 
   let message;
-  if (!statusMessageId) {
-    // Neue Nachricht senden
-    const offlineEmbed = createOfflineEmbed();
-    const liveEmbed = createOfflineEmbed();
-    message = await channel.send({
-      embeds: [offlineEmbed, liveEmbed],
-      components: [createButton()]
-    });
-    statusMessageId = message.id;
+  const embed = stream ? createLiveEmbed(stream) : createOfflineEmbed();
 
-    // Speichern in Datei
-    saveStatusMessageId(statusMessageId);
-  } else {
+  if (statusMessageId) {
     try {
       message = await channel.messages.fetch(statusMessageId);
+      await message.edit({ embeds: [embed], components: [createButton()] });
     } catch {
-      // Falls Nachricht nicht gefunden wurde, neue erstellen
-      const offlineEmbed = createOfflineEmbed();
-      const liveEmbed = createOfflineEmbed();
-      message = await channel.send({
-        embeds: [offlineEmbed, liveEmbed],
-        components: [createButton()]
-      });
+      message = await channel.send({ embeds: [embed], components: [createButton()] });
       statusMessageId = message.id;
       saveStatusMessageId(statusMessageId);
     }
-  }
-
-  if (stream) {
-    isLive = true;
-    const offlineEmbed = createOfflineEmbed();
-    const liveEmbed = createLiveEmbed(stream);
-    await message.edit({
-      embeds: [offlineEmbed, liveEmbed],
-      components: [createButton()]
-    });
   } else {
-    isLive = false;
-    const offlineEmbed = createOfflineEmbed();
-    const liveEmbed = createOfflineEmbed();
-    await message.edit({
-      embeds: [offlineEmbed, liveEmbed],
-      components: [createButton()]
-    });
+    message = await channel.send({ embeds: [embed], components: [createButton()] });
+    statusMessageId = message.id;
+    saveStatusMessageId(statusMessageId);
   }
 }
 
-// Speichert die statusMessageId in einer JSON-Datei
+// Speichert die Nachricht-ID
 function saveStatusMessageId(messageId) {
   try {
     fs.writeFileSync(twitchStatusPath, JSON.stringify({ statusMessageId: messageId }, null, 2));
