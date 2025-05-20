@@ -1,4 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, PermissionFlagsBits } = require('discord.js');
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+  PermissionFlagsBits,
+} = require('discord.js');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
@@ -7,11 +14,9 @@ const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.js
 
 let twitchconfig = {};
 let accessToken = '';
-
 let updateIntervalHandle = null;
 let tokenRefreshIntervalHandle = null;
 
-// twitchconfig aus Datei laden
 function loadTwitchConfig() {
   if (fs.existsSync(twitchStatusPath)) {
     try {
@@ -24,52 +29,73 @@ function loadTwitchConfig() {
   }
 }
 
-// twitchconfig in Datei speichern
 function saveTwitchConfig() {
   fs.writeFileSync(twitchStatusPath, JSON.stringify(twitchconfig, null, 2), 'utf-8');
 }
 
-// Zu Beginn laden
+// Direkt laden beim Start
 loadTwitchConfig();
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('twitch-status')
-    .setDescription('Sendet oder aktualisiert den Twitch-Status im Kanal')
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    .setDescription('Aktiviere oder deaktiviere den automatischen Twitch-Status')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .addStringOption(option =>
+      option
+        .setName('aktion')
+        .setDescription('Wähle, ob du den Auto-Status aktivieren oder deaktivieren willst')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Aktivieren', value: 'start' },
+          { name: 'Deaktivieren', value: 'stop' }
+        )
+    ),
 
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
-    try {
-      await getAccessToken();
+    const aktion = interaction.options.getString('aktion');
 
-      await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
+    if (aktion === 'start') {
+      try {
+        await getAccessToken();
+        await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
 
-      if (!updateIntervalHandle) {
-        startExactMinuteInterval(async () => {
-          try {
-            await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
-          } catch (err) {
-            console.error('Fehler bei automatischer Twitch-Status-Aktualisierung:', err);
-          }
-        }, 60 * 1000);
+        if (!updateIntervalHandle) {
+          startExactMinuteInterval(async () => {
+            try {
+              await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
+            } catch (err) {
+              console.error('Fehler bei automatischer Twitch-Status-Aktualisierung:', err);
+            }
+          }, 60 * 1000);
+        }
+
+        if (!tokenRefreshIntervalHandle) {
+          tokenRefreshIntervalHandle = setInterval(async () => {
+            try {
+              await getAccessToken();
+            } catch (err) {
+              console.error('Fehler beim Erneuern des Twitch Access Tokens:', err);
+            }
+          }, 10 * 60 * 1000);
+        }
+
+        await interaction.editReply({ content: '> `✅` » Automatische Twitch-Status-Aktualisierung wurde **aktiviert**.' });
+
+      } catch (err) {
+        console.error('Fehler beim Starten:', err);
+        await interaction.editReply({ content: '> `❌` » Fehler beim Starten des automatischen Status-Updates.' });
       }
 
-      if (!tokenRefreshIntervalHandle) {
-        tokenRefreshIntervalHandle = setInterval(async () => {
-          try {
-            await getAccessToken();
-          } catch (err) {
-            console.error('Fehler beim Erneuern des Twitch Access Tokens:', err);
-          }
-        }, 10 * 60 * 1000);
-      }
+    } else if (aktion === 'stop') {
+      clearInterval(updateIntervalHandle);
+      clearInterval(tokenRefreshIntervalHandle);
+      updateIntervalHandle = null;
+      tokenRefreshIntervalHandle = null;
 
-      await interaction.editReply({ content: '> `✅` » Twitch-Status erfolgreich aktualisiert und automatischer Refresh aktiviert.' });
-    } catch (err) {
-      console.error('Fehler beim Ausführen von /twitch-status:', err);
-      await interaction.editReply({ content: '> `❌` » Fehler beim Senden des Twitch-Status.' });
+      await interaction.editReply({ content: '> `🛑` » Automatische Twitch-Status-Aktualisierung wurde **deaktiviert**.' });
     }
   }
 };
@@ -88,6 +114,7 @@ async function getAccessToken() {
   if (!twitchconfig.twitchClientId || !twitchconfig.twitchClientSecret) {
     throw new Error('Twitch Client ID oder Secret nicht konfiguriert!');
   }
+
   const res = await fetch(
     `https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitchClientId}&client_secret=${twitchconfig.twitchClientSecret}&grant_type=client_credentials`,
     { method: 'POST' }
@@ -143,9 +170,7 @@ function createButton() {
   );
 }
 
-// Hier: Immer fresh aus Datei lesen vor Update, um aktuellen StatusMessageId zu bekommen
 async function updateTwitchStatus(client, guild, user) {
-  // twitchconfig neu laden (damit statusMessageId aktuell ist)
   loadTwitchConfig();
 
   const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${twitchconfig.twitchUser}`, {
@@ -176,7 +201,6 @@ async function updateTwitchStatus(client, guild, user) {
         components: [createButton()]
       });
     } catch (err) {
-      // Falls Nachricht nicht gefunden (z.B. gelöscht): neue Nachricht senden, ID aktualisieren
       console.warn('Gespeicherte Twitch-Status-Nachricht nicht gefunden, sende neue Nachricht.');
       message = await channel.send({
         content: `https://www.twitch.tv/${twitchconfig.twitchUser}`,
