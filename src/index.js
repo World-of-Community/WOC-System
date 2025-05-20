@@ -614,24 +614,21 @@ cron.schedule('0 0 * * *', async () => {
 
 // Free Games System
 
-const API_KEY = 'MCowBQYDK2VwAyEAiCySRe3wRI2n0IYLRrrrsT2/q6y3qEhlNnAK/W0GBcY=';  // <---- Hier einfügen
+const API_KEY = 'MCowBQYDK2VwAyEAiCySRe3wRI2n0IYLRrrrsT2/q6y3qEhlNnAK/W0GBcY=';
 
-// Bereits gesendete Spiele im Set speichern (für aktuelle Session)
 const previousGames = new Set();
 
-// Plattform-Icons
 const platformIcons = {
     steam: 'https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg',
-    'epic games': 'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo.jpg',
+    epic: 'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo.jpg',
     gog: 'https://upload.wikimedia.org/wikipedia/commons/1/10/GOG.com_Logo_2018.svg',
     origin: 'https://upload.wikimedia.org/wikipedia/commons/d/db/Origin_logo.svg',
     ubisoft: 'https://upload.wikimedia.org/wikipedia/en/9/95/Ubisoft_Logo_2017.svg'
 };
 
-// Spiele von Freestuffbot API holen mit API-Key im Header
 async function getFreeGamesFromGamerPower() {
     try {
-        const response = await fetch('https://api.freestuffbot.com/giveaways', {  // <--- Beispiel-URL
+        const response = await fetch('https://api.freestuffbot.com/giveaways', {
             headers: {
                 'Authorization': `Bearer ${API_KEY}`
             }
@@ -645,7 +642,6 @@ async function getFreeGamesFromGamerPower() {
     }
 }
 
-// Neue Spiele checken und senden
 async function checkAndSendFreeGames(channel, guild) {
     const giveaways = await getFreeGamesFromGamerPower();
 
@@ -665,30 +661,16 @@ async function checkAndSendFreeGames(channel, guild) {
         const iconURL = platformIcons[matchedPlatform] || guild.iconURL();
 
         const embed = new EmbedBuilder()
-            .setAuthor({
-                name: `Erhältlich bei ${platformName}`,
-                iconURL
-            })
+            .setAuthor({ name: `Erhältlich bei ${platformName}`, iconURL })
             .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${game.title}](${game.open_giveaway_url})`)
             .setDescription(`> <:Pfeil:1119709908540076124> ${game.description || 'Keine Beschreibung verfügbar.'}`)
             .addFields(
-                {
-                    name: '💰 𑁉 **DAS ANGEBOT**',
-                    value: `- **Kosten:** ~${game.worth || 'Unbekannt'}~ - **GRATIS!**\n- **Endet:** ${game.end_date || 'Unbekannt'}`,
-                    inline: false
-                },
-                {
-                    name: '🎮 𑁉 **SPIEL DETAILS**',
-                    value: `- **Typ:** ${game.type || 'Unbekannt'}\n- **Plattform:** ${game.platforms || 'Unbekannt'}`,
-                    inline: false
-                }
+                { name: '💰 𑁉 **DAS ANGEBOT**', value: `- **Kosten:** ~${game.worth || 'Unbekannt'}~ - **GRATIS!**\n- **Endet:** ${game.end_date || 'Unbekannt'}`, inline: false },
+                { name: '🎮 𑁉 **SPIEL DETAILS**', value: `- **Typ:** ${game.type || 'Unbekannt'}\n- **Plattform:** ${game.platforms || 'Unbekannt'}`, inline: false }
             )
             .setColor(Math.floor(Math.random() * 16777215))
             .setImage(game.thumbnail)
-            .setFooter({
-                text: 'Mehr Gratisspiele auf: World Of Community & gamerpower.com!',
-                iconURL: guild.iconURL()
-            })
+            .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & gamerpower.com!', iconURL: guild.iconURL() })
             .setTimestamp();
 
         const button = new ButtonBuilder()
@@ -708,6 +690,8 @@ async function checkAndSendFreeGames(channel, guild) {
     }
 }
 
+client.once('ready', async () => {
+
     const channel = client.channels.cache.get('1332119668697202783'); // Channel-ID anpassen
     const guild = client.guilds.cache.get('815919809379172354'); // Server-ID anpassen
 
@@ -716,8 +700,10 @@ async function checkAndSendFreeGames(channel, guild) {
         return;
     }
 
+    // Initialer Aufruf
     await checkAndSendFreeGames(channel, guild);
 
+    // Wiederholung alle 60 Sekunden
     setInterval(async () => {
         try {
             await checkAndSendFreeGames(channel, guild);
@@ -725,8 +711,7 @@ async function checkAndSendFreeGames(channel, guild) {
             console.error("Fehler beim Senden der Spiele:", err);
         }
     }, 60 * 1000);
-
-
+});
 
 // Werbung
 setInterval( async () => {
