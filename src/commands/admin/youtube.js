@@ -19,7 +19,7 @@ module.exports = {
             const row = createActionRow(videoUrl);
 
             const embedMessage = await interaction.channel.send({
-                content: `> YouTube: https://www.youtube.com/@Red3405YT`,
+                content: `> \`📺\` YouTube: https://www.youtube.com/@Red3405YT`,
                 embeds: [embed],
                 components: [row]
             });
