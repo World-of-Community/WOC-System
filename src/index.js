@@ -614,130 +614,91 @@ cron.schedule('0 0 * * *', async () => {
 
 // Free Games System
 
-// Speicher für bereits gesendete Spiele
-const previousGames = { epic: [], steam: [] };
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const fetch = require('node-fetch');
 
-// Epic Games Freebies abrufen
-async function getEpicGamesFreebies() {
+// Bereits gesendete Spiele
+const previousGames = new Set();
+
+// Funktion zum Abrufen der Giveaways von GamerPower
+async function getFreeGamesFromGamerPower() {
     try {
-        const response = await fetch('https://www.freemegames.io/api/epic');
+        const response = await fetch('https://www.gamerpower.com/api/giveaways');
         const data = await response.json();
         return data;
     } catch (err) {
-        console.error("Fehler beim Abrufen von Epic Games Freebies:", err);
+        console.error("Fehler beim Abrufen der kostenlosen Spiele:", err);
         return [];
     }
 }
 
-// Steam Freebies abrufen (nur über Drittanbieter möglich, da Steam-API keine Preisinfos liefert)
-async function getSteamFreeGames() {
-    try {
-        const response = await fetch('https://www.freemegames.io/api/steam');
-        const data = await response.json();
-        return data;
-    } catch (err) {
-        console.error("Fehler beim Abrufen von Steam Freebies:", err);
-        return [];
-    }
-}
-
-// Hauptfunktion zum Vergleichen und Senden
+// Hauptfunktion
 async function checkAndSendFreeGames(channel, guild) {
-    const epicGamesFreebies = await getEpicGamesFreebies();
-    const steamFreeGames = await getSteamFreeGames();
+    const giveaways = await getFreeGamesFromGamerPower();
 
-    const newEpicGames = epicGamesFreebies.filter(game => !previousGames.epic.includes(game.id));
-    const newSteamGames = steamFreeGames.filter(game => !previousGames.steam.includes(game.id));
+    // Filter nach Plattform
+    const epicGames = giveaways.filter(g => g.platforms.includes('Epic Games Store'));
+    const steamGames = giveaways.filter(g => g.platforms.includes('Steam'));
 
-    // EPIC SPIELE
-    for (const game of newEpicGames) {
-        const epicEmbed = new EmbedBuilder()
-            .setAuthor({ name: 'Erhältlich bei Epic Games', iconURL: 'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo_504x512_1529964470588-503x512-ac795e81c54b27aaa2e196456dd307bfe4ca3ca4.jpg' })
-            .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${game.name}](https://www.epicgames.com/store/de/p/${game.id})`)
+    const newGames = [...epicGames, ...steamGames].filter(g => !previousGames.has(g.id));
+
+    for (const game of newGames) {
+        const platform = game.platforms.includes('Steam') ? 'Steam' : 'Epic Games';
+        const url = game.open_giveaway_url;
+
+        const embed = new EmbedBuilder()
+            .setAuthor({
+                name: `Erhältlich bei ${platform}`,
+                iconURL: platform === 'Steam'
+                    ? 'https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg'
+                    : 'https://cdn2.unrealengine.com/Epic+Games+Node%2Fxlarge_whitetext_blackback_epiclogo.jpg'
+            })
+            .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${game.title}](${url})`)
             .setDescription(`> <:Pfeil:1119709908540076124> ${game.description || 'Keine Beschreibung verfügbar.'}`)
             .addFields(
                 {
                     name: '💰 𑁉 **DAS ANGEBOT**',
-                    value: `- **Kosten:** ~${game.original_price || 'Unbekannt'}~ - **GRATIS!**\n- **Endet:** ${game.offer_end_timestamp ? new Date(game.offer_end_timestamp * 1000).toLocaleString() : 'Unbekannt'}`,
+                    value: `- **Kosten:** ~${game.worth || 'Unbekannt'}~ - **GRATIS!**\n- **Endet:** ${game.end_date || 'Unbekannt'}`,
                     inline: true
                 },
                 {
                     name: '🎮 𑁉 **SPIEL DETAILS**',
-                    value: `- **Bewertung:** ${game.recommended_reviews || 'Keine Bewertung'}`,
+                    value: `- **Typ:** ${game.type || 'Unbekannt'}\n- **Plattform:** ${game.platforms || 'Unbekannt'}`,
                     inline: true
                 }
             )
             .setColor(Math.floor(Math.random() * 16777215))
-            .setImage(game.image_url)
-            .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & freestuffbot.xyz!', iconURL: guild.iconURL() })
+            .setImage(game.thumbnail)
+            .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & gamerpower.com!', iconURL: guild.iconURL() })
             .setTimestamp();
 
-        const epicButton = new ButtonBuilder()
-            .setLabel(`${game.name}`)
+        const button = new ButtonBuilder()
+            .setLabel(`${game.title}`)
             .setStyle(ButtonStyle.Link)
-            .setURL(`https://www.epicgames.com/store/de/p/${game.id}`);
+            .setURL(url);
 
-        const epicRow = new ActionRowBuilder().addComponents(epicButton);
+        const row = new ActionRowBuilder().addComponents(button);
 
         await channel.send({
-            content: `<a:guthaben:1186636139281530970> 𑁉  [https://www.epicgames.com/store/de/p/${game.id}](Epic Games) Bietet ein neues **Gratis Spiel!** <@&1230568420240527462>`,
-            embeds: [epicEmbed],
-            components: [epicRow]
+            content: `<a:guthaben:1186636139281530970> 𑁉  **Neues Gratis-Spiel bei ${platform}!** <@&1230568420240527462>`,
+            embeds: [embed],
+            components: [row]
         });
 
-        previousGames.epic.push(game.id);
-    }
-
-    // STEAM SPIELE
-    for (const game of newSteamGames) {
-        const steamEmbed = new EmbedBuilder()
-            .setAuthor({ name: 'Erhältlich bei Steam', iconURL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/1024px-Steam_icon_logo.svg.png' })
-            .setTitle(`<a:guthaben:1186636139281530970> 𑁉 [${game.name}](https://store.steampowered.com/app/${game.id})`)
-            .setDescription(`> <:Pfeil:1119709908540076124> ${game.description || 'Keine Beschreibung verfügbar.'}`)
-            .addFields(
-                {
-                    name: '💰 𑁉 **DAS ANGEBOT**',
-                    value: `- **Kosten:** ~${game.original_price || 'Unbekannt'}~ - **GRATIS!**\n- **Endet:** ${game.offer_end_timestamp ? new Date(game.offer_end_timestamp * 1000).toLocaleString() : 'Unbekannt'}`,
-                    inline: true
-                },
-                {
-                    name: '🎮 𑁉 **SPIEL DETAILS**',
-                    value: `- **Bewertung:** ${game.recommended_reviews || 'Keine Bewertung'}`,
-                    inline: true
-                }
-            )
-            .setColor(Math.floor(Math.random() * 16777215))
-            .setImage(game.image_url)
-            .setFooter({ text: 'Mehr Gratisspiele auf: World Of Community & freestuffbot.xyz!', iconURL: guild.iconURL() })
-            .setTimestamp();
-
-        const steamButton = new ButtonBuilder()
-            .setLabel(`${game.name}`)
-            .setStyle(ButtonStyle.Link)
-            .setURL(`https://store.steampowered.com/app/${game.id}`);
-
-        const steamRow = new ActionRowBuilder().addComponents(steamButton);
-
-        await channel.send({
-            content: `<a:guthaben:1186636139281530970> 𑁉  [https://store.steampowered.com/app/${game.id}](Steam) Bietet ein neues **Gratis Spiel!** <@&1230568420240527462>`,
-            embeds: [steamEmbed],
-            components: [steamRow]
-        });
-
-        previousGames.steam.push(game.id);
+        previousGames.add(game.id);
     }
 }
 
-// Automatische Prüfung alle 1 Minute
+// Automatische Ausführung alle 1 Minute
 setInterval(async () => {
-    const channel = client.channels.cache.get('1332119668697202783'); // Dein Kanal
-    const guild = client.guilds.cache.get('815919809379172354'); // Dein Server
+    const channel = client.channels.cache.get('1332119668697202783');
+    const guild = client.guilds.cache.get('815919809379172354');
     if (channel && guild) {
         await checkAndSendFreeGames(channel, guild);
     } else {
         console.log("Kanal oder Server nicht gefunden.");
     }
-}, 60 * 1000); // Alle 1 Minute
+}, 60 * 1000);
 
 // Werbung
 setInterval( async () => {
