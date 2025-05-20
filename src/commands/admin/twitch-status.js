@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, PermissionFlagsBits } = require('discord.js');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +9,9 @@ const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.js
 let twitchconfig = {};
 let accessToken = '';
 let statusMessageId = null;
-let updateIntervalHandle = null; // Globaler Timer
+
+let updateIntervalHandle = null;
+let tokenRefreshIntervalHandle = null;
 
 // Twitch-Daten und evtl. gespeicherte statusMessageId laden
 if (fs.existsSync(twitchStatusPath)) {
@@ -25,7 +27,8 @@ if (fs.existsSync(twitchStatusPath)) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('twitch-status')
-    .setDescription('Sendet oder aktualisiert den Twitch-Status im Kanal'),
+    .setDescription('Sendet oder aktualisiert den Twitch-Status im Kanal')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
@@ -34,28 +37,53 @@ module.exports = {
       // Access Token holen
       await getAccessToken();
 
-      // Update einmalig sofort ausführen
+      // Status sofort aktualisieren
       await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
 
-      // Timer nur einmal starten (wenn noch nicht gestartet)
+      // Wenn noch kein Interval läuft: Starte
       if (!updateIntervalHandle) {
-        updateIntervalHandle = setInterval(async () => {
+        startExactMinuteInterval(async () => {
           try {
-            await getAccessToken(); // Token ggf. erneuern
             await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
           } catch (err) {
             console.error('Fehler bei automatischer Twitch-Status-Aktualisierung:', err);
           }
-        }, 60 * 1000); // alle 60 Sekunden
+        }, 60 * 1000);
       }
 
-      await interaction.editReply({ content: '> ✅ » Twitch-Status erfolgreich aktualisiert und automatischer Refresh aktiviert.' });
+      // Optional: Token alle 10 Minuten erneuern
+      if (!tokenRefreshIntervalHandle) {
+        tokenRefreshIntervalHandle = setInterval(async () => {
+          try {
+            await getAccessToken();
+          } catch (err) {
+            console.error('Fehler beim Erneuern des Twitch Access Tokens:', err);
+          }
+        }, 10 * 60 * 1000);
+      }
+
+      await interaction.editReply({ content: '> `✅` » Twitch-Status erfolgreich aktualisiert und automatischer Refresh aktiviert.' });
     } catch (err) {
       console.error('Fehler beim Ausführen von /twitch-status:', err);
-      await interaction.editReply({ content: '> ❌ » Fehler beim Senden des Twitch-Status.' });
+      await interaction.editReply({ content: '> `❌` » Fehler beim Senden des Twitch-Status.' });
     }
   }
 };
+
+// Hilfsfunktion: Startet ein setInterval, das die Funktion genau an den vollen Minuten ausführt
+function startExactMinuteInterval(callback, interval) {
+  // Berechne wie viele ms bis zur nächsten vollen Minute
+  const now = new Date();
+  const msTillNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+
+  // Einmal Timeout bis zur nächsten vollen Minute
+  setTimeout(() => {
+    callback();
+
+    // Danach alle interval ms wiederholen
+    updateIntervalHandle = setInterval(callback, interval);
+  }, msTillNextMinute);
+}
 
 // Twitch Access Token holen (Client Credentials Flow)
 async function getAccessToken() {
@@ -74,7 +102,7 @@ function createOfflineEmbed(user) {
     .setAuthor({ 
       name: 'Red3405 Ankündigung', 
       iconURL: user.displayAvatarURL({ dynamic: true }),
-      url: `https://twitch.tv/${twitchconfig.twitchUser}`  // klickbarer Author-Link!
+      url: `https://twitch.tv/${twitchconfig.twitchUser}`
     })
     .setTitle('Offline!')
     .setDescription(
@@ -93,7 +121,7 @@ function createLiveEmbed(stream, user) {
     .setAuthor({ 
       name: 'Red3405 Ankündigung', 
       iconURL: user.displayAvatarURL({ dynamic: true }),
-      url: `https://twitch.tv/${twitchconfig.twitchUser}` // klickbarer Author-Link!
+      url: `https://twitch.tv/${twitchconfig.twitchUser}`
     })
     .setTitle(`${stream.user_name} streamt!`)
     .setDescription(
@@ -104,7 +132,7 @@ function createLiveEmbed(stream, user) {
     .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${twitchconfig.twitchUser}-640x360.jpg?${Date.now()}`)
     .setColor('Purple')
     .setFooter({ text: 'Live seit' })
-    .setTimestamp(new Date(stream.started_at)); // Zeit festsetzen auf Streamstart
+    .setTimestamp(new Date(stream.started_at));
 }
 
 // Button mit dynamischem Twitch-User
