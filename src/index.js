@@ -614,9 +614,6 @@ cron.schedule('0 0 * * *', async () => {
 
 // Free Games System
 
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const fetch = require('node-fetch');
-
 // Bereits gesendete Spiele
 const previousGames = new Set();
 
