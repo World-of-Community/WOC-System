@@ -4,13 +4,15 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../../json/config.json');
 
+// Pfad zur Statusdatei, in der die Nachricht-ID gespeichert wird
 const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
+// Twitch API Credentials (clientId und secret) aus eigener Config laden
 const twitchconfig = require('../../json/twitchStatus.json');
 
 let accessToken = '';
 let statusMessageId = null;
 
-// Versuche, die gespeicherte Nachricht-ID zu laden
+// Versuche, die gespeicherte Nachricht-ID zu laden (für Aktualisierungen)
 if (fs.existsSync(twitchStatusPath)) {
   try {
     const data = fs.readFileSync(twitchStatusPath, 'utf-8');
@@ -32,39 +34,40 @@ module.exports = {
     try {
       await getAccessToken();
       await updateTwitchStatus(interaction.client);
-      await interaction.editReply({ content: '✅ Twitch-Status erfolgreich aktualisiert.' });
+      await interaction.editReply({ content: '> `✅` » Twitch-Status erfolgreich aktualisiert.' });
     } catch (err) {
       console.error('Fehler beim Ausführen von /twitch-status:', err);
-      await interaction.editReply({ content: '❌ Fehler beim Senden des Twitch-Status.' });
+      await interaction.editReply({ content: '> `❌` » Fehler beim Senden des Twitch-Status.' });
     }
   }
 };
 
-// Holt den Access Token von Twitch
+// Twitch Access Token holen (Client Credentials Flow)
 async function getAccessToken() {
-  const res = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitch.twitchClientId}&client_secret=${twitchconfig.twitch.twitchClientSecret}&grant_type=client_credentials`, {
-    method: 'POST'
-  });
+  const res = await fetch(
+    `https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitch.twitchClientId}&client_secret=${twitchconfig.twitch.twitchClientSecret}&grant_type=client_credentials`,
+    { method: 'POST' }
+  );
   const data = await res.json();
   if (!data.access_token) throw new Error('Konnte Access Token nicht abrufen');
   accessToken = data.access_token;
 }
 
-// Erstellt das Embed für Offline-Status
+// Embed für Offline-Status
 function createOfflineEmbed() {
   return new EmbedBuilder()
-    .setTitle('🔴 Stream Offline')
+    .setTitle('Offline')
     .setURL(`https://twitch.tv/${config.twitchUser}`)
     .addFields(
       { name: '- Titel', value: '**?**', inline: false },
       { name: '- Kategorie', value: '**?**', inline: false },
-      { name: '- Zuschauer', value: '**?**', inline: false }
+      { name: '- Zuschauer', value: '**0**', inline: false }
     )
     .setColor('Red')
     .setTimestamp();
 }
 
-// Erstellt das Embed für Live-Status
+// Embed für Live-Status (Stream läuft)
 function createLiveEmbed(stream) {
   return new EmbedBuilder()
     .setTitle(`${stream.user_name} streamt!`)
@@ -74,12 +77,13 @@ function createLiveEmbed(stream) {
       { name: '- Kategorie', value: stream.game_name || 'Keine Angabe', inline: false },
       { name: '- Zuschauer', value: stream.viewer_count.toString(), inline: false }
     )
+    // Vorsicht: URL für das Vorschaubild baut sich aus user_login, daher config.twitchUser nutzen
     .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${config.twitchUser}-640x360.jpg?${Date.now()}`)
     .setColor('Purple')
     .setTimestamp();
 }
 
-// Erstellt den Button
+// Erzeugt den Link-Button zum Twitch-Stream
 function createButton() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
@@ -89,41 +93,49 @@ function createButton() {
   );
 }
 
-// Hauptlogik zur Aktualisierung oder Erstellung der Statusnachricht
+// Hauptfunktion: Sendet oder aktualisiert die Twitch-Status-Nachricht
 async function updateTwitchStatus(client) {
+  // Twitch API aufrufen, um Stream-Status zu bekommen
   const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${config.twitchUser}`, {
     headers: {
-      'Client-ID': config.twitchClientId,
-      'Authorization': `Bearer ${accessToken}`
+      'Client-ID': twitchconfig.twitch.twitchClientId, // Korrekt: Client ID aus twitchconfig verwenden
+      Authorization: `Bearer ${accessToken}`
     }
   });
+
+  if (!res.ok) throw new Error(`Twitch API Fehler: ${res.status} ${res.statusText}`);
 
   const data = await res.json();
   const stream = data.data && data.data.length > 0 ? data.data[0] : null;
 
+  // Kanal aus config holen
   const channel = await client.channels.fetch(config.channelId);
   if (!channel || !channel.isTextBased()) throw new Error('Konnte Kanal nicht finden oder ist kein Textkanal.');
 
-  let message;
   const embed = stream ? createLiveEmbed(stream) : createOfflineEmbed();
+
+  let message;
 
   if (statusMessageId) {
     try {
+      // Existierende Nachricht holen und aktualisieren
       message = await channel.messages.fetch(statusMessageId);
       await message.edit({ embeds: [embed], components: [createButton()] });
     } catch {
+      // Falls Nachricht nicht gefunden wird, neu senden
       message = await channel.send({ embeds: [embed], components: [createButton()] });
       statusMessageId = message.id;
       saveStatusMessageId(statusMessageId);
     }
   } else {
+    // Nachricht noch nicht vorhanden => neu senden
     message = await channel.send({ embeds: [embed], components: [createButton()] });
     statusMessageId = message.id;
     saveStatusMessageId(statusMessageId);
   }
 }
 
-// Speichert die Nachricht-ID
+// Nachricht-ID speichern, damit sie wiederverwendet werden kann
 function saveStatusMessageId(messageId) {
   try {
     fs.writeFileSync(twitchStatusPath, JSON.stringify({ statusMessageId: messageId }, null, 2));
