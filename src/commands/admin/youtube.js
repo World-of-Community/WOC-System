@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, PermissionFlagsBits, ComponentType } = require('discord.js');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const PLACEHOLDER_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/d/d6/KeinBildVorhanden.jpg';
 
 const YT_API_KEY = 'AIzaSyCvg3Nd7BkHQzLqbHDObsyNlX_fOzoU2-4';
+const YOUTUBE_ROLE_ID = '1337362885101359146';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,37 +14,60 @@ module.exports = {
 
     async execute(interaction) {
         try {
-            const YouTubeEmbed = await getYouTubeEmbed(); // Hole das Embed
+            const { embed, videoUrl } = await getYouTubeEmbed();
+
+            const row = createActionRow(videoUrl);
+
             const embedMessage = await interaction.channel.send({
-                embeds: [YouTubeEmbed],
-                components: [createActionRow()] // Fügt die Buttons hinzu
+                content: `> <@&${YOUTUBE_ROLE_ID}> Hier ist das neuste YouTube-Video!`,
+                embeds: [embed],
+                components: [row]
             });
 
             await interaction.reply({ content: '> Das **YouTube**-Embed wurde erfolgreich gesendet.', ephemeral: true });
 
-            // Alle 60 Sekunden das Embed aktualisieren
+            // Component collector für Notification-Toggle
+            const collector = embedMessage.createMessageComponentCollector({ componentType: ComponentType.Button });
+
+            collector.on('collect', async i => {
+                if (i.customId === 'toggle_notify') {
+                    const db = mongoose.connection.db;
+                    const collection = db.collection('youtube_notify');
+                    const userId = i.user.id;
+
+                    const existing = await collection.findOne({ userId });
+
+                    if (existing) {
+                        await collection.deleteOne({ userId });
+                        await i.reply({ content: '> 🔕 Du hast YouTube-Benachrichtigungen **deaktiviert**.', ephemeral: true });
+                    } else {
+                        await collection.insertOne({ userId });
+                        await i.reply({ content: '> 🔔 Du hast YouTube-Benachrichtigungen **aktiviert**.', ephemeral: true });
+                    }
+                }
+            });
+
+            // Embed alle 60 Sekunden aktualisieren
             setInterval(async () => {
                 try {
-                    const updatedEmbed = await getYouTubeEmbed(); // Hole das aktualisierte Embed
-                    const YouTubeRolle = '1337362885101359146';
+                    const { embed: updatedEmbed, videoUrl } = await getYouTubeEmbed();
+                    const updatedRow = createActionRow(videoUrl);
 
-                    // Bearbeite die Nachricht und aktualisiere das Embed
                     await embedMessage.edit({
-                        content: `> \`🔴\` » <@&${YouTubeRolle}> Hier ist das neueste YouTube-Video!`,
+                        content: `> <@&${YOUTUBE_ROLE_ID}> Hier ist das neuste YouTube-Video!`,
                         embeds: [
-                            new EmbedBuilder(updatedEmbed)
-                                .setFooter({ text: 'Zuletzt aktualisiert:' })
-                                .setTimestamp()
+                            updatedEmbed.setFooter({ text: 'Zuletzt aktualisiert:' }).setTimestamp()
                         ],
+                        components: [updatedRow]
                     });
                 } catch (error) {
                     console.error('Fehler beim Aktualisieren des Embeds:', error);
                 }
-            }, 60000); // Alle 60 Sekunden (1 Minute) das Embed aktualisieren
+            }, 60000);
 
         } catch (error) {
             console.error('Fehler beim Senden des YouTube-Embeds:', error);
-            await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
+            await interaction.reply({ content: `> \`❌\` » Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
         }
     },
 };
@@ -57,18 +81,32 @@ async function getYouTubeEmbed() {
 
     for (const { channelId, lastVideoId } of channels) {
         const url = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
-        
+
         try {
             const response = await axios.get(url);
             const latestVideo = response.data.items[0];
 
-            if (latestVideo.id.videoId !== lastVideoId) {
-                await collection.updateOne({ channelId }, { $set: { lastVideoId: latestVideo.id.videoId } });
+            if (!latestVideo) continue;
+
+            const videoId = latestVideo.id.videoId;
+
+            if (videoId !== lastVideoId) {
+                await collection.updateOne({ channelId }, { $set: { lastVideoId: videoId } });
 
                 const videoData = {
                     title: latestVideo.snippet.title,
                     description: latestVideo.snippet.description,
-                    url: `https://www.youtube.com/watch?v=${latestVideo.id.videoId}`,
+                    url: `https://www.youtube.com/watch?v=${videoId}`,
+                    thumbnail: latestVideo.snippet.thumbnails.medium.url,
+                    channelName: latestVideo.snippet.channelTitle,
+                };
+
+                latestVideos.push(videoData);
+            } else {
+                const videoData = {
+                    title: latestVideo.snippet.title,
+                    description: latestVideo.snippet.description,
+                    url: `https://www.youtube.com/watch?v=${videoId}`,
                     thumbnail: latestVideo.snippet.thumbnails.medium.url,
                     channelName: latestVideo.snippet.channelTitle,
                 };
@@ -81,31 +119,40 @@ async function getYouTubeEmbed() {
     }
 
     if (latestVideos.length === 0) {
-        return new EmbedBuilder()
-            .setTitle('Noch kein Video verfügbar')
-            .setDescription('Sobald ein neues Video hochgeladen wird, erscheint es hier!')
-            .setColor('Red')
-            .setImage(PLACEHOLDER_IMAGE)
-            .setURL('https://www.youtube.com');
+        return {
+            embed: new EmbedBuilder()
+                .setTitle('Noch kein Video verfügbar')
+                .setDescription('Sobald ein neues Video hochgeladen wird, erscheint es hier!')
+                .setColor('Red')
+                .setImage(PLACEHOLDER_IMAGE)
+                .setURL('https://www.youtube.com'),
+            videoUrl: 'https://www.youtube.com'
+        };
     }
 
-    const embed = new EmbedBuilder()
-        .setAuthor({ name: latestVideos[0].channelName || 'YouTube' })
-        .setTitle(latestVideos[0].title || 'Noch kein Video verfügbar')
-        .setDescription(latestVideos[0].description || 'Sobald ein neues Video hochgeladen wird, erscheint es hier!')
-        .setColor('Red')
-        .setImage(latestVideos[0].thumbnail || PLACEHOLDER_IMAGE)
-        .setURL(latestVideos[0].url || 'https://www.youtube.com');
+    const video = latestVideos[0];
 
-    return embed;
+    const embed = new EmbedBuilder()
+        .setAuthor({ name: video.channelName || 'YouTube' })
+        .setTitle(video.title || 'Noch kein Video verfügbar')
+        .setDescription(video.description || 'Sobald ein neues Video hochgeladen wird, erscheint es hier!')
+        .setColor('Red')
+        .setImage(video.thumbnail || PLACEHOLDER_IMAGE)
+        .setURL(video.url || 'https://www.youtube.com');
+
+    return { embed, videoUrl: video.url };
 }
 
-function createActionRow() {
+function createActionRow(videoUrl) {
     return new ActionRowBuilder().addComponents(
         new ButtonBuilder()
             .setLabel('Jetzt ansehen')
-            .setStyle('Link')
-            .setURL('https://www.youtube.com')
+            .setStyle(ButtonStyle.Link)
+            .setURL(videoUrl || 'https://www.youtube.com'),
+        new ButtonBuilder()
+            .setCustomId('toggle_notify')
+            .setLabel('Benachrichtigung an/aus')
+            .setStyle(ButtonStyle.Secondary)
     );
 }
 
