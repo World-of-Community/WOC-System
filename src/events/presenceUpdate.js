@@ -1,11 +1,11 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 
-const streamingUsers = new Map(); // Falls noch nicht vorhanden, unbedingt hinzufügen!
+const streamingUsers = new Map(); // Streaming-Daten für User: { intervalId, startTimestamp }
 
 module.exports = {
     name: Events.PresenceUpdate,
-    async execute (oldPresence, newPresence) {
+    async execute(oldPresence, newPresence) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
         if (newPresence.guild.id !== config.server) return;
@@ -29,15 +29,34 @@ module.exports = {
         if (!streamingMember) return;
 
         // 1 = STREAMING
-        const isStreamingReward = newPresence.activities.some(activity => activity.type === 1);
+        const isStreamingReward = newPresence.activities.some(activity => activity.type === ActivityType.Streaming);
 
         if (isStreamingReward && !streamingUsers.has(streamingMember.id)) {
+            // Startzeit merken und Interval starten
+            const startTimestamp = Date.now();
+
             const intervalId = setInterval(async () => {
-                const coins = Math.floor(Math.random() * 4) + 1;
+                const data = streamingUsers.get(streamingMember.id);
+                if (!data) return;
+
+                const streamingDurationMs = Date.now() - data.startTimestamp;
+                const streamingDurationHours = streamingDurationMs / (1000 * 60 * 60);
+
+                let coins;
+
+                if (streamingDurationHours >= 3 && streamingDurationHours <= 5) {
+                    // Ca. 2500 Coins in 5h -> ca. 42 Coins pro 5 Minuten (max 60 Intervalle)
+                    coins = 42;
+                } else {
+                    // Normalbereich: 1-4 Coins
+                    coins = Math.floor(Math.random() * 4) + 1;
+                }
+
+                const formattedCoins = coins.toLocaleString("de-DE");
 
                 const embed = new EmbedBuilder()
                     .setTitle('🎥 Streaming-Belohnung')
-                    .setDescription(`Du hast **${coins} Coins** für deinen Stream erhalten!\n\n📨 Bitte melde dich im [Ticket Support](https://discord.com/channels/815919809379172354/819555839362072606) von World Of Community um die Coins auf dein Coin-Konto zu erhalten. (Bitte mache von dieser Nachricht einen Screenshot.)`)
+                    .setDescription(`Du hast **${formattedCoins} Coins** für deinen Stream erhalten!\n\n📨 Bitte melde dich im [Ticket Support](https://discord.com/channels/815919809379172354/819555839362072606) von World Of Community um die Coins auf dein Coin-Konto zu erhalten. (Bitte mache von dieser Nachricht einen Screenshot.)`)
                     .setColor('Purple')
                     .setFooter({ text: 'Bleib weiter live für mehr Coins!' });
 
@@ -48,11 +67,12 @@ module.exports = {
                 }
             }, 5 * 60 * 1000);
 
-            streamingUsers.set(streamingMember.id, intervalId);
-        }
+            streamingUsers.set(streamingMember.id, { intervalId, startTimestamp });
 
-        if (!isStreamingReward && streamingUsers.has(streamingMember.id)) {
-            clearInterval(streamingUsers.get(streamingMember.id));
+        } else if (!isStreamingReward && streamingUsers.has(streamingMember.id)) {
+            // Stream beendet, Interval stoppen und Daten löschen
+            const data = streamingUsers.get(streamingMember.id);
+            if (data && data.intervalId) clearInterval(data.intervalId);
             streamingUsers.delete(streamingMember.id);
         }
 
