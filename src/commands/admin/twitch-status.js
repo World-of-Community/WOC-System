@@ -3,26 +3,34 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
 
-// Pfad zur Statusdatei mit Twitch-Credentials und Nachricht-ID
 const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
 
 let twitchconfig = {};
 let accessToken = '';
-let statusMessageId = null;
 
 let updateIntervalHandle = null;
 let tokenRefreshIntervalHandle = null;
 
-// Twitch-Daten und evtl. gespeicherte statusMessageId laden
-if (fs.existsSync(twitchStatusPath)) {
-  try {
-    const data = fs.readFileSync(twitchStatusPath, 'utf-8');
-    twitchconfig = JSON.parse(data);
-    statusMessageId = twitchconfig.statusMessageId || null;
-  } catch (err) {
-    console.error('Fehler beim Laden der twitchStatus.json:', err);
+// twitchconfig aus Datei laden
+function loadTwitchConfig() {
+  if (fs.existsSync(twitchStatusPath)) {
+    try {
+      const data = fs.readFileSync(twitchStatusPath, 'utf-8');
+      twitchconfig = JSON.parse(data);
+    } catch (err) {
+      console.error('Fehler beim Laden der twitchStatus.json:', err);
+      twitchconfig = {};
+    }
   }
 }
+
+// twitchconfig in Datei speichern
+function saveTwitchConfig() {
+  fs.writeFileSync(twitchStatusPath, JSON.stringify(twitchconfig, null, 2), 'utf-8');
+}
+
+// Zu Beginn laden
+loadTwitchConfig();
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,13 +42,10 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
 
     try {
-      // Access Token holen
       await getAccessToken();
 
-      // Status sofort aktualisieren
       await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
 
-      // Wenn noch kein Interval läuft: Starte
       if (!updateIntervalHandle) {
         startExactMinuteInterval(async () => {
           try {
@@ -51,7 +56,6 @@ module.exports = {
         }, 60 * 1000);
       }
 
-      // Optional: Token alle 10 Minuten erneuern
       if (!tokenRefreshIntervalHandle) {
         tokenRefreshIntervalHandle = setInterval(async () => {
           try {
@@ -70,23 +74,20 @@ module.exports = {
   }
 };
 
-// Hilfsfunktion: Startet ein setInterval, das die Funktion genau an den vollen Minuten ausführt
 function startExactMinuteInterval(callback, interval) {
-  // Berechne wie viele ms bis zur nächsten vollen Minute
   const now = new Date();
   const msTillNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
 
-  // Einmal Timeout bis zur nächsten vollen Minute
   setTimeout(() => {
     callback();
-
-    // Danach alle interval ms wiederholen
     updateIntervalHandle = setInterval(callback, interval);
   }, msTillNextMinute);
 }
 
-// Twitch Access Token holen (Client Credentials Flow)
 async function getAccessToken() {
+  if (!twitchconfig.twitchClientId || !twitchconfig.twitchClientSecret) {
+    throw new Error('Twitch Client ID oder Secret nicht konfiguriert!');
+  }
   const res = await fetch(
     `https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitchClientId}&client_secret=${twitchconfig.twitchClientSecret}&grant_type=client_credentials`,
     { method: 'POST' }
@@ -96,11 +97,10 @@ async function getAccessToken() {
   accessToken = data.access_token;
 }
 
-// Embed für Offline-Status
 function createOfflineEmbed(user) {
   return new EmbedBuilder()
-    .setAuthor({ 
-      name: 'Red3405 Ankündigung', 
+    .setAuthor({
+      name: 'Red3405 Ankündigung',
       iconURL: user.displayAvatarURL({ dynamic: true }),
       url: `https://twitch.tv/${twitchconfig.twitchUser}`
     })
@@ -115,11 +115,10 @@ function createOfflineEmbed(user) {
     .setTimestamp();
 }
 
-// Embed für Live-Status (Stream läuft)
 function createLiveEmbed(stream, user) {
   return new EmbedBuilder()
-    .setAuthor({ 
-      name: 'Red3405 Ankündigung', 
+    .setAuthor({
+      name: 'Red3405 Ankündigung',
       iconURL: user.displayAvatarURL({ dynamic: true }),
       url: `https://twitch.tv/${twitchconfig.twitchUser}`
     })
@@ -135,7 +134,6 @@ function createLiveEmbed(stream, user) {
     .setTimestamp(new Date(stream.started_at));
 }
 
-// Button mit dynamischem Twitch-User
 function createButton() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
@@ -145,14 +143,11 @@ function createButton() {
   );
 }
 
-// Speichert die statusMessageId zurück in die Datei
-function saveStatusMessageId(id) {
-  twitchconfig.statusMessageId = id;
-  fs.writeFileSync(twitchStatusPath, JSON.stringify(twitchconfig, null, 2), 'utf-8');
-}
-
-// Hauptfunktion: Sendet oder aktualisiert die Twitch-Status-Nachricht mit Link über dem Embed
+// Hier: Immer fresh aus Datei lesen vor Update, um aktuellen StatusMessageId zu bekommen
 async function updateTwitchStatus(client, guild, user) {
+  // twitchconfig neu laden (damit statusMessageId aktuell ist)
+  loadTwitchConfig();
+
   const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${twitchconfig.twitchUser}`, {
     headers: {
       'Client-ID': twitchconfig.twitchClientId,
@@ -172,22 +167,24 @@ async function updateTwitchStatus(client, guild, user) {
 
   let message;
 
-  if (statusMessageId) {
+  if (twitchconfig.statusMessageId) {
     try {
-      message = await channel.messages.fetch(statusMessageId);
+      message = await channel.messages.fetch(twitchconfig.statusMessageId);
       await message.edit({
         content: `https://www.twitch.tv/${twitchconfig.twitchUser}`,
         embeds: [embed],
         components: [createButton()]
       });
-    } catch {
+    } catch (err) {
+      // Falls Nachricht nicht gefunden (z.B. gelöscht): neue Nachricht senden, ID aktualisieren
+      console.warn('Gespeicherte Twitch-Status-Nachricht nicht gefunden, sende neue Nachricht.');
       message = await channel.send({
         content: `https://www.twitch.tv/${twitchconfig.twitchUser}`,
         embeds: [embed],
         components: [createButton()]
       });
-      statusMessageId = message.id;
-      saveStatusMessageId(statusMessageId);
+      twitchconfig.statusMessageId = message.id;
+      saveTwitchConfig();
     }
   } else {
     message = await channel.send({
@@ -195,7 +192,7 @@ async function updateTwitchStatus(client, guild, user) {
       embeds: [embed],
       components: [createButton()]
     });
-    statusMessageId = message.id;
-    saveStatusMessageId(statusMessageId);
+    twitchconfig.statusMessageId = message.id;
+    saveTwitchConfig();
   }
 }
