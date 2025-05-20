@@ -2,22 +2,20 @@ const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRow
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
-const config = require('../../json/config.json');
 
-// Pfad zur Statusdatei, in der die Nachricht-ID gespeichert wird
+// Pfad zur Statusdatei mit Twitch-Credentials und Nachricht-ID
 const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
-// Twitch API Credentials (clientId und secret) aus eigener Config laden
-const twitchconfig = require('../../json/twitchStatus.json');
 
+let twitchconfig = {};
 let accessToken = '';
 let statusMessageId = null;
 
-// Versuche, die gespeicherte Nachricht-ID zu laden (für Aktualisierungen)
+// Twitch-Daten und evtl. gespeicherte statusMessageId laden
 if (fs.existsSync(twitchStatusPath)) {
   try {
     const data = fs.readFileSync(twitchStatusPath, 'utf-8');
-    const json = JSON.parse(data);
-    statusMessageId = json.statusMessageId || null;
+    twitchconfig = JSON.parse(data);
+    statusMessageId = twitchconfig.statusMessageId || null;
   } catch (err) {
     console.error('Fehler beim Laden der twitchStatus.json:', err);
   }
@@ -57,7 +55,7 @@ async function getAccessToken() {
 function createOfflineEmbed() {
   return new EmbedBuilder()
     .setTitle('Offline')
-    .setURL(`https://twitch.tv/${config.twitchUser}`)
+    .setURL(`https://twitch.tv/${twitchconfig.twitchUser}`)
     .addFields(
       { name: '- Titel', value: '**?**', inline: false },
       { name: '- Kategorie', value: '**?**', inline: false },
@@ -77,8 +75,7 @@ function createLiveEmbed(stream) {
       { name: '- Kategorie', value: stream.game_name || 'Keine Angabe', inline: false },
       { name: '- Zuschauer', value: stream.viewer_count.toString(), inline: false }
     )
-    // Vorsicht: URL für das Vorschaubild baut sich aus user_login, daher config.twitchUser nutzen
-    .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${config.twitchUser}-640x360.jpg?${Date.now()}`)
+    .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${twitchconfig.twitchUser}-640x360.jpg?${Date.now()}`)
     .setColor('Purple')
     .setTimestamp();
 }
@@ -89,16 +86,15 @@ function createButton() {
     new ButtonBuilder()
       .setLabel('➡️ Zum Stream')
       .setStyle(ButtonStyle.Link)
-      .setURL(`https://twitch.tv/${config.twitchUser}`)
+      .setURL(`https://twitch.tv/${twitchconfig.twitchUser}`)
   );
 }
 
 // Hauptfunktion: Sendet oder aktualisiert die Twitch-Status-Nachricht
 async function updateTwitchStatus(client) {
-  // Twitch API aufrufen, um Stream-Status zu bekommen
-  const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${config.twitchUser}`, {
+  const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${twitchconfig.twitchUser}`, {
     headers: {
-      'Client-ID': twitchconfig.twitch.twitchClientId, // Korrekt: Client ID aus twitchconfig verwenden
+      'Client-ID': twitchconfig.twitchClientId,
       Authorization: `Bearer ${accessToken}`
     }
   });
@@ -108,8 +104,8 @@ async function updateTwitchStatus(client) {
   const data = await res.json();
   const stream = data.data && data.data.length > 0 ? data.data[0] : null;
 
-  // Kanal aus config holen
-  const channel = await client.channels.fetch(config.channelId);
+  // Kanal aus twitchconfig holen
+  const channel = await client.channels.fetch(twitchconfig.channelId);
   if (!channel || !channel.isTextBased()) throw new Error('Konnte Kanal nicht finden oder ist kein Textkanal.');
 
   const embed = stream ? createLiveEmbed(stream) : createOfflineEmbed();
@@ -135,10 +131,18 @@ async function updateTwitchStatus(client) {
   }
 }
 
-// Nachricht-ID speichern, damit sie wiederverwendet werden kann
+// Nachricht-ID speichern, ohne die anderen twitchconfig-Keys zu verlieren
 function saveStatusMessageId(messageId) {
   try {
-    fs.writeFileSync(twitchStatusPath, JSON.stringify({ statusMessageId: messageId }, null, 2));
+    // Aktuelle Daten laden
+    let currentData = {};
+    if (fs.existsSync(twitchStatusPath)) {
+      currentData = JSON.parse(fs.readFileSync(twitchStatusPath, 'utf-8'));
+    }
+    // statusMessageId updaten
+    currentData.statusMessageId = messageId;
+    // Zurückschreiben
+    fs.writeFileSync(twitchStatusPath, JSON.stringify(currentData, null, 2));
   } catch (err) {
     console.error('Fehler beim Speichern der statusMessageId:', err);
   }
