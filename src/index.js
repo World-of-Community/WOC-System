@@ -180,12 +180,12 @@ const pingMessages = [
     'Ich bin sehr Aufmerksam! `❗`'
 ];
 
-const config = {
-  twitchClientId: 'cyqewlruf64cb71xhbjmf6n9tdk1ab',
-  twitchClientSecret: 'jnyvkcpopl4bnigh9kp83a09gx7pel',
-  twitchUser: 'red3405_', // Twitch-Username
-  channelId: '1269565441513357355'
-};
+//const config = {
+//  twitchClientId: 'cyqewlruf64cb71xhbjmf6n9tdk1ab',
+//  twitchClientSecret: 'jnyvkcpopl4bnigh9kp83a09gx7pel',
+//  twitchUser: 'red3405_', // Twitch-Username
+//  channelId: '1269565441513357355'
+//};
 
 let accessToken = '';
 let statusMessageId = null; // ID der Nachricht mit den Embeds
