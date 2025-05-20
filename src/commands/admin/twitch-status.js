@@ -45,7 +45,7 @@ module.exports = {
 // Twitch Access Token holen (Client Credentials Flow)
 async function getAccessToken() {
   const res = await fetch(
-    `https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitch.twitchClientId}&client_secret=${twitchconfig.twitch.twitchClientSecret}&grant_type=client_credentials`,
+    `https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitchClientId}&client_secret=${twitchconfig.twitchClientSecret}&grant_type=client_credentials`,
     { method: 'POST' }
   );
   const data = await res.json();
