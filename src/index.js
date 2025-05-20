@@ -180,6 +180,113 @@ const pingMessages = [
     'Ich bin sehr Aufmerksam! `❗`'
 ];
 
+const config = {
+  twitchClientId: 'cyqewlruf64cb71xhbjmf6n9tdk1ab',
+  twitchClientSecret: 'jnyvkcpopl4bnigh9kp83a09gx7pel',
+  twitchUser: 'red3405_', // Twitch-Username
+  channelId: '1269565441513357355'
+};
+
+let accessToken = '';
+let statusMessageId = null; // ID der Nachricht mit den Embeds
+let isLive = false;
+
+async function getAccessToken() {
+  const res = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${config.twitchClientId}&client_secret=${config.twitchClientSecret}&grant_type=client_credentials`, {
+    method: 'POST'
+  });
+  const data = await res.json();
+  accessToken = data.access_token;
+}
+
+function createOfflineEmbed() {
+  return new EmbedBuilder()
+    .setTitle('Offline!')
+    .setURL(`https://twitch.tv/${config.twitchUser}`)
+    .addFields(
+      { name: '- Titel', value: '?', inline: false },
+      { name: '- Kategorie', value: '?', inline: false },
+      { name: '- Zuschauer', value: '0', inline: false }
+    )
+    .setColor('Red')
+    .setTimestamp();
+}
+
+function createLiveEmbed(stream) {
+  return new EmbedBuilder()
+    .setTitle(`${stream.user_name} streamt!`)
+    .setURL(`https://twitch.tv/${stream.user_name}`)
+    .addFields(
+      { name: '- Titel', value: stream.title || 'Kein Titel', inline: false },
+      { name: '- Kategorie', value: stream.game_name || 'Keine Angabe', inline: false },
+      { name: '- Zuschauer', value: stream.viewer_count.toString(), inline: false }
+    )
+    .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${config.twitchUser}-640x360.jpg?${Date.now()}`)
+    .setColor('Purple')
+    .setTimestamp();
+}
+
+function createButton() {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setLabel('Zum Stream')
+      .setStyle(ButtonStyle.Link)
+      .setURL(`https://twitch.tv/${config.twitchUser}`)
+  );
+}
+
+async function checkStream() {
+  const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${config.twitchUser}`, {
+    headers: {
+      'Client-ID': config.twitchClientId,
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+
+  const data = await res.json();
+  const stream = data.data[0];
+
+  const channel = await client.channels.fetch(config.channelId);
+
+  if (!statusMessageId) {
+    // Erste Nachricht senden mit Offline & Live Embed (leer)
+    const offlineEmbed = createOfflineEmbed();
+    const liveEmbed = createOfflineEmbed(); // initial offline
+
+    const message = await channel.send({ 
+      embeds: [offlineEmbed, liveEmbed], 
+      components: [createButton()] 
+    });
+    statusMessageId = message.id;
+  }
+
+  const message = await channel.messages.fetch(statusMessageId);
+
+  if (stream) {
+    // Stream ist live
+    isLive = true;
+    const offlineEmbed = createOfflineEmbed(); // immer offline embed gleich lassen
+    const liveEmbed = createLiveEmbed(stream);
+
+    await message.edit({
+      embeds: [offlineEmbed, liveEmbed],
+      components: [createButton()]
+    });
+  } else {
+    // Stream offline
+    if (isLive || !isLive) {
+      isLive = false;
+      const offlineEmbed = createOfflineEmbed();
+      const liveEmbed = createOfflineEmbed(); // offline Zustand
+
+      await message.edit({
+        embeds: [offlineEmbed, liveEmbed],
+        components: [createButton()]
+      });
+    }
+  }
+}
+
 // MongoDB
 mongoose.connection.on('connected', () => {
     console.log('Verbunden mit MongoDB!');
