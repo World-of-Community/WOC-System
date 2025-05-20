@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const fetch = require('node-fetch');
-const config = require('../../config.json'); // Pfad zu deiner config
+const config = require('../../../config.json'); // Pfad zu deiner config
 let accessToken = '';
 let statusMessageId = null;
 let isLive = false;
