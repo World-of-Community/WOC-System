@@ -687,20 +687,21 @@ async function checkAndSendFreeGames(channel, guild) {
         previousGames.add(game.id);
     }
 }
-    // Alle 10 Minuten neue Spiele checken
-setInterval(async () => {
-    const channel = client.channels.cache.get('1332119668697202783'); // ID anpassen
-    const guild = client.guilds.cache.get('815919809379172354'); // ID anpassen
-    if (channel && guild) {
-        try {
-            await checkAndSendFreeGames(channel, guild);
-        } catch (err) {
-            console.error("Fehler beim Senden der Spiele:", err);
+
+// Alle 1 Minute neue Spiele checken
+    setInterval(async () => {
+        const channel = client.channels.cache.get('1332119668697202783'); // ID anpassen
+        const guild = client.guilds.cache.get('815919809379172354'); // ID anpassen
+        if (channel && guild) {
+            try {
+                await checkAndSendFreeGames(channel, guild);
+            } catch (err) {
+                console.error("Fehler beim Senden der Spiele:", err);
+            }
+        } else {
+            console.log("Kanal oder Server nicht gefunden.");
         }
-    } else {
-        console.log("Kanal oder Server nicht gefunden.");
-    }
-}, 10 * 60 * 1000);
+    }, 60 * 1000);
 
 
 // Werbung
