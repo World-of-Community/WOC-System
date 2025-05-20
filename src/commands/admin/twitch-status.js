@@ -54,7 +54,7 @@ async function getAccessToken() {
 // Embed für Offline-Status
 function createOfflineEmbed(user) {
   return new EmbedBuilder()
-    .setAuthor({ name: 'Red3405 Ankündigung', iconURL: user.displayAvatarURL({ dynamic: true }), url: `https://twitch.tv/${stream.user_name}` })
+    .setAuthor({ name: 'Red3405 Ankündigung', iconURL: user.displayAvatarURL({ dynamic: true }), url: `https://twitch.tv/${twitchconfig.twitchUser}` })
     .setTitle('Offline!')
     .setDescription(
       `- Titel: **?**\n` +
@@ -69,7 +69,7 @@ function createOfflineEmbed(user) {
 // Embed für Live-Status (Stream läuft)
 function createLiveEmbed(stream, user) {
   return new EmbedBuilder()
-    .setAuthor({ name: 'Red3405 Ankündigung', iconURL: user.displayAvatarURL({ dynamic: true }), url: `https://twitch.tv/${stream.user_name}` })
+    .setAuthor({ name: 'Red3405 Ankündigung', iconURL: user.displayAvatarURL({ dynamic: true }), url: `https://twitch.tv/${twitchconfig.twitchUser}` })
     .setTitle(`${stream.user_name} streamt!`)
     .setDescription(
       `- Titel: **${stream.title || 'Kein Titel'}**\n` +
