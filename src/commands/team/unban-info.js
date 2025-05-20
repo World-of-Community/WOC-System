@@ -84,7 +84,7 @@ module.exports = {
         .setFooter({ text: interaction.guild.name, iconURL: interaction.client.user.displayAvatarURL() });
     }
 
-    await interaction.channel.send({ content: `${interaction.user}`, embeds: [embed] });
+    await interaction.channel.send({ content: `<@${interaction.user.id}>`, embeds: [embed] });
 
     await interaction.reply({
       content: `> Die Nachricht wurde erfolgreich im Kanal gesendet.` +
