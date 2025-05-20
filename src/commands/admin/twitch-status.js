@@ -31,7 +31,7 @@ module.exports = {
 
     try {
       await getAccessToken();
-      await updateTwitchStatus(interaction.client);
+      await updateTwitchStatus(interaction.client, interaction.guild);
       await interaction.editReply({ content: '> `✅` » Twitch-Status erfolgreich aktualisiert.' });
     } catch (err) {
       console.error('Fehler beim Ausführen von /twitch-status:', err);
@@ -52,31 +52,35 @@ async function getAccessToken() {
 }
 
 // Embed für Offline-Status
-function createOfflineEmbed() {
+function createOfflineEmbed(guild) {
   return new EmbedBuilder()
+    .setAuthor({ name: 'Red3405 Ankündigung', iconURL: guild.iconURL() || undefined })
     .setTitle('Offline')
     .setURL(`https://twitch.tv/${twitchconfig.twitchUser}`)
     .addFields(
-      { name: '- Titel', value: '**?**', inline: false },
-      { name: '- Kategorie', value: '**?**', inline: false },
-      { name: '- Zuschauer', value: '**0**', inline: false }
+      { name: '- Titel', value: '**?**', inline: true },
+      { name: '- Kategorie', value: '**?**', inline: true },
+      { name: '- Zuschauer', value: '**0**', inline: true }
     )
     .setColor('Red')
+    .setFooter({ text: 'Zuletzt aktualisiert' })
     .setTimestamp();
 }
 
 // Embed für Live-Status (Stream läuft)
-function createLiveEmbed(stream) {
+function createLiveEmbed(stream, guild) {
   return new EmbedBuilder()
+    .setAuthor({ name: 'Red3405 Ankündigung', iconURL: guild.iconURL() || undefined })
     .setTitle(`${stream.user_name} streamt!`)
     .setURL(`https://twitch.tv/${stream.user_name}`)
     .addFields(
-      { name: '- Titel', value: stream.title || 'Kein Titel', inline: false },
-      { name: '- Kategorie', value: stream.game_name || 'Keine Angabe', inline: false },
-      { name: '- Zuschauer', value: stream.viewer_count.toString(), inline: false }
+      { name: '- Titel', value: stream.title || 'Kein Titel', inline: true },
+      { name: '- Kategorie', value: stream.game_name || 'Keine Angabe', inline: true },
+      { name: '- Zuschauer', value: stream.viewer_count.toString(), inline: true }
     )
     .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${twitchconfig.twitchUser}-640x360.jpg?${Date.now()}`)
     .setColor('Purple')
+    .setFooter({ text: 'Zuletzt aktualisiert' })
     .setTimestamp();
 }
 
@@ -84,14 +88,14 @@ function createLiveEmbed(stream) {
 function createButton() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setLabel('➡️ Zum Stream')
+      .setLabel(`🔗 Twitch: ${twitchconfig.twitchUser}`)
       .setStyle(ButtonStyle.Link)
       .setURL(`https://twitch.tv/${twitchconfig.twitchUser}`)
   );
 }
 
 // Hauptfunktion: Sendet oder aktualisiert die Twitch-Status-Nachricht
-async function updateTwitchStatus(client) {
+async function updateTwitchStatus(client, guild) {
   const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${twitchconfig.twitchUser}`, {
     headers: {
       'Client-ID': twitchconfig.twitchClientId,
@@ -108,7 +112,7 @@ async function updateTwitchStatus(client) {
   const channel = await client.channels.fetch(twitchconfig.channelId);
   if (!channel || !channel.isTextBased()) throw new Error('Konnte Kanal nicht finden oder ist kein Textkanal.');
 
-  const embed = stream ? createLiveEmbed(stream) : createOfflineEmbed();
+  const embed = stream ? createLiveEmbed(stream, guild) : createOfflineEmbed(guild);
 
   let message;
 
