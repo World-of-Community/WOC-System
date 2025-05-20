@@ -110,23 +110,36 @@ async function getYouTubeEmbed() {
     let latestVideos = [];
 
     for (const { channelId, lastVideoId } of channels) {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
+        const searchUrl = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
 
         try {
-            const response = await axios.get(url);
-            const latestVideo = response.data.items[0];
+            const searchResponse = await axios.get(searchUrl);
+            const latestVideo = searchResponse.data.items[0];
 
             if (!latestVideo) continue;
 
             const videoId = latestVideo.id.videoId;
 
+            // Hole zusätzliche Video-Details
+            const videoDetailsUrl = `https://www.googleapis.com/youtube/v3/videos?key=${YT_API_KEY}&id=${videoId}&part=contentDetails,snippet`;
+            const videoDetailsResponse = await axios.get(videoDetailsUrl);
+            const videoDetails = videoDetailsResponse.data.items[0];
+
+            const publishedAt = videoDetails.snippet.publishedAt;
+            const durationISO = videoDetails.contentDetails.duration;
+
+            const publishedAtUnix = Math.floor(new Date(publishedAt).getTime() / 1000);
+            const durationSeconds = parseISODuration(durationISO);
+
             const videoData = {
-                title: latestVideo.snippet.title,
-                description: latestVideo.snippet.description,
+                title: videoDetails.snippet.title,
+                description: videoDetails.snippet.description,
                 url: `https://www.youtube.com/watch?v=${videoId}`,
-                thumbnail: latestVideo.snippet.thumbnails.medium.url,
-                channelName: latestVideo.snippet.channelTitle,
-                videoId: videoId
+                thumbnail: videoDetails.snippet.thumbnails.medium.url,
+                channelName: videoDetails.snippet.channelTitle,
+                videoId: videoId,
+                publishedAtUnix: publishedAtUnix,
+                durationSeconds: durationSeconds
             };
 
             let isNewVideo = false;
@@ -183,6 +196,10 @@ async function getYouTubeEmbed() {
         .setAuthor({ name: video.channelName || 'YouTube' })
         .setTitle(video.title || 'Noch kein Video verfügbar')
         .setDescription(video.description || 'Sobald ein neues Video hochgeladen wird, erscheint es hier!')
+        .addFields(
+            { name: 'Veröffentlicht am', value: `<t:${video.publishedAtUnix}:f>`, inline: true },
+            { name: 'Dauer', value: `<t:${video.durationSeconds}:t>`, inline: true }
+        )
         .setColor('Red')
         .setImage(video.thumbnail || PLACEHOLDER_IMAGE)
         .setURL(video.url || 'https://www.youtube.com');
@@ -209,3 +226,16 @@ function createActionRow(videoUrl) {
             .setURL(videoUrl || 'https://www.youtube.com')
     );
 }
+
+// Funktion zum Parsen der ISO 8601-Dauer in Sekunden
+function parseISODuration(duration) {
+    const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+    const matches = duration.match(regex);
+
+    const hours = parseInt(matches[1]) || 0;
+    const minutes = parseInt(matches[2]) || 0;
+    const seconds = parseInt(matches[3]) || 0;
+
+    return hours * 3600 + minutes * 60 + seconds;
+}
+
