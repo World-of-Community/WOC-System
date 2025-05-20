@@ -614,13 +614,14 @@ cron.schedule('0 0 * * *', async () => {
 
 // Free Games System
 
-// Bereits gesendete Spiele
+// Bereits gesendete Spiele (Set speichert Spiel-IDs, um Spam zu verhindern)
 const previousGames = new Set();
 
 // Funktion zum Abrufen der Giveaways von GamerPower
 async function getFreeGamesFromGamerPower() {
     try {
         const response = await fetch('https://www.gamerpower.com/api/giveaways');
+        if (!response.ok) throw new Error(`HTTP-Error: ${response.status}`);
         const data = await response.json();
         return data;
     } catch (err) {
@@ -629,11 +630,11 @@ async function getFreeGamesFromGamerPower() {
     }
 }
 
-// Hauptfunktion
+// Hauptfunktion: checkt neue Spiele und sendet sie in den Channel
 async function checkAndSendFreeGames(channel, guild) {
     const giveaways = await getFreeGamesFromGamerPower();
 
-    // Filter nach Plattform
+    // Filter: Nur Epic Games Store und Steam Spiele
     const epicGames = giveaways.filter(g => g.platforms.includes('Epic Games Store'));
     const steamGames = giveaways.filter(g => g.platforms.includes('Steam'));
 
@@ -656,12 +657,12 @@ async function checkAndSendFreeGames(channel, guild) {
                 {
                     name: '💰 𑁉 **DAS ANGEBOT**',
                     value: `- **Kosten:** ~${game.worth || 'Unbekannt'}~ - **GRATIS!**\n- **Endet:** ${game.end_date || 'Unbekannt'}`,
-                    inline: true
+                    inline: false
                 },
                 {
                     name: '🎮 𑁉 **SPIEL DETAILS**',
-                    value: `- **Typ:** ${game.type || 'Unbekannt'}\n- **Plattform:** ${game.platforms || 'Unbekannt'}`,
-                    inline: true
+                    value: `- **Typ:** ${game.type || 'Unbekannt'}\n- **Plattform:** ${game.platforms.join(', ') || 'Unbekannt'}`,
+                    inline: false
                 }
             )
             .setColor(Math.floor(Math.random() * 16777215))
@@ -670,7 +671,7 @@ async function checkAndSendFreeGames(channel, guild) {
             .setTimestamp();
 
         const button = new ButtonBuilder()
-            .setLabel(`${game.title}`)
+            .setLabel('Zum Angebot')
             .setStyle(ButtonStyle.Link)
             .setURL(url);
 
@@ -682,20 +683,25 @@ async function checkAndSendFreeGames(channel, guild) {
             components: [row]
         });
 
+        // Spiel als gesendet markieren
         previousGames.add(game.id);
     }
 }
-
-// Automatische Ausführung alle 1 Minute
+    // Alle 10 Minuten neue Spiele checken
 setInterval(async () => {
-    const channel = client.channels.cache.get('1332119668697202783');
-    const guild = client.guilds.cache.get('815919809379172354');
+    const channel = client.channels.cache.get('1332119668697202783'); // ID anpassen
+    const guild = client.guilds.cache.get('815919809379172354'); // ID anpassen
     if (channel && guild) {
-        await checkAndSendFreeGames(channel, guild);
+        try {
+            await checkAndSendFreeGames(channel, guild);
+        } catch (err) {
+            console.error("Fehler beim Senden der Spiele:", err);
+        }
     } else {
         console.log("Kanal oder Server nicht gefunden.");
     }
-}, 60 * 1000);
+}, 10 * 60 * 1000);
+
 
 // Werbung
 setInterval( async () => {
