@@ -1,9 +1,25 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
 const config = require('../../../config.json'); // Pfad zu deiner config
+
+const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
+
 let accessToken = '';
-let statusMessageId = null;
 let isLive = false;
+
+// Lade bestehende statusMessageId, wenn vorhanden
+let statusMessageId = null;
+if (fs.existsSync(twitchStatusPath)) {
+  try {
+    const data = fs.readFileSync(twitchStatusPath, 'utf-8');
+    const json = JSON.parse(data);
+    statusMessageId = json.statusMessageId || null;
+  } catch (err) {
+    console.error('Fehler beim Laden der twitchStatus.json:', err);
+  }
+}
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -84,18 +100,34 @@ async function checkStream(client) {
   const channel = await client.channels.fetch(config.channelId);
   if (!channel) throw new Error('Kanal nicht gefunden');
 
+  let message;
   if (!statusMessageId) {
     // Neue Nachricht senden
     const offlineEmbed = createOfflineEmbed();
     const liveEmbed = createOfflineEmbed();
-    const message = await channel.send({
+    message = await channel.send({
       embeds: [offlineEmbed, liveEmbed],
       components: [createButton()]
     });
     statusMessageId = message.id;
-  }
 
-  const message = await channel.messages.fetch(statusMessageId);
+    // Speichern in Datei
+    saveStatusMessageId(statusMessageId);
+  } else {
+    try {
+      message = await channel.messages.fetch(statusMessageId);
+    } catch {
+      // Falls Nachricht nicht gefunden wurde, neue erstellen
+      const offlineEmbed = createOfflineEmbed();
+      const liveEmbed = createOfflineEmbed();
+      message = await channel.send({
+        embeds: [offlineEmbed, liveEmbed],
+        components: [createButton()]
+      });
+      statusMessageId = message.id;
+      saveStatusMessageId(statusMessageId);
+    }
+  }
 
   if (stream) {
     isLive = true;
@@ -113,5 +145,14 @@ async function checkStream(client) {
       embeds: [offlineEmbed, liveEmbed],
       components: [createButton()]
     });
+  }
+}
+
+// Speichert die statusMessageId in einer JSON-Datei
+function saveStatusMessageId(messageId) {
+  try {
+    fs.writeFileSync(twitchStatusPath, JSON.stringify({ statusMessageId: messageId }, null, 2));
+  } catch (err) {
+    console.error('Fehler beim Speichern der statusMessageId:', err);
   }
 }
