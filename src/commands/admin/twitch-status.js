@@ -9,6 +9,7 @@ const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.js
 let twitchconfig = {};
 let accessToken = '';
 let statusMessageId = null;
+let updateIntervalHandle = null; // Globaler Timer
 
 // Twitch-Daten und evtl. gespeicherte statusMessageId laden
 if (fs.existsSync(twitchStatusPath)) {
@@ -30,9 +31,25 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
 
     try {
+      // Access Token holen
       await getAccessToken();
+
+      // Update einmalig sofort ausführen
       await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
-      await interaction.editReply({ content: '> ✅ » Twitch-Status erfolgreich aktualisiert.' });
+
+      // Timer nur einmal starten (wenn noch nicht gestartet)
+      if (!updateIntervalHandle) {
+        updateIntervalHandle = setInterval(async () => {
+          try {
+            await getAccessToken(); // Token ggf. erneuern
+            await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
+          } catch (err) {
+            console.error('Fehler bei automatischer Twitch-Status-Aktualisierung:', err);
+          }
+        }, 60 * 1000); // alle 60 Sekunden
+      }
+
+      await interaction.editReply({ content: '> ✅ » Twitch-Status erfolgreich aktualisiert und automatischer Refresh aktiviert.' });
     } catch (err) {
       console.error('Fehler beim Ausführen von /twitch-status:', err);
       await interaction.editReply({ content: '> ❌ » Fehler beim Senden des Twitch-Status.' });
@@ -54,7 +71,11 @@ async function getAccessToken() {
 // Embed für Offline-Status
 function createOfflineEmbed(user) {
   return new EmbedBuilder()
-    .setAuthor({ name: 'Red3405 Ankündigung', iconURL: user.displayAvatarURL({ dynamic: true }), url: `https://twitch.tv/${twitchconfig.twitchUser}` })
+    .setAuthor({ 
+      name: 'Red3405 Ankündigung', 
+      iconURL: user.displayAvatarURL({ dynamic: true }),
+      url: `https://twitch.tv/${twitchconfig.twitchUser}`  // klickbarer Author-Link!
+    })
     .setTitle('Offline!')
     .setDescription(
       `- Titel: **?**\n` +
@@ -69,7 +90,11 @@ function createOfflineEmbed(user) {
 // Embed für Live-Status (Stream läuft)
 function createLiveEmbed(stream, user) {
   return new EmbedBuilder()
-    .setAuthor({ name: 'Red3405 Ankündigung', iconURL: user.displayAvatarURL({ dynamic: true }), url: `https://twitch.tv/${twitchconfig.twitchUser}` })
+    .setAuthor({ 
+      name: 'Red3405 Ankündigung', 
+      iconURL: user.displayAvatarURL({ dynamic: true }),
+      url: `https://twitch.tv/${twitchconfig.twitchUser}` // klickbarer Author-Link!
+    })
     .setTitle(`${stream.user_name} streamt!`)
     .setDescription(
       `- Titel: **${stream.title || 'Kein Titel'}**\n` +
@@ -82,11 +107,11 @@ function createLiveEmbed(stream, user) {
     .setTimestamp(new Date(stream.started_at)); // Zeit festsetzen auf Streamstart
 }
 
-// Button (Beispiel-Button, kannst du anpassen)
+// Button mit dynamischem Twitch-User
 function createButton() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setLabel(`🔗 Twitch: ${twitchconfig.twitchUser}`)
+      .setLabel(`🔗 Twitch: Red3405`)
       .setStyle(ButtonStyle.Link)
       .setURL(`https://twitch.tv/${twitchconfig.twitchUser}`)
   );
