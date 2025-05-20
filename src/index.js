@@ -614,21 +614,10 @@ cron.schedule('0 0 * * *', async () => {
 
 // Free Games System
 
-// Bereits gesendete Spiele (Set speichert Spiel-IDs, um Spam zu verhindern)
-const previousGames = new Set();
+const API_KEY = 'MCowBQYDK2VwAyEAiCySRe3wRI2n0IYLRrrrsT2/q6y3qEhlNnAK/W0GBcY=';  // <---- Hier einfügen
 
-// Funktion zum Abrufen der Giveaways von GamerPower
-async function getFreeGamesFromGamerPower() {
-    try {
-        const response = await fetch('https://www.gamerpower.com/api/giveaways');
-        if (!response.ok) throw new Error(`HTTP-Error: ${response.status}`);
-        const data = await response.json();
-        return data;
-    } catch (err) {
-        console.error("Fehler beim Abrufen der kostenlosen Spiele:", err);
-        return [];
-    }
-}
+// Bereits gesendete Spiele im Set speichern (für aktuelle Session)
+const previousGames = new Set();
 
 // Plattform-Icons
 const platformIcons = {
@@ -639,14 +628,29 @@ const platformIcons = {
     ubisoft: 'https://upload.wikimedia.org/wikipedia/en/9/95/Ubisoft_Logo_2017.svg'
 };
 
-// Hauptfunktion: checkt neue Spiele und sendet sie in den Channel
+// Spiele von Freestuffbot API holen mit API-Key im Header
+async function getFreeGamesFromGamerPower() {
+    try {
+        const response = await fetch('https://api.freestuffbot.com/giveaways', {  // <--- Beispiel-URL
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`
+            }
+        });
+        if (!response.ok) throw new Error(`HTTP-Error: ${response.status}`);
+        const data = await response.json();
+        return data;
+    } catch (err) {
+        console.error("Fehler beim Abrufen der kostenlosen Spiele:", err);
+        return [];
+    }
+}
+
+// Neue Spiele checken und senden
 async function checkAndSendFreeGames(channel, guild) {
     const giveaways = await getFreeGamesFromGamerPower();
 
-    // Erlaubte Plattformen (kleingeschrieben, für includes-Vergleich)
     const allowedPlatforms = ['steam', 'epic', 'gog', 'origin', 'ubisoft'];
 
-    // Nur relevante Spiele filtern
     const filteredGames = giveaways.filter(g =>
         typeof g.platforms === 'string' &&
         allowedPlatforms.some(p => g.platforms.toLowerCase().includes(p)) &&
@@ -704,21 +708,24 @@ async function checkAndSendFreeGames(channel, guild) {
     }
 }
 
-// Alle 1 Minute neue Spiele checken
-setInterval(async () => {
     const channel = client.channels.cache.get('1332119668697202783'); // Channel-ID anpassen
     const guild = client.guilds.cache.get('815919809379172354'); // Server-ID anpassen
 
-    if (channel && guild) {
+    if (!channel || !guild) {
+        console.log("Kanal oder Server nicht gefunden.");
+        return;
+    }
+
+    await checkAndSendFreeGames(channel, guild);
+
+    setInterval(async () => {
         try {
             await checkAndSendFreeGames(channel, guild);
         } catch (err) {
             console.error("Fehler beim Senden der Spiele:", err);
         }
-    } else {
-        console.log("Kanal oder Server nicht gefunden.");
-    }
-}, 60 * 1000);
+    }, 60 * 1000);
+
 
 
 // Werbung
