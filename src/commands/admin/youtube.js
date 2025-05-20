@@ -19,7 +19,7 @@ module.exports = {
             const row = createActionRow(videoUrl);
 
             const embedMessage = await interaction.channel.send({
-                content: `> https://www.youtube.com/@Red3405YT`,
+                content: `https://www.youtube.com/@Red3405YT`,
                 embeds: [embed],
                 components: [row]
             });
@@ -84,7 +84,7 @@ module.exports = {
                     }
 
                     await embedMessage.edit({
-                        content: `> https://www.youtube.com/@Red3405YT`,
+                        content: `https://www.youtube.com/@Red3405YT`,
                         embeds: [
                             updatedEmbed.setFooter({ text: 'Zuletzt aktualisiert:' }).setTimestamp()
                         ],
