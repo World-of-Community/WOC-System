@@ -23,40 +23,34 @@ module.exports = {
             }
         }
 
-        const member = newPresence.member;
-        if (!member) return;
-      
+        const streamingMember = newPresence.member;
+        if (!streamingMember) return;
+        
         const isStreaming = newPresence.activities.some(activity => activity.type === 1); // 1 = STREAMING
-      
-        // Wenn User neu streamt
-        if (isStreaming && !streamingUsers.has(member.id)) {
+        
+        if (isStreaming && !streamingUsers.has(streamingMember.id)) {
           const intervalId = setInterval(async () => {
-            const coins = Math.floor(Math.random() * 4) + 1; // 1–4 Coins zufällig
-      
-            // ❗ Hier kannst du Coins z.B. in einer Datenbank speichern:
-            // await db.addCoins(member.id, coins);
-      
-            // Sende DM mit Embed
+            const coins = Math.floor(Math.random() * 4) + 1;
+        
             const embed = new EmbedBuilder()
               .setTitle('🎥 Streaming-Belohnung')
               .setDescription(`Du hast **${coins} Coins** für deinen Stream erhalten!\n\n📨 Bitte melde dich im [Ticket Support](https://discord.com/channels/815919809379172354/819555839362072606) von World Of Community um die Coins auf dein Coin-Konto zu erhalten. (Bitte mache von dieser Nachricht einen Screenshot.)`)
               .setColor('Purple')
               .setFooter({ text: 'Bleib weiter live für mehr Coins!' });
-      
+        
             try {
-              await member.send({ embeds: [embed] });
+              await streamingMember.send({ embeds: [embed] });
             } catch (err) {
-              console.log(`(Streaming-Belohnung) Konnte ${member.user.username} keine DM senden.`);
+              console.log(`(Streaming-Belohnung) Konnte ${streamingMember.user.username} keine DM senden.`);
             }
-          }, 5 * 60 * 1000); // ⏱️ Alle 5 Minuten
-      
-          streamingUsers.set(member.id, intervalId);
+          }, 5 * 60 * 1000);
+        
+          streamingUsers.set(streamingMember.id, intervalId);
         }
-      
-        // Wenn User nicht mehr streamt
-        if (!isStreaming && streamingUsers.has(member.id)) {
-          clearInterval(streamingUsers.get(member.id));
-          streamingUsers.delete(member.id);
+        
+        if (!isStreaming && streamingUsers.has(streamingMember.id)) {
+          clearInterval(streamingUsers.get(streamingMember.id));
+          streamingUsers.delete(streamingMember.id);
         }
 
         // Streamer Rollen System
