@@ -613,6 +613,7 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Free Games System
+/*
 
 const API_KEY = 'MCowBQYDK2VwAyEAiCySRe3wRI2n0IYLRrrrsT2/q6y3qEhlNnAK/W0GBcY=';
 
@@ -712,6 +713,7 @@ client.once('ready', async () => {
         }
     }, 60 * 1000);
 });
+*/
 
 // Werbung
 setInterval( async () => {
