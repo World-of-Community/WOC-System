@@ -1,8 +1,6 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 
-const streamingUsers = new Map(); // Streaming-Daten für User: { intervalId, startTimestamp }
-
 module.exports = {
     name: Events.PresenceUpdate,
     async execute(oldPresence, newPresence) {
@@ -17,10 +15,10 @@ module.exports = {
         const streamerRole = newPresence.guild.roles.cache.get('1266095218239995968');
         if (!role || !streamerRole) return console.log("❌ > Eine der Rollen wurde nicht gefunden");
 
-        // Vanity Link check
         const activities = member.presence?.activities;
-        const customActivity = activities?.find(a => a.type === ActivityType.Custom);
 
+        // Vanity-Link prüfen
+        const customActivity = activities?.find(a => a.type === ActivityType.Custom);
         if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
             await member.roles.add(role).catch(() => {});
         } else {
@@ -28,8 +26,44 @@ module.exports = {
                 await member.roles.remove(role).catch(() => {});
             }
         }
-//
-        //// Streaming Belohnungssystem
+
+        // Streamer-Aktivität prüfen
+        const isStreaming = activities?.some(a => a.type === ActivityType.Streaming);
+
+        if (isStreaming) {
+            if (!member.roles.cache.has(streamerRole.id)) {
+                await member.roles.add(streamerRole).catch(() => {});
+                logStreamerRoleChange('hinzugefügt', member);
+            }
+        } else {
+            if (member.roles.cache.has(streamerRole.id)) {
+                await member.roles.remove(streamerRole).catch(() => {});
+                logStreamerRoleChange('entfernt', member);
+            }
+        }
+
+        function logStreamerRoleChange(action, member) {
+            const now = new Date();
+            const tage = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+            const tagName = tage[now.getDay()];
+            const tag = now.getDate().toString().padStart(2, '0');
+            const monat = (now.getMonth() + 1).toString().padStart(2, '0');
+            const jahr = now.getFullYear();
+            const stunde = now.getHours().toString().padStart(2, '0');
+            const minute = now.getMinutes().toString().padStart(2, '0');
+            const datumUhrzeit = `${tagName}, ${tag}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
+
+            console.log(`📺 Streamer-Rolle ${action} für ${member.user.displayName} (${member.user.username})`);
+            console.log(`🕓 Datum: ${datumUhrzeit}`);
+        }
+    }
+};
+
+/*
+
+const streamingUsers = new Map(); // Streaming-Daten für User: { intervalId, startTimestamp }
+
+//// Streaming Belohnungssystem
         //const isStreaming = activities?.some(activity => activity.type === ActivityType.Streaming);
 //
         //if (isStreaming && !streamingUsers.has(member.id)) {
@@ -92,19 +126,4 @@ module.exports = {
         //        logStreamerRoleChange("entfernt", member);
         //    }
         //}
-
-        function logStreamerRoleChange(action, member) {
-            const now = new Date();
-            const tage = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-            const tagName = tage[now.getDay()];
-            const tag = now.getDate().toString().padStart(2, '0');
-            const monat = (now.getMonth() + 1).toString().padStart(2, '0');
-            const jahr = now.getFullYear();
-            const stunde = now.getHours().toString().padStart(2, '0');
-            const minute = now.getMinutes().toString().padStart(2, '0');
-            const datumUhrzeit = `${tagName}, ${tag}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
-            console.log(`Streamer-Rolle ${action} für ${member.user.displayName} (${member.user.username})`);
-            console.log(`Datum: ${datumUhrzeit}`);
-        }
-    }
-};
+*/
