@@ -10,24 +10,24 @@ module.exports = {
         const config = JSON.parse(file);
         if (newPresence.guild.id !== config.server) return;
 
-        //const member = newPresence.member;
-        //if (!member) return;
-//
-        //const role = newPresence.guild.roles.cache.get(config.vanityRole);
-        //const streamerRole = newPresence.guild.roles.cache.get('1266095218239995968');
-        //if (!role || !streamerRole) return console.log("❌ > Eine der Rollen wurde nicht gefunden");
-//
-        //// Vanity Link check
-        //const activities = member.presence?.activities;
-        //const customActivity = activities?.find(a => a.type === ActivityType.Custom);
-//
-        //if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
-        //    await member.roles.add(role).catch(() => {});
-        //} else {
-        //    if (member.roles.cache.has(role.id)) {
-        //        await member.roles.remove(role).catch(() => {});
-        //    }
-        //}
+        const member = newPresence.member;
+        if (!member) return;
+
+        const role = newPresence.guild.roles.cache.get(config.vanityRole);
+        const streamerRole = newPresence.guild.roles.cache.get('1266095218239995968');
+        if (!role || !streamerRole) return console.log("❌ > Eine der Rollen wurde nicht gefunden");
+
+        // Vanity Link check
+        const activities = member.presence?.activities;
+        const customActivity = activities?.find(a => a.type === ActivityType.Custom);
+
+        if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
+            await member.roles.add(role).catch(() => {});
+        } else {
+            if (member.roles.cache.has(role.id)) {
+                await member.roles.remove(role).catch(() => {});
+            }
+        }
 //
         //// Streaming Belohnungssystem
         //const isStreaming = activities?.some(activity => activity.type === ActivityType.Streaming);
