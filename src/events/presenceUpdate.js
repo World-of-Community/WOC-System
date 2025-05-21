@@ -81,17 +81,17 @@ module.exports = {
         //}
 
         // Streamer-Rollen-Verwaltung
-        if (isStreaming) {
-            if (!member.roles.cache.has(streamerRole.id)) {
-                await member.roles.add(streamerRole).catch(() => {});
-                logStreamerRoleChange("hinzugefügt", member);
-            }
-        } else {
-            if (member.roles.cache.has(streamerRole.id)) {
-                await member.roles.remove(streamerRole).catch(() => {});
-                logStreamerRoleChange("entfernt", member);
-            }
-        }
+        //if (isStreaming) {
+        //    if (!member.roles.cache.has(streamerRole.id)) {
+        //        await member.roles.add(streamerRole).catch(() => {});
+        //        logStreamerRoleChange("hinzugefügt", member);
+        //    }
+        //} else {
+        //    if (member.roles.cache.has(streamerRole.id)) {
+        //        await member.roles.remove(streamerRole).catch(() => {});
+        //        logStreamerRoleChange("entfernt", member);
+        //    }
+        //}
 
         function logStreamerRoleChange(action, member) {
             const now = new Date();
