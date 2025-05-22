@@ -32,7 +32,7 @@ const deployCommands = async function deploy() {
 
     try {
         await restClient.put(Routes.applicationGuildCommands(config.application, config.server), { body: commands });
-        console.log("Successfully registered Commands!");
+        console.log("✅  | Successfully registered Commands!");
     } catch (error) {
         console.error(error);
     }

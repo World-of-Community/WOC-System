@@ -70,7 +70,7 @@ const buttonConfig = {
 // Modules and Files
 const mongoose = require('mongoose');
 const threaddb = require('../Datenbank/threaddb');
-mongoose.connect(config.mongodb).then(console.log('Datenbank ist verbunden'));
+mongoose.connect(config.mongodb).then(console.log('🔗  | Datenbank ist verbunden'));
 const cron = require('node-cron');
 const giveawaydb = require('../Datenbank/giveawaydb');
 const serverdb = require('../Datenbank/serverdb');

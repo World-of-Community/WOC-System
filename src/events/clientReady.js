@@ -35,7 +35,7 @@ module.exports = {
       console.log("Server wurde nicht gefunden");
       return;
     }
-    console.log("Verbunden mit Discord");
+    console.log("💙  | Verbunden mit Discord");
 
     leaderboardSchedules(client)
 
