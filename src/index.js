@@ -182,11 +182,11 @@ const pingMessages = [
 
 // MongoDB
 mongoose.connection.on('connected', () => {
-    console.log('Verbunden mit MongoDB!');
+    console.log('🔗  | Verbunden mit MongoDB!');
 });
 
 mongoose.connection.on('error', (err) => {
-    console.error(`Verbindungsfehler: ${err.message}`);
+    console.error(`⚠️  | Verbindungsfehler: ${err.message}`);
 });
 
 // Täglich um Mitternacht (Adventskalender)
