@@ -4,7 +4,7 @@ const { CoinConfig } = require("../../../Datenbank/coindb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('coin-manage')
-    .setDescription('Coin-System konfigurieren')
+    .setDescription('» Verwalte die generierung an Coins. 🪙')
     .addIntegerOption(option =>
       option.setName('min')
         .setDescription('Minimal generierte Coins (z.B. 1)')

@@ -4,7 +4,7 @@ const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('coin')
-    .setDescription('Starte den Coin-Generator für 1 Minute (Live-Anzeige)')
+    .setDescription('» Starte den Coin-Generator für 1 Minute (Live-Anzeige). 🪙')
     .addUserOption(option =>
       option.setName('user')
         .setDescription('Benutzer, der Coins erhalten soll')
