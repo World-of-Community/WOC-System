@@ -10,9 +10,6 @@ module.exports = {
   async execute(interaction) {
     const user = interaction.options.getUser('user') || interaction.user;
 
-    // Suche nach den Coins des Benutzers in der Datenbank
-    let userCoins = await coindb.findOne({ userId: user.id });
-
     // Bots ignorieren
     if (user.bot) {
       return interaction.reply({ content: '> `❌` » Bots können keine Coins haben.', ephemeral: true });
