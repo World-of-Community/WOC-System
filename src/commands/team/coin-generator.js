@@ -22,7 +22,7 @@ module.exports = {
       const targetMember = await interaction.guild.members.fetch(targetUser.id);
 
       const totalMs = 60000; // 1 Minute
-      const intervalMs = 15000; // alle 15 Sekunden
+      const intervalMs = 3000; // alle 3 Sekunden
       const maxTicks = totalMs / intervalMs;
 
       let collectedCoins = 0;
