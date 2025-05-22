@@ -22,7 +22,10 @@ module.exports = {
     const max = interaction.options.getInteger('max');
 
     if (min < 0 || max < 1 || min > max) {
-      return interaction.reply({ content: '> `⛔` » Ungültige Werte. Stelle sicher, dass `min ≤ max` und beide ≥ 0 sind.', ephemeral: true });
+      return interaction.reply({
+        content: '> `⛔` » Ungültige Werte. Stelle sicher, dass `min ≤ max` und beide ≥ 0 sind.',
+        ephemeral: true
+      });
     }
 
     let config = await CoinConfig.findOne({ guildId: interaction.guild.id });
@@ -33,7 +36,7 @@ module.exports = {
     await config.save();
 
     await interaction.reply({
-      content: `> \`✅\` » Der Coin-Generator wurde angepasst: Generiert nun **${min}–${max} Coins** pro Sekunde.`,
+      content: `> \`✅\` » Der Coin-Generator wurde angepasst: Es werden nun **zwischen ${min.toLocaleString('de-DE')} und ${max.toLocaleString('de-DE')} Coins** pro Sekunde generiert.`,
       ephemeral: true
     });
   }
