@@ -3,7 +3,7 @@ const { CoinConfig } = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('coin')
+    .setName('coin-manage')
     .setDescription('Coin-System konfigurieren')
     .addIntegerOption(option =>
       option.setName('min')
