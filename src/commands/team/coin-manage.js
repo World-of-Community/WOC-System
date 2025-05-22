@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const CoinConfig = require('../../../Datenbank/coinConfig');
+const Coin = require('../../../Datenbank/coinConfig');
 
 module.exports = {
   data: new SlashCommandBuilder()
