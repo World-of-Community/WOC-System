@@ -1,23 +1,19 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
+const { CoinConfig } = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('coin')
-    .setDescription('Coin-System')
-    .addSubcommand(sub =>
-      sub.setName('generator-coins')
-        .setDescription('Lege fest, wie viele Coins pro Sekunde generiert werden')
-        .addIntegerOption(option =>
-          option.setName('min')
-            .setDescription('Minimal generierte Coins (z.b. 1)')
-            .setRequired(true)
-        )
-        .addIntegerOption(option =>
-          option.setName('max')
-            .setDescription('Maximal generierte Coins (z.b. 5)')
-            .setRequired(true)
-        )
+    .setDescription('Coin-System konfigurieren')
+    .addIntegerOption(option =>
+      option.setName('min')
+        .setDescription('Minimal generierte Coins (z.B. 1)')
+        .setRequired(true)
+    )
+    .addIntegerOption(option =>
+      option.setName('max')
+        .setDescription('Maximal generierte Coins (z.B. 5)')
+        .setRequired(true)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
