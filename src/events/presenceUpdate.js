@@ -53,8 +53,8 @@ module.exports = {
             const minute = now.getMinutes().toString().padStart(2, '0');
             const datumUhrzeit = `${tagName}, ${tag}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
 
-            console.log(`📺 Streamer-Rolle ${action} für ${member.user.displayName} (${member.user.username})`);
-            console.log(`🕓 Datum: ${datumUhrzeit}`);
+            console.log(`📺  | Streamer-Rolle ${action} für ${member.user.displayName} (${member.user.username})`);
+            console.log(`🕓  | Datum: ${datumUhrzeit}`);
         }
     }
 };
