@@ -49,9 +49,9 @@ module.exports = {
     let elapsed = 0;
 
     const generateCoins = async () => {
-      const randomInterval = (Math.floor(Math.random() * 5) + 1) * 60 * 1000; // 1–5 Minuten
+      const fixedInterval = 6000; // 6 Sekunden Ladezeit
 
-      if (elapsed + randomInterval > totalMs) {
+      if (elapsed + fixedInterval > totalMs) {
         let user = await Coin.findOne({ userId: targetUser.id });
         if (!user) user = new Coin({ userId: targetUser.id, coins: 0 });
 
@@ -68,11 +68,11 @@ module.exports = {
         return await interaction.editReply({ content: '> `✅` » Coin-Generator ist nun fertig. Hier ist die Übersicht:', embeds: [embed] });
       }
 
-      const coins = Math.floor(Math.random() * 4) + 1;
+      const coins = Math.floor(Math.random() * 5) + 1; // 1 bis 5 Coins
       collectedCoins += coins;
-      elapsed += randomInterval;
+      elapsed += fixedInterval;
 
-      setTimeout(generateCoins, randomInterval);
+      setTimeout(generateCoins, fixedInterval);
     };
 
     generateCoins();
