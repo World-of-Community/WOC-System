@@ -4,15 +4,11 @@ const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('coin')
-    .setDescription('Coin-System')
-    .addSubcommand(sub =>
-      sub.setName('generator')
-        .setDescription('Starte den Coin-Generator für 1 Minute (Live-Anzeige)')
-        .addUserOption(option =>
-          option.setName('user')
-            .setDescription('Benutzer, der Coins erhalten soll')
-            .setRequired(true)
-        )
+    .setDescription('Starte den Coin-Generator für 1 Minute (Live-Anzeige)')
+    .addUserOption(option =>
+      option.setName('user')
+        .setDescription('Benutzer, der Coins erhalten soll')
+        .setRequired(true)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
@@ -28,9 +24,8 @@ module.exports = {
       let collectedCoins = 0;
       let tickCount = 0;
 
-      const message = await interaction.reply({
+      await interaction.reply({
         content: `> \`⏳\` » Starte Coin-Generator für ${targetMember.displayName} für **1 Minute**...\nCoins gesammelt: **0**`,
-        fetchReply: true,
         ephemeral: true
       });
 
@@ -39,9 +34,8 @@ module.exports = {
         collectedCoins += coins;
         tickCount++;
 
-        // Nachricht aktualisieren
         await interaction.editReply({
-          content: `> \`⏳\` » Coin-Generator läuft...\n> \`🪙\` » Coins gesammelt: **${collectedCoins}**`
+          content: `> \`⏳\` » Coin-Generator läuft...\n> \`🪙\` » Coins gesammelt: **${collectedCoins.toLocaleString('de-DE')}**`
         });
 
         if (tickCount >= maxTicks) {
@@ -55,7 +49,7 @@ module.exports = {
           const embed = new EmbedBuilder()
             .setTitle(`\`🎉\` Coin-Ergebnis für ${targetUser.username}`)
             .setColor('Gold')
-            .setDescription(`**${targetUser.displayName}** hat in **1 Minute** insgesamt **${collectedCoins} Coins** gesammelt.`)
+            .setDescription(`**${targetMember.displayName}** hat in **1 Minute** insgesamt **${collectedCoins.toLocaleString('de-DE')} Coins** gesammelt.`)
             .setTimestamp();
 
           await interaction.editReply({
