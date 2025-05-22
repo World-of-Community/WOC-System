@@ -47,7 +47,7 @@ module.exports = {
           await user.save();
 
           const embed = new EmbedBuilder()
-            .setTitle(`\`🎉\` Coin-Ergebnis für ${targetUser.username}`)
+            .setTitle(`\`🪙\` Coin-Ergebnis für ${targetUser.username}`)
             .setColor('Gold')
             .setDescription(`**${targetMember.displayName}** hat in **1 Minute** insgesamt **${collectedCoins.toLocaleString('de-DE')} Coins** gesammelt.`)
             .setTimestamp();
