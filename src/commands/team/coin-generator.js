@@ -55,7 +55,7 @@ module.exports = {
           const embed = new EmbedBuilder()
             .setTitle(`\`🎉\` Coin-Ergebnis für ${targetUser.username}`)
             .setColor('Gold')
-            .setDescription(`**${targetUser.username}** hat in **1 Minute** insgesamt **${collectedCoins} Coins** gesammelt.`)
+            .setDescription(`**${targetUser.displayName}** hat in **1 Minute** insgesamt **${collectedCoins} Coins** gesammelt.`)
             .setTimestamp();
 
           await interaction.editReply({
