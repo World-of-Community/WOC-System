@@ -29,7 +29,7 @@ module.exports = {
       let tickCount = 0;
 
       const message = await interaction.reply({
-        content: `⏳ » Starte Coin-Generator für ${targetMember.displayName} für **1 Minute**...\nCoins gesammelt: **0**`,
+        content: `> \`⏳\` » Starte Coin-Generator für ${targetMember.displayName} für **1 Minute**...\nCoins gesammelt: **0**`,
         fetchReply: true,
         ephemeral: true
       });
@@ -41,7 +41,7 @@ module.exports = {
 
         // Nachricht aktualisieren
         await interaction.editReply({
-          content: `⏳ » Coin-Generator läuft...\nCoins gesammelt: **${collectedCoins}**`
+          content: `> \`⏳\` » Coin-Generator läuft...\n> \`🪙\` » Coins gesammelt: **${collectedCoins}**`
         });
 
         if (tickCount >= maxTicks) {
@@ -53,13 +53,13 @@ module.exports = {
           await user.save();
 
           const embed = new EmbedBuilder()
-            .setTitle(`🎉 Coin-Ergebnis für ${targetUser.username}`)
+            .setTitle(`\`🎉\` Coin-Ergebnis für ${targetUser.username}`)
             .setColor('Gold')
-            .setDescription(`👤 **${targetUser.username}** hat in **1 Minute** insgesamt **${collectedCoins} Coins** gesammelt.`)
+            .setDescription(`**${targetUser.username}** hat in **1 Minute** insgesamt **${collectedCoins} Coins** gesammelt.`)
             .setTimestamp();
 
           await interaction.editReply({
-            content: '✅ » Coin-Generator abgeschlossen.',
+            content: '> `✅` » Coin-Generator abgeschlossen.',
             embeds: [embed]
           });
         }
@@ -68,7 +68,7 @@ module.exports = {
     } catch (error) {
       console.error('Fehler im Coin-Generator:', error);
       if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content: '❌ Ein Fehler ist aufgetreten.', ephemeral: true });
+        await interaction.reply({ content: '> `❌` » Ein Fehler ist aufgetreten.', ephemeral: true });
       }
     }
   }
