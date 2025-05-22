@@ -18,9 +18,12 @@ module.exports = {
       return interaction.reply({ content: '> `❌` » Bots können keine Coins haben.', ephemeral: true });
     }
     
+    // Suche nach den Coins des Benutzers in der Datenbank
+    let userCoins = await Coin.findOne({ userId: user.id });
+
     if (!userCoins) {
-      // Wenn der Benutzer keine Coins hat, erstelle einen neuen Eintrag
-      userCoins = new coindb({ userId: user.id, coins: 0 });
+      // Wenn der Benutzer keine Coins hat, Eintrag mit 0 erstellen
+      userCoins = new Coin({ userId: user.id, coins: 0 });
       await userCoins.save();
     }
 
