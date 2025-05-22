@@ -25,7 +25,7 @@ module.exports = {
       let tickCount = 0;
 
       await interaction.reply({
-        content: `> \`⏳\` » Starte Coin-Generator für ${targetMember.displayName} für **1 Minute**...\nCoins gesammelt: **0**`,
+        content: `> \`⏳\` » Starte Coin-Generator für ${targetMember.displayName} für **1 Minute**...`,
         ephemeral: true
       });
 
