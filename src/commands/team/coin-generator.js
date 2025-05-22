@@ -24,13 +24,18 @@ module.exports = {
       let collectedCoins = 0;
       let tickCount = 0;
 
+      // Konfiguration abrufen
+      const config = await CoinConfig.findOne({ guildId: interaction.guild.id });
+      const min = config?.minCoins ?? 1;
+      const max = config?.maxCoins ?? 5;
+
       await interaction.reply({
         content: `> \`⏳\` » Starte Coin-Generator für <@${targetMember.id}> für **1 Minute**...`,
         ephemeral: true
       });
 
       const interval = setInterval(async () => {
-        const coins = Math.floor(Math.random() * 5) + 1;
+        const coins = Math.floor(Math.random() * (max - min + 1)) + min;
         collectedCoins += coins;
         tickCount++;
 
