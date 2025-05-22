@@ -1,8 +1,18 @@
 const mongoose = require('mongoose');
 
 const coinSchema = new mongoose.Schema({
-    userId: String,
-    coins: { type: Number, default: 0 },
+    userId: { type: String, required: true },
+    coins: { type: Number, default: 0 }
 });
 
-module.exports = mongoose.model('Coin', coinSchema);
+const coinConfigSchema = new mongoose.Schema({
+    guildId: { type: String, required: true, unique: true },
+    minCoins: { type: Number, default: 1 },
+    maxCoins: { type: Number, default: 5 }
+});
+
+module.exports = {
+    Coin: mongoose.model('Coin', coinSchema),
+    CoinConfig: mongoose.model('CoinConfig', coinConfigSchema)
+};
+
