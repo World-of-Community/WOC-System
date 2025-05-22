@@ -4,43 +4,53 @@ const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('coin')
-    .setDescription('» Starte den Coin-Generator für 1 Minute (Live-Anzeige). 🪙')
+    .setDescription('» Starte den Coin-Generator für 1 Minute mit Live-Anzeige. 🪙')
     .addUserOption(option =>
       option.setName('user')
         .setDescription('Benutzer, der Coins erhalten soll')
         .setRequired(true)
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     try {
       const targetUser = interaction.options.getUser('user');
       const targetMember = await interaction.guild.members.fetch(targetUser.id);
 
-      const totalMs = 60000; // 1 Minute
-      const intervalMs = 3000; // alle 3 Sekunden
+      const totalMs = 60_000; // 1 Minute
+      const intervalMs = 3_000; // alle 3 Sekunden
       const maxTicks = totalMs / intervalMs;
 
       let collectedCoins = 0;
       let tickCount = 0;
 
-      // Konfiguration abrufen
+      // Konfiguration abrufen oder Standardwerte setzen
       const config = await CoinConfig.findOne({ guildId: interaction.guild.id });
       const min = config?.minCoins ?? 1;
       const max = config?.maxCoins ?? 5;
+
+      if (min > max || min < 0 || max < 1) {
+        return interaction.reply({
+          content: '> `⛔` » Ungültige Coin-Konfiguration. Bitte überprüfe die Einstellungen mit `/coin-manage`.',
+          ephemeral: true
+        });
+      }
 
       await interaction.reply({
         content: `> \`⏳\` » Starte Coin-Generator für <@${targetMember.id}> für **1 Minute**...`,
         ephemeral: true
       });
 
+      const message = await interaction.fetchReply();
+
       const interval = setInterval(async () => {
         const coins = Math.floor(Math.random() * (max - min + 1)) + min;
         collectedCoins += coins;
         tickCount++;
 
+        // Live-Update
         await interaction.editReply({
-          content: `> \`⏳\` » Coin-Generator läuft...\n> \`🪙\` » Coins gesammelt: **${collectedCoins.toLocaleString('de-DE')}**`
+          content: `> \`⏳\` » Coin-Generator läuft für <@${targetMember.id}>...\n> \`🪙\` » Coins gesammelt: **${collectedCoins.toLocaleString('de-DE')}**`
         });
 
         if (tickCount >= maxTicks) {
@@ -52,9 +62,10 @@ module.exports = {
           await user.save();
 
           const embed = new EmbedBuilder()
-            .setTitle(`\`🪙\` Coin-Ergebnis für ${targetUser.username}`)
+            .setTitle(`\`🪙\` Coin-Ergebnis`)
             .setColor('Gold')
-            .setDescription(`<@${targetMember.id}> hat in **1 Minute** insgesamt **${collectedCoins.toLocaleString('de-DE')} Coins** gesammelt.`)
+            .setDescription(`> <@${targetUser.id}> hat in **1 Minute** insgesamt **${collectedCoins.toLocaleString('de-DE')} Coins** gesammelt.`)
+            .setFooter({ text: `Coin-Bereich: ${min}–${max} Coins pro Tick` })
             .setTimestamp();
 
           await interaction.editReply({
@@ -67,7 +78,7 @@ module.exports = {
     } catch (error) {
       console.error('Fehler im Coin-Generator:', error);
       if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content: '> `❌` » Ein Fehler ist aufgetreten.', ephemeral: true });
+        await interaction.reply({ content: '> `❌` » Ein unerwarteter Fehler ist aufgetreten.', ephemeral: true });
       }
     }
   }
