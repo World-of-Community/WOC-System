@@ -24,6 +24,7 @@ module.exports = {
   async execute(interaction) {
     const input = interaction.options.getString('zeit').toLowerCase();
     const targetUser = interaction.options.getUser('user');
+    const targetMember = await interaction.guild.members.fetch(targetUser.id);
 
     const hMatch = input.match(/(\d+)\s*h/);
     const mMatch = input.match(/(\d+)\s*m/);
@@ -41,7 +42,7 @@ module.exports = {
     const endTimestamp = Date.now() + totalMs;
 
     await interaction.reply({
-      content: `> \`⏳\` » Starte Coin-Generator für ${targetUser.username} für **${hours}h ${minutes}m**...`,
+      content: `> \`⏳\` » Starte Coin-Generator für ${targetMember.displayName} (${targetUser.username}) für **${hours}h ${minutes}m**...`,
       ephemeral: true
     });
 
@@ -49,7 +50,7 @@ module.exports = {
     let elapsed = 0;
 
     const generateCoins = async () => {
-      const fixedInterval = 6000; // 6 Sekunden Ladezeit
+      const fixedInterval = 6000; // 6 Sekunden
 
       if (elapsed + fixedInterval > totalMs) {
         let user = await Coin.findOne({ userId: targetUser.id });
@@ -65,7 +66,11 @@ module.exports = {
           .setFooter({ text: `Ende war: <t:${Math.floor(endTimestamp / 1000)}:F>` })
           .setTimestamp();
 
-        return await interaction.editReply({ content: '> `✅` » Coin-Generator ist nun fertig. Hier ist die Übersicht:', embeds: [embed] });
+        // editReply darf kein ephemeral haben!
+        return await interaction.editReply({
+          content: '> `✅` » Coin-Generator ist nun fertig. Hier ist die Übersicht:',
+          embeds: [embed]
+        });
       }
 
       const coins = Math.floor(Math.random() * 5) + 1; // 1 bis 5 Coins
