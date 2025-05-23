@@ -1,20 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const mongoose = require('mongoose');
-
-// Beispiel: Schema für Teams (muss angepasst werden)
-const TeamSchema = new mongoose.Schema({
-  name: String,
-  liga: String, // 'pro' oder '2liga'
-  spiele: Number,
-  siege: Number,
-  unentschieden: Number,
-  niederlagen: Number,
-  tore: Number,
-  gegnerTore: Number,
-  punkte: Number
-});
-
-const Team = mongoose.model('Team', TeamSchema);
+const { Team, Match } = require('../../../Datenbank/fussballdb');
 
 // Pro League Teams (24 feste Namen)
 const proLeagueTeams = [
