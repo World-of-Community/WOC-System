@@ -104,6 +104,7 @@ module.exports = {
       .setDescription(createTableDescription(zweiteLigaData))
       .setColor('Green');
 
-    await interaction.reply({ embeds: [embedProLeague, embedZweiteLiga] });
+    await interaction.channel.send({ embeds: [embedProLeague, embedZweiteLiga] })
+    await interaction.reply({ content: 'erfolgreich gesendet', ephemeral: true });
   }
 };
