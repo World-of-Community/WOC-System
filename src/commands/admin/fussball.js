@@ -1,137 +1,170 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { FussballMatch, FussballTeam } = require('../../../Datenbank/fussballteam');
+
+// Pro League Teams (24 feste Namen)
+const proLeagueTeams = [
+  'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
+  'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
+  'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
+  'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
+  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
+];
+
+// 2. Liga Teams (Beispiel: 60 Kandidaten, du kannst 48 davon nehmen)
+const allSecondLeagueCandidates = [
+  'FC Drachen', 'SV Panther', 'TSV Adlerhorst', 'SC Tiger', 'VfB Falken',
+  'FC Wölfe', 'SV Bären', 'TSV Löwenherz', 'SC Eichenwald', 'VfB Stürmer',
+  'FC Geier', 'SV Habichte', 'TSV Felsen', 'SC Blitz', 'VfB Titan',
+  'FC Komet', 'SV Donner', 'TSV Sturmvogel', 'SC Nebel', 'VfB Gladius',
+  'FC Sturm', 'SV Schatten', 'TSV Phönix', 'SC Wogen', 'VfB Gletscher',
+  'FC Sturmwind', 'SV Flamme', 'TSV Falkenberg', 'SC Pegasus', 'VfB Erle',
+  'FC Blitzschlag', 'SV Eisvogel', 'TSV Sternenkrieger', 'SC Löwenmut', 'VfB Himmel',
+  'FC Wolfspfad', 'SV Fuchs', 'TSV Mondlicht', 'SC Sturmflut', 'VfB Nebula',
+  'FC Krieger', 'SV Orkan', 'TSV Gletscher', 'SC Wildfang', 'VfB Donnerfaust',
+  'FC Sturmjäger', 'SV Fluss', 'TSV Felswand', 'SC Eisdorn', 'VfB Feuer',
+  'FC Titanen', 'SV Falkenhorst', 'TSV Silber', 'SC Golden', 'VfB Adlerblick',
+  'FC Eiswolf', 'SV Schattenläufer', 'TSV Blitzen', 'SC Nebelschleier', 'VfB Flügel'
+];
+
+// Emojis für Pro League Teams (du kannst hier auch noch die 2. Liga ergänzen)
+const teamIcons = {
+  'FC Adler': '🦅',
+  'SV Löwen': '🦁',
+  'TSV Eiche': '🌳',
+  'SC Blau': '🔵',
+  'VfB Stern': '⭐',
+  'FC Rot-Weiß': '🔴⚪',
+  'SV Grünwald': '🌲',
+  'TSV Nord': '❄️',
+  'SC Süd': '☀️',
+  'VfB West': '🌅',
+  'FC Ostwind': '🌬️',
+  'SV Nordstern': '🌟',
+  'TSV Berg': '⛰️',
+  'SC Tal': '🏞️',
+  'VfB See': '🌊',
+  'FC Sturm': '🌪️',
+  'SV Blitz': '⚡',
+  'TSV Vulkan': '🌋',
+  'SC Frost': '❄️',
+  'VfB Flamme': '🔥',
+  'FC Donner': '⛈️',
+  'SV Schatten': '🌑',
+  'TSV Nebel': '🌫️',
+  'SC Licht': '💡'
+};
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball')
-    .setDescription('Starte ein Fußballspiel mit echten Teams und Spielern!')
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    .setDescription('Starte ein Fußballspiel und tippe, wer gewinnt!'),
 
   async execute(interaction) {
-    await interaction.deferReply();
+    // Alle Teams aus der DB laden
+    const allTeams = await FussballTeam.find({});
+    if (allTeams.length < 2) {
+      return interaction.reply({ content: 'Es sind nicht genug Teams in der Datenbank.', ephemeral: true });
+    }
 
-    // Teams und ihre Spieler
-    const teamData = {
-      'FC Adler': ['Müller', 'Becker', 'Krause', 'Falk', 'Schwarz'],
-      'SV Löwen': ['Schmidt', 'Wagner', 'Hahn', 'Zimmermann', 'Pohl'],
-      'TSV Blitz': ['Bergmann', 'Klein', 'Voigt', 'Arnold', 'Franz'],
-      'SC Phönix': ['Lorenz', 'Brandt', 'Fuchs', 'Sauer', 'Horn'],
-      'Rot-Weiß': ['Jansen', 'Meier', 'Koch', 'Albrecht', 'Schulte'],
-      'Blau-Gelb': ['Neumann', 'Fischer', 'Hartmann', 'Seidel', 'Engel'],
-      'SV Sturm': ['Lange', 'Dietrich', 'Bauer', 'Schreiber', 'Graf'],
-      'VfB Dynamit': ['Beck', 'Kraus', 'Simon', 'Jung', 'Wolf'],
-      'TSV Könige': ['Peters', 'Brand', 'Schmitt', 'Friedrich', 'Lang'],
-      'FC Titan': ['Mayer', 'Keller', 'Hart', 'Richter', 'Wendt'],
-      'SV Adlerhorst': ['Zimmer', 'Krüger', 'Friedrich', 'Böhm', 'Voigt'],
-      'VfL Stürmer': ['Kuhn', 'Bauer', 'Maier', 'Fischer', 'Brandt'],
-      'SG Blitzschlag': ['Graf', 'Schmidt', 'Lang', 'Heinrich', 'Schulz'],
-      'FC Drachen': ['Schulze', 'Keller', 'Becker', 'Hoffmann', 'Wolfgang'],
-      'TSV Titanen': ['Jung', 'Fischer', 'Koch', 'Zimmermann', 'Schmidt'],
-      'SV Panther': ['Hahn', 'Lange', 'Bauer', 'Engel', 'Meier'],
-      'VfR Sturm': ['Schulz', 'Neumann', 'Lorenz', 'Brandt', 'Seidel'],
-      'FC Falken': ['Kraus', 'Wolf', 'Jansen', 'Simon', 'Richter']
-    };
+    // Zwei verschiedene Teams zufällig auswählen
+    const [team1, team2] = getTwoDifferentTeams(allTeams);
 
-    // Emojis als Team-Icons/Farben
-    const teamColors = {
-      'FC Adler': '🦅',
-      'SV Löwen': '🦁',
-      'TSV Blitz': '⚡',
-      'SC Phönix': '🔥',
-      'Rot-Weiß': '🔴⚪',
-      'Blau-Gelb': '🔵💛',
-      'SV Sturm': '🌪️',
-      'VfB Dynamit': '💥',
-      'TSV Könige': '👑',
-      'FC Titan': '🛡️',
-      'SV Adlerhorst': '🦅',
-      'VfL Stürmer': '🎯',
-      'SG Blitzschlag': '⚡',
-      'FC Drachen': '🐉',
-      'TSV Titanen': '🛡️',
-      'SV Panther': '🐆',
-      'VfR Sturm': '🌪️',
-      'FC Falken': '🦅'
-    };
+    // Emojis oder Default-Emoji
+    const icon1 = teamIcons[team1.name] || '⚽';
+    const icon2 = teamIcons[team2.name] || '⚽';
 
-    const allTeams = Object.keys(teamData);
-
-    // Zufällige Auswahl von zwei unterschiedlichen Teams
-    let team1, team2;
-    do {
-      team1 = allTeams[Math.floor(Math.random() * allTeams.length)];
-      team2 = allTeams[Math.floor(Math.random() * allTeams.length)];
-    } while (team1 === team2);
-
-    const score = { [team1]: 0, [team2]: 0 };
-    const xG = { [team1]: 0, [team2]: 0 };
-    let minute = 0;
-    const log = [];
-
-    // Initiales Embed mit Spielstart-Infos
+    // Embed bauen
     const embed = new EmbedBuilder()
-      .setTitle(`🏟️ Fußballspiel: ${teamColors[team1]} ${team1} vs. ${teamColors[team2]} ${team2}`)
-      .setColor('Green')
-      .setDescription('Das Spiel beginnt...')
-      .addFields(
-        { name: 'Spielminute', value: '0\'', inline: true },
-        { name: 'Spielstand', value: `0 : 0`, inline: true },
-        { name: 'xG', value: `0.00 : 0.00`, inline: true },
-        { name: 'Tore', value: 'Noch keine Tore...' }
-      );
+      .setTitle(`⚽ Fußballspiel: ${icon1} ${team1.name} vs. ${icon2} ${team2.name}`)
+      .setDescription('Tippe, wer gewinnt, oder ob es ein Unentschieden wird!');
 
-    const message = await interaction.editReply({ embeds: [embed] });
+    // Buttons bauen
+    const buttons = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('win_team1')
+        .setLabel(`${icon1} ${team1.name} gewinnt`)
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId('draw')
+        .setLabel('Unentschieden')
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('win_team2')
+        .setLabel(`${icon2} ${team2.name} gewinnt`)
+        .setStyle(ButtonStyle.Primary),
+    );
 
-    // Simulation des Spiels im 5-Minuten-Takt (alle 5 Sekunden in Echtzeit)
-    const interval = setInterval(async () => {
-      minute += 5;
+    // Antwort senden
+    await interaction.reply({ embeds: [embed], components: [buttons] });
 
-      // Spielende nach 90 Minuten
-      if (minute > 90) {
-        clearInterval(interval);
+    // Collector filtert auf den Nutzer, der den Befehl ausgeführt hat
+    const filter = i => i.user.id === interaction.user.id;
+    const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 60000 });
 
-        embed
-          .setTitle(`🏁 Spiel beendet: ${teamColors[team1]} ${team1} vs. ${teamColors[team2]} ${team2}`)
-          .setDescription('Das Spiel ist vorbei.')
-          .spliceFields(0, 4,
-            { name: 'Endstand', value: `${teamColors[team1]} ${team1} ${score[team1]} : ${score[team2]} ${teamColors[team2]} ${team2}` },
-            { name: 'xG Endstand', value: `${xG[team1].toFixed(2)} : ${xG[team2].toFixed(2)}`, inline: true },
-            { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Keine Tore im Spiel.' }
-          )
-          .setColor('Gold');
-
-        await message.edit({ embeds: [embed] });
+    collector.on('collect', async i => {
+      if (!filter(i)) {
+        await i.reply({ content: 'Du kannst hier nicht tippen!', ephemeral: true });
         return;
       }
 
-      // Torchance ca. 30%
-      if (Math.random() < 0.3) {
-        const scoringTeam = Math.random() < 0.5 ? team1 : team2;
-        const players = teamData[scoringTeam];
-        const scorer = players[Math.floor(Math.random() * players.length)];
-        score[scoringTeam]++;
-
-        const chanceXG = (Math.random() * 0.4) + 0.1;
-        xG[scoringTeam] += chanceXG;
-
-        log.push(`⚽ ${minute}. Minute: ${scorer} (${teamColors[scoringTeam]} ${scoringTeam}) [xG: ${chanceXG.toFixed(2)}]`);
+      let ergebnis, punkteTeam1 = 0, punkteTeam2 = 0;
+      if (i.customId === 'win_team1') {
+        ergebnis = `${team1.name} gewinnt`;
+        punkteTeam1 = 3;
+      } else if (i.customId === 'win_team2') {
+        ergebnis = `${team2.name} gewinnt`;
+        punkteTeam2 = 3;
       } else {
-        // Kleine xG-Erhöhung ohne Tor (10% Chance)
-        if (Math.random() < 0.1) {
-          const teamForXG = Math.random() < 0.5 ? team1 : team2;
-          const chanceXG = (Math.random() * 0.09) + 0.01;
-          xG[teamForXG] += chanceXG;
-        }
+        ergebnis = 'Unentschieden';
+        punkteTeam1 = 1;
+        punkteTeam2 = 1;
       }
 
-      // Aktualisiere das Embed mit aktuellem Spielstand
-      embed.spliceFields(0, 4,
-        { name: 'Spielminute', value: `${minute}'`, inline: true },
-        { name: 'Spielstand', value: `${score[team1]} : ${score[team2]}`, inline: true },
-        { name: 'xG', value: `${xG[team1].toFixed(2)} : ${xG[team2].toFixed(2)}`, inline: true },
-        { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Noch keine Tore...' }
-      );
+      // Datenbank updaten
+      await updateTeamStats(team1.name, punkteTeam1, punkteTeam2);
+      await updateTeamStats(team2.name, punkteTeam2, punkteTeam1);
 
-      await message.edit({ embeds: [embed] });
-    }, 5000); // alle 5 Sekunden = 5 Minuten Spielzeit
-  },
+      // Embed updaten und Buttons entfernen
+      embed.setDescription(`Ergebnis: **${ergebnis}**`);
+      await i.update({ embeds: [embed], components: [] });
+
+      collector.stop();
+    });
+
+    collector.on('end', collected => {
+      if (collected.size === 0) {
+        interaction.editReply({ content: 'Zeit abgelaufen, kein Tipp abgegeben.', components: [] });
+      }
+    });
+  }
 };
+
+// Funktion, um zwei unterschiedliche Teams aus einem Array zu holen
+function getTwoDifferentTeams(teams) {
+  let team1Index = Math.floor(Math.random() * teams.length);
+  let team2Index;
+  do {
+    team2Index = Math.floor(Math.random() * teams.length);
+  } while (team2Index === team1Index);
+
+  return [teams[team1Index], teams[team2Index]];
+}
+
+// Funktion zum Updaten der Team-Statistiken in der DB
+async function updateTeamStats(teamName, punkte, gegnerPunkte) {
+  const team = await FussballTeam.findOne({ name: teamName });
+  if (!team) return;
+
+  team.played++;
+  if (punkte === 3) team.won++;
+  else if (punkte === 1) team.draw++;
+  else team.lost++;
+
+  team.goalsFor += punkte;
+  team.goalsAgainst += gegnerPunkte;
+
+  team.points += punkte;
+  team.goalDifference = team.goalsFor - team.goalsAgainst;
+
+  await team.save();
+}
