@@ -64,7 +64,8 @@ module.exports = {
         .setDescription(description)
         .setColor('Blue');
 
-      await interaction.reply({ embeds: [embed] });
+      await interaction.channel.send({ embeds: [embed] })
+      await interaction.reply({ content: 'gesendet', ephemeral: true });
 
     } catch (error) {
       console.error('Fehler beim Anzeigen der Pro League Tabelle:', error);
