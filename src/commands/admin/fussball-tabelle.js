@@ -1,5 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb');
+const { EmbedBuilder } = require('discord.js');
+const { Team } = require('../Datenbank/fussballdb');
+const EmbedDB = require('../Datenbank/embeddb'); // Sammlung zum Speichern von Message/Channel-ID
 
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
@@ -9,69 +10,60 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('fussball-tabelle')
-    .setDescription('Zeigt die aktuelle Tabelle der Pro League'),
+module.exports = async function updateTabelleEmbed(client) {
+  try {
+    const allTeams = await Team.find({ league: 'Pro League' });
+    const teamMap = new Map(allTeams.map(t => [t.name.trim(), t.toObject()]));
 
-  async execute(interaction) {
-    try {
-      // Teams aus DB laden (nur Pro League)
-      const alleTeams = await Team.find({ league: 'Pro League' });
-
-      // Map der Teams für schnellen Zugriff
-      const teamMap = new Map(alleTeams.map(team => [team.name.trim(), team.toObject()]));
-
-      // Fehlende Teams mit Default-Daten ergänzen
-      for (const name of proLeagueTeams) {
-        if (!teamMap.has(name)) {
-          teamMap.set(name, {
-            name,
-            played: 0,
-            won: 0,
-            draw: 0,
-            lost: 0,
-            goalsFor: 0,
-            goalsAgainst: 0,
-            goalDifference: 0,
-            points: 0,
-            yellowCards: 0,
-            redCards: 0
-          });
-        }
-      }
-
-      // Sortierung nach Punkten, dann Torverhältnis
-      const proLeagueData = Array.from(teamMap.values())
-        .map(team => {
-          team.goalDifference = team.goalsFor - team.goalsAgainst;
-          team.points = (team.won * 3) + team.draw;
-          return team;
-        })
-        .sort((a, b) => {
-          if (b.points !== a.points) return b.points - a.points;
-          return b.goalDifference - a.goalDifference;
+    for (const name of proLeagueTeams) {
+      if (!teamMap.has(name)) {
+        teamMap.set(name, {
+          name,
+          played: 0,
+          won: 0,
+          draw: 0,
+          lost: 0,
+          goalsFor: 0,
+          goalsAgainst: 0,
+          goalDifference: 0,
+          points: 0,
+          yellowCards: 0,
+          redCards: 0
         });
-
-      // Embed-Beschreibung aufbauen (max 4096 Zeichen beachten)
-      const description = proLeagueData.map((team, i) => 
-        `**${i + 1}. ${team.name}** - ${team.points} Pkt | Spiele: ${team.played} | S: ${team.won} | U: ${team.draw} | N: ${team.lost} | Tore: ${team.goalsFor}:${team.goalsAgainst} (TV: ${team.goalDifference})`
-      ).join('\n');
-
-      const embed = new EmbedBuilder()
-        .setTitle('⚽ Pro League Tabelle')
-        .setDescription(description)
-        .setColor('Blue');
-
-      // Antwort per Interaction senden (ephemeral + Channel Nachricht)
-      await interaction.reply({ content: 'Tabelle wird angezeigt...', ephemeral: true });
-      await interaction.channel.send({ embeds: [embed] });
-
-    } catch (error) {
-      console.error('Fehler beim Anzeigen der Pro League Tabelle:', error);
-      if (!interaction.replied) {
-        await interaction.reply({ content: '❌ Fehler beim Abrufen der Tabelle.', ephemeral: true });
       }
     }
+
+    const proLeagueData = Array.from(teamMap.values())
+      .map(t => {
+        t.goalDifference = t.goalsFor - t.goalsAgainst;
+        t.points = (t.won * 3) + t.draw;
+        return t;
+      })
+      .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
+
+    const description = proLeagueData.map((t, i) =>
+      `**${i + 1}. ${t.name}** - ${t.points} Pkt | Spiele: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | Tore: ${t.goalsFor}:${t.goalsAgainst} (TV: ${t.goalDifference})`
+    ).join('\n');
+
+    const embed = new EmbedBuilder()
+      .setTitle('⚽ Pro League Tabelle')
+      .setDescription(description)
+      .setColor('Blue')
+      .setTimestamp();
+
+    // Nachricht-ID + Channel-ID aus DB holen
+    const embedData = await EmbedDB.findOne({ name: 'proleague_tabelle' });
+    if (!embedData) return console.warn('Tabelle-Embed nicht gespeichert.');
+
+    const channel = await client.channels.fetch(embedData.channelId);
+    if (!channel) return console.warn('Kanal nicht gefunden.');
+    const message = await channel.messages.fetch(embedData.messageId);
+    if (!message) return console.warn('Nachricht nicht gefunden.');
+
+    // Embed aktualisieren
+    await message.edit({ embeds: [embed] });
+
+  } catch (err) {
+    console.error('Fehler beim Aktualisieren der Tabelle:', err);
   }
 };
