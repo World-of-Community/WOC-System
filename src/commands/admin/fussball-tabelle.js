@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
-const { Team } = require('../Datenbank/fussballdb');
-const EmbedDB = require('../Datenbank/embeddb'); // Sammlung zum Speichern von Message/Channel-ID
+const { Team } = require('../../../Datenbank/fussballdb');
+const EmbedDB = require('../../../Datenbank/embeddb'); // Sammlung zum Speichern von Message/Channel-ID
 
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
