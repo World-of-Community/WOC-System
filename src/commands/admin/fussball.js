@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { fussballdb } = require('../../../Datenbank/fussballdb'); // Dein DB-Modell, z.B. Mongoose Model
+const { Team } = require('../../../Datenbank/fussballdb'); // Korrekte Modell-Import
 
 // Feste Teams der Pro League (24 Teams)
 const proLeagueTeams = [
@@ -7,7 +7,7 @@ const proLeagueTeams = [
   'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
   'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
   'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
-  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
+  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht',
 ];
 
 // Emojis für Pro League Teams
@@ -46,15 +46,15 @@ module.exports = {
   async execute(interaction) {
     try {
       // Alle Teams aus der DB laden
-      const allTeams = await fussballdb.find({});
+      const allTeams = await Team.find({});
 
       if (allTeams.length < 2) {
         return interaction.reply({ content: 'Es sind nicht genug Teams in der Datenbank.', ephemeral: true });
       }
 
       // 1. Liga (Pro League) und 2. Liga filtern
-      const proLeague = allTeams.filter(t => t.league === 'pro');
-      let secondLeague = allTeams.filter(t => t.league === 'second');
+      const proLeague = allTeams.filter(t => t.league === 'Pro League'); // Pass auf: league enum exakt nutzen
+      let secondLeague = allTeams.filter(t => t.league === '2. League');
 
       // Für 2. Liga nur maximal 38 Teams zufällig auswählen, falls mehr
       if (secondLeague.length > 38) {
@@ -102,7 +102,7 @@ module.exports = {
       const collector = interaction.channel.createMessageComponentCollector({
         filter,
         componentType: ComponentType.Button,
-        time: 60000
+        time: 60000,
       });
 
       collector.on('collect', async i => {
@@ -142,14 +142,13 @@ module.exports = {
           interaction.editReply({ content: 'Zeit abgelaufen, kein Tipp abgegeben.', components: [] });
         }
       });
-
     } catch (error) {
       console.error('Fehler im /fussball Command:', error);
       if (!interaction.replied) {
-        return interaction.reply({ content: 'Es ist ein Fehler aufgetreten.', ephemeral: true });
+        await interaction.reply({ content: 'Es ist ein Fehler aufgetreten.', ephemeral: true });
       }
     }
-  }
+  },
 };
 
 // Hilfsfunktion: zwei verschiedene Teams aus Array holen
@@ -169,12 +168,18 @@ function getRandomElements(arr, n) {
   return shuffled.slice(0, n);
 }
 
-// Update Team Stats in der DB (Beispiel mit Mongoose)
-// "points" und "conceded" müssen in deinem Schema existieren
+// Update Team Stats in der DB
 async function updateTeamStats(teamName, punkte, gegenPunkte) {
-  await fussballdb.findOneAndUpdate(
+  await Team.findOneAndUpdate(
     { name: teamName },
-    { $inc: { points: punkte, conceded: gegenPunkte } },
+    { 
+      $inc: { 
+        points: punkte, 
+        goalsAgainst: gegenPunkte, // Falls du das so tracken willst
+        played: 1,
+        // ggf. weitere Felder wie won, lost, draw etc. je nach Ergebnis
+      }
+    },
     { upsert: true }
   );
 }
