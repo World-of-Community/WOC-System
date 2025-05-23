@@ -7,6 +7,8 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
+    // Defer ohne ephemeral, damit Antwort für alle sichtbar wird
+    await interaction.deferReply();
 
     const teamData = {
       'FC Adler': ['Müller', 'Becker', 'Krause', 'Falk', 'Schwarz'],
@@ -53,6 +55,7 @@ module.exports = {
         { name: 'Tore', value: 'Noch keine Tore...' }
       );
 
+    // Antwort mit initialem Embed senden
     const message = await interaction.editReply({ embeds: [embed] });
 
     const interval = setInterval(async () => {
