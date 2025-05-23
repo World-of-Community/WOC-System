@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb');
+const Team = require('../../../Datenbank/fussballdb');  // Pfad zu deinem Mongoose Modell
 
-// Pro League Teams (24 feste Namen)
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
   'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
@@ -17,60 +16,63 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      // Alle Teams aus der DB laden
-      const alleTeams = await Team.find({});
-      
-      // Map zum schnellen Zugriff
+      // Teams aus DB laden, nur Pro League
+      const alleTeams = await Team.find({ league: 'Pro League' });
       const teamMap = new Map();
+
       for (const team of alleTeams) {
-        const name = team.name.trim();
-        teamMap.set(name, team);
+        teamMap.set(team.name.trim(), team);
       }
 
-      // Fehlende Pro League Teams ergänzen mit Default-Werten
+      // Fehlende Teams mit Defaultwerten ergänzen
       for (const name of proLeagueTeams) {
         if (!teamMap.has(name)) {
           teamMap.set(name, {
             name,
-            spiele: 0,
-            siege: 0,
-            unentschieden: 0,
-            niederlagen: 0,
-            tore: 0,
-            gegnerTore: 0,
-            punkte: 0
+            played: 0,
+            won: 0,
+            draw: 0,
+            lost: 0,
+            goalsFor: 0,
+            goalsAgainst: 0,
+            goalDifference: 0,
+            points: 0,
+            yellowCards: 0,
+            redCards: 0
           });
         }
       }
 
-      // Sortieren nach Punkten und Torverhältnis
+      // Teams nach Punkten & Torverhältnis sortieren
       const proLeagueData = proLeagueTeams
-        .map(name => teamMap.get(name))
+        .map(name => {
+          const team = teamMap.get(name);
+          team.goalDifference = team.goalsFor - team.goalsAgainst;
+          team.points = (team.won * 3) + team.draw;
+          return team;
+        })
         .sort((a, b) => {
-          if (b.punkte !== a.punkte) return b.punkte - a.punkte;
-          const tvB = b.tore - b.gegnerTore;
-          const tvA = a.tore - a.gegnerTore;
-          return tvB - tvA;
+          if (b.points !== a.points) return b.points - a.points;
+          return b.goalDifference - a.goalDifference;
         });
 
-      // Tabellenbeschreibung erstellen
-      const description = proLeagueData.map((team, i) => {
-        const tv = team.tore - team.gegnerTore;
-        return `**${i + 1}. ${team.name}** - ${team.punkte} Pkt | Spiele: ${team.spiele} | S: ${team.siege} | U: ${team.unentschieden} | N: ${team.niederlagen} | Tore: ${team.tore}:${team.gegnerTore} (TV: ${tv})`;
-      }).join('\n') || 'Keine Daten vorhanden.';
+      // Embed-Beschreibung erstellen
+      const description = proLeagueData.map((team, i) => 
+        `**${i + 1}. ${team.name}** - ${team.points} Pkt | Spiele: ${team.played} | S: ${team.won} | U: ${team.draw} | N: ${team.lost} | Tore: ${team.goalsFor}:${team.goalsAgainst} (TV: ${team.goalDifference})`
+      ).join('\n');
 
       const embed = new EmbedBuilder()
         .setTitle('⚽ Pro League Tabelle')
         .setDescription(description)
         .setColor('Blue');
 
-      await interaction.channel.send({ embeds: [embed] })
-      await interaction.reply({ content: 'gesendet', ephemeral: true });
+      await interaction.channel.send({ embeds: [embed] });
+      await interaction.reply({ content: 'Tabelle gesendet.', ephemeral: true });
 
     } catch (error) {
       console.error('Fehler beim Anzeigen der Pro League Tabelle:', error);
       if (!interaction.replied) {
-        await interaction.reply({ content: '❌ Beim Abrufen der Tabelle ist ein Fehler aufgetreten.', ephemeral: true });
+        await interaction.reply({ content: '❌ Fehler beim Abrufen der Tabelle.', ephemeral: true });
       }
     }
   }
