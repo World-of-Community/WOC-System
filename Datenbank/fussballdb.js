@@ -1,6 +1,6 @@
+// fussballdb.js (Datenbank-Schema und Model)
 const mongoose = require('mongoose');
 
-// Team-Schema (nur Pro League)
 const teamSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   league: { type: String, enum: ["Pro League"], required: true },
@@ -16,7 +16,6 @@ const teamSchema = new mongoose.Schema({
   redCards: { type: Number, default: 0 }
 });
 
-// Match-Schema mit eingebetteten Team-Objekten
 const matchSchema = new mongoose.Schema({
   team1: { type: teamSchema, required: true },
   team2: { type: teamSchema, required: true },

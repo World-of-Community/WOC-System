@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb');
+const { Team } = require('../../Datenbank/fussballdb');
 
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
@@ -113,7 +113,7 @@ module.exports = {
   },
 };
 
-// Zwei verschiedene Teams zufällig auswählen
+// Helfer: Zwei verschiedene Teams zufällig auswählen
 function getTwoDifferentTeams(teams) {
   if (teams.length < 2) throw new Error('Mindestens zwei Teams benötigt.');
   const team1Index = Math.floor(Math.random() * teams.length);
@@ -124,10 +124,11 @@ function getTwoDifferentTeams(teams) {
   return [teams[team1Index], teams[team2Index]];
 }
 
-// Team-Daten aktualisieren (Punkte & Spiele)
+// Helfer: Team-Daten aktualisieren (Punkte & Spiele)
 async function updateTeamStats(teamName, punkte) {
   try {
-    // Optional: Wenn Team nicht existiert, anlegen
+    console.log(`[Fussball] UpdateTeamStats für ${teamName} mit ${punkte} Punkten`);
+
     const result = await Team.findOneAndUpdate(
       { name: teamName },
       {
@@ -139,8 +140,9 @@ async function updateTeamStats(teamName, punkte) {
           lost: punkte === 0 ? 1 : 0,
         },
       },
-      { upsert: true, new: true } // upsert: true für anlegen falls nicht vorhanden
+      { upsert: true, new: true }
     );
+
     console.log(`[Fussball] Team ${teamName} aktualisiert:`, result);
   } catch (error) {
     console.error(`Fehler beim Update von Team ${teamName}:`, error);
