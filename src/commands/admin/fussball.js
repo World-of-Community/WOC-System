@@ -36,11 +36,9 @@ module.exports = {
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
 
-      // Nachnamen extrahieren (alles nach dem ersten Wort)
       const team1LastName = team1.name.split(' ').slice(1).join(' ') || team1.name;
       const team2LastName = team2.name.split(' ').slice(1).join(' ') || team2.name;
 
-      // Erst einmal Tipp abfragen
       const embed = new EmbedBuilder()
         .setTitle(`⚽ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
         .setDescription('Tippe, wer gewinnt, oder ob es ein Unentschieden wird!')
@@ -71,7 +69,6 @@ module.exports = {
       });
 
       collector.on('collect', async i => {
-        // Tipp speichern
         let userTip;
         switch (i.customId) {
           case 'win_team1':
@@ -91,7 +88,6 @@ module.exports = {
 
         collector.stop();
 
-        // Spiel starten und Tore simulieren
         await simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip);
       });
 
@@ -123,7 +119,6 @@ function getTwoDifferentTeams(teams) {
   return [teams[team1Index], teams[team2Index]];
 }
 
-// Simuliere das Spiel mit Toren und aktualisiere am Ende die Stats
 async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip) {
   let score1 = 0;
   let score2 = 0;
@@ -133,13 +128,10 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
     .setTitle(`⚽ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
     .setColor('Blue');
 
-  // Simuliere das Spiel, z.B. 90 "Minuten" in 90 Sekunden (jede Sekunde = 1 Minute)
-  // Du kannst die Zeit anpassen (hier 45 Sekunden für Demo)
   const totalMatchMinutes = 90;
-  const realTimePerMinuteMs = 1000; // 1 Sekunde pro Spielminute (kann auch langsamer oder schneller)
+  const realTimePerMinuteMs = 1000;
 
   for (; minute <= totalMatchMinutes; minute++) {
-    // Zufällige Tore: z.B. Chance 3% pro Minute pro Team
     if (Math.random() < 0.03) {
       score1++;
       await interaction.editReply({
@@ -158,7 +150,6 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
       });
     }
 
-    // Alle paar Minuten auch mal Update ohne Tor
     if (minute % 10 === 0 && minute !== 0) {
       await interaction.editReply({
         content: null,
@@ -168,11 +159,9 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
       });
     }
 
-    // Warten bis nächste "Minute"
     await new Promise(resolve => setTimeout(resolve, realTimePerMinuteMs));
   }
 
-  // Spiel beendet, Ergebnis bestimmen
   let punkte1 = 0;
   let punkte2 = 0;
   let ergebnisText;
@@ -189,7 +178,6 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
     punkte2 = 1;
   }
 
-  // Vergleiche Tipp mit Ergebnis und füge z.B. eine Nachricht dazu ein (optional)
   let tippRichtig = false;
   if (
     (userTip === 'team1' && score1 > score2) ||
@@ -199,15 +187,17 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
     tippRichtig = true;
   }
 
-  // Stats updaten
   await updateTeamStats(team1.name, punkte1);
   await updateTeamStats(team2.name, punkte2);
 
-  // End-Embed mit Ergebnis
-  embed.setDescription(
-    `🏁 Spiel beendet!\n\nErgebnis: **${icon1} ${team1LastName} ${score1} : ${score2} ${icon2} ${team2LastName}**\n` +
-    `Dein Tipp: **${tippRichtig ? '✅ richtig' : '❌ falsch'}** (${userTip === 'team1' ? team1LastName : userTip === 'team2' ? team2LastName : 'Unentschieden'})`
-  );
+  // Nutze addFields für bessere Struktur
+  embed
+    .setDescription('🏁 Spiel beendet!')
+    .addFields(
+      { name: 'Ergebnis', value: `${icon1} **${team1LastName}** ${score1} : ${score2} ${icon2} **${team2LastName}**`, inline: false },
+      { name: 'Dein Tipp', value: `${tippRichtig ? '✅ richtig' : '❌ falsch'} (${userTip === 'team1' ? team1LastName : userTip === 'team2' ? team2LastName : 'Unentschieden'})`, inline: false },
+      { name: 'Punkte', value: `${icon1} ${team1LastName}: ${punkte1}\n${icon2} ${team2LastName}: ${punkte2}`, inline: false },
+    );
 
   await interaction.editReply({ content: null, embeds: [embed], components: [] });
 }
@@ -227,7 +217,6 @@ async function updateTeamStats(teamName, punkte) {
       },
       { new: true }
     );
-    // Hier kannst du noch weitere Updates machen
     return result;
   } catch (err) {
     console.error('Fehler beim Update der Teamstats:', err);
