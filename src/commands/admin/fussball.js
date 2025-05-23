@@ -7,7 +7,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true }); // Nur für dich sichtbar
+    await interaction.deferReply({ ephemeral: true }); // Antwort nur für dich sichtbar
 
     const teamData = {
       'FC Adler': ['Müller', 'Becker', 'Krause', 'Falk', 'Schwarz'],
@@ -32,7 +32,8 @@ module.exports = {
 
     const allTeams = Object.keys(teamData);
 
-    let [team1, team2] = [null, null];
+    // Zufällige 2 verschiedene Teams wählen
+    let team1, team2;
     do {
       team1 = allTeams[Math.floor(Math.random() * allTeams.length)];
       team2 = allTeams[Math.floor(Math.random() * allTeams.length)];
@@ -49,7 +50,7 @@ module.exports = {
     };
 
     let minute = 0;
-    let log = [];
+    const log = [];
 
     const embed = new EmbedBuilder()
       .setTitle(`🏟️ Fußballspiel: ${team1} vs. ${team2}`)
@@ -66,10 +67,12 @@ module.exports = {
 
     const interval = setInterval(async () => {
       minute += 5;
+
       if (minute > 90) {
         clearInterval(interval);
 
-        embed.setTitle(`🏁 Spiel beendet: ${team1} vs. ${team2}`)
+        embed
+          .setTitle(`🏁 Spiel beendet: ${team1} vs. ${team2}`)
           .setDescription('Das Spiel ist vorbei.')
           .spliceFields(0, 4,
             { name: 'Endstand', value: `${team1} ${score[team1]} : ${score[team2]} ${team2}` },
@@ -89,15 +92,14 @@ module.exports = {
         const scorer = players[Math.floor(Math.random() * players.length)];
         score[scoringTeam]++;
 
-        // xG Wert zwischen 0.1 und 0.5
-        const chanceXG = (Math.random() * 0.4) + 0.1;
+        const chanceXG = (Math.random() * 0.4) + 0.1; // xG 0.1-0.5
         xG[scoringTeam] += chanceXG;
 
         log.push(`⚽ ${minute}. Minute: ${scorer} (${scoringTeam}) [xG: ${chanceXG.toFixed(2)}]`);
       } else {
         if (Math.random() < 0.1) {
           const teamForXG = Math.random() < 0.5 ? team1 : team2;
-          const chanceXG = (Math.random() * 0.09) + 0.01;
+          const chanceXG = (Math.random() * 0.09) + 0.01; // xG 0.01-0.1
           xG[teamForXG] += chanceXG;
         }
       }
@@ -111,6 +113,6 @@ module.exports = {
 
       await message.edit({ embeds: [embed] });
 
-    }, 5000);
+    }, 5000); // alle 5000ms = 5 Sekunden
   },
 };
