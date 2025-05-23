@@ -7,9 +7,9 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    // Defer ohne ephemeral, damit Antwort für alle sichtbar wird
     await interaction.deferReply();
 
+    // Teams und ihre Spieler
     const teamData = {
       'FC Adler': ['Müller', 'Becker', 'Krause', 'Falk', 'Schwarz'],
       'SV Löwen': ['Schmidt', 'Wagner', 'Hahn', 'Zimmermann', 'Pohl'],
@@ -31,8 +31,31 @@ module.exports = {
       'FC Falken': ['Kraus', 'Wolf', 'Jansen', 'Simon', 'Richter']
     };
 
+    // Emojis als Team-Icons/Farben
+    const teamColors = {
+      'FC Adler': '🦅',
+      'SV Löwen': '🦁',
+      'TSV Blitz': '⚡',
+      'SC Phönix': '🔥',
+      'Rot-Weiß': '🔴⚪',
+      'Blau-Gelb': '🔵💛',
+      'SV Sturm': '🌪️',
+      'VfB Dynamit': '💥',
+      'TSV Könige': '👑',
+      'FC Titan': '🛡️',
+      'SV Adlerhorst': '🦅',
+      'VfL Stürmer': '🎯',
+      'SG Blitzschlag': '⚡',
+      'FC Drachen': '🐉',
+      'TSV Titanen': '🛡️',
+      'SV Panther': '🐆',
+      'VfR Sturm': '🌪️',
+      'FC Falken': '🦅'
+    };
+
     const allTeams = Object.keys(teamData);
 
+    // Zufällige Auswahl von zwei unterschiedlichen Teams
     let team1, team2;
     do {
       team1 = allTeams[Math.floor(Math.random() * allTeams.length)];
@@ -44,31 +67,33 @@ module.exports = {
     let minute = 0;
     const log = [];
 
+    // Initiales Embed mit Spielstart-Infos
     const embed = new EmbedBuilder()
-      .setTitle(`🏟️ Fußballspiel: ${team1} vs. ${team2}`)
+      .setTitle(`🏟️ Fußballspiel: ${teamColors[team1]} ${team1} vs. ${teamColors[team2]} ${team2}`)
       .setColor('Green')
       .setDescription('Das Spiel beginnt...')
       .addFields(
         { name: 'Spielminute', value: '0\'', inline: true },
-        { name: 'Spielstand', value: '0 : 0', inline: true },
-        { name: 'xG', value: '0.00 : 0.00', inline: true },
+        { name: 'Spielstand', value: `0 : 0`, inline: true },
+        { name: 'xG', value: `0.00 : 0.00`, inline: true },
         { name: 'Tore', value: 'Noch keine Tore...' }
       );
 
-    // Antwort mit initialem Embed senden
     const message = await interaction.editReply({ embeds: [embed] });
 
+    // Simulation des Spiels im 5-Minuten-Takt (alle 5 Sekunden in Echtzeit)
     const interval = setInterval(async () => {
       minute += 5;
 
+      // Spielende nach 90 Minuten
       if (minute > 90) {
         clearInterval(interval);
 
         embed
-          .setTitle(`🏁 Spiel beendet: ${team1} vs. ${team2}`)
+          .setTitle(`🏁 Spiel beendet: ${teamColors[team1]} ${team1} vs. ${teamColors[team2]} ${team2}`)
           .setDescription('Das Spiel ist vorbei.')
           .spliceFields(0, 4,
-            { name: 'Endstand', value: `${team1} ${score[team1]} : ${score[team2]} ${team2}` },
+            { name: 'Endstand', value: `${teamColors[team1]} ${team1} ${score[team1]} : ${score[team2]} ${teamColors[team2]} ${team2}` },
             { name: 'xG Endstand', value: `${xG[team1].toFixed(2)} : ${xG[team2].toFixed(2)}`, inline: true },
             { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Keine Tore im Spiel.' }
           )
@@ -78,7 +103,7 @@ module.exports = {
         return;
       }
 
-      // Torchance 30%
+      // Torchance ca. 30%
       if (Math.random() < 0.3) {
         const scoringTeam = Math.random() < 0.5 ? team1 : team2;
         const players = teamData[scoringTeam];
@@ -88,8 +113,9 @@ module.exports = {
         const chanceXG = (Math.random() * 0.4) + 0.1;
         xG[scoringTeam] += chanceXG;
 
-        log.push(`⚽ ${minute}. Minute: ${scorer} (${scoringTeam}) [xG: ${chanceXG.toFixed(2)}]`);
+        log.push(`⚽ ${minute}. Minute: ${scorer} (${teamColors[scoringTeam]} ${scoringTeam}) [xG: ${chanceXG.toFixed(2)}]`);
       } else {
+        // Kleine xG-Erhöhung ohne Tor (10% Chance)
         if (Math.random() < 0.1) {
           const teamForXG = Math.random() < 0.5 ? team1 : team2;
           const chanceXG = (Math.random() * 0.09) + 0.01;
@@ -97,6 +123,7 @@ module.exports = {
         }
       }
 
+      // Aktualisiere das Embed mit aktuellem Spielstand
       embed.spliceFields(0, 4,
         { name: 'Spielminute', value: `${minute}'`, inline: true },
         { name: 'Spielstand', value: `${score[team1]} : ${score[team2]}`, inline: true },
@@ -105,6 +132,6 @@ module.exports = {
       );
 
       await message.edit({ embeds: [embed] });
-    }, 5000);
+    }, 5000); // alle 5 Sekunden = 5 Minuten Spielzeit
   },
 };
