@@ -17,8 +17,9 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      // Nur Teams aus der Pro League laden
+      // Teams aus Pro League laden
       const proLeagueTeams = await Team.find({ league: 'Pro League' });
+      console.log(`[Fussball] Gefundene Teams in Pro League: ${proLeagueTeams.length}`);
 
       if (!proLeagueTeams || proLeagueTeams.length < 2) {
         return interaction.reply({
@@ -27,7 +28,6 @@ module.exports = {
         });
       }
 
-      // Zwei verschiedene Teams aus Pro League auswählen
       const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
 
       const icon1 = teamIcons[team1.name] || '⚽';
@@ -86,8 +86,8 @@ module.exports = {
         }
 
         // Teamstats aktualisieren
-        await updateTeamStats(team1.name, punkte1, punkte2);
-        await updateTeamStats(team2.name, punkte2, punkte1);
+        await updateTeamStats(team1.name, punkte1);
+        await updateTeamStats(team2.name, punkte2);
 
         embed.setDescription(`✅ Ergebnis: **${ergebnis}**`);
         await i.update({ embeds: [embed], components: [] });
@@ -113,7 +113,7 @@ module.exports = {
   },
 };
 
-// Hilfsfunktion: Zwei verschiedene Teams zufällig auswählen
+// Zwei verschiedene Teams zufällig auswählen
 function getTwoDifferentTeams(teams) {
   if (teams.length < 2) throw new Error('Mindestens zwei Teams benötigt.');
   const team1Index = Math.floor(Math.random() * teams.length);
@@ -125,21 +125,23 @@ function getTwoDifferentTeams(teams) {
 }
 
 // Team-Daten aktualisieren (Punkte & Spiele)
-async function updateTeamStats(teamName, punkte, gegnerPunkte) {
+async function updateTeamStats(teamName, punkte) {
   try {
-    await Team.findOneAndUpdate(
+    // Optional: Wenn Team nicht existiert, anlegen
+    const result = await Team.findOneAndUpdate(
       { name: teamName },
       {
         $inc: {
-          points: punkte,    // Punkte hinzufügen
-          played: 1,        // Spiele um 1 erhöhen
+          points: punkte,
+          played: 1,
           won: punkte === 3 ? 1 : 0,
           draw: punkte === 1 ? 1 : 0,
           lost: punkte === 0 ? 1 : 0,
         },
       },
-      { upsert: false }
+      { upsert: true, new: true } // upsert: true für anlegen falls nicht vorhanden
     );
+    console.log(`[Fussball] Team ${teamName} aktualisiert:`, result);
   } catch (error) {
     console.error(`Fehler beim Update von Team ${teamName}:`, error);
   }
