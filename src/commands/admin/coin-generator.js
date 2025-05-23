@@ -20,11 +20,11 @@ module.exports = {
       const totalMs = 60_000; // 1 Minute
       const intervalMs = 3_000; // alle 3 Sekunden
       const maxTicks = totalMs / intervalMs;
+      const endTimeUnix = Math.floor((Date.now() + totalMs) / 1000);
 
       let collectedCoins = 0;
       let tickCount = 0;
 
-      // Konfiguration abrufen oder Standardwerte setzen
       const config = await CoinConfig.findOne({ guildId: interaction.guild.id });
       const min = config?.minCoins ?? 1;
       const max = config?.maxCoins ?? 5;
@@ -48,9 +48,14 @@ module.exports = {
         collectedCoins += coins;
         tickCount++;
 
-        // Live-Update
+        const currentUnix = Math.floor(Date.now() / 1000);
+        const remainingUnix = Math.max(endTimeUnix - currentUnix, 0);
+
         await interaction.editReply({
-          content: `> \`⏳\` » Coin-Generator läuft für <@${targetMember.id}>...\n> \`🪙\` » Coins gesammelt: **${collectedCoins.toLocaleString('de-DE')}**`
+          content:
+            `> \`⏳\` » Coin-Generator läuft für <@${targetMember.id}>...\n` +
+            `> \`🪙\` » Coins gesammelt: **${collectedCoins.toLocaleString('de-DE')}**\n` +
+            `> \`⌛\` » Verbleibende Zeit: <t:${currentUnix + remainingUnix}:R>`
         });
 
         if (tickCount >= maxTicks) {
