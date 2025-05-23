@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { FussballTeam } = require('../../../Datenbank/fussballdb'); // Annahme: deine DB heißt so
+const { fussballdb } = require('../../../Datenbank/fussballdb'); // Annahme: deine DB heißt so
 
 // Feste Teams der Pro League (24 Teams)
 const proLeagueTeams = [
@@ -62,7 +62,7 @@ module.exports = {
 
   async execute(interaction) {
     // Alle Teams aus der DB laden
-    const allTeams = await FussballTeam.find({});
+    const allTeams = await fussballdb.find({});
 
     if (allTeams.length < 2) {
       return interaction.reply({ content: 'Es sind nicht genug Teams in der Datenbank.', ephemeral: true });
