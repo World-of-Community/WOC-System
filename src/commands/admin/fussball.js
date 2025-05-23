@@ -132,32 +132,44 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
   const realTimePerMinuteMs = 1000;
 
   for (; minute <= totalMatchMinutes; minute++) {
+    let eventText = null;
+
     if (Math.random() < 0.03) {
       score1++;
-      await interaction.editReply({
-        content: null,
-        embeds: [
-          embed.setDescription(`Minute ${minute}: Tor für ${icon1} **${team1LastName}**! (${score1} : ${score2})`)
-        ],
-      });
+      eventText = `Tor für ${icon1} **${team1LastName}**!`;
     } else if (Math.random() < 0.03) {
       score2++;
-      await interaction.editReply({
-        content: null,
-        embeds: [
-          embed.setDescription(`Minute ${minute}: Tor für ${icon2} **${team2LastName}**! (${score1} : ${score2})`)
-        ],
-      });
+      eventText = `Tor für ${icon2} **${team2LastName}**!`;
     }
 
     if (minute % 10 === 0 && minute !== 0) {
-      await interaction.editReply({
-        content: null,
-        embeds: [
-          embed.setDescription(`Minute ${minute}: Spielstand ${icon1} **${score1}** : ${icon2} **${score2}**`)
-        ],
-      });
+      // Zeige nur Spielstand alle 10 Minuten
+      embed
+        .setDescription(`Minute ${minute}`)
+        .setFields(
+          { name: 'Spielstand', value: `${icon1} **${score1}** : ${icon2} **${score2}**`, inline: true }
+        );
+    } else if (eventText) {
+      // Bei Toren zeige Event + aktuellen Spielstand
+      embed
+        .setDescription(`Minute ${minute}`)
+        .setFields(
+          { name: 'Ereignis', value: eventText, inline: false },
+          { name: 'Spielstand', value: `${icon1} **${score1}** : ${icon2} **${score2}**`, inline: true }
+        );
+    } else {
+      // Sonst einfach Minute + Spielstand
+      embed
+        .setDescription(`Minute ${minute}`)
+        .setFields(
+          { name: 'Spielstand', value: `${icon1} **${score1}** : ${icon2} **${score2}**`, inline: true }
+        );
     }
+
+    await interaction.editReply({
+      content: null,
+      embeds: [embed],
+    });
 
     await new Promise(resolve => setTimeout(resolve, realTimePerMinuteMs));
   }
@@ -190,10 +202,10 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
   await updateTeamStats(team1.name, punkte1);
   await updateTeamStats(team2.name, punkte2);
 
-  // Nutze addFields für bessere Struktur
+  // Endergebnis mit addFields / setFields
   embed
     .setDescription('🏁 Spiel beendet!')
-    .addFields(
+    .setFields(
       { name: 'Ergebnis', value: `${icon1} **${team1LastName}** ${score1} : ${score2} ${icon2} **${team2LastName}**`, inline: false },
       { name: 'Dein Tipp', value: `${tippRichtig ? '✅ richtig' : '❌ falsch'} (${userTip === 'team1' ? team1LastName : userTip === 'team2' ? team2LastName : 'Unentschieden'})`, inline: false },
       { name: 'Punkte', value: `${icon1} ${team1LastName}: ${punkte1}\n${icon2} ${team2LastName}: ${punkte2}`, inline: false },
