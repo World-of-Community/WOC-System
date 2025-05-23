@@ -32,7 +32,7 @@ module.exports = {
                     for (const levelL of levelList) {
                         if (level == levelL.level) {
                             const member = mention.member;
-                                    channel.send(`<a:trophe1:1221802325056950303> **LEVEL-UP!** ${mention} hat das Level **${level}.** erreicht - und einen **neuen Rang** erhalten! <a:Cool:1033461188299858001>`);
+                                    channel.send(`<a:trophy:1375557481434189934> **LEVEL-UP!** ${mention} hat das Level **${level}.** erreicht - und einen **neuen Rang** erhalten! <a:Cool:1033461188299858001>`);
                                     newRankAchieved = true;
                                     break;
                         }
@@ -40,13 +40,13 @@ module.exports = {
                     if (!newRankAchieved) {
                         for (const levelL of levelList) {
                             if (level < levelL.level) {
-                                channel.send(`<a:bier:1196502621427601498> **LEVEL-UP!** ${mention} hat das Level **${level}.** erreicht - noch **${levelL.level - level}** Level bis zu einem **neuen Rang** - Weiter so! <a:Chat1:976129450112593990>`);
+                                channel.send(`<a:cheers:1375558102098776214> **LEVEL-UP!** ${mention} hat das Level **${level}.** erreicht - noch **${levelL.level - level}** Level bis zu einem **neuen Rang** - Weiter so! <a:Chat1:976129450112593990>`);
                                 break;
                             }
                         }
                     }
                     if (level >= 100 && !newRankAchieved) {
-                        channel.send(`<a:trophe1:1221802325056950303> **LEVEL-UP!** ${mention} hat das Level **${level}.** erreicht - danke für deine weitere Treue für die Community! <a:2herzen:1196502635465932984>`);
+                        channel.send(`<a:trophy:1375557481434189934> **LEVEL-UP!** ${mention} hat das Level **${level}.** erreicht - danke für deine weitere Treue für die Community! <a:2herzen:1196502635465932984>`);
                     }
                 }
             }
