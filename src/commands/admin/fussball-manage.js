@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { Team } = require('../../Datenbank/fussballdb'); // Pfad anpassen
+const { Team } = require('../../../Datenbank/fussballdb'); // Pfad anpassen
 const fs = require('fs');
 const path = require('path');
 
