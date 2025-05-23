@@ -1,9 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
 const { fussballdb } = require('../../../Datenbank/fussballdb'); // Dein DB-Modell, z.B. Mongoose Model
 
-// Beispiel: Falls du mit Mongoose arbeitest, sollte fussballdb ein Model sein.
-// Falls du eine andere DB verwendest, musst du die Methoden anpassen.
-
 // Feste Teams der Pro League (24 Teams)
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
@@ -13,7 +10,7 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-// Emojis für Pro League Teams (kannst du für 2. Liga ergänzen)
+// Emojis für Pro League Teams
 const teamIcons = {
   'FC Adler': '🦅',
   'SV Löwen': '🦁',
@@ -39,7 +36,6 @@ const teamIcons = {
   'SV Schatten': '🌑',
   'TSV Nebel': '🌫️',
   'SC Licht': '💡',
-  // Hier kannst du weitere Emojis für 2. Liga ergänzen
 };
 
 module.exports = {
@@ -57,7 +53,6 @@ module.exports = {
       }
 
       // 1. Liga (Pro League) und 2. Liga filtern
-      // Wichtig: Das Feld "league" muss in deinen DB-Dokumenten existieren (z.B. 'pro' oder 'second')
       const proLeague = allTeams.filter(t => t.league === 'pro');
       let secondLeague = allTeams.filter(t => t.league === 'second');
 
@@ -128,7 +123,6 @@ module.exports = {
           punkteTeam1 = 1;
           punkteTeam2 = 1;
         } else {
-          // Ungültige Interaktion
           await i.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
           return;
         }
@@ -151,7 +145,9 @@ module.exports = {
 
     } catch (error) {
       console.error('Fehler im /fussball Command:', error);
-      return interaction.reply({ content: 'Es ist ein Fehler aufgetreten.', ephemeral: true });
+      if (!interaction.replied) {
+        return interaction.reply({ content: 'Es ist ein Fehler aufgetreten.', ephemeral: true });
+      }
     }
   }
 };
@@ -174,11 +170,11 @@ function getRandomElements(arr, n) {
 }
 
 // Update Team Stats in der DB (Beispiel mit Mongoose)
-// Passe die Felder "points" und "conceded" an deine Datenbankstruktur an!
+// "points" und "conceded" müssen in deinem Schema existieren
 async function updateTeamStats(teamName, punkte, gegenPunkte) {
   await fussballdb.findOneAndUpdate(
     { name: teamName },
     { $inc: { points: punkte, conceded: gegenPunkte } },
-    { upsert: true } // falls Team noch nicht da, anlegen
+    { upsert: true }
   );
 }
