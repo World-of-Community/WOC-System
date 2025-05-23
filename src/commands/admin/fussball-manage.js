@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Optional: Teamicons persistent in JSON-Datei speichern
-const teamIconPath = path.join(__dirname, '../../../json/teamIcons.json');
+const teamIconPath = path.join(__dirname, '../../json/teamIcons.json');
 let teamIcons = fs.existsSync(teamIconPath) ? require(teamIconPath) : {};
 
 function saveIcons() {
