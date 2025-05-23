@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { Team, Match } = require('../../../Datenbank/fussballdb');
+const { FussballTeam } = require('../../../Datenbank/fussballdb'); // Annahme: deine DB heißt so
 
-// Pro League Teams (24 feste Namen)
+// Feste Teams der Pro League (24 Teams)
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
   'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
@@ -10,7 +10,7 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-// 2. Liga Teams (Beispiel: 60 Kandidaten, du kannst 48 davon nehmen)
+// Alle Kandidaten für 2. Liga (Beispiel 60 Teams, du kannst das nach Bedarf anpassen)
 const allSecondLeagueCandidates = [
   'FC Drachen', 'SV Panther', 'TSV Adlerhorst', 'SC Tiger', 'VfB Falken',
   'FC Wölfe', 'SV Bären', 'TSV Löwenherz', 'SC Eichenwald', 'VfB Stürmer',
@@ -26,7 +26,7 @@ const allSecondLeagueCandidates = [
   'FC Eiswolf', 'SV Schattenläufer', 'TSV Blitzen', 'SC Nebelschleier', 'VfB Flügel'
 ];
 
-// Emojis für Pro League Teams (du kannst hier auch noch die 2. Liga ergänzen)
+// Emojis für Pro League Teams (kannst du für 2. Liga ergänzen)
 const teamIcons = {
   'FC Adler': '🦅',
   'SV Löwen': '🦁',
@@ -51,7 +51,8 @@ const teamIcons = {
   'FC Donner': '⛈️',
   'SV Schatten': '🌑',
   'TSV Nebel': '🌫️',
-  'SC Licht': '💡'
+  'SC Licht': '💡',
+  // Du kannst hier weitere 2. Liga Emojis hinzufügen
 };
 
 module.exports = {
@@ -62,14 +63,33 @@ module.exports = {
   async execute(interaction) {
     // Alle Teams aus der DB laden
     const allTeams = await FussballTeam.find({});
+
     if (allTeams.length < 2) {
       return interaction.reply({ content: 'Es sind nicht genug Teams in der Datenbank.', ephemeral: true });
     }
 
-    // Zwei verschiedene Teams zufällig auswählen
-    const [team1, team2] = getTwoDifferentTeams(allTeams);
+    // 1. Liga (Pro League) und 2. Liga filtern
+    // Ich nehme an, in deiner DB gibt es ein Feld "league" mit "pro" oder "second"
+    // Falls nicht, musst du das anpassen.
+    const proLeague = allTeams.filter(t => t.league === 'pro');
+    let secondLeague = allTeams.filter(t => t.league === 'second');
 
-    // Emojis oder Default-Emoji
+    // Für 2. Liga nur maximal 38 Teams zufällig auswählen, wenn mehr als 38 vorhanden
+    if (secondLeague.length > 38) {
+      secondLeague = getRandomElements(secondLeague, 38);
+    }
+
+    // Alle Teams zusammenfügen (je nachdem, was du brauchst, evtl nur eine Liga)
+    const teamsForMatch = [...proLeague, ...secondLeague];
+
+    if (teamsForMatch.length < 2) {
+      return interaction.reply({ content: 'Nicht genug Teams in den Ligen für ein Spiel.', ephemeral: true });
+    }
+
+    // Zwei verschiedene Teams auswählen
+    const [team1, team2] = getTwoDifferentTeams(teamsForMatch);
+
+    // Emojis auswählen (Default ⚽ falls nicht gefunden)
     const icon1 = teamIcons[team1.name] || '⚽';
     const icon2 = teamIcons[team2.name] || '⚽';
 
@@ -94,12 +114,14 @@ module.exports = {
         .setStyle(ButtonStyle.Primary),
     );
 
-    // Antwort senden
     await interaction.reply({ embeds: [embed], components: [buttons] });
 
-    // Collector filtert auf den Nutzer, der den Befehl ausgeführt hat
     const filter = i => i.user.id === interaction.user.id;
-    const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 60000 });
+    const collector = interaction.channel.createMessageComponentCollector({
+      filter,
+      componentType: ComponentType.Button,
+      time: 60000
+    });
 
     collector.on('collect', async i => {
       if (!filter(i)) {
@@ -120,11 +142,9 @@ module.exports = {
         punkteTeam2 = 1;
       }
 
-      // Datenbank updaten
       await updateTeamStats(team1.name, punkteTeam1, punkteTeam2);
       await updateTeamStats(team2.name, punkteTeam2, punkteTeam1);
 
-      // Embed updaten und Buttons entfernen
       embed.setDescription(`Ergebnis: **${ergebnis}**`);
       await i.update({ embeds: [embed], components: [] });
 
@@ -139,7 +159,7 @@ module.exports = {
   }
 };
 
-// Funktion, um zwei unterschiedliche Teams aus einem Array zu holen
+// Hilfsfunktion: zwei verschiedene Teams aus Array holen
 function getTwoDifferentTeams(teams) {
   let team1Index = Math.floor(Math.random() * teams.length);
   let team2Index;
@@ -150,21 +170,16 @@ function getTwoDifferentTeams(teams) {
   return [teams[team1Index], teams[team2Index]];
 }
 
-// Funktion zum Updaten der Team-Statistiken in der DB
-async function updateTeamStats(teamName, punkte, gegnerPunkte) {
-  const team = await FussballTeam.findOne({ name: teamName });
-  if (!team) return;
+// Hilfsfunktion: zufällig n Elemente aus Array holen
+function getRandomElements(arr, n) {
+  const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, n);
+}
 
-  team.played++;
-  if (punkte === 3) team.won++;
-  else if (punkte === 1) team.draw++;
-  else team.lost++;
-
-  team.goalsFor += punkte;
-  team.goalsAgainst += gegnerPunkte;
-
-  team.points += punkte;
-  team.goalDifference = team.goalsFor - team.goalsAgainst;
-
-  await team.save();
+// Update Team Stats - Beispiel (müsstest du anpassen auf deine DB)
+async function updateTeamStats(teamName, punkte, gegenPunkte) {
+  await FussballTeam.findOneAndUpdate(
+    { name: teamName },
+    { $inc: { points: punkte, conceded: gegenPunkte } }
+  );
 }
