@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ChannelType } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const EmbedDB = require('../../../Datenbank/embeddb');
 
@@ -51,18 +51,31 @@ async function createTabelleEmbed() {
     .setTimestamp();
 }
 
+// Funktion zum Aktualisieren der gespeicherten Embed-Nachricht
+async function updateLeagueTable(client) {
+  const dbEntry = await EmbedDB.findOne({ name: 'proleague_tabelle' });
+  if (!dbEntry) return;
+
+  const channel = await client.channels.fetch(dbEntry.channelId).catch(() => null);
+  if (!channel || channel.type !== ChannelType.GuildText) return;
+
+  const message = await channel.messages.fetch(dbEntry.messageId).catch(() => null);
+  if (!message) return;
+
+  const embed = await createTabelleEmbed();
+  await message.edit({ embeds: [embed] });
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('send_tabelle')
+    .setName('fussball-tabelle')
     .setDescription('Sendet die Pro League Tabelle und speichert die Nachricht'),
 
   async execute(interaction) {
     const embed = await createTabelleEmbed();
     
-    // Embed im aktuellen Channel senden
     const message = await interaction.channel.send({ embeds: [embed] });
 
-    // In DB speichern oder updaten (nur 1 Eintrag pro Name)
     await EmbedDB.findOneAndUpdate(
       { name: 'proleague_tabelle' },
       {
@@ -74,6 +87,7 @@ module.exports = {
     );
 
     await interaction.reply({ content: '✅ Tabelle gesendet und gespeichert!', ephemeral: true });
-  }
-};
+  },
 
+  updateLeagueTable
+};
