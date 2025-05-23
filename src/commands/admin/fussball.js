@@ -36,11 +36,10 @@ module.exports = {
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
 
-      // Lastname: alles außer erstes Wort, oder kompletten Namen wenn nur eins
+      // Letzter Teil des Teamnamens (z.B. „Adler“ aus „FC Adler“)
       const team1LastName = team1.name.split(' ').slice(1).join(' ') || team1.name;
       const team2LastName = team2.name.split(' ').slice(1).join(' ') || team2.name;
 
-      // Embed 1: Spielstatus (erstes Embed)
       const embedStatus = new EmbedBuilder()
         .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
         .setColor('Green')
@@ -51,8 +50,6 @@ module.exports = {
           { name: 'Tore', value: 'Noch keine Tore...' }
         );
 
-      // Embed 2: Aufstellung (zweites Embed)
-      // Wir speichern Spieler im Team-Objekt unter 'players' als Array, sonst Dummy
       const players1 = team1.players ? team1.players.join(', ') : 'Keine Spieler-Daten';
       const players2 = team2.players ? team2.players.join(', ') : 'Keine Spieler-Daten';
 
@@ -64,7 +61,6 @@ module.exports = {
           `**${icon2} ${team2LastName}:**\n${players2}`
         );
 
-      // Buttons für Tipp abgeben
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('win_team1')
@@ -80,9 +76,7 @@ module.exports = {
           .setStyle(ButtonStyle.Primary),
       );
 
-      // Erst Embed 1 senden
       await interaction.reply({ embeds: [embedStatus] });
-      // Dann Embed 2 als FollowUp mit Aufstellung
       await interaction.followUp({ embeds: [embedLineup], components: [buttons] });
 
       const filter = i => i.user.id === interaction.user.id;
@@ -143,14 +137,12 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
   const totalMatchMinutes = 90;
   const realTimePerMinuteMs = 1000; // 1 Sekunde pro Spielminute
 
-  // Tracking xG (expected goals) - hier zufällig
   let xG1 = 0.0;
   let xG2 = 0.0;
 
   for (; minute <= totalMatchMinutes; minute++) {
     let eventText = null;
 
-    // Zufällige Tor-Events (3% Chance pro Minute pro Team)
     if (Math.random() < 0.03) {
       score1++;
       eventText = `Tor für ${icon1} **${team1LastName}**!`;
@@ -159,11 +151,9 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
       eventText = `Tor für ${icon2} **${team2LastName}**!`;
     }
 
-    // xG simulieren (etwas steigen pro Minute)
     xG1 += Math.random() * 0.05;
     xG2 += Math.random() * 0.05;
 
-    // Embed aktualisieren wie in deinem ersten Beispiel
     embedStatus
       .setFields(
         { name: 'Spielminute', value: `${minute}'`, inline: true },
@@ -179,7 +169,6 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
     await new Promise(resolve => setTimeout(resolve, realTimePerMinuteMs));
   }
 
-  // Ergebnis ermitteln
   let punkte1 = 0, punkte2 = 0;
   let ergebnisText;
   if (score1 > score2) {
@@ -194,7 +183,6 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
     punkte2 = 1;
   }
 
-  // Tipp checken
   const tippRichtig =
     (userTip === 'team1' && score1 > score2) ||
     (userTip === 'team2' && score2 > score1) ||
