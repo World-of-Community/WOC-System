@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { FussballMatch, FussballTeam } = require('../../../Datenbank/fussballteam');
+const { FussballMatch, FussballTeam } = require('../../../Datenbank/fussballdb');
 
 // Pro League Teams (24 feste Namen)
 const proLeagueTeams = [
