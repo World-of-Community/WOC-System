@@ -8,7 +8,6 @@ const {
 } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
-// Emojis für Pro League Teams (kannst du erweitern)
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
   'VfB Stern': '⭐', 'FC Rot-Weiß': '🔴⚪', 'SV Grünwald': '🌲', 'TSV Nord': '❄️',
@@ -25,40 +24,19 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      const allTeams = await Team.find({});
-      if (!allTeams || allTeams.length < 2) {
+      // Nur Teams aus der Pro League laden
+      const proLeagueTeams = await Team.find({ league: 'Pro League' });
+
+      if (!proLeagueTeams || proLeagueTeams.length < 2) {
         return interaction.reply({
-          content: '❌ Es sind nicht genug Teams in der Datenbank.',
+          content: '❌ Es sind nicht genug Teams in der Pro League Datenbank.',
           ephemeral: true,
         });
       }
 
-      // Korrigiere die Liga-Namen so, dass sie exakt mit DB übereinstimmen
-      const proLeague = allTeams.filter(t => t.league === 'Pro League');
-      const secondLeague = allTeams.filter(t => t.league === '2. Liga');
+      // Zwei verschiedene Teams aus Pro League auswählen
+      const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
 
-      if (proLeague.length + secondLeague.length < 2) {
-        return interaction.reply({
-          content: '❌ Nicht genug Teams in den Ligen für ein Spiel.',
-          ephemeral: true,
-        });
-      }
-
-      // Falls zu viele Teams in 2. Liga sind, max 38 nehmen (optional)
-      const secondLeagueSample = secondLeague.length > 38 ? getRandomElements(secondLeague, 38) : secondLeague;
-
-      const teamsForMatch = [...proLeague, ...secondLeagueSample];
-      if (teamsForMatch.length < 2) {
-        return interaction.reply({
-          content: '❌ Nicht genug Teams ausgewählt für ein Spiel.',
-          ephemeral: true,
-        });
-      }
-
-      // Zwei verschiedene Teams aussuchen
-      const [team1, team2] = getTwoDifferentTeams(teamsForMatch);
-
-      // Emojis holen oder default
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
 
@@ -114,6 +92,7 @@ module.exports = {
             return await i.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
         }
 
+        // Teamstats aktualisieren
         await updateTeamStats(team1.name, punkte1, punkte2);
         await updateTeamStats(team2.name, punkte2, punkte1);
 
@@ -141,7 +120,7 @@ module.exports = {
   },
 };
 
-// Zwei unterschiedliche Teams auswählen
+// Hilfsfunktion: Zwei verschiedene Teams zufällig auswählen
 function getTwoDifferentTeams(teams) {
   if (teams.length < 2) throw new Error('Mindestens zwei Teams benötigt.');
   const team1Index = Math.floor(Math.random() * teams.length);
@@ -152,26 +131,21 @@ function getTwoDifferentTeams(teams) {
   return [teams[team1Index], teams[team2Index]];
 }
 
-// Zufällige n Elemente aus einem Array
-function getRandomElements(arr, n) {
-  const shuffled = arr.slice().sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, n);
-}
-
-// Teamdaten updaten (nutze hier dieselben Felder wie in deinem Tabellen-Code)
+// Team-Daten aktualisieren (Punkte & Spiele)
 async function updateTeamStats(teamName, punkte, gegnerPunkte) {
   try {
     await Team.findOneAndUpdate(
       { name: teamName },
       {
         $inc: {
-          punkte: punkte,       // Punkte dazuaddieren
-          spiele: 1,           // Spiel erhöht sich um 1
-          // Hier kann man Siege/Unentschieden/Niederlagen auch zählen, je nach Ergebnis
-          // Tore und GegnerTore können hier ggf. angepasst werden, wenn gewünscht
+          points: punkte,    // Punkte hinzufügen
+          played: 1,        // Spiele um 1 erhöhen
+          won: punkte === 3 ? 1 : 0,
+          draw: punkte === 1 ? 1 : 0,
+          lost: punkte === 0 ? 1 : 0,
         },
       },
-      { upsert: true }
+      { upsert: false }
     );
   } catch (error) {
     console.error(`Fehler beim Update von Team ${teamName}:`, error);

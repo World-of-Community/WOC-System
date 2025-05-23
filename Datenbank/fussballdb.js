@@ -16,10 +16,10 @@ const teamSchema = new mongoose.Schema({
   redCards: { type: Number, default: 0 }
 });
 
-// Match-Schema mit Referenzen auf Teams
+// Match-Schema mit eingebetteten Team-Objekten
 const matchSchema = new mongoose.Schema({
-  team1: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
-  team2: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
+  team1: teamSchema,    // eingebettetes Team-Objekt
+  team2: teamSchema,    // eingebettetes Team-Objekt
   score1: { type: Number, required: true },
   score2: { type: Number, required: true },
   date: { type: Date, default: Date.now },
@@ -29,7 +29,7 @@ const matchSchema = new mongoose.Schema({
 });
 
 // Exportiere die Modelle
-const Team = mongoose.model('Team', teamSchema);
-const Match = mongoose.model('Match', matchSchema);
-
-module.exports = { Team, Match };
+module.exports = {
+  Team: mongoose.model('Team', teamSchema),
+  Match: mongoose.model('Match', matchSchema)
+};

@@ -10,113 +10,67 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-// 2. Liga Teams (60 Vorschläge, 48 nehmen – ohne Duplikate aus Pro League)
-const allSecondLeagueCandidates = [
-  'FC Drachen', 'SV Panther', 'TSV Adlerhorst', 'SC Tiger', 'VfB Falken',
-  'FC Wölfe', 'SV Bären', 'TSV Löwenherz', 'SC Eichenwald', 'VfB Stürmer',
-  'FC Geier', 'SV Habichte', 'TSV Felsen', 'SC Blitz', 'VfB Titan',
-  'FC Komet', 'SV Donner', 'TSV Sturmvogel', 'SC Nebel', 'VfB Gladius',
-  'FC Sturm', 'SV Schatten', 'TSV Phönix', 'SC Wogen', 'VfB Gletscher',
-  'FC Sturmwind', 'SV Flamme', 'TSV Falkenberg', 'SC Pegasus', 'VfB Erle',
-  'FC Blitzschlag', 'SV Eisvogel', 'TSV Sternenkrieger', 'SC Löwenmut', 'VfB Himmel',
-  'FC Wolfspfad', 'SV Fuchs', 'TSV Mondlicht', 'SC Sturmflut', 'VfB Nebula',
-  'FC Krieger', 'SV Orkan', 'TSV Gletscher', 'SC Wildfang', 'VfB Donnerfaust',
-  'FC Sturmjäger', 'SV Fluss', 'TSV Felswand', 'SC Eisdorn', 'VfB Feuer',
-  'FC Titanen', 'SV Falkenhorst', 'TSV Silber', 'SC Golden', 'VfB Adlerblick',
-  'FC Eiswolf', 'SV Schattenläufer', 'TSV Blitzen', 'SC Nebelschleier', 'VfB Flügel'
-];
-
-// Filtere alle Teams raus, die bereits in der Pro League sind
-const zweiteLigaTeams = allSecondLeagueCandidates.filter(team => !proLeagueTeams.includes(team)).slice(0, 48);
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-tabelle')
-    .setDescription('Zeigt die aktuellen Tabellen der Pro League und 2. Liga'),
+    .setDescription('Zeigt die aktuelle Tabelle der Pro League'),
 
   async execute(interaction) {
     try {
-      // Datenbankabfrage: Alle Teams
+      // Alle Teams aus der DB laden
       const alleTeams = await Team.find({});
-      console.log('Teams aus DB:', alleTeams.map(t => t.name));
-
+      
       // Map zum schnellen Zugriff
       const teamMap = new Map();
       for (const team of alleTeams) {
-        // Optional: normalize Namen (trim)
         const name = team.name.trim();
         teamMap.set(name, team);
       }
 
-      console.log('TeamMap vor ensureTeamsInMap:', Array.from(teamMap.keys()));
-
-      // Fehlende Teams mit 0-Daten ergänzen
-      function ensureTeamsInMap(teamNames) {
-        for (const name of teamNames) {
-          if (!teamMap.has(name)) {
-            console.log(`Team fehlt in DB und wird ergänzt: ${name}`);
-            teamMap.set(name, {
-              name,
-              spiele: 0,
-              siege: 0,
-              unentschieden: 0,
-              niederlagen: 0,
-              tore: 0,
-              gegnerTore: 0,
-              punkte: 0
-            });
-          }
+      // Fehlende Pro League Teams ergänzen mit Default-Werten
+      for (const name of proLeagueTeams) {
+        if (!teamMap.has(name)) {
+          teamMap.set(name, {
+            name,
+            spiele: 0,
+            siege: 0,
+            unentschieden: 0,
+            niederlagen: 0,
+            tore: 0,
+            gegnerTore: 0,
+            punkte: 0
+          });
         }
       }
 
-      ensureTeamsInMap(proLeagueTeams);
-      ensureTeamsInMap(zweiteLigaTeams);
-
-      console.log('TeamMap nach ensureTeamsInMap:', Array.from(teamMap.keys()));
-
-      // Sortierung nach Punkte, dann Torverhältnis
-      function sortiereTeams(teams) {
-        return teams.sort((a, b) => {
+      // Sortieren nach Punkten und Torverhältnis
+      const proLeagueData = proLeagueTeams
+        .map(name => teamMap.get(name))
+        .sort((a, b) => {
           if (b.punkte !== a.punkte) return b.punkte - a.punkte;
           const tvB = b.tore - b.gegnerTore;
           const tvA = a.tore - a.gegnerTore;
           return tvB - tvA;
         });
-      }
 
-      const proLeagueData = sortiereTeams(proLeagueTeams.map(t => teamMap.get(t)));
-      const zweiteLigaData = sortiereTeams(zweiteLigaTeams.map(t => teamMap.get(t)));
+      // Tabellenbeschreibung erstellen
+      const description = proLeagueData.map((team, i) => {
+        const tv = team.tore - team.gegnerTore;
+        return `**${i + 1}. ${team.name}** - ${team.punkte} Pkt | Spiele: ${team.spiele} | S: ${team.siege} | U: ${team.unentschieden} | N: ${team.niederlagen} | Tore: ${team.tore}:${team.gegnerTore} (TV: ${tv})`;
+      }).join('\n') || 'Keine Daten vorhanden.';
 
-      // Tabellenbeschreibung als String
-      function createTableDescription(teams) {
-        return teams.map((team, i) => {
-          const tv = team.tore - team.gegnerTore;
-          return `**${i + 1}. ${team.name}** - ${team.punkte} Pkt | Spiele: ${team.spiele} | S: ${team.siege} | U: ${team.unentschieden} | N: ${team.niederlagen} | Tore: ${team.tore}:${team.gegnerTore} (TV: ${tv})`;
-        }).join('\n') || 'Keine Daten vorhanden.';
-      }
-
-      const embedProLeague = new EmbedBuilder()
+      const embed = new EmbedBuilder()
         .setTitle('⚽ Pro League Tabelle')
-        .setDescription(createTableDescription(proLeagueData))
+        .setDescription(description)
         .setColor('Blue');
 
-      const embedZweiteLiga = new EmbedBuilder()
-        .setTitle('⚽ 2. Liga Tabelle')
-        .setDescription(createTableDescription(zweiteLigaData))
-        .setColor('Green');
-
-      // Erst Antwort, dann Embed posten
-      await interaction.reply({ content: '📊 Tabelle wird angezeigt.', ephemeral: true });
-
-      if (interaction.channel) {
-        await interaction.channel.send({ embeds: [embedProLeague, embedZweiteLiga] });
-      } else {
-        console.warn('Konnte Nachricht nicht senden: Kein Channel vorhanden');
-      }
+      await interaction.reply({ embeds: [embed] });
 
     } catch (error) {
-      console.error('Fehler beim Anzeigen der Tabelle:', error);
-      await interaction.reply({ content: '❌ Beim Abrufen der Tabelle ist ein Fehler aufgetreten.', ephemeral: true });
+      console.error('Fehler beim Anzeigen der Pro League Tabelle:', error);
+      if (!interaction.replied) {
+        await interaction.reply({ content: '❌ Beim Abrufen der Tabelle ist ein Fehler aufgetreten.', ephemeral: true });
+      }
     }
   }
 };
