@@ -25,8 +25,6 @@ module.exports = {
   async execute(interaction) {
     try {
       const proLeagueTeams = await Team.find({ league: 'Pro League' });
-      console.log(`[Fussball] Gefundene Teams in Pro League: ${proLeagueTeams.length}`);
-
       if (!proLeagueTeams || proLeagueTeams.length < 2) {
         return interaction.reply({
           content: '❌ Es sind nicht genug Teams in der Pro League Datenbank.',
@@ -35,14 +33,14 @@ module.exports = {
       }
 
       const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
-
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
 
       // Nachnamen extrahieren (alles nach dem ersten Wort)
-      const team1LastName = team1.name.split(' ').slice(1).join(' ');
-      const team2LastName = team2.name.split(' ').slice(1).join(' ');
+      const team1LastName = team1.name.split(' ').slice(1).join(' ') || team1.name;
+      const team2LastName = team2.name.split(' ').slice(1).join(' ') || team2.name;
 
+      // Erst einmal Tipp abfragen
       const embed = new EmbedBuilder()
         .setTitle(`⚽ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
         .setDescription('Tippe, wer gewinnt, oder ob es ein Unentschieden wird!')
@@ -73,35 +71,28 @@ module.exports = {
       });
 
       collector.on('collect', async i => {
-        let ergebnis;
-        let punkte1 = 0;
-        let punkte2 = 0;
-
+        // Tipp speichern
+        let userTip;
         switch (i.customId) {
           case 'win_team1':
-            ergebnis = `${team1LastName} gewinnt`;
-            punkte1 = 3;
+            userTip = 'team1';
             break;
           case 'win_team2':
-            ergebnis = `${team2LastName} gewinnt`;
-            punkte2 = 3;
+            userTip = 'team2';
             break;
           case 'draw':
-            ergebnis = 'Unentschieden';
-            punkte1 = 1;
-            punkte2 = 1;
+            userTip = 'draw';
             break;
           default:
             return await i.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
         }
 
-        await updateTeamStats(team1.name, punkte1);
-        await updateTeamStats(team2.name, punkte2);
-
-        embed.setDescription(`✅ Ergebnis: **${ergebnis}**`);
-        await i.update({ embeds: [embed], components: [] });
+        await i.update({ content: 'Das Spiel startet... ⚽', embeds: [], components: [] });
 
         collector.stop();
+
+        // Spiel starten und Tore simulieren
+        await simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip);
       });
 
       collector.on('end', async collected => {
@@ -132,9 +123,97 @@ function getTwoDifferentTeams(teams) {
   return [teams[team1Index], teams[team2Index]];
 }
 
+// Simuliere das Spiel mit Toren und aktualisiere am Ende die Stats
+async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip) {
+  let score1 = 0;
+  let score2 = 0;
+  let minute = 0;
+
+  const embed = new EmbedBuilder()
+    .setTitle(`⚽ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
+    .setColor('Blue');
+
+  // Simuliere das Spiel, z.B. 90 "Minuten" in 90 Sekunden (jede Sekunde = 1 Minute)
+  // Du kannst die Zeit anpassen (hier 45 Sekunden für Demo)
+  const totalMatchMinutes = 90;
+  const realTimePerMinuteMs = 1000; // 1 Sekunde pro Spielminute (kann auch langsamer oder schneller)
+
+  for (; minute <= totalMatchMinutes; minute++) {
+    // Zufällige Tore: z.B. Chance 3% pro Minute pro Team
+    if (Math.random() < 0.03) {
+      score1++;
+      await interaction.editReply({
+        content: null,
+        embeds: [
+          embed.setDescription(`Minute ${minute}: Tor für ${icon1} **${team1LastName}**! (${score1} : ${score2})`)
+        ],
+      });
+    } else if (Math.random() < 0.03) {
+      score2++;
+      await interaction.editReply({
+        content: null,
+        embeds: [
+          embed.setDescription(`Minute ${minute}: Tor für ${icon2} **${team2LastName}**! (${score1} : ${score2})`)
+        ],
+      });
+    }
+
+    // Alle paar Minuten auch mal Update ohne Tor
+    if (minute % 10 === 0 && minute !== 0) {
+      await interaction.editReply({
+        content: null,
+        embeds: [
+          embed.setDescription(`Minute ${minute}: Spielstand ${icon1} **${score1}** : ${icon2} **${score2}**`)
+        ],
+      });
+    }
+
+    // Warten bis nächste "Minute"
+    await new Promise(resolve => setTimeout(resolve, realTimePerMinuteMs));
+  }
+
+  // Spiel beendet, Ergebnis bestimmen
+  let punkte1 = 0;
+  let punkte2 = 0;
+  let ergebnisText;
+
+  if (score1 > score2) {
+    ergebnisText = `${team1LastName} gewinnt`;
+    punkte1 = 3;
+  } else if (score2 > score1) {
+    ergebnisText = `${team2LastName} gewinnt`;
+    punkte2 = 3;
+  } else {
+    ergebnisText = 'Unentschieden';
+    punkte1 = 1;
+    punkte2 = 1;
+  }
+
+  // Vergleiche Tipp mit Ergebnis und füge z.B. eine Nachricht dazu ein (optional)
+  let tippRichtig = false;
+  if (
+    (userTip === 'team1' && score1 > score2) ||
+    (userTip === 'team2' && score2 > score1) ||
+    (userTip === 'draw' && score1 === score2)
+  ) {
+    tippRichtig = true;
+  }
+
+  // Stats updaten
+  await updateTeamStats(team1.name, punkte1);
+  await updateTeamStats(team2.name, punkte2);
+
+  // End-Embed mit Ergebnis
+  embed.setDescription(
+    `🏁 Spiel beendet!\n\nErgebnis: **${icon1} ${team1LastName} ${score1} : ${score2} ${icon2} ${team2LastName}**\n` +
+    `Dein Tipp: **${tippRichtig ? '✅ richtig' : '❌ falsch'}** (${userTip === 'team1' ? team1LastName : userTip === 'team2' ? team2LastName : 'Unentschieden'})`
+  );
+
+  await interaction.editReply({ content: null, embeds: [embed], components: [] });
+}
+
 async function updateTeamStats(teamName, punkte) {
   try {
-    console.log(`[Fussball] UpdateTeamStats für ${teamName} mit ${punkte} Punkten`);
     const result = await Team.findOneAndUpdate(
       { name: teamName },
       {
@@ -146,10 +225,11 @@ async function updateTeamStats(teamName, punkte) {
           lost: punkte === 0 ? 1 : 0,
         },
       },
-      { upsert: true, new: true }
+      { new: true }
     );
-    console.log(`[Fussball] Team ${teamName} aktualisiert:`, result);
-  } catch (error) {
-    console.error(`Fehler beim Update von Team ${teamName}:`, error);
+    // Hier kannst du noch weitere Updates machen
+    return result;
+  } catch (err) {
+    console.error('Fehler beim Update der Teamstats:', err);
   }
 }
