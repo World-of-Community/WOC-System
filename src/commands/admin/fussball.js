@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
-// Emojis für Pro League Teams
+// Emojis für Pro League Teams (kannst du erweitern)
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
   'VfB Stern': '⭐', 'FC Rot-Weiß': '🔴⚪', 'SV Grünwald': '🌲', 'TSV Nord': '❄️',
@@ -26,29 +26,39 @@ module.exports = {
   async execute(interaction) {
     try {
       const allTeams = await Team.find({});
-      if (allTeams.length < 2) {
+      if (!allTeams || allTeams.length < 2) {
         return interaction.reply({
           content: '❌ Es sind nicht genug Teams in der Datenbank.',
           ephemeral: true,
         });
       }
 
+      // Korrigiere die Liga-Namen so, dass sie exakt mit DB übereinstimmen
       const proLeague = allTeams.filter(t => t.league === 'Pro League');
-      let secondLeague = allTeams.filter(t => t.league === '2. League');
+      const secondLeague = allTeams.filter(t => t.league === '2. Liga');
 
-      if (secondLeague.length > 38) {
-        secondLeague = getRandomElements(secondLeague, 38);
-      }
-
-      const teamsForMatch = [...proLeague, ...secondLeague];
-      if (teamsForMatch.length < 2) {
+      if (proLeague.length + secondLeague.length < 2) {
         return interaction.reply({
           content: '❌ Nicht genug Teams in den Ligen für ein Spiel.',
           ephemeral: true,
         });
       }
 
+      // Falls zu viele Teams in 2. Liga sind, max 38 nehmen (optional)
+      const secondLeagueSample = secondLeague.length > 38 ? getRandomElements(secondLeague, 38) : secondLeague;
+
+      const teamsForMatch = [...proLeague, ...secondLeagueSample];
+      if (teamsForMatch.length < 2) {
+        return interaction.reply({
+          content: '❌ Nicht genug Teams ausgewählt für ein Spiel.',
+          ephemeral: true,
+        });
+      }
+
+      // Zwei verschiedene Teams aussuchen
       const [team1, team2] = getTwoDifferentTeams(teamsForMatch);
+
+      // Emojis holen oder default
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
 
@@ -148,17 +158,22 @@ function getRandomElements(arr, n) {
   return shuffled.slice(0, n);
 }
 
-// Teamdaten updaten
-async function updateTeamStats(teamName, punkte, gegentore) {
-  await Team.findOneAndUpdate(
-    { name: teamName },
-    {
-      $inc: {
-        points: punkte,
-        goalsAgainst: gegentore,
-        played: 1,
+// Teamdaten updaten (nutze hier dieselben Felder wie in deinem Tabellen-Code)
+async function updateTeamStats(teamName, punkte, gegnerPunkte) {
+  try {
+    await Team.findOneAndUpdate(
+      { name: teamName },
+      {
+        $inc: {
+          punkte: punkte,       // Punkte dazuaddieren
+          spiele: 1,           // Spiel erhöht sich um 1
+          // Hier kann man Siege/Unentschieden/Niederlagen auch zählen, je nach Ergebnis
+          // Tore und GegnerTore können hier ggf. angepasst werden, wenn gewünscht
+        },
       },
-    },
-    { upsert: true }
-  );
+      { upsert: true }
+    );
+  } catch (error) {
+    console.error(`Fehler beim Update von Team ${teamName}:`, error);
+  }
 }

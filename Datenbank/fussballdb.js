@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // Team-Schema (Teil von Fußball-Daten)
 const teamSchema = new mongoose.Schema({
   name: String,
-  league: { type: String, enum: ["Pro League", "2. League"] },
+  league: { type: String, enum: ["Pro League", "2. Liga"] },
   played: { type: Number, default: 0 },
   won: { type: Number, default: 0 },
   draw: { type: Number, default: 0 },
