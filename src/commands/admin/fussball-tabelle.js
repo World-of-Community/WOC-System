@@ -36,19 +36,25 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      // Datenbankabfrage
+      // Datenbankabfrage: Alle Teams
       const alleTeams = await Team.find({});
-      const teamMap = new Map();
+      console.log('Teams aus DB:', alleTeams.map(t => t.name));
 
-      // Teams in Map speichern
+      // Map zum schnellen Zugriff
+      const teamMap = new Map();
       for (const team of alleTeams) {
-        teamMap.set(team.name, team);
+        // Optional: normalize Namen (trim)
+        const name = team.name.trim();
+        teamMap.set(name, team);
       }
 
-      // Initialisiere fehlende Teams mit 0-Daten
+      console.log('TeamMap vor ensureTeamsInMap:', Array.from(teamMap.keys()));
+
+      // Fehlende Teams mit 0-Daten ergänzen
       function ensureTeamsInMap(teamNames) {
         for (const name of teamNames) {
           if (!teamMap.has(name)) {
+            console.log(`Team fehlt in DB und wird ergänzt: ${name}`);
             teamMap.set(name, {
               name,
               spiele: 0,
@@ -66,7 +72,9 @@ module.exports = {
       ensureTeamsInMap(proLeagueTeams);
       ensureTeamsInMap(zweiteLigaTeams);
 
-      // Sortierlogik: Punkte > Torverhältnis
+      console.log('TeamMap nach ensureTeamsInMap:', Array.from(teamMap.keys()));
+
+      // Sortierung nach Punkte, dann Torverhältnis
       function sortiereTeams(teams) {
         return teams.sort((a, b) => {
           if (b.punkte !== a.punkte) return b.punkte - a.punkte;
@@ -79,7 +87,7 @@ module.exports = {
       const proLeagueData = sortiereTeams(proLeagueTeams.map(t => teamMap.get(t)));
       const zweiteLigaData = sortiereTeams(zweiteLigaTeams.map(t => teamMap.get(t)));
 
-      // Tabellenbeschreibung generieren
+      // Tabellenbeschreibung als String
       function createTableDescription(teams) {
         return teams.map((team, i) => {
           const tv = team.tore - team.gegnerTore;
@@ -97,10 +105,9 @@ module.exports = {
         .setDescription(createTableDescription(zweiteLigaData))
         .setColor('Green');
 
-      // Antwort zuerst senden
+      // Erst Antwort, dann Embed posten
       await interaction.reply({ content: '📊 Tabelle wird angezeigt.', ephemeral: true });
 
-      // Dann Embed posten
       if (interaction.channel) {
         await interaction.channel.send({ embeds: [embedProLeague, embedZweiteLiga] });
       } else {
