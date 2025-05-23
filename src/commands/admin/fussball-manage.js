@@ -13,7 +13,7 @@ function saveIcons() {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('fussball')
+    .setName('fussball-manage')
     .setDescription('Verwalte Fußballteams')
     .addSubcommand(sub =>
       sub.setName('add')
