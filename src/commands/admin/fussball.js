@@ -1,4 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+} = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
 const teamIcons = {
@@ -17,7 +24,6 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      // Teams aus Pro League laden
       const proLeagueTeams = await Team.find({ league: 'Pro League' });
       console.log(`[Fussball] Gefundene Teams in Pro League: ${proLeagueTeams.length}`);
 
@@ -33,15 +39,19 @@ module.exports = {
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
 
+      // Nachnamen extrahieren (alles nach dem ersten Wort)
+      const team1LastName = team1.name.split(' ').slice(1).join(' ');
+      const team2LastName = team2.name.split(' ').slice(1).join(' ');
+
       const embed = new EmbedBuilder()
-        .setTitle(`⚽ Fußballspiel: ${icon1} ${team1.name} vs. ${icon2} ${team2.name}`)
+        .setTitle(`⚽ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
         .setDescription('Tippe, wer gewinnt, oder ob es ein Unentschieden wird!')
         .setColor('Blue');
 
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('win_team1')
-          .setLabel(`${icon1} ${team1.name} gewinnt`)
+          .setLabel(`${icon1} ${team1LastName} gewinnt`)
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
           .setCustomId('draw')
@@ -49,7 +59,7 @@ module.exports = {
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('win_team2')
-          .setLabel(`${icon2} ${team2.name} gewinnt`)
+          .setLabel(`${icon2} ${team2LastName} gewinnt`)
           .setStyle(ButtonStyle.Primary),
       );
 
@@ -69,11 +79,11 @@ module.exports = {
 
         switch (i.customId) {
           case 'win_team1':
-            ergebnis = `${team1.name} gewinnt`;
+            ergebnis = `${team1LastName} gewinnt`;
             punkte1 = 3;
             break;
           case 'win_team2':
-            ergebnis = `${team2.name} gewinnt`;
+            ergebnis = `${team2LastName} gewinnt`;
             punkte2 = 3;
             break;
           case 'draw':
@@ -85,7 +95,6 @@ module.exports = {
             return await i.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
         }
 
-        // Teamstats aktualisieren
         await updateTeamStats(team1.name, punkte1);
         await updateTeamStats(team2.name, punkte2);
 
@@ -113,7 +122,6 @@ module.exports = {
   },
 };
 
-// Helfer: Zwei verschiedene Teams zufällig auswählen
 function getTwoDifferentTeams(teams) {
   if (teams.length < 2) throw new Error('Mindestens zwei Teams benötigt.');
   const team1Index = Math.floor(Math.random() * teams.length);
@@ -124,11 +132,9 @@ function getTwoDifferentTeams(teams) {
   return [teams[team1Index], teams[team2Index]];
 }
 
-// Helfer: Team-Daten aktualisieren (Punkte & Spiele)
 async function updateTeamStats(teamName, punkte) {
   try {
     console.log(`[Fussball] UpdateTeamStats für ${teamName} mit ${punkte} Punkten`);
-
     const result = await Team.findOneAndUpdate(
       { name: teamName },
       {
@@ -142,7 +148,6 @@ async function updateTeamStats(teamName, punkte) {
       },
       { upsert: true, new: true }
     );
-
     console.log(`[Fussball] Team ${teamName} aktualisiert:`, result);
   } catch (error) {
     console.error(`Fehler beim Update von Team ${teamName}:`, error);
