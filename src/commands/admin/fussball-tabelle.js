@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const Team = require('../../../Datenbank/fussballdb'); // Dein Mongoose Modell
+const { Team } = require('../../../Datenbank/fussballdb');
 
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
