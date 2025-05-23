@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const Team = require('../../../Datenbank/fussballdb');  // Pfad zu deinem Mongoose Modell
+const Team = require('../../../Datenbank/fussballdb'); // Dein Mongoose Modell
 
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
@@ -16,15 +16,13 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      // Teams aus DB laden, nur Pro League
+      // Teams aus DB laden (nur Pro League)
       const alleTeams = await Team.find({ league: 'Pro League' });
-      const teamMap = new Map();
 
-      for (const team of alleTeams) {
-        teamMap.set(team.name.trim(), team);
-      }
+      // Map der Teams für schnellen Zugriff
+      const teamMap = new Map(alleTeams.map(team => [team.name.trim(), team.toObject()]));
 
-      // Fehlende Teams mit Defaultwerten ergänzen
+      // Fehlende Teams mit Default-Daten ergänzen
       for (const name of proLeagueTeams) {
         if (!teamMap.has(name)) {
           teamMap.set(name, {
@@ -43,10 +41,9 @@ module.exports = {
         }
       }
 
-      // Teams nach Punkten & Torverhältnis sortieren
-      const proLeagueData = proLeagueTeams
-        .map(name => {
-          const team = teamMap.get(name);
+      // Sortierung nach Punkten, dann Torverhältnis
+      const proLeagueData = Array.from(teamMap.values())
+        .map(team => {
           team.goalDifference = team.goalsFor - team.goalsAgainst;
           team.points = (team.won * 3) + team.draw;
           return team;
@@ -56,7 +53,7 @@ module.exports = {
           return b.goalDifference - a.goalDifference;
         });
 
-      // Embed-Beschreibung erstellen
+      // Embed-Beschreibung aufbauen (max 4096 Zeichen beachten)
       const description = proLeagueData.map((team, i) => 
         `**${i + 1}. ${team.name}** - ${team.points} Pkt | Spiele: ${team.played} | S: ${team.won} | U: ${team.draw} | N: ${team.lost} | Tore: ${team.goalsFor}:${team.goalsAgainst} (TV: ${team.goalDifference})`
       ).join('\n');
@@ -66,8 +63,9 @@ module.exports = {
         .setDescription(description)
         .setColor('Blue');
 
+      // Antwort per Interaction senden (ephemeral + Channel Nachricht)
+      await interaction.reply({ content: 'Tabelle wird angezeigt...', ephemeral: true });
       await interaction.channel.send({ embeds: [embed] });
-      await interaction.reply({ content: 'Tabelle gesendet.', ephemeral: true });
 
     } catch (error) {
       console.error('Fehler beim Anzeigen der Pro League Tabelle:', error);
