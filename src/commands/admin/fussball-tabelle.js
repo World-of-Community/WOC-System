@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Team, Match } = require('../../../Datenbank/fussballdb');
+const { Team } = require('../../../Datenbank/fussballdb');
 
 // Pro League Teams (24 feste Namen)
 const proLeagueTeams = [
@@ -10,7 +10,7 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-// 2. Liga Teams - mehr Teams, aber ohne Pro League Teams (z.B. 60 Vorschläge, dann 48 nehmen)
+// 2. Liga Teams (60 Vorschläge, 48 nehmen – ohne Duplikate aus Pro League)
 const allSecondLeagueCandidates = [
   'FC Drachen', 'SV Panther', 'TSV Adlerhorst', 'SC Tiger', 'VfB Falken',
   'FC Wölfe', 'SV Bären', 'TSV Löwenherz', 'SC Eichenwald', 'VfB Stürmer',
@@ -26,7 +26,7 @@ const allSecondLeagueCandidates = [
   'FC Eiswolf', 'SV Schattenläufer', 'TSV Blitzen', 'SC Nebelschleier', 'VfB Flügel'
 ];
 
-// Filtere 2. Liga Teams raus, die in Pro League sind
+// Filtere alle Teams raus, die bereits in der Pro League sind
 const zweiteLigaTeams = allSecondLeagueCandidates.filter(team => !proLeagueTeams.includes(team)).slice(0, 48);
 
 module.exports = {
@@ -35,76 +35,81 @@ module.exports = {
     .setDescription('Zeigt die aktuellen Tabellen der Pro League und 2. Liga'),
 
   async execute(interaction) {
-    // Lade alle Teams aus der DB
-    const alleTeams = await Team.find({});
+    try {
+      // Datenbankabfrage
+      const alleTeams = await Team.find({});
+      const teamMap = new Map();
 
-    // Map für schnellen Zugriff
-    const teamMap = new Map();
-    for (const team of alleTeams) {
-      teamMap.set(team.name, team);
-    }
+      // Teams in Map speichern
+      for (const team of alleTeams) {
+        teamMap.set(team.name, team);
+      }
 
-    // Hilfsfunktion: Stellt sicher, dass alle Teams in teamMap sind, sonst mit 0 initialisieren
-    function ensureTeamsInMap(teamNames) {
-      for (const name of teamNames) {
-        if (!teamMap.has(name)) {
-          teamMap.set(name, {
-            name,
-            spiele: 0,
-            siege: 0,
-            unentschieden: 0,
-            niederlagen: 0,
-            tore: 0,
-            gegnerTore: 0,
-            punkte: 0
-          });
+      // Initialisiere fehlende Teams mit 0-Daten
+      function ensureTeamsInMap(teamNames) {
+        for (const name of teamNames) {
+          if (!teamMap.has(name)) {
+            teamMap.set(name, {
+              name,
+              spiele: 0,
+              siege: 0,
+              unentschieden: 0,
+              niederlagen: 0,
+              tore: 0,
+              gegnerTore: 0,
+              punkte: 0
+            });
+          }
         }
       }
-    }
 
-    // Sicherstellen, dass alle Teams in der Map sind
-    ensureTeamsInMap(proLeagueTeams);
-    ensureTeamsInMap(zweiteLigaTeams);
+      ensureTeamsInMap(proLeagueTeams);
+      ensureTeamsInMap(zweiteLigaTeams);
 
-    // Sortierfunktion
-    function sortiereTeams(teams) {
-      return teams.sort((a, b) => {
-        if (b.punkte !== a.punkte) return b.punkte - a.punkte;
-        const torverhaeltnisB = b.tore - b.gegnerTore;
-        const torverhaeltnisA = a.tore - a.gegnerTore;
-        return torverhaeltnisB - torverhaeltnisA;
-      });
-    }
-
-    // Pro League Teams sortieren
-    const proLeagueData = sortiereTeams(proLeagueTeams.map(t => teamMap.get(t)));
-
-    // 2. Liga Teams sortieren
-    const zweiteLigaData = sortiereTeams(zweiteLigaTeams.map(t => teamMap.get(t)));
-
-    // Erstelle Beschreibungstext für Embed
-    function createTableDescription(teams) {
-      let description = '';
-      let platz = 1;
-      for (const team of teams) {
-        const torverhaeltnis = team.tore - team.gegnerTore;
-        description += `**${platz}. ${team.name}** - ${team.punkte} Pkt | Spiele: ${team.spiele} | S: ${team.siege} | U: ${team.unentschieden} | N: ${team.niederlagen} | Tore: ${team.tore}:${team.gegnerTore} (TV: ${torverhaeltnis})\n`;
-        platz++;
+      // Sortierlogik: Punkte > Torverhältnis
+      function sortiereTeams(teams) {
+        return teams.sort((a, b) => {
+          if (b.punkte !== a.punkte) return b.punkte - a.punkte;
+          const tvB = b.tore - b.gegnerTore;
+          const tvA = a.tore - a.gegnerTore;
+          return tvB - tvA;
+        });
       }
-      return description || 'Keine Daten vorhanden.';
+
+      const proLeagueData = sortiereTeams(proLeagueTeams.map(t => teamMap.get(t)));
+      const zweiteLigaData = sortiereTeams(zweiteLigaTeams.map(t => teamMap.get(t)));
+
+      // Tabellenbeschreibung generieren
+      function createTableDescription(teams) {
+        return teams.map((team, i) => {
+          const tv = team.tore - team.gegnerTore;
+          return `**${i + 1}. ${team.name}** - ${team.punkte} Pkt | Spiele: ${team.spiele} | S: ${team.siege} | U: ${team.unentschieden} | N: ${team.niederlagen} | Tore: ${team.tore}:${team.gegnerTore} (TV: ${tv})`;
+        }).join('\n') || 'Keine Daten vorhanden.';
+      }
+
+      const embedProLeague = new EmbedBuilder()
+        .setTitle('⚽ Pro League Tabelle')
+        .setDescription(createTableDescription(proLeagueData))
+        .setColor('Blue');
+
+      const embedZweiteLiga = new EmbedBuilder()
+        .setTitle('⚽ 2. Liga Tabelle')
+        .setDescription(createTableDescription(zweiteLigaData))
+        .setColor('Green');
+
+      // Antwort zuerst senden
+      await interaction.reply({ content: '📊 Tabelle wird angezeigt.', ephemeral: true });
+
+      // Dann Embed posten
+      if (interaction.channel) {
+        await interaction.channel.send({ embeds: [embedProLeague, embedZweiteLiga] });
+      } else {
+        console.warn('Konnte Nachricht nicht senden: Kein Channel vorhanden');
+      }
+
+    } catch (error) {
+      console.error('Fehler beim Anzeigen der Tabelle:', error);
+      await interaction.reply({ content: '❌ Beim Abrufen der Tabelle ist ein Fehler aufgetreten.', ephemeral: true });
     }
-
-    const embedProLeague = new EmbedBuilder()
-      .setTitle('⚽ Pro League Tabelle')
-      .setDescription(createTableDescription(proLeagueData))
-      .setColor('Blue');
-
-    const embedZweiteLiga = new EmbedBuilder()
-      .setTitle('⚽ 2. Liga Tabelle')
-      .setDescription(createTableDescription(zweiteLigaData))
-      .setColor('Green');
-
-    await interaction.channel.send({ embeds: [embedProLeague, embedZweiteLiga] })
-    await interaction.reply({ content: 'erfolgreich gesendet', ephemeral: true });
   }
 };
