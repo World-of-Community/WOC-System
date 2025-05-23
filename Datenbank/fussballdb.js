@@ -1,4 +1,3 @@
-// fussballdb.js (Datenbank-Schema und Model)
 const mongoose = require('mongoose');
 
 const teamSchema = new mongoose.Schema({
