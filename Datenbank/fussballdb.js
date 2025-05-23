@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-// Team-Schema (Teil von Fußball-Daten)
+// Team-Schema (nur Pro League)
 const teamSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  league: { type: String, enum: ["Pro League", "2. Liga"], required: true },
+  name: { type: String, required: true, trim: true },
+  league: { type: String, enum: ["Pro League"], required: true },
   played: { type: Number, default: 0 },
   won: { type: Number, default: 0 },
   draw: { type: Number, default: 0 },
@@ -18,17 +18,16 @@ const teamSchema = new mongoose.Schema({
 
 // Match-Schema mit eingebetteten Team-Objekten
 const matchSchema = new mongoose.Schema({
-  team1: teamSchema,    // eingebettetes Team-Objekt
-  team2: teamSchema,    // eingebettetes Team-Objekt
+  team1: { type: teamSchema, required: true },
+  team2: { type: teamSchema, required: true },
   score1: { type: Number, required: true },
   score2: { type: Number, required: true },
   date: { type: Date, default: Date.now },
-  events: [String], // z.B. ["⚽ 12' Tor FC Adler"]
+  events: { type: [String], default: [] },
   yellowCards: { type: Map, of: Number, default: {} },
   redCards: { type: Map, of: Number, default: {} }
 });
 
-// Exportiere die Modelle
 module.exports = {
   Team: mongoose.model('Team', teamSchema),
   Match: mongoose.model('Match', matchSchema)
