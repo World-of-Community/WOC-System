@@ -79,7 +79,7 @@ module.exports = {
         .setColor('Green')
         .addFields(
           { name: 'Spielminute', value: '0\'', inline: true },
-          { name: 'Spielstand', value: `0 : 0`, inline: true },
+          { name: 'Spielstand', value: `0 - 0`, inline: true },
           { name: 'xG', value: `0.00 : 0.00`, inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         );
@@ -197,7 +197,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setFields(
         { name: 'Spielminute', value: `${minute}'`, inline: true },
-        { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
+        { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
         { name: 'Ereignisse', value: goals.length > 0 ? goals.join('\n') : 'Noch keine Ereignisse...' }
       );
