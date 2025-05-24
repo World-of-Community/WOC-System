@@ -174,7 +174,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
         { name: 'Spielminute', value: `${minute}'`, inline: true },
         { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-        { name: 'Tore', value: goals.length > 0 ? goals.join('\n') : 'Noch keine Tore...' }
+        { name: 'Ereignisse', value: goals.length > 0 ? goals.join('\n') : 'Noch keine Ereignisse...' }
       );
 
     await statusMessage.edit({ embeds: [embedUpdate] });
@@ -196,7 +196,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
         xG2 += xG;
       }
 
-      goals.push(`${minute}': ${teamScored === 'team1' ? icon1 : icon2} **${scorer}** (${xG} xG)`);
+      goals.push(`⚽ Tooor! ${teamScored === 'team1' ? icon1 : icon2} **${scorer}** (${minute}')`);
     }
 
     // 1000 ms warten = 1 Spielminute simulieren (kann an die gewünschte Geschwindigkeit angepasst werden)
