@@ -168,11 +168,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       if (teamScored === 'team1') {
         score1++;
         xG1 += xG;
-        goals.push(`⚽ Tooor! ${team1Name} - ${score1} (${minute}')`);
+        goals.push(`⚽ Tooor! ${team1Name} - ${score} (${minute}')`);
       } else {
         score2++;
         xG2 += xG;
-        goals.push(`⚽ Tooor! ${team2Name} - ${scorer2} (${minute}')`);
+        goals.push(`⚽ Tooor! ${team2Name} - ${scorer} (${minute}')`);
       }
     }
 
