@@ -111,18 +111,18 @@ module.exports = {
           case 'draw': userTip = 'draw'; break;
         }
 
-        await i.update({ content: '⏳ Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
+        await i.update({ content: '`⏳` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
         collector.stop();
 
         await delay(3000);
-        await interaction.followUp({ content: '🔊 **Anpfiff! Das Spiel beginnt!** ⚽' });
+        await interaction.followUp({ content: '`🔊` **Anpfiff! Das Spiel beginnt!** `⚽`' });
         await simulateMatch(interaction, statusMessage, team1, team2, team1Name, team2Name, userTip);
       });
 
       collector.on('end', async collected => {
         if (collected.size === 0) {
           await interaction.editReply({
-            content: '⏱️ Zeit abgelaufen, kein Tipp abgegeben.',
+            content: '`⏱️` Zeit abgelaufen, kein Tipp abgegeben.',
             embeds: [],
             components: [],
           });
