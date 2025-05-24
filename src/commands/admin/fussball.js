@@ -205,7 +205,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
     await statusMessage.edit({ embeds: [embedUpdate] });
 
     // Alle 5 Minuten mit 10% Chance ein Tor
-    if (minute % 5 === 0 && Math.random() < 0.1) {
+    if (minute % 4 === 0 && Math.random() < 0.25) {
       const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
       const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
       const players = teamScored === 'team1' ? team1.players : team2.players;
