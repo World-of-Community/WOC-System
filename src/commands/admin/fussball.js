@@ -195,33 +195,19 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`🔁 Wechsel bei ${team.name}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
     }
 
-    if (Math.random() < 0.3) {
+    if (Math.random() < 0.15) {
       const team = Math.random() < 0.5 ? team1Name : team2Name;
       events.push(`🎯 Freistoß für ${team} (${minute}')`);
     }
 
-    if (Math.random() < 0.02) {
+    if (Math.random() < 0.20) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       events.push(`🚩 Abseits von ${player} (${minute}')`);
     }
 
-    if (Math.random() < 0.07) {
-      const team = Math.random() < 0.5 ? team1 : team2;
-      const player = getRandomPlayer(team);
-      events.push(`🚫 Foul von ${player} (${minute}')`);
-    }
-
-    // Einwurf (5% Chance)
-    if (Math.random() < 0.10) {
-      const team = Math.random() < 0.5 ? team1 : team2;
-      const teamName = team === team1 ? team1Name : team2Name;
-      const player = getRandomPlayer(team);
-      events.push(`↩️ Einwurf für ${teamName} durch ${player} (${minute}')`);
-    }
-
-    // Gefährlicher Angriff (z.B. 7% Chance pro Minute)
-    if (Math.random() < 0.07) {
+    // Gefährlicher Angriff (z.B. 8% Chance pro Minute)
+    if (Math.random() < 0.08) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
@@ -229,7 +215,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
 
     // Pfosten/Torlatte Chance
-    if (Math.random() < 0.05) {
+    if (Math.random() < 0.25) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
@@ -237,7 +223,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
 
     // Großchance
-    if (Math.random() < 0.07) {
+    if (Math.random() < 0.12) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
@@ -249,15 +235,10 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`⏸ Spielunterbrechung (${minute}')`);
     }
 
-    // Strittige Entscheidung (2% Chance)
-    if (Math.random() < 0.02) {
-      events.push(`⚖️ Strittige Entscheidung des Schiedsrichters (${minute}')`);
-    }
-
     // Funktion zur Anzeige der Spielminute
     function getDisplayMinute(minute) {
       if (minute <= 90) return `${minute}'`;
-      return `90'+${minute - 90}`;
+      return `90' +${minute - 90}`;
     }
     
     // Beispielhafte Event-Generierung in einem Spiel-Tick
