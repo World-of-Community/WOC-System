@@ -142,8 +142,9 @@ function generateOdds() {
   };
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+function getRandomEventType() {
+  const events = ['Freistoß', 'Elfmeter', 'Gelbe Karte', 'Rote Karte'];
+  return events[Math.floor(Math.random() * events.length)];
 }
 
 function getRandomPlayer(players) {
@@ -156,13 +157,11 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
   let xG = { [team1.name]: 0, [team2.name]: 0 };
   let log = [];
   const teamData = { [team1.name]: team1.players || [], [team2.name]: team2.players || [] };
-  const realTimePerMinuteMs = 1000;
 
   for (let minute = 1; minute <= 90; minute++) {
     xG[team1.name] += Math.random() * 0.03;
     xG[team2.name] += Math.random() * 0.03;
 
-    // Tore
     if (Math.random() < xG[team1.name] / 10 - score[team1.name] * 0.1) {
       score[team1.name]++;
       const scorer = getRandomPlayer(teamData[team1.name]);
@@ -175,9 +174,8 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
       log.push(`⚽ ${icon2} ${team2LastName} Tor durch **${scorer}** (${minute}')`);
     }
 
-    // Weitere Events (Freistoß, Elfmeter, gelbe/rote Karten)
     const eventChance = Math.random();
-    if (eventChance < 0.04) { // 4% Chance pro Minute ein Event
+    if (eventChance < 0.04) {
       const eventType = getRandomEventType();
       const teamEvent = Math.random() < 0.5 ? team1 : team2;
       const iconEvent = teamEvent === team1 ? icon1 : icon2;
@@ -189,7 +187,6 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
           log.push(`🟡 Freistoß für ${iconEvent} ${teamLastNameEvent} durch **${playerEvent}** (${minute}')`);
           break;
         case 'Elfmeter':
-          // Event: Elfmeter kann auch Tor sein mit 75% Chance
           if (Math.random() < 0.75) {
             score[teamEvent.name]++;
             log.push(`⚽ Elfmeter verwandelt von **${playerEvent}** für ${iconEvent} ${teamLastNameEvent} (${minute}')`);
@@ -213,30 +210,20 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
         { name: 'Spielminute', value: `${minute}'`, inline: true },
         { name: 'Spielstand', value: `${score[team1.name]} : ${score[team2.name]}`, inline: true },
         { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
-        { name: 'Ereignisse', value: log.length > 0 ? log.slice(-10).join('\n') : 'Noch keine Ereignisse...' }
+        { name: 'Ereignisse', value: log.slice(-5).join('\n') || 'Keine Ereignisse...' }
       );
 
     await interaction.editReply({ embeds: [embedUpdate] });
-    await sleep(realTimePerMinuteMs);
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
 
-  // Ergebnis auswerten
-  let result;
-  if (score[team1.name] > score[team2.name]) result = 'team1';
-  else if (score[team1.name] < score[team2.name]) result = 'team2';
-  else result = 'draw';
+  const result =
+    score[team1.name] > score[team2.name] ? 'team1' :
+    score[team2.name] > score[team1.name] ? 'team2' : 'draw';
 
-  const gewonnen = result === userTip;
+  let resultMsg = userTip === result
+    ? `✅ Du hast richtig getippt! Ergebnis: ${score[team1.name]} : ${score[team2.name]}`
+    : `❌ Leider falsch getippt. Ergebnis: ${score[team1.name]} : ${score[team2.name]}`;
 
-  const resultMessage = new EmbedBuilder()
-    .setTitle(`🏁 Spiel beendet: ${icon1} ${team1LastName} ${score[team1.name]} : ${score[team2.name]} ${icon2} ${team2LastName}`)
-    .setDescription(`${gewonnen ? '✅ Glückwunsch, dein Tipp war richtig!' : '❌ Leider war dein Tipp falsch.'}`)
-    .setColor(gewonnen ? 'Green' : 'Red');
-
-  await interaction.followUp({ embeds: [resultMessage] });
-}
-
-function getRandomEventType() {
-  const events = ['Freistoß', 'Elfmeter', 'Gelbe Karte', 'Rote Karte'];
-  return events[Math.floor(Math.random() * events.length)];
+  await interaction.followUp({ content: resultMsg });
 }
