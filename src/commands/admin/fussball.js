@@ -160,45 +160,46 @@ function getTwoDifferentTeams(teams) {
 }
 
 function generateOdds() {
-  // Beispiel: zufällige Quoten zwischen 1.5 und 3.5
   const team1 = (Math.random() * 2 + 1.5).toFixed(2);
   const draw = (Math.random() * 2 + 1.5).toFixed(2);
   const team2 = (Math.random() * 2 + 1.5).toFixed(2);
   return { team1, draw, team2 };
 }
 
+function getShortName(fullName) {
+  return fullName.split(' ').slice(1).join(' ') || fullName;
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function simulateMatch(statusMessage, team1, team2, icon1, icon2) {
-  let minute = 0;
-  let score1 = 0;
-  let score2 = 0;
-  let xG1 = 0;
-  let xG2 = 0;
-  let events = [];
+  let minute = 0, score1 = 0, score2 = 0, xG1 = 0, xG2 = 0;
+  const events = [];
 
   while (minute < 90) {
-    await delay(1500); // Warte 1.5 Sekunden zwischen Updates
+    await delay(1500);
     minute += 5;
 
-    // Simuliere Ereignis
-    const event = simulateEvent(team1, team2, icon1, icon2);
-    if (event) {
-      events.push(event);
-      // Event kann auch Tore verändern
-      if (event.includes('TOR für')) {
-        if (event.includes(icon1)) score1++;
-        else if (event.includes(icon2)) score2++;
+    if (Math.random() < 0.3) {
+      const scoringTeam = Math.random() < 0.5 ? 1 : 2;
+      const scorer = (scoringTeam === 1 ? team1 : team2).name;
+      const icon = scoringTeam === 1 ? icon1 : icon2;
+
+      if (scoringTeam === 1) {
+        score1++;
+        xG1 += Math.random() * 0.9 + 0.1;
+      } else {
+        score2++;
+        xG2 += Math.random() * 0.9 + 0.1;
       }
+
+      events.push(`${minute}' ${icon} **${getShortName(scorer)}** erzielt ein Tor! ⚽`);
     }
 
-    // Simuliere xG-Zahlen leicht zufällig steigend
-    xG1 += Math.random() * 0.3;
-    xG2 += Math.random() * 0.3;
-
-    // Embed aktualisieren
-    const embedUpdate = new EmbedBuilder()
-      .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1.name} vs. ${icon2} ${team2.name}`)
-      .setColor('Green')
-      .addFields(
+    const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
+      .setFields(
         { name: 'Spielminute', value: `${minute}'`, inline: true },
         { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
@@ -207,37 +208,4 @@ async function simulateMatch(statusMessage, team1, team2, icon1, icon2) {
 
     await statusMessage.edit({ embeds: [embedUpdate] });
   }
-
-  // Spiel vorbei
-  const embedEnd = new EmbedBuilder()
-    .setTitle(`🏁 Spielende: ${icon1} ${team1.name} vs. ${icon2} ${team2.name}`)
-    .setColor('DarkGreen')
-    .addFields(
-      { name: 'Endstand', value: `${score1} : ${score2}`, inline: true },
-      { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-      { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Keine Ereignisse' }
-    );
-
-  await statusMessage.edit({ embeds: [embedEnd] });
-}
-
-function simulateEvent(team1, team2, icon1, icon2) {
-  const possibleEvents = [
-    `${icon1} Angriff von ${team1.name}`,
-    `${icon2} Angriff von ${team2.name}`,
-    `${icon1} TOR für ${team1.name} ⚽`,
-    `${icon2} TOR für ${team2.name} ⚽`,
-    'Gelbe Karte',
-    'Foul',
-    'Ecke',
-    'Abseits',
-    'Freistoß',
-  ];
-  // 50% Chance, dass ein Ereignis ein Tor ist
-  const event = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
-  return event;
-}
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
