@@ -167,58 +167,86 @@ module.exports = {
           .setTitle('⚽ Spielergebnis')
           .setColor(correct ? 'Green' : 'Red')
           .setDescription(
-            `${icon1} **${team1LastName}** ${result.score1} : ${result.score2} **${team2LastName}** ${icon2}\n\n` +
-            `Ergebnis: **${winnerText}**\n` +
-            `Dein Tipp war ${correct ? '✅ richtig!' : '❌ falsch.'}`
+            `**Endstand:** ${icon1} ${team1LastName} ${result.score1} : ${result.score2} ${icon2} ${team2LastName}\n` +
+            `**Tore:**\n${formatGoals(result.goals, teamIcons)}\n\n` +
+            `Dein Tipp war **${correct ? 'richtig' : 'falsch'}**!`
           )
-          .setFooter({ text: `xG: ${result.xg1.toFixed(2)} : ${result.xg2.toFixed(2)}` });
+          .addFields(
+            { name: 'Spielminute', value: `90'`, inline: true },
+            { name: 'xG', value: `${result.xG1.toFixed(2)} : ${result.xG2.toFixed(2)}`, inline: true }
+          );
 
-        await interaction.followUp({ embeds: [embedResult] });
-
-        // Buttons deaktivieren
-        const disabledButtons = new ActionRowBuilder().addComponents(
-          buttons.components.map(b => b.setDisabled(true))
-        );
-        await lineupMessage.edit({ components: [disabledButtons] });
+        // Ergebnis senden
+        await interaction.followUp({ embeds: [embedResult], components: [] });
       });
-
     } catch (error) {
-      console.error(error);
-      return interaction.reply({ content: '❌ Es ist ein Fehler aufgetreten.', ephemeral: true });
+      console.error('Fehler beim Fußballspiel-Befehl:', error);
+      await interaction.reply({ content: '❌ Ein Fehler ist aufgetreten.', ephemeral: true });
     }
-  }
+  },
 };
 
-// Hilfsfunktion: Zwei unterschiedliche Teams zufällig aus der Liste holen
+// Hilfsfunktionen
+
 function getTwoDifferentTeams(teams) {
-  if (teams.length < 2) return [];
-  const idx1 = Math.floor(Math.random() * teams.length);
-  let idx2;
+  if (teams.length < 2) throw new Error('Nicht genug Teams vorhanden');
+  let t1 = teams[Math.floor(Math.random() * teams.length)];
+  let t2;
   do {
-    idx2 = Math.floor(Math.random() * teams.length);
-  } while (idx2 === idx1);
-  return [teams[idx1], teams[idx2]];
+    t2 = teams[Math.floor(Math.random() * teams.length)];
+  } while (t1.name === t2.name);
+  return [t1, t2];
 }
 
-// Hilfsfunktion: Zufällige Wettquoten generieren (z.B. 1.5 - 4.0)
 function generateOdds() {
-  const rand = () => (Math.random() * 3 + 1).toFixed(2);
-  return {
-    team1: rand(),
-    draw: rand(),
-    team2: rand(),
-  };
+  // Einfache zufällige Quoten erzeugen (kannst du beliebig anpassen)
+  const team1 = (Math.random() * 3 + 1).toFixed(2);
+  const draw = (Math.random() * 3 + 2).toFixed(2);
+  const team2 = (Math.random() * 3 + 1).toFixed(2);
+  return { team1, draw, team2 };
 }
 
-// Hilfsfunktion: Spiel simulieren mit zufälligen Toren und xG (expected goals)
 function simulateGame(team1, team2) {
-  // xG-Werte simulieren
-  const xg1 = Math.random() * 3; 
-  const xg2 = Math.random() * 3;
+  // Simuliere ein Spiel: Tore und xG-Werte zufällig generieren
 
-  // Tore anhand xG bestimmen (z.B. rund auf 0-5)
-  const score1 = Math.min(5, Math.max(0, Math.round(xg1 + Math.random())));
-  const score2 = Math.min(5, Math.max(0, Math.round(xg2 + Math.random())));
+  const xG1 = Math.random() * 3;
+  const xG2 = Math.random() * 3;
 
-  return { score1, score2, xg1, xg2 };
+  // Tore annähern an xG (Poisson-Verteilung ist genauer, hier einfache Annäherung)
+  const score1 = Math.floor(xG1 + Math.random());
+  const score2 = Math.floor(xG2 + Math.random());
+
+  // Zufällige Torschützen auswählen
+  const goals = [];
+  const players1 = teamsData.find(t => t.name === team1.name)?.players || [];
+  const players2 = teamsData.find(t => t.name === team2.name)?.players || [];
+
+  // Generiere Tore für Team 1
+  for (let i = 0; i < score1; i++) {
+    const scorer = players1.length ? players1[Math.floor(Math.random() * players1.length)] : 'Spieler 1';
+    goals.push({ team: 'team1', scorer, minute: randomMinute() });
+  }
+
+  // Tore für Team 2
+  for (let i = 0; i < score2; i++) {
+    const scorer = players2.length ? players2[Math.floor(Math.random() * players2.length)] : 'Spieler 2';
+    goals.push({ team: 'team2', scorer, minute: randomMinute() });
+  }
+
+  // Sortiere Tore nach Minute
+  goals.sort((a, b) => a.minute - b.minute);
+
+  return { score1, score2, xG1, xG2, goals };
+}
+
+function randomMinute() {
+  return Math.floor(Math.random() * 90) + 1;
+}
+
+function formatGoals(goals, icons) {
+  if (!goals.length) return 'Keine Tore';
+
+  return goals
+    .map(g => `${icons[g.team === 'team1' ? 'team1' : 'team2'] || '⚽'} ${g.minute}' - ${g.scorer}`)
+    .join('\n');
 }
