@@ -195,12 +195,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`🔁 Wechsel bei ${team.name}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
     }
 
-    if (Math.random() < 0.15) {
+    if (Math.random() < 0.05) {
       const team = Math.random() < 0.5 ? team1Name : team2Name;
       events.push(`🎯 Freistoß für ${team} (${minute}')`);
     }
 
-    if (Math.random() < 0.10) {
+    if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       events.push(`🚩 Abseits von ${player} (${minute}')`);
@@ -215,7 +215,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
 
     // Großchance
-    if (Math.random() < 0.12) {
+    if (Math.random() < 0.06) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
