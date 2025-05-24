@@ -147,8 +147,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   let xG1 = 0.0;
   let xG2 = 0.0;
   const events = [];
-
-  for (let minute = 1; minute <= 90; minute++) {
+  const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
+  
+  for (let minute = 1; minute <= 90 + extraTime; minute++) {
     let torGezaehlt = true;
     let scorer = '';
     let xG = 0;
@@ -209,6 +210,68 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       events.push(`🚫 Foul von ${player} (${minute}')`);
+    }
+
+    if (Math.random() < 0.75) {
+      // Elfmeter verwandelt
+      events.push(`⚽️ Elfmeter für ${teamName} verwandelt durch ${player} (${minute}')`);
+      if (team === team1) score1++;
+      else score2++;
+    } else {
+      // Elfmeter verschossen
+      events.push(`❌ Elfmeter für ${teamName} verschossen durch ${player} (${minute}')`);
+    }
+
+    // Einwurf (5% Chance)
+    if (Math.random() < 0.05) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
+      const player = getRandomPlayer(team);
+      events.push(`↩️ Einwurf für ${teamName} durch ${player} (${minute}')`);
+    }
+
+    // Gefährlicher Angriff (z.B. 7% Chance pro Minute)
+    if (Math.random() < 0.07) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
+      const player = getRandomPlayer(team);
+      events.push(`🔥 Gefährlicher Angriff von ${teamName} durch ${player} (${minute}')`);
+    }
+
+    // Pfosten/Torlatte Chance
+    if (Math.random() < 0.05) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
+      const player = getRandomPlayer(team);
+      events.push(`🚨 Pfosten! Knapp vorbei von ${player} (${minute}')`);
+    }
+
+    // Großchance
+    if (Math.random() < 0.07) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
+      const player = getRandomPlayer(team);
+      events.push(`⚠️ Großchance für ${teamName} durch ${player} (${minute}')`);
+    }
+
+    // Spielunterbrechung (z.B. 3% Chance)
+    if (Math.random() < 0.03) {
+      events.push(`⏸ Spielunterbrechung (${minute}')`);
+    }
+
+    // Strittige Entscheidung (2% Chance)
+    if (Math.random() < 0.02) {
+      events.push(`⚖️ Strittige Entscheidung des Schiedsrichters (${minute}')`);
+    }
+
+    // Nachspielzeit beginnt! Nur genau bei Minute 90
+    if (minute === 90) {
+      events.push(`⏳ Nachspielzeit beginnt! (+${extraTime}')`);
+    }
+
+    // Schlusspfiff am Ende der Nachspielzeit
+    if (minute === 90 + extraTime) {
+      events.push(`🔔 Schlusspfiff! Endstand: ${team1Name} ${score1} : ${score2} ${team2Name}`);
     }
 
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
