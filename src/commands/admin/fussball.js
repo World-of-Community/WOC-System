@@ -194,6 +194,68 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     await delay(1000); // 1 Sekunde Pause zwischen Minuten
   }
 
+  // Event: Gelbe Karte
+  if (minute % 6 === 0 && Math.random() < 0.15) {
+    const team = Math.random() < 0.5 ? team1 : team2;
+    const players = team.players || [];
+    const validPlayers = players.filter(p => typeof p === 'string' && p.trim() !== '');
+    const player = validPlayers.length > 0 ? validPlayers[Math.floor(Math.random() * validPlayers.length)] : 'Unbekannter Spieler';
+    goals.push(`🟨 Gelbe Karte für ${player} (${minute}')`);
+  }
+
+  // Event: Auswechslung
+  if (minute % 20 === 0 && Math.random() < 0.3) {
+    const team = Math.random() < 0.5 ? team1 : team2;
+    const players = team.players || [];
+    const validPlayers = players.filter(p => typeof p === 'string' && p.trim() !== '');
+    const outPlayer = validPlayers.length > 0 ? validPlayers[Math.floor(Math.random() * validPlayers.length)] : 'Spieler A';
+    const inPlayer = `Spieler ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`;
+    goals.push(`🔁 Wechsel bei ${team.name}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
+  }
+
+  function freistossEvent(minute, team1Name, team2Name) {
+  const team = Math.random() < 0.5 ? team1Name : team2Name;
+  return `🆓 Freistoß für ${team} (${minute}')`;
+  }
+
+  if (Math.random() < 0.1) events.push(freistossEvent(minute, team1Name, team2Name));
+
+  function abseitsEvent(minute, team1, team2) {
+  const team = Math.random() < 0.5 ? team1 : team2;
+  const player = getRandomPlayer(team);
+  return `🚩 Abseits von ${player} (${minute}')`;
+  }
+
+  if (Math.random() < 0.05) events.push(abseitsEvent(minute, team1, team2));
+
+  function foulEvent(minute, team1, team2) {
+  const team = Math.random() < 0.5 ? team1 : team2;
+  const player = getRandomPlayer(team);
+  return `🚫 Foul von ${player} (${minute}')`;
+  }
+
+  if (Math.random() < 0.07) events.push(foulEvent(minute, team1, team2));
+
+  function eckeEvent(minute, team1Name, team2Name) {
+  const team = Math.random() < 0.5 ? team1Name : team2Name;
+  return `🚩 Ecke für ${team} (${minute}')`;
+  }
+
+  if (Math.random() < 0.08) events.push(eckeEvent(minute, team1Name, team2Name));
+
+  function varEvent(minute) {
+  return `📺 VAR-Überprüfung wegen möglichem Handspiel (${minute}')`;
+  }
+
+  if (Math.random() < 0.03) events.push(varEvent(minute));
+
+  function elfmeterEvent(minute, team1Name, team2Name) {
+  const team = Math.random() < 0.5 ? team1Name : team2Name;
+  return `⚽ Elfmeter für ${team} (${minute}')`;
+  }
+
+  if (Math.random() < 0.04) events.push(elfmeterEvent(minute, team1Name, team2Name));
+
   // Ergebnis-Embed
   const embedResult = new EmbedBuilder()
     .setTitle(`🏁 Spiel beendet: ${team1Name} vs. ${team2Name}`)
