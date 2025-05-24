@@ -6,7 +6,7 @@ const {
   ButtonStyle,
   ComponentType,
 } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb'); // Deine Datenbankanbindung
+const { Team } = require('../../../Datenbank/fussballdb'); // Deine DB-Verbindung
 
 // Emojis für Teams
 const teamIcons = {
@@ -18,7 +18,7 @@ const teamIcons = {
   'FC Donner': '⛈️', 'SV Schatten': '🌑', 'TSV Nebel': '🌫️', 'SC Licht': '💡',
 };
 
-// Feste Teams und Spieler für Anzeige (optional, kannst du erweitern)
+// Beispielteams mit Spielern
 const teamsData = [
   { "name": "FC Adler", "players": ["Müller", "Schmidt", "Fischer", "Weber"] },
   { "name": "SV Löwen", "players": ["Schneider", "Wagner", "Becker", "Hoffmann"] },
@@ -53,7 +53,7 @@ module.exports = {
 
   async execute(interaction) {
     try {
-      // Pro League Teams aus DB holen
+      // Hol dir Teams aus der Datenbank, Pro League als Beispiel
       const proLeagueTeams = await Team.find({ league: 'Pro League' });
       if (!proLeagueTeams || proLeagueTeams.length < 2) {
         return interaction.reply({
@@ -62,7 +62,7 @@ module.exports = {
         });
       }
 
-      // Zwei unterschiedliche Teams auswählen
+      // Wähle zwei unterschiedliche Teams
       const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
 
       const icon1 = teamIcons[team1.name] || '⚽';
@@ -142,46 +142,32 @@ module.exports = {
 
       collector.on('end', async (_, reason) => {
         if (reason === 'time') {
-          await interaction.followUp('⏰ Zeit abgelaufen! Es wurde kein Tipp abgegeben.');
-          return;
+          return interaction.followUp({ content: '⏰ Zeit abgelaufen! Du hast keinen Tipp abgegeben.', ephemeral: true });
         }
-        const userTip = reason; // Tipp des Users
 
-        // Spiel simulieren
-        const result = simulateGame(team1, team2);
+        // Simuliere Ergebnis
+        const result = simulateMatch(odds);
 
-        // Gewinner ermitteln
-        let winnerText = '';
-        if (result.score1 > result.score2) winnerText = `${icon1} ${team1LastName} gewinnt`;
-        else if (result.score1 < result.score2) winnerText = `${icon2} ${team2LastName} gewinnt`;
-        else winnerText = 'Unentschieden';
-
-        // Ob der Tipp richtig war
-        let correct = false;
-        if (userTip === 'draw' && result.score1 === result.score2) correct = true;
-        else if (userTip === 'team1' && result.score1 > result.score2) correct = true;
-        else if (userTip === 'team2' && result.score1 < result.score2) correct = true;
-
-        // Ergebnis-Embed
+        // Ergebnis-Embed mit Tipp-Auswertung
         const embedResult = new EmbedBuilder()
           .setTitle('⚽ Spielergebnis')
-          .setColor(correct ? 'Green' : 'Red')
+          .setColor('Gold')
           .setDescription(
-            `**Endstand:** ${icon1} ${team1LastName} ${result.score1} : ${result.score2} ${icon2} ${team2LastName}\n` +
-            `**Tore:**\n${formatGoals(result.goals, teamIcons)}\n\n` +
-            `Dein Tipp war **${correct ? 'richtig' : 'falsch'}**!`
+            `**${icon1} ${team1LastName}** ${result.goals1} : ${result.goals2} **${icon2} ${team2LastName}**\n\n` +
+            `Dein Tipp: ${formatTip(reason, icon1, team1LastName, icon2, team2LastName)}\n` +
+            `${reason === result.winner ? '✅ Du hast richtig getippt!' : '❌ Leider falsch geraten.'}`
           )
           .addFields(
-            { name: 'Spielminute', value: `90'`, inline: true },
-            { name: 'xG', value: `${result.xG1.toFixed(2)} : ${result.xG2.toFixed(2)}`, inline: true }
+            { name: 'xG', value: `${result.xg1.toFixed(2)} : ${result.xg2.toFixed(2)}`, inline: true },
+            { name: 'Spielminute', value: `90'`, inline: true }
           );
 
-        // Ergebnis senden
         await interaction.followUp({ embeds: [embedResult], components: [] });
       });
+
     } catch (error) {
-      console.error('Fehler beim Fußballspiel-Befehl:', error);
-      await interaction.reply({ content: '❌ Ein Fehler ist aufgetreten.', ephemeral: true });
+      console.error('Fehler beim /fussball Command:', error);
+      return interaction.reply({ content: '❌ Ein Fehler ist aufgetreten.', ephemeral: true });
     }
   },
 };
@@ -189,64 +175,53 @@ module.exports = {
 // Hilfsfunktionen
 
 function getTwoDifferentTeams(teams) {
-  if (teams.length < 2) throw new Error('Nicht genug Teams vorhanden');
-  let t1 = teams[Math.floor(Math.random() * teams.length)];
-  let t2;
+  if (teams.length < 2) throw new Error('Nicht genug Teams');
+  const firstIndex = Math.floor(Math.random() * teams.length);
+  let secondIndex;
   do {
-    t2 = teams[Math.floor(Math.random() * teams.length)];
-  } while (t1.name === t2.name);
-  return [t1, t2];
+    secondIndex = Math.floor(Math.random() * teams.length);
+  } while (secondIndex === firstIndex);
+  return [teams[firstIndex], teams[secondIndex]];
 }
 
+// Generiere zufällige Wettquoten (z.B. 1.5 - 5.0)
 function generateOdds() {
-  // Einfache zufällige Quoten erzeugen (kannst du beliebig anpassen)
+  // Odds für beide Teams plus Draw, summe aber ungleich 1
   const team1 = (Math.random() * 3 + 1).toFixed(2);
-  const draw = (Math.random() * 3 + 2).toFixed(2);
   const team2 = (Math.random() * 3 + 1).toFixed(2);
-  return { team1, draw, team2 };
+  const draw = (Math.random() * 4 + 1).toFixed(2);
+  return {
+    team1: team1,
+    team2: team2,
+    draw: draw,
+  };
 }
 
-function simulateGame(team1, team2) {
-  // Simuliere ein Spiel: Tore und xG-Werte zufällig generieren
+// Simuliere ein Spiel basierend auf Quoten
+function simulateMatch(odds) {
+  // Verwende Quoten als Indikator für Siegchancen
+  // Einfaches Modell: Niedrigere Quote = Favorit
+  // Hier erzeugen wir xG und Tore zufällig mit leichten Gewichtungen
+  const xg1 = Math.random() * (5 / odds.team1);
+  const xg2 = Math.random() * (5 / odds.team2);
 
-  const xG1 = Math.random() * 3;
-  const xG2 = Math.random() * 3;
+  const goals1 = Math.floor(xg1);
+  const goals2 = Math.floor(xg2);
 
-  // Tore annähern an xG (Poisson-Verteilung ist genauer, hier einfache Annäherung)
-  const score1 = Math.floor(xG1 + Math.random());
-  const score2 = Math.floor(xG2 + Math.random());
+  let winner;
+  if (goals1 > goals2) winner = 'team1';
+  else if (goals2 > goals1) winner = 'team2';
+  else winner = 'draw';
 
-  // Zufällige Torschützen auswählen
-  const goals = [];
-  const players1 = teamsData.find(t => t.name === team1.name)?.players || [];
-  const players2 = teamsData.find(t => t.name === team2.name)?.players || [];
+  return { goals1, goals2, winner, xg1, xg2 };
+}
 
-  // Generiere Tore für Team 1
-  for (let i = 0; i < score1; i++) {
-    const scorer = players1.length ? players1[Math.floor(Math.random() * players1.length)] : 'Spieler 1';
-    goals.push({ team: 'team1', scorer, minute: randomMinute() });
+// Hilft Tipp-Text zu formatieren
+function formatTip(tip, icon1, team1, icon2, team2) {
+  switch (tip) {
+    case 'team1': return `${icon1} ${team1} gewinnt`;
+    case 'team2': return `${icon2} ${team2} gewinnt`;
+    case 'draw': return 'Unentschieden';
+    default: return 'Kein Tipp';
   }
-
-  // Tore für Team 2
-  for (let i = 0; i < score2; i++) {
-    const scorer = players2.length ? players2[Math.floor(Math.random() * players2.length)] : 'Spieler 2';
-    goals.push({ team: 'team2', scorer, minute: randomMinute() });
-  }
-
-  // Sortiere Tore nach Minute
-  goals.sort((a, b) => a.minute - b.minute);
-
-  return { score1, score2, xG1, xG2, goals };
-}
-
-function randomMinute() {
-  return Math.floor(Math.random() * 90) + 1;
-}
-
-function formatGoals(goals, icons) {
-  if (!goals.length) return 'Keine Tore';
-
-  return goals
-    .map(g => `${icons[g.team === 'team1' ? 'team1' : 'team2'] || '⚽'} ${g.minute}' - ${g.scorer}`)
-    .join('\n');
 }
