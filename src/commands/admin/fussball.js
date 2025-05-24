@@ -8,6 +8,8 @@ const {
 } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
+// alle 1 minte das embed und die minte aktualisieren bearbeiten
+
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
   'VfB Stern': '⭐', 'FC Rot-Weiß': '🔴⚪', 'SV Grünwald': '🌲', 'TSV Nord': '❄️',
@@ -166,18 +168,16 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
   const goals = [];
 
   for (let minute = 1; minute <= 90; minute++) {
-    // Update der Anzeige in den Minuten 1, 60 und 90 (angepasst)
-    if (minute === 1 || minute === 60 || minute === 90) {
-      const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
-        .setFields(
-          { name: 'Spielminute', value: `${minute}'`, inline: true },
-          { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
-          { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-          { name: 'Tore', value: goals.length > 0 ? goals.join('\n') : 'Noch keine Tore...' }
-        );
+    // Alle 1 Minute das Embed aktualisieren
+    const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
+      .setFields(
+        { name: 'Spielminute', value: `${minute}'`, inline: true },
+        { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
+        { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+        { name: 'Tore', value: goals.length > 0 ? goals.join('\n') : 'Noch keine Tore...' }
+      );
 
-      await statusMessage.edit({ embeds: [embedUpdate] });
-    }
+    await statusMessage.edit({ embeds: [embedUpdate] });
 
     // Alle 5 Minuten mit 10% Chance ein Tor
     if (minute % 5 === 0 && Math.random() < 0.1) {
@@ -199,8 +199,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
       goals.push(`${minute}': ${teamScored === 'team1' ? icon1 : icon2} **${scorer}** (${xG} xG)`);
     }
 
-    // 500 ms warten = 1 Spielminute (kann angepasst werden)
-    await new Promise(r => setTimeout(r, 500));
+    // 1000 ms warten = 1 Spielminute simulieren (kann an die gewünschte Geschwindigkeit angepasst werden)
+    await new Promise(r => setTimeout(r, 1000));
   }
 
   // Endstand-Embed
