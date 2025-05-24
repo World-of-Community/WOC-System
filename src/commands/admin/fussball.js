@@ -48,7 +48,7 @@ module.exports = {
           { name: 'Spielminute', value: `0'`, inline: true },
           { name: 'Spielstand', value: `0 : 0`, inline: true },
           { name: 'xG', value: `0.00 : 0.00`, inline: true },
-          { name: 'Tore', value: 'Noch keine Tore...' }
+          { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         );
 
       const players1 = team1.players || [];
@@ -162,6 +162,7 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
     xG[team1.name] += Math.random() * 0.03;
     xG[team2.name] += Math.random() * 0.03;
 
+    // Tore
     if (Math.random() < xG[team1.name] / 10 - score[team1.name] * 0.1) {
       score[team1.name]++;
       const scorer = getRandomPlayer(teamData[team1.name]);
@@ -174,6 +175,37 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
       log.push(`⚽ ${icon2} ${team2LastName} Tor durch **${scorer}** (${minute}')`);
     }
 
+    // Weitere Events (Freistoß, Elfmeter, gelbe/rote Karten)
+    const eventChance = Math.random();
+    if (eventChance < 0.04) { // 4% Chance pro Minute ein Event
+      const eventType = getRandomEventType();
+      const teamEvent = Math.random() < 0.5 ? team1 : team2;
+      const iconEvent = teamEvent === team1 ? icon1 : icon2;
+      const teamLastNameEvent = teamEvent === team1 ? team1LastName : team2LastName;
+      const playerEvent = getRandomPlayer(teamData[teamEvent.name]);
+
+      switch (eventType) {
+        case 'Freistoß':
+          log.push(`🟡 Freistoß für ${iconEvent} ${teamLastNameEvent} durch **${playerEvent}** (${minute}')`);
+          break;
+        case 'Elfmeter':
+          // Event: Elfmeter kann auch Tor sein mit 75% Chance
+          if (Math.random() < 0.75) {
+            score[teamEvent.name]++;
+            log.push(`⚽ Elfmeter verwandelt von **${playerEvent}** für ${iconEvent} ${teamLastNameEvent} (${minute}')`);
+          } else {
+            log.push(`❌ Elfmeter verschossen von **${playerEvent}** für ${iconEvent} ${teamLastNameEvent} (${minute}')`);
+          }
+          break;
+        case 'Gelbe Karte':
+          log.push(`🟨 Gelbe Karte für **${playerEvent}** (${iconEvent} ${teamLastNameEvent}) (${minute}')`);
+          break;
+        case 'Rote Karte':
+          log.push(`🟥 Rote Karte für **${playerEvent}** (${iconEvent} ${teamLastNameEvent}) (${minute}')`);
+          break;
+      }
+    }
+
     const embedUpdate = new EmbedBuilder()
       .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
       .setColor('Green')
@@ -181,7 +213,7 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
         { name: 'Spielminute', value: `${minute}'`, inline: true },
         { name: 'Spielstand', value: `${score[team1.name]} : ${score[team2.name]}`, inline: true },
         { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
-        { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Noch keine Tore...' }
+        { name: 'Ereignisse', value: log.length > 0 ? log.slice(-10).join('\n') : 'Noch keine Ereignisse...' }
       );
 
     await interaction.editReply({ embeds: [embedUpdate] });
@@ -202,4 +234,9 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
     .setColor(gewonnen ? 'Green' : 'Red');
 
   await interaction.followUp({ embeds: [resultMessage] });
+}
+
+function getRandomEventType() {
+  const events = ['Freistoß', 'Elfmeter', 'Gelbe Karte', 'Rote Karte'];
+  return events[Math.floor(Math.random() * events.length)];
 }
