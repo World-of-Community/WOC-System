@@ -176,9 +176,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
       const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
       const players = teamScored === 'team1' ? team1.players : team2.players;
-      const scorer = players && players.length > 0
-        ? players[Math.floor(Math.random() * players.length)]
-        : 'Unbekannter Spieler';
+
+      const validPlayers = Array.isArray(players) ? players.filter(p => typeof p === 'string' && p.trim() !== '') : [];
+      const scorer = validPlayers.length > 0 ? validPlayers[Math.floor(Math.random() * validPlayers.length)] : 'Unbekannter Spieler';
 
       if (teamScored === 'team1') {
         score1++;
