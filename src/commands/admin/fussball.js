@@ -41,7 +41,7 @@ const teamsData = [
   { "name": "FC Donner", "players": ["Lorenz", "Bauer", "Wolf", "Schmid"] },
   { "name": "SV Schatten", "players": ["Ziegler", "Beck", "Kruse", "Hart"] },
   { "name": "TSV Nebel", "players": ["Lang", "Winter", "Schwarz", "Beier"] },
-  { "name": "SC Licht", "players": ["Günther", "Kaiser", "Sachs", "Mayer"] }
+  { "name": "SC Licht", "players": ["Günther", "Kaiser", "Sachs", "Mayer"] },
 ];
 
 module.exports = {
@@ -77,7 +77,7 @@ module.exports = {
       let xg2 = 0;
       let ereignisse = 'Noch keine Ereignisse...';
 
-      // Erstelle das initiale Status-Embed
+      // Funktion für Status-Embed, wird bei jedem Update neu gebaut
       const embedStatus = () =>
         new EmbedBuilder()
           .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
@@ -89,7 +89,7 @@ module.exports = {
             { name: 'Ereignisse', value: ereignisse }
           );
 
-      // Spieler aus dem Array holen (für Aufstellung)
+      // Spieler-Aufstellung
       const players1 = teamsData.find(t => t.name === team1.name)?.players || [];
       const players2 = teamsData.find(t => t.name === team2.name)?.players || [];
 
@@ -116,89 +116,89 @@ module.exports = {
           .setStyle(ButtonStyle.Primary),
       );
 
-      // Status-Embed senden
+      // Sende das Status-Embed und die Aufstellung + Buttons
       await interaction.reply({ embeds: [embedStatus()] });
-      // Aufstellung + Buttons senden
       const lineupMessage = await interaction.followUp({ embeds: [embedLineup], components: [buttons], fetchReply: true });
 
-      // Collector für Buttonklicks (nur vom Interaktionsuser)
+      // Button-Collector für den Tipp des Users
       const filter = i => i.user.id === interaction.user.id;
       const collector = interaction.channel.createMessageComponentCollector({
         filter,
         componentType: ComponentType.Button,
-        time: 60000,
+        time: 60 * 1000,
       });
 
-      // Interval zum Updaten des Status-Embeds jede Minute (max 90 Minuten)
       const maxMinutes = 90;
-      let interval = setInterval(async () => {
-        spielminute += 1;
 
-        // Simuliere etwas Spielverlauf (xG + Tore zufällig erhöhen)
-        const xg1Inc = Math.random() * 0.1;
-        const xg2Inc = Math.random() * 0.1;
+      // Interval zum Aktualisieren des Spiels jede Minute
+      const interval = setInterval(async () => {
+        spielminute++;
+
+        // Zufällige xG-Steigerung pro Team
+        const xg1Inc = Math.random() * 0.12; // etwas größere Schwankung
+        const xg2Inc = Math.random() * 0.12;
         xg1 += xg1Inc;
         xg2 += xg2Inc;
 
-        // Chance für Tor (klein, basierend auf xG-Inkrement)
-        if (Math.random() < xg1Inc * 0.2) tore1++;
-        if (Math.random() < xg2Inc * 0.2) tore2++;
-
-        // Beispiel Ereignis (alle 15 Minuten)
-        if (spielminute % 15 === 0) {
-          ereignisse = `⚽ Tore: ${tore1} : ${tore2} - Spielminute: ${spielminute}'`;
+        // Chance für Tor basierend auf xG-Inkrement (klein, aber realistisch)
+        if (Math.random() < xg1Inc * 0.25) {
+          tore1++;
+          ereignisse = `⚽ Tor für ${icon1} ${team1LastName} in der ${spielminute}'!`;
+        } else if (Math.random() < xg2Inc * 0.25) {
+          tore2++;
+          ereignisse = `⚽ Tor für ${icon2} ${team2LastName} in der ${spielminute}'!`;
+        } else if (spielminute % 15 === 0) {
+          ereignisse = `Spielminute ${spielminute}: Spielstand ${tore1} : ${tore2}, xG: ${xg1.toFixed(2)} : ${xg2.toFixed(2)}`;
         }
 
-        // Embed aktualisieren
+        // Update des Status-Embeds im ursprünglichen Reply
         try {
           await interaction.editReply({ embeds: [embedStatus()] });
-        } catch (e) {
-          console.error('Fehler beim Aktualisieren des Status-Embeds:', e);
+        } catch (err) {
+          console.error('Fehler beim Aktualisieren des Embeds:', err);
         }
 
-        if (spielminute >= maxMinutes) clearInterval(interval);
-      }, 60_000);
+        // Spielende nach 90 Minuten
+        if (spielminute >= maxMinutes) {
+          clearInterval(interval);
+          collector.stop();
+        }
+      }, 60 * 1000); // 1 Minute
 
-      // Ergebnis-Embed vorbereiten
+      // Ergebnis-Embed, das nach Tipp oder Timeout gesendet wird
       const embedResult = new EmbedBuilder()
-        .setTitle('🎉 Ergebnis')
+        .setTitle('🎉 Spiel beendet')
         .setColor('Gold')
         .setDescription(
-          `Das Spiel ist beendet!\n\n` +
-          `${icon1} ${team1LastName}: ${tore1} Tore\n` +
+          `Endstand:\n${icon1} ${team1LastName}: ${tore1} Tore\n` +
           `${icon2} ${team2LastName}: ${tore2} Tore\n\n` +
           `xG:\n${icon1} ${xg1.toFixed(2)} : ${xg2.toFixed(2)} ${icon2}`
         );
 
-      // Collector Event: Button wurde gedrückt
       collector.on('collect', async i => {
         await i.deferUpdate();
 
         let tip;
-
         switch (i.customId) {
           case 'win_team1': tip = team1.name; break;
           case 'draw': tip = 'Unentschieden'; break;
           case 'win_team2': tip = team2.name; break;
-          default: tip = 'Keine gültige Auswahl'; break;
+          default: tip = 'Ungültiger Tipp'; break;
         }
 
-        // Collector stoppen, wenn ein Tipp abgegeben wurde
         collector.stop();
-
         clearInterval(interval);
 
-        // Ergebnis ausgeben mit Tipp
         embedResult.addFields({ name: 'Dein Tipp', value: tip, inline: false });
 
         await interaction.followUp({ embeds: [embedResult] });
       });
 
-      // Collector Ende (Timeout)
       collector.on('end', async collected => {
         if (collected.size === 0) {
           clearInterval(interval);
           await interaction.followUp({ content: '⏰ Zeit abgelaufen, du hast keinen Tipp abgegeben!' });
+          await interaction.followUp({ embeds: [embedResult] });
         }
       });
 
@@ -212,8 +212,6 @@ module.exports = {
   },
 };
 
-// Hilfsfunktionen
-
 function getTwoDifferentTeams(teams) {
   if (teams.length < 2) return [];
   let idx1 = Math.floor(Math.random() * teams.length);
@@ -225,9 +223,10 @@ function getTwoDifferentTeams(teams) {
 }
 
 function generateOdds() {
-  // Zufallsquoten (einfaches Beispiel)
+  // Beispielhafte Zufallsquoten
   const team1 = (Math.random() * 2 + 1).toFixed(2);
   const draw = (Math.random() * 3 + 2).toFixed(2);
   const team2 = (Math.random() * 2 + 1).toFixed(2);
   return { team1, draw, team2 };
 }
+
