@@ -219,7 +219,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const team = Math.random() < 0.5 ? team1 : team2;
       const outPlayer = getRandomPlayer(team);
       const inPlayer = `Spieler ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`;
-      events.push(`\`🔁\` Wechsel bei ${team.name}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
+      events.push(`\`🔁\` Wechsel bei ${team}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
     }
 
     if (Math.random() < 0.05) {
