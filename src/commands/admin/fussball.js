@@ -6,10 +6,8 @@ const {
   ButtonStyle,
   ComponentType,
 } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
 const { Team } = require('../../../Datenbank/fussballdb');
-
+const path = require('path');
 const fussballteams = require(path.join(__dirname, '..', '..', 'json', 'fussballteams.json'));
 
 const teamIcons = {
@@ -27,130 +25,181 @@ module.exports = {
     .setDescription('Starte ein Fußballspiel und tippe, wer gewinnt!'),
 
   async execute(interaction) {
-    const proLeagueTeams = await Team.find({ league: 'Pro League' });
-    if (!proLeagueTeams || proLeagueTeams.length < 2) {
-      return interaction.reply({
-        content: '❌ Es sind nicht genug Teams in der Pro League.',
-        ephemeral: true,
+    try {
+      const proLeagueTeams = await Team.find({ league: 'Pro League' });
+      if (!proLeagueTeams || proLeagueTeams.length < 2) {
+        return interaction.reply({
+          content: '❌ Es sind nicht genug Teams in der Pro League Datenbank.',
+          ephemeral: true,
+        });
+      }
+
+      const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
+      const icon1 = teamIcons[team1.name] || '⚽';
+      const icon2 = teamIcons[team2.name] || '⚽';
+      const team1LastName = team1.name.split(' ').slice(1).join(' ') || team1.name;
+      const team2LastName = team2.name.split(' ').slice(1).join(' ') || team2.name;
+      const odds = generateOdds();
+
+      const embedStatus = new EmbedBuilder()
+        .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
+        .setColor('Green')
+        .addFields(
+          { name: 'Spielminute', value: `0'`, inline: true },
+          { name: 'Spielstand', value: `0 : 0`, inline: true },
+          { name: 'xG', value: `0.00 : 0.00`, inline: true },
+          { name: 'Tore', value: 'Noch keine Tore...' }
+        );
+
+      const players1 = team1.players || [];
+      const players2 = team2.players || [];
+
+      const embedLineup = new EmbedBuilder()
+        .setTitle('📋 Aufstellung')
+        .setColor('Blue')
+        .setDescription(
+          `**${icon1} ${team1LastName}:**\n${players1.length ? players1.join(', ') : 'Keine Spieler-Daten'}\n\n` +
+          `**${icon2} ${team2LastName}:**\n${players2.length ? players2.join(', ') : 'Keine Spieler-Daten'}`
+        );
+
+      const buttons = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('win_team1')
+          .setLabel(`${icon1} ${team1LastName} gewinnt (${odds.team1.toFixed(2)})`)
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('draw')
+          .setLabel(`Unentschieden (${odds.draw.toFixed(2)})`)
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId('win_team2')
+          .setLabel(`${icon2} ${team2LastName} gewinnt (${odds.team2.toFixed(2)})`)
+          .setStyle(ButtonStyle.Primary),
+      );
+
+      await interaction.reply({ embeds: [embedStatus] });
+      await interaction.followUp({ embeds: [embedLineup], components: [buttons] });
+
+      const filter = i => i.user.id === interaction.user.id;
+      const collector = interaction.channel.createMessageComponentCollector({
+        filter,
+        componentType: ComponentType.Button,
+        time: 60000,
       });
+
+      collector.on('collect', async i => {
+        let userTip;
+        switch (i.customId) {
+          case 'win_team1': userTip = 'team1'; break;
+          case 'win_team2': userTip = 'team2'; break;
+          case 'draw': userTip = 'draw'; break;
+          default:
+            return await i.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
+        }
+
+        await i.update({ content: 'Das Spiel startet... ⚽', embeds: [], components: [] });
+        collector.stop();
+
+        await simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip);
+      });
+
+      collector.on('end', async collected => {
+        if (collected.size === 0) {
+          await interaction.editReply({
+            content: '⏱️ Zeit abgelaufen, kein Tipp abgegeben.',
+            components: [],
+          });
+        }
+      });
+    } catch (error) {
+      console.error('❌ Fehler im /fussball Command:', error);
+      if (!interaction.replied) {
+        await interaction.reply({ content: 'Ein Fehler ist aufgetreten.', ephemeral: true });
+      }
     }
-
-    const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
-    const icon1 = teamIcons[team1.name] || '⚽';
-    const icon2 = teamIcons[team2.name] || '⚽';
-    const team1Short = team1.name.split(' ').slice(1).join(' ') || team1.name;
-    const team2Short = team2.name.split(' ').slice(1).join(' ') || team2.name;
-
-    const odds = generateOdds();
-
-    const embedStatus = new EmbedBuilder()
-      .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1Short} vs. ${icon2} ${team2Short}`)
-      .setColor('Green')
-      .addFields(
-        { name: 'Spielminute', value: '0\'', inline: true },
-        { name: 'Spielstand', value: `0 : 0`, inline: true },
-        { name: 'xG', value: `0.00 : 0.00`, inline: true },
-        { name: 'Tore', value: 'Noch keine Tore...' }
-      );
-
-    const players1 = team1.players?.length
-      ? team1.players
-      : getPlayersFromJSON(team1.name);
-    const players2 = team2.players?.length
-      ? team2.players
-      : getPlayersFromJSON(team2.name);
-
-    const embedLineup = new EmbedBuilder()
-      .setTitle('📋 Aufstellung')
-      .setColor('Blue')
-      .setDescription(
-        `**${icon1} ${team1Short}:**\n${players1.join(', ') || 'Keine Spieler-Daten'}\n\n` +
-        `**${icon2} ${team2Short}:**\n${players2.join(', ') || 'Keine Spieler-Daten'}`
-      );
-
-    const buttons = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('win_team1')
-        .setLabel(`${icon1} ${team1Short} gewinnt (${odds.team1.toFixed(2)})`)
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId('draw')
-        .setLabel(`Unentschieden (${odds.draw.toFixed(2)})`)
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId('win_team2')
-        .setLabel(`${icon2} ${team2Short} gewinnt (${odds.team2.toFixed(2)})`)
-        .setStyle(ButtonStyle.Primary),
-    );
-
-    await interaction.reply({ embeds: [embedStatus] });
-    await interaction.followUp({ embeds: [embedLineup], components: [buttons] });
-
-    const filter = i => i.user.id === interaction.user.id;
-    const collector = interaction.channel.createMessageComponentCollector({
-      filter,
-      componentType: ComponentType.Button,
-      time: 60000,
-    });
-
-    collector.on('collect', async i => {
-      let userTip;
-      switch (i.customId) {
-        case 'win_team1': userTip = 'team1'; break;
-        case 'win_team2': userTip = 'team2'; break;
-        case 'draw': userTip = 'draw'; break;
-        default:
-          return await i.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
-      }
-
-      await i.update({
-        content: `📢 Du hast auf **${userTip === 'team1' ? icon1 + ' ' + team1Short : userTip === 'team2' ? icon2 + ' ' + team2Short : 'Unentschieden'}** getippt. Das Spiel startet...`,
-        embeds: [],
-        components: [],
-      });
-
-      collector.stop();
-
-      await simulateMatch(interaction, team1, team2, icon1, icon2, team1Short, team2Short, userTip);
-    });
-
-    collector.on('end', async collected => {
-      if (collected.size === 0) {
-        await interaction.followUp({ content: '⏱️ Zeit zum Tippen ist abgelaufen!', components: [] });
-      }
-    });
-  }
+  },
 };
 
-// Hilfsfunktionen
 function getTwoDifferentTeams(teams) {
-  const shuffled = [...teams].sort(() => Math.random() - 0.5);
-  return [shuffled[0], shuffled[1]];
+  if (teams.length < 2) throw new Error('Mindestens zwei Teams benötigt.');
+  const team1Index = Math.floor(Math.random() * teams.length);
+  let team2Index;
+  do {
+    team2Index = Math.floor(Math.random() * teams.length);
+  } while (team2Index === team1Index);
+  return [teams[team1Index], teams[team2Index]];
 }
 
 function generateOdds() {
-  const team1 = Math.random() * (2.5 - 1.2) + 1.2;
-  const team2 = Math.random() * (2.5 - 1.2) + 1.2;
-  const draw = Math.random() * (3.5 - 2.0) + 2.0;
-  return { team1, team2, draw };
+  const pTeam1 = Math.random() * 0.6 + 0.2;
+  const pTeam2 = Math.random() * (1 - pTeam1);
+  const pDraw = 1 - pTeam1 - pTeam2;
+
+  return {
+    team1: Math.max(1.01, 1 / pTeam1),
+    draw: Math.max(1.01, 1 / pDraw),
+    team2: Math.max(1.01, 1 / pTeam2),
+  };
 }
 
-function getPlayersFromJSON(teamName) {
-  const team = fussballteams.find(t => t.name === teamName);
-  return team?.players || [];
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function simulateMatch(interaction, team1, team2, icon1, icon2, team1Short, team2Short, userTip) {
-  // Dummy Simulation
-  const goals1 = Math.floor(Math.random() * 5);
-  const goals2 = Math.floor(Math.random() * 5);
+function getRandomPlayer(players) {
+  if (!players || players.length === 0) return 'Unbekannter Spieler';
+  return players[Math.floor(Math.random() * players.length)];
+}
 
-  const embedResult = new EmbedBuilder()
-    .setTitle(`🏁 Endstand: ${icon1} ${team1Short} ${goals1} : ${goals2} ${icon2} ${team2Short}`)
-    .setColor('Gold')
-    .setDescription(userTip === (goals1 > goals2 ? 'team1' : goals2 > goals1 ? 'team2' : 'draw')
-      ? '🎉 Du hast richtig getippt!'
-      : '😢 Leider daneben getippt.');
+async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip) {
+  let score = { [team1.name]: 0, [team2.name]: 0 };
+  let xG = { [team1.name]: 0, [team2.name]: 0 };
+  let log = [];
+  const teamData = { [team1.name]: team1.players || [], [team2.name]: team2.players || [] };
+  const realTimePerMinuteMs = 1000;
 
-  await interaction.followUp({ embeds: [embedResult] });
+  for (let minute = 1; minute <= 90; minute++) {
+    xG[team1.name] += Math.random() * 0.03;
+    xG[team2.name] += Math.random() * 0.03;
+
+    if (Math.random() < xG[team1.name] / 10 - score[team1.name] * 0.1) {
+      score[team1.name]++;
+      const scorer = getRandomPlayer(teamData[team1.name]);
+      log.push(`⚽ ${icon1} ${team1LastName} Tor durch **${scorer}** (${minute}')`);
+    }
+
+    if (Math.random() < xG[team2.name] / 10 - score[team2.name] * 0.1) {
+      score[team2.name]++;
+      const scorer = getRandomPlayer(teamData[team2.name]);
+      log.push(`⚽ ${icon2} ${team2LastName} Tor durch **${scorer}** (${minute}')`);
+    }
+
+    const embedUpdate = new EmbedBuilder()
+      .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
+      .setColor('Green')
+      .addFields(
+        { name: 'Spielminute', value: `${minute}'`, inline: true },
+        { name: 'Spielstand', value: `${score[team1.name]} : ${score[team2.name]}`, inline: true },
+        { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
+        { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Noch keine Tore...' }
+      );
+
+    await interaction.editReply({ embeds: [embedUpdate] });
+    await sleep(realTimePerMinuteMs);
+  }
+
+  // Ergebnis auswerten
+  let result;
+  if (score[team1.name] > score[team2.name]) result = 'team1';
+  else if (score[team1.name] < score[team2.name]) result = 'team2';
+  else result = 'draw';
+
+  const gewonnen = result === userTip;
+
+  const resultMessage = new EmbedBuilder()
+    .setTitle(`🏁 Spiel beendet: ${icon1} ${team1LastName} ${score[team1.name]} : ${score[team2.name]} ${icon2} ${team2LastName}`)
+    .setDescription(`${gewonnen ? '✅ Glückwunsch, dein Tipp war richtig!' : '❌ Leider war dein Tipp falsch.'}`)
+    .setColor(gewonnen ? 'Green' : 'Red');
+
+  await interaction.followUp({ embeds: [resultMessage] });
 }
