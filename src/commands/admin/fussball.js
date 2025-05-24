@@ -212,13 +212,17 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`🚫 Foul von ${player} (${minute}')`);
     }
 
+    const team = Math.random() < 0.5 ? team1 : team2;
+    const player = getRandomPlayer(team);
+    const teamName = team.name; // Falls teamName aus team.name besteht
+    
     if (Math.random() < 0.75) {
-      // Elfmeter verwandelt
+      // Elfmeter verwandelt (75% Chance)
       events.push(`⚽️ Elfmeter für ${teamName} verwandelt durch ${player} (${minute}')`);
-      if (team === team1) score1++;
-      else score2++;
+      if (team === team1) score1++; // Tor für Team 1
+      else score2++;                // Tor für Team 2
     } else {
-      // Elfmeter verschossen
+      // Elfmeter verschossen (25% Chance)
       events.push(`❌ Elfmeter für ${teamName} verschossen durch ${player} (${minute}')`);
     }
 
