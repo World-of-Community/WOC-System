@@ -78,7 +78,7 @@ module.exports = {
           .setStyle(ButtonStyle.Primary),
       );
 
-      await interaction.reply({ embeds: [embedStatus] });
+      const statusMessage = await interaction.reply({ embeds: [embedStatus], fetchReply: true });
       await interaction.followUp({ embeds: [embedLineup], components: [buttons] });
 
       const filter = i => i.user.id === interaction.user.id;
@@ -101,7 +101,7 @@ module.exports = {
         await i.update({ content: 'Das Spiel startet... ⚽', embeds: [], components: [] });
         collector.stop();
 
-        await simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip);
+        await simulateMatch(interaction, statusMessage, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip);
       });
 
       collector.on('end', async collected => {
@@ -124,7 +124,6 @@ module.exports = {
 };
 
 function getTwoDifferentTeams(teams) {
-  if (teams.length < 2) throw new Error('Mindestens zwei Teams benötigt.');
   const team1Index = Math.floor(Math.random() * teams.length);
   let team2Index;
   do {
@@ -134,7 +133,7 @@ function getTwoDifferentTeams(teams) {
 }
 
 function generateOdds() {
-  const probTeam1 = Math.random() * 0.5 + 0.25; // 0.25 – 0.75
+  const probTeam1 = Math.random() * 0.5 + 0.25;
   const probTeam2 = Math.random() * (1 - probTeam1);
   const probDraw = 1 - probTeam1 - probTeam2;
 
@@ -145,15 +144,27 @@ function generateOdds() {
   };
 }
 
-async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip) {
+async function simulateMatch(interaction, statusMessage, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip) {
   let score1 = 0;
   let score2 = 0;
   let xG1 = 0.0;
   let xG2 = 0.0;
   const goals = [];
 
-  for (let minute = 1; minute <= 90; minute += 5) {
-    if (Math.random() < 0.1) {
+  for (let minute = 1; minute <= 90; minute++) {
+    if (minute % 60 === 0 || minute === 1) {
+      const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
+        .setFields(
+          { name: 'Spielminute', value: `${minute}'`, inline: true },
+          { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
+          { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+          { name: 'Tore', value: goals.length > 0 ? goals.join('\n') : 'Noch keine Tore...' }
+        );
+
+      await statusMessage.edit({ embeds: [embedUpdate] });
+    }
+
+    if (minute % 5 === 0 && Math.random() < 0.1) {
       const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
       const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
       const scorer = (teamScored === 'team1' ? team1.players : team2.players)[Math.floor(Math.random() * 4)];
@@ -169,7 +180,7 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
       goals.push(`${minute}': ${teamScored === 'team1' ? icon1 : icon2} **${scorer}** (${xG} xG)`);
     }
 
-    await new Promise(r => setTimeout(r, 300)); // kurze Pause
+    await new Promise(r => setTimeout(r, 1000)); // 1 Sekunde = 1 Spielminute
   }
 
   const finalEmbed = new EmbedBuilder()
