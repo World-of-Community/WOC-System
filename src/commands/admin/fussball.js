@@ -178,17 +178,17 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1Name,
 
   const maxMinutes = 90;
   const eventPool = [
-    `${icon1} Ecke für ${team1Name}`,
-    `${icon2} Freistoß für ${team2Name}`,
-    `${icon1} Torschuss knapp vorbei`,
-    `${icon2} Gelbe Karte`,
-    `${icon1} Torchance!`,
-    `${icon2} Torchance!`,
-    `${icon1} Spieler verletzt sich`,
-    `${icon2} Spieler verletzt sich`,
-    `${icon1} Tor!`,
-    `${icon2} Tor!`,
-  ];
+  `${icon1} Ecke für ${team1Name}`,
+  `${icon2} Freistoß für ${team2Name}`,
+  `${icon1} Torschuss knapp vorbei von ${getRandomPlayer(team1Players)}`,
+  `${icon2} Gelbe Karte für ${getRandomPlayer(team2Players)}`,
+  `${icon1} Torchance für ${getRandomPlayer(team1Players)}!`,
+  `${icon2} Torchance für ${getRandomPlayer(team2Players)}!`,
+  `${icon1} Spieler ${getRandomPlayer(team1Players)} verletzt sich`,
+  `${icon2} Spieler ${getRandomPlayer(team2Players)} verletzt sich`,
+  `${icon1} Tor! Torschütze: ${getRandomPlayer(team1Players)}`,
+  `${icon2} Tor! Torschütze: ${getRandomPlayer(team2Players)}`,
+];
 
   // Einfache Simulation: alle 5 Sekunden eine Spielminute erhöhen und evtl. Event
   for (; minute <= maxMinutes; minute += 5) {
