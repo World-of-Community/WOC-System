@@ -22,7 +22,7 @@ module.exports = {
           opt.setName('teamname')
           .setDescription('Name des Teams')
           .setRequired(true)))
-    // NEU: Spieler hinzufügen
+    // Spieler hinzufügen als STRING (kein User)
     .addSubcommand(sub =>
       sub.setName('add-player')
         .setDescription('Füge einen Spieler zu einem Team hinzu')
@@ -30,9 +30,9 @@ module.exports = {
           opt.setName('teamname')
           .setDescription('Name des Teams')
           .setRequired(true))
-        .addUserOption(opt =>
+        .addStringOption(opt =>
           opt.setName('spieler')
-          .setDescription('Der Spieler, der hinzugefügt werden soll')
+          .setDescription('Name des Spielers')
           .setRequired(true))
     ),
 
@@ -40,14 +40,14 @@ module.exports = {
     const sub = interaction.options.getSubcommand();
 
     if (sub === 'add') {
-      // ... dein existierender Code ...
+      // ... existierender Code ...
     } 
     else if (sub === 'remove') {
-      // ... dein existierender Code ...
+      // ... existierender Code ...
     }
     else if (sub === 'add-player') {
       const teamName = interaction.options.getString('teamname');
-      const user = interaction.options.getUser('spieler');
+      const spielerName = interaction.options.getString('spieler');
 
       const team = await Team.findOne({ name: teamName });
       if (!team) {
@@ -57,20 +57,20 @@ module.exports = {
         });
       }
 
-      // Prüfen, ob Spieler schon im Team ist
-      if (team.players.some(p => p.userId === user.id)) {
+      if (!team.players) team.players = [];
+
+      if (team.players.includes(spielerName)) {
         return interaction.reply({
-          content: `❌ Spieler **${user.tag}** ist bereits im Team **${teamName}**.`,
+          content: `⚠️ Spieler **${spielerName}** ist bereits im Team **${teamName}**.`,
           ephemeral: true,
         });
       }
 
-      // Spieler hinzufügen
-      team.players.push({ userId: user.id, username: user.tag });
+      team.players.push(spielerName);
       await team.save();
 
       return interaction.reply({
-        content: `✅ Spieler **${user.tag}** wurde zum Team **${teamName}** hinzugefügt.`,
+        content: `✅ Spieler **${spielerName}** wurde zum Team **${teamName}** hinzugefügt.`,
         ephemeral: true,
       });
     }
