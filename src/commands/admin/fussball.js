@@ -7,6 +7,7 @@ const {
   ComponentType,
 } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
+const teams = JSON.parse(fs.readFileSync('./fussballteams.json', 'utf-8'));
 
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
@@ -15,33 +16,6 @@ const teamIcons = {
   'TSV Berg': '⛰️', 'SC Tal': '🏞️', 'VfB See': '🌊', 'FC Sturm': '🌪️',
   'SV Blitz': '⚡', 'TSV Vulkan': '🌋', 'SC Frost': '❄️', 'VfB Flamme': '🔥',
   'FC Donner': '⛈️', 'SV Schatten': '🌑', 'TSV Nebel': '🌫️', 'SC Licht': '💡',
-};
-
-const teams = {
-  'FC Adler': ['Müller', 'Schmidt', 'Fischer', 'Weber'],
-  'SV Löwen': ['Schneider', 'Wagner', 'Becker', 'Hoffmann'],
-  'TSV Eiche': ['Bauer', 'Koch', 'Richter', 'Klein'],
-  'SC Blau': ['Wolf', 'Neumann', 'Schröder', 'Krüger'],
-  'VfB Stern': ['Hartmann', 'Lange', 'Schmitt', 'Werner'],
-  'FC Rot-Weiß': ['Krause', 'Meier', 'Schulz', 'Hahn'],
-  'SV Grünwald': ['König', 'Fuchs', 'Bergmann', 'Lorenz'],
-  'TSV Nord': ['Frank', 'Mayer', 'Jung', 'Albrecht'],
-  'SC Süd': ['Böhm', 'Engel', 'Jäger', 'Brandt'],
-  'VfB West': ['Peters', 'Simon', 'Vogel', 'Friedrich'],
-  'FC Ostwind': ['Paul', 'Hoffmeister', 'Bender', 'Keller'],
-  'SV Nordstern': ['Mayerhofer', 'Schulze', 'Graf', 'Krafft'],
-  'TSV Berg': ['Winkler', 'Horn', 'Seidel', 'Busch'],
-  'SC Tal': ['Zimmermann', 'Lutz', 'Hahn', 'Franke'],
-  'VfB See': ['Döring', 'Kuhn', 'Voigt', 'Bach'],
-  'FC Sturm': ['Schulz', 'Ritter', 'Heinrich', 'Friedl'],
-  'SV Blitz': ['Köhler', 'Dietrich', 'Eckert', 'Löwe'],
-  'TSV Vulkan': ['Maier', 'Groß', 'Schulze', 'Hoffmann'],
-  'SC Frost': ['Schuster', 'Brand', 'Sauer', 'Lang'],
-  'VfB Flamme': ['Reuter', 'Schiller', 'Born', 'Herz'],
-  'FC Donner': ['Lorenz', 'Bauer', 'Wolf', 'Schmid'],
-  'SV Schatten': ['Ziegler', 'Beck', 'Kruse', 'Hart'],
-  'TSV Nebel': ['Lang', 'Winter', 'Schwarz', 'Beier'],
-  'SC Licht': ['Günther', 'Kaiser', 'Sachs', 'Mayer']
 };
 
 module.exports = {
