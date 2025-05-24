@@ -217,18 +217,21 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     if (minute % 20 === 0 && Math.random() < 0.5) {
       const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
       const outPlayer = getRandomPlayer(team);
       const inPlayer = `Spieler ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`;
-      events.push(`\`🔁\` Wechsel bei ${team}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
+      events.push(`\`🔁\` Wechsel bei ${teamName}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
     }
 
     if (Math.random() < 0.05) {
       const team = Math.random() < 0.5 ? team1Name : team2Name;
-      events.push(`\`🎯\` Freistoß für ${team} (${minute}')`);
+      const teamName = team === team1 ? team1Name : team2Name;
+      events.push(`\`🎯\` Freistoß für ${teamName} (${minute}')`);
     }
 
     if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
       events.push(`\`🚩\` Abseits von ${teamName} durch ${player} (${minute}')`);
     }
