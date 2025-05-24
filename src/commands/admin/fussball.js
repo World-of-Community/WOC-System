@@ -17,6 +17,33 @@ const teamIcons = {
   'FC Donner': '⛈️', 'SV Schatten': '🌑', 'TSV Nebel': '🌫️', 'SC Licht': '💡',
 };
 
+const teamsData = [
+  { "name": "FC Adler", "players": ["Müller", "Schmidt", "Fischer", "Weber"] },
+  { "name": "SV Löwen", "players": ["Schneider", "Wagner", "Becker", "Hoffmann"] },
+  { "name": "TSV Eiche", "players": ["Bauer", "Koch", "Richter", "Klein"] },
+  { "name": "SC Blau", "players": ["Wolf", "Neumann", "Schröder", "Krüger"] },
+  { "name": "VfB Stern", "players": ["Hartmann", "Lange", "Schmitt", "Werner"] },
+  { "name": "FC Rot-Weiß", "players": ["Krause", "Meier", "Schulz", "Hahn"] },
+  { "name": "SV Grünwald", "players": ["König", "Fuchs", "Bergmann", "Lorenz"] },
+  { "name": "TSV Nord", "players": ["Frank", "Mayer", "Jung", "Albrecht"] },
+  { "name": "SC Süd", "players": ["Böhm", "Engel", "Jäger", "Brandt"] },
+  { "name": "VfB West", "players": ["Peters", "Simon", "Vogel", "Friedrich"] },
+  { "name": "FC Ostwind", "players": ["Paul", "Hoffmeister", "Bender", "Keller"] },
+  { "name": "SV Nordstern", "players": ["Mayerhofer", "Schulze", "Graf", "Krafft"] },
+  { "name": "TSV Berg", "players": ["Winkler", "Horn", "Seidel", "Busch"] },
+  { "name": "SC Tal", "players": ["Zimmermann", "Lutz", "Hahn", "Franke"] },
+  { "name": "VfB See", "players": ["Döring", "Kuhn", "Voigt", "Bach"] },
+  { "name": "FC Sturm", "players": ["Schulz", "Ritter", "Heinrich", "Friedl"] },
+  { "name": "SV Blitz", "players": ["Köhler", "Dietrich", "Eckert", "Löwe"] },
+  { "name": "TSV Vulkan", "players": ["Maier", "Groß", "Schulze", "Hoffmann"] },
+  { "name": "SC Frost", "players": ["Schuster", "Brand", "Sauer", "Lang"] },
+  { "name": "VfB Flamme", "players": ["Reuter", "Schiller", "Born", "Herz"] },
+  { "name": "FC Donner", "players": ["Lorenz", "Bauer", "Wolf", "Schmid"] },
+  { "name": "SV Schatten", "players": ["Ziegler", "Beck", "Kruse", "Hart"] },
+  { "name": "TSV Nebel", "players": ["Lang", "Winter", "Schwarz", "Beier"] },
+  { "name": "SC Licht", "players": ["Günther", "Kaiser", "Sachs", "Mayer"] },
+];
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball')
@@ -207,13 +234,13 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
       // Tor für Team1
       score[team1.name]++;
       const scorer = randomFromArray(teamData[team1.name]) || 'Unbekannter Spieler';
-      log.push(`⚽ Minute ${minute}: Tor für ${team1LastName} durch ${scorer}`);
+      log.push(`⚽ ${minute}': Tor für ${team1LastName} durch ${scorer}`);
     }
     if (Math.random() < 0.3) {
       // Tor für Team2
       score[team2.name]++;
       const scorer = randomFromArray(teamData[team2.name]) || 'Unbekannter Spieler';
-      log.push(`⚽ Minute ${minute}: Tor für ${team2LastName} durch ${scorer}`);
+      log.push(`⚽ ${minute}': Tor für ${team2LastName} durch ${scorer}`);
     }
 
     embed.setFields(
