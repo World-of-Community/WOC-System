@@ -24,6 +24,7 @@ module.exports = {
 
   async execute(interaction) {
     try {
+      // Lade alle Teams aus der "Pro League"
       const proLeagueTeams = await Team.find({ league: 'Pro League' });
 
       if (!proLeagueTeams || proLeagueTeams.length < 2) {
@@ -33,15 +34,19 @@ module.exports = {
         });
       }
 
+      // Zwei unterschiedliche Teams zufällig auswählen
       const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
 
+      // Letzten Teil des Teamnamens für bessere Darstellung
       const team1LastName = team1.name.split(' ').slice(1).join(' ') || team1.name;
       const team2LastName = team2.name.split(' ').slice(1).join(' ') || team2.name;
 
+      // Quoten generieren (Odds)
       const odds = generateOdds();
 
+      // Initiales Status-Embed mit Spielminute, Spielstand und xG
       const embedStatus = new EmbedBuilder()
         .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
         .setColor('Green')
@@ -52,6 +57,7 @@ module.exports = {
           { name: 'Tore', value: 'Noch keine Tore...' }
         );
 
+      // Spieleraufstellung-Embed
       const players1 = team1.players || [];
       const players2 = team2.players || [];
 
@@ -63,6 +69,7 @@ module.exports = {
           `**${icon2} ${team2LastName}:**\n${players2.length > 0 ? players2.join(', ') : 'Keine Spieler-Daten'}`
         );
 
+      // Buttons für Tipps
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('win_team1')
@@ -78,14 +85,16 @@ module.exports = {
           .setStyle(ButtonStyle.Primary),
       );
 
+      // Sende Status-Embed und dann Aufstellung + Buttons als FollowUp
       const statusMessage = await interaction.reply({ embeds: [embedStatus], fetchReply: true });
       await interaction.followUp({ embeds: [embedLineup], components: [buttons] });
 
+      // Button Collector (nur für den Kommando-Aufrufer)
       const filter = i => i.user.id === interaction.user.id;
       const collector = interaction.channel.createMessageComponentCollector({
         filter,
         componentType: ComponentType.Button,
-        time: 60000,
+        time: 60000, // 1 Minute Zeit zum Tippen
       });
 
       collector.on('collect', async i => {
@@ -98,9 +107,11 @@ module.exports = {
             return await i.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
         }
 
+        // Antwort auf Button klicken: Startmeldung und Buttons entfernen
         await i.update({ content: 'Das Spiel startet... ⚽', embeds: [], components: [] });
         collector.stop();
 
+        // Simulation starten
         await simulateMatch(interaction, statusMessage, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip);
       });
 
@@ -123,6 +134,7 @@ module.exports = {
   },
 };
 
+// Hilfsfunktion: Zwei verschiedene Teams zufällig auswählen
 function getTwoDifferentTeams(teams) {
   const team1Index = Math.floor(Math.random() * teams.length);
   let team2Index;
@@ -132,8 +144,9 @@ function getTwoDifferentTeams(teams) {
   return [teams[team1Index], teams[team2Index]];
 }
 
+// Quoten generieren (invertierte Wahrscheinlichkeit)
 function generateOdds() {
-  const probTeam1 = Math.random() * 0.5 + 0.25;
+  const probTeam1 = Math.random() * 0.5 + 0.25; // zwischen 0.25 und 0.75
   const probTeam2 = Math.random() * (1 - probTeam1);
   const probDraw = 1 - probTeam1 - probTeam2;
 
@@ -144,6 +157,7 @@ function generateOdds() {
   };
 }
 
+// Spielsimulation mit 90 "Spielminuten"
 async function simulateMatch(interaction, statusMessage, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip) {
   let score1 = 0;
   let score2 = 0;
@@ -152,7 +166,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
   const goals = [];
 
   for (let minute = 1; minute <= 90; minute++) {
-    if (minute % 60 === 0 || minute === 1) {
+    // Update der Anzeige in den Minuten 1, 60 und 90 (angepasst)
+    if (minute === 1 || minute === 60 || minute === 90) {
       const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
         .setFields(
           { name: 'Spielminute', value: `${minute}'`, inline: true },
@@ -164,10 +179,14 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
       await statusMessage.edit({ embeds: [embedUpdate] });
     }
 
+    // Alle 5 Minuten mit 10% Chance ein Tor
     if (minute % 5 === 0 && Math.random() < 0.1) {
       const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
       const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-      const scorer = (teamScored === 'team1' ? team1.players : team2.players)[Math.floor(Math.random() * 4)];
+      const players = teamScored === 'team1' ? team1.players : team2.players;
+      const scorer = players && players.length > 0
+        ? players[Math.floor(Math.random() * players.length)]
+        : 'Unbekannt';
 
       if (teamScored === 'team1') {
         score1++;
@@ -180,9 +199,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
       goals.push(`${minute}': ${teamScored === 'team1' ? icon1 : icon2} **${scorer}** (${xG} xG)`);
     }
 
-    await new Promise(r => setTimeout(r, 500)); // 1 Sekunde = 1 Spielminute
+    // 500 ms warten = 1 Spielminute (kann angepasst werden)
+    await new Promise(r => setTimeout(r, 500));
   }
 
+  // Endstand-Embed
   const finalEmbed = new EmbedBuilder()
     .setTitle(`🏁 Endstand: ${icon1} ${team1LastName} ${score1} : ${score2} ${icon2} ${team2LastName}`)
     .setColor('Gold')
@@ -193,6 +214,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
 
   await interaction.followUp({ embeds: [finalEmbed] });
 
+  // Ergebnis mit Tipp vergleichen
   const winner = score1 > score2 ? 'team1' : score2 > score1 ? 'team2' : 'draw';
   const resultText = userTip === winner
     ? '🎉 Du hast richtig getippt!'
