@@ -135,21 +135,38 @@ module.exports = {
           default:
             return await i.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
         }
-
-        // Buttons entfernen, Nachricht anpassen
-        await i.update({ content: 'Das Spiel startet... ⚽', embeds: [], components: [] });
-
-        // Spielsimulation starten
-        await simulateMatch(statusMessage, team1, team2, icon1, icon2);
-        collector.stop();
+        await i.reply({ content: `Du hast getippt: ${userTip}`, ephemeral: true });
+        collector.stop(userTip);
       });
 
-      collector.on('end', collected => {
-        if (collected.size === 0) {
-          interaction.followUp('⏰ Zeit abgelaufen! Du hast nicht getippt.');
-          // Buttons entfernen, falls noch sichtbar
-          lineupMessage.edit({ components: [] }).catch(() => {});
+      collector.on('end', async (_, reason) => {
+        if (reason === 'time') {
+          await interaction.followUp('⏰ Zeit abgelaufen! Es wurde kein Tipp abgegeben.');
+          return;
         }
+        const userTip = reason; // Der getippte Ausgang
+
+        // Simuliere das Spiel und Ergebnis
+        const gameResult = simulateGame(team1.name, team2.name);
+
+        // Ergebnis-Embed erstellen
+        const resultEmbed = new EmbedBuilder()
+          .setTitle('⚽ Spielende!')
+          .setColor('Gold')
+          .setDescription(
+            `**${icon1} ${team1LastName}** vs **${icon2} ${team2LastName}**\n` +
+            `Endstand: **${gameResult.score1} : ${gameResult.score2}**\n` +
+            `xG: ${gameResult.xg1.toFixed(2)} : ${gameResult.xg2.toFixed(2)}\n\n` +
+            `**Dein Tipp:** ${userTip}\n` +
+            (checkUserTip(userTip, gameResult.score1, gameResult.score2)
+              ? '🎉 Du hast richtig getippt!'
+              : '❌ Leider falsch getippt.')
+          )
+          .addFields(
+            { name: 'Ereignisse', value: gameResult.events.length ? gameResult.events.join('\n') : 'Keine besonderen Ereignisse.' }
+          );
+
+        await interaction.followUp({ embeds: [resultEmbed], components: [] });
       });
 
     } catch (error) {
@@ -159,99 +176,60 @@ module.exports = {
   }
 };
 
-// Helferfunktionen
+// Hilfsfunktionen
 
-// Zwei verschiedene Teams aus der Liste auswählen
 function getTwoDifferentTeams(teams) {
-  let team1 = teams[Math.floor(Math.random() * teams.length)];
-  let team2;
+  if (teams.length < 2) throw new Error('Nicht genug Teams in DB');
+
+  let idx1 = Math.floor(Math.random() * teams.length);
+  let idx2;
   do {
-    team2 = teams[Math.floor(Math.random() * teams.length)];
-  } while (team1.name === team2.name);
-  return [team1, team2];
+    idx2 = Math.floor(Math.random() * teams.length);
+  } while (idx2 === idx1);
+
+  return [teams[idx1], teams[idx2]];
 }
 
-// Zufällige Wettquoten generieren
 function generateOdds() {
-  const team1 = (Math.random() * 2 + 1.5).toFixed(2);
-  const draw = (Math.random() * 2 + 1.5).toFixed(2);
-  const team2 = (Math.random() * 2 + 1.5).toFixed(2);
+  // Einfach Zufallsquoten
+  const team1 = (Math.random() * 3 + 1).toFixed(2);
+  const draw = (Math.random() * 3 + 1).toFixed(2);
+  const team2 = (Math.random() * 3 + 1).toFixed(2);
   return { team1, draw, team2 };
 }
 
-// Kurzname aus Teamname (optional)
-function getShortName(fullName) {
-  return fullName.split(' ').slice(1).join(' ') || fullName;
-}
+function simulateGame(team1Name, team2Name) {
+  // Zufällige Toranzahl 0-5
+  const score1 = Math.floor(Math.random() * 6);
+  const score2 = Math.floor(Math.random() * 6);
 
-// Delay für Simulation
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+  // Zufällige xG-Werte (expected goals)
+  const xg1 = (Math.random() * 3).toFixed(2);
+  const xg2 = (Math.random() * 3).toFixed(2);
 
-// Spielsimulation mit 20 Minuten (simuliert als Sekunden für Schnelligkeit)
-async function simulateMatch(message, team1, team2, icon1, icon2) {
-  let minute = 0;
-  let score1 = 0;
-  let score2 = 0;
-  let xG1 = 0;
-  let xG2 = 0;
-  let events = [];
-
-  const team1Short = getShortName(team1.name);
-  const team2Short = getShortName(team2.name);
-
-  while (minute <= 20) {
-    await delay(1000); // 1 Sekunde pro "Minute"
-
-    // Zufällige Chancen und Ereignisse
-    if (Math.random() < 0.3) {
-      // Chance für Team1
-      const xgChance = +(Math.random() * 0.5).toFixed(2);
-      xG1 += xgChance;
-      events.push(`${icon1} Chance für ${team1Short} (xG: ${xgChance.toFixed(2)})`);
-      if (Math.random() < xgChance / 2) {
-        score1++;
-        events.push(`⚽ Tor für ${icon1} ${team1Short}!`);
-      }
-    }
-
-    if (Math.random() < 0.3) {
-      // Chance für Team2
-      const xgChance = +(Math.random() * 0.5).toFixed(2);
-      xG2 += xgChance;
-      events.push(`${icon2} Chance für ${team2Short} (xG: ${xgChance.toFixed(2)})`);
-      if (Math.random() < xgChance / 2) {
-        score2++;
-        events.push(`⚽ Tor für ${icon2} ${team2Short}!`);
-      }
-    }
-
-    // Ereignisse kürzen auf max 5 Einträge
-    if (events.length > 5) events = events.slice(events.length - 5);
-
-    // Embed aktualisieren
-    const embed = new EmbedBuilder()
-      .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1Short} vs. ${icon2} ${team2Short}`)
-      .setColor(score1 > score2 ? 'Green' : score1 < score2 ? 'Red' : 'Yellow')
-      .addFields(
-        { name: 'Spielminute', value: `${minute}'`, inline: true },
-        { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
-        { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-        { name: 'Ereignisse', value: events.join('\n') || 'Noch keine Ereignisse...' }
-      );
-
-    await message.edit({ embeds: [embed] });
-
-    minute++;
+  // Zufällige Ereignisse
+  const possibleEvents = [
+    "Gelbe Karte für Müller",
+    "Elfmeter für " + team1Name,
+    "Rote Karte für Schmidt",
+    "Freistoß für " + team2Name,
+    "Tor für " + team1Name,
+    "Tor für " + team2Name,
+    "Verletzung bei Spieler X",
+  ];
+  const events = [];
+  const eventCount = Math.floor(Math.random() * 5);
+  for (let i = 0; i < eventCount; i++) {
+    const event = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
+    events.push(`'${(i+1)*10}' - ${event}`);
   }
 
-  // Endergebnis
-  const resultText = score1 > score2
-    ? `${icon1} ${team1Short} gewinnt! 🎉`
-    : score2 > score1
-      ? `${icon2} ${team2Short} gewinnt! 🎉`
-      : `Unentschieden! 🤝`;
+  return { score1, score2, xg1: parseFloat(xg1), xg2: parseFloat(xg2), events };
+}
 
-  await message.channel.send(resultText);
+function checkUserTip(tip, score1, score2) {
+  if (tip === 'draw') return score1 === score2;
+  if (tip === 'team1') return score1 > score2;
+  if (tip === 'team2') return score2 > score1;
+  return false;
 }
