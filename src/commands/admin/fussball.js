@@ -8,8 +8,6 @@ const {
 } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
-// alle 1 minte das embed und die minte aktualisieren bearbeiten
-
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
   'VfB Stern': '⭐', 'FC Rot-Weiß': '🔴⚪', 'SV Grünwald': '🌲', 'TSV Nord': '❄️',
@@ -18,6 +16,33 @@ const teamIcons = {
   'SV Blitz': '⚡', 'TSV Vulkan': '🌋', 'SC Frost': '❄️', 'VfB Flamme': '🔥',
   'FC Donner': '⛈️', 'SV Schatten': '🌑', 'TSV Nebel': '🌫️', 'SC Licht': '💡',
 };
+
+const teamsData = [
+  { "name": "FC Adler", "players": ["Müller", "Schmidt", "Fischer", "Weber"] },
+  { "name": "SV Löwen", "players": ["Schneider", "Wagner", "Becker", "Hoffmann"] },
+  { "name": "TSV Eiche", "players": ["Bauer", "Koch", "Richter", "Klein"] },
+  { "name": "SC Blau", "players": ["Wolf", "Neumann", "Schröder", "Krüger"] },
+  { "name": "VfB Stern", "players": ["Hartmann", "Lange", "Schmitt", "Werner"] },
+  { "name": "FC Rot-Weiß", "players": ["Krause", "Meier", "Schulz", "Hahn"] },
+  { "name": "SV Grünwald", "players": ["König", "Fuchs", "Bergmann", "Lorenz"] },
+  { "name": "TSV Nord", "players": ["Frank", "Mayer", "Jung", "Albrecht"] },
+  { "name": "SC Süd", "players": ["Böhm", "Engel", "Jäger", "Brandt"] },
+  { "name": "VfB West", "players": ["Peters", "Simon", "Vogel", "Friedrich"] },
+  { "name": "FC Ostwind", "players": ["Paul", "Hoffmeister", "Bender", "Keller"] },
+  { "name": "SV Nordstern", "players": ["Mayerhofer", "Schulze", "Graf", "Krafft"] },
+  { "name": "TSV Berg", "players": ["Winkler", "Horn", "Seidel", "Busch"] },
+  { "name": "SC Tal", "players": ["Zimmermann", "Lutz", "Hahn", "Franke"] },
+  { "name": "VfB See", "players": ["Döring", "Kuhn", "Voigt", "Bach"] },
+  { "name": "FC Sturm", "players": ["Schulz", "Ritter", "Heinrich", "Friedl"] },
+  { "name": "SV Blitz", "players": ["Köhler", "Dietrich", "Eckert", "Löwe"] },
+  { "name": "TSV Vulkan", "players": ["Maier", "Groß", "Schulze", "Hoffmann"] },
+  { "name": "SC Frost", "players": ["Schuster", "Brand", "Sauer", "Lang"] },
+  { "name": "VfB Flamme", "players": ["Reuter", "Schiller", "Born", "Herz"] },
+  { "name": "FC Donner", "players": ["Lorenz", "Bauer", "Wolf", "Schmid"] },
+  { "name": "SV Schatten", "players": ["Ziegler", "Beck", "Kruse", "Hart"] },
+  { "name": "TSV Nebel", "players": ["Lang", "Winter", "Schwarz", "Beier"] },
+  { "name": "SC Licht", "players": ["Günther", "Kaiser", "Sachs", "Mayer"] }
+];
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -56,7 +81,7 @@ module.exports = {
           { name: 'Spielminute', value: '0\'', inline: true },
           { name: 'Spielstand', value: `0 : 0`, inline: true },
           { name: 'xG', value: `0.00 : 0.00`, inline: true },
-          { name: 'Tore', value: 'Noch keine Tore...' }
+          { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         );
 
       // Spieleraufstellung-Embed
