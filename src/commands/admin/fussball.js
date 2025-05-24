@@ -180,7 +180,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
       goals.push(`${minute}': ${teamScored === 'team1' ? icon1 : icon2} **${scorer}** (${xG} xG)`);
     }
 
-    await new Promise(r => setTimeout(r, 1000)); // 1 Sekunde = 1 Spielminute
+    await new Promise(r => setTimeout(r, 500)); // 1 Sekunde = 1 Spielminute
   }
 
   const finalEmbed = new EmbedBuilder()
