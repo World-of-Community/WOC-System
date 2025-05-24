@@ -84,9 +84,11 @@ module.exports = {
           case 'draw': userTip = 'draw'; break;
         }
 
-        await i.update({ content: 'Das Spiel startet... ⚽', embeds: [], components: [] });
+        await i.update({ content: '⏳ Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
         collector.stop();
 
+        await delay(3000);
+        await interaction.followUp({ content: '🔊 **Anpfiff! Das Spiel beginnt!** ⚽' });
         await simulateMatch(interaction, statusMessage, team1, team2, team1Name, team2Name, userTip);
       });
 
@@ -147,31 +149,44 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   const events = [];
 
   for (let minute = 1; minute <= 90; minute++) {
-    // Tore
+    let torGezaehlt = true;
+    let scorer = '';
+    let xG = 0;
+
     if (minute % 4 === 0 && Math.random() < 0.25) {
       const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
-      const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-      const scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+      xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+      scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
 
-      if (teamScored === 'team1') {
-        score1++;
-        xG1 += xG;
-        events.push(`⚽ Tooor! ${team1Name} - ${scorer} (${minute}')`);
-      } else {
-        score2++;
-        xG2 += xG;
-        events.push(`⚽ Tooor! ${team2Name} - ${scorer} (${minute}')`);
+      // VAR prüft Tor
+      if (Math.random() < 0.1) {
+        if (Math.random() < 0.5) {
+          torGezaehlt = false;
+          events.push(`🖥️ VAR-Überprüfung: Tor von ${scorer} wird ABERKANNT (${minute}')`);
+        } else {
+          events.push(`🖥️ VAR-Überprüfung: Tor von ${scorer} wird bestätigt ✅ (${minute}')`);
+        }
+      }
+
+      if (torGezaehlt) {
+        if (teamScored === 'team1') {
+          score1++;
+          xG1 += xG;
+          events.push(`⚽ Tooor! ${team1Name} - ${scorer} (${minute}')`);
+        } else {
+          score2++;
+          xG2 += xG;
+          events.push(`⚽ Tooor! ${team2Name} - ${scorer} (${minute}')`);
+        }
       }
     }
 
-    // Gelbe Karte
     if (minute % 6 === 0 && Math.random() < 0.15) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       events.push(`🟨 Gelbe Karte für ${player} (${minute}')`);
     }
 
-    // Auswechslung
     if (minute % 20 === 0 && Math.random() < 0.3) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const outPlayer = getRandomPlayer(team);
@@ -179,20 +194,17 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`🔁 Wechsel bei ${team.name}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
     }
 
-    // Freistoß
     if (Math.random() < 0.1) {
       const team = Math.random() < 0.5 ? team1Name : team2Name;
-      events.push(`🆓 Freistoß für ${team} (${minute}')`);
+      events.push(`🎯 Freistoß für ${team} (${minute}')`);
     }
 
-    // Abseits
     if (Math.random() < 0.05) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       events.push(`🚩 Abseits von ${player} (${minute}')`);
     }
 
-    // Foul
     if (Math.random() < 0.07) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
@@ -204,18 +216,18 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         { name: 'Spielminute', value: `${minute}'`, inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-        { name: 'Ereignisse', value: events.length > 0 ? events.slice(-5).join('\n') : 'Noch keine Ereignisse...' }
+        { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       );
 
     await statusMessage.edit({ embeds: [embedUpdate] });
     await delay(1000);
   }
 
-  let ergebnis = score1 > score2 ? 'team1' : score1 < score2 ? 'team2' : 'draw';
-  let tippErgebnis = ergebnis === userTip ? '✅ Du hast richtig getippt!' : '❌ Dein Tipp war leider falsch.';
+  const ergebnis = score1 > score2 ? 'team1' : score1 < score2 ? 'team2' : 'draw';
+  const tippErgebnis = ergebnis === userTip ? '✅ Du hast richtig getippt!' : '❌ Dein Tipp war leider falsch.';
 
   await interaction.followUp({
-    content: `🏁 Abpfiff! Endstand: ${team1Name} ${score1} - ${score2} ${team2Name}\n${tippErgebnis}`,
+    content: `🏁 Abpfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**\n${tippErgebnis}`,
   });
 }
 
