@@ -283,7 +283,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   }
 
   const ergebnis = score1 > score2 ? 'team1' : score1 < score2 ? 'team2' : 'draw';
-  const tippErgebnis = ergebnis === userTip ? '`✅` Du hast richtig getippt!' : '❌ Dein Tipp war leider falsch.';
+  const tippErgebnis = ergebnis === userTip ? '`✅` Du hast richtig getippt!' : '`❌` Dein Tipp war leider falsch.';
 
   await interaction.followUp({
     content: `\`🏁\` Abpfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**\n${tippErgebnis}`,
