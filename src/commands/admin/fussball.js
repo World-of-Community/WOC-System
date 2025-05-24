@@ -6,7 +6,8 @@ const {
   ButtonStyle,
   ComponentType,
 } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb');
+const fs = require('fs');
+const { Team } = require('../../../Datenbank/fussballdb'); // Dein Datenbankmodell
 const teams = JSON.parse(fs.readFileSync('./fussballteams.json', 'utf-8'));
 
 const teamIcons = {
@@ -25,6 +26,7 @@ module.exports = {
 
   async execute(interaction) {
     try {
+      // 1. Pro League Teams aus DB holen
       const proLeagueTeams = await Team.find({ league: 'Pro League' });
       if (!proLeagueTeams || proLeagueTeams.length < 2) {
         return interaction.reply({
@@ -33,18 +35,21 @@ module.exports = {
         });
       }
 
+      // 2. Zwei verschiedene Teams auswählen
       const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
+
+      // 3. Icons aus Mapping, falls nicht vorhanden ⚽ Standard
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
 
-      // Letzter Teil des Teamnamens (z.B. „Adler“ aus „FC Adler“)
+      // 4. Letzter Teil vom Teamnamen (z.B. "Adler" aus "FC Adler")
       const team1LastName = team1.name.split(' ').slice(1).join(' ') || team1.name;
       const team2LastName = team2.name.split(' ').slice(1).join(' ') || team2.name;
 
-      // Quoten berechnen (Beispiel: basierend auf fiktiven Team-Stärken)
-      // Hier zufällige Quoten generieren, in Realität kann man das durch echte Daten ersetzen
+      // 5. Wettquoten (Zufall)
       const odds = generateOdds();
 
+      // 6. Status-Embed initial
       const embedStatus = new EmbedBuilder()
         .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
         .setColor('Green')
@@ -55,8 +60,9 @@ module.exports = {
           { name: 'Tore', value: 'Noch keine Tore...' }
         );
 
-      const players1 = team1.players ? team1.players : [];
-      const players2 = team2.players ? team2.players : [];
+      // 7. Aufstellung-Embed
+      const players1 = team1.players || [];
+      const players2 = team2.players || [];
 
       const embedLineup = new EmbedBuilder()
         .setTitle('📋 Aufstellung')
@@ -66,6 +72,7 @@ module.exports = {
           `**${icon2} ${team2LastName}:**\n${players2.length ? players2.join(', ') : 'Keine Spieler-Daten'}`
         );
 
+      // 8. Buttons für Tipp (Team1 gewinnt, Unentschieden, Team2 gewinnt)
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('win_team1')
@@ -84,6 +91,7 @@ module.exports = {
       await interaction.reply({ embeds: [embedStatus] });
       await interaction.followUp({ embeds: [embedLineup], components: [buttons] });
 
+      // 9. Button-Collector, nur für User, 60 Sekunden Zeit
       const filter = i => i.user.id === interaction.user.id;
       const collector = interaction.channel.createMessageComponentCollector({
         filter,
@@ -104,6 +112,7 @@ module.exports = {
         await i.update({ content: 'Das Spiel startet... ⚽', embeds: [], components: [] });
         collector.stop();
 
+        // Spiel simulieren mit dem Tipp des Nutzers
         await simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip);
       });
 
@@ -137,17 +146,12 @@ function getTwoDifferentTeams(teams) {
 /**
  * Generiert fiktive Wettquoten für Team1 Sieg, Unentschieden und Team2 Sieg.
  * Summe der Wahrscheinlichkeiten = 1
- * Die Quoten sind das Inverse der Wahrscheinlichkeiten (vereinfacht).
  */
 function generateOdds() {
-  // Beispiel Wahrscheinlichkeiten (Summe = 1)
-  // Hier zufällig oder anhand von "Team-Stärke" (z.B. aus DB) bestimmen
-  const pTeam1 = Math.random() * 0.6 + 0.2; // 0.2 bis 0.8
+  const pTeam1 = Math.random() * 0.6 + 0.2; // zwischen 0.2 und 0.8
   const pTeam2 = Math.random() * (1 - pTeam1);
   const pDraw = 1 - pTeam1 - pTeam2;
 
-  // Quoten sind das Inverse der Wahrscheinlichkeiten (vereinfachte Wettquote)
-  // Minimalquote auf 1.01, damit es keine 0 oder Inf gibt
   const qTeam1 = Math.max(1.01, 1 / pTeam1);
   const qDraw = Math.max(1.01, 1 / pDraw);
   const qTeam2 = Math.max(1.01, 1 / pTeam2);
@@ -187,63 +191,82 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
   await interaction.editReply({ embeds: [embedStatus] });
 
   for (; minute <= totalMatchMinutes; minute++) {
-    // Torchance 30%
-    if (Math.random() < 0.3) {
-      const scoringTeam = Math.random() < 0.5 ? team1.name : team2.name;
-      const players = teamData[scoringTeam];
-      const scorer = players.length > 0 ? players[Math.floor(Math.random() * players.length)] : 'Unbekannter Spieler';
-      score[scoringTeam]++;
-
-      const chanceXG = (Math.random() * 0.4) + 0.1;
-      xG[scoringTeam] += chanceXG;
-
-      log.push(`${minute}' - Tor für ${scoringTeam}: ${scorer} ⚽`);
-
-      const goalsString = `${score[team1.name]} : ${score[team2.name]}`;
-      const xgString = `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`;
-
-      const embedUpdate = new EmbedBuilder()
-        .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
-        .setColor('Green')
-        .addFields(
-          { name: 'Spielminute', value: `${minute}'`, inline: true },
-          { name: 'Spielstand', value: goalsString, inline: true },
-          { name: 'xG', value: xgString, inline: true },
-          { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Noch keine Tore...' }
-        );
-
-      await interaction.editReply({ embeds: [embedUpdate] });
+    if (minute === 0) {
+      // Noch kein Tor, nur Start
+      await sleep(realTimePerMinuteMs);
+      continue;
     }
 
-    await wait(realTimePerMinuteMs);
+    // xG-Wert pro Minute zufällig (klein)
+    xG[team1.name] += Math.random() * 0.03;
+    xG[team2.name] += Math.random() * 0.03;
+
+    // Prüfen, ob ein Tor fällt (kleine Chance proportional zu xG)
+    const chanceTeam1Goal = xG[team1.name] * 0.05; 
+    const chanceTeam2Goal = xG[team2.name] * 0.05;
+
+    if (Math.random() < chanceTeam1Goal) {
+      score[team1.name]++;
+      const scorer = randomArrayElement(teamData[team1.name]) || 'Unbekannter Spieler';
+      log.push(`⚽ ${minute}': Tor für ${team1.name} durch ${scorer}`);
+    }
+    if (Math.random() < chanceTeam2Goal) {
+      score[team2.name]++;
+      const scorer = randomArrayElement(teamData[team2.name]) || 'Unbekannter Spieler';
+      log.push(`⚽ ${minute}': Tor für ${team2.name} durch ${scorer}`);
+    }
+
+    // Update Embed
+    let goalsText = log.length > 0 ? log.slice(-5).join('\n') : 'Noch keine Tore...';
+
+    const embedUpdate = new EmbedBuilder()
+      .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
+      .setColor('Green')
+      .addFields(
+        { name: 'Spielminute', value: `${minute}'`, inline: true },
+        { name: 'Spielstand', value: `${score[team1.name]} : ${score[team2.name]}`, inline: true },
+        { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
+        { name: 'Tore', value: goalsText }
+      );
+
+    await interaction.editReply({ embeds: [embedUpdate] });
+
+    await sleep(realTimePerMinuteMs);
   }
 
-  // Spielende - Gewinner ermitteln
-  let result;
-  if (score[team1.name] > score[team2.name]) result = 'team1';
-  else if (score[team1.name] < score[team2.name]) result = 'team2';
-  else result = 'draw';
+  // Endergebnis
+  const finalScoreText = `${score[team1.name]} : ${score[team2.name]}`;
 
-  let resultText;
-  if (result === 'team1') resultText = `${icon1} ${team1LastName} gewinnt!`;
-  else if (result === 'team2') resultText = `${icon2} ${team2LastName} gewinnt!`;
-  else resultText = 'Unentschieden!';
+  // Tipp auswerten
+  let resultText = '';
+  if (
+    (score[team1.name] > score[team2.name] && userTip === 'team1') ||
+    (score[team2.name] > score[team1.name] && userTip === 'team2') ||
+    (score[team1.name] === score[team2.name] && userTip === 'draw')
+  ) {
+    resultText = '🎉 Du hast richtig getippt!';
+  } else {
+    resultText = '❌ Dein Tipp war leider falsch.';
+  }
 
-  let tipCorrect = (userTip === result);
-  let tipText = tipCorrect ? '✅ Du hast richtig getippt!' : '❌ Dein Tipp war leider falsch.';
-
-  const finalEmbed = new EmbedBuilder()
-    .setTitle('⚽ Spiel beendet')
-    .setDescription(`Endstand: ${score[team1.name]} : ${score[team2.name]}\n${resultText}\n\n${tipText}`)
-    .setColor(tipCorrect ? 'Green' : 'Red')
-    .addFields(
-      { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
-      { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Keine Tore gefallen.' }
+  // Ergebnis-Embed
+  const embedEnd = new EmbedBuilder()
+    .setTitle('🏁 Spiel beendet')
+    .setColor('Purple')
+    .setDescription(
+      `${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}\n` +
+      `Endstand: **${finalScoreText}**\n\n` +
+      `${resultText}`
     );
 
-  await interaction.followUp({ embeds: [finalEmbed] });
+  await interaction.editReply({ embeds: [embedEnd] });
 }
 
-function wait(ms) {
+function randomArrayElement(arr) {
+  if (!arr || arr.length === 0) return null;
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
