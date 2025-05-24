@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const fs = require('fs');
 const { Team } = require('../../../Datenbank/fussballdb'); // Dein Datenbankmodell
-const teams = JSON.parse(fs.readFileSync('./fussballteams.json', 'utf-8'));
+const teams = JSON.parse(fs.readFileSync('../../fussballteams.json', 'utf-8'));
 
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
