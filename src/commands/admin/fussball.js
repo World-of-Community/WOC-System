@@ -34,7 +34,7 @@ module.exports = {
         .setTitle(`🏟️ Fußballspiel: ${team1Name} vs. ${team2Name}`)
         .setColor('Green')
         .addFields(
-          { name: 'Spielminute', value: '0\'', inline: true },
+          { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
           { name: 'Spielstand', value: '0 - 0', inline: true },
           { name: 'xG', value: '0.00 : 0.00', inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
@@ -254,25 +254,24 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`⚖️ Strittige Entscheidung des Schiedsrichters (${minute}')`);
     }
 
-    // Nachspielzeit beginnt! Nur genau bei Minute 90
+    // Funktion zur Anzeige der Spielminute
+    function getDisplayMinute(minute) {
+      if (minute <= 90) return `${minute}'`;
+      return `90'+${minute - 90}`;
+    }
+    
+    // Beispielhafte Event-Generierung in einem Spiel-Tick
     if (minute === 90) {
       events.push(`⏳ Nachspielzeit beginnt! (+${extraTime}')`);
     }
-
-    // Schlusspfiff am Ende der Nachspielzeit
+    
     if (minute === 90 + extraTime) {
       events.push(`🔔 Schlusspfiff! Endstand: ${team1Name} ${score1} : ${score2} ${team2Name}`);
     }
 
-    function getDisplayMinute(minute, extraTime) {
-
-      if (minute <= 90) return `${minute}'`;
-      return `90' +${minute - 90}`;
-    }
-
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setFields(
-        { name: 'Spielminute', value: `${minute}'`, inline: true },
+        { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
