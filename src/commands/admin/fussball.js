@@ -200,7 +200,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`🎯 Freistoß für ${team} (${minute}')`);
     }
 
-    if (Math.random() < 0.20) {
+    if (Math.random() < 0.10) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       events.push(`🚩 Abseits von ${player} (${minute}')`);
@@ -212,14 +212,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
       events.push(`🔥 Gefährlicher Angriff von ${teamName} durch ${player} (${minute}')`);
-    }
-
-    // Pfosten/Torlatte Chance
-    if (Math.random() < 0.25) {
-      const team = Math.random() < 0.5 ? team1 : team2;
-      const teamName = team === team1 ? team1Name : team2Name;
-      const player = getRandomPlayer(team);
-      events.push(`🚨 Pfosten! Knapp vorbei von ${player} (${minute}')`);
     }
 
     // Großchance
