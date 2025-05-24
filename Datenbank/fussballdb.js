@@ -14,6 +14,10 @@ const teamSchema = new mongoose.Schema({
   points: { type: Number, default: 0 },
   yellowCards: { type: Number, default: 0 },
   redCards: { type: Number, default: 0 },
+
+  // ✅ Spielerfeld hinzugefügt
+  players: { type: [String], default: [] },
+
 }, {
   timestamps: true,
 });
