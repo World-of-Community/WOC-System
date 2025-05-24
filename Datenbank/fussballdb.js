@@ -13,29 +13,24 @@ const teamSchema = new mongoose.Schema({
   goalsFor: { type: Number, default: 0 },
   goalsAgainst: { type: Number, default: 0 },
 
-  // goalDifference wird virtuell berechnet
-  // du kannst es auch speichern, aber dann musst du es beim Update synchronisieren
-  // hier besser virtuell (wird nicht in DB gespeichert)
-  goalDifference: {
-    type: Number,
-    default: 0,
-  },
-
   points: { type: Number, default: 0 },
   yellowCards: { type: Number, default: 0 },
   redCards: { type: Number, default: 0 },
 
-  // Spieler als Array von Strings (Namen oder IDs)
-  // falls Spieler eigene Dokumente sind: type: [mongoose.Schema.Types.ObjectId], ref: 'Player'
   players: { type: [String], default: [] },
-
 }, {
   timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
 });
 
-// Virtuelle Eigenschaft für goalDifference (nur zur Laufzeit, nicht gespeichert)
-teamSchema.virtual('goalDifferenceVirtual').get(function () {
+// Virtuelle Eigenschaften
+teamSchema.virtual('goalDifference').get(function () {
   return this.goalsFor - this.goalsAgainst;
+});
+
+teamSchema.virtual('calculatedPoints').get(function () {
+  return this.won * 3 + this.draw;
 });
 
 // Match-Schema
@@ -48,7 +43,12 @@ const matchSchema = new mongoose.Schema({
 
   date: { type: Date, default: Date.now },
 
-  events: { type: [String], default: [] },
+  events: [{
+    time: Number,
+    type: { type: String, enum: ['goal', 'yellow', 'red', 'substitution'] },
+    player: String,
+    team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+  }],
 
   yellowCards: {
     type: Map,
@@ -64,11 +64,48 @@ const matchSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Export
-module.exports = {
-  Team: mongoose.model('Team', teamSchema),
-  Match: mongoose.model('Match', matchSchema),
-};
+// Middleware zur automatischen Teamstatistik-Aktualisierung
+matchSchema.post('save', async function (doc) {
+  const { Team } = require('./league'); // Eigenen Export nutzen
+
+  const team1 = await Team.findById(doc.team1);
+  const team2 = await Team.findById(doc.team2);
+
+  if (!team1 || !team2) return;
+
+  team1.played++;
+  team2.played++;
+
+  team1.goalsFor += doc.score1;
+  team1.goalsAgainst += doc.score2;
+
+  team2.goalsFor += doc.score2;
+  team2.goalsAgainst += doc.score1;
+
+  if (doc.score1 > doc.score2) {
+    team1.won++;
+    team2.lost++;
+    team1.points += 3;
+  } else if (doc.score1 < doc.score2) {
+    team2.won++;
+    team1.lost++;
+    team2.points += 3;
+  } else {
+    team1.draw++;
+    team2.draw++;
+    team1.points += 1;
+    team2.points += 1;
+  }
+
+  await team1.save();
+  await team2.save();
+});
+
+// Exportiere die Modelle
+const Team = mongoose.model('Team', teamSchema);
+const Match = mongoose.model('Match', matchSchema);
+
+module.exports = { Team, Match };
 
 
 /*
