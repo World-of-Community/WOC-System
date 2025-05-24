@@ -34,7 +34,7 @@ module.exports = {
         .setTitle(`🏟️ Fußballspiel: ${team1Name} vs. ${team2Name}`)
         .setColor('Green')
         .addFields(
-          { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
+          { name: 'Spielminute', value: '0\'', inline: true },
           { name: 'Spielstand', value: '0 - 0', inline: true },
           { name: 'xG', value: '0.00 : 0.00', inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
