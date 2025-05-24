@@ -188,19 +188,19 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`🟨 Gelbe Karte für ${player} (${minute}')`);
     }
 
-    if (minute % 20 === 0 && Math.random() < 0.3) {
+    if (minute % 20 === 0 && Math.random() < 0.5) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const outPlayer = getRandomPlayer(team);
       const inPlayer = `Spieler ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`;
       events.push(`🔁 Wechsel bei ${team.name}: ${outPlayer} raus, ${inPlayer} rein (${minute}')`);
     }
 
-    if (Math.random() < 0.1) {
+    if (Math.random() < 0.3) {
       const team = Math.random() < 0.5 ? team1Name : team2Name;
       events.push(`🎯 Freistoß für ${team} (${minute}')`);
     }
 
-    if (Math.random() < 0.05) {
+    if (Math.random() < 0.02) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       events.push(`🚩 Abseits von ${player} (${minute}')`);
@@ -216,7 +216,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const player = getRandomPlayer(team);
     const teamName = team.name; // Falls teamName aus team.name besteht
     
-    if (Math.random() < 0.25) {
+    if (Math.random() < 0.02) {
       // Elfmeter verwandelt (25% Chance)
       events.push(`⚽️ Elfmeter für ${teamName} verwandelt durch ${player} (${minute}')`);
       if (team === team1) score1++; // Tor für Team 1
@@ -227,7 +227,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
 
     // Einwurf (5% Chance)
-    if (Math.random() < 0.05) {
+    if (Math.random() < 0.10) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
@@ -276,6 +276,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     // Schlusspfiff am Ende der Nachspielzeit
     if (minute === 90 + extraTime) {
       events.push(`🔔 Schlusspfiff! Endstand: ${team1Name} ${score1} : ${score2} ${team2Name}`);
+    }
+
+    function getDisplayMinute(minute, extraTime) {
+
+      if (minute <= 90) return `${minute}'`;
+      return `90' +${minute - 90}`;
     }
 
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
