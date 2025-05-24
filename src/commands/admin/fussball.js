@@ -8,7 +8,6 @@ const {
 } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const path = require('path');
-const fussballteams = require(path.join(__dirname, '..', '..', 'json', 'fussballteams.json'));
 
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
@@ -18,6 +17,33 @@ const teamIcons = {
   'SV Blitz': '⚡', 'TSV Vulkan': '🌋', 'SC Frost': '❄️', 'VfB Flamme': '🔥',
   'FC Donner': '⛈️', 'SV Schatten': '🌑', 'TSV Nebel': '🌫️', 'SC Licht': '💡',
 };
+
+const teamsData = [
+  { "name": "FC Adler", "players": ["Müller", "Schmidt", "Fischer", "Weber"] },
+  { "name": "SV Löwen", "players": ["Schneider", "Wagner", "Becker", "Hoffmann"] },
+  { "name": "TSV Eiche", "players": ["Bauer", "Koch", "Richter", "Klein"] },
+  { "name": "SC Blau", "players": ["Wolf", "Neumann", "Schröder", "Krüger"] },
+  { "name": "VfB Stern", "players": ["Hartmann", "Lange", "Schmitt", "Werner"] },
+  { "name": "FC Rot-Weiß", "players": ["Krause", "Meier", "Schulz", "Hahn"] },
+  { "name": "SV Grünwald", "players": ["König", "Fuchs", "Bergmann", "Lorenz"] },
+  { "name": "TSV Nord", "players": ["Frank", "Mayer", "Jung", "Albrecht"] },
+  { "name": "SC Süd", "players": ["Böhm", "Engel", "Jäger", "Brandt"] },
+  { "name": "VfB West", "players": ["Peters", "Simon", "Vogel", "Friedrich"] },
+  { "name": "FC Ostwind", "players": ["Paul", "Hoffmeister", "Bender", "Keller"] },
+  { "name": "SV Nordstern", "players": ["Mayerhofer", "Schulze", "Graf", "Krafft"] },
+  { "name": "TSV Berg", "players": ["Winkler", "Horn", "Seidel", "Busch"] },
+  { "name": "SC Tal", "players": ["Zimmermann", "Lutz", "Hahn", "Franke"] },
+  { "name": "VfB See", "players": ["Döring", "Kuhn", "Voigt", "Bach"] },
+  { "name": "FC Sturm", "players": ["Schulz", "Ritter", "Heinrich", "Friedl"] },
+  { "name": "SV Blitz", "players": ["Köhler", "Dietrich", "Eckert", "Löwe"] },
+  { "name": "TSV Vulkan", "players": ["Maier", "Groß", "Schulze", "Hoffmann"] },
+  { "name": "SC Frost", "players": ["Schuster", "Brand", "Sauer", "Lang"] },
+  { "name": "VfB Flamme", "players": ["Reuter", "Schiller", "Born", "Herz"] },
+  { "name": "FC Donner", "players": ["Lorenz", "Bauer", "Wolf", "Schmid"] },
+  { "name": "SV Schatten", "players": ["Ziegler", "Beck", "Kruse", "Hart"] },
+  { "name": "TSV Nebel", "players": ["Lang", "Winter", "Schwarz", "Beier"] },
+  { "name": "SC Licht", "players": ["Günther", "Kaiser", "Sachs", "Mayer"] }
+];
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -35,12 +61,15 @@ module.exports = {
       }
 
       const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
+
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
       const team1LastName = team1.name.split(' ').slice(1).join(' ') || team1.name;
       const team2LastName = team2.name.split(' ').slice(1).join(' ') || team2.name;
+
       const odds = generateOdds();
 
+      // Status-Embed
       const embedStatus = new EmbedBuilder()
         .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
         .setColor('Green')
@@ -51,9 +80,11 @@ module.exports = {
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         );
 
-      const players1 = team1.players || [];
-      const players2 = team2.players || [];
+      // Aufstellung aus teamsData holen
+      const players1 = teamsData.find(t => t.name === team1.name)?.players || [];
+      const players2 = teamsData.find(t => t.name === team2.name)?.players || [];
 
+      // Aufstellungs-Embed
       const embedLineup = new EmbedBuilder()
         .setTitle('📋 Aufstellung')
         .setColor('Blue')
@@ -62,6 +93,7 @@ module.exports = {
           `**${icon2} ${team2LastName}:**\n${players2.length ? players2.join(', ') : 'Keine Spieler-Daten'}`
         );
 
+      // Buttons mit Quoten
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('win_team1')
@@ -114,116 +146,100 @@ module.exports = {
     } catch (error) {
       console.error('❌ Fehler im /fussball Command:', error);
       if (!interaction.replied) {
-        await interaction.reply({ content: 'Ein Fehler ist aufgetreten.', ephemeral: true });
+        await interaction.reply({ content: '❌ Ein Fehler ist aufgetreten.', ephemeral: true });
       }
     }
-  },
+  }
 };
 
+// Hilfsfunktionen
+
 function getTwoDifferentTeams(teams) {
-  if (teams.length < 2) throw new Error('Mindestens zwei Teams benötigt.');
-  const team1Index = Math.floor(Math.random() * teams.length);
-  let team2Index;
+  let idx1 = Math.floor(Math.random() * teams.length);
+  let idx2;
   do {
-    team2Index = Math.floor(Math.random() * teams.length);
-  } while (team2Index === team1Index);
-  return [teams[team1Index], teams[team2Index]];
+    idx2 = Math.floor(Math.random() * teams.length);
+  } while (idx2 === idx1);
+  return [teams[idx1], teams[idx2]];
 }
 
 function generateOdds() {
-  const pTeam1 = Math.random() * 0.6 + 0.2;
-  const pTeam2 = Math.random() * (1 - pTeam1);
-  const pDraw = 1 - pTeam1 - pTeam2;
-
-  return {
-    team1: Math.max(1.01, 1 / pTeam1),
-    draw: Math.max(1.01, 1 / pDraw),
-    team2: Math.max(1.01, 1 / pTeam2),
-  };
+  // Beispielhafte Quoten, kannst du beliebig anpassen
+  const team1 = 1 + Math.random() * 3;
+  const team2 = 1 + Math.random() * 3;
+  const draw = 1 + Math.random() * 3;
+  return { team1, team2, draw };
 }
 
-function getRandomEventType() {
-  const events = ['Freistoß', 'Elfmeter', 'Gelbe Karte', 'Rote Karte'];
-  return events[Math.floor(Math.random() * events.length)];
-}
+async function simulateMatch(interaction, team1, team2, icon1, icon2, name1, name2, userTip) {
+  let score1 = 0;
+  let score2 = 0;
+  let minute = 0;
+  let xG1 = 0;
+  let xG2 = 0;
+  let events = [];
 
-function getRandomPlayer(players) {
-  if (!players || players.length === 0) return 'Unbekannter Spieler';
-  return players[Math.floor(Math.random() * players.length)];
-}
+  const maxMinutes = 90;
 
-async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastName, team2LastName, userTip) {
-  let score = { [team1.name]: 0, [team2.name]: 0 };
-  let xG = { [team1.name]: 0, [team2.name]: 0 };
-  let log = [];
-  const teamData = { [team1.name]: team1.players || [], [team2.name]: team2.players || [] };
-
-  for (let minute = 1; minute <= 90; minute++) {
-    xG[team1.name] += Math.random() * 0.03;
-    xG[team2.name] += Math.random() * 0.03;
-
-    if (Math.random() < xG[team1.name] / 10 - score[team1.name] * 0.1) {
-      score[team1.name]++;
-      const scorer = getRandomPlayer(teamData[team1.name]);
-      log.push(`⚽ ${icon1} ${team1LastName} Tor durch **${scorer}** (${minute}')`);
-    }
-
-    if (Math.random() < xG[team2.name] / 10 - score[team2.name] * 0.1) {
-      score[team2.name]++;
-      const scorer = getRandomPlayer(teamData[team2.name]);
-      log.push(`⚽ ${icon2} ${team2LastName} Tor durch **${scorer}** (${minute}')`);
-    }
-
+  // Simuliere jeden 10. Spielminute mit kurzer Pause
+  for (minute = 10; minute <= maxMinutes; minute += 10) {
+    // Simuliere Ereignisse und Tore mit Wahrscheinlichkeiten
     const eventChance = Math.random();
-    if (eventChance < 0.04) {
-      const eventType = getRandomEventType();
-      const teamEvent = Math.random() < 0.5 ? team1 : team2;
-      const iconEvent = teamEvent === team1 ? icon1 : icon2;
-      const teamLastNameEvent = teamEvent === team1 ? team1LastName : team2LastName;
-      const playerEvent = getRandomPlayer(teamData[teamEvent.name]);
-
-      switch (eventType) {
-        case 'Freistoß':
-          log.push(`🟡 Freistoß für ${iconEvent} ${teamLastNameEvent} durch **${playerEvent}** (${minute}')`);
-          break;
-        case 'Elfmeter':
-          if (Math.random() < 0.75) {
-            score[teamEvent.name]++;
-            log.push(`⚽ Elfmeter verwandelt von **${playerEvent}** für ${iconEvent} ${teamLastNameEvent} (${minute}')`);
-          } else {
-            log.push(`❌ Elfmeter verschossen von **${playerEvent}** für ${iconEvent} ${teamLastNameEvent} (${minute}')`);
-          }
-          break;
-        case 'Gelbe Karte':
-          log.push(`🟨 Gelbe Karte für **${playerEvent}** (${iconEvent} ${teamLastNameEvent}) (${minute}')`);
-          break;
-        case 'Rote Karte':
-          log.push(`🟥 Rote Karte für **${playerEvent}** (${iconEvent} ${teamLastNameEvent}) (${minute}')`);
-          break;
+    if (eventChance < 0.3) {
+      // Torchance
+      const scoringTeam = Math.random() < 0.5 ? 1 : 2;
+      if (scoringTeam === 1) {
+        score1++;
+        xG1 += +(0.5 + Math.random()).toFixed(2);
+        events.push(`${minute}' - Tor für ${icon1} ${name1}!`);
+      } else {
+        score2++;
+        xG2 += +(0.5 + Math.random()).toFixed(2);
+        events.push(`${minute}' - Tor für ${icon2} ${name2}!`);
       }
+    } else {
+      // Keine Tore, nur xG steigern
+      xG1 += +(Math.random() * 0.3).toFixed(2);
+      xG2 += +(Math.random() * 0.3).toFixed(2);
+      events.push(`${minute}' - Keine Tore, Spiel läuft.`);
     }
 
-    const embedUpdate = new EmbedBuilder()
-      .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
+    // Status-Embed updaten
+    const embed = new EmbedBuilder()
+      .setTitle(`🏟️ Fußballspiel: ${icon1} ${name1} vs. ${icon2} ${name2}`)
       .setColor('Green')
       .addFields(
         { name: 'Spielminute', value: `${minute}'`, inline: true },
-        { name: 'Spielstand', value: `${score[team1.name]} : ${score[team2.name]}`, inline: true },
-        { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
-        { name: 'Ereignisse', value: log.slice(-5).join('\n') || 'Keine Ereignisse...' }
+        { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
+        { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+        { name: 'Ereignisse', value: events.slice(-5).join('\n') }
       );
 
-    await interaction.editReply({ embeds: [embedUpdate] });
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await interaction.followUp({ embeds: [embed] });
+
+    // Kurze Pause simulieren
+    await new Promise(res => setTimeout(res, 3000));
   }
 
-  const result =
-    score[team1.name] > score[team2.name] ? 'team1' :
-    score[team2.name] > score[team1.name] ? 'team2' : 'draw';
+  // Ergebnis auswerten und Tipp überprüfen
+  let resultText;
+  if (score1 > score2) resultText = 'team1';
+  else if (score1 < score2) resultText = 'team2';
+  else resultText = 'draw';
 
-  let resultMsg = userTip === result
-    ? `✅ Du hast richtig getippt! Ergebnis: ${score[team1.name]} : ${score[team2.name]}`
-    : `❌ Leider falsch getippt. Ergebnis: ${score[team1.name]} : ${score[team2.name]}`;
+  const won = (resultText === userTip);
+  const resultString = won ? 'Du hast richtig getippt! 🎉' : 'Leider falsch getippt. 😢';
 
-  await interaction.followUp({ content: resultMsg });
+  // Endergebnis-Embed
+  const embedFinal = new EmbedBuilder()
+    .setTitle(`🏁 Spiel beendet: ${icon1} ${name1} ${score1} : ${score2} ${icon2} ${name2}`)
+    .setColor(won ? 'Green' : 'Red')
+    .setDescription(resultString)
+    .addFields(
+      { name: 'Dein Tipp', value: userTip === 'team1' ? `${icon1} ${name1} gewinnt` : userTip === 'team2' ? `${icon2} ${name2} gewinnt` : 'Unentschieden' },
+      { name: 'Spielstand', value: `${score1} : ${score2}` },
+      { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}` }
+    );
+
+  await interaction.followUp({ embeds: [embedFinal] });
 }
