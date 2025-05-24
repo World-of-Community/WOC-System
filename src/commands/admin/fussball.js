@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const fs = require('fs');
 const { Team } = require('../../../Datenbank/fussballdb'); // Dein Datenbankmodell
-const teams = JSON.parse(fs.readFileSync('../../json/fussballteams.json', 'utf-8'));
+const teams = JSON.parse(fs.readFileSync('../src/json/fussballteams.json', 'utf-8'));
 
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
@@ -202,69 +202,63 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
     xG[team2.name] += Math.random() * 0.03;
 
     // Prüfen, ob ein Tor fällt (kleine Chance proportional zu xG)
-    const chanceTeam1Goal = xG[team1.name] * 0.05; 
-    const chanceTeam2Goal = xG[team2.name] * 0.05;
+    const chanceTeam1Goal = xG[team1.name] - score[team1.name];
+    const chanceTeam2Goal = xG[team2.name] - score[team2.name];
 
-    if (Math.random() < chanceTeam1Goal) {
+    if (Math.random() < chanceTeam1Goal / 10) {
       score[team1.name]++;
-      const scorer = randomArrayElement(teamData[team1.name]) || 'Unbekannter Spieler';
-      log.push(`⚽ ${minute}': Tor für ${team1.name} durch ${scorer}`);
+      const scorer = getRandomPlayer(teamData[team1.name]);
+      log.push(`⚽ ${icon1} ${team1LastName} Tor durch **${scorer}** (${minute}')`);
     }
-    if (Math.random() < chanceTeam2Goal) {
+    if (Math.random() < chanceTeam2Goal / 10) {
       score[team2.name]++;
-      const scorer = randomArrayElement(teamData[team2.name]) || 'Unbekannter Spieler';
-      log.push(`⚽ ${minute}': Tor für ${team2.name} durch ${scorer}`);
+      const scorer = getRandomPlayer(teamData[team2.name]);
+      log.push(`⚽ ${icon2} ${team2LastName} Tor durch **${scorer}** (${minute}')`);
     }
 
     // Update Embed
-    let goalsText = log.length > 0 ? log.slice(-5).join('\n') : 'Noch keine Tore...';
+    const goalLogText = log.length > 0 ? log.join('\n') : 'Noch keine Tore...';
 
-    const embedUpdate = new EmbedBuilder()
-      .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
-      .setColor('Green')
-      .addFields(
-        { name: 'Spielminute', value: `${minute}'`, inline: true },
-        { name: 'Spielstand', value: `${score[team1.name]} : ${score[team2.name]}`, inline: true },
-        { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
-        { name: 'Tore', value: goalsText }
-      );
+    embedStatus.setFields(
+      { name: 'Spielminute', value: `${minute}'`, inline: true },
+      { name: 'Spielstand', value: `${score[team1.name]} : ${score[team2.name]}`, inline: true },
+      { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
+      { name: 'Tore', value: goalLogText }
+    );
 
-    await interaction.editReply({ embeds: [embedUpdate] });
+    await interaction.editReply({ embeds: [embedStatus] });
 
     await sleep(realTimePerMinuteMs);
   }
 
-  // Endergebnis
-  const finalScoreText = `${score[team1.name]} : ${score[team2.name]}`;
+  // Ergebnis und Tipp auswerten
+  let result;
+  if (score[team1.name] > score[team2.name]) result = 'team1';
+  else if (score[team1.name] < score[team2.name]) result = 'team2';
+  else result = 'draw';
 
-  // Tipp auswerten
-  let resultText = '';
-  if (
-    (score[team1.name] > score[team2.name] && userTip === 'team1') ||
-    (score[team2.name] > score[team1.name] && userTip === 'team2') ||
-    (score[team1.name] === score[team2.name] && userTip === 'draw')
-  ) {
-    resultText = '🎉 Du hast richtig getippt!';
+  let resultText;
+  if (result === 'team1') {
+    resultText = `${icon1} ${team1LastName} gewinnen!`;
+  } else if (result === 'team2') {
+    resultText = `${icon2} ${team2LastName} gewinnen!`;
   } else {
-    resultText = '❌ Dein Tipp war leider falsch.';
+    resultText = 'Unentschieden!';
   }
 
-  // Ergebnis-Embed
-  const embedEnd = new EmbedBuilder()
-    .setTitle('🏁 Spiel beendet')
-    .setColor('Purple')
-    .setDescription(
-      `${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}\n` +
-      `Endstand: **${finalScoreText}**\n\n` +
-      `${resultText}`
-    );
+  // Rückmeldung an den Nutzer bzgl. Tipp
+  let tipCorrect = userTip === result;
+  let tipMessage = tipCorrect ? '🎉 Du hast richtig getippt!' : '😞 Dein Tipp war leider falsch.';
 
-  await interaction.editReply({ embeds: [embedEnd] });
+  await interaction.followUp({
+    content: `Spiel vorbei: ${resultText}\n${tipMessage}`,
+    ephemeral: false,
+  });
 }
 
-function randomArrayElement(arr) {
-  if (!arr || arr.length === 0) return null;
-  return arr[Math.floor(Math.random() * arr.length)];
+function getRandomPlayer(players) {
+  if (!players.length) return 'Unbekannter Spieler';
+  return players[Math.floor(Math.random() * players.length)];
 }
 
 function sleep(ms) {
