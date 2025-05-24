@@ -209,7 +209,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
     .setColor('Gold')
     .addFields(
       { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-      { name: 'Tore', value: goals.length > 0 ? goals.join('\n') : 'Keine Tore im Spiel.' }
+      { name: 'Ereignisse', value: goals.length > 0 ? goals.join('\n') : 'Keine Tore im Spiel.' }
     );
 
   await interaction.followUp({ embeds: [finalEmbed] });
