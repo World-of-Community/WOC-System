@@ -1,4 +1,4 @@
-const {
+const { 
   SlashCommandBuilder,
   EmbedBuilder,
   ActionRowBuilder,
@@ -7,7 +7,6 @@ const {
   ComponentType,
 } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
-const path = require('path');
 
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
@@ -60,16 +59,19 @@ module.exports = {
         });
       }
 
+      // Zwei verschiedene Teams auswählen
       const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
 
       const icon1 = teamIcons[team1.name] || '⚽';
       const icon2 = teamIcons[team2.name] || '⚽';
+
+      // Letzter Teil des Teamnamens für Kurzform (z.B. "Adler" aus "FC Adler")
       const team1LastName = team1.name.split(' ').slice(1).join(' ') || team1.name;
       const team2LastName = team2.name.split(' ').slice(1).join(' ') || team2.name;
 
       const odds = generateOdds();
 
-      // Status-Embed
+      // Status-Embed initial
       const embedStatus = new EmbedBuilder()
         .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
         .setColor('Green')
@@ -84,7 +86,6 @@ module.exports = {
       const players1 = teamsData.find(t => t.name === team1.name)?.players || [];
       const players2 = teamsData.find(t => t.name === team2.name)?.players || [];
 
-      // Aufstellungs-Embed
       const embedLineup = new EmbedBuilder()
         .setTitle('📋 Aufstellung')
         .setColor('Blue')
@@ -97,15 +98,15 @@ module.exports = {
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('win_team1')
-          .setLabel(`${icon1} ${team1LastName} gewinnt (${odds.team1.toFixed(2)})`)
+          .setLabel(`${icon1} ${team1LastName} gewinnt (${odds.team1})`)
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
           .setCustomId('draw')
-          .setLabel(`Unentschieden (${odds.draw.toFixed(2)})`)
+          .setLabel(`Unentschieden (${odds.draw})`)
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('win_team2')
-          .setLabel(`${icon2} ${team2LastName} gewinnt (${odds.team2.toFixed(2)})`)
+          .setLabel(`${icon2} ${team2LastName} gewinnt (${odds.team2})`)
           .setStyle(ButtonStyle.Primary),
       );
 
@@ -149,10 +150,8 @@ module.exports = {
         await interaction.reply({ content: '❌ Ein Fehler ist aufgetreten.', ephemeral: true });
       }
     }
-  }
+  },
 };
-
-// Hilfsfunktionen
 
 function getTwoDifferentTeams(teams) {
   let idx1 = Math.floor(Math.random() * teams.length);
@@ -164,82 +163,93 @@ function getTwoDifferentTeams(teams) {
 }
 
 function generateOdds() {
-  // Beispielhafte Quoten, kannst du beliebig anpassen
-  const team1 = 1 + Math.random() * 3;
-  const team2 = 1 + Math.random() * 3;
-  const draw = 1 + Math.random() * 3;
+  // Beispiel-Quoten zwischen 1.2 und 4.5, gleich nicht exakt 1.0
+  const team1 = (Math.random() * 3.3 + 1.2).toFixed(2);
+  const team2 = (Math.random() * 3.3 + 1.2).toFixed(2);
+  const draw = (Math.random() * 3 + 2).toFixed(2);
   return { team1, team2, draw };
 }
 
-async function simulateMatch(interaction, team1, team2, icon1, icon2, name1, name2, userTip) {
-  let score1 = 0;
-  let score2 = 0;
+async function simulateMatch(interaction, team1, team2, icon1, icon2, team1Name, team2Name, userTip) {
   let minute = 0;
-  let xG1 = 0;
-  let xG2 = 0;
+  let score = [0, 0];
+  let xG = [0, 0];
   let events = [];
 
   const maxMinutes = 90;
+  const eventPool = [
+    `${icon1} Ecke für ${team1Name}`,
+    `${icon2} Freistoß für ${team2Name}`,
+    `${icon1} Torschuss knapp vorbei`,
+    `${icon2} Gelbe Karte`,
+    `${icon1} Torchance!`,
+    `${icon2} Torchance!`,
+    `${icon1} Spieler verletzt sich`,
+    `${icon2} Spieler verletzt sich`,
+    `${icon1} Tor!`,
+    `${icon2} Tor!`,
+  ];
 
-  // Simuliere jeden 10. Spielminute mit kurzer Pause
-  for (minute = 10; minute <= maxMinutes; minute += 10) {
-    // Simuliere Ereignisse und Tore mit Wahrscheinlichkeiten
-    const eventChance = Math.random();
-    if (eventChance < 0.3) {
-      // Torchance
-      const scoringTeam = Math.random() < 0.5 ? 1 : 2;
-      if (scoringTeam === 1) {
-        score1++;
-        xG1 += +(0.5 + Math.random()).toFixed(2);
-        events.push(`${minute}' - Tor für ${icon1} ${name1}!`);
+  // Einfache Simulation: alle 5 Sekunden eine Spielminute erhöhen und evtl. Event
+  for (; minute <= maxMinutes; minute += 5) {
+    // Zufälliges Ereignis (50% Chance)
+    if (Math.random() < 0.5) {
+      let event = eventPool[Math.floor(Math.random() * eventPool.length)];
+
+      // Wenn Tor, erhöhe Score und xG
+      if (event.includes('Tor!')) {
+        if (event.includes(icon1)) {
+          score[0]++;
+          xG[0] += parseFloat((Math.random() * 0.7 + 0.3).toFixed(2));
+        } else {
+          score[1]++;
+          xG[1] += parseFloat((Math.random() * 0.7 + 0.3).toFixed(2));
+        }
       } else {
-        score2++;
-        xG2 += +(0.5 + Math.random()).toFixed(2);
-        events.push(`${minute}' - Tor für ${icon2} ${name2}!`);
+        // Normale Ereignisse erhöhen xG leicht
+        if (event.includes(icon1)) xG[0] += 0.05;
+        if (event.includes(icon2)) xG[1] += 0.05;
       }
-    } else {
-      // Keine Tore, nur xG steigern
-      xG1 += +(Math.random() * 0.3).toFixed(2);
-      xG2 += +(Math.random() * 0.3).toFixed(2);
-      events.push(`${minute}' - Keine Tore, Spiel läuft.`);
+
+      events.push(`${minute}' - ${event}`);
+
+      if (events.length > 5) events.shift(); // max 5 Events anzeigen
     }
 
-    // Status-Embed updaten
     const embed = new EmbedBuilder()
-      .setTitle(`🏟️ Fußballspiel: ${icon1} ${name1} vs. ${icon2} ${name2}`)
+      .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1Name} vs. ${icon2} ${team2Name}`)
       .setColor('Green')
       .addFields(
         { name: 'Spielminute', value: `${minute}'`, inline: true },
-        { name: 'Spielstand', value: `${score1} : ${score2}`, inline: true },
-        { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-        { name: 'Ereignisse', value: events.slice(-5).join('\n') }
+        { name: 'Spielstand', value: `${score[0]} : ${score[1]}`, inline: true },
+        { name: 'xG', value: `${xG[0].toFixed(2)} : ${xG[1].toFixed(2)}`, inline: true },
+        { name: 'Ereignisse', value: events.length ? events.join('\n') : 'Noch keine Ereignisse...' }
       );
 
-    await interaction.followUp({ embeds: [embed] });
-
-    // Kurze Pause simulieren
-    await new Promise(res => setTimeout(res, 3000));
+    await interaction.editReply({ embeds: [embed] });
+    await delay(5000);
   }
 
-  // Ergebnis auswerten und Tipp überprüfen
-  let resultText;
-  if (score1 > score2) resultText = 'team1';
-  else if (score1 < score2) resultText = 'team2';
-  else resultText = 'draw';
+  // Spiel beendet: Ergebnis auswerten und Tipp vergleichen
+  let result;
+  if (score[0] > score[1]) result = 'team1';
+  else if (score[1] > score[0]) result = 'team2';
+  else result = 'draw';
 
-  const won = (resultText === userTip);
-  const resultString = won ? 'Du hast richtig getippt! 🎉' : 'Leider falsch getippt. 😢';
+  const tipCorrect = result === userTip;
 
-  // Endergebnis-Embed
-  const embedFinal = new EmbedBuilder()
-    .setTitle(`🏁 Spiel beendet: ${icon1} ${name1} ${score1} : ${score2} ${icon2} ${name2}`)
-    .setColor(won ? 'Green' : 'Red')
-    .setDescription(resultString)
+  const resultEmbed = new EmbedBuilder()
+    .setTitle(`⚽ Spiel beendet: ${icon1} ${team1Name} vs. ${icon2} ${team2Name}`)
+    .setColor(tipCorrect ? 'Green' : 'Red')
     .addFields(
-      { name: 'Dein Tipp', value: userTip === 'team1' ? `${icon1} ${name1} gewinnt` : userTip === 'team2' ? `${icon2} ${name2} gewinnt` : 'Unentschieden' },
-      { name: 'Spielstand', value: `${score1} : ${score2}` },
-      { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}` }
+      { name: 'Endstand', value: `${score[0]} : ${score[1]}`, inline: true },
+      { name: 'Dein Tipp', value: userTip === 'team1' ? `${icon1} Sieg` : userTip === 'team2' ? `${icon2} Sieg` : 'Unentschieden', inline: true },
+      { name: 'Ergebnis', value: tipCorrect ? '✅ Richtig getippt!' : '❌ Leider falsch getippt.' }
     );
 
-  await interaction.followUp({ embeds: [embedFinal] });
+  await interaction.editReply({ embeds: [resultEmbed] });
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
