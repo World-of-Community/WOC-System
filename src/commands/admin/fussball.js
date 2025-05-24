@@ -9,9 +9,7 @@ const {
 const fs = require('fs');
 const { Team } = require('../../../Datenbank/fussballdb'); // Dein Datenbankmodell
 const path = require('path');
-const fussballteamsPath = path.resolve(__dirname, '../json/fussballteams.json');
-const fussballteams = require(fussballteamsPath);
-
+const fussballteams = require(path.join(__dirname, '..', '..', 'json', 'fussballteams.json'));
 
 const teamIcons = {
   'FC Adler': '🦅', 'SV Löwen': '🦁', 'TSV Eiche': '🌳', 'SC Blau': '🔵',
