@@ -170,6 +170,12 @@ function generateOdds() {
   return { team1, team2, draw };
 }
 
+function getRandomPlayer(players) {
+  // players ist ein Array
+  const randomIndex = Math.floor(Math.random() * players.length);
+  return players[randomIndex];
+}
+
 async function simulateMatch(interaction, team1, team2, icon1, icon2, team1Name, team2Name, userTip) {
   let minute = 0;
   let score = [0, 0];
@@ -178,16 +184,16 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1Name,
 
   const maxMinutes = 90;
   const eventPool = [
-  `${icon1} Ecke für ${team1Name}`,
-  `${icon2} Freistoß für ${team2Name}`,
-  `${icon1} Torschuss knapp vorbei von ${getRandomPlayer(team1Players)}`,
-  `${icon2} Gelbe Karte für ${getRandomPlayer(team2Players)}`,
-  `${icon1} Torchance für ${getRandomPlayer(team1Players)}!`,
-  `${icon2} Torchance für ${getRandomPlayer(team2Players)}!`,
-  `${icon1} Spieler ${getRandomPlayer(team1Players)} verletzt sich`,
-  `${icon2} Spieler ${getRandomPlayer(team2Players)} verletzt sich`,
-  `${icon1} Tor! Torschütze: ${getRandomPlayer(team1Players)}`,
-  `${icon2} Tor! Torschütze: ${getRandomPlayer(team2Players)}`,
+  `🚩 ${icon1} Ecke für ${team1Name}`,
+  `🎯 ${icon2} Freistoß für ${team2Name}`,
+  `💨 ${icon1} Torschuss knapp vorbei von ${getRandomPlayer(team1Players)}`,
+  `🟨 ${icon2} Gelbe Karte für ${getRandomPlayer(team2Players)}`,
+  `⚠️ ${icon1} Torchance für ${getRandomPlayer(team1Players)}!`,
+  `⚠️ ${icon2} Torchance für ${getRandomPlayer(team2Players)}!`,
+  `🤕 ${icon1} Spieler ${getRandomPlayer(team1Players)} verletzt sich`,
+  `🤕 ${icon2} Spieler ${getRandomPlayer(team2Players)} verletzt sich`,
+  `🥅 ${icon1} Tor! Torschütze: ${getRandomPlayer(team1Players)}`,
+  `🥅 ${icon2} Tor! Torschütze: ${getRandomPlayer(team2Players)}`,
 ];
 
   // Einfache Simulation: alle 5 Sekunden eine Spielminute erhöhen und evtl. Event
