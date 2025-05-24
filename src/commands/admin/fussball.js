@@ -238,7 +238,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
   function eckeEvent(minute, team1Name, team2Name) {
   const team = Math.random() < 0.5 ? team1Name : team2Name;
-  return `🚩 Ecke für ${team} (${minute}')`;
+  return `🏳️ Ecke für ${team} (${minute}')`;
   }
 
   if (Math.random() < 0.08) events.push(eckeEvent(minute, team1Name, team2Name));
