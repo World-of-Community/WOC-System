@@ -196,7 +196,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, icon1, ic
         xG2 += xG;
       }
 
-      goals.push(`⚽ Tor! ${teamScored === 'team1' ? icon1 : icon2} **${scorer}** (${minute}')`);
+      goals.push(`⚽ Tooor! ${teamScored === 'team1' ? icon1 : icon2} **${scorer}** (${minute}')`);
     }
 
     // 1000 ms warten = 1 Spielminute simulieren (kann an die gewünschte Geschwindigkeit angepasst werden)
