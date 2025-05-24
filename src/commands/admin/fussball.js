@@ -17,6 +17,33 @@ const teamIcons = {
   'FC Donner': '⛈️', 'SV Schatten': '🌑', 'TSV Nebel': '🌫️', 'SC Licht': '💡',
 };
 
+const teams = {
+  'FC Adler': ['Müller', 'Schmidt', 'Fischer', 'Weber'],
+  'SV Löwen': ['Schneider', 'Wagner', 'Becker', 'Hoffmann'],
+  'TSV Eiche': ['Bauer', 'Koch', 'Richter', 'Klein'],
+  'SC Blau': ['Wolf', 'Neumann', 'Schröder', 'Krüger'],
+  'VfB Stern': ['Hartmann', 'Lange', 'Schmitt', 'Werner'],
+  'FC Rot-Weiß': ['Krause', 'Meier', 'Schulz', 'Hahn'],
+  'SV Grünwald': ['König', 'Fuchs', 'Bergmann', 'Lorenz'],
+  'TSV Nord': ['Frank', 'Mayer', 'Jung', 'Albrecht'],
+  'SC Süd': ['Böhm', 'Engel', 'Jäger', 'Brandt'],
+  'VfB West': ['Peters', 'Simon', 'Vogel', 'Friedrich'],
+  'FC Ostwind': ['Paul', 'Hoffmeister', 'Bender', 'Keller'],
+  'SV Nordstern': ['Mayerhofer', 'Schulze', 'Graf', 'Krafft'],
+  'TSV Berg': ['Winkler', 'Horn', 'Seidel', 'Busch'],
+  'SC Tal': ['Zimmermann', 'Lutz', 'Hahn', 'Franke'],
+  'VfB See': ['Döring', 'Kuhn', 'Voigt', 'Bach'],
+  'FC Sturm': ['Schulz', 'Ritter', 'Heinrich', 'Friedl'],
+  'SV Blitz': ['Köhler', 'Dietrich', 'Eckert', 'Löwe'],
+  'TSV Vulkan': ['Maier', 'Groß', 'Schulze', 'Hoffmann'],
+  'SC Frost': ['Schuster', 'Brand', 'Sauer', 'Lang'],
+  'VfB Flamme': ['Reuter', 'Schiller', 'Born', 'Herz'],
+  'FC Donner': ['Lorenz', 'Bauer', 'Wolf', 'Schmid'],
+  'SV Schatten': ['Ziegler', 'Beck', 'Kruse', 'Hart'],
+  'TSV Nebel': ['Lang', 'Winter', 'Schwarz', 'Beier'],
+  'SC Licht': ['Günther', 'Kaiser', 'Sachs', 'Mayer']
+};
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball')
@@ -196,55 +223,53 @@ async function simulateMatch(interaction, team1, team2, icon1, icon2, team1LastN
       const chanceXG = (Math.random() * 0.4) + 0.1;
       xG[scoringTeam] += chanceXG;
 
-      log.push(`⚽ ${minute}. Minute: ${scorer} (${scoringTeam}) [xG: ${chanceXG.toFixed(2)}]`);
-    } else {
-      // Chance auf xG, auch ohne Tor (10%)
-      if (Math.random() < 0.1) {
-        const teamForXG = Math.random() < 0.5 ? team1.name : team2.name;
-        const chanceXG = (Math.random() * 0.09) + 0.01;
-        xG[teamForXG] += chanceXG;
-      }
+      log.push(`${minute}' - Tor für ${scoringTeam}: ${scorer} ⚽`);
+
+      const goalsString = `${score[team1.name]} : ${score[team2.name]}`;
+      const xgString = `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`;
+
+      const embedUpdate = new EmbedBuilder()
+        .setTitle(`🏟️ Fußballspiel: ${icon1} ${team1LastName} vs. ${icon2} ${team2LastName}`)
+        .setColor('Green')
+        .addFields(
+          { name: 'Spielminute', value: `${minute}'`, inline: true },
+          { name: 'Spielstand', value: goalsString, inline: true },
+          { name: 'xG', value: xgString, inline: true },
+          { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Noch keine Tore...' }
+        );
+
+      await interaction.editReply({ embeds: [embedUpdate] });
     }
 
-    embedStatus.spliceFields(0, 4,
-      { name: 'Spielminute', value: `${minute}'`, inline: true },
-      { name: 'Spielstand', value: `${score[team1.name]} : ${score[team2.name]}`, inline: true },
-      { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
-      { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Noch keine Tore...' }
-    );
-
-    await interaction.editReply({ embeds: [embedStatus] });
-
-    await delay(realTimePerMinuteMs);
+    await wait(realTimePerMinuteMs);
   }
 
-  // Endergebnis
-  let resultText = '';
-  if (score[team1.name] > score[team2.name]) resultText = `${icon1} ${team1LastName} gewinnt!`;
-  else if (score[team1.name] < score[team2.name]) resultText = `${icon2} ${team2LastName} gewinnt!`;
+  // Spielende - Gewinner ermitteln
+  let result;
+  if (score[team1.name] > score[team2.name]) result = 'team1';
+  else if (score[team1.name] < score[team2.name]) result = 'team2';
+  else result = 'draw';
+
+  let resultText;
+  if (result === 'team1') resultText = `${icon1} ${team1LastName} gewinnt!`;
+  else if (result === 'team2') resultText = `${icon2} ${team2LastName} gewinnt!`;
   else resultText = 'Unentschieden!';
 
-  // Gewinner-Tipp prüfen
-  let userWin = false;
-  if (userTip === 'team1' && score[team1.name] > score[team2.name]) userWin = true;
-  else if (userTip === 'team2' && score[team1.name] < score[team2.name]) userWin = true;
-  else if (userTip === 'draw' && score[team1.name] === score[team2.name]) userWin = true;
+  let tipCorrect = (userTip === result);
+  let tipText = tipCorrect ? '✅ Du hast richtig getippt!' : '❌ Dein Tipp war leider falsch.';
 
   const finalEmbed = new EmbedBuilder()
-    .setTitle('🏁 Spiel beendet')
-    .setColor(userWin ? 'Green' : 'Red')
-    .setDescription(
-      `Endstand: ${icon1} ${team1LastName} ${score[team1.name]} : ${score[team2.name]} ${icon2} ${team2LastName}\n` +
-      `Du hast ${userWin ? 'richtig' : 'falsch'} getippt! 🎉`
-    )
+    .setTitle('⚽ Spiel beendet')
+    .setDescription(`Endstand: ${score[team1.name]} : ${score[team2.name]}\n${resultText}\n\n${tipText}`)
+    .setColor(tipCorrect ? 'Green' : 'Red')
     .addFields(
       { name: 'xG', value: `${xG[team1.name].toFixed(2)} : ${xG[team2.name].toFixed(2)}`, inline: true },
-      { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Keine Tore' }
+      { name: 'Tore', value: log.length > 0 ? log.join('\n') : 'Keine Tore gefallen.' }
     );
 
-  await interaction.editReply({ embeds: [finalEmbed], components: [] });
+  await interaction.followUp({ embeds: [finalEmbed] });
 }
 
-function delay(ms) {
+function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
