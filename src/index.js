@@ -6,6 +6,7 @@ const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');
 const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
+const fussballCommand = require('../commands/admin/fussball-tabelle'); // Pfad anpassen
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
@@ -179,6 +180,11 @@ const pingMessages = [
     'Legt euch lieber nicht mit mir an! `😈`',
     'Ich bin sehr Aufmerksam! `❗`'
 ];
+
+// Fussball Tabelle Updaten System 
+setInterval(() => {
+    fussballCommand.updateLeagueTable(client);
+  }, 60 * 1000); // 60.000 ms = 1 Minute
 
 // MongoDB
 mongoose.connection.on('connected', () => {

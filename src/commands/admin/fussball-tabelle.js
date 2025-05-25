@@ -51,7 +51,6 @@ async function createTabelleEmbed() {
     .setTimestamp();
 }
 
-// Funktion zum Aktualisieren der gespeicherten Embed-Nachricht
 async function updateLeagueTable(client) {
   const dbEntry = await EmbedDB.findOne({ name: 'proleague_tabelle' });
   if (!dbEntry) return;
