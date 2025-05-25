@@ -266,7 +266,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
     
     if (minute === 90 + extraTime) {
-      events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} : ${score2} ${team2Name}**`);
+      events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
     }
 
     const fullTeam1Data = teamsData.find(t => t.name === team1.name);
