@@ -1,7 +1,5 @@
-const { matchEvents } = require('../src/commands/admin/matchEvents.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const { EmbedBuilder } = require('discord.js');
-const { client } = require('../index'); // Pfad anpassen
 
 const LEADERBOARD_CHANNEL_ID = '1373937313922682900';
 const LEADERBOARD_MESSAGE_ID = '1376330791336022077';
