@@ -54,15 +54,15 @@ module.exports = {
       const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
       const team1Name = team1.name;
       const team2Name = team2.name;
-
-      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
-      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
   
       const odds = generateOdds();
 
+      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
       const embedStatus = new EmbedBuilder()
         .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
-        .setDescription(`\`📍\` Austragungsort: **${team1.stadium || 'Unbekanntes Stadion'}**`)
+        .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
         .setColor('Green')
         .addFields(
           { name: 'Spielminute', value: '0\'', inline: true },
@@ -222,14 +222,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`🟨\` Gelbe Karte für ${player} (${getDisplayMinute(minute)})`);
     }
 
-    if (minute % 20 === 0 && Math.random() < 0.5) {
-      const team = Math.random() < 0.5 ? team1 : team2;
-      const teamName = team === team1 ? team1Name : team2Name;
-      const outPlayer = getRandomPlayer(team);
-      const inPlayer = `Spieler ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`;
-      events.push(`\`🔁\` Wechsel bei ${teamName}: ${outPlayer} raus, ${inPlayer} rein (${getDisplayMinute(minute)})`);
-    }
-
     if (Math.random() < 0.05) {
       const team = Math.random() < 0.5 ? team1Name : team2Name;
       const teamName = team === team1 ? team1Name : team2Name;
@@ -274,11 +266,14 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
     
     if (minute === 90 + extraTime) {
-      events.push(`\`🔔\` Schlusspfiff! Endstand: ${team1Name} ${score1} : ${score2} ${team2Name}`);
+      events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} : ${score2} ${team2Name}**`);
     }
 
+    const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
-      .setDescription(`\`📍\` Austragungsort: **${team1.stadium || 'Unbekanntes Stadion'}**`)
+      .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
       .setFields(
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
