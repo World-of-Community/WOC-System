@@ -62,7 +62,7 @@ module.exports = {
 
       const embedStatus = new EmbedBuilder()
         .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
-        .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+        .setDescription(`\`📍\` Austragungsort: **${team1.stadium || 'Unbekanntes Stadion'}**`)
         .setColor('Green')
         .addFields(
           { name: 'Spielminute', value: '0\'', inline: true },
@@ -278,7 +278,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
 
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
-      .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+      .setDescription(`\`📍\` Austragungsort: **${team1.stadium || 'Unbekanntes Stadion'}**`)
       .setFields(
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
