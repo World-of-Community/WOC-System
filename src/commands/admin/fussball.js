@@ -219,7 +219,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     if (minute % 6 === 0 && Math.random() < 0.15) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
-      events.push(`\`🟨\` Gelbe Karte für ${player} (${getDisplayMinute(minute)})`);
+      events.push(`\`🟨\` Gelbe Karte für **${player}** (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.05) {
