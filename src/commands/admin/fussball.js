@@ -70,19 +70,6 @@ module.exports = {
       const players1 = team1.players || [];
       const players2 = team2.players || [];
 
-      function getTeamPlayersByName(name) {
-        const fallback = teamsData.find(team => team.name === name);
-        return fallback ? fallback.players : [];
-      }
-
-      const players1 = Array.isArray(team1.players) && team1.players.length > 0
-        ? team1.players
-        : getTeamPlayersByName(team1.name);
-      
-      const players2 = Array.isArray(team2.players) && team2.players.length > 0
-        ? team2.players
-        : getTeamPlayersByName(team2.name);
-
       const embedLineup = new EmbedBuilder()
         .setTitle('📋 Aufstellung')
         .setColor('Blue')
