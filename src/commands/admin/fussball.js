@@ -61,8 +61,8 @@ module.exports = {
       const odds = generateOdds();
 
       const embedStatus = new EmbedBuilder()
-        .setTitle(`🏟️ Fußballspiel: ${team1Name} vs. ${team2Name}`)
-        .setDescription(`📍 Austragungsort: **${stadium}**`)
+        .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
+        .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
         .setColor('Green')
         .addFields(
           { name: 'Spielminute', value: '0\'', inline: true },
@@ -190,6 +190,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
       scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
 
+      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
       // VAR prüft Tor
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
@@ -275,7 +278,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
 
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
-      .setDescription(`📍 Austragungsort: **${stadium}**`)
+      .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
       .setFields(
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
