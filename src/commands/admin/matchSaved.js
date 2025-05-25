@@ -1,4 +1,4 @@
-const { matchEvents } = require('../src/commands/admin/matchSaved.js');
+const { matchEvents } = require('../src/commands/admin/matchEvents.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const { EmbedBuilder } = require('discord.js');
 const { client } = require('../index'); // Pfad anpassen
