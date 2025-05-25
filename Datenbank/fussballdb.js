@@ -111,10 +111,6 @@ matchSchema.post('save', async function (doc) {
     return b.goalsFor - a.goalsFor;
   });
 
-  // Embed erstellen und Nachricht aktualisieren
-  const { EmbedBuilder } = require('discord.js');
-  const { client } = require('../client'); // Pfad ggf. anpassen!
-
   const table = teams.map((team, index) => {
     const rank = `${index + 1}`;
     const played = team.played;
@@ -149,8 +145,6 @@ const Team = mongoose.model('Team', teamSchema);
 const Match = mongoose.model('Match', matchSchema);
 
 module.exports = { Team, Match };
-
-
 
 /*
 
