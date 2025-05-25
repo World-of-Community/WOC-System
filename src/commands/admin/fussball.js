@@ -197,9 +197,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
           torGezaehlt = false;
-          events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT - ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+          events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT - ${score1}-${score2} (${getDisplayMinute(minute)})`);
         } else {
-          events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+          events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${getDisplayMinute(minute)})`);
         }
       }
 
@@ -207,11 +207,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         if (teamScored === 'team1') {
           score1++;
           xG1 += xG;
-          events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+          events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
         } else {
           score2++;
           xG2 += xG;
-          events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+          events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
         }
       }
     }
