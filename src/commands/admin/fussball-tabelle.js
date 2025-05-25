@@ -48,6 +48,7 @@ async function createTabelleEmbed() {
     .setTitle('⚽ Pro League Tabelle')
     .setDescription(description)
     .setColor('Blue')
+    .setFooter({ text: 'Zuletzt aktualisiert'})
     .setTimestamp();
 }
 
