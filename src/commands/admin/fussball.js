@@ -49,6 +49,23 @@ module.exports = {
       const team2Name = team2.name;
   
       const odds = generateOdds();
+      const overUnderValues = [1.5, 2.5, 3.5, 4.5, 5.5];
+
+      const team1Goals = 2; // tatsächliche Tore Team 1
+      const team2Goals = 1; // tatsächliche Tore Team 2
+      const actualGoals = team1Goals + team2Goals;
+      
+      const tip = "Beide Teams treffen"; // Tipp des Users
+      
+      let tipCorrect = false;
+      
+      if (tip.toLowerCase().includes("unter")) {
+        tipCorrect = actualGoals < 5.5;
+      } else if (tip.toLowerCase().includes("über")) {
+        tipCorrect = actualGoals > 5.5;
+      } else if (tip.toLowerCase().includes("beide teams treffen")) {
+        tipCorrect = (team1Goals > 0 && team2Goals > 0);
+      }
 
       const fullTeam1Data = teamsData.find(t => t.name === team1.name);
       const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
@@ -61,6 +78,7 @@ module.exports = {
           { name: 'Spielminute', value: '0\'', inline: true },
           { name: 'Spielstand', value: '0 - 0', inline: true },
           { name: 'xG', value: '0.00 : 0.00', inline: true },
+          { name: 'Tipp', value: `${tip} — ${tipCorrect ? '✅ Richtig' : '❌ Falsch'}`, inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         );
 
@@ -75,7 +93,23 @@ module.exports = {
           `**${team2Name}:**\n${players2.length > 0 ? players2.join(', ') : 'Keine Spieler-Daten'}`
         );
 
-      const buttons = new ActionRowBuilder().addComponents(
+      //const buttons = new ActionRowBuilder().addComponents(
+      //  new ButtonBuilder()
+      //    .setCustomId('win_team1')
+      //    .setLabel(`${team1Name} gewinnt (${odds.team1.toFixed(2)})`)
+      //    .setStyle(ButtonStyle.Primary),
+      //  new ButtonBuilder()
+      //    .setCustomId('draw')
+      //    .setLabel(`Unentschieden (${odds.draw.toFixed(2)})`)
+      //    .setStyle(ButtonStyle.Secondary),
+      //  new ButtonBuilder()
+      //    .setCustomId('win_team2')
+      //    .setLabel(`${team2Name} gewinnt (${odds.team2.toFixed(2)})`)
+      //    .setStyle(ButtonStyle.Primary),
+      //);
+
+      // Erste Zeile: Sieg/Unentschieden/Sieg
+      const row1 = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('win_team1')
           .setLabel(`${team1Name} gewinnt (${odds.team1.toFixed(2)})`)
@@ -89,9 +123,45 @@ module.exports = {
           .setLabel(`${team2Name} gewinnt (${odds.team2.toFixed(2)})`)
           .setStyle(ButtonStyle.Primary),
       );
+      
+      // Zweite Zeile: Over/Under 1.5 Tore
+      const row2 = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('over_1.5')
+          .setLabel('Über 1.5 Tore')
+          .setStyle(ButtonStyle.Success),
+        new ButtonBuilder()
+          .setCustomId('under_1.5')
+          .setLabel('Unter 1.5 Tore')
+          .setStyle(ButtonStyle.Danger),
+      );
+      
+      // Dritte Zeile: Over/Under 2.5 Tore (Beispiel)
+      const row3 = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('over_2.5')
+          .setLabel('Über 2.5 Tore')
+          .setStyle(ButtonStyle.Success),
+        new ButtonBuilder()
+          .setCustomId('under_2.5')
+          .setLabel('Unter 2.5 Tore')
+          .setStyle(ButtonStyle.Danger),
+      );
+      
+      // Vierte Zeile: Beide Teams treffen ja/nein
+      const row4 = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('both_score_yes')
+          .setLabel('Beide Teams treffen: Ja')
+          .setStyle(ButtonStyle.Success),
+        new ButtonBuilder()
+          .setCustomId('both_score_no')
+          .setLabel('Beide Teams treffen: Nein')
+          .setStyle(ButtonStyle.Danger),
+      );
 
       const statusMessage = await interaction.reply({ embeds: [embedStatus], fetchReply: true });
-      await interaction.followUp({ embeds: [embedLineup], components: [buttons] });
+      await interaction.followUp({ embeds: [embedLineup], components: [row1, row2, row3, row4] });
 
       const filter = i => i.user.id === interaction.user.id;
       const collector = interaction.channel.createMessageComponentCollector({
@@ -271,6 +341,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+        { name: 'Tipp', value: `${tip} — ${tipCorrect ? '✅ Richtig' : '❌ Falsch'}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       );
 
