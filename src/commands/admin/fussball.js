@@ -279,7 +279,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   }
 
   await interaction.followUp({
-    content: `\`🏁\` Abpfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**\n${tippErgebnis}`,
+    content: `\`🏁\` Abpfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`,
   });
 }
 
