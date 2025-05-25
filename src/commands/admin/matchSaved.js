@@ -1,5 +1,5 @@
-const { matchEvents } = require('../models/league');
-const { Team } = require('../models/league');
+const { matchEvents } = require('../src/commands/admin/matchSaved.js');
+const { Team } = require('../../../Datenbank/fussballdb');
 const { EmbedBuilder } = require('discord.js');
 const { client } = require('../index'); // Pfad anpassen
 
