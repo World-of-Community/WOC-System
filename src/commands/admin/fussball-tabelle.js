@@ -41,7 +41,7 @@ async function createTabelleEmbed() {
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
 
   const description = proLeagueData.map((t, i) =>
-    `**${i + 1}. ${t.name}** - ${t.points} Pkt | Spiele: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | Tore: ${t.goalsFor}:${t.goalsAgainst} (TV: ${t.goalDifference})`
+    `**${i + 1}. ${t.name}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkte: ${t.points}`
   ).join('\n');
 
   return new EmbedBuilder()
