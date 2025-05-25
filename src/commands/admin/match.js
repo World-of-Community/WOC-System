@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const { EmbedBuilder } = require('discord.js');
-const { client } = require('../src/commands/admin/match'); // Passe den Pfad an, je nachdem wo dein client ist
+const { client } = require('../src/clientready'); // Passe den Pfad an, je nachdem wo dein client ist
 const { Team } = require('../../../Datenbank/fussballdb');
 
 const LEADERBOARD_CHANNEL_ID = '1373937313922682900';
