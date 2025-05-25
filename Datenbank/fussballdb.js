@@ -64,7 +64,10 @@ const matchSchema = new mongoose.Schema({
 // --- Hier die Middleware, die die Tabelle aktualisiert ---
 
 matchSchema.post('save', async function (doc) {
-  const { Team } = require('./league'); // anpassen, je nach Dateistruktur
+  const { Team } = require('./league'); // passe ggf. den Pfad an
+
+  const LEADERBOARD_CHANNEL_ID = '1373937313922682900';
+  const LEADERBOARD_MESSAGE_ID = '1376330791336022077';
 
   const team1 = await Team.findById(doc.team1);
   const team2 = await Team.findById(doc.team2);
@@ -100,16 +103,46 @@ matchSchema.post('save', async function (doc) {
   await team2.save();
 
   // --- Tabelle (Leaderboard) aktualisieren ---
-
-  // Hole alle Teams aus der Liga (z.B. "Pro League")
   const teams = await Team.find({ league: 'Pro League' });
 
-  // Sortiere Teams nach Punkten, dann Tor-Differenz, dann Tore für
   teams.sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;
     if ((b.goalsFor - b.goalsAgainst) !== (a.goalsFor - a.goalsAgainst)) return (b.goalsFor - b.goalsAgainst) - (a.goalsFor - a.goalsAgainst);
     return b.goalsFor - a.goalsFor;
   });
+
+  // Embed erstellen und Nachricht aktualisieren
+  const { EmbedBuilder } = require('discord.js');
+  const { client } = require('../client'); // Pfad ggf. anpassen!
+
+  const table = teams.map((team, index) => {
+    const rank = `${index + 1}`;
+    const played = team.played;
+    const won = team.won;
+    const draw = team.draw;
+    const lost = team.lost;
+    const gf = team.goalsFor;
+    const ga = team.goalsAgainst;
+    const gd = team.goalsFor - team.goalsAgainst;
+    const pts = team.points;
+
+    return `**${rank}** - \`${team.name}\` | ${played} Sp | ${won} S | ${draw} U | ${lost} N | ${gf}:${ga} (${gd}) | ${pts} P`;
+  }).join('\n');
+
+  const embed = new EmbedBuilder()
+    .setTitle('📊 Aktuelle Tabelle - Pro League')
+    .setColor(0x00AE86)
+    .setDescription(table)
+    .setFooter({ text: 'Letztes Update' })
+    .setTimestamp();
+
+  try {
+    const channel = await client.channels.fetch(LEADERBOARD_CHANNEL_ID);
+    const message = await channel.messages.fetch(LEADERBOARD_MESSAGE_ID);
+    await message.edit({ embeds: [embed] });
+  } catch (error) {
+    console.error('[Tabelle Aktualisierung Fehler]', error);
+  }
 });
 
 const Team = mongoose.model('Team', teamSchema);
