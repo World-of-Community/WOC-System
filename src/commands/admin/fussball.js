@@ -55,6 +55,9 @@ module.exports = {
       const team1Name = team1.name;
       const team2Name = team2.name;
 
+      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+  
       const odds = generateOdds();
 
       const embedStatus = new EmbedBuilder()
