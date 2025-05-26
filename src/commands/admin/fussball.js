@@ -74,7 +74,8 @@ module.exports = {
           { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
           { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
-        );
+        )
+        .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
       const players1 = team1.players || [];
       const players2 = team2.players || [];
@@ -244,12 +245,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       }
     }
 
-    //if (minute % 6 === 0 && Math.random() < 0.15) {
-    //  const team = Math.random() < 0.5 ? team1 : team2;
-    //  const player = getRandomPlayer(team);
-    //  events.push(`\`🟨\` Gelbe Karte für **${player}** (${getDisplayMinute(minute)})`);
-    //}
-
     if (Math.random() < 0.5) team1Passes++;
     else team2Passes++;
     
@@ -350,7 +345,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
         { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
-      );
+      )
+      .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
     await statusMessage.edit({ embeds: [embedUpdate] });
     await delay(1000);
