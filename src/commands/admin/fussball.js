@@ -196,8 +196,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   let team2Tackles = 0;
   let team1Saves = 0;
   let team2Saves = 0;
-  const possessionTeam1 = team1Passes + team1Shots + team1Tackles + team1Saves;
-  const possessionTeam2 = team2Passes + team2Shots + team2Tackles + team2Saves;
+  const team1Activity = team1Passes + team1Shots + team1Tackles + team1Saves;
+  const team2Activity = team2Passes + team2Shots + team2Tackles + team2Saves;
+  const totalActivity = team1Activity + team2Activity;
+  
+  const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
+  const possessionTeam2 = 100 - possessionTeam1;
   const events = [];
   const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
   
@@ -326,8 +330,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const possessionTeam1Percent = Math.round((ballPossessionCountTeam1 / totalBallPossessionEvents) * 100);
     const possessionTeam2Percent = 100 - possessionTeam1Percent;
 
-    const possessionTeam1 = team1Passes + team1Shots + team1Tackles + team1Saves;
-    const possessionTeam2 = team2Passes + team2Shots + team2Tackles + team2Saves;
+    const team1Activity = team1Passes + team1Shots + team1Tackles + team1Saves;
+    const team2Activity = team2Passes + team2Shots + team2Tackles + team2Saves;
+    const totalActivity = team1Activity + team2Activity;
+    
+    const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
+    const possessionTeam2 = 100 - possessionTeam1;
 
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
@@ -337,7 +345,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
         { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
         { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-        { name: 'Ecken', value: `\`\`🚩 ${cornersTeam1}-${cornersTeam2}`, inline: true },
+        { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       );
 
