@@ -53,6 +53,9 @@ module.exports = {
       const fullTeam1Data = teamsData.find(t => t.name === team1.name);
       const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
+      const possessionTeam1 = Math.floor(Math.random() * 21) + 40; // 40–60%
+      const possessionTeam2 = 100 - possessionTeam1;
+
       const embedStatus = new EmbedBuilder()
         .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
         .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
@@ -61,6 +64,7 @@ module.exports = {
           { name: 'Spielminute', value: '0\'', inline: true },
           { name: 'Spielstand', value: '0 - 0', inline: true },
           { name: 'xG', value: '0.00 : 0.00', inline: true },
+          { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         );
 
@@ -265,12 +269,16 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const fullTeam1Data = teamsData.find(t => t.name === team1.name);
     const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
+    const possessionTeam1 = Math.floor(Math.random() * 21) + 40; // 40–60%
+    const possessionTeam2 = 100 - possessionTeam1;
+
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
       .setFields(
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+        { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       );
 
