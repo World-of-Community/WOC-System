@@ -122,12 +122,14 @@ module.exports = {
 
       if (i.customId === 'show_table') {
         const tableEmbed = await createTabelleEmbed();
-        await i.update({ embeds: [tableEmbed] });
+        await i.deferUpdate();
+        await interaction.followUp({ embeds: [tableEmbed], ephemeral: false });
       }
 
       if (i.customId === 'next_matchday') {
         const matchdayEmbed = await createNextMatchdayEmbed();
-        await i.update({ embeds: [matchdayEmbed] });
+        await i.deferUpdate();
+        await interaction.followUp({ embeds: [matchdayEmbed], ephemeral: false });
       }
     });
 
