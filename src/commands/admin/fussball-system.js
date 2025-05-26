@@ -90,13 +90,16 @@ async function createNextMatchdayEmbed() {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-embed')
-    .setDescription(
-       'Zeigt die Fußball-Übersicht mit Tabelle und nächstem Spieltag\n\n' +
-       'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
-       '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
-       '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
-       '- `📊` » **Detaillierte Spielerwerte** und Teamdaten'
-    ),
+    .setDescription('⚽ Pro League: Die Königsklasse unseres Fußball-Universums.')
+    .addFields([
+      {
+        name: 'Was dich erwartet:',
+        value:
+          '💥 Spannende Matches mit Live-Statistiken\n' +
+          '🏆 Kampf um den Meistertitel\n' +
+          '📊 Detaillierte Spielerwerte und Teamdaten',
+      },
+    ]),
 
   async execute(interaction) {
     const overviewEmbed = new EmbedBuilder()
