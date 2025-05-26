@@ -111,7 +111,7 @@ module.exports = {
     );
 
     await interaction.reply({ content: 'Fussball Übersicht gesendet.', ephemeral: true });
-    const replymessage = await interaction.reply({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
+    const replymessage = await interaction.followUp({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
 
     const collector = replymessage.createMessageComponentCollector({ componentType: ComponentType.Button });
 
