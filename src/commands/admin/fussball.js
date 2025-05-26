@@ -70,9 +70,9 @@ module.exports = {
           { name: 'Spielminute', value: '0\'', inline: true },
           { name: 'Spielstand', value: '0 - 0', inline: true },
           { name: 'xG', value: '0.00 : 0.00', inline: true },
-          { name: 'Gelbe Karten', value: `🟨 ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+          { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
           { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-          { name: 'Ecken', value: `🚩 ${cornersTeam1}-${cornersTeam2}`, inline: true },
+          { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         );
 
@@ -326,15 +326,18 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const possessionTeam1Percent = Math.round((ballPossessionCountTeam1 / totalBallPossessionEvents) * 100);
     const possessionTeam2Percent = 100 - possessionTeam1Percent;
 
+    const possessionTeam1 = team1Passes + team1Shots + team1Tackles + team1Saves;
+    const possessionTeam2 = team2Passes + team2Shots + team2Tackles + team2Saves;
+
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
       .setFields(
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-        { name: 'Gelbe Karten', value: `🟨 ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+        { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
         { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-        { name: 'Ecken', value: `🚩 ${cornersTeam1}-${cornersTeam2}`, inline: true },
+        { name: 'Ecken', value: `\`\`🚩 ${cornersTeam1}-${cornersTeam2}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       );
 
