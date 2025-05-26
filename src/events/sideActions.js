@@ -52,11 +52,8 @@ module.exports = {
                     break;
 
                 case '1172920281526960238':
-
-                    const customEmoji = message.guild.emojis.cache.get("1236232439022616658");
-                    if (customEmoji) {
-                        await message.react(customEmoji);
-                    }
+                    await message.react('<a:link:1369954893380718672>'); // Werbung für alle
+                    
 
                     break;
 
