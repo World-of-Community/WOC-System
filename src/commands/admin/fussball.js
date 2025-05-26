@@ -339,7 +339,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     // Wenn Tor fällt
     if (torGezaehlt) {
-      imageUrl = 'https://sdmntpritalynorth.oaiusercontent.com/files/00000000-e7f4-6246-8314-39141b26f3b3/raw?se=2025-05-26T15%3A41%3A30Z&sp=r&sv=2024-08-04&sr=b&scid=be2f8534-0fb1-5813-8ae3-bc7b6bf0e799&skoid=b32d65cd-c8f1-46fb-90df-c208671889d4&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-26T07%3A24%3A32Z&ske=2025-05-27T07%3A24%3A32Z&sks=b&skv=2024-08-04&sig=%2BtGJbWOYvVDLWGXIsHc2FGSYpUrM3eFqFHXgFlWK/q0%3D';  // Neue Bild-URL nach Tor
+      goalImage = 'https://sdmntpritalynorth.oaiusercontent.com/files/00000000-e7f4-6246-8314-39141b26f3b3/raw?se=2025-05-26T15%3A41%3A30Z&sp=r&sv=2024-08-04&sr=b&scid=be2f8534-0fb1-5813-8ae3-bc7b6bf0e799&skoid=b32d65cd-c8f1-46fb-90df-c208671889d4&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-26T07%3A24%3A32Z&ske=2025-05-27T07%3A24%3A32Z&sks=b&skv=2024-08-04&sig=%2BtGJbWOYvVDLWGXIsHc2FGSYpUrM3eFqFHXgFlWK/q0%3D';  // Neue Bild-URL nach Tor
     }
 
     // test
