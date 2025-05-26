@@ -113,7 +113,7 @@ module.exports = {
     await interaction.channel.send({ content: 'Fussball Übersicht gesendet.', ephemeral: true })
     const replymessage = await interaction.reply({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
 
-    const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000 });
+    const collector = replymessage.createMessageComponentCollector({ componentType: ComponentType.Button });
 
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) {
@@ -135,7 +135,7 @@ module.exports = {
       const disabledRow = new ActionRowBuilder().addComponents(
         buttons.components.map(button => button.setDisabled(true))
       );
-      await message.edit({ components: [disabledRow] });
+      await replymessage.edit({ components: [disabledRow] });
     });
   }
 };
