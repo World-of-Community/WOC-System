@@ -53,14 +53,14 @@ module.exports = {
       const fullTeam1Data = teamsData.find(t => t.name === team1.name);
       const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
-      const yellowCardsTeam1 = Math.floor(Math.random() * 21); // 0–20
-      const yellowCardsTeam2 = Math.floor(Math.random() * 21);
+      const yellowCardsTeam1 = 0;
+      const yellowCardsTeam2 = 0;
 
-      const possessionTeam1 = Math.floor(Math.random() * 21) + 40; // 40–60%
-      const possessionTeam2 = 100 - possessionTeam1;
+      const possessionTeam1 = 0;
+      const possessionTeam2 = 0;
 
-      const cornersTeam1 = Math.floor(Math.random() * 41); // 0–40
-      const cornersTeam2 = Math.floor(Math.random() * 41);
+      const cornersTeam1 = 0;
+      const cornersTeam2 = 0;
 
       const embedStatus = new EmbedBuilder()
         .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
@@ -221,9 +221,21 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       }
     }
 
-    if (minute % 6 === 0 && Math.random() < 0.15) {
-      const team = Math.random() < 0.5 ? team1 : team2;
-      const player = getRandomPlayer(team);
+    //if (minute % 6 === 0 && Math.random() < 0.15) {
+    //  const team = Math.random() < 0.5 ? team1 : team2;
+    //  const player = getRandomPlayer(team);
+    //  events.push(`\`🟨\` Gelbe Karte für **${player}** (${getDisplayMinute(minute)})`);
+    //}
+
+    let yellowCardsTeam1 = 0;
+    let yellowCardsTeam2 = 0;
+    
+    // In der Schleife bei gelben Karten:
+    if (Math.random() < 0.15 && minute % 6 === 0) {
+      const team = Math.random() < 0.5 ? 'team1' : 'team2';
+      const player = getRandomPlayer(team === 'team1' ? team1 : team2);
+      if (team === 'team1') yellowCardsTeam1++;
+      else yellowCardsTeam2++;
       events.push(`\`🟨\` Gelbe Karte für **${player}** (${getDisplayMinute(minute)})`);
     }
 
