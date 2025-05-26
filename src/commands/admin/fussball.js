@@ -204,6 +204,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   const possessionTeam2 = 100 - possessionTeam1;
   //const events = [];
 
+  let minute = 0;
   const events = [`\`🔊\` **Anpfiff! Das Spiel beginnt!** \`⚽\` (${getDisplayMinute(minute)})`];
   const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
   
