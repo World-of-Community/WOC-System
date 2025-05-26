@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const { Match } = require('../../../Datenbank/matchdb');
 
@@ -90,21 +90,19 @@ async function createNextMatchdayEmbed() {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-embed')
-    .setDescription('⚽ Pro League: Die Königsklasse unseres Fußball-Universums.')
-    .addFields([
-      {
-        name: 'Was dich erwartet:',
-        value:
-          '💥 Spannende Matches mit Live-Statistiken\n' +
-          '🏆 Kampf um den Meistertitel\n' +
-          '📊 Detaillierte Spielerwerte und Teamdaten',
-      },
-    ]),
+    .setDescription('Zeigt die Fußball Übersicht mit Tabelle und nächsten Spieltag')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const overviewEmbed = new EmbedBuilder()
       .setTitle('⚽ Fußball Übersicht')
-      .setDescription('Wähle unten eine Option aus, um die Tabelle oder den nächsten Spieltag anzuzeigen.')
+      .setDescription(
+        'Wähle unten eine Option aus, um die Tabelle oder den nächsten Spieltag anzuzeigen.\n\n' +
+        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n' +
+        '- 💥 » **Spannende Matches** mit Live-Statistiken\n' +
+        '- 🏆 » **Kampf um den Meistertitel** unter den besten Teams\n' +
+        '- 📊 » **Detaillierte Spielerwerte** und Teamdaten'
+      )
       .setColor('Blurple');
 
     const buttons = new ActionRowBuilder().addComponents(
