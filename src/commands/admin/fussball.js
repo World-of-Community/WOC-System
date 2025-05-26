@@ -205,7 +205,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   //const events = [];
 
   let minute = 0;
-  const events = [`\`🔊\` **Anpfiff! Das Spiel beginnt!** \`⚽\` (${minute})`];
+  const events = [`\`🔊\` **Anpfiff! Das Spiel beginnt!** \`⚽\` (${minute}')`];
   const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
   
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
