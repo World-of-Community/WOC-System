@@ -246,7 +246,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const team = Math.random() < 0.5 ? team1 : team2;
       const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
-      events.push(`\`🚩\` Abseits von ${teamName} durch **${player}** (${getDisplayMinute(minute)})`);
+      events.push(`\`🏳️\` Abseits von ${teamName} durch **${player}** (${getDisplayMinute(minute)})`);
     }
 
     // Gefährlicher Angriff (z.B. 8% Chance pro Minute)
@@ -268,6 +268,16 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`🕹️\` ${teamName} im Ballbesitz (${getDisplayMinute(minute)})`);
     }
 
+    // Beispiel: Ecke - wenn tatsächlich passiert, erhöhen
+    if (Math.random() < 0.1) {  // 10% Chance pro Minute für Ecke
+      const team = Math.random() < 0.5 ? 'team1' : 'team2';
+      if (team === 'team1') cornersTeam1++;
+      else cornersTeam2++;
+
+      const teamName = team === 'team1' ? team1Name : team2Name;
+      events.push(`\`🚩\` Ecke für ${teamName} (${getDisplayMinute(minute)})`);
+    }
+
     // Funktion zur Anzeige der Spielminute
     function getDisplayMinute(minute) {
       if (minute <= 90) return `${minute}'`;
@@ -286,14 +296,10 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const fullTeam1Data = teamsData.find(t => t.name === team1.name);
     const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
-    const yellowCardsTeam1 = Math.floor(Math.random() * 21); // 0–20
-    const yellowCardsTeam2 = Math.floor(Math.random() * 21);
-
-    const possessionTeam1 = Math.floor(Math.random() * 21) + 40; // 40–60%
-    const possessionTeam2 = 100 - possessionTeam1;
-
-    const cornersTeam1 = Math.floor(Math.random() * 41); // 0–40
-    const cornersTeam2 = Math.floor(Math.random() * 41);
+    // Ballbesitz % berechnen aus den gezählten Ballbesitz-Events
+    const totalBallPossessionEvents = ballPossessionCountTeam1 + ballPossessionCountTeam2 || 1;
+    const possessionTeam1Percent = Math.round((ballPossessionCountTeam1 / totalBallPossessionEvents) * 100);
+    const possessionTeam2Percent = 100 - possessionTeam1Percent;
 
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
