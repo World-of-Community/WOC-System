@@ -188,6 +188,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   let ballPossessionCountTeam2 = 0;
   let cornersTeam1 = 0;
   let cornersTeam2 = 0;
+  const possessionTeam1 = team1Passes + team1Shots + team1Tackles + team1Saves;
+  const possessionTeam2 = team2Passes + team2Shots + team2Tackles + team2Saves;
   const events = [];
   const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
   
