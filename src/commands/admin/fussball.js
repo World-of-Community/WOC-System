@@ -226,9 +226,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     //  const player = getRandomPlayer(team);
     //  events.push(`\`🟨\` Gelbe Karte für **${player}** (${getDisplayMinute(minute)})`);
     //}
-
-    let yellowCardsTeam1 = 0;
-    let yellowCardsTeam2 = 0;
     
     // In der Schleife bei gelben Karten:
     if (Math.random() < 0.15 && minute % 6 === 0) {
