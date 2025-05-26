@@ -188,6 +188,14 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   let ballPossessionCountTeam2 = 0;
   let cornersTeam1 = 0;
   let cornersTeam2 = 0;
+  let team1Passes = 0;
+  let team2Passes = 0;
+  let team1Shots = 0;
+  let team2Shots = 0;
+  let team1Tackles = 0;
+  let team2Tackles = 0;
+  let team1Saves = 0;
+  let team2Saves = 0;
   const possessionTeam1 = team1Passes + team1Shots + team1Tackles + team1Saves;
   const possessionTeam2 = team2Passes + team2Shots + team2Tackles + team2Saves;
   const events = [];
@@ -234,6 +242,15 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     //  const player = getRandomPlayer(team);
     //  events.push(`\`🟨\` Gelbe Karte für **${player}** (${getDisplayMinute(minute)})`);
     //}
+
+    if (Math.random() < 0.5) team1Passes++;
+    else team2Passes++;
+    
+    if (Math.random() < 0.3) team1Shots++;
+    else team2Shots++;
+    
+    if (Math.random() < 0.2) team1Tackles++;
+    else team2Tackles++;
     
     // In der Schleife bei gelben Karten:
     if (Math.random() < 0.15 && minute % 6 === 0) {
