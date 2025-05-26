@@ -38,4 +38,4 @@ const matchSchema = new mongoose.Schema({
   timestamps: true // createdAt, updatedAt automatisch
 });
 
-module.exports = mongoose.model('Match', matchSchema);
+module.exports = mongoose.models.Match || mongoose.model('Match', matchSchema);
