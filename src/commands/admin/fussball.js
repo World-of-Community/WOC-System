@@ -53,8 +53,14 @@ module.exports = {
       const fullTeam1Data = teamsData.find(t => t.name === team1.name);
       const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
+      const yellowCardsTeam1 = Math.floor(Math.random() * 21); // 0–20
+      const yellowCardsTeam2 = Math.floor(Math.random() * 21);
+
       const possessionTeam1 = Math.floor(Math.random() * 21) + 40; // 40–60%
       const possessionTeam2 = 100 - possessionTeam1;
+
+      const cornersTeam1 = Math.floor(Math.random() * 41); // 0–40
+      const cornersTeam2 = Math.floor(Math.random() * 41);
 
       const embedStatus = new EmbedBuilder()
         .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
@@ -64,7 +70,9 @@ module.exports = {
           { name: 'Spielminute', value: '0\'', inline: true },
           { name: 'Spielstand', value: '0 - 0', inline: true },
           { name: 'xG', value: '0.00 : 0.00', inline: true },
+          { name: 'Gelbe Karten', value: `🟨 ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
           { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
+          { name: 'Ecken', value: `🚩 ${cornersTeam1}-${cornersTeam2}`, inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         );
 
@@ -269,8 +277,14 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const fullTeam1Data = teamsData.find(t => t.name === team1.name);
     const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
+    const yellowCardsTeam1 = Math.floor(Math.random() * 21); // 0–20
+    const yellowCardsTeam2 = Math.floor(Math.random() * 21);
+
     const possessionTeam1 = Math.floor(Math.random() * 21) + 40; // 40–60%
     const possessionTeam2 = 100 - possessionTeam1;
+
+    const cornersTeam1 = Math.floor(Math.random() * 41); // 0–40
+    const cornersTeam2 = Math.floor(Math.random() * 41);
 
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
@@ -278,7 +292,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+        { name: 'Gelbe Karten', value: `🟨 ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
         { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
+        { name: 'Ecken', value: `🚩 ${cornersTeam1}-${cornersTeam2}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       );
 
