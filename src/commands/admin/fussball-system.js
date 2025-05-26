@@ -96,7 +96,7 @@ module.exports = {
     const overviewEmbed = new EmbedBuilder()
       .setTitle('⚽ Fußball Übersicht')
       .setDescription('Wähle unten eine Option aus, um die Tabelle oder den nächsten Spieltag anzuzeigen.')
-      .setColor(0x1F8B4C);
+      .setColor('Blurple');
 
     const buttons = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -110,7 +110,8 @@ module.exports = {
         .setStyle(ButtonStyle.Secondary),
     );
 
-    const message = await interaction.reply({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
+    await interaction.channel.send({ content: 'Fussball Übersicht gesendet.', ephemeral: true })
+    const replymessage = await interaction.reply({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
 
     const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000 });
 
