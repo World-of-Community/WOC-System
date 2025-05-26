@@ -335,7 +335,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
     const possessionTeam2 = 100 - possessionTeam1;
 
-    let imageUrl = 'https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=';
+    let normalImage = 'https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=';
 
     // Wenn Tor fällt
     if (torGezaehlt) {
@@ -344,7 +344,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     // test
 
-    async function updateEmbedImage(imageUrl) {
+    async function updateEmbedImage(normalImage) {
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
       .setFields(
@@ -356,7 +356,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       )
-      .setImage(imageUrl);
+      .setImage(normalImage);
   
       await statusMessage.edit({ embeds: [embedUpdate] });
     }
