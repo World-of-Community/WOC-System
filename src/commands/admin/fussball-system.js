@@ -101,16 +101,16 @@ module.exports = {
     const buttons = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('show_table')
-        .setLabel('Tabelle')
+        .setLabel('📄 Tabelle')
         .setStyle(ButtonStyle.Primary),
 
       new ButtonBuilder()
         .setCustomId('next_matchday')
-        .setLabel('Nächster Spieltag')
+        .setLabel('📅 Nächster Spieltag')
         .setStyle(ButtonStyle.Secondary),
     );
 
-    await interaction.channel.send({ content: 'Fussball Übersicht gesendet.', ephemeral: true })
+    await interaction.reply({ content: 'Fussball Übersicht gesendet.', ephemeral: true });
     const replymessage = await interaction.reply({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
 
     const collector = replymessage.createMessageComponentCollector({ componentType: ComponentType.Button });
