@@ -320,6 +320,17 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
     }
 
+    let actualWinner;
+
+    // Beispiel, wenn du die Tore hast:
+    if (team1Goals > team2Goals) {
+      actualWinner = "Team1";
+    } else if (team2Goals > team1Goals) {
+      actualWinner = "Team2";
+    } else {
+      actualWinner = "Unentschieden";
+    }
+
     const fullTeam1Data = teamsData.find(t => t.name === team1.name);
     const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
