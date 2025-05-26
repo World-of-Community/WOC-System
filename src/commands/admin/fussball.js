@@ -335,6 +335,16 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
     const possessionTeam2 = 100 - possessionTeam1;
 
+    let imageUrl = 'https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=';
+
+    // Wenn Tor fällt
+    if (goalOccurred) {
+      imageUrl = 'https://sdmntpritalynorth.oaiusercontent.com/files/00000000-e7f4-6246-8314-39141b26f3b3/raw?se=2025-05-26T15%3A41%3A30Z&sp=r&sv=2024-08-04&sr=b&scid=be2f8534-0fb1-5813-8ae3-bc7b6bf0e799&skoid=b32d65cd-c8f1-46fb-90df-c208671889d4&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-26T07%3A24%3A32Z&ske=2025-05-27T07%3A24%3A32Z&sks=b&skv=2024-08-04&sig=%2BtGJbWOYvVDLWGXIsHc2FGSYpUrM3eFqFHXgFlWK/q0%3D';  // Neue Bild-URL nach Tor
+    }
+
+    // test
+
+    async function updateEmbedImage(imageUrl) {
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
       .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
       .setFields(
@@ -346,9 +356,47 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       )
-      .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
+      .setImage(imageUrl);
+  
+      await statusMessage.edit({ embeds: [embedUpdate] });
+    }
 
-    await statusMessage.edit({ embeds: [embedUpdate] });
+    async function onGoal() {
+
+      // Tor-Bild zeigen
+      await updateEmbedImage(goalImage);
+    
+      // 3 Sekunden warten
+      await delay(3000);
+    
+      // Normales Bild wiederherstellen
+      await updateEmbedImage(normalImage);
+    }
+
+    // Dann irgendwo, wenn ein Tor fällt:
+    if (goalOccurred) {
+      await onGoal();
+    } else {
+      // normales Update ohne Bildwechsel
+      await updateEmbedImage(normalImage);
+    }
+
+    //
+
+  //  const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
+  //    .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+  //    .setFields(
+  //      { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
+  //      { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
+  //      { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+  //      { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+  //      { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
+  //      { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
+  //      { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
+  //    )
+  //    .setImage(imageUrl);
+//
+  //  await statusMessage.edit({ embeds: [embedUpdate] });
     await delay(1000);
   }
 
