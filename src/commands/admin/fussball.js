@@ -233,6 +233,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       }
 
       if (torGezaehlt) {
+        let torBildURL = 'https://sdmntprsouthcentralus.oaiusercontent.com/files/00000000-ec2c-61f7-b345-976b5c037a55/raw?se=2025-05-27T10%3A25%3A20Z&sp=r&sv=2024-08-04&sr=b&scid=264f18fd-b8df-5666-9e99-e606d0b69734&skoid=04233560-0ad7-493e-8bf0-1347c317d021&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-27T08%3A02%3A53Z&ske=2025-05-28T08%3A02%3A53Z&sks=b&skv=2024-08-04&sig=P5VQDaHRB0evKljcTSRygoi6Smt5lOUB6vde6nog8zg%3D';
+
         if (teamScored === 'team1') {
           score1++;
           xG1 += xG;
@@ -242,6 +244,22 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           xG2 += xG;
           events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
         }
+
+        const torEmbed = EmbedBuilder.from(statusMessage.embeds[0])
+          .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+          .setFields(
+            { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
+            { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
+            { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+            { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+            { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
+            { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
+            { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
+          )
+          .setImage(torBildURL);
+
+          // Tor-Embed senden (bzw. bearbeiten)
+          await statusMessage.edit({ embeds: [torEmbed] });
       }
     }
 
@@ -335,21 +353,39 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
     const possessionTeam2 = 100 - possessionTeam1;
 
-    const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
-      .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
-      .setFields(
-        { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
-        { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
-        { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-        { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
-        { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-        { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
-        { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
-      )
-      .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
+    // Nach 3 Sekunden zurück zum Standardbild-Embed
+    setTimeout(async () => {
+      const normalEmbed = EmbedBuilder.from(statusMessage.embeds[0])
+        .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+        .setFields(
+          { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
+          { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
+          { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+          { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+          { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
+          { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
+          { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
+        )
+        .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
+  
+      await statusMessage.edit({ embeds: [normalEmbed] });
+    }, 3000);
 
-    await statusMessage.edit({ embeds: [embedUpdate] });
-    await delay(1000);
+    //const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
+    //  .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+    //  .setFields(
+    //    { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
+    //    { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
+    //    { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+    //    { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+    //    { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
+    //    { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
+    //    { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
+    //  )
+    //  .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
+//
+    //await statusMessage.edit({ embeds: [embedUpdate] });
+    //await delay(1000);
   }
 
   const tippErgebnis = userTip  ? '`✅` Du hast richtig getippt!' : '`❌` Dein Tipp war leider falsch.';
