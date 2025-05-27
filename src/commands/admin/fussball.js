@@ -243,21 +243,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           xG2 += xG;
           events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
         }
-
-        const torEmbed = EmbedBuilder.from(statusMessage.embeds[0])
-          .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
-          .setFields(
-            { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
-            { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
-            { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-            { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
-            { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-            { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
-            { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
-          )
-          .setImage(torBildURL);
-
-          await statusMessage.edit({ embeds: [torEmbed] });
       }
     }
 
@@ -348,42 +333,24 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const team2Activity = team2Passes + team2Shots + team2Tackles + team2Saves;
     const totalActivity = team1Activity + team2Activity;
     
-    //const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
-    //const possessionTeam2 = 100 - possessionTeam1;
+    const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
+    const possessionTeam2 = 100 - possessionTeam1;
 
-    // Nach 3 Sekunden zurück zum Standardbild-Embed
-    setTimeout(async () => {
-      const normalEmbed = EmbedBuilder.from(statusMessage.embeds[0])
-        .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
-        .setFields(
-          { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
-          { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
-          { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-          { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
-          { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-          { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
-          { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
-        )
-        .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
-  
-      await statusMessage.edit({ embeds: [normalEmbed] });
-    }, 3000);
+    const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
+      .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+      .setFields(
+        { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
+        { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
+        { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+        { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+        { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
+        { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
+        { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
+      )
+      .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
-    //const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
-    //  .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
-    //  .setFields(
-    //    { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
-    //    { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
-    //    { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-    //    { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
-    //    { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-    //    { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
-    //    { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
-    //  )
-    //  .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
-//
-    //await statusMessage.edit({ embeds: [embedUpdate] });
-    //await delay(1000);
+    await statusMessage.edit({ embeds: [embedUpdate] });
+    await delay(1000);
   }
 
   const tippErgebnis = userTip  ? '`✅` Du hast richtig getippt!' : '`❌` Dein Tipp war leider falsch.';
