@@ -203,7 +203,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   
   const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
   const possessionTeam2 = 100 - possessionTeam1;
-  //const events = [];
 
   let minute = 0;
   const events = [`\`🔊\` **Anpfiff! Das Spiel beginnt!** \`⚽\` (${minute}')`];
@@ -258,7 +257,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           )
           .setImage(torBildURL);
 
-          // Tor-Embed senden (bzw. bearbeiten)
           await statusMessage.edit({ embeds: [torEmbed] });
       }
     }
@@ -350,8 +348,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const team2Activity = team2Passes + team2Shots + team2Tackles + team2Saves;
     const totalActivity = team1Activity + team2Activity;
     
-    const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
-    const possessionTeam2 = 100 - possessionTeam1;
+    //const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
+    //const possessionTeam2 = 100 - possessionTeam1;
 
     // Nach 3 Sekunden zurück zum Standardbild-Embed
     setTimeout(async () => {
