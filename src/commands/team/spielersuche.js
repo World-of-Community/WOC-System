@@ -6,10 +6,7 @@ module.exports = {
     .setDescription('Startet das automatische Spielersuche-System (alle 24h)'),
 
   async execute(interaction) {
-    await interaction.reply({
-      content: '✅ Das Spielersuche-System wurde gestartet und postet nun alle 24 Stunden eine neue Nachricht.',
-      ephemeral: true
-    });
+    await interaction.reply({ content: '> `✅` »  Das Spielersuche-System wurde gestartet und postet nun alle 24 Stunden eine neue Nachricht.', ephemeral: true });
 
     const channel = interaction.channel;
 
