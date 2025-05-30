@@ -35,6 +35,6 @@ module.exports = {
     }
 
     await interaction.reply({
-      content: `${interaction.user} sucht einen Spielpartner mit der Rolle ${rolle}` });
+      content: `${rolle}\n\n${interaction.user.displayName} sucht einen Spielpartner` });
   }
 };

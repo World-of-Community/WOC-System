@@ -11,7 +11,6 @@ module.exports = {
     const channel = interaction.channel;
 
     async function sendeSpielersuche() {
-      const rollen = '<@&1259972154963918858> <@&1303652117487157300> <@&1263620833423654942>';
 
       const SpielersucheEmbed = new EmbedBuilder()
         .setTitle('🎮 Spielersuche System')
