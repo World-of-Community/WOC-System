@@ -16,7 +16,7 @@ module.exports = {
         .setTitle('🎮 Spielersuche System')
         .setDescription(
           `Hier kannst du deinen Spielpartner finden, benutze \`/game <rolle>\` und finde deinen Spielpartner.\n\n` +
-          `Server Spielmodi\n\n`
+          `Server Spielmodi\n\n` +
           `- <@&1259972154963918858>\n` +
           `- <@&1303652117487157300>\n` +
           `- <@&1263620833423654942>\n\n` +
