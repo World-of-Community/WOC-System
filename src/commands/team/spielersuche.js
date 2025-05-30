@@ -43,11 +43,7 @@ module.exports = {
           .setStyle(ButtonStyle.Success)
       );
 
-      const message = await channel.send({
-        content: rollen,
-        embeds: [embed],
-        components: [button],
-      });
+      const message = await channel.send({ embeds: [embed], components: [button] });
 
       setTimeout(async () => {
         try {
