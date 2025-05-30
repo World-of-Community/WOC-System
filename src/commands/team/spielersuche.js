@@ -13,10 +13,11 @@ module.exports = {
     async function sendeSpielersuche() {
       const rollen = '<@&1259972154963918858> <@&1303652117487157300> <@&1263620833423654942>';
 
-      const embed = new EmbedBuilder()
+      const SpielersucheEmbed = new EmbedBuilder()
         .setTitle('🎮 Spielersuche System')
         .setDescription(
           `Hier kannst du deinen Spielpartner finden, benutze \`/game <rolle>\` und finde deinen Spielpartner.\n\n` +
+          `Server Spielmodi\n\n`
           `- <@&1259972154963918858>\n` +
           `- <@&1303652117487157300>\n` +
           `- <@&1263620833423654942>\n\n` +
@@ -31,16 +32,8 @@ module.exports = {
           `- <@&1232070141127426058>`
         )
         .setColor('Blurple')
-        .setTimestamp();
 
-      const button = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId('spielersuche_melden')
-          .setLabel('Ich will mitspielen!')
-          .setStyle(ButtonStyle.Success)
-      );
-
-      const message = await channel.send({ embeds: [embed], components: [button] });
+      const message = await channel.send({ embeds: [SpielersucheEmbed], });
 
       setTimeout(async () => {
         try {
