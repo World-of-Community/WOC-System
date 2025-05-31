@@ -3,10 +3,10 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('spielersuche')
-    .setDescription('Startet das automatische Spielersuche-System (alle 24h)'),
+    .setDescription('Startet das automatische Spielersuche-System (täglich um 00:00 Uhr)'),
 
   async execute(interaction) {
-    const allowedChannelId = '896743941813207081'; // Spielersuche
+    const allowedChannelId = '896743941813207081'; // Spielersuche-Channel
 
     if (interaction.channel.id !== allowedChannelId) {
       return interaction.reply({
@@ -16,13 +16,14 @@ module.exports = {
     }
 
     await interaction.reply({
-      content: '> `✅` » Das Spielersuche-System wurde gestartet und postet nun alle 24 Stunden eine neue Nachricht.',
+      content: '> `✅` » Das Spielersuche-System wurde gestartet und sendet jeden Tag um 00:00 Uhr automatisch eine neue Nachricht.',
       ephemeral: true,
     });
 
     const channel = interaction.channel;
+    let currentMessage;
 
-    async function sendeSpielersuche() {
+    function sendeSpielersuche() {
       const SpielersucheEmbed = new EmbedBuilder()
         .setTitle('🎮 Spielersuche System')
         .setDescription(
@@ -43,68 +44,45 @@ module.exports = {
         )
         .setColor('Blurple');
 
-      const message = await channel.send({ embeds: [SpielersucheEmbed] });
-
-      setTimeout(async () => {
-        try {
-          if (message.deletable) await message.delete();
-        } catch (err) {
-          console.error('❌ Fehler beim Löschen:', err);
-        }
-
-        sendeSpielersuche(); // Wiederholen
-      }, 24 * 60 * 60 * 1000); // 24 Stunden
+      channel.send({ embeds: [SpielersucheEmbed] })
+        .then(msg => {
+          currentMessage = msg;
+        })
+        .catch(console.error);
     }
 
-    sendeSpielersuche(); // Starte Schleife
-  }
-};
+    function getMillisUntilNextMidnight() {
+      const now = new Date();
+      const nextMidnight = new Date();
+      nextMidnight.setHours(0, 0, 0, 0);
+      nextMidnight.setDate(nextMidnight.getDate() + 1); // immer nächster Tag um 0 Uhr
+      return nextMidnight.getTime() - now.getTime();
+    }
 
-/*
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-
-module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('spielersuche')
-    .setDescription('» Aktiviert das Spielersuche-System')
-    .addRoleOption(option =>
-      option.setName('rollen')
-        .setDescription('Welche Rolle soll gepingt werden?')
-        .setRequired(true)
-    .addIntegerOption(option =>
-      option.setName('anzahl')
-        .setDescription('Wie viele Mitspieler?')
-        .setRequired(true))
-    ),
-
-  async execute(interaction) {
-    const rollen = interaction.options.getRole('rollen');
-    const anzahl = interaction.options.getInteger('anzahl');
-
-    const embed = new EmbedBuilder()
-      .setTitle('🎮 Spielersuche gestartet!')
-      .setDescription(`**Spiel:** ${game}\n**Gesuchte Spieler:** ${anzahl}\n**Wer kann mitspielen?**`)
-      .addFields({ name: 'Erstellt von', value: `<@${interaction.user.id}>`, inline: true })
-      .setColor('Blurple')
-      .setTimestamp();
-
-    const button = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('spielersuche_melden')
-        .setLabel('Ich will mitspielen!')
-        .setStyle(ButtonStyle.Success)
-    );
-
-    const message = await interaction.reply({ content: `${rollen}`, embeds: [embed], components: [button], fetchReply: true });
-
-    // ⏲️ Lösche die Nachricht nach 24 Stunden
-    setTimeout(async () => {
-      try {
-        await message.delete();
-      } catch (error) {
-        console.error('Fehler beim Löschen der Nachricht:', error);
+    // Starte initiale Wartezeit bis Mitternacht
+    setTimeout(() => {
+      if (currentMessage && currentMessage.deletable) {
+        currentMessage.delete().catch(console.error);
       }
-    }, 24 * 60 * 60 * 1000);
+
+      setTimeout(() => {
+        sendeSpielersuche();
+      }, 5000); // 5 Sekunden nach dem Löschen
+
+      // Wiederhole das Ganze alle 24 Stunden
+      setInterval(() => {
+        if (currentMessage && currentMessage.deletable) {
+          currentMessage.delete().catch(console.error);
+        }
+
+        setTimeout(() => {
+          sendeSpielersuche();
+        }, 5000); // 5 Sekunden später neu senden
+      }, 24 * 60 * 60 * 1000); // Alle 24 Stunden
+
+    }, getMillisUntilNextMidnight());
+
+    // Sofort einmal senden beim Start
+    sendeSpielersuche();
   }
 };
-*/
