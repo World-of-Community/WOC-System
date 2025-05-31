@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -6,12 +6,23 @@ module.exports = {
     .setDescription('Startet das automatische Spielersuche-System (alle 24h)'),
 
   async execute(interaction) {
-    await interaction.reply({ content: '> `✅` »  Das Spielersuche-System wurde gestartet und postet nun alle 24 Stunden eine neue Nachricht.', ephemeral: true });
+    const allowedChannelId = '896743941813207081'; // Spielersuche
+
+    if (interaction.channel.id !== allowedChannelId) {
+      return interaction.reply({
+        content: '> `❌` » Dieser Befehl kann nur in einem bestimmten Channel verwendet werden.',
+        ephemeral: true,
+      });
+    }
+
+    await interaction.reply({
+      content: '> `✅` » Das Spielersuche-System wurde gestartet und postet nun alle 24 Stunden eine neue Nachricht.',
+      ephemeral: true,
+    });
 
     const channel = interaction.channel;
 
     async function sendeSpielersuche() {
-
       const SpielersucheEmbed = new EmbedBuilder()
         .setTitle('🎮 Spielersuche System')
         .setDescription(
@@ -30,9 +41,9 @@ module.exports = {
           `- <@&1232066632491208704>\n` +
           `- <@&1232070141127426058>`
         )
-        .setColor('Blurple')
+        .setColor('Blurple');
 
-      const message = await channel.send({ embeds: [SpielersucheEmbed], });
+      const message = await channel.send({ embeds: [SpielersucheEmbed] });
 
       setTimeout(async () => {
         try {
