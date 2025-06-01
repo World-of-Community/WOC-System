@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,7 +34,8 @@ module.exports = {
           opt.setName('spieler')
           .setDescription('Name des Spielers')
           .setRequired(true))
-    ),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();

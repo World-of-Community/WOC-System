@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const EmbedDB = require('../../../Datenbank/embeddb');
 
@@ -69,7 +69,8 @@ async function updateLeagueTable(client) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-tabelle')
-    .setDescription('Sendet die Pro League Tabelle und speichert die Nachricht'),
+    .setDescription('Sendet die Pro League Tabelle und speichert die Nachricht')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const embed = await createTabelleEmbed();

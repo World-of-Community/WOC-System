@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
 const teamsData = [
@@ -31,7 +31,8 @@ const teamsData = [
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball')
-    .setDescription('Starte ein Fußballspiel und tippe, wer gewinnt!'),
+    .setDescription('Starte ein Fußballspiel und tippe, wer gewinnt!')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     try {

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
 module.exports = {
@@ -12,7 +12,8 @@ module.exports = {
     .addStringOption(opt =>
       opt.setName('spieler')
         .setDescription('Name des Spielers')
-        .setRequired(true)),
+        .setRequired(true))
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const teamName = interaction.options.getString('team');
