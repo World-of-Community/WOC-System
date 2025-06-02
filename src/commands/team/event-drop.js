@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const EventDropAndUser = require("../../../Datenbank/EventDropAndUserdb");
 
 module.exports = {
@@ -41,7 +41,8 @@ module.exports = {
             .setDescription('Benutzer, dessen Gewinne zurückgesetzt werden')
             .setRequired(true)
         )
-    ),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     // Berechtigungsprüfung: Nur Admins oder bestimmte Rollen dürfen ausführen
