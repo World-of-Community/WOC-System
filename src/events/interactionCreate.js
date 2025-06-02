@@ -269,7 +269,21 @@ module.exports = {
 
                     const spielerEmbed = new EmbedBuilder()
                         .setTitle('`🌍` 𑁉 UNSERE MINECRAFT-RÄNGE')
-                        .setDescription(`» Erhalte diese Ränge auf dem Discord-& Minecraft Server.\n\n> \`🌟\` 𑁉 <@&815921105407574056> (\`${roleCountsupreme}👥\`)\n<:PfeilBlau:1119711275014955080> Doppelsprung.\n\n> \`⭐\` 𑁉 <@&917826787977871441> (\`${roleCountpremium}👥\`)\n<:PfeilBlau:1119711275014955080> Doppelsprung\n\n> \`🔮\` 𑁉 <@&815920452337139733> (\`${roleCountlegende}👥\`)\n<:PfeilBlau:1119711275014955080> Doppelsprung\n\n> \`💎\` 𑁉 <@&835775627721179167> (\`${roleCountdiamond}👥\`)\n<:PfeilBlau:1119711275014955080> Doppelsprung\n\n> \`👻\` 𑁉 <@&835775556611997697> (\`${roleCountemerald}👥\`)\n<:PfeilBlau:1119711275014955080> Doppelsprung\n\n> \`🟣\` 𑁉 <@&835775597446955048> (\`${roleCountepisch}👥\`)\n<:PfeilBlau:1119711275014955080> Bald Verfügbar.`)
+                        .setDescription(
+                            `» Erhalte diese Ränge auf dem Discord-& Minecraft Server.\n\n` +
+                            `> \`🌟\` 𑁉 <@&815921105407574056> (\`${roleCountsupreme}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> Doppelsprung.\n\n` +
+                            `> \`⭐\` 𑁉 <@&917826787977871441> (\`${roleCountpremium}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> Doppelsprung\n\n` +
+                            `> \`🔮\` 𑁉 <@&815920452337139733> (\`${roleCountlegende}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> Doppelsprung\n\n` +
+                            `> \`💎\` 𑁉 <@&835775627721179167> (\`${roleCountdiamond}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> Doppelsprung\n\n` +
+                            `> \`👻\` 𑁉 <@&835775556611997697> (\`${roleCountemerald}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> Doppelsprung\n\n` +
+                            `> \`🟣\` 𑁉 <@&835775597446955048> (\`${roleCountepisch}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> Bald Verfügbar.`
+                        )
                         .setColor('Green')
                         .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340189336010757/WOC_Banner_Minecraft_Range.png?ex=66b4faac&is=66b3a92c&hm=dbde292175421ce18dd4b7a1a067f1a5e164b65d5f23b12911bfc57b509f723c&')
                         .setFooter({ text: 'Öffne ein Ticket im Support bei Fragen oder Problemen.', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
@@ -304,7 +318,25 @@ module.exports = {
 
                     const levelEmbed = new EmbedBuilder()
                         .setTitle('`👥` 𑁉 UNSERE LEVEL-ROLLEN')
-                        .setDescription(`» Chatte mit **anderen Server-Mitgliedern** oder **unterhalte dich** in unseren Sprachkanälen um **die folgenden Rollen** freizuschalten.\n\n> \`☢️\` 𑁉 <@&1258825307239219371> (\`${roleCounthyperaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> Wir schenken dir einmal <a:basic:1186636165567229972> **DISCORD NITRO BASIC!** <a:basic:1186636165567229972>\n\n> \`🤩\` 𑁉 <@&1258794321533075526> (\`${roleCountultraaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich **jemand erwähnt!**\n\n> \`⚡️\` 𑁉 <@&1258825144697360485> (\`${roleCountextremaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Eine eigene Rolle:** Name + Farbe selbst wählbar!\n\n> \`🥊\` 𑁉 <@&1258794405507240038> (\`${roleCountmegaaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`💪\` 𑁉 <@&1258827956634128467> (\`${roleCountstarkaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Schreibrechte** erhalten in den Kanal: <#1243964646449483788>\n\n> \`👀\` 𑁉 <@&1258794479570124920> (\`${roleCountsehraktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Umfragen** in **öffentliche** Chats posten\n\n> \`🏃\` 𑁉 <@&1258794944953319534> (\`${roleCountaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n> \`💤\` 𑁉 <@&1258827226846199808> (\`${roleCountinaktiv}👥\`)\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden`)
+                        .setDescription(
+                            `» Chatte mit **anderen Server-Mitgliedern** oder **unterhalte dich** in unseren Sprachkanälen um **die folgenden Rollen** freizuschalten.\n\n` +
+                            `> \`☢️\` 𑁉 <@&1258825307239219371> (\`${roleCounthyperaktiv}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> Wir schenken dir einmal <a:basic:1186636165567229972> **DISCORD NITRO BASIC!** <a:basic:1186636165567229972>\n\n` +
+                            `> \`🤩\` 𑁉 <@&1258794321533075526> (\`${roleCountultraaktiv}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich **jemand erwähnt!**\n\n` +
+                            `> \`⚡️\` 𑁉 <@&1258825144697360485> (\`${roleCountextremaktiv}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> **Eine eigene Rolle:** Name + Farbe selbst wählbar!\n\n` +
+                            `> \`🥊\` 𑁉 <@&1258794405507240038> (\`${roleCountmegaaktiv}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
+                            `> \`💪\` 𑁉 <@&1258827956634128467> (\`${roleCountstarkaktiv}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> **Schreibrechte** erhalten in den Kanal: <#1243964646449483788>\n\n` +
+                            `> \`👀\` 𑁉 <@&1258794479570124920> (\`${roleCountsehraktiv}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> **Umfragen** in **öffentliche** Chats posten\n\n` +
+                            `> \`🏃\` 𑁉 <@&1258794944953319534> (\`${roleCountaktiv}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n` + 
+                            `> \`💤\` 𑁉 <@&1258827226846199808> (\`${roleCountinaktiv}👥\`)\n` +
+                            `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden`
+                        )
                         .setColor('Orange')
                         .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340226862452896/WOC_Banner_Levelsystem.png?ex=66b4fab5&is=66b3a935&hm=56c41f63e7f2cb41f0fbb42cd8423b6f03e05e310af8afba5e7eb7f7437d7a3f&')
                         .setFooter({ text: 'Öffne ein Ticket im Support bei Fragen oder Problemen.', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
@@ -334,10 +366,43 @@ module.exports = {
                     const unterstützer = await interaction.guild.roles.cache.get('1010105569866174574')
                     const roleCountunterstützer = unterstützer.members.size
 
-
                     const exklusiveEmbed = new EmbedBuilder()
                         .setTitle('<a:krone:1112823594649665607> 𑁉 EXKLUSIVE ROLLEN FREISCHALTEN')
-                        .setDescription(`» Alle **Rollen in dieser Liste** kannst du nur auf ganz **bestimmer Art und Weise** erhalten, dennoch haben sie **mächtige Vorteile.**\n\n> \`🔮\` 𑁉 <@&843013551605284864> (\`${roleCountbooster}👥\`)\n<:Pfeil:1119709908540076124> **Rang freischalten:** Booste diesen Server!\n\n<:PfeilBlau:1119711275014955080> **2X XP-Boost** in allen Chats!\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`😎\` 𑁉 <@&862708375698538507> (\`${roleCountvip}👥\`)\n<:Pfeil:1119709908540076124> **Rang freischalten:** Dieser Rang wird von uns individuell vergeben.\n\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`🎥\` 𑁉 <@&815920219247214644> (\`${roleCountcreator}👥\`)\n<:Pfeil:1119709908540076124> **Rang freischalten:** Dieser Rang wird von uns individuell vergeben.\n\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`💜\` 𑁉 <@&1067899186542018571> (\`${roleCounttwitchsub}👥\`)\n<:Pfeil:1119709908540076124> **Rang Freischalten:** Kaufe dir einen Sub bei [Red3405](https://www.twitch.tv/red340505tv) auf Twitch und erhalte diesen Rang auf unserem Discord Server.\n\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n> \`👋\` 𑁉 <@&1222122625594294272> (\`${roleCountneuesmitglied}👥\`)\n<:Pfeil:1119709908540076124> **Rang freischalten:** Erhält jeder für 24 Stunden nach Beitritt!\n\n<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n\n> \`🎂\` 𑁉 <@&1244945910262399046> (\`${roleCountbirthday}👥\`)\n<:Pfeil:1119709908540076124> **Rang freischalten:** Heute Geburtstag feiern!\n\n<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n<:PfeilBlau:1119711275014955080> **Zugriff** auf <#1243964646449483788>\n\n> \`💛\` 𑁉 <@&1010105569866174574> (\`${roleCountunterstützer}👥\`)\n<:Pfeil:1119709908540076124> **Rang freischalten:** im Status \`discord.gg/woc\` schreiben!\n\n<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!`)
+                        .setDescription(
+                            `» Alle **Rollen in dieser Liste** kannst du nur auf ganz **bestimmer Art und Weise** erhalten, dennoch haben sie **mächtige Vorteile.**\n\n` +
+                            `> \`🔮\` 𑁉 <@&843013551605284864> (\`${roleCountbooster}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Rang freischalten:** Booste diesen Server!\n\n` +
+                            `<:PfeilBlau:1119711275014955080> **2X XP-Boost** in allen Chats!\n` +
+                            `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n` +
+                            `<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n` +
+                            `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
+                            `> \`😎\` 𑁉 <@&862708375698538507> (\`${roleCountvip}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Rang freischalten:** Dieser Rang wird von uns individuell vergeben.\n\n` +
+                            `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n` +
+                            `<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n` +
+                            `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
+                            `> \`🎥\` 𑁉 <@&815920219247214644> (\`${roleCountcreator}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Rang freischalten:** Dieser Rang wird von uns individuell vergeben.\n\n` +
+                            `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n`
+                            `<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n` +
+                            `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
+                            `> \`💜\` 𑁉 <@&1067899186542018571> (\`${roleCounttwitchsub}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Rang Freischalten:** Kaufe dir einen Sub bei [Red3405](https://www.twitch.tv/red340505tv) auf Twitch und erhalte diesen Rang auf unserem Discord Server.\n\n` +
+                            `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n` +
+                            `<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n` +
+                            `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
+                            `> \`👋\` 𑁉 <@&1222122625594294272> (\`${roleCountneuesmitglied}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Rang freischalten:** Erhält jeder für 24 Stunden nach Beitritt!\n\n` +
+                            `<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n\n` +
+                            `> \`🎂\` 𑁉 <@&1244945910262399046> (\`${roleCountbirthday}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Rang freischalten:** Heute Geburtstag feiern!\n\n` +
+                            `<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n` +
+                            `<:PfeilBlau:1119711275014955080> **Zugriff** auf <#1243964646449483788>\n\n` +
+                            `> \`💛\` 𑁉 <@&1010105569866174574> (\`${roleCountunterstützer}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Rang freischalten:** im Status \`discord.gg/woc\` schreiben!\n\n` +
+                            `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n` +
+                            `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!`
+                        )
                         .setColor('DarkBlue')
                         .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1181732753243381870/WOC_Banner_Exklusive_Rollen.jpg?ex=65949663&is=65822163&hm=72a1632efc783e7be7d34cfc055637a1e344e9b56fd0e6f051b89fd60da868d1&')
                         .setFooter({ text: 'Öffne ein Ticket im Support bei Fragen oder Problemen.', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
@@ -376,7 +441,27 @@ module.exports = {
 
                     const teamEmbed = new EmbedBuilder()
                         .setTitle('<a:security:1119708496670232646> 𑁉 UNSER SERVER-TEAM')
-                        .setDescription(`» Hier kannst du alle **unsere Team-Ränge** sehen und welche User **aktuell in unserem Server-Team** tätig sind.\n\n> \`🎯\` 𑁉 <@&959869691529154631> (\`${roleCountadmin}👥\`)\n<:Pfeil:1119709908540076124> **Aufgabe:** Die Administration kümmert sich um die ganze Server-Verwaltung, die Organisation und um die Umsetzung neuer Ideen.\n<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(admin.id)}\n\n> \`👨‍💻\` 𑁉 <@&929349039433056276> (\`${roleCountdeveloper}👥\`)\n<:Pfeil:1119709908540076124> **Aufgabe:** Die Developer/Entwickler kümmern sich um die Entwicklung unserer Bots sowie Plugins und helfen der Administrator bei der technischen Umsetzung.\n<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(developer.id)}\n\n> \`🕵\` 𑁉 <@&816985466230145044> (\`${roleCountsrmoderator}👥\`)\n<:Pfeil:1119709908540076124> **Aufgabe:** Die Senior-Mod's sind erfahrene Moderatoren und kümmern sich um die Pflege des Support-Teams. Sie agieren als eine Art von "Mentor" und führen neue Teammitglieder ein.\n<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(srmoderator.id)}\n\n> \`👮\` 𑁉 <@&815920052385480754> (\`${roleCountmoderator}👥\`)\n<:Pfeil:1119709908540076124> **Aufgabe:** Die Mods sind wichtige Bestandteile des Teams. Sie kümmern sich um Tickets, Moderation und administrieren kleinere Elemente (wie das Bann-System & Geburtstag ändern).\n<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(moderator.id)}\n\n> \`🧩\` 𑁉 <@&815920170371383366> (\`${roleCountsupporter}👥\`)\n<:Pfeil:1119709908540076124> **Aufgabe:** Die Supporter sind neu in unserem Team. Sie kümmern sich um Support-Tickets, moderieren den Chat und gewöhnen sich ein.\n<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(supporter.id)}\n\n> \`🪓\` 𑁉 <@&1263645368441241700> (\`${roleCountbuilder}👥\`)\n<:Pfeil:1119709908540076124> **Aufgabe:** Neue Maps für die jeweiligen Spielmodi Bauen sowie Lobby & bei den anderen Builder unter die Arme greifen\n<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(builder.id)}`)
+                        .setDescription(
+                            `» Hier kannst du alle **unsere Team-Ränge** sehen und welche User **aktuell in unserem Server-Team** tätig sind.\n\n` +
+                            `> \`🎯\` 𑁉 <@&959869691529154631> (\`${roleCountadmin}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Aufgabe:** Die Administration kümmert sich um die ganze Server-Verwaltung, die Organisation und um die Umsetzung neuer Ideen.\n` +
+                            `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(admin.id)}\n\n` +
+                            `> \`👨‍💻\` 𑁉 <@&929349039433056276> (\`${roleCountdeveloper}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Aufgabe:** Die Developer/Entwickler kümmern sich um die Entwicklung unserer Bots sowie Plugins und helfen der Administrator bei der technischen Umsetzung.\n` +
+                            `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(developer.id)}\n\n` +
+                            `> \`🕵\` 𑁉 <@&816985466230145044> (\`${roleCountsrmoderator}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Aufgabe:** Die Senior-Mod's sind erfahrene Moderatoren und kümmern sich um die Pflege des Support-Teams. Sie agieren als eine Art von "Mentor" und führen neue Teammitglieder ein.\n` + 
+                            `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(srmoderator.id)}\n\n` +
+                            `> \`👮\` 𑁉 <@&815920052385480754> (\`${roleCountmoderator}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Aufgabe:** Die Mod's sind wichtige Bestandteile des Teams. Sie kümmern sich um Tickets, Moderation und administrieren kleinere Elemente (wie das Bann-System & Geburtstag ändern).\n` +
+                            `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(moderator.id)}\n\n` +
+                            `> \`🧩\` 𑁉 <@&815920170371383366> (\`${roleCountsupporter}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Aufgabe:** Die Supporter sind neu in unserem Team. Sie kümmern sich um Support-Tickets, moderieren den Chat und gewöhnen sich ein.\n` +
+                            `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(supporter.id)}\n\n` +
+                            `> \`🪓\` 𑁉 <@&1263645368441241700> (\`${roleCountbuilder}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> **Aufgabe:** Neue Maps für die jeweiligen Spielmodi Bauen sowie Lobby & bei den anderen Builder unter die Arme greifen\n` +
+                            `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(builder.id)}`
+                        )
                         .setColor('Red')
                         .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1181732690458837083/WOC_Banner_Unser_Server-Team.jpg?ex=65949654&is=65822154&hm=4a077c7d4e3975ee38617cb9b3de6aa8fe7861c9e45c8c3665b2f9b50e045786&')
                         .setFooter({ text: 'Öffne ein Ticket im Support bei Fragen oder Problemen.', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
@@ -387,7 +472,19 @@ module.exports = {
                 case 'bot': {
                     const botEmbed = new EmbedBuilder()
                         .setTitle('<a:pin:1119708768326914100> 𑁉 UNSERE WICHTIGSTEN BOTS')
-                        .setDescription('» Hier könnt ihr sehen **welche Aufgaben** unsere **wichtigsten Bots** haben, die speziell **von uns entwickelt** wurden.\n\n> `⚙️` 𑁉 <@1020023299448786955> (Eingeführt am `15.09.2022📝`)\n<:Pfeil:1119709908540076124> **Aufgabe:** Die Aufgaben dieses Bots sind sehr vielfältig. Wir listen euch einmal die größten Dinge auf.\n\n<:PfeilBlau:1119711275014955080> **Info-& Stats-Kanäle aktuell halten**\n<:PfeilBlau:1119711275014955080> **Ideen-, Spielersuche-& Changelog-System**\n<:PfeilBlau:1119711275014955080> **Bewerbungs-& Rollen-Verwaltung**\n<:PfeilBlau:1119711275014955080> **Verwaltung der Gewinnspiele**\n\n> \`🚑\` 𑁉 <@1031487336783028274> (Tickets bearbeitet: `10.000+🎫`)\n<:Pfeil:1119709908540076124> **Aufgabe:** Erstellung, Verwaltung und Organisierung von Tickets.\n\n> <a:pin:1119708768326914100> 𑁉 **DIE RESTLICHEN BOTS...**\n<:Pfeil:1119709908540076124> **Aufgaben:** Die restlichen Bots erfüllen nur noch kleine Aufgaben oder werden bald durch einen eigenen Bot von uns ersetzt.')
+                        .setDescription(
+                            '» Hier könnt ihr sehen **welche Aufgaben** unsere **wichtigsten Bots** haben, die speziell **von uns entwickelt** wurden.\n\n' +
+                            '> `⚙️` 𑁉 <@1020023299448786955> (Eingeführt am `15.09.2022📝`)\n' +
+                            '<:Pfeil:1119709908540076124> **Aufgabe:** Die Aufgaben dieses Bots sind sehr vielfältig. Wir listen euch einmal die größten Dinge auf.\n\n' +
+                            '<:PfeilBlau:1119711275014955080> **Info-& Stats-Kanäle aktuell halten**\n' +
+                            '<:PfeilBlau:1119711275014955080> **Ideen-, Spielersuche-& Changelog-System**\n' +
+                            '<:PfeilBlau:1119711275014955080> **Bewerbungs-& Rollen-Verwaltung**\n' +
+                            '<:PfeilBlau:1119711275014955080> **Verwaltung der Gewinnspiele**\n\n' +
+                            '> \`🚑\` 𑁉 <@1031487336783028274> (Tickets bearbeitet: `10.000+🎫`)\n' +
+                            '<:Pfeil:1119709908540076124> **Aufgabe:** Erstellung, Verwaltung und Organisierung von Tickets.\n\n' +
+                            '> <a:pin:1119708768326914100> 𑁉 **DIE RESTLICHEN BOTS...**\n' +
+                            '<:Pfeil:1119709908540076124> **Aufgaben:** Die restlichen Bots erfüllen nur noch kleine Aufgaben oder werden bald durch einen eigenen Bot von uns ersetzt.'
+                        )
                         .setColor('Aqua')
                         .setImage('https://cdn.discordapp.com/attachments/1145779055644393592/1181732786554540183/WOC_Banner_Discord_Bots.jpg?ex=6594966b&is=6582216b&hm=e036aa4455500313ff188c610bdbc1981f0190d78f5e6cde9490b91ad56ecec1&')
                         .setFooter({ text: 'Öffne ein Ticket im Support bei Fragen oder Problemen.', iconURL: 'https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png' })
