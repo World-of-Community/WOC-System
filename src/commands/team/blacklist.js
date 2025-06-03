@@ -69,21 +69,23 @@ module.exports = {
       }
 
       const lines = await Promise.all(entries.map(async (entry, i) => {
-        const id = entry.name;
-        let mention = `\`${id}\``;
+        const id = entry.name; // 'name' ist hier die User-ID
+        let mention = id;      // fallback falls Fetch nicht klappt
         let username = id;
 
         try {
           const user = await interaction.client.users.fetch(id);
           mention = `<@${user.id}>`;
           username = user.username;
-        } catch (_) {}
+        } catch (_) {
+          // falls User nicht gefunden wird, bleibt fallback
+        }
 
-        return `**${i + 1}.** ${mention} – ${username} (\`${id}\`)${entry.reason ? `\n> Grund: *${entry.reason}*` : ''}`;
+        return `**${i + 1}.** ${mention} – ${username} (\`${id}\`)` + (entry.reason ? `\n> Grund: *${entry.reason}*` : '');
       }));
 
       const embed = new EmbedBuilder()
-        .setTitle('📄 Blacklist Nutzer')
+        .setTitle('`📄` Blacklist Nutzer')
         .setColor('Red')
         .setDescription(lines.join('\n\n'))
         .setFooter({ text: `Einträge insgesamt: ${entries.length}` });
