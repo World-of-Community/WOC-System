@@ -9,14 +9,14 @@ module.exports = {
       sub.setName('add')
         .setDescription('» Fügt jemanden zur Blacklist hinzu')
         .addStringOption(opt =>
-          opt.setName('name').setDescription('User-ID oder Name').setRequired(true))
+          opt.setName('input').setDescription('User-ID oder Username').setRequired(true))
         .addStringOption(opt =>
           opt.setName('grund').setDescription('Grund für die Blacklist').setRequired(false)))
     .addSubcommand(sub =>
       sub.setName('remove')
         .setDescription('» Entfernt jemanden von der Blacklist')
         .addStringOption(opt =>
-          opt.setName('name').setDescription('User-ID oder Name').setRequired(true)))
+          opt.setName('input').setDescription('User-ID oder Username').setRequired(true)))
     .addSubcommand(sub =>
       sub.setName('list')
         .setDescription('» Zeigt alle geblacklisteten Personen'))
@@ -26,36 +26,73 @@ module.exports = {
     const sub = interaction.options.getSubcommand();
 
     if (sub === 'add') {
-      const name = interaction.options.getString('name');
-      const reason = interaction.options.getString('grund');
+      const input = interaction.options.getString('input');
+      const reason = interaction.options.getString('grund') || 'Kein Grund angegeben';
 
-      const exists = await Blacklist.findOne({ name });
+      let user;
+
+      // Versuche, input als User-ID zu holen
+      try {
+        user = await interaction.client.users.fetch(input);
+      } catch {
+        // Falls nicht als ID, suche im Guild-Member Cache nach Username (case-insensitive)
+        const member = interaction.guild.members.cache.find(m => m.user.username.toLowerCase() === input.toLowerCase());
+        if (member) {
+          user = member.user;
+        } else {
+          return interaction.reply({
+            content: `❗ Nutzer \`${input}\` wurde nicht gefunden.`,
+            ephemeral: true
+          });
+        }
+      }
+
+      const exists = await Blacklist.findOne({ userId: user.id });
       if (exists) {
         return interaction.reply({
-          content: `> \`❗\` » Dieser Nutzer (${name}) ist bereits auf der Blacklist.`,
+          content: `❗ Der Nutzer ${user.tag} ist bereits auf der Blacklist.`,
           ephemeral: true
         });
       }
 
-      await Blacklist.create({ name, reason });
+      await Blacklist.create({ userId: user.id, username: user.tag, reason });
       return interaction.reply({
-        content: `> \`✅\` » **${name}** wurde zur Blacklist hinzugefügt.`,
+        content: `✅ **${user.tag}** wurde zur Blacklist hinzugefügt.`,
         ephemeral: true
       });
 
     } else if (sub === 'remove') {
-      const name = interaction.options.getString('name');
-      const removed = await Blacklist.findOneAndDelete({ name });
+      const input = interaction.options.getString('input');
 
+      let userIdToRemove;
+
+      // Versuch input als User-ID
+      try {
+        const user = await interaction.client.users.fetch(input);
+        userIdToRemove = user.id;
+      } catch {
+        // Falls nicht als ID, suche DB nach username (case-insensitive)
+        const found = await Blacklist.findOne({ username: new RegExp(`^${input}$`, 'i') });
+        if (found) {
+          userIdToRemove = found.userId;
+        } else {
+          return interaction.reply({
+            content: `❗ Nutzer \`${input}\` ist nicht auf der Blacklist.`,
+            ephemeral: true
+          });
+        }
+      }
+
+      const removed = await Blacklist.findOneAndDelete({ userId: userIdToRemove });
       if (!removed) {
         return interaction.reply({
-          content: `\`❗\` » Dieser Nutzer (${name}) ist nicht auf der Blacklist.`,
+          content: `❗ Nutzer \`${input}\` ist nicht auf der Blacklist.`,
           ephemeral: true
         });
       }
 
       return interaction.reply({
-        content: `> \`❌\` » **${name}** wurde von der Blacklist entfernt.`,
+        content: `❌ Nutzer **${removed.username}** wurde von der Blacklist entfernt.`,
         ephemeral: true
       });
 
@@ -63,29 +100,18 @@ module.exports = {
       const entries = await Blacklist.find();
       if (!entries.length) {
         return interaction.reply({
-          content: '> `❗` » Die Blacklist ist leer.',
+          content: '❗ Die Blacklist ist leer.',
           ephemeral: true
         });
       }
 
-      const lines = await Promise.all(entries.map(async (entry, i) => {
-        const id = entry.name; // 'name' ist hier die User-ID
-        let mention = id;      // fallback falls Fetch nicht klappt
-        let username = id;
-
-        try {
-          const user = await interaction.client.users.fetch(id);
-          mention = `<@${user.id}>`;
-          username = user.username;
-        } catch (_) {
-          // falls User nicht gefunden wird, bleibt fallback
-        }
-
-        return `**${i + 1}.** ${mention} – ${username} (\`${id}\`)` + (entry.reason ? `\n> Grund: *${entry.reason}*` : '');
-      }));
+      const lines = entries.map((entry, i) => {
+        const mention = `<@${entry.userId}>`;
+        return `**${i + 1}.** ${mention} – ${entry.username} (\`${entry.userId}\`)\n> Grund: *${entry.reason}*`;
+      });
 
       const embed = new EmbedBuilder()
-        .setTitle('`📄` Blacklist Nutzer')
+        .setTitle('📄 Blacklist Nutzer')
         .setColor('Red')
         .setDescription(lines.join('\n\n'))
         .setFooter({ text: `Einträge insgesamt: ${entries.length}` });
