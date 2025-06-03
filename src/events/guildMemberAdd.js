@@ -162,6 +162,13 @@ module.exports = {
           { upsert: true }
         );
 
+        // Speichere, von wem der Member eingeladen wurde
+        await User.findOneAndUpdate(
+          { userID: member.id },
+          { invitedBy: usedInvite.inviter.id },
+          { upsert: true }
+        );
+
         const userData = await userdb.findOne({ userID: member.id })
         if (!userData) {
             const newUser = new userdb({

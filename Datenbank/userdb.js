@@ -106,7 +106,12 @@ const userSchema = new mongoose.Schema({
     joins: { type: Number, default: 0 },
     bonus: { type: Number, default: 0 },
     left: { type: Number, default: 0 }
-  },
+    },
+
+    invitedBy: {
+    type: String,
+    required: false,
+    }
 });
 
 module.exports = mongoose.model('user-data', userSchema)
