@@ -126,7 +126,7 @@ module.exports = {
         const reason = entry.reason || 'Kein Grund angegeben';
         const mention = `<@${userId}>`;
 
-        return `**${i + 1}.** ${mention} – ${username} (\`${userId}\`)\n> Grund: *${reason}*`;
+        return `**${i + 1}.** ${mention} – ${username} (\`${userId}\`)\n> Grund: ${reason}`;
       });
 
       const embed = new EmbedBuilder()
