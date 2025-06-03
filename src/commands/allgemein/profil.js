@@ -138,6 +138,7 @@ module.exports = {
         let roleGamesList = [];
         let rolePingsList = [];
         let teamRoleMention = '';
+        let bundeslandRoleMention = '';
         let exklusivRoleMention = '';
         let memberRoleMention = '';
 
@@ -146,6 +147,14 @@ module.exports = {
             const role = member.roles.cache.get(roleId); // Rolle abrufen
             if (role) {
                 teamRoleMention = `<@&${roleId}>`; // Rolle als Erwähnung speichern
+                return true;
+            }
+            return false;
+        });
+        const hasBundeslandRole = BundeslandRoleIds.some(roleId => {
+            const role = member.roles.cache.get(roleId);
+            if (role) {
+                bundeslandRoleMention = `<@&${roleId}>`;
                 return true;
             }
             return false;
@@ -172,7 +181,7 @@ module.exports = {
 
             // Bundesland zuweisen
             if (BundeslandRoleIds.includes(role.id)) {
-                userBundesland = roleBundesland[role.name] || role.name;
+                userBundesland = roleBundesland[role.name] || '❓';
             }
 
             // Überprüfe Geschlecht
