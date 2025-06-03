@@ -32,16 +32,16 @@ module.exports = {
       let user;
 
       try {
-        // Versuche input als User-ID zu holen
+        // Versuche input als User-ID zu holen (funktioniert auch wenn User nicht im Server ist)
         user = await interaction.client.users.fetch(input);
       } catch {
         // Falls nicht als ID, suche im Guild-Member Cache nach Username (case-insensitive)
-        const member = interaction.guild.members.cache.find(m => m.user.username.toLowerCase() === input.toLowerCase());
+        const member = interaction.guild.members.cache.find(m => m.user.tag.toLowerCase() === input.toLowerCase() || m.user.username.toLowerCase() === input.toLowerCase());
         if (member) {
           user = member.user;
         } else {
           return interaction.reply({
-            content: `> \`❗\` » Nutzer \`${input}\` wurde nicht gefunden.`,
+            content: `> \`❗\` » Nutzer \`${input}\` wurde nicht gefunden. Bitte gib die User-ID an, falls der Nutzer nicht auf dem Server ist.`,
             ephemeral: true
           });
         }
