@@ -70,24 +70,16 @@ module.exports = {
 
       const lines = await Promise.all(entries.map(async (entry, i) => {
         const id = entry.name;
-        let mention = `${user}`;
-        let userTag = id;
+        let mention = `\`${id}\``;
+        let username = id;
 
         try {
           const user = await interaction.client.users.fetch(id);
-          mention = `${user}`;
-          userTag = `${user.username}`;
-
-          // Optional: Displayname ergänzen
-          if (interaction.guild) {
-            try {
-              const member = await interaction.guild.members.fetch(user.id);
-              userTag = `${member.displayName} (${user.username} - \`${user.id}\`)`;
-            } catch (_) {}
-          }
+          mention = `<@${user.id}>`;
+          username = user.username;
         } catch (_) {}
 
-        return `Information für Bewerbungen oder Regelverstoß\n\n**${i + 1}.** ${mention} – ${userTag} (\`${user.id}\`)${entry.reason ? `\n> Grund: *${entry.reason}*` : ''}`;
+        return `**${i + 1}.** ${mention} – ${username} (\`${id}\`)${entry.reason ? `\n> Grund: *${entry.reason}*` : ''}`;
       }));
 
       const embed = new EmbedBuilder()
