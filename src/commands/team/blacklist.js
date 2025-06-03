@@ -31,8 +31,8 @@ module.exports = {
 
       let user;
 
-      // Versuche, input als User-ID zu holen
       try {
+        // Versuche input als User-ID zu holen
         user = await interaction.client.users.fetch(input);
       } catch {
         // Falls nicht als ID, suche im Guild-Member Cache nach Username (case-insensitive)
@@ -47,6 +47,13 @@ module.exports = {
         }
       }
 
+      if (!user || !user.id || !user.tag) {
+        return interaction.reply({
+          content: `❗ Ungültiger Nutzer.`,
+          ephemeral: true
+        });
+      }
+
       const exists = await Blacklist.findOne({ userId: user.id });
       if (exists) {
         return interaction.reply({
@@ -55,6 +62,7 @@ module.exports = {
         });
       }
 
+      // Speichern in DB
       await Blacklist.create({ userId: user.id, username: user.tag, reason });
       return interaction.reply({
         content: `✅ **${user.tag}** wurde zur Blacklist hinzugefügt.`,
@@ -66,8 +74,8 @@ module.exports = {
 
       let userIdToRemove;
 
-      // Versuch input als User-ID
       try {
+        // Versuch input als User-ID
         const user = await interaction.client.users.fetch(input);
         userIdToRemove = user.id;
       } catch {
@@ -83,6 +91,13 @@ module.exports = {
         }
       }
 
+      if (!userIdToRemove) {
+        return interaction.reply({
+          content: `❗ Nutzer \`${input}\` konnte nicht ermittelt werden.`,
+          ephemeral: true
+        });
+      }
+
       const removed = await Blacklist.findOneAndDelete({ userId: userIdToRemove });
       if (!removed) {
         return interaction.reply({
@@ -92,7 +107,7 @@ module.exports = {
       }
 
       return interaction.reply({
-        content: `❌ Nutzer **${removed.username}** wurde von der Blacklist entfernt.`,
+        content: `❌ Nutzer **${removed.username || 'Unbekannt'}** wurde von der Blacklist entfernt.`,
         ephemeral: true
       });
 
@@ -106,8 +121,12 @@ module.exports = {
       }
 
       const lines = entries.map((entry, i) => {
-        const mention = `<@${entry.userId}>`;
-        return `**${i + 1}.** ${mention} – ${entry.username} (\`${entry.userId}\`)\n> Grund: *${entry.reason}*`;
+        const userId = entry.userId || 'Unbekannt';
+        const username = entry.username || 'Unbekannt';
+        const reason = entry.reason || 'Kein Grund angegeben';
+        const mention = `<@${userId}>`;
+
+        return `**${i + 1}.** ${mention} – ${username} (\`${userId}\`)\n> Grund: *${reason}*`;
       });
 
       const embed = new EmbedBuilder()

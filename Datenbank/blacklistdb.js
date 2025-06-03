@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
 const blacklistSchema = new mongoose.Schema({
-  userId: String,
-  name: String,
-  reason: String,
-  date: { type: Date, default: Date.now }
+  userId: { type: String, required: true, unique: true },
+  username: { type: String, required: true },
+  reason: { type: String, default: 'Kein Grund angegeben' }
 });
 
 module.exports = mongoose.model('Blacklist', blacklistSchema);
