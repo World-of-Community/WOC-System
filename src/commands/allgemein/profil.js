@@ -14,12 +14,12 @@ module.exports = {
             return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
         }
 
-        const roleNationalität = {
-            'Deutschland': ':flag_de:',
-            'Österreich': ':flag_at:',
-            'Schweiz': ':flag_ch:',
-            'England': ':england:',
-        };
+        //const roleNationalität = {
+        //    'Deutschland': ':flag_de:',
+        //    'Österreich': ':flag_at:',
+        //    'Schweiz': ':flag_ch:',
+        //    'England': ':england:',
+        //};
 
         const roleGeschlecht = {
             'Männlich': ':male_sign:',
@@ -148,9 +148,9 @@ module.exports = {
         member.roles.cache.forEach(role => {
             if (role.name === '@everyone') return;
 
-            // Überprüfe Nationalität
+            // Bundesland zuweisen
             if (BundeslandRoleIds.includes(role.id)) {
-                userBundesland = roleBundesland[role.name] || '❓';
+                userBundesland = roleBundesland[role.name] || role.name;
             }
 
             // Überprüfe Geschlecht
