@@ -997,7 +997,7 @@ module.exports = {
                         .setLabel('✍️ - BESCHREIBUNG DES SERVERS')
                         .setPlaceholder('Wir sind ein allgemeiner Deutscher Discord Server mit Gaming, Community und vielem mehr!')
                         .setMinLength(25)
-                        .setMaxLength(500)
+                        .setMaxLength(4000)
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(true)
                 )
