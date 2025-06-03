@@ -70,12 +70,12 @@ module.exports = {
 
       const lines = await Promise.all(entries.map(async (entry, i) => {
         const id = entry.name;
-        let mention = `\`${id}\``;
+        let mention = `${user}`;
         let userTag = id;
 
         try {
           const user = await interaction.client.users.fetch(id);
-          mention = `<@${user.id}>`;
+          mention = `${user}`;
           userTag = `${user.username}`;
 
           // Optional: Displayname ergänzen
@@ -87,7 +87,7 @@ module.exports = {
           }
         } catch (_) {}
 
-        return `Information für Bewerbungen oder Regelverstoß\n\n**${i + 1}.** ${mention} – ${userTag}${entry.reason ? `\n> Grund: *${entry.reason}*` : ''}`;
+        return `Information für Bewerbungen oder Regelverstoß\n\n**${i + 1}.** ${mention} – ${userTag} (\`${user.id}\`)${entry.reason ? `\n> Grund: *${entry.reason}*` : ''}`;
       }));
 
       const embed = new EmbedBuilder()
