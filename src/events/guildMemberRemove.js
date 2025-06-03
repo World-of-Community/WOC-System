@@ -35,6 +35,22 @@ module.exports = {
             await userData.deleteOne();
         }
 
+        const inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
+        if (!inviteCache) return;
+    
+        // Suche den User, der ihn eingeladen hat
+        const userDoc = await User.findOne({ userID: member.id });
+        if (!userDoc) return;
+    
+        // Optional: Wer hat den User eingeladen?
+        const inviterID = userDoc.invitedBy;
+        if (!inviterID) return;
+    
+        await User.findOneAndUpdate(
+          { userID: inviterID },
+          { $inc: { 'invites.left': 1 } }
+        );
+
         // Nachrichten des Users in bestimmtem Kanal löschen
         const CHANNEL_ID = '1172920281526960238';
         const channel = member.guild.channels.cache.get(CHANNEL_ID);

@@ -158,7 +158,7 @@ module.exports = {
         // Update Einladungs-Statistik im User-Dokument
         await User.findOneAndUpdate(
           { userID: usedInvite.inviter.id },
-          { $inc: { 'invites.invites': 1 } },
+          { $inc: { 'invites.joins': 1 } },
           { upsert: true }
         );
 
