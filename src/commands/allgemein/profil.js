@@ -58,10 +58,25 @@ module.exports = {
         ];
 
         const NationalitätRoleIds = [
-            '848163744197771276', // Deutschland
+            '1379411398827704362', // Baden-Württemberg
+            '1379411504394141758', // Bayern
+            '1379411613240528936', // Berlin
+            '1379411641958924338', // Brandenburg
+            '1379411675773538404', // Bremen
+            '1379411700931104830', // Hamburg
+            '1379411767452762233', // Hessen
+            '1379411797353955379', // Mecklenburg-Vorpommern
+            '1379411848482390128', // Niedersachsen
+            '1379411880828735568', // Nordrhein-Westfalen
+            '1379411970020605982', // Rheinland-Pfalz
+            '1379412016447492096', // Saarland
+            '1370492716001132699', // Sachsen
+            '1379412047103660092', // Sachsen-Anhalt
+            '1379412115240124517', // Schleswig-Holstein
+            '1379412160194805810', // Thüringen
             '848163749637914674', // Österreich
             '848163753139896330', // Schweiz
-            '1127923622653210654', // England
+            '1127923622653210654', // Sonstiges
         ];
 
         const GeschlechtRoleIds = [
