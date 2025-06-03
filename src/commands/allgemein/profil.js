@@ -163,6 +163,32 @@ module.exports = {
             }
         };
 
+        const badgeIcons = {
+            "ActiveDeveloper": "https://discord.com/assets/4c4d9e6f2f5936f67e1c72d7ad5b7c6f.svg",
+            "BugHunterLevel1": "https://discord.com/assets/f61c4a2b62ad6d5cbd00aa839a413ce9.svg",
+            "BugHunterLevel2": "https://discord.com/assets/a22a6f99f6c5ef1e52a0f51fa2fe17db.svg",
+            "CertifiedModerator": "https://discord.com/assets/f2ddfb0ff9d8e8d8b42675542ceab2f8.svg",
+            "HypeSquadOnlineHouse1": "https://discord.com/assets/1cbd08c76f8af6dddce02c5138971129.svg", // Bravery
+            "HypeSquadOnlineHouse2": "https://discord.com/assets/6e33a9a94e4c89b61bb28e8c56452b4c.svg", // Brilliance
+            "HypeSquadOnlineHouse3": "https://discord.com/assets/f49e7c60891f3d66a6ef48ec4f62b752.svg", // Balance
+            "Hypesquad": "https://discord.com/assets/01d8f5f41e50e3a8448d45b1ce2c68d7.svg",
+            "Partner": "https://discord.com/assets/3ecb8b92c8e8013b7ef85cb8cb2435ff.svg",
+            "PremiumEarlySupporter": "https://discord.com/assets/e04e152fdd9c2b4d17005e88ef86f125.svg",
+            "Staff": "https://discord.com/assets/e3d2a5d289f07057fbc7d06a483b1e52.svg",
+            "VerifiedDeveloper": "https://discord.com/assets/4c4d9e6f2f5936f67e1c72d7ad5b7c6f.svg"
+        };
+
+        const userFlags = await member.user.fetchFlags();
+        const flagsArray = userFlags.toArray();
+        
+        const badgeImages = flagsArray.map(flag => {
+            if (badgeIcons[flag]) {
+                return `[](${badgeIcons[flag]})`; // Unsichtbares Zeichen als "Platzhalter" für das Badge-Bild
+            }
+        }).filter(Boolean).join("");
+        
+        const badgeDisplay = badgeImages || "**Keine Abzeichen**";
+
         // Invite System
         const invites = userData.invites || { joins: 0, left: 0, bonus: 0 };
         const inviteJoins = invites.joins || 0;
@@ -173,7 +199,24 @@ module.exports = {
         if (userData) {
             const embed = new EmbedBuilder()
                 .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
-                .setDescription(`» **Alle Statistiken** von \`${member.user.username}\`\n\n> \`👤\` **» SERVER PROFIL**\n- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n- \`📌\` » Geschlecht: ${userGeschlecht}\n- \`📌\` » Land: ${userNationalität}\n- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n> \`🏆\` **» ALLE STATISTIKEN**\n- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n\`📡\` » Du hast **${inviteJoins}** User eingeladen.\n(\`${totalInvites}\` Gesamt, \`${inviteBonus}\` Bonus & \`${inviteLeft}\` Verlassen)\n\n\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`)
+                .setDescription(
+                    `» **Alle Statistiken** von \`${member.user.username}\`\n\n` +
+                    `> \`👤\` **» SERVER PROFIL**\n` +
+                    `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n` +
+                    `- \`📌\` » Abzeichen: ${badgeDisplay}\n` +
+                    `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
+                    `- \`📌\` » Land: ${userNationalität}\n` +
+                    `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
+                    `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
+                    `> \`🏆\` **» ALLE STATISTIKEN**\n` +
+                    `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
+                    `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
+                    `- \`🔊\` » \`${(userData.giveaway.voiceTime / (3.6e+6)).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n` +
+                    `\`📡\` » Du hast **${inviteJoins}** User eingeladen.\n` +
+                    `(\`${totalInvites}\` Gesamt, \`${inviteBonus}\` Bonus & \`${inviteLeft}\` Verlassen)\n\n` +
+                    `\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n` +
+                    `\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`
+                )
                 .setColor('Blurple')
                 .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 512 }))
                 .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
