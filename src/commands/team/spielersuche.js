@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('spielersuche')
-    .setDescription('Startet das automatische Spielersuche-System (täglich um 00:00 Uhr)'),
+    .setDescription('Startet das automatische Spielersuche-System (täglich um 00:00 Uhr)')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const allowedChannelId = '896743941813207081'; // Spielersuche-Channel
