@@ -154,7 +154,7 @@ module.exports = {
         const hasBundeslandRole = BundeslandRoleIds.some(roleId => {
             const role = member.roles.cache.get(roleId);
             if (role) {
-                bundeslandRoleMention = `<@&${roleId}>`;
+                bundeslandRoleMention = `<@&${roleId}>` || '❓';
                 return true;
             }
             return false;
