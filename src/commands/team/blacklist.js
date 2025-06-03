@@ -41,7 +41,7 @@ module.exports = {
           user = member.user;
         } else {
           return interaction.reply({
-            content: `❗ Nutzer \`${input}\` wurde nicht gefunden.`,
+            content: `> \`❗\` » Nutzer \`${input}\` wurde nicht gefunden.`,
             ephemeral: true
           });
         }
@@ -49,7 +49,7 @@ module.exports = {
 
       if (!user || !user.id || !user.tag) {
         return interaction.reply({
-          content: `❗ Ungültiger Nutzer.`,
+          content: `> \`❗\` » Ungültiger Nutzer.`,
           ephemeral: true
         });
       }
@@ -57,7 +57,7 @@ module.exports = {
       const exists = await Blacklist.findOne({ userId: user.id });
       if (exists) {
         return interaction.reply({
-          content: `❗ Der Nutzer ${user.tag} ist bereits auf der Blacklist.`,
+          content: `> \`❗\` » Der Nutzer ${user.tag} ist bereits auf der Blacklist.`,
           ephemeral: true
         });
       }
@@ -65,7 +65,7 @@ module.exports = {
       // Speichern in DB
       await Blacklist.create({ userId: user.id, username: user.tag, reason });
       return interaction.reply({
-        content: `✅ **${user.tag}** wurde zur Blacklist hinzugefügt.`,
+        content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
         ephemeral: true
       });
 
@@ -85,7 +85,7 @@ module.exports = {
           userIdToRemove = found.userId;
         } else {
           return interaction.reply({
-            content: `❗ Nutzer \`${input}\` ist nicht auf der Blacklist.`,
+            content: `> \`❗\` » Nutzer \`${input}\` ist nicht auf der Blacklist.`,
             ephemeral: true
           });
         }
@@ -93,7 +93,7 @@ module.exports = {
 
       if (!userIdToRemove) {
         return interaction.reply({
-          content: `❗ Nutzer \`${input}\` konnte nicht ermittelt werden.`,
+          content: `> \`❗\` » Nutzer \`${input}\` konnte nicht ermittelt werden.`,
           ephemeral: true
         });
       }
@@ -101,13 +101,13 @@ module.exports = {
       const removed = await Blacklist.findOneAndDelete({ userId: userIdToRemove });
       if (!removed) {
         return interaction.reply({
-          content: `❗ Nutzer \`${input}\` ist nicht auf der Blacklist.`,
+          content: `> \`❗\` » Nutzer \`${input}\` ist nicht auf der Blacklist.`,
           ephemeral: true
         });
       }
 
       return interaction.reply({
-        content: `❌ Nutzer **${removed.username || 'Unbekannt'}** wurde von der Blacklist entfernt.`,
+        content: `> \`❌\` » Nutzer **${removed.username || 'Unbekannt'}** wurde von der Blacklist entfernt.`,
         ephemeral: true
       });
 
@@ -115,7 +115,7 @@ module.exports = {
       const entries = await Blacklist.find();
       if (!entries.length) {
         return interaction.reply({
-          content: '❗ Die Blacklist ist leer.',
+          content: '> `❗` » Die Blacklist ist leer.',
           ephemeral: true
         });
       }
