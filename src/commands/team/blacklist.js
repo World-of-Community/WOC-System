@@ -40,7 +40,7 @@ module.exports = {
       await Blacklist.create({ name, reason });
       return interaction.reply({
         content: `> \`✅\` » **${name}** wurde zur Blacklist hinzugefügt.`,
-        ephemeral: false
+        ephemeral: true
       });
 
     } else if (sub === 'remove') {
@@ -56,7 +56,7 @@ module.exports = {
 
       return interaction.reply({
         content: `> \`❌\` » **${name}** wurde von der Blacklist entfernt.`,
-        ephemeral: false
+        ephemeral: true
       });
 
     } else if (sub === 'list') {
