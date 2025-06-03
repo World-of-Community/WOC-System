@@ -57,7 +57,7 @@ module.exports = {
             '815920703067914290', // Mitglied
         ];
 
-        const NationalitätRoleIds = [
+        const BundeslandRoleIds = [
             '1379411398827704362', // Baden-Württemberg
             '1379411504394141758', // Bayern
             '1379411613240528936', // Berlin
@@ -111,7 +111,7 @@ module.exports = {
             '1231257309313765396', // Welt News Ping
         ];
 
-        let userNationalität = '❓';
+        let userBundesland = '❓';
         let userGeschlecht = '❓';
         let roleGamesList = [];
         let rolePingsList = [];
@@ -149,8 +149,8 @@ module.exports = {
             if (role.name === '@everyone') return;
 
             // Überprüfe Nationalität
-            if (NationalitätRoleIds.includes(role.id)) {
-                userNationalität = roleNationalität[role.name] || '❓';
+            if (BundeslandRoleIds.includes(role.id)) {
+                userBundesland = roleBundesland[role.name] || '❓';
             }
 
             // Überprüfe Geschlecht
@@ -220,7 +220,7 @@ module.exports = {
                     `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n` +
                     `- \`📌\` » Abzeichen: ${badgeDisplay}\n` +
                     `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
-                    `- \`📌\` » Land: ${userNationalität}\n` +
+                    `- \`📌\` » Bundesland: ${userBundesland}\n` +
                     `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                     `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                     `> \`🏆\` **» ALLE STATISTIKEN**\n` +
