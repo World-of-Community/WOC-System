@@ -96,7 +96,7 @@ module.exports = {
         .setDescription(lines.join('\n\n'))
         .setFooter({ text: `Einträge insgesamt: ${entries.length}` });
 
-      return interaction.reply({ embeds: [embed], ephemeral: false });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
   }
 };
