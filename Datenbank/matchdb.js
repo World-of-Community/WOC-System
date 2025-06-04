@@ -25,7 +25,6 @@ const matchSchema = new mongoose.Schema({
     type: String,
     default: '' // optional, z.B. Stadionname
   },
-  // Optionale Felder für Ergebnis (falls gewünscht)
   homeGoals: {
     type: Number,
     default: null
@@ -38,4 +37,5 @@ const matchSchema = new mongoose.Schema({
   timestamps: true // createdAt, updatedAt automatisch
 });
 
+// Exportiert das Model, falls schon vorhanden wird das vorhandene benutzt (Hot-Reload freundlich)
 module.exports = mongoose.models.Match || mongoose.model('Match', matchSchema);
