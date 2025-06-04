@@ -9,6 +9,12 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
+// Spieltage von 1 bis 34 als Choices vorbereiten
+const spieltagChoices = Array.from({ length: 34 }, (_, i) => ({
+  name: `${i + 1}`,
+  value: i + 1
+}));
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('spiel-erstellen')
@@ -25,11 +31,12 @@ module.exports = {
         .addChoices(...proLeagueTeams.map(team => ({ name: team, value: team }))))
     .addIntegerOption(option =>
       option.setName('spieltag')
-        .setDescription('Spieltagnummer')
-        .setRequired(true))
+        .setDescription('Spieltag auswählen')
+        .setRequired(true)
+        .addChoices(...spieltagChoices))
     .addStringOption(option =>
       option.setName('datum')
-        .setDescription('Datum & Uhrzeit (Beispiel: 15:30 - 25.05.2000)')
+        .setDescription('Datum & Uhrzeit (Beispiel: 15:30 - 25.05.2025)')
         .setRequired(true)),
 
   async execute(interaction) {
@@ -39,8 +46,6 @@ module.exports = {
     const datum = interaction.options.getString('datum');
 
     try {
-      // Datum & Uhrzeit parsen: Format "HH:MM - TT.MM.JJJJ"
-      // Beispiel: "15:30 - 25.05.2025"
       const [zeit, dateString] = datum.split(' - ');
       if (!zeit || !dateString) throw new Error('Falsches Datumsformat');
 
@@ -49,7 +54,6 @@ module.exports = {
 
       const date = new Date(jahr, monat - 1, tag, stunde, minute);
 
-      // Match erstellen
       const match = new Match({
         homeTeam: heim,
         awayTeam: auswaerts,
@@ -59,10 +63,8 @@ module.exports = {
 
       await match.save();
 
-      // Alle Spiele des Spieltags abrufen
       const spieleDesSpieltags = await Match.find({ matchday: spieltag }).sort({ date: 1 });
 
-      // Übersicht aller Spiele am Spieltag
       const spieleListe = spieleDesSpieltags
         .map(m => `- ${m.homeTeam} vs ${m.awayTeam} (${new Date(m.date).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })})`)
         .join('\n');
