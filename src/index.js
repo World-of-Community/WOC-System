@@ -973,8 +973,10 @@ client.on('messageCreate', async (message) => {
                 await i.message.edit({ components: [buttons] }).catch(console.error);
                 
                 const gewinn = getRandomString();
-                await i.reply({ 
-                    content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\nDie Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n*(Bitte mache von dieser Nachricht einen Screenshot als Beweis.)*\n\n> \`🎫\` » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`, 
+                await i.reply({ content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
+                    `Die Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n` +
+                    `*(Bitte mache von dieser Nachricht einen Screenshot als Beweis.)*\n\n` +
+                    `> \`🎫\` » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`, 
                     ephemeral: true 
                 });
 
