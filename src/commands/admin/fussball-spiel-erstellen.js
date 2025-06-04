@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { Match } = require('../../../Datenbank/matchdb');
+const Match = require('../../../Datenbank/matchdb');  // ohne {} !!!
 
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
@@ -23,6 +23,7 @@ const fixedTimes = [
   { name: '11:30', value: '11:30' },
   { name: '12:30', value: '12:30' },
   { name: '13:30', value: '13:30' },
+  { name: '14:00', value: '14:00' },
   { name: '15:00', value: '15:00' },
   { name: '15:30', value: '15:30' },
   { name: '16:45', value: '16:45' },
@@ -105,7 +106,6 @@ module.exports = {
         throw new Error('Ungültige Uhrzeit');
       }
 
-      // Neues Date-Objekt mit Datum und Uhrzeit
       const date = new Date(jahr, monat - 1, tag, stunde, minute);
 
       const match = new Match({
