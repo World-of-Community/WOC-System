@@ -17,8 +17,10 @@ const fixedTimes = [
   { name: '06:00', value: '06:00' },
   { name: '07:30', value: '07:30' },
   { name: '09:00', value: '09:00' },
+  { name: '09:30', value: '09:30' },
   { name: '10:30', value: '10:30' },
   { name: '11:00', value: '11:00' },
+  { name: '11:30', value: '11:30' },
   { name: '12:30', value: '12:30' },
   { name: '13:30', value: '13:30' },
   { name: '15:00', value: '15:00' },
@@ -78,14 +80,32 @@ module.exports = {
     }
 
     try {
-      // Datum in Tag, Monat, Jahr splitten
-      const [tag, monat, jahr] = datum.split('.').map(Number);
-      if (!tag || !monat || !jahr) throw new Error('Falsches Datumsformat');
+      // Datum parsen und validieren
+      const [tagStr, monatStr, jahrStr] = datum.split('.');
+      if (!tagStr || !monatStr || !jahrStr) throw new Error('Falsches Datumsformat');
 
-      // Uhrzeit splitten
-      const [stunde, minute] = uhrzeit.split(':').map(Number);
+      const tag = Number(tagStr.trim());
+      const monat = Number(monatStr.trim());
+      const jahr = Number(jahrStr.trim());
+      if (
+        isNaN(tag) || isNaN(monat) || isNaN(jahr) ||
+        tag < 1 || tag > 31 || monat < 1 || monat > 12 || jahr < 1000
+      ) {
+        throw new Error('Ungültiges Datum');
+      }
 
-      // Date-Objekt erzeugen mit Datum + Uhrzeit
+      // Uhrzeit parsen und validieren
+      const [stundeStr, minuteStr] = uhrzeit.split(':');
+      const stunde = Number(stundeStr.trim());
+      const minute = Number(minuteStr.trim());
+      if (
+        isNaN(stunde) || isNaN(minute) ||
+        stunde < 0 || stunde > 23 || minute < 0 || minute > 59
+      ) {
+        throw new Error('Ungültige Uhrzeit');
+      }
+
+      // Neues Date-Objekt mit Datum und Uhrzeit
       const date = new Date(jahr, monat - 1, tag, stunde, minute);
 
       const match = new Match({
@@ -111,7 +131,8 @@ module.exports = {
     } catch (error) {
       await interaction.reply({
         content: `❌ Fehler beim Eintragen des Spiels. Stelle sicher, dass das Datum im Format **TT.MM.JJJJ** ist und die Uhrzeit ausgewählt wurde.\n` +
-                 `Beispiel: \`25.05.2025\` mit Uhrzeit \`15:30\``,
+                 `Beispiel: \`25.05.2025\` mit Uhrzeit \`15:30\`\n` +
+                 `Fehler: ${error.message}`,
         ephemeral: true
       });
     }
