@@ -9,12 +9,6 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-// Spieltage von 1 bis 34 als Choices vorbereiten
-const spieltagChoices = Array.from({ length: 34 }, (_, i) => ({
-  name: `${i + 1}`,
-  value: i + 1
-}));
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('spiel-erstellen')
@@ -31,9 +25,8 @@ module.exports = {
         .addChoices(...proLeagueTeams.map(team => ({ name: team, value: team }))))
     .addIntegerOption(option =>
       option.setName('spieltag')
-        .setDescription('Spieltag auswählen')
-        .setRequired(true)
-        .addChoices(...spieltagChoices))
+        .setDescription('Spieltag auswählen (1-34)')
+        .setRequired(true)) // keine .addChoices, freie Eingabe
     .addStringOption(option =>
       option.setName('datum')
         .setDescription('Datum & Uhrzeit (Beispiel: 15:30 - 25.05.2025)')
@@ -44,6 +37,13 @@ module.exports = {
     const auswaerts = interaction.options.getString('auswaertsteam');
     const spieltag = interaction.options.getInteger('spieltag');
     const datum = interaction.options.getString('datum');
+
+    if (spieltag < 1 || spieltag > 34) {
+      return interaction.reply({
+        content: '❌ Bitte gib einen Spieltag zwischen 1 und 34 an.',
+        ephemeral: true
+      });
+    }
 
     try {
       const [zeit, dateString] = datum.split(' - ');
