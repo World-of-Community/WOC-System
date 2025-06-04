@@ -17,12 +17,12 @@ module.exports = {
       option.setName('heimteam')
         .setDescription('Heimteam auswählen')
         .setRequired(true)
-        .addChoices(proLeagueTeams.map(team => ({ name: team, value: team }))))
+        .addChoices(...proLeagueTeams.map(team => ({ name: team, value: team }))))
     .addStringOption(option =>
       option.setName('auswaertsteam')
         .setDescription('Auswärtsteam auswählen')
         .setRequired(true)
-        .addChoices(proLeagueTeams.map(team => ({ name: team, value: team }))))
+        .addChoices(...proLeagueTeams.map(team => ({ name: team, value: team }))))
     .addIntegerOption(option =>
       option.setName('spieltag')
         .setDescription('Spieltagnummer')
