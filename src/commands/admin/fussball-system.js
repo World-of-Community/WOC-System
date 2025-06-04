@@ -80,121 +80,63 @@ async function createNextMatchdayEmbed() {
     .setColor(0x00BFFF);
 }
 
-module.exports = [
-  {
-    data: new SlashCommandBuilder()
-      .setName('fussball-embed')
-      .setDescription('Zeigt die Fußball Übersicht mit Tabelle und nächsten Spieltag')
-      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('fussball-embed')
+    .setDescription('Zeigt die Fußball Übersicht mit Tabelle und nächsten Spieltag')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    async execute(interaction) {
-      const overviewEmbed = new EmbedBuilder()
-        .setTitle('`⚽` » Fußball Übersicht')
-        .setDescription(
-          'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
-          '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
-          '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
-          '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
-          'Wähle unten eine Option aus, um die Tabelle oder den nächsten Spieltag anzuzeigen.'
-        )
-        .setColor('Blurple');
+  async execute(interaction) {
+    const overviewEmbed = new EmbedBuilder()
+      .setTitle('`⚽` » Fußball Übersicht')
+      .setDescription(
+        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
+        '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
+        '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
+        '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
+        'Wähle unten eine Option aus, um die Tabelle oder den nächsten Spieltag anzuzeigen.'
+      )
+      .setColor('Blurple');
 
-      const buttons = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId('show_table')
-          .setLabel('📄 Tabelle')
-          .setStyle(ButtonStyle.Primary),
+    const buttons = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('show_table')
+        .setLabel('📄 Tabelle')
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId('next_matchday')
+        .setLabel('📅 Nächster Spieltag')
+        .setStyle(ButtonStyle.Secondary),
+    );
 
-        new ButtonBuilder()
-          .setCustomId('next_matchday')
-          .setLabel('📅 Nächster Spieltag')
-          .setStyle(ButtonStyle.Secondary),
-      );
+    await interaction.reply({ content: 'Fussball Übersicht gesendet.', ephemeral: true });
+    const replymessage = await interaction.channel.send({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
 
-      await interaction.reply({ content: 'Fussball Übersicht gesendet.', ephemeral: true });
-      const replymessage = await interaction.channel.send({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
+    const collector = replymessage.createMessageComponentCollector({ componentType: ComponentType.Button });
 
-      const collector = replymessage.createMessageComponentCollector({ componentType: ComponentType.Button });
-
-      collector.on('collect', async i => {
-        if (i.user.id !== interaction.user.id) {
-          return i.reply({ content: 'Nur du kannst die Buttons benutzen!', ephemeral: true });
-        }
-
-        if (i.customId === 'show_table') {
-          const tableEmbed = await createTabelleEmbed();
-          await i.deferUpdate();
-          await interaction.followUp({ embeds: [tableEmbed], ephemeral: true });
-        }
-
-        if (i.customId === 'next_matchday') {
-          const matchdayEmbed = await createNextMatchdayEmbed();
-          await i.deferUpdate();
-          await interaction.followUp({ embeds: [matchdayEmbed], ephemeral: true });
-        }
-      });
-
-      collector.on('end', async () => {
-        const disabledRow = new ActionRowBuilder().addComponents(
-          buttons.components.map(button => button.setDisabled(true))
-        );
-        await replymessage.edit({ components: [disabledRow] });
-      });
-    }
-  },
-
-  {
-    data: new SlashCommandBuilder()
-      .setName('spiel-erstellen')
-      .setDescription('Erstellt ein Spiel mit Datum und Uhrzeit')
-      .addStringOption(option =>
-        option.setName('heimteam')
-          .setDescription('Heimteam')
-          .setRequired(true))
-      .addStringOption(option =>
-        option.setName('auswaertsteam')
-          .setDescription('Auswärtsteam')
-          .setRequired(true))
-      .addIntegerOption(option =>
-        option.setName('spieltag')
-          .setDescription('Spieltagnummer')
-          .setRequired(true))
-      .addStringOption(option =>
-        option.setName('datum')
-          .setDescription('Datum & Uhrzeit (Format: TT.MM.JJJJ HH:MM)')
-          .setRequired(true)),
-
-    async execute(interaction) {
-      const heim = interaction.options.getString('heimteam');
-      const auswaerts = interaction.options.getString('auswaertsteam');
-      const spieltag = interaction.options.getInteger('spieltag');
-      const datum = interaction.options.getString('datum');
-
-      try {
-        const [tag, monat, rest] = datum.split('.');
-        const [jahr, zeit] = rest.split(' ');
-        const [stunde, minute] = zeit.split(':');
-        const date = new Date(jahr, monat - 1, tag, stunde, minute);
-
-        const match = new Match({
-          homeTeam: heim,
-          awayTeam: auswaerts,
-          matchday: spieltag,
-          date
-        });
-
-        await match.save();
-
-        await interaction.reply({
-          content: `✅ Spiel eingetragen: **${heim}** vs **${auswaerts}** am **${date.toLocaleString('de-DE')}** (Spieltag ${spieltag})`,
-          ephemeral: true
-        });
-      } catch (error) {
-        await interaction.reply({
-          content: `❌ Fehler beim Eintragen des Spiels. Stelle sicher, dass das Datum im Format **TT.MM.JJJJ HH:MM** ist.`,
-          ephemeral: true
-        });
+    collector.on('collect', async i => {
+      if (i.user.id !== interaction.user.id) {
+        return i.reply({ content: 'Nur du kannst die Buttons benutzen!', ephemeral: true });
       }
-    }
+
+      if (i.customId === 'show_table') {
+        const tableEmbed = await createTabelleEmbed();
+        await i.deferUpdate();
+        await interaction.followUp({ embeds: [tableEmbed], ephemeral: true });
+      }
+
+      if (i.customId === 'next_matchday') {
+        const matchdayEmbed = await createNextMatchdayEmbed();
+        await i.deferUpdate();
+        await interaction.followUp({ embeds: [matchdayEmbed], ephemeral: true });
+      }
+    });
+
+    collector.on('end', async () => {
+      const disabledRow = new ActionRowBuilder().addComponents(
+        buttons.components.map(button => button.setDisabled(true))
+      );
+      await replymessage.edit({ components: [disabledRow] });
+    });
   }
-];
+};
