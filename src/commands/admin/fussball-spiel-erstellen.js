@@ -9,10 +9,36 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
+const fixedTimes = [
+  { name: '00:30', value: '00:30' },
+  { name: '01:30', value: '01:30' },
+  { name: '02:00', value: '02:00' },
+  { name: '04:00', value: '04:00' },
+  { name: '06:00', value: '06:00' },
+  { name: '07:30', value: '07:30' },
+  { name: '09:00', value: '09:00' },
+  { name: '10:30', value: '10:30' },
+  { name: '11:00', value: '11:00' },
+  { name: '12:30', value: '12:30' },
+  { name: '13:30', value: '13:30' },
+  { name: '15:00', value: '15:00' },
+  { name: '15:30', value: '15:30' },
+  { name: '16:45', value: '16:45' },
+  { name: '18:00', value: '18:00' },
+  { name: '18:30', value: '18:30' },
+  { name: '19:00', value: '19:00' },
+  { name: '19:30', value: '19:30' },
+  { name: '20:00', value: '20:00' },
+  { name: '20:30', value: '20:30' },
+  { name: '21:45', value: '21:45' },
+  { name: '23:00', value: '23:00' },
+  { name: '23:30', value: '23:30' }
+];
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('spiel-erstellen')
-    .setDescription('Erstellt ein Spiel mit Datum und Uhrzeit')
+    .setDescription('Erstellt ein Spiel mit Datum und fester Uhrzeit')
     .addStringOption(option =>
       option.setName('heimteam')
         .setDescription('Heimteam auswählen')
@@ -26,16 +52,22 @@ module.exports = {
     .addIntegerOption(option =>
       option.setName('spieltag')
         .setDescription('Spieltag auswählen (1-34)')
-        .setRequired(true)) // keine .addChoices, freie Eingabe
+        .setRequired(true))
+    .addStringOption(option =>
+      option.setName('uhrzeit')
+        .setDescription('Uhrzeit auswählen')
+        .setRequired(true)
+        .addChoices(...fixedTimes))
     .addStringOption(option =>
       option.setName('datum')
-        .setDescription('Datum & Uhrzeit (Beispiel: 15:30 - 25.05.2025)')
+        .setDescription('Datum im Format TT.MM.JJJJ')
         .setRequired(true)),
 
   async execute(interaction) {
     const heim = interaction.options.getString('heimteam');
     const auswaerts = interaction.options.getString('auswaertsteam');
     const spieltag = interaction.options.getInteger('spieltag');
+    const uhrzeit = interaction.options.getString('uhrzeit');
     const datum = interaction.options.getString('datum');
 
     if (spieltag < 1 || spieltag > 34) {
@@ -46,12 +78,14 @@ module.exports = {
     }
 
     try {
-      const [zeit, dateString] = datum.split(' - ');
-      if (!zeit || !dateString) throw new Error('Falsches Datumsformat');
+      // Datum in Tag, Monat, Jahr splitten
+      const [tag, monat, jahr] = datum.split('.').map(Number);
+      if (!tag || !monat || !jahr) throw new Error('Falsches Datumsformat');
 
-      const [stunde, minute] = zeit.split(':').map(Number);
-      const [tag, monat, jahr] = dateString.split('.').map(Number);
+      // Uhrzeit splitten
+      const [stunde, minute] = uhrzeit.split(':').map(Number);
 
+      // Date-Objekt erzeugen mit Datum + Uhrzeit
       const date = new Date(jahr, monat - 1, tag, stunde, minute);
 
       const match = new Match({
@@ -76,8 +110,8 @@ module.exports = {
       });
     } catch (error) {
       await interaction.reply({
-        content: `❌ Fehler beim Eintragen des Spiels. Stelle sicher, dass das Datum im Format **HH:MM - TT.MM.JJJJ** ist.\n` +
-                 `Beispiel: \`15:30 - 25.05.2025\``,
+        content: `❌ Fehler beim Eintragen des Spiels. Stelle sicher, dass das Datum im Format **TT.MM.JJJJ** ist und die Uhrzeit ausgewählt wurde.\n` +
+                 `Beispiel: \`25.05.2025\` mit Uhrzeit \`15:30\``,
         ephemeral: true
       });
     }
