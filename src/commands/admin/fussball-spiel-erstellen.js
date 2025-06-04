@@ -34,8 +34,7 @@ const fixedTimes = [
   { name: '20:00', value: '20:00' },
   { name: '20:30', value: '20:30' },
   { name: '21:45', value: '21:45' },
-  { name: '23:00', value: '23:00' },
-  { name: '23:30', value: '23:30' }
+  { name: '23:00', value: '23:00' }
 ];
 
 module.exports = {
