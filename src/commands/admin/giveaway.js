@@ -142,13 +142,11 @@ module.exports = {
               let bedingungsvalue = "none"; 
               let serverEmpfehlung;
 
-
-
               if (bedingung != "none" && bedingung && bedingungsInputs[bedingung]) {
                 bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput') || ''; 
                 
               if (bedingung === 'voiceTime' || bedingung === 'membersince') {
-                  bedingungInput = ms(bedingungsvalue) || null; 
+                  bedingungInput = bedingungsvalue || null; 
                 } else {
                   bedingungInput = bedingungsvalue;
                 }
