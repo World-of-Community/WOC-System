@@ -24,12 +24,12 @@ module.exports = {
     const isNitro = link.startsWith('https://discord.gift/') || link.startsWith('https://discord.com/gifts/');
 
     const embed = new EmbedBuilder()
-      .setTitle(isNitro ? '🎁 Nitro Geschenk erhalten!' : '🎁 Geschenk erhalten!')
+      .setTitle(isNitro ? '`🎁` Nitro Geschenk erhalten!' : '`🎁` Geschenk erhalten!')
       .setDescription(
-        `${interaction.user} hat ${isNitro ? 'Nitro' : 'ein Geschenk'} an ${user} verschenkt!\n\n` +
-        `Link: [Hier klicken](${link})\n\n` +
-        `Wichtiger Hinweis\n` +
-        `Dies ist kein Scam. Bitte prüfe trotzdem jeden Link sorgfältig, bevor du darauf klickst.`
+        `${interaction.user} hat ${isNitro ? '**Nitro**' : '**ein Geschenk**'} an ${user} verschenkt!\n\n` +
+        `> \`🔗\` » Link: **[Hier klicken](${link})**\n\n` +
+        `> \`❗\` » Wichtiger Hinweis\n` +
+        `*Dies ist kein Scam. Bitte prüfe trotzdem jeden Link sorgfältig, bevor du darauf klickst.*`
       )
       .setColor('Blurple')
       .setTimestamp();
