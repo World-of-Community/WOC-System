@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 const { ModalBuilder, TextInputBuilder, ChannelType, ActionRowBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } = require("discord.js");
 const ms = require("ms");
-
 const giveawaydb = require("../../../Datenbank/giveawaydb");
 const userDB = require("../../../Datenbank/userdb");
 
@@ -142,24 +141,23 @@ module.exports = {
               let bedingungsvalue = "none"; 
               let serverEmpfehlung;
 
-              function zeitLang(zeitKurz) {
-                const zahl = parseInt(zeitKurz);
-                if (zeitKurz.endsWith('m')) {
-                  return zahl === 1 ? '1 Minute' : `${zahl} Minuten`;
-                }
-                if (zeitKurz.endsWith('h')) {
-                  return zahl === 1 ? '1 Stunde' : `${zahl} Stunden`;
-                }
-                if (zeitKurz.endsWith('d')) {
-                  return zahl === 1 ? '1 Tag' : `${zahl} Tage`;
-                }
-                return zeitKurz;
-              }
-
               if (bedingung != "none" && bedingung && bedingungsInputs[bedingung]) {
                 bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput') || ''; 
                 
               if (bedingung === 'voiceTime' || bedingung === 'membersince') {
+                  function zeitLang(zeitKurz) {
+                    const zahl = parseInt(zeitKurz);
+                    if (zeitKurz.endsWith('m')) {
+                      return zahl === 1 ? '1 Minute' : `${zahl} Minuten`;
+                    }
+                    if (zeitKurz.endsWith('h')) {
+                      return zahl === 1 ? '1 Stunde' : `${zahl} Stunden`;
+                    }
+                    if (zeitKurz.endsWith('d')) {
+                      return zahl === 1 ? '1 Tag' : `${zahl} Tage`;
+                    }
+                    return zeitKurz;
+                  }
                   bedingungInput = bedingungsvalue || null; 
                 } else {
                   bedingungInput = bedingungsvalue;
