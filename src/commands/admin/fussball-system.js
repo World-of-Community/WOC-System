@@ -174,7 +174,7 @@ module.exports = {
     )
     .addSubcommand((command) =>
       command
-        .setName('fussball-spieler-hinzufügen')
+        .setName('spieler-hinzufügen')
         .setDescription('Füge einem Team einen Spieler hinzu.')
         .addStringOption(opt =>
           opt.setName('team')

@@ -182,9 +182,9 @@ const pingMessages = [
 ];
 
 // Fussball Tabelle Updaten System 
-setInterval(() => {
-    fussballCommand.updateLeagueTable(client);
-  }, 60 * 1000); // 60.000 ms = 1 Minute
+//setInterval(() => {
+//    fussballCommand.updateLeagueTable(client);
+//  }, 60 * 1000); // 60.000 ms = 1 Minute
 
 // MongoDB
 mongoose.connection.on('connected', () => {
