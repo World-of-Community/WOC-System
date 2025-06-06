@@ -1,3 +1,4 @@
+/*
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
@@ -35,3 +36,4 @@ module.exports = {
     await interaction.reply({ content: `✅ Spieler **${spielerName}** wurde dem Team **${teamName}** hinzugefügt.`, ephemeral: true });
   }
 };
+*/

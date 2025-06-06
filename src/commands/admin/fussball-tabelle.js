@@ -1,3 +1,4 @@
+/*
 const { SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const EmbedDB = require('../../../Datenbank/embeddb');
@@ -92,3 +93,4 @@ module.exports = {
 
   updateLeagueTable
 };
+*/

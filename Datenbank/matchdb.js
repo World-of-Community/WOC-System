@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 
 const matchSchema = new mongoose.Schema({
-  matchday: { type: Number, required: true, min: 1, max: 34 },
   homeTeam: { type: String, required: true, trim: true },
   awayTeam: { type: String, required: true, trim: true },
+  matchday: { type: Number, required: true },
   date: { type: Date, required: true },
-  stadium: { type: String, default: '' },
-  homeGoals: { type: Number, default: null },
-  awayGoals: { type: Number, default: null }
-}, { timestamps: true });
+  homeScore: { type: Number, default: null }, // Tore Heimteam, null = noch nicht gesetzt
+  awayScore: { type: Number, default: null }, // Tore Auswärtsteam, null = noch nicht gesetzt
+}, {
+  timestamps: true,
+});
 
-module.exports = mongoose.models.Match || mongoose.model('Match', matchSchema);
+const Match = mongoose.models.Match || mongoose.model('Match', matchSchema);
+
+module.exports = Match;
