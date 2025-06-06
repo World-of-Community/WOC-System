@@ -141,24 +141,26 @@ module.exports = {
               let bedingungsvalue = "none"; 
               let serverEmpfehlung;
 
+              function zeitLang(zeitKurz) {
+                const zahl = parseInt(zeitKurz);
+                if (zeitKurz.endsWith('m')) {
+                  return zahl === 1 ? '1 Minute' : `${zahl} Minuten`;
+                }
+                if (zeitKurz.endsWith('h')) {
+                  return zahl === 1 ? '1 Stunde' : `${zahl} Stunden`;
+                }
+                if (zeitKurz.endsWith('d')) {
+                  return zahl === 1 ? '1 Tag' : `${zahl} Tage`;
+                }
+                return zeitKurz;
+              }
+
               if (bedingung != "none" && bedingung && bedingungsInputs[bedingung]) {
                 bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput') || ''; 
                 
               if (bedingung === 'voiceTime' || bedingung === 'membersince') {
-                  function zeitLang(zeitKurz) {
-                    const zahl = parseInt(zeitKurz);
-                    if (zeitKurz.endsWith('m')) {
-                      return zahl === 1 ? '1 Minute' : `${zahl} Minuten`;
-                    }
-                    if (zeitKurz.endsWith('h')) {
-                      return zahl === 1 ? '1 Stunde' : `${zahl} Stunden`;
-                    }
-                    if (zeitKurz.endsWith('d')) {
-                      return zahl === 1 ? '1 Tag' : `${zahl} Tage`;
-                    }
-                    return zeitKurz;
-                  }
-                  bedingungInput = bedingungsvalue || null; 
+                  bedingungInput = bedingungsvalue || null;
+                  bedingungInput = zeitLang(bedingungInput);
                 } else {
                   bedingungInput = bedingungsvalue;
                 }
