@@ -20,11 +20,6 @@ module.exports = {
     const user = interaction.options.getUser('user');
     const link = interaction.options.getString('link');
 
-    // Prüfen, ob Link "gift" enthält (allgemeine Prüfung)
-    if (!link.toLowerCase().includes('gift')) {
-      return interaction.reply({ content: 'Bitte gib einen gültigen Geschenk-Link an.', ephemeral: true });
-    }
-
     // Prüfen, ob es ein Nitro-Link ist
     const isNitro = link.startsWith('https://discord.gift/') || link.startsWith('https://discord.com/gifts/');
 
