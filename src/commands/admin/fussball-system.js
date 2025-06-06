@@ -1,4 +1,13 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, PermissionFlagsBits } = require('discord.js');
+const { 
+  SlashCommandBuilder, 
+  EmbedBuilder, 
+  ActionRowBuilder, 
+  ButtonBuilder, 
+  ButtonStyle, 
+  ComponentType, 
+  PermissionFlagsBits 
+} = require('discord.js');
+
 const { Team } = require('../../../Datenbank/fussballdb');
 const { Match } = require('../../../Datenbank/matchdb');
 
@@ -8,33 +17,6 @@ const proLeagueTeams = [
   'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
   'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
-];
-
-const teamsData = [
-  { name: "FC Adler", players: ["Müller", "Schmidt", "Fischer", "Weber"], stadium: "Adler Arena" },
-  { name: "SV Löwen", players: ["Schneider", "Wagner", "Becker", "Hoffmann"], stadium: "Löwenstein-Stadion" },
-  { name: "TSV Eiche", players: ["Bauer", "Koch", "Richter", "Klein"], stadium: "Stadion am Eichenweg" },
-  { name: "SC Blau", players: ["Wolf", "Neumann", "Schröder", "Krüger"], stadium: "Blau-Weiß Arena" },
-  { name: "VfB Stern", players: ["Hartmann", "Lange", "Schmitt", "Werner"], stadium: "Sternenfelder Stadion" },
-  { name: "FC Rot-Weiß", players: ["Krause", "Meier", "Schulz", "Hahn"], stadium: "RW Arena" },
-  { name: "SV Grünwald", players: ["König", "Fuchs", "Bergmann", "Lorenz"], stadium: "Grünwaldstadion" },
-  { name: "TSV Nord", players: ["Frank", "Mayer", "Jung", "Albrecht"], stadium: "Nordstadion" },
-  { name: "SC Süd", players: ["Böhm", "Engel", "Jäger", "Brandt"], stadium: "Südpark Stadion" },
-  { name: "VfB West", players: ["Peters", "Simon", "Vogel", "Friedrich"], stadium: "Stadion am Westufer" },
-  { name: "FC Ostwind", players: ["Paul", "Hoffmeister", "Bender", "Keller"], stadium: "Ostwind-Arena" },
-  { name: "SV Nordstern", players: ["Mayerhofer", "Schulze", "Graf", "Krafft"], stadium: "Nordstern-Stadion" },
-  { name: "TSV Berg", players: ["Winkler", "Horn", "Seidel", "Busch"], stadium: "Bergstadion" },
-  { name: "SC Tal", players: ["Zimmermann", "Lutz", "Hahn", "Franke"], stadium: "Talgrund-Stadion" },
-  { name: "VfB See", players: ["Döring", "Kuhn", "Voigt", "Bach"], stadium: "Seestadion" },
-  { name: "FC Sturm", players: ["Schulz", "Ritter", "Heinrich", "Friedl"], stadium: "Sturmfeld Arena" },
-  { name: "SV Blitz", players: ["Köhler", "Dietrich", "Eckert", "Löwe"], stadium: "Blitz Arena" },
-  { name: "TSV Vulkan", players: ["Maier", "Groß", "Schulze", "Hoffmann"], stadium: "Vulkanstadion" },
-  { name: "SC Frost", players: ["Schuster", "Brand", "Sauer", "Lang"], stadium: "Frostpark" },
-  { name: "VfB Flamme", players: ["Reuter", "Schiller", "Born", "Herz"], stadium: "Flammenarena" },
-  { name: "FC Donner", players: ["Lorenz", "Bauer", "Wolf", "Schmid"], stadium: "Donnerdom Arena" },
-  { name: "SV Schatten", players: ["Ziegler", "Beck", "Kruse", "Hart"], stadium: "Schattenfeldstadion" },
-  { name: "TSV Nebel", players: ["Lang", "Winter", "Schwarz", "Beier"], stadium: "Stadion am Nebelhang" },
-  { name: "SC Licht", players: ["Günther", "Kaiser", "Sachs", "Mayer"], stadium: "Lichtstadion" }
 ];
 
 const fixedTimes = [
@@ -65,6 +47,7 @@ const fixedTimes = [
   { name: '23:00', value: '23:00' }
 ];
 
+// Erzeugt das Tabellen-Embed mit den aktuellen Team-Daten
 async function createTabelleEmbed() {
   const allTeams = await Team.find({ league: 'Pro League' });
   const teamMap = new Map(allTeams.map(t => [t.name.trim(), t.toObject()]));
@@ -108,6 +91,7 @@ async function createTabelleEmbed() {
     .setTimestamp();
 }
 
+// Erzeugt das Embed für den nächsten Spieltag mit den nächsten Spielen
 async function createNextMatchdayEmbed() {
   const now = new Date();
 
@@ -142,47 +126,53 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-system')
     .setDescription('Fussball System')
-    .addSubcommand((command) => 
+    // hier Subcommands/SubcommandGroups hinzufügen wie in deinem Beispiel
+    .addSubcommand((command) =>
       command
         .setName('fussball-match')
         .setDescription('Starte ein Fußballspiel und tippe, wer gewinnt!')
     )
-    .addSubcommand((command) => 
-      command
+    .addSubcommandGroup(group =>
+      group
         .setName('fussball-manage')
         .setDescription('Verwalte Fußballteams')
         .addSubcommand(sub =>
-          sub.setName('add')
-          .setDescription('Füge ein Fußballteam hinzu')
-          .addStringOption(opt =>
-            opt.setName('teamname')
-            .setDescription('Name des Teams')
-            .setRequired(true))
-          .addStringOption(opt =>
-            opt.setName('emoji')
-            .setDescription('Emoji/Icon für das Team')
-            .setRequired(true)))
+          sub
+            .setName('add')
+            .setDescription('Füge ein Fußballteam hinzu')
+            .addStringOption(opt =>
+              opt.setName('teamname')
+                .setDescription('Name des Teams')
+                .setRequired(true))
+            .addStringOption(opt =>
+              opt.setName('emoji')
+                .setDescription('Emoji/Icon für das Team')
+                .setRequired(true))
+        )
         .addSubcommand(sub =>
-          sub.setName('remove')
-          .setDescription('Entferne ein Fußballteam')
-          .addStringOption(opt =>
-            opt.setName('teamname')
-            .setDescription('Name des Teams')
-            .setRequired(true)))
+          sub
+            .setName('remove')
+            .setDescription('Entferne ein Fußballteam')
+            .addStringOption(opt =>
+              opt.setName('teamname')
+                .setDescription('Name des Teams')
+                .setRequired(true))
+        )
         .addSubcommand(sub =>
-          sub.setName('add-player')
-          .setDescription('Füge einen Spieler zu einem Team hinzu')
-          .addStringOption(opt =>
-            opt.setName('teamname')
-            .setDescription('Name des Teams')
-            .setRequired(true))
-          .addStringOption(opt =>
-            opt.setName('spieler')
-            .setDescription('Name des Spielers')
-            .setRequired(true))
+          sub
+            .setName('add-player')
+            .setDescription('Füge einen Spieler zu einem Team hinzu')
+            .addStringOption(opt =>
+              opt.setName('teamname')
+                .setDescription('Name des Teams')
+                .setRequired(true))
+            .addStringOption(opt =>
+              opt.setName('spieler')
+                .setDescription('Name des Spielers')
+                .setRequired(true))
         )
     )
-    .addSubcommand((command) => 
+    .addSubcommand((command) =>
       command
         .setName('fussball-spieler-hinzufügen')
         .setDescription('Füge einem Team einen Spieler hinzu.')
@@ -195,7 +185,7 @@ module.exports = {
             .setDescription('Name des Spielers')
             .setRequired(true))
     )
-    .addSubcommand((command) => 
+    .addSubcommand((command) =>
       command
         .setName('spiel-erstellen')
         .setDescription('Erstellt ein Spiel mit Datum und fester Uhrzeit')
@@ -220,62 +210,97 @@ module.exports = {
             .addChoices(...fixedTimes))
         .addStringOption(option =>
           option.setName('datum')
-            .setDescription('Datum im Format TT.MM.JJJJ')
+            .setDescription('Datum im Format YYYY-MM-DD')
             .setRequired(true))
-    )
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-
+    ),
   async execute(interaction) {
-    const overviewEmbed = new EmbedBuilder()
-      .setTitle('`⚽` » Fußball Übersicht')
-      .setDescription(
-        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
-        '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
-        '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
-        '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
-        'Wähle unten eine Option aus, um die Tabelle oder den nächsten Spieltag anzuzeigen.'
-      )
-      .setColor('Blurple');
+    const subCommand = interaction.options.getSubcommand(false);
+    const subCommandGroup = interaction.options.getSubcommandGroup(false);
 
-    const buttons = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('show_table')
-        .setLabel('📄 Tabelle')
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId('next_matchday')
-        .setLabel('📅 Nächster Spieltag')
-        .setStyle(ButtonStyle.Secondary),
-    );
+    // Beispiel für Subcommands
+    if (subCommand === 'spiel-erstellen') {
+      const heimteam = interaction.options.getString('heimteam');
+      const auswaertsteam = interaction.options.getString('auswaertsteam');
+      const spieltag = interaction.options.getInteger('spieltag');
+      const uhrzeit = interaction.options.getString('uhrzeit');
+      const datum = interaction.options.getString('datum');
 
-    await interaction.reply({ content: 'Fussball Übersicht gesendet.', ephemeral: true });
-    const replymessage = await interaction.channel.send({ embeds: [overviewEmbed], components: [buttons], fetchReply: true });
+      // Datum & Uhrzeit kombinieren
+      const dateTimeString = `${datum}T${uhrzeit}:00`;
+      const dateObj = new Date(dateTimeString);
+      if (isNaN(dateObj)) {
+        return interaction.reply({ content: 'Ungültiges Datum oder Uhrzeit!', ephemeral: true });
+      }
 
-    const collector = replymessage.createMessageComponentCollector({ componentType: ComponentType.Button });
+      // Spiel speichern
+      const newMatch = new Match({
+        homeTeam: heimteam,
+        awayTeam: auswaertsteam,
+        matchday: spieltag,
+        date: dateObj,
+        score1: null,
+        score2: null,
+        events: [],
+        yellowCards: [],
+        redCards: []
+      });
+
+      await newMatch.save();
+
+      return interaction.reply(`Spiel zwischen ${heimteam} und ${auswaertsteam} für Spieltag ${spieltag} wurde erstellt.`);
+    }
+
+    // Tabelle-Embed und Button-Row generieren
+    const tabelleEmbed = await createTabelleEmbed();
+    const nextMatchdayEmbed = await createNextMatchdayEmbed();
+
+    // Buttons für Übersicht (Beispiel, du kannst sie erweitern)
+    const buttonRow = new ActionRowBuilder()
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('tabelle')
+          .setLabel('Tabelle')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('spieltag')
+          .setLabel('Nächster Spieltag')
+          .setStyle(ButtonStyle.Success),
+        new ButtonBuilder()
+          .setCustomId('update')
+          .setLabel('Aktualisieren')
+          .setStyle(ButtonStyle.Secondary)
+      );
+
+    // Antwort mit Tabelle + Buttons
+    const message = await interaction.reply({ 
+      embeds: [tabelleEmbed], 
+      components: [buttonRow], 
+      fetchReply: true 
+    });
+
+    // Collector für Button-Interaktionen (30 Sekunden)
+    const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000 });
 
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: 'Nur du kannst die Buttons benutzen!', ephemeral: true });
+        return i.reply({ content: 'Nur der ursprüngliche Benutzer kann hier klicken.', ephemeral: true });
       }
 
-      if (i.customId === 'show_table') {
-        const tableEmbed = await createTabelleEmbed();
+      if (i.customId === 'tabelle') {
+        await i.update({ embeds: [await createTabelleEmbed()] });
+      } else if (i.customId === 'spieltag') {
+        await i.update({ embeds: [await createNextMatchdayEmbed()] });
+      } else if (i.customId === 'update') {
         await i.deferUpdate();
-        await interaction.followUp({ embeds: [tableEmbed], ephemeral: true });
-      }
-
-      if (i.customId === 'next_matchday') {
-        const matchdayEmbed = await createNextMatchdayEmbed();
-        await i.deferUpdate();
-        await interaction.followUp({ embeds: [matchdayEmbed], ephemeral: true });
+        // Optional: Daten neu laden oder Logik ergänzen
+        await i.editReply({ embeds: [await createTabelleEmbed()] });
       }
     });
 
     collector.on('end', async () => {
-      const disabledRow = new ActionRowBuilder().addComponents(
-        buttons.components.map(button => button.setDisabled(true))
-      );
-      await replymessage.edit({ components: [disabledRow] });
+      try {
+        await message.edit({ components: [] });
+      } catch {}
     });
   }
 };
