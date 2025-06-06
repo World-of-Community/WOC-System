@@ -36,7 +36,7 @@ module.exports = {
 
     try {
       await user.send({ embeds: [embed] });
-      await interaction.reply({ content: `> \`✅\` » Das Geschenk wurde erfolgreich an ${user} per DM geschickt! 📬`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Das Geschenk wurde erfolgreich an ${user} per DM geschickt! \`📬\``, ephemeral: true });
     } catch (error) {
       await interaction.reply({ content: `> \`❌\` » Ich konnte ${user} keine DM schicken. Bitte überprüfe die Datenschutzeinstellungen des Nutzers.`, ephemeral: true });
     }
