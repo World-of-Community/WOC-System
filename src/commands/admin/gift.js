@@ -29,7 +29,8 @@ module.exports = {
         `${interaction.user} hat ${isNitro ? '**Nitro**' : '**ein Geschenk**'} an ${user} verschenkt!\n\n` +
         `> \`🔗\` » Link: **[Hier klicken](${link})**\n\n` +
         `> \`❗\` » Wichtiger Hinweis\n` +
-        `*Dies ist kein Scam. Bitte prüfe trotzdem jeden Link sorgfältig, bevor du darauf klickst.*`
+        `*Dies ist kein Scam. Bitte prüfe trotzdem jeden Link sorgfältig, bevor du darauf klickst.*\n\n` +
+        `> \`🚑\` » Öffne ein Ticket im Support bei Fragen oder Problemen.`
       )
       .setColor('Blurple')
       .setTimestamp();

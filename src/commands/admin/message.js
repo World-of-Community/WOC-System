@@ -17,7 +17,11 @@ module.exports = {
         // Embed für die DM-Nachricht erstellen
         const Nachrichtembed = new EmbedBuilder()
             .setTitle('Du hast eine neue Nachricht!')
-            .setDescription(`» Hallo, ${member} du hast gerade eine neue Nachricht von \`${interaction.user.displayName}\` bekommen.\n\n> \`💬\` » **Nachricht:** ${message}\n\n> \`🚑\` » Öffne ein Ticket im Support bei Fragen oder Problemen.`)
+            .setDescription(
+                `» Hallo, ${member} du hast gerade eine neue Nachricht von \`${interaction.user.displayName}\` bekommen.\n\n` +
+                `> \`💬\` » **Nachricht:** ${message}\n\n` +
+                `> \`🚑\` » Öffne ein Ticket im Support bei Fragen oder Problemen.`
+            )
             .setColor('Blurple')
             .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
