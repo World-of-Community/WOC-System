@@ -26,11 +26,11 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle(isNitro ? '`🎁` Nitro Geschenk erhalten!' : '`🎁` Geschenk erhalten!')
       .setDescription(
-        `${interaction.user} hat ${isNitro ? '**Nitro**' : '**ein Geschenk**'} an ${user} verschenkt!\n\n` +
+        `${interaction.user} hat ${isNitro ? '**Nitro**' : '**ein Geschenk**'} an **dich** verschenkt!\n\n` +
         `> \`🔗\` » Link: **[Hier klicken](${link})**\n\n` +
         `> \`❗\` » Wichtiger Hinweis\n` +
         `*Dies ist kein Scam. Bitte prüfe trotzdem jeden Link sorgfältig, bevor du darauf klickst.*\n\n` +
-        `> \`🚑\` » Öffne ein Ticket im Support bei Fragen oder Problemen.`
+        `> \`🚑\` » Öffne ein Ticket im **[Support](https://discord.com/channels/815919809379172354/819555839362072606)** bei Fragen oder Problemen.`
       )
       .setColor('Blurple')
       .setTimestamp();
