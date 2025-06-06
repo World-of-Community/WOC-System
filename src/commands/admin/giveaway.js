@@ -140,8 +140,11 @@ module.exports = {
               let bedingungInput = "none";
               let bedingungsvalue = "none"; 
               let serverEmpfehlung;
+              let bedingungInput;
+              let bedingungAnzeige;
 
               function zeitLang(zeitKurz) {
+                if (!zeitKurz) return '';  // Sicherheit falls null oder undefined
                 const zahl = parseInt(zeitKurz);
                 if (zeitKurz.endsWith('m')) {
                   return zahl === 1 ? '1 Minute' : `${zahl} Minuten`;
@@ -159,12 +162,12 @@ module.exports = {
                 bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput') || ''; 
                 
               if (bedingung === 'voiceTime' || bedingung === 'membersince') {
-                  bedingungInput = bedingungsvalue || null;
-                  bedingungInput = zeitLang(bedingungInput);
-                } else {
-                  bedingungInput = bedingungsvalue;
-                }
-              
+                bedingungInput = bedingungsvalue || null;
+                bedingungAnzeige = zeitLang(bedingungInput);
+               } else {
+                 bedingungInput = bedingungsvalue;
+                 bedingungAnzeige = bedingungsvalue;
+               }
                 if (bedingung === 'server') {
                   serverEmpfehlung = bedingungsvalue;
                 }
