@@ -140,7 +140,6 @@ module.exports = {
               let bedingungInput = "none";
               let bedingungsvalue = "none"; 
               let serverEmpfehlung;
-              let bedingungInput;
               let bedingungAnzeige;
 
               function zeitLang(zeitKurz) {
