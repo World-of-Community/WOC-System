@@ -304,3 +304,25 @@ module.exports = {
     });
   }
 };
+
+
+                                                //fussball spieler system
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { Team } = require("../../../Datenbank/fussballdb");
+
+
+module.exports = {
+  data: new SlashCommandBuilder()
+  .setName("fusball")
+  -setDescription("⚽ Fußball-System Verwaltung")
+  .addSubcommand(sub =>
+    sub
+    .setName("Spieler Hizufügen")
+    .setDescription("Füge einem Team einen Spieler hinzu.")
+    .addStringOption(opt => 
+      opt.setName("spieler")
+      .setDescription(Name des Spielers)
+      .setRequired(true())
+  )
+
+
