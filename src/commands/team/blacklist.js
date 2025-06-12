@@ -132,7 +132,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle('`📄` Blacklist Nutzer')
         .setColor('Red')
-        .setDescription('Verbot bzw gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + lines.join('\n\n'))
+        .setDescription('**Information zu den Nutzern:**\n> Verbot bzw gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + lines.join('\n\n'))
         .setFooter({ text: `Einträge insgesamt: ${entries.length}` });
 
       return interaction.reply({ embeds: [embed], ephemeral: true });
