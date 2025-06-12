@@ -126,13 +126,13 @@ module.exports = {
         const reason = entry.reason || 'Kein Grund angegeben';
         const mention = `<@${userId}>`;
 
-        return `Verbot bzw gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n**${i + 1}.** ${mention} – ${username} (\`${userId}\`)\n> Grund: ${reason}`;
+        return `**${i + 1}.** ${mention} – ${username} (\`${userId}\`)\n> Grund: ${reason}`;
       });
 
       const embed = new EmbedBuilder()
         .setTitle('`📄` Blacklist Nutzer')
         .setColor('Red')
-        .setDescription(lines.join('\n\n'))
+        .setDescription('Verbot bzw gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + lines.join('\n\n'))
         .setFooter({ text: `Einträge insgesamt: ${entries.length}` });
 
       return interaction.reply({ embeds: [embed], ephemeral: true });
