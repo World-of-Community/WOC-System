@@ -953,7 +953,11 @@ client.on('messageCreate', async (message) => {
             );
 
         const msg = await message.channel.send({ 
-            content: `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\nHey ${message.author},\nDu hast soeben deine **erste Nachricht** geschrieben, Glückwunsch! \n\nDrück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, 
+            content: 
+            `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\n` +
+            `Hey ${message.author},\n` +
+            `Du hast soeben deine **erste Nachricht** geschrieben, Glückwunsch! \n\n` +
+            `Drück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, 
             components: [buttons], 
             ephemeral: true 
         });
@@ -974,7 +978,7 @@ client.on('messageCreate', async (message) => {
                 
                 const gewinn = getRandomString();
                 await i.reply({ content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
-                    `Die Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n` +
+                    `Die Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n\n` +
                     `*(Bitte mache von dieser Nachricht einen Screenshot als Beweis.)*\n\n` +
                     `> \`🎫\` » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`, 
                     ephemeral: true 
