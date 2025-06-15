@@ -99,10 +99,13 @@ module.exports = {
             '1379412047103660092', // Sachsen-Anhalt
             '1379412115240124517', // Schleswig-Holstein
             '1379412160194805810', // Thüringen
+        ];
+
+        const NationalitätRoleIds = [
             '848163749637914674', // Österreich
             '848163753139896330', // Schweiz
             '1127923622653210654', // Sonstiges
-        ];
+        ]
 
         const GeschlechtRoleIds = [
             '848173921630945320', // Männlich
