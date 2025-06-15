@@ -187,7 +187,7 @@ module.exports = {
             
                 if (emoji) {
                   // Emoji vorhanden, nur Emoji anzeigen
-                  userBundesland = emoji;
+                  userBundesland = '❓';
                 } else {
                   // Kein Emoji, dann nur Rollen-Mention anzeigen
                   userBundesland = `<@&${role.id}>`;
