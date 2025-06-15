@@ -215,9 +215,9 @@ module.exports = {
             }
 
             if (nationalitätRoleMention) {
-                outputText = `- \`📌\` » Land: ${landRoleMention}\n`;
+                outputText = `- \`📌\` » Land: ${landRoleMention}`;
             } else if (bundeslandRoleMention) {
-                outputText = `- \`📌\` » Bundesland: ${bundeslandRoleMention}\n`;
+                outputText = `- \`📌\` » Bundesland: ${bundeslandRoleMention}`;
             } else {
                 outputText = `- \`📌\` » Land/Bundesland: ❓`;
             }
