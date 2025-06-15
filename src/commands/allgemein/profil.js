@@ -179,20 +179,18 @@ module.exports = {
         member.roles.cache.forEach(role => {
             if (role.name === '@everyone') return;
 
-            let userBundesland = '❓'; // Default, falls keine Rolle gefunden wird
+            let userBundesland = '❓'; // Default wenn keine Rolle passt
 
             for (const role of member.roles.cache.values()) {
               if (BundeslandRoleIds.includes(role.id)) {
-                const emoji = roleBundesland[role.name];
+                const name = roleBundesland[role.name];
             
-                if (emoji) {
-                  // Emoji vorhanden, nur Emoji anzeigen
-                  userBundesland = '❓';
+                if (name) {
+                  userBundesland = name;          // Name aus Mapping
                 } else {
-                  // Kein Emoji, dann nur Rollen-Mention anzeigen
-                  userBundesland = `<@&${role.id}>`;
+                  userBundesland = `<@&${role.id}>`; // Rollen-Mention wenn kein Name
                 }
-                break; // erste passende Rolle nehmen
+                break; // nur erste passende Rolle nehmen
               }
             }
 
