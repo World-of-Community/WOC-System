@@ -215,11 +215,11 @@ module.exports = {
             }
 
             if (nationalitätRoleMention) {
-            outputText = `- \`📌\` » Land: ${landRoleMention}\n`;
+                outputText = `- \`📌\` » Land: ${landRoleMention}\n`;
             } else if (bundeslandRoleMention) {
-            outputText = `- \`📌\` » Bundesland: ${bundeslandRoleMention}\n`;
+                outputText = `- \`📌\` » Bundesland: ${bundeslandRoleMention}\n`;
             } else {
-            outputText = `\📌 » Land/Bundesland: ❓\n`;
+                outputText = `- \`📌\` » Land/Bundesland: ❓`;
             }
 
             // Überprüfe Geschlecht
@@ -290,7 +290,6 @@ module.exports = {
                     //`- \`📌\` » Abzeichen: ${badgeDisplay}\n` +
                     `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
                     `${outputText}\n` +
-                    //`- \`📌\` » Bundesland: ${bundeslandRoleMention || '❓' }\n` +
                     `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                     `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                     `> \`🏆\` **» ALLE STATISTIKEN**\n` +
