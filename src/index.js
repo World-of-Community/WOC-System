@@ -1019,7 +1019,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     } 
     else if (oldState.channelId && !newState.channelId) {
 
-        console.log('Benutzer hat einen Sprachkanal verlassen.');
+        console.log(`Benutzer ${oldState.member.user.username} hat einen Sprachkanal verlassen.`);
 
         let userData = await userdb.findOne({ userID: userId });
         if (userData) {
