@@ -38,10 +38,13 @@ module.exports = {
             'Sachsen-Anhalt': 'Sachsen-Anhalt',
             'Schleswig-Holstein': 'Schleswig-Holstein',
             'Thüringen': 'Thüringen',
-            'Österreich': 'Österreich',
-            'Schweiz': '🇨Schweiz',
-            'Sonstiges': 'Sonstiges',
         };
+
+        const roleNationalität = {
+            'Österreich': 'Österreich',
+            'Schweiz': 'Schweiz',
+            'Sonstiges': 'Sonstiges',
+        }
 
         const roleGeschlecht = {
             'Männlich': ':male_sign:',
@@ -134,6 +137,7 @@ module.exports = {
         ];
 
         let userBundesland = '❓';
+        let userNationalität = '❓';
         let userGeschlecht = '❓';
         let roleGamesList = [];
         let rolePingsList = [];
@@ -141,6 +145,12 @@ module.exports = {
         let bundeslandRoleMention = '';
         let exklusivRoleMention = '';
         let memberRoleMention = '';
+
+        if (nationalitätRoleMention) {
+            outputText = `- \`📌\` » Land: ${landRoleMention}\n`;
+        } else if (bundeslandRoleMention) {
+            outputText = `- \`📌\` » Bundesland: ${bundeslandRoleMention}\n`;
+        }
 
         // Überprüfe, ob das Mitglied eine Teamrolle hat und erstelle eine Liste für Mitgliederrollen
         const hasTeamRole = TeamRoleIds.some(roleId => {
@@ -155,6 +165,14 @@ module.exports = {
             const role = member.roles.cache.get(roleId);
             if (role) {
                 bundeslandRoleMention = `<@&${roleId}>`;
+                return true;
+            }
+            return false;
+        });
+        const hasNationalitätRole = NationalitätRoleIds.some(roleId => {
+            const role = member.roles.cache.get(rolId);
+            if (role) {
+                nationalitätRoleMention = `<@&${roleId}>`;
                 return true;
             }
             return false;
@@ -192,6 +210,10 @@ module.exports = {
                 }
                 break; // nur erste passende Rolle nehmen
               }
+            }
+
+            if (NationalitätRoleIds.includes(role.id)) {
+                userNationalität = roleNationalität[role.name] || '❓';
             }
 
             // Überprüfe Geschlecht
@@ -261,7 +283,8 @@ module.exports = {
                     `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n` +
                     //`- \`📌\` » Abzeichen: ${badgeDisplay}\n` +
                     `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
-                    `- \`📌\` » Bundesland: ${bundeslandRoleMention || '❓' }\n` +
+                    `${outputText}\n` +
+                    //`- \`📌\` » Bundesland: ${bundeslandRoleMention || '❓' }\n` +
                     `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                     `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                     `> \`🏆\` **» ALLE STATISTIKEN**\n` +
