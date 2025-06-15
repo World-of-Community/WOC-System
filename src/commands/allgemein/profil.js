@@ -179,9 +179,20 @@ module.exports = {
         member.roles.cache.forEach(role => {
             if (role.name === '@everyone') return;
 
-            // Bundesland zuweisen
-            if (BundeslandRoleIds.includes(role.id)) {
-                userBundesland = roleBundesland[role.name] || '❓';
+            let userBundesland = '❓'; // Default, falls keine Rolle gefunden wird
+
+            for (const role of member.roles.cache.values()) {
+              if (BundeslandRoleIds.includes(role.id)) {
+                const emoji = roleBundesland[role.name] || '❓';
+            
+                if (emoji === '❓') {
+                  userBundesland = '❓'; // Nur Emoji ohne Rollen-Mention
+                } else {
+                  userBundesland = `${emoji} <@&${role.id}>`; // Emoji + Rollen-Mention
+                }
+            
+                break; // Nur erste passende Rolle nehmen
+              }
             }
 
             // Überprüfe Geschlecht
@@ -251,6 +262,7 @@ module.exports = {
                     `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n` +
                     //`- \`📌\` » Abzeichen: ${badgeDisplay}\n` +
                     `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
+                    `- \`📌\` » Bundesland: ${roleBundesland[role.name] || '❓'} <@&${role.id}>\n` +
                     `- \`📌\` » Bundesland: ${bundeslandRoleMention}\n` +
                     `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                     `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
