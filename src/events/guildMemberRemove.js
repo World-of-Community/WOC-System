@@ -3,6 +3,7 @@ const client = require('../index');
 const fs = require('fs');
 const config = JSON.parse(fs.readFileSync('src/json/config.json', 'utf-8'));
 const userdb = require("../../Datenbank/userdb");
+const inviteCache = require("../../Datenbank/inviteCachedb");
 
 module.exports = {
     name: Events.GuildMemberRemove,

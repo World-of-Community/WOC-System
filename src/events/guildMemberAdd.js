@@ -3,6 +3,7 @@ const client = require('../index');
 const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
+const inviteCache = require("../../Datenbank/inviteCachedb");
 const { once } = require("events");
 
 module.exports = {
@@ -130,6 +131,7 @@ module.exports = {
 
         // Invite-Daten vom Discord-API holen
         const newInvites = await member.guild.invites.fetch();
+        const invites = await guild.invites.fetch();
       
         // Lade alten Cache aus DB
         let inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
