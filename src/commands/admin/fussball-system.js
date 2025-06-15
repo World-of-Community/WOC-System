@@ -306,7 +306,7 @@ module.exports = {
 };
 
 
-                                                //fussball spieler system
+//fussball spieler system
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 
