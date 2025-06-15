@@ -146,6 +146,7 @@ module.exports = {
         let rolePingsList = [];
         let teamRoleMention = '';
         let bundeslandRoleMention = '';
+        let nationalitätRoleMention = '';
         let exklusivRoleMention = '';
         let memberRoleMention = '';
 
