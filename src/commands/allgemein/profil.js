@@ -146,12 +146,6 @@ module.exports = {
         let exklusivRoleMention = '';
         let memberRoleMention = '';
 
-        if (nationalitätRoleMention) {
-            outputText = `- \`📌\` » Land: ${landRoleMention}\n`;
-        } else if (bundeslandRoleMention) {
-            outputText = `- \`📌\` » Bundesland: ${bundeslandRoleMention}\n`;
-        }
-
         // Überprüfe, ob das Mitglied eine Teamrolle hat und erstelle eine Liste für Mitgliederrollen
         const hasTeamRole = TeamRoleIds.some(roleId => {
             const role = member.roles.cache.get(roleId); // Rolle abrufen
@@ -214,6 +208,14 @@ module.exports = {
 
             if (NationalitätRoleIds.includes(role.id)) {
                 userNationalität = roleNationalität[role.name] || '❓';
+            }
+
+            if (nationalitätRoleMention) {
+            outputText = `- \`📌\` » Land: ${landRoleMention}\n`;
+            } else if (bundeslandRoleMention) {
+            outputText = `- \`📌\` » Bundesland: ${bundeslandRoleMention}\n`;
+            } else {
+            outputText = `\📌 » Land/Bundesland: ❓\n`;
             }
 
             // Überprüfe Geschlecht
