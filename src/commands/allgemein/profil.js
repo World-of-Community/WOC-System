@@ -167,7 +167,7 @@ module.exports = {
             return false;
         });
         const hasNationalitätRole = NationalitätRoleIds.some(roleId => {
-            const role = member.roles.cache.get(rolId);
+            const role = member.roles.cache.get(roleId);
             if (role) {
                 nationalitätRoleMention = `<@&${roleId}>`;
                 return true;
