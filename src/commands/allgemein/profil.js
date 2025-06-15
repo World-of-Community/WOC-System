@@ -182,16 +182,18 @@ module.exports = {
             let userBundesland = '❓'; // Default, falls keine Rolle gefunden wird
 
             for (const role of member.roles.cache.values()) {
-                if (BundeslandRoleIds.includes(role.id)) {
-                  const emoji = roleBundesland[role.name] || '❓';
-              
-                  if (emoji === '❓') {
-                    userBundesland = '❓';
-                  } else {
-                    userBundesland = `${emoji} <@&${role.id}>`;
-                  }
-                  break;
+              if (BundeslandRoleIds.includes(role.id)) {
+                const emoji = roleBundesland[role.name];
+            
+                if (emoji) {
+                  // Emoji vorhanden, nur Emoji anzeigen
+                  userBundesland = emoji;
+                } else {
+                  // Kein Emoji, dann nur Rollen-Mention anzeigen
+                  userBundesland = `<@&${role.id}>`;
                 }
+                break; // erste passende Rolle nehmen
+              }
             }
 
             // Überprüfe Geschlecht
