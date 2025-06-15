@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const warndb = require("../../../Datenbank/warndb");
 
 module.exports = {
