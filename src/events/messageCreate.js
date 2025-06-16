@@ -146,7 +146,7 @@ module.exports = {
 
     // Fragen wegen Minecraft Server
     if (message.author.bot) return;
-    
+
     const frage = message.content.toLowerCase();
   
     const suchbegriffe = [
@@ -197,7 +197,7 @@ module.exports = {
       const timestamp = Math.floor((Date.now() + deleteAfter) / 1000); // UNIX-Timestamp in Sekunden
   
       const embed = new EmbedBuilder()
-        .setTitle('`🌐` Minecraft-Server IP')
+        .setTitle('🌐 Minecraft-Server IP')
         .setDescription(
             `> \`📡\` » Die IP des Servers lautet: \`${mcServerIP}\`\n\n` +
             `> \`⏳\` » Nachricht wird gelöcht am: <t:${timestamp}:T> (<t:${timestamp}:R>)`)
