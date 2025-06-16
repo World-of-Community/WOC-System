@@ -152,6 +152,7 @@ module.exports = {
         'was ist die ip',
         'server ip',
         'minecraft ip',
+        'ip',
         'ip?',
         'ip ?',
         'ip bitte',
