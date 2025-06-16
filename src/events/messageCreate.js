@@ -72,7 +72,7 @@ module.exports = {
         ];
       
         if (suchbegriffe.some(begriff => frage.includes(begriff))) {
-          const deleteAfter = 3 * 60 * 1000; // 3 Minuten in Millisekunden
+          const deleteAfter = 30 * 1000; // 30 Sekunden in Millisekunden
           const timestamp = Math.floor((Date.now() + deleteAfter) / 1000); // UNIX-Timestamp in Sekunden
       
           const embed = new EmbedBuilder()
