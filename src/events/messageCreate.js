@@ -85,7 +85,8 @@ module.exports = {
           const reply = await message.reply({ embeds: [embed] });
       
           setTimeout(() => {
-            reply.delete().catch(() => {}); // Fehler ignorieren, falls Nachricht schon gelöscht wurde
+            reply.delete().catch(() => {});        // Bot-Antwort löschen
+            message.delete().catch(() => {});      // User-Nachricht löschen
           }, deleteAfter);
         }
             
