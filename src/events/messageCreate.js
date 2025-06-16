@@ -145,6 +145,8 @@ module.exports = {
     }
 
     // Fragen wegen Minecraft Server
+    if (message.author.bot) return;
+    
     const frage = message.content.toLowerCase();
   
     const suchbegriffe = [
