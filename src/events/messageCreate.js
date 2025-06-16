@@ -5,6 +5,7 @@ const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
 const teamdb = require("../../Datenbank/teamdb");
 const bumpdb = require("../../Datenbank/bumpdb");
+const { time } = require("console");
 
 const mcServerIP = 'worldofcommunity.de'; // IP deines Servers
 
@@ -78,7 +79,7 @@ module.exports = {
             .setTitle('🌐 Minecraft-Server IP')
             .setDescription(
                 `> \`📡\` » Die IP des Servers lautet: \`${mcServerIP}\`\n\n` +
-                `> \`⏳\` » Nachricht wird gelöcht am: <t:${timestamp}:T> (<t:${timestamp}:R>)`)
+                `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`)
             .setColor('Green');
       
           const reply = await message.reply({ embeds: [embed] });
