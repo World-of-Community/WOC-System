@@ -76,7 +76,7 @@ module.exports = {
           const timestamp = Math.floor((Date.now() + deleteAfter) / 1000); // UNIX-Timestamp in Sekunden
       
           const embed = new EmbedBuilder()
-            .setTitle('🌐 Minecraft-Server IP')
+            .setTitle('`🌐` Minecraft-Server IP')
             .setDescription(
                 `> \`📡\` » Die IP des Servers lautet: \`${mcServerIP}\`\n\n` +
                 `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`)
