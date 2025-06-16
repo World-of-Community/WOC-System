@@ -307,8 +307,8 @@ module.exports = {
 
 
 //fussball spieler system
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb');
+//const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+//const { Team } = require('../../../Datenbank/fussballdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
