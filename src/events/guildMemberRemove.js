@@ -8,6 +8,23 @@ const inviteCache = require("../../Datenbank/inviteCachedb");
 module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
+
+        const inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
+        if (!inviteCache) return;
+    
+        // Suche den User, der ihn eingeladen hat
+        const userDoc = await User.findOne({ userID: member.id });
+        if (!userDoc) return;
+    
+        // Optional: Wer hat den User eingeladen?
+        const inviterID = userDoc.invitedBy;
+        if (!inviterID) return;
+    
+        await User.findOneAndUpdate(
+          { userID: inviterID },
+          { $inc: { 'invites.left': 1 } }
+        );
+
         const logchannel = member.guild.channels.cache.get("1263436406655680513");
         if (!logchannel) return;
 
@@ -35,22 +52,6 @@ module.exports = {
             // Nutzerdaten löschen
             await userData.deleteOne();
         }
-
-        const inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
-        if (!inviteCache) return;
-    
-        // Suche den User, der ihn eingeladen hat
-        const userDoc = await User.findOne({ userID: member.id });
-        if (!userDoc) return;
-    
-        // Optional: Wer hat den User eingeladen?
-        const inviterID = userDoc.invitedBy;
-        if (!inviterID) return;
-    
-        await User.findOneAndUpdate(
-          { userID: inviterID },
-          { $inc: { 'invites.left': 1 } }
-        );
 
         // Nachrichten des Users in bestimmtem Kanal löschen
         const CHANNEL_ID = '1172920281526960238';

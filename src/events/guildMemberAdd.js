@@ -130,6 +130,7 @@ module.exports = {
         // Invite System
 
         // Invite-Daten vom Discord-API holen
+        const guild = member.guild;
         const newInvites = await member.guild.invites.fetch();
         const invites = await guild.invites.fetch();
       
