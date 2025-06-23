@@ -375,6 +375,18 @@ module.exports = {
         return [teams[team1Index], teams[team2Index]];
       }
 
+      function generateOdds() {
+        const probTeam1 = Math.random() * 0.5 + 0.25;
+        const probTeam2 = Math.random() * (1 - probTeam1);
+        const probDraw = 1 - probTeam1 - probTeam2;
+      
+        return {
+          team1: 1 / probTeam1,
+          draw: 1 / probDraw,
+          team2: 1 / probTeam2,
+        };
+      }
+
     // Initiales Info-Embed mit Buttons
     const overviewEmbed = new EmbedBuilder()
       .setTitle('`⚽` » Fußball Übersicht')
