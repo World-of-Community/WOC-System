@@ -126,8 +126,7 @@ module.exports = {
     });
 
     const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.Button,
-      time: 60000
+      componentType: ComponentType.Button
     });
 
     collector.on('collect', async i => {
@@ -137,10 +136,10 @@ module.exports = {
 
       if (i.customId === 'tabelle') {
         const tabelleEmbed = await createTabelleEmbed();
-        await i.update({ embeds: [tabelleEmbed], components: [] });
+        await i.followUp({ embeds: [tabelleEmbed], components: [] });
       } else if (i.customId === 'spieltag') {
         const spieltagEmbed = await createNextMatchdayEmbed();
-        await i.update({ embeds: [spieltagEmbed], components: [] });
+        await i.followUp({ embeds: [spieltagEmbed], components: [] });
       }
     });
 
