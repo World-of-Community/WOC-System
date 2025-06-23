@@ -235,7 +235,7 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     if (Math.random() < 0.1) {
       if (Math.random() < 0.5) {
         torGezaehlt = false;
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT - ${score1}-${score2} (${spielminute}')`);
+        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT \`❌\` - ${score1}-${score2} (${spielminute}')`);
       } else {
         events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${spielminute}')`);
       }
@@ -283,17 +283,11 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     const team = Math.random() < 0.5 ? team1 : team2;
     const teamName = team === team1 ? team1Name : team2Name;
     const player = getRandomPlayer(team);
-    events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** ${spielminute}')`);
+    events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** (${spielminute}')`);
   }
 
   if (Math.random() < 0.03) {
-    events.push(`\`⏸️\` Spielunterbrechung ${spielminute}')`);
-  }
-
-  if (Math.random() < 0.10) {
-    const team = Math.random() < 0.5 ? team1 : team2;
-    const teamName = team === team1 ? team1Name : team2Name;
-    events.push(`\`🕹️\` ${teamName} im Ballbesitz ${spielminute}')`);
+    events.push(`\`⏸️\` Spielunterbrechung (${spielminute}')`);
   }
 
   if (Math.random() < 0.1) {
@@ -302,13 +296,13 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     else cornersTeam2++;
 
     const teamName = team === 'team1' ? team1Name : team2Name;
-    events.push(`\`🚩\` Ecke für ${teamName} ${spielminute}')`);
+    events.push(`\`🚩\` Ecke für ${teamName} (${spielminute}')`);
   }
 
   // *** HIER: Prüfen, ob mindestens ein Event in dieser Minute hinzugefügt wurde ***
   if (events.length === eventsBefore) {
     const neutralTeam = Math.random() < 0.5 ? team1Name : team2Name;
-    events.push(`\`⚽\` Ballbesitz für ${neutralTeam} ${spielminute}')`);
+    events.push(`\`🕹️\` ${neutralTeam} im Ballbesitz (${spielminute}')`);
   }
 
   // Beispiel für Nachspielzeit und Schlusspfiff
