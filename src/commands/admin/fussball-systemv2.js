@@ -173,13 +173,13 @@ module.exports = {
 
       switch (i.values[0]) {
         case 'tabelle':
-          await i.update({ embeds: [tabelleEmbed], components: [auswahlMenü] });
+          await i.followUp({ embeds: [tabelleEmbed], components: [auswahlMenü] });
           break;
         case 'naechstes_spiel':
-          await i.update({ embeds: [naechstesSpielEmbed], components: [auswahlMenü] });
+          await i.followUp({ embeds: [naechstesSpielEmbed], components: [auswahlMenü] });
           break;
         case 'spieltag':
-          await i.update({ embeds: [spieltagEmbed], components: [auswahlMenü] });
+          await i.followUp({ embeds: [spieltagEmbed], components: [auswahlMenü] });
           break;
       }
     });
