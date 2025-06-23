@@ -77,22 +77,42 @@ module.exports = {
     }
 
     const tabelleEmbed = new EmbedBuilder()
+      .setTitle('📊 Aktuelle Tabelle')
+      .setColor('#0099ff');
 
-    .setTitle('📊 Aktuelle Tabelle')
-    .setColor('#0099ff');
-    teams.forEach((team, i) => {
-        const displayName = liveTeams.has(team.name) ? `\`🔴\` ${team.name}` : team.name;
-        tabelleEmbed.addFields({
-          name: `${i + 1}. ${displayName}`,
-          value: `Spiele: ${team.played}, S: ${team.won}, U: ${team.draw}, N: ${team.lost}, Tore: ${team.goalsFor}, GT: ${team.goalsAgainst}, TD: ${team.goalsFor - team.goalsAgainst}, Punkte: ${team.points}`,
-          inline: false
-        });
-    });
+    for (const [i, team] of teams.entries()) {
+      const displayName = liveTeams.has(team.name) ? `\`🔴\` ${team.name}` : team.name;
+
+      const recentMatches = await Match.find({
+        $or: [
+          { homeTeam: team.name },
+          { awayTeam: team.name }
+        ],
+        score1: { $ne: null },
+        score2: { $ne: null },
+        date: { $lt: now }
+      }).sort({ date: -1 }).limit(5);
+
+      const last5 = recentMatches.map(match => {
+        const isHome = match.homeTeam === team.name;
+        const teamGoals = isHome ? match.score1 : match.score2;
+        const opponentGoals = isHome ? match.score2 : match.score1;
+        if (teamGoals > opponentGoals) return '`✅`';
+        if (teamGoals < opponentGoals) return '`❌`';
+        return '`➖`';
+      }).join(' ');
+
+      tabelleEmbed.addFields({
+        name: `${i + 1}. ${displayName}`,
+        value: `Spiele: ${team.played} | S: ${team.won} | U: ${team.draw} | N: ${team.lost} | Tore: ${team.goalsFor} | GT: ${team.goalsAgainst} | TD: ${team.goalsFor - team.goalsAgainst} | Pkte: **${team.points}**\nLetzte 5: ${last5 || '–'}`,
+        inline: false
+      })
+    }
 
     // Nächstes Spiel Embed
     const nextMatch = upcomingMatches[0];
     const naechstesSpielEmbed = new EmbedBuilder()
-      .setTitle('🏟️ Nächstes Spiel')
+      .setTitle('\`🏟️\` Nächstes Spiel')
       .setColor('#00cc66');
     if (nextMatch) {
       naechstesSpielEmbed.setDescription(
@@ -107,7 +127,7 @@ module.exports = {
     const ersterSpieltag = nextMatch?.matchday ?? null;
     const spieltagMatches = await Match.find({ matchday: ersterSpieltag }).sort({ date: 1 });
     const spieltagEmbed = new EmbedBuilder()
-      .setTitle(`\`📅\` Spieltag ${ersterSpieltag ?? 'N/A'}`)
+      .setTitle(`\`📅\` Spieltag: ${ersterSpieltag ?? 'N/A'}`)
       .setColor('#ffaa00');
     if (spieltagMatches.length) {
       for (const match of spieltagMatches) {
@@ -123,7 +143,7 @@ module.exports = {
 
     // Übersicht Embed + Select-Menü
     const overviewEmbed = new EmbedBuilder()
-      .setTitle('⚽ » Fußball Übersicht')
+      .setTitle('\`⚽\` » Fußball Übersicht')
       .setDescription(
         'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen.\n\n' +
         '- 💥 » **Spannende Matches** mit Live-Statistiken\n' +
