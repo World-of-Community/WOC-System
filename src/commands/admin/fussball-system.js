@@ -174,7 +174,7 @@ function createLiveMatchesSelectMenu(liveMatches) {
 }
 
 // Detailliertes Embed zu einem Live-Spiel mit Statistiken (Beispiel)
-function createLiveMatchDetailEmbed(match, events, push, statusMessage, team1, team2, team1Name, team2Name, userTip) {
+function createLiveMatchDetailEmbed(match, events, statusMessage, team1, team2, team1Name, team2Name, userTip) {
   const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   const spielminute = formatMatchMinute(match);
   const scoreHome = match.homeScore ?? 0;
@@ -221,6 +221,8 @@ function createLiveMatchDetailEmbed(match, events, push, statusMessage, team1, t
 
       const fullTeam1Data = teamsData.find(t => t.name === team1.name);
       const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
+      if (!Array.isArray(events)) events = [];
 
       // VAR prüft Tor
       if (Math.random() < 0.1) {
