@@ -99,9 +99,9 @@ module.exports = {
       .setTitle('⚽ » Fußball Übersicht')
       .setDescription(
         'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
-        '- 💥 » **Spannende Matches** mit Live-Statistiken\n' +
-        '- 🏆 » **Kampf um den Meistertitel** unter den besten Teams\n' +
-        '- 📊 » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
+        '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
+        '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
+        '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
         'Klicke unten, um die aktuelle Tabelle oder den nächsten Spieltag anzuzeigen.'
       )
       .setColor('Blurple');
