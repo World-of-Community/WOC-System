@@ -131,12 +131,14 @@ module.exports = {
         return i.reply({ content: 'Nur du darfst diese Buttons benutzen.', ephemeral: true });
       }
 
+      await i.deferReply({ ephemeral: true });
+
       if (i.customId === 'tabelle') {
         const tabelleEmbed = await createTabelleEmbed();
-        await i.followUp({ embeds: [tabelleEmbed], ephemeral: true });
+        await i.editReply({ embeds: [tabelleEmbed], ephemeral: true });
       } else if (i.customId === 'spieltag') {
         const spieltagEmbed = await createNextMatchdayEmbed();
-        await i.followUp({ embeds: [spieltagEmbed], ephemeral: true });
+        await i.editReply({ embeds: [spieltagEmbed], ephemeral: true });
       }
     });
 
