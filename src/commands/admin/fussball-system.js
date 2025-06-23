@@ -173,6 +173,11 @@ function createLiveMatchesSelectMenu(liveMatches) {
     );
 }
 
+function getRandomPlayer(team) {
+  const validPlayers = Array.isArray(team.players) ? team.players.filter(p => typeof p === 'string' && p.trim() !== '') : [];
+  return validPlayers.length > 0 ? validPlayers[Math.floor(Math.random() * validPlayers.length)] : 'Unbekannter Spieler';
+}
+
 // Detailliertes Embed zu einem Live-Spiel mit Statistiken (Beispiel)
 function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, team2, team1Name, team2Name, userTip) {
   const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
