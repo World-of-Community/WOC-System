@@ -5,6 +5,7 @@ const matchSchema = new mongoose.Schema({
   awayTeam: { type: String, required: true, trim: true },
   matchday: { type: Number, required: true },
   date: { type: Date, required: true },
+  endDate: { $gte: liveNow },
   homeScore: { type: Number, default: null }, // Tore Heimteam, null = noch nicht gesetzt
   awayScore: { type: Number, default: null }, // Tore Auswärtsteam, null = noch nicht gesetzt
 }, {

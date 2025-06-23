@@ -20,6 +20,18 @@ const proLeagueTeams = [
 
 async function createTabelleEmbed() {
   const allTeams = await Team.find({ league: 'Pro League' });
+  const liveNow = new Date();
+  const liveMatches = await Match.find({
+    date: { $lte: liveNow },
+    endDate: { $gte: liveNow } // Du brauchst dieses Feld in deiner Match-Datenbank!
+  });
+
+  const liveTeams = new Set();
+  for (const m of liveMatches) {
+    liveTeams.add(m.homeTeam);
+    liveTeams.add(m.awayTeam);
+  }
+
   const teamMap = new Map(allTeams.map(t => [t.name.trim(), t.toObject()]));
 
   for (const name of proLeagueTeams) {
@@ -47,15 +59,17 @@ async function createTabelleEmbed() {
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
 
   const description = proLeagueData.map((t, i) => {
+    const isLive = liveTeams.has(t.name);
     const platz = (i + 1).toString().padStart(2, ' ');
-    return `**${platz}.** ${t.name.padEnd(15)} | Sp: ${t.played.toString().padStart(2)} | S: ${t.won.toString().padStart(2)} | U: ${t.draw.toString().padStart(2)} | N: ${t.lost.toString().padStart(2)} | T: ${t.goalsFor.toString().padStart(2)} | GT: ${t.goalsAgainst.toString().padStart(2)} | TD: ${t.goalDifference.toString().padStart(3)} | Pkte: ${t.points.toString().padStart(3)}`;
+    const teamDisplay = `${isLive ? '`🔴`' : ''} ${t.name}`.padEnd(17);
+    return `**${platz}.** ${teamDisplay} | Sp: ${t.played.toString().padStart(2)} | S: ${t.won.toString().padStart(2)} | U: ${t.draw.toString().padStart(2)} | N: ${t.lost.toString().padStart(2)} | T: ${t.goalsFor.toString().padStart(2)} | GT: ${t.goalsAgainst.toString().padStart(2)} | TD: ${t.goalDifference.toString().padStart(3)} | Pkte: ${t.points.toString().padStart(3)}`;
   }).join('\n');
 
   return new EmbedBuilder()
     .setTitle('🏆 Pro League Tabelle')
     .setDescription(description || 'Keine Daten vorhanden')
     .setColor(0xFFD700)
-    .setFooter({ text: 'Zuletzt aktualisiert' })
+    .setFooter({ text: '🔴 = Team spielt aktuell live | Zuletzt aktualisiert' })
     .setTimestamp();
 }
 
