@@ -83,7 +83,7 @@ async function createNextMatchdayEmbed() {
 
   if (!nextMatches.length) {
     return new EmbedBuilder()
-      .setTitle('📅 Nächster Spieltag')
+      .setTitle('\`📅\` Nächster Spieltag')
       .setDescription('Keine Spiele für den nächsten Spieltag gefunden.')
       .setColor(0x00BFFF);
   }
@@ -99,7 +99,7 @@ async function createNextMatchdayEmbed() {
   }).join('\n');
 
   return new EmbedBuilder()
-    .setTitle(`📅 Nächster Spieltag: Spieltag ${nextMatchdayNumber}`)
+    .setTitle(`\`📅\` Nächster Spieltag: Spieltag ${nextMatchdayNumber}`)
     .setDescription(matchdayText)
     .setColor(0x00BFFF);
 }
@@ -114,15 +114,15 @@ function formatMatchMinute(match) {
   return 'Ende';
 }
 
-function createLiveMatchEmbed(match) {
+function createLiveMatchEmbed(match, liveCount) {
   const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   const spielminute = formatMatchMinute(match);
   const scoreHome = match.homeScore ?? 0;
   const scoreAway = match.awayScore ?? 0;
 
   return new EmbedBuilder()
-    .setTitle(`🔴 Live Spiel: ${match.homeTeam} vs ${match.awayTeam}`)
-    .setDescription(`Anpfiff: ${startTime} Uhr\nSpielminute: ${spielminute}'\n\n**${match.homeTeam}** ${scoreHome} - ${scoreAway} **${match.awayTeam}**`)
+    .setTitle(`\`🔴\` Live Spiele: ${liveCount}`)
+    .setDescription(`${match.homeTeam} ${scoreHome} - ${scoreAway} ${match.awayTeam} (Anpfiff: ${startTime} Uhr, Spielminute: ${spielminute}')`)
     .setColor(0xff0000)
     .setTimestamp();
 }
@@ -206,7 +206,7 @@ module.exports = {
           return i.editReply({
             embeds: [
               new EmbedBuilder()
-                .setTitle('🔴 Live Spiele')
+                .setTitle(`\`🔴\` Live Spiele: 0`)
                 .setDescription('Zurzeit laufen keine Spiele.')
                 .setColor(0xff0000),
             ],
@@ -216,17 +216,17 @@ module.exports = {
 
         currentIndex = 0;
         liveMessage = await i.editReply({
-          embeds: [createLiveMatchEmbed(liveMatches[currentIndex])],
+          embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
           components: [
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setCustomId('prev_match')
-                .setLabel('⬅️')
+                .setLabel('⬅️ Vorherige Seite')
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(true),
               new ButtonBuilder()
                 .setCustomId('next_match')
-                .setLabel('➡️')
+                .setLabel('➡️ Nächste Seite')
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(liveMatches.length <= 1),
             ),
@@ -247,7 +247,7 @@ module.exports = {
               await liveMessage.edit({
                 embeds: [
                   new EmbedBuilder()
-                    .setTitle('🔴 Live Spiele')
+                    .setTitle(`\`🔴\` Live Spiele: 0`)
                     .setDescription('Zurzeit laufen keine Spiele.')
                     .setColor(0xff0000),
                 ],
@@ -261,17 +261,17 @@ module.exports = {
             if (currentIndex < 0) currentIndex = 0;
 
             await liveMessage.edit({
-              embeds: [createLiveMatchEmbed(liveMatches[currentIndex])],
+              embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
               components: [
                 new ActionRowBuilder().addComponents(
                   new ButtonBuilder()
                     .setCustomId('prev_match')
-                    .setLabel('⬅️')
+                    .setLabel('⬅️ Vorherige Seite')
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(currentIndex === 0),
                   new ButtonBuilder()
                     .setCustomId('next_match')
-                    .setLabel('➡️')
+                    .setLabel('➡️ Nächste Seite')
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(currentIndex === liveMatches.length - 1),
                 ),
@@ -300,17 +300,17 @@ module.exports = {
             }
 
             await btnInt.update({
-              embeds: [createLiveMatchEmbed(liveMatches[currentIndex])],
+              embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
               components: [
                 new ActionRowBuilder().addComponents(
                   new ButtonBuilder()
                     .setCustomId('prev_match')
-                    .setLabel('⬅️')
+                    .setLabel('⬅️ Vorherige Seite')
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(currentIndex === 0),
                   new ButtonBuilder()
                     .setCustomId('next_match')
-                    .setLabel('➡️')
+                    .setLabel('➡️ Nächste Seite')
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(currentIndex === liveMatches.length - 1),
                 ),
@@ -322,7 +322,7 @@ module.exports = {
             if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < liveMatches.length) {
               currentIndex = selectedIndex;
               await btnInt.update({
-                embeds: [createLiveMatchEmbed(liveMatches[currentIndex])],
+                embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
                 components: [
                   new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
