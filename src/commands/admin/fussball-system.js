@@ -162,19 +162,137 @@ function createLiveMatchDetailEmbed(match) {
   const ballPossessionHome = match.ballPossessionHome ?? 50;
   const ballPossessionAway = 100 - ballPossessionHome;
 
+  for (let minute = 1; minute <= 90 + extraTime; minute++) {
+    let torGezaehlt = true;
+    let scorer = '';
+    let xG = 0;
+
+    if (minute % 4 === 0 && Math.random() < 0.25) {
+      const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
+      xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+      scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+
+      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
+      // VAR prüft Tor
+      if (Math.random() < 0.1) {
+        if (Math.random() < 0.5) {
+          torGezaehlt = false;
+          events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+        } else {
+          events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+        }
+      }
+
+      if (torGezaehlt) {
+        //let torBildURL = 'https://sdmntprsouthcentralus.oaiusercontent.com/files/00000000-ec2c-61f7-b345-976b5c037a55/raw?se=2025-05-27T10%3A25%3A20Z&sp=r&sv=2024-08-04&sr=b&scid=264f18fd-b8df-5666-9e99-e606d0b69734&skoid=04233560-0ad7-493e-8bf0-1347c317d021&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-27T08%3A02%3A53Z&ske=2025-05-28T08%3A02%3A53Z&sks=b&skv=2024-08-04&sig=P5VQDaHRB0evKljcTSRygoi6Smt5lOUB6vde6nog8zg%3D';
+
+        if (teamScored === 'team1') {
+          score1++;
+          xG1 += xG;
+          events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+        } else {
+          score2++;
+          xG2 += xG;
+          events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+        }
+      }
+    }
+
+    if (Math.random() < 0.5) team1Passes++;
+    else team2Passes++;
+    
+    if (Math.random() < 0.3) team1Shots++;
+    else team2Shots++;
+    
+    if (Math.random() < 0.2) team1Tackles++;
+    else team2Tackles++;
+    
+    // In der Schleife bei gelben Karten:
+    if (Math.random() < 0.15 && minute % 6 === 0) {
+      const team = Math.random() < 0.5 ? 'team1' : 'team2';
+      const player = getRandomPlayer(team === 'team1' ? team1 : team2);
+      if (team === 'team1') yellowCardsTeam1++;
+      else yellowCardsTeam2++;
+      events.push(`\`🟨\` Gelbe Karte für **${player}** (${getDisplayMinute(minute)})`);
+    }
+
+    if (Math.random() < 0.05) {
+      const team = Math.random() < 0.5 ? team1Name : team2Name;
+      const teamName = team === team1 ? team1Name : team2Name;
+      events.push(`\`🎯\` Freistoß für ${teamName} (${getDisplayMinute(minute)})`);
+    }
+
+    if (Math.random() < 0.04) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
+      const player = getRandomPlayer(team);
+      events.push(`\`🏳️\` Abseits von ${teamName} durch **${player}** (${getDisplayMinute(minute)})`);
+    }
+
+    // Gefährlicher Angriff (z.B. 8% Chance pro Minute)
+    if (Math.random() < 0.08) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
+      const player = getRandomPlayer(team);
+      events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** (${getDisplayMinute(minute)})`);
+    }
+
+    // Spielunterbrechung (z.B. 3% Chance)
+    if (Math.random() < 0.03) {
+      events.push(`\`⏸️\` Spielunterbrechung (${getDisplayMinute(minute)})`);
+    }
+
+    if (Math.random() < 0.10) { // 5% Chance pro Minute
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const teamName = team === team1 ? team1Name : team2Name;
+      events.push(`\`🕹️\` ${teamName} im Ballbesitz (${getDisplayMinute(minute)})`);
+    }
+
+    // Beispiel: Ecke - wenn tatsächlich passiert, erhöhen
+    if (Math.random() < 0.1) {  // 10% Chance pro Minute für Ecke
+      const team = Math.random() < 0.5 ? 'team1' : 'team2';
+      if (team === 'team1') cornersTeam1++;
+      else cornersTeam2++;
+
+      const teamName = team === 'team1' ? team1Name : team2Name;
+      events.push(`\`🚩\` Ecke für ${teamName} (${getDisplayMinute(minute)})`);
+    }
+
+    // Funktion zur Anzeige der Spielminute
+    function getDisplayMinute(minute) {
+      if (minute <= 90) return `${minute}'`;
+      return `90' +${minute - 90}`;
+    }
+    
+    // Beispielhafte Event-Generierung in einem Spiel-Tick
+    if (minute === 90) {
+      events.push(`\`⏳\` Nachspielzeit beginnt! (+${extraTime}')`);
+    }
+    
+    if (minute === 90 + extraTime) {
+      events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
+    }
+
+    const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
   return new EmbedBuilder()
     .setTitle(`\`🔴\` Live-Spiel Detail: ${match.homeTeam} vs ${match.awayTeam}`)
-    .setDescription(`Anpfiff: ${startTime} Uhr\nSpielminute: ${spielminute}'`)
+    .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
     .addFields(
+      { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
       { name: 'Spielstand', value: `${scoreHome} - ${scoreAway}`, inline: true },
       { name: 'xG', value: `${xG1} : ${xG2}`, inline: true },
-      { name: 'Gelbe Karten', value: `🟨 ${yellowCardsHome} - ${yellowCardsAway}`, inline: true },
-      { name: 'Ecken', value: `🚩 ${cornersHome} - ${cornersAway}`, inline: true },
-      { name: 'Ballbesitz', value: `${ballPossessionHome}% - ${ballPossessionAway}%`, inline: true }
+      { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsHome} - ${yellowCardsAway}`, inline: true },
+      { name: 'Ballbesitz', value: `${ballPossessionHome}% - ${ballPossessionAway}%`, inline: true },
+      { name: 'Ecken', value: `\`🚩\` ${cornersHome} - ${cornersAway}`, inline: true },
+      { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
     )
     .setColor(0xff0000)
     .setTimestamp();
-}
+}}
 
 module.exports = {
   data: new SlashCommandBuilder()
