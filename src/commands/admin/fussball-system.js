@@ -113,7 +113,7 @@ async function createLiveMatchesEmbed() {
 
   if (liveMatches.length === 0) {
     return new EmbedBuilder()
-      .setTitle('🔴 Live Spiele')
+      .setTitle('`🔴` Live Spiele')
       .setDescription('Zurzeit laufen keine Spiele.')
       .setColor(0xFF0000);
   }
@@ -126,7 +126,7 @@ async function createLiveMatchesEmbed() {
   }).join('\n');
 
   return new EmbedBuilder()
-    .setTitle('🔴 Live Spiele')
+    .setTitle('`🔴` Live Spiele')
     .setDescription(matchDescriptions)
     .setColor(0xFF0000)
     .setTimestamp();
@@ -155,13 +155,13 @@ module.exports = {
         .setLabel('📊 Tabelle')
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
-        .setCustomId('spieltag')
-        .setLabel('📅 Nächster Spieltag')
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
         .setCustomId('live')
         .setLabel('🔴 Live Spiele')
-        .setStyle(ButtonStyle.Danger)
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('spieltag')
+        .setLabel('📅 Nächster Spieltag')
+        .setStyle(ButtonStyle.Secondary)
     );
 
     await interaction.reply({ embeds: [overviewEmbed], components: [buttonRow] });
