@@ -32,6 +32,5 @@ teamSchema.virtual('calculatedPoints').get(function () {
 });
 
 const Team = mongoose.model('Team', teamSchema);
-const Match = mongoose.model('Match', matchSchema);
 
 module.exports = { Team, Match };
