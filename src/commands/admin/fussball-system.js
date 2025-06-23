@@ -109,12 +109,12 @@ module.exports = {
     const buttonRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('tabelle')
-        .setLabel('📊 Tabelle anzeigen')
+        .setLabel('📊 Tabelle')
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
         .setCustomId('spieltag')
         .setLabel('📅 Nächster Spieltag')
-        .setStyle(ButtonStyle.Success)
+        .setStyle(ButtonStyle.Secondary)
     );
 
     await interaction.reply({ embeds: [overviewEmbed], components: [buttonRow] })
