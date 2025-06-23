@@ -13,7 +13,7 @@ const proLeagueTeams = [
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('club-profil')
-    .setDescription('Zeigt Informationen zu einem Fußballclub.')
+    .setDescription('» Zeigt Informationen zu einem Fußballclub. ⚽')
     .addStringOption(option =>
       option.setName('team')
         .setDescription('Name des Teams')
@@ -28,7 +28,7 @@ module.exports = {
 
     const team = await Team.findOne({ name: teamName });
     if (!team) {
-      return interaction.reply({ content: `⚠️ Team **${teamName}** wurde nicht gefunden.`, ephemeral: true });
+      return interaction.reply({ content: `> \`❗\` » Team **${teamName}** wurde nicht gefunden.`, ephemeral: true });
     }
 
     const lastMatch = await Match.find({
@@ -38,25 +38,25 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setTitle(`\`🏟️\` Club-Profil: ${team.name}`)
-      .setColor('Green')
+      .setColor('Blurple')
       .addFields(
-        { name: '📊 Spiele', value: `${team.played}`, inline: true },
-        { name: '✅ Siege', value: `${team.won}`, inline: true },
-        { name: '➖ Unentschieden', value: `${team.draw}`, inline: true },
-        { name: '❌ Niederlagen', value: `${team.lost}`, inline: true },
-        { name: '⚽ Tore (für)', value: `${team.goalsFor}`, inline: true },
-        { name: '🥅 Tore (gegen)', value: `${team.goalsAgainst}`, inline: true },
-        { name: '🏆 Punkte', value: `${team.points}`, inline: true }
+        { name: '`📊` Spiele', value: `${team.played}`, inline: true },
+        { name: '`✅` Siege', value: `${team.won}`, inline: true },
+        { name: '`➖` Unentschieden', value: `${team.draw}`, inline: true },
+        { name: '`❌` Niederlagen', value: `${team.lost}`, inline: true },
+        { name: '`⚽` Tore (für)', value: `${team.goalsFor}`, inline: true },
+        { name: '`🥅` Tore (gegen)', value: `${team.goalsAgainst}`, inline: true },
+        { name: '`🏆` Punkte', value: `${team.points}`, inline: true }
       );
 
     if (lastMatch.length > 0) {
       const m = lastMatch[0];
       embed.addFields({
-        name: '📅 Letztes Spiel',
+        name: '`📅` Letztes Spiel',
         value: `${m.team1} ${m.score1} - ${m.score2} ${m.team2} (${m.date.toLocaleDateString()})`
       });
     }
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 };
