@@ -119,10 +119,24 @@ async function createLiveMatchesEmbed() {
   }
 
   const matchDescriptions = liveMatches.map(m => {
+    const now = new Date();
     const startTime = new Date(m.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    const scoreHome = m.homeScore ?? '-';
-    const scoreAway = m.awayScore ?? '-';
-    return `**${m.homeTeam}** ${scoreHome} : ${scoreAway} **${m.awayTeam}**  (Start: ${startTime})`;
+
+    const diffMs = now - m.date;
+    const diffMin = Math.floor(diffMs / 60000);
+
+    let spielminute;
+    if (diffMin <= 90) {
+      spielminute = diffMin.toString();
+    } else if (diffMin > 90 && diffMin <= 110) { // max. 20 Minuten Nachspielzeit
+      spielminute = `90+${diffMin - 90}`;
+    } else {
+      spielminute = 'Ende';
+    }
+
+    const scoreHome = m.homeScore ?? '0';
+    const scoreAway = m.awayScore ?? '0';
+    return `**${m.homeTeam}** ${scoreHome} - ${scoreAway} **${m.awayTeam}**  (Start: ${startTime}, Min: ${spielminute}')`;
   }).join('\n');
 
   return new EmbedBuilder()
