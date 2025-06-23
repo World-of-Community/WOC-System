@@ -292,7 +292,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
     function getDisplayMinute(minute) {
-      return minute <= 90 ? `${minute}'` : `90'+${minute - 90}`;
+      return minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
     }
 
     // Embed aktualisieren
