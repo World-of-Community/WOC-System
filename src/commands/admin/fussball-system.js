@@ -162,7 +162,7 @@ module.exports = {
 
   async execute(interaction) {
     const overviewEmbed = new EmbedBuilder()
-      .setTitle('⚽ » Fußball Übersicht')
+      .setTitle('`⚽` » Fußball Übersicht')
       .setDescription(
         'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
         '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
