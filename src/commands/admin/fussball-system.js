@@ -162,6 +162,8 @@ function createLiveMatchDetailEmbed(match) {
   const ballPossessionHome = match.ballPossessionHome ?? 50;
   const ballPossessionAway = 100 - ballPossessionHome;
 
+  const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
+
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
     let torGezaehlt = true;
     let scorer = '';
