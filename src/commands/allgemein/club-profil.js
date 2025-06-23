@@ -32,9 +32,9 @@ module.exports = {
     }
 
     const lastMatch = await Match.find({
-      $or: [{ team1: teamName }, { team2: teamName }],
-      date: { $lt: new Date() }
-    }).sort({ date: -1 }).limit(1);
+        $or: [{ team1: team._id }, { team2: team._id }],
+        date: { $lt: new Date() }
+    }).sort({ date: -1 }).limit(1).populate('team1 team2');
 
     const embed = new EmbedBuilder()
       .setTitle(`\`🏟️\` Club-Profil: ${team.name}`)
