@@ -54,30 +54,23 @@ module.exports = {
       const fullTeam1Data = teamsData.find(t => t.name === team1.name);
       const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
-      const yellowCardsTeam1 = 0;
-      const yellowCardsTeam2 = 0;
-
-      const possessionTeam1 = 0;
-      const possessionTeam2 = 0;
-
-      const cornersTeam1 = 0;
-      const cornersTeam2 = 0;
-
+      // Start-Embed
       const embedStatus = new EmbedBuilder()
-        .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
-        .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+        .setTitle(`🏟️ Fußballspiel: ${team1Name} vs. ${team2Name}`)
+        .setDescription(`📍 Austragungsort: **${stadium}**`)
         .setColor('Green')
         .addFields(
           { name: 'Spielminute', value: '0\'', inline: true },
           { name: 'Spielstand', value: '0 - 0', inline: true },
           { name: 'xG', value: '0.00 : 0.00', inline: true },
-          { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
-          { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-          { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
+          { name: 'Gelbe Karten', value: `🟨 0 - 0`, inline: true },
+          { name: 'Ballbesitz', value: '50% - 50%', inline: true },
+          { name: 'Ecken', value: '🚩 0 - 0', inline: true },
           { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
         )
         .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
+      // Aufstellung (optional)
       const players1 = team1.players || [];
       const players2 = team2.players || [];
 
@@ -89,6 +82,7 @@ module.exports = {
           `**${team2Name}:**\n${players2.length > 0 ? players2.join(', ') : 'Keine Spieler-Daten'}`
         );
 
+      // Tipp-Buttons mit Quoten
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('win_team1')
@@ -122,18 +116,18 @@ module.exports = {
           case 'draw': userTip = 'draw'; break;
         }
 
-        await i.update({ content: '`⏳` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
+        await i.update({ content: '⏳ Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
         collector.stop();
 
         await delay(3000);
-        await interaction.followUp({ content: '`🔊` **Anpfiff! Das Spiel beginnt!** `⚽`' });
+        await interaction.followUp({ content: '🔊 **Anpfiff! Das Spiel beginnt!** ⚽' });
         await simulateMatch(interaction, statusMessage, team1, team2, team1Name, team2Name, userTip);
       });
 
       collector.on('end', async collected => {
         if (collected.size === 0) {
           await interaction.editReply({
-            content: '`⏱️` Zeit abgelaufen, kein Tipp abgegeben.',
+            content: '⏱️ Zeit abgelaufen, kein Tipp abgegeben.',
             embeds: [],
             components: [],
           });
@@ -198,17 +192,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   let team2Tackles = 0;
   let team1Saves = 0;
   let team2Saves = 0;
-  const team1Activity = team1Passes + team1Shots + team1Tackles + team1Saves;
-  const team2Activity = team2Passes + team2Shots + team2Tackles + team2Saves;
-  const totalActivity = team1Activity + team2Activity;
-  
-  const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
-  const possessionTeam2 = 100 - possessionTeam1;
 
-  let minute = 0;
-  const events = [`\`🔊\` **Anpfiff! Das Spiel beginnt!** \`⚽\` (${minute}')`];
   const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
-  
+
+  const events = [`🔊 Anpfiff! Das Spiel beginnt! ⚽ (0')`];
+
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
     let torGezaehlt = true;
     let scorer = '';
@@ -219,147 +207,121 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
       scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
 
-      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
-      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
-
       // VAR prüft Tor
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
           torGezaehlt = false;
-          events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+          events.push(`🖥️ VAR-Überprüfung: Tor von ${scorer} wird ABERKANNT - ${score1}-${score2} (${minute}')`);
         } else {
-          events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+          events.push(`🖥️ VAR-Überprüfung: Tor von ${scorer} wird bestätigt ✅ - ${score1}-${score2} (${minute}')`);
         }
       }
 
       if (torGezaehlt) {
-        //let torBildURL = 'https://sdmntprsouthcentralus.oaiusercontent.com/files/00000000-ec2c-61f7-b345-976b5c037a55/raw?se=2025-05-27T10%3A25%3A20Z&sp=r&sv=2024-08-04&sr=b&scid=264f18fd-b8df-5666-9e99-e606d0b69734&skoid=04233560-0ad7-493e-8bf0-1347c317d021&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-27T08%3A02%3A53Z&ske=2025-05-28T08%3A02%3A53Z&sks=b&skv=2024-08-04&sig=P5VQDaHRB0evKljcTSRygoi6Smt5lOUB6vde6nog8zg%3D';
-
         if (teamScored === 'team1') {
           score1++;
           xG1 += xG;
-          events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+          events.push(`⚽ TOOOR! - ${team1Name} - von ${scorer} - ${score1}-${score2} (${minute}')`);
         } else {
           score2++;
           xG2 += xG;
-          events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+          events.push(`⚽ TOOOR! - ${team2Name} - von ${scorer} - ${score1}-${score2} (${minute}')`);
         }
       }
     }
 
-    if (Math.random() < 0.5) team1Passes++;
-    else team2Passes++;
-    
-    if (Math.random() < 0.3) team1Shots++;
-    else team2Shots++;
-    
-    if (Math.random() < 0.2) team1Tackles++;
-    else team2Tackles++;
-    
-    // In der Schleife bei gelben Karten:
+    // Verschiedene Stats random erhöhen
+    if (Math.random() < 0.5) team1Passes++; else team2Passes++;
+    if (Math.random() < 0.3) team1Shots++; else team2Shots++;
+    if (Math.random() < 0.2) team1Tackles++; else team2Tackles++;
+
+    // Gelbe Karten zufällig
     if (Math.random() < 0.15 && minute % 6 === 0) {
       const team = Math.random() < 0.5 ? 'team1' : 'team2';
       const player = getRandomPlayer(team === 'team1' ? team1 : team2);
       if (team === 'team1') yellowCardsTeam1++;
       else yellowCardsTeam2++;
-      events.push(`\`🟨\` Gelbe Karte für **${player}** (${getDisplayMinute(minute)})`);
+      events.push(`🟨 Gelbe Karte für ${player} (${minute}')`);
     }
 
+    // Freistöße, Abseits, gefährliche Angriffe, Unterbrechungen, Ballbesitz und Ecken zufällig erzeugen
     if (Math.random() < 0.05) {
       const team = Math.random() < 0.5 ? team1Name : team2Name;
-      const teamName = team === team1 ? team1Name : team2Name;
-      events.push(`\`🎯\` Freistoß für ${teamName} (${getDisplayMinute(minute)})`);
+      events.push(`🎯 Freistoß für ${team} (${minute}')`);
     }
-
     if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
-      const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
-      events.push(`\`🏳️\` Abseits von ${teamName} durch **${player}** (${getDisplayMinute(minute)})`);
+      events.push(`🏳️ Abseits von ${(team === team1 ? team1Name : team2Name)} durch ${player} (${minute}')`);
     }
-
-    // Gefährlicher Angriff (z.B. 8% Chance pro Minute)
     if (Math.random() < 0.08) {
       const team = Math.random() < 0.5 ? team1 : team2;
-      const teamName = team === team1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
-      events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** (${getDisplayMinute(minute)})`);
+      events.push(`🔥 Gefährlicher Angriff von ${(team === team1 ? team1Name : team2Name)} durch ${player} (${minute}')`);
     }
-
-    // Spielunterbrechung (z.B. 3% Chance)
     if (Math.random() < 0.03) {
-      events.push(`\`⏸️\` Spielunterbrechung (${getDisplayMinute(minute)})`);
+      events.push(`⏸️ Spielunterbrechung (${minute}')`);
     }
-
-    if (Math.random() < 0.10) { // 5% Chance pro Minute
+    if (Math.random() < 0.10) {
       const team = Math.random() < 0.5 ? team1 : team2;
-      const teamName = team === team1 ? team1Name : team2Name;
-      events.push(`\`🕹️\` ${teamName} im Ballbesitz (${getDisplayMinute(minute)})`);
+      events.push(`🕹️ ${(team === team1 ? team1Name : team2Name)} im Ballbesitz (${minute}')`);
     }
-
-    // Beispiel: Ecke - wenn tatsächlich passiert, erhöhen
-    if (Math.random() < 0.1) {  // 10% Chance pro Minute für Ecke
+    if (Math.random() < 0.1) {
       const team = Math.random() < 0.5 ? 'team1' : 'team2';
       if (team === 'team1') cornersTeam1++;
       else cornersTeam2++;
-
       const teamName = team === 'team1' ? team1Name : team2Name;
-      events.push(`\`🚩\` Ecke für ${teamName} (${getDisplayMinute(minute)})`);
+      events.push(`🚩 Ecke für ${teamName} (${minute}')`);
     }
 
-    // Funktion zur Anzeige der Spielminute
-    function getDisplayMinute(minute) {
-      if (minute <= 90) return `${minute}'`;
-      return `90' +${minute - 90}`;
-    }
-    
-    // Beispielhafte Event-Generierung in einem Spiel-Tick
     if (minute === 90) {
-      events.push(`\`⏳\` Nachspielzeit beginnt! (+${extraTime}')`);
+      events.push(`⏳ Nachspielzeit beginnt! (+${extraTime}')`);
     }
-    
     if (minute === 90 + extraTime) {
-      events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
+      events.push(`🔔 Schlusspfiff! Endstand: ${team1Name} ${score1} - ${score2} ${team2Name}`);
     }
 
-    const fullTeam1Data = teamsData.find(t => t.name === team1.name);
-    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
-
-    // Ballbesitz % berechnen aus den gezählten Ballbesitz-Events
-    const totalBallPossessionEvents = ballPossessionCountTeam1 + ballPossessionCountTeam2 || 1;
-    const possessionTeam1Percent = Math.round((ballPossessionCountTeam1 / totalBallPossessionEvents) * 100);
-    const possessionTeam2Percent = 100 - possessionTeam1Percent;
-
+    // Ballbesitz und Activity
     const team1Activity = team1Passes + team1Shots + team1Tackles + team1Saves;
     const team2Activity = team2Passes + team2Shots + team2Tackles + team2Saves;
     const totalActivity = team1Activity + team2Activity;
-    
     const possessionTeam1 = totalActivity > 0 ? Math.round((team1Activity / totalActivity) * 100) : 50;
     const possessionTeam2 = 100 - possessionTeam1;
 
+    // Embed aktualisieren
     const embedUpdate = EmbedBuilder.from(statusMessage.embeds[0])
-      .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+      .setDescription(`📍 Austragungsort: **${stadium}**`)
       .setFields(
-        { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
+        { name: 'Spielminute', value: `${minute}'`, inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
-        { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+        { name: 'Gelbe Karten', value: `🟨 ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
         { name: 'Ballbesitz', value: `${possessionTeam1}% - ${possessionTeam2}%`, inline: true },
-        { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
+        { name: 'Ecken', value: `🚩 ${cornersTeam1}-${cornersTeam2}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       )
       .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
     await statusMessage.edit({ embeds: [embedUpdate] });
-    await delay(1000);
+    await delay(60000); // 1 Sekunde Pause pro Minute Spielzeit; hier ggf auf 60000 für 1 Minute anpassen
   }
 
-  const tippErgebnis = userTip  ? '`✅` Du hast richtig getippt!' : '`❌` Dein Tipp war leider falsch.';
-
+  const tippErgebnis = checkTipResult(userTip, score1, score2);
   await interaction.followUp({
-    content: `\`🏁\` Abpfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**\n${tippErgebnis}`,
+    content: `🏁 Abpfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**\n${tippErgebnis}`,
   });
 }
+
+function checkTipResult(userTip, score1, score2) {
+  if (!userTip) return '`❌` Kein Tipp abgegeben.';
+
+  if (userTip === 'draw' && score1 === score2) return '`✅` Du hast richtig getippt!';
+  if (userTip === 'team1' && score1 > score2) return '`✅` Du hast richtig getippt!';
+  if (userTip === 'team2' && score2 > score1) return '`✅` Du hast richtig getippt!';
+
+  return '`❌` Dein Tipp war leider falsch.';
+}
+
 
 /*
 const {
