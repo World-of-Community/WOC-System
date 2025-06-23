@@ -136,7 +136,7 @@ async function createLiveMatchesEmbed() {
 
     const scoreHome = m.homeScore ?? '0';
     const scoreAway = m.awayScore ?? '0';
-    return `**${m.homeTeam}** ${scoreHome} - ${scoreAway} **${m.awayTeam}**  (Start: ${startTime}, Min: ${spielminute}')`;
+    return `**${m.homeTeam}** ${scoreHome} - ${scoreAway} **${m.awayTeam}**  (Anpfiff: ${startTime} Uhr, Spielminute: ${spielminute}')`;
   }).join('\n');
 
   return new EmbedBuilder()
