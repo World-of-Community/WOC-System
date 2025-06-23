@@ -46,12 +46,10 @@ async function createTabelleEmbed() {
     })
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
 
-  const description = `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-    proLeagueData.map((t, i) => {
-      const platz = (i + 1).toString().padStart(2, ' ');
-      return `┃ **${platz}.** ${t.name.padEnd(15)} | Sp: ${t.played.toString().padStart(2)} | S: ${t.won.toString().padStart(2)} | U: ${t.draw.toString().padStart(2)} | N: ${t.lost.toString().padStart(2)} | T: ${t.goalsFor.toString().padStart(2)} | GT: ${t.goalsAgainst.toString().padStart(2)} | TD: ${t.goalDifference.toString().padStart(3)} | Pkte: ${t.points.toString().padStart(3)} `;
-    }).join('\n') +
-    `\n╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`;
+  const description = proLeagueData.map((t, i) => {
+    const platz = (i + 1).toString().padStart(2, ' ');
+    return `**${platz}.** ${t.name.padEnd(15)} | Sp: ${t.played.toString().padStart(2)} | S: ${t.won.toString().padStart(2)} | U: ${t.draw.toString().padStart(2)} | N: ${t.lost.toString().padStart(2)} | T: ${t.goalsFor.toString().padStart(2)} | GT: ${t.goalsAgainst.toString().padStart(2)} | TD: ${t.goalDifference.toString().padStart(3)} | Pkte: ${t.points.toString().padStart(3)}`;
+  }).join('\n');
 
   return new EmbedBuilder()
     .setTitle('🏆 Pro League Tabelle')
@@ -59,6 +57,36 @@ async function createTabelleEmbed() {
     .setColor(0xFFD700)
     .setFooter({ text: 'Zuletzt aktualisiert' })
     .setTimestamp();
+}
+
+async function createNextMatchdayEmbed() {
+  const now = new Date();
+
+  const nextMatches = await Match.find({ date: { $gte: now } })
+    .sort({ date: 1 })
+    .limit(10);
+
+  if (!nextMatches.length) {
+    return new EmbedBuilder()
+      .setTitle('📅 Nächster Spieltag')
+      .setDescription('Keine Spiele für den nächsten Spieltag gefunden.')
+      .setColor(0x00BFFF);
+  }
+
+  const nextMatchdayNumber = nextMatches[0].matchday;
+  const matchdayGames = await Match.find({ matchday: nextMatchdayNumber }).sort({ date: 1 });
+
+  const matchdayText = matchdayGames.map(m => {
+    const dateStr = new Date(m.date).toLocaleString('de-DE', {
+      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+    });
+    return `${m.homeTeam} vs ${m.awayTeam} - ${dateStr}`;
+  }).join('\n');
+
+  return new EmbedBuilder()
+    .setTitle(`📅 Nächster Spieltag: Spieltag ${nextMatchdayNumber}`)
+    .setDescription(matchdayText)
+    .setColor(0x00BFFF);
 }
 
 module.exports = {
@@ -76,7 +104,7 @@ module.exports = {
         '- 💥 » **Spannende Matches** mit Live-Statistiken\n' +
         '- 🏆 » **Kampf um den Meistertitel** unter den besten Teams\n' +
         '- 📊 » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
-        'Klicke unten, um die aktuelle Tabelle einzublenden.'
+        'Klicke unten, um die aktuelle Tabelle oder den nächsten Spieltag anzuzeigen.'
       )
       .setColor('Blurple');
 
@@ -84,7 +112,11 @@ module.exports = {
       new ButtonBuilder()
         .setCustomId('tabelle')
         .setLabel('📊 Tabelle anzeigen')
-        .setStyle(ButtonStyle.Primary)
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId('spieltag')
+        .setLabel('📅 Nächster Spieltag')
+        .setStyle(ButtonStyle.Success)
     );
 
     const message = await interaction.followUp({
@@ -100,12 +132,15 @@ module.exports = {
 
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: 'Nur du darfst diesen Button verwenden.', ephemeral: true });
+        return i.reply({ content: 'Nur du darfst diese Buttons benutzen.', ephemeral: true });
       }
 
       if (i.customId === 'tabelle') {
         const tabelleEmbed = await createTabelleEmbed();
         await i.update({ embeds: [tabelleEmbed], components: [] });
+      } else if (i.customId === 'spieltag') {
+        const spieltagEmbed = await createNextMatchdayEmbed();
+        await i.update({ embeds: [spieltagEmbed], components: [] });
       }
     });
 
@@ -118,4 +153,3 @@ module.exports = {
     });
   }
 };
-
