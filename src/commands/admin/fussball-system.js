@@ -186,6 +186,7 @@ module.exports = {
     let liveMatches = [];
     let currentIndex = 0;
     let liveMessage;
+    let updateInterval;
 
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) {
@@ -195,7 +196,7 @@ module.exports = {
       if (i.customId === 'live') {
         await i.deferReply({ ephemeral: false });
 
-        const now = new Date();
+        let now = new Date();
         liveMatches = await Match.find({
           date: { $lte: now },
           endDate: { $gte: now },
@@ -209,6 +210,7 @@ module.exports = {
                 .setDescription('Zurzeit laufen keine Spiele.')
                 .setColor(0xff0000),
             ],
+            components: [],
           });
         }
 
@@ -231,6 +233,56 @@ module.exports = {
             new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
           ],
         });
+
+        // Alle 60 Sekunden automatisch aktualisieren
+        updateInterval = setInterval(async () => {
+          try {
+            now = new Date();
+            liveMatches = await Match.find({
+              date: { $lte: now },
+              endDate: { $gte: now },
+            }).sort({ date: 1 });
+
+            if (liveMatches.length === 0) {
+              await liveMessage.edit({
+                embeds: [
+                  new EmbedBuilder()
+                    .setTitle('🔴 Live Spiele')
+                    .setDescription('Zurzeit laufen keine Spiele.')
+                    .setColor(0xff0000),
+                ],
+                components: [],
+              });
+              clearInterval(updateInterval);
+              return;
+            }
+
+            if (currentIndex >= liveMatches.length) currentIndex = liveMatches.length - 1;
+            if (currentIndex < 0) currentIndex = 0;
+
+            await liveMessage.edit({
+              embeds: [createLiveMatchEmbed(liveMatches[currentIndex])],
+              components: [
+                new ActionRowBuilder().addComponents(
+                  new ButtonBuilder()
+                    .setCustomId('prev_match')
+                    .setLabel('⬅️')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(currentIndex === 0),
+                  new ButtonBuilder()
+                    .setCustomId('next_match')
+                    .setLabel('➡️')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(currentIndex === liveMatches.length - 1),
+                ),
+                new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
+              ],
+            });
+          } catch (error) {
+            console.error('Fehler beim Aktualisieren des Live-Embeds:', error);
+            clearInterval(updateInterval);
+          }
+        }, 60 * 1000);
 
         const filter = btnInt => btnInt.user.id === i.user.id;
 
@@ -294,6 +346,7 @@ module.exports = {
         });
 
         liveCollector.on('end', async () => {
+          clearInterval(updateInterval);
           try {
             await liveMessage.edit({ components: [] });
           } catch {}
@@ -312,7 +365,7 @@ module.exports = {
     });
 
     collector.on('end', () => {
-      // Collector für Hauptbuttons beendet
+      // Haupt-Collector Ende
     });
   },
 };
