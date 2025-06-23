@@ -2,6 +2,14 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const { Match } = require('../../../Datenbank/matchdb');
 
+const proLeagueTeams = [
+  'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
+  'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
+  'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
+  'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
+  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
+];
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('club-profil')
@@ -10,6 +18,9 @@ module.exports = {
       option.setName('team')
         .setDescription('Name des Teams')
         .setRequired(true)
+        .addChoices(
+          ...proLeagueTeams.map(team => ({ name: team, value: team }))
+        )
     ),
 
   async execute(interaction) {
@@ -20,7 +31,6 @@ module.exports = {
       return interaction.reply({ content: `⚠️ Team **${teamName}** wurde nicht gefunden.`, ephemeral: true });
     }
 
-    // Optional: Letztes oder nächstes Spiel suchen
     const lastMatch = await Match.find({
       $or: [{ team1: teamName }, { team2: teamName }],
       date: { $lt: new Date() }
