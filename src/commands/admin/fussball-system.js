@@ -103,6 +103,35 @@ async function createNextMatchdayEmbed() {
     .setColor(0x00BFFF);
 }
 
+async function createLiveMatchesEmbed() {
+  const now = new Date();
+
+  const liveMatches = await Match.find({
+    date: { $lte: now },
+    endDate: { $gte: now }
+  }).sort({ date: 1 });
+
+  if (liveMatches.length === 0) {
+    return new EmbedBuilder()
+      .setTitle('🔴 Live Spiele')
+      .setDescription('Zurzeit laufen keine Spiele.')
+      .setColor(0xFF0000);
+  }
+
+  const matchDescriptions = liveMatches.map(m => {
+    const startTime = new Date(m.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    const scoreHome = m.homeScore ?? '-';
+    const scoreAway = m.awayScore ?? '-';
+    return `**${m.homeTeam}** ${scoreHome} : ${scoreAway} **${m.awayTeam}**  (Start: ${startTime})`;
+  }).join('\n');
+
+  return new EmbedBuilder()
+    .setTitle('🔴 Live Spiele')
+    .setDescription(matchDescriptions)
+    .setColor(0xFF0000)
+    .setTimestamp();
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-system')
@@ -116,7 +145,7 @@ module.exports = {
         '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
         '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
         '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
-        'Klicke unten, um die aktuelle Tabelle oder den nächsten Spieltag anzuzeigen.'
+        'Klicke unten, um die aktuelle Tabelle, den nächsten Spieltag oder die Live-Spiele anzuzeigen.'
       )
       .setColor('Blurple');
 
@@ -128,11 +157,15 @@ module.exports = {
       new ButtonBuilder()
         .setCustomId('spieltag')
         .setLabel('📅 Nächster Spieltag')
-        .setStyle(ButtonStyle.Secondary)
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('live')
+        .setLabel('🔴 Live Spiele')
+        .setStyle(ButtonStyle.Danger)
     );
 
-    await interaction.reply({ embeds: [overviewEmbed], components: [buttonRow] })
-    await interaction.followUp({ content: 'Fussball Info gesendet.', ephemeral: true });
+    await interaction.reply({ embeds: [overviewEmbed], components: [buttonRow] });
+    await interaction.followUp({ content: 'Fußball Info gesendet.', ephemeral: true });
 
     const message = await interaction.fetchReply();
 
@@ -153,6 +186,9 @@ module.exports = {
       } else if (i.customId === 'spieltag') {
         const spieltagEmbed = await createNextMatchdayEmbed();
         await i.editReply({ embeds: [spieltagEmbed], ephemeral: true });
+      } else if (i.customId === 'live') {
+        const liveEmbed = await createLiveMatchesEmbed();
+        await i.editReply({ embeds: [liveEmbed], ephemeral: true });
       }
     });
 

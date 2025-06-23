@@ -113,8 +113,8 @@ module.exports = {
 
       await interaction.reply({
         content:
-          `✅ Spiel eingetragen: **${heim}** vs **${auswaerts}** am **${date.toLocaleString('de-DE')}** (Spieltag ${spieltag})\n\n` +
-          `📅 **Alle Spiele für Spieltag ${spieltag}:**\n${spieleListe}`,
+          `\`✅\` Spiel eingetragen: **${heim}** vs **${auswaerts}** am **${date.toLocaleString('de-DE')}** (Spieltag ${spieltag})\n\n` +
+          `\`📅\` **Alle Spiele für Spieltag ${spieltag}:**\n${spieleListe}`,
         ephemeral: true
       });
 

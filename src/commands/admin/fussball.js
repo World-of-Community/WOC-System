@@ -244,8 +244,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           xG2 += xG;
           events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${getDisplayMinute(minute)})`);
         }
-
-        //const torSound = new Audio('./sounds/tor.mp3'); // Pfad zur lokalen MP3-Datei
       }
     }
 
@@ -364,7 +362,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 }
 
 /*
-
 const {
   SlashCommandBuilder,
   EmbedBuilder,
