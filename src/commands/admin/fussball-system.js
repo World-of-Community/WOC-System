@@ -322,7 +322,7 @@ function createLiveMatchDetailEmbed(match, events, statusMessage, team1, team2, 
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
     }
 
-    const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+    const fullTeam1Data = teamsData.find(t => t.name === match.team1);
     const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
   return new EmbedBuilder()
