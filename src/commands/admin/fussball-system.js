@@ -230,9 +230,9 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     if (Math.random() < 0.1) {
       if (Math.random() < 0.5) {
         torGezaehlt = false;
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT - ${score1}-${score2} (${minute}')`);
+        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT - ${score1}-${score2} (${spielminute}')`);
       } else {
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${minute}')`);
+        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${spielminute}')`);
       }
     }
 
@@ -240,11 +240,11 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
       if (teamScored === 'team1') {
         score1++;
         xG1 += xG;
-        events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${minute}')`);
+        events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${spielminute}')`);
       } else {
         score2++;
         xG2 += xG;
-        events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${minute}')`);
+        events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${spielminute}')`);
       }
     }
   }
@@ -258,37 +258,37 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     const player = getRandomPlayer(team === 'team1' ? team1 : team2);
     if (team === 'team1') yellowCardsTeam1++;
     else yellowCardsTeam2++;
-    events.push(`\`🟨\` Gelbe Karte für **${player}** (${minute}')`);
+    events.push(`\`🟨\` Gelbe Karte für **${player}** (${spielminute}')`);
   }
 
   if (Math.random() < 0.05) {
     const team = Math.random() < 0.5 ? team1Name : team2Name;
     const teamName = team === team1 ? team1Name : team2Name;
-    events.push(`\`🎯\` Freistoß für ${teamName} (${minute}')`);
+    events.push(`\`🎯\` Freistoß für ${teamName} (${spielminute}')`);
   }
 
   if (Math.random() < 0.04) {
     const team = Math.random() < 0.5 ? team1 : team2;
     const teamName = team === team1 ? team1Name : team2Name;
     const player = getRandomPlayer(team);
-    events.push(`\`🏳️\` Abseits von ${teamName} durch **${player}** (${minute}')`);
+    events.push(`\`🏳️\` Abseits von ${teamName} durch **${player}** (${spielminute}')`);
   }
 
   if (Math.random() < 0.08) {
     const team = Math.random() < 0.5 ? team1 : team2;
     const teamName = team === team1 ? team1Name : team2Name;
     const player = getRandomPlayer(team);
-    events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** (${minute}')`);
+    events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** ${spielminute}')`);
   }
 
   if (Math.random() < 0.03) {
-    events.push(`\`⏸️\` Spielunterbrechung (${minute}')`);
+    events.push(`\`⏸️\` Spielunterbrechung ${spielminute}')`);
   }
 
   if (Math.random() < 0.10) {
     const team = Math.random() < 0.5 ? team1 : team2;
     const teamName = team === team1 ? team1Name : team2Name;
-    events.push(`\`🕹️\` ${teamName} im Ballbesitz (${minute}')`);
+    events.push(`\`🕹️\` ${teamName} im Ballbesitz ${spielminute}')`);
   }
 
   if (Math.random() < 0.1) {
@@ -297,20 +297,20 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     else cornersTeam2++;
 
     const teamName = team === 'team1' ? team1Name : team2Name;
-    events.push(`\`🚩\` Ecke für ${teamName} (${minute}')`);
+    events.push(`\`🚩\` Ecke für ${teamName} ${spielminute}')`);
   }
 
   // *** HIER: Prüfen, ob mindestens ein Event in dieser Minute hinzugefügt wurde ***
   if (events.length === eventsBefore) {
     const neutralTeam = Math.random() < 0.5 ? team1Name : team2Name;
-    events.push(`\`⚽\` Ballbesitz für ${neutralTeam} (${minute}')`);
+    events.push(`\`⚽\` Ballbesitz für ${neutralTeam} ${spielminute}')`);
   }
 
   // Beispiel für Nachspielzeit und Schlusspfiff
-  if (minute === 90) {
+  if (spielminute === 90) {
     events.push(`\`⏳\` Nachspielzeit beginnt! (+${extraTime}')`);
   }
-  if (minute === 90 + extraTime) {
+  if (spielminute === 90 + extraTime) {
     events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
   }
 
@@ -321,7 +321,7 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     .setTitle(`\`🔴\` Live-Spiel Detail: ${match.homeTeam} vs ${match.awayTeam}`)
     .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
     .addFields(
-      { name: 'Spielminute', value: `${minute}`, inline: true },
+      { name: 'Spielminute', value: `${spielminute}')`, inline: true },
       { name: 'Spielstand', value: `${scoreHome} - ${scoreAway}`, inline: true },
       { name: 'xG', value: `${xG1} : ${xG2}`, inline: true },
       { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsHome} - ${yellowCardsAway}`, inline: true },
