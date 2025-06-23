@@ -197,29 +197,43 @@ module.exports = {
     });
 
     collector.on('collect', async i => {
+
       if (i.user.id !== interaction.user.id) {
         return i.reply({ content: 'Nur du darfst diese Buttons benutzen.', ephemeral: true });
       }
 
-      await i.deferReply({ ephemeral: true });
-
-      if (i.customId === 'tabelle') {
-        const tabelleEmbed = await createTabelleEmbed();
-        await i.editReply({ embeds: [tabelleEmbed], ephemeral: true });
-      } else if (i.customId === 'spieltag') {
-        const spieltagEmbed = await createNextMatchdayEmbed();
-        await i.editReply({ embeds: [spieltagEmbed], ephemeral: true });
-      } else if (i.customId === 'live') {
+      if (i.customId === 'live') {
+        await i.deferReply({ ephemeral: false }); // Öffentlich, damit alle sehen und editierbar
+    
         const liveEmbed = await createLiveMatchesEmbed();
-        await i.editReply({ embeds: [liveEmbed], ephemeral: true });
-      }
-    });
-
-    collector.on('end', async () => {
-      try {
-        await message.edit({ components: [] });
-      } catch (err) {
-        console.error('Fehler beim Entfernen der Buttons:', err);
+        const liveMessage = await i.editReply({ embeds: [liveEmbed], ephemeral: false });
+    
+        const interval = setInterval(async () => {
+          try {
+            const updatedEmbed = await createLiveMatchesEmbed();
+            await liveMessage.edit({ embeds: [updatedEmbed] });
+          } catch (error) {
+            console.error('Fehler beim Aktualisieren des Live-Embeds:', error);
+            clearInterval(interval);
+          }
+        }, 60 * 1000);
+    
+        // Stoppt Intervall, wenn Collector endet
+        collector.once('end', () => {
+          clearInterval(interval);
+        });
+    
+      } else {
+        // Andere Buttons: klassische ephemeral Antwort
+        await i.deferReply({ ephemeral: true });
+    
+        if (i.customId === 'tabelle') {
+          const tabelleEmbed = await createTabelleEmbed();
+          await i.editReply({ embeds: [tabelleEmbed], ephemeral: true });
+        } else if (i.customId === 'spieltag') {
+          const spieltagEmbed = await createNextMatchdayEmbed();
+          await i.editReply({ embeds: [spieltagEmbed], ephemeral: true });
+        }
       }
     });
   }
