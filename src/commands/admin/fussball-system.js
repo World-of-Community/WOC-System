@@ -1,3 +1,153 @@
+// Komplett überarbeiteter Code für /fussball-system mit kompakter Live-Übersicht + detaillierter Spielanzeige bei Auswahl
+
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+  StringSelectMenuBuilder,
+} = require('discord.js');
+
+const { Team } = require('../../../Datenbank/fussballdb');
+const { Match } = require('../../../Datenbank/matchdb');
+
+function formatMatchMinute(match) {
+  const now = new Date();
+  const diffMin = Math.floor((now - match.date) / 60000);
+  if (diffMin < 0 && diffMin >= -5) return `0 (startet in ${Math.abs(diffMin)} Min)`;
+  if (diffMin >= 0 && diffMin <= 90) return diffMin.toString();
+  if (diffMin > 90 && diffMin <= 110) return `90+${diffMin - 90}`;
+  if (diffMin < -5) return '0';
+  return 'Ende';
+}
+
+function createLiveOverviewEmbed(liveMatches) {
+  const lines = liveMatches.map(match => {
+    const scoreHome = match.homeScore ?? 0;
+    const scoreAway = match.awayScore ?? 0;
+    return `${match.homeTeam} ${scoreHome} - ${scoreAway} ${match.awayTeam}`;
+  });
+
+  return new EmbedBuilder()
+    .setTitle('`🔴` Aktuelle Live-Spiele')
+    .setDescription(lines.join('\n') || 'Keine Live-Spiele')
+    .setColor(0xff0000);
+}
+
+function createLiveMatchDetailEmbed(match) {
+  const scoreHome = match.homeScore ?? 0;
+  const scoreAway = match.awayScore ?? 0;
+  const xG1 = match.xG1 ?? 0;
+  const xG2 = match.xG2 ?? 0;
+  const yellow1 = match.yellowCardsTeam1 ?? 0;
+  const yellow2 = match.yellowCardsTeam2 ?? 0;
+  const corners1 = match.cornersTeam1 ?? 0;
+  const corners2 = match.cornersTeam2 ?? 0;
+  const possession1 = match.possessionTeam1 ?? 50;
+  const possession2 = 100 - possession1;
+  const minute = formatMatchMinute(match);
+
+  return new EmbedBuilder()
+    .setTitle(`\`📊\` ${match.homeTeam} ${scoreHome} - ${scoreAway} ${match.awayTeam}`)
+    .addFields(
+      { name: 'Spielminute', value: `${minute}'`, inline: true },
+      { name: 'xG', value: `${xG1.toFixed(2)} : ${xG2.toFixed(2)}`, inline: true },
+      { name: 'Ballbesitz', value: `${possession1}% - ${possession2}%`, inline: true },
+      { name: 'Gelbe Karten', value: `🟨 ${yellow1} - ${yellow2}`, inline: true },
+      { name: 'Ecken', value: `🚩 ${corners1} - ${corners2}`, inline: true }
+    )
+    .setColor(0x00bfff)
+    .setFooter({ text: 'Live-Spielstatistiken' })
+    .setTimestamp();
+}
+
+function createLiveMatchesSelectMenu(liveMatches) {
+  return new StringSelectMenuBuilder()
+    .setCustomId('live_match_select')
+    .setPlaceholder('Wähle ein Spiel für Details')
+    .addOptions(
+      liveMatches.map((match, idx) => ({
+        label: `${match.homeTeam} vs ${match.awayTeam}`,
+        value: idx.toString(),
+        description: `Spielminute: ${formatMatchMinute(match)}'`
+      }))
+    );
+}
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('fussball-system')
+    .setDescription('Zeigt die Fußballübersicht mit Live-Spielen und Tabelle'),
+
+  async execute(interaction) {
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('live')
+        .setLabel('🔴 Live Spiele')
+        .setStyle(ButtonStyle.Danger),
+    );
+
+    await interaction.reply({
+      content: '⚽ Fußball-System Übersicht – wähle eine Option:',
+      components: [row],
+      ephemeral: true,
+    });
+
+    const msg = await interaction.fetchReply();
+
+    const collector = msg.createMessageComponentCollector({
+      componentType: ComponentType.Button,
+      time: 60_000,
+    });
+
+    collector.on('collect', async btn => {
+      if (btn.customId === 'live') {
+        await btn.deferUpdate();
+
+        const now = new Date();
+        const liveMatches = await Match.find({
+          date: { $lte: now },
+          endDate: { $gte: now },
+        });
+
+        if (!liveMatches.length) {
+          return btn.followUp({
+            ephemeral: true,
+            content: 'Aktuell laufen keine Spiele.',
+          });
+        }
+
+        const overviewEmbed = createLiveOverviewEmbed(liveMatches);
+        const selectMenu = createLiveMatchesSelectMenu(liveMatches);
+        const selectRow = new ActionRowBuilder().addComponents(selectMenu);
+
+        const response = await btn.followUp({
+          embeds: [overviewEmbed],
+          components: [selectRow],
+          ephemeral: false,
+        });
+
+        const selectCollector = response.createMessageComponentCollector({
+          componentType: ComponentType.StringSelect,
+          time: 5 * 60 * 1000,
+        });
+
+        selectCollector.on('collect', async select => {
+          const idx = parseInt(select.values[0], 10);
+          const selectedMatch = liveMatches[idx];
+
+          const detailEmbed = createLiveMatchDetailEmbed(selectedMatch);
+
+          await select.update({ embeds: [detailEmbed], components: [selectRow] });
+        });
+      }
+    });
+  },
+};
+
+/*
 const {
   SlashCommandBuilder,
   EmbedBuilder,
@@ -369,3 +519,4 @@ module.exports = {
     });
   },
 };
+*/
