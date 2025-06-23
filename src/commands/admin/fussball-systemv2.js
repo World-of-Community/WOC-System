@@ -171,6 +171,8 @@ module.exports = {
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) return i.reply({ content: '> \`❌\` Nur du darfst das benutzen.', ephemeral: true });
 
+      await i.deferUpdate();
+
       switch (i.values[0]) {
         case 'tabelle':
           await i.followUp({ embeds: [tabelleEmbed], components: [auswahlMenü] });
