@@ -321,8 +321,8 @@ function createLiveMatchDetailEmbed(match, statusMessage, team1, team2, team1Nam
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
     }
 
-    const fullTeam1Data = teamsData.find(t => t.name === team1.name);
-    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+    const fullTeamData = teamsData.find(t => t.name === team.name);
+    const stadium = fullTeamData?.stadium || 'Unbekanntes Stadion';
 
   return new EmbedBuilder()
     .setTitle(`\`🔴\` Live-Spiel Detail: ${match.homeTeam} vs ${match.awayTeam}`)
