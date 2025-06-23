@@ -173,18 +173,6 @@ function createLiveMatchesSelectMenu(liveMatches) {
     );
 }
 
-// Aufstellung (optional)
-      const players1 = team1.players || [];
-      const players2 = team2.players || [];
-
-      const embedLineup = new EmbedBuilder()
-        .setTitle('📋 Aufstellung')
-        .setColor('Blue')
-        .setDescription(
-          `**${team1Name}:**\n${players1.length > 0 ? players1.join(', ') : 'Keine Spieler-Daten'}\n\n` +
-          `**${team2Name}:**\n${players2.length > 0 ? players2.join(', ') : 'Keine Spieler-Daten'}`
-        );
-
 function getRandomPlayer(team) {
   const validPlayers = Array.isArray(team.players) ? team.players.filter(p => typeof p === 'string' && p.trim() !== '') : [];
   return validPlayers.length > 0 ? validPlayers[Math.floor(Math.random() * validPlayers.length)] : 'Unbekannter Spieler';
