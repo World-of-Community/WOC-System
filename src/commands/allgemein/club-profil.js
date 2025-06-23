@@ -28,7 +28,7 @@ module.exports = {
     const team = await Team.findOne({ name: teamName });
 
     if (!team) {
-      return interaction.reply({ content: `⚠️ Team **${teamName}** wurde nicht gefunden.`, ephemeral: true });
+      return interaction.reply({ content: `> ⚠️ Team **${teamName}** wurde nicht gefunden.`, ephemeral: true });
     }
 
     // Letztes Spiel
