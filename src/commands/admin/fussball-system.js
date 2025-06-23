@@ -155,6 +155,7 @@ function createLiveMatchEmbed(match, liveCount) {
     .setTitle(`\`🔴\` Live Spiele: ${liveCount}`)
     .setDescription(`${match.homeTeam} ${scoreHome} - ${scoreAway} ${match.awayTeam} (Anpfiff: ${startTime} Uhr, Spielminute: ${spielminute}')`)
     .setColor(0xff0000)
+    .setFooter({ text: 'Zuletzt aktualisiert'})
     .setTimestamp();
 }
 
@@ -207,6 +208,24 @@ function createLiveMatchDetailEmbed(match, statusMessage, team1, team2, team1Nam
   let team2Saves = 0;
 
   const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
+
+  const proLeagueTeams = await Team.find({ league: 'Pro League' });
+
+      if (!proLeagueTeams || proLeagueTeams.length < 2) {
+        return interaction.reply({
+          content: '❌ Es sind nicht genug Teams in der Pro League Datenbank.',
+          ephemeral: true,
+        });
+      }
+
+      const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
+      const team1Name = team1.name;
+      const team2Name = team2.name;
+  
+      const odds = generateOdds();
+
+      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
     let torGezaehlt = true;
@@ -321,8 +340,8 @@ function createLiveMatchDetailEmbed(match, statusMessage, team1, team2, team1Nam
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
     }
 
-    const fullTeamData = teamsData.find(t => t.name === team.name);
-    const stadium = fullTeamData?.stadium || 'Unbekanntes Stadion';
+    const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
   return new EmbedBuilder()
     .setTitle(`\`🔴\` Live-Spiel Detail: ${match.homeTeam} vs ${match.awayTeam}`)
