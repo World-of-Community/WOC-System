@@ -126,10 +126,19 @@ async function createLiveMatchesEmbed() {
     const diffMin = Math.floor(diffMs / 60000);
 
     let spielminute;
-    if (diffMin <= 90) {
+    let startInfo = '';
+
+    if (diffMin < 0 && diffMin >= -5) {
+    // Spiel startet in weniger als 5 Minuten (negative Differenz)
+      startInfo = `, Spiel beginnt in ${Math.abs(diffMin)} Minute${Math.abs(diffMin) === 1 ? '' : 'n'}`;
+      spielminute = '0';
+    } else if (diffMin <= 90 && diffMin >= 0) {
       spielminute = diffMin.toString();
     } else if (diffMin > 90 && diffMin <= 110) { // max. 20 Minuten Nachspielzeit
       spielminute = `90+${diffMin - 90}`;
+    } else if (diffMin < -5) {
+    // Spiel beginnt später als 5 Minuten
+      spielminute = '0';
     } else {
       spielminute = 'Ende';
     }
