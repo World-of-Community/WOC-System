@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Match = require('../../../Datenbank/matchdb');  // Import von MatchSimple ohne {}
+const { Match } = require('../../../Datenbank/matchdb');
 
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
