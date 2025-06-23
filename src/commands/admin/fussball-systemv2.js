@@ -56,9 +56,38 @@ module.exports = {
       }).replace(',', ' -');
     }
 
+    // Aktuelle Zeit
+    const now = new Date();
+
     // Teams + Spiele laden
     const teams = await Team.find().sort({ points: -1, goalsFor: -1 });
-    const upcomingMatches = await Match.find({ date: { $gte: new Date() } }).sort({ date: 1 });
+    const upcomingMatches = await Match.find({ date: { $gte: now } }).sort({ date: 1 });
+
+    // Live-Spiele: Spiele die gerade laufen (Start <= jetzt < Ende)
+    const liveMatches = await Match.find({
+      date: { $lte: now },
+      endDate: { $gte: now }
+    });
+
+    // Set mit allen Teamnamen, die gerade live spielen
+    const liveTeams = new Set();
+    for (const match of liveMatches) {
+      liveTeams.add(match.homeTeam);
+      liveTeams.add(match.awayTeam);
+    }
+
+    // Tabelle Embed mit 🔴 vor Teamnamen, wenn live
+    const tabelleEmbed = new EmbedBuilder()
+      .setTitle('📊 Aktuelle Tabelle')
+      .setColor('#0099ff');
+    teams.forEach((team, i) => {
+      const displayName = liveTeams.has(team.name) ? `🔴 ${team.name}` : team.name;
+      tabelleEmbed.addFields({
+        name: `${i + 1}. ${displayName}`,
+        value: `Spiele: ${team.played}, S: ${team.won}, U: ${team.draw}, N: ${team.lost}, Tore: ${team.goalsFor}, GT: ${team.goalsAgainst}, TD: ${team.goalsFor - team.goalsAgainst}, Punkte: ${team.points}`,
+        inline: false
+      });
+    });
 
     // Tabelle Embed
     const tabelleEmbed = new EmbedBuilder()
@@ -67,7 +96,7 @@ module.exports = {
     teams.forEach((team, i) => {
       tabelleEmbed.addFields({
         name: `${i+1}. ${team.name}`,
-        value: `Spiele: ${team.played}, Punkte: ${team.points}, Tore: ${team.goalsFor}:${team.goalsAgainst}`,
+        value: `Spiele: ${team.played}, S: ${team.won}, U: ${team.draw}, N: ${team.lost}, Tore: ${team.goalsFor}, GT: ${team.goalsAgainst}, TD: ${team.goalsFor - team.goalsAgainst}, Punkte: ${team.points}`,
         inline: false
       });
     });
