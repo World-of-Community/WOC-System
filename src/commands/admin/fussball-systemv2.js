@@ -76,29 +76,17 @@ module.exports = {
       liveTeams.add(match.awayTeam);
     }
 
-    // Tabelle Embed mit 🔴 vor Teamnamen, wenn live
     const tabelleEmbed = new EmbedBuilder()
-      .setTitle('📊 Aktuelle Tabelle')
-      .setColor('#0099ff');
-    teams.forEach((team, i) => {
-      const displayName = liveTeams.has(team.name) ? `🔴 ${team.name}` : team.name;
-      tabelleEmbed.addFields({
-        name: `${i + 1}. ${displayName}`,
-        value: `Spiele: ${team.played}, S: ${team.won}, U: ${team.draw}, N: ${team.lost}, Tore: ${team.goalsFor}, GT: ${team.goalsAgainst}, TD: ${team.goalsFor - team.goalsAgainst}, Punkte: ${team.points}`,
-        inline: false
-      });
-    });
 
-    // Tabelle Embed
-    const tabelleEmbed = new EmbedBuilder()
-      .setTitle('\`📊\` Aktuelle Tabelle')
-      .setColor('#0099ff');
+    .setTitle('📊 Aktuelle Tabelle')
+    .setColor('#0099ff');
     teams.forEach((team, i) => {
-      tabelleEmbed.addFields({
-        name: `${i+1}. ${team.name}`,
-        value: `Spiele: ${team.played}, S: ${team.won}, U: ${team.draw}, N: ${team.lost}, Tore: ${team.goalsFor}, GT: ${team.goalsAgainst}, TD: ${team.goalsFor - team.goalsAgainst}, Punkte: ${team.points}`,
-        inline: false
-      });
+        const displayName = liveTeams.has(team.name) ? `🔴 ${team.name}` : team.name;
+        tabelleEmbed.addFields({
+          name: `${i + 1}. ${displayName}`,
+          value: `Spiele: ${team.played}, S: ${team.won}, U: ${team.draw}, N: ${team.lost}, Tore: ${team.goalsFor}, GT: ${team.goalsAgainst}, TD: ${team.goalsFor - team.goalsAgainst}, Punkte: ${team.points}`,
+          inline: false
+        });
     });
 
     // Nächstes Spiel Embed
