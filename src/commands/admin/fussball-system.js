@@ -156,7 +156,7 @@ module.exports = {
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
         .setCustomId('live')
-        .setLabel('🔴 Live Spiele')
+        .setLabel('🔴 Live Spiele (BETA)')
         .setStyle(ButtonStyle.Secondary),
       new ButtonBuilder()
         .setCustomId('spieltag')
