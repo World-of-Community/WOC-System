@@ -4,7 +4,8 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ComponentType
+  ComponentType,
+  StringSelectMenuBuilder,
 } = require('discord.js');
 
 const { Team } = require('../../../Datenbank/fussballdb');
@@ -23,7 +24,7 @@ async function createTabelleEmbed() {
   const liveNow = new Date();
   const liveMatches = await Match.find({
     date: { $lte: liveNow },
-    endDate: { $gte: liveNow } // Du brauchst dieses Feld in deiner Match-Datenbank!
+    endDate: { $gte: liveNow }
   });
 
   const liveTeams = new Set();
@@ -103,56 +104,40 @@ async function createNextMatchdayEmbed() {
     .setColor(0x00BFFF);
 }
 
-async function createLiveMatchesEmbed() {
+function formatMatchMinute(match) {
   const now = new Date();
+  const diffMin = Math.floor((now - match.date) / 60000);
+  if (diffMin < 0 && diffMin >= -5) return `0 (startet in ${Math.abs(diffMin)} Min)`;
+  if (diffMin >= 0 && diffMin <= 90) return diffMin.toString();
+  if (diffMin > 90 && diffMin <= 110) return `90+${diffMin - 90}`;
+  if (diffMin < -5) return '0';
+  return 'Ende';
+}
 
-  const liveMatches = await Match.find({
-    date: { $lte: now },
-    endDate: { $gte: now }
-  }).sort({ date: 1 });
-
-  if (liveMatches.length === 0) {
-    return new EmbedBuilder()
-      .setTitle('`🔴` Live Spiele')
-      .setDescription('Zurzeit laufen keine Spiele.')
-      .setColor(0xFF0000);
-  }
-
-  const matchDescriptions = liveMatches.map(m => {
-    const now = new Date();
-    const startTime = new Date(m.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-
-    const diffMs = now - m.date;
-    const diffMin = Math.floor(diffMs / 60000);
-
-    let spielminute;
-    let startInfo = '';
-
-    if (diffMin < 0 && diffMin >= -5) {
-    // Spiel startet in weniger als 5 Minuten (negative Differenz)
-      startInfo = `, Spiel beginnt in ${Math.abs(diffMin)} Minute${Math.abs(diffMin) === 1 ? '' : 'n'}`;
-      spielminute = '0';
-    } else if (diffMin <= 90 && diffMin >= 0) {
-      spielminute = diffMin.toString();
-    } else if (diffMin > 90 && diffMin <= 110) { // max. 20 Minuten Nachspielzeit
-      spielminute = `90+${diffMin - 90}`;
-    } else if (diffMin < -5) {
-    // Spiel beginnt später als 5 Minuten
-      spielminute = '0';
-    } else {
-      spielminute = 'Ende';
-    }
-
-    const scoreHome = m.homeScore ?? '0';
-    const scoreAway = m.awayScore ?? '0';
-    return `**${m.homeTeam}** ${scoreHome} - ${scoreAway} **${m.awayTeam}**  (Anpfiff: ${startTime} Uhr, Spielminute: ${spielminute}')`;
-  }).join('\n');
+function createLiveMatchEmbed(match) {
+  const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  const spielminute = formatMatchMinute(match);
+  const scoreHome = match.homeScore ?? 0;
+  const scoreAway = match.awayScore ?? 0;
 
   return new EmbedBuilder()
-    .setTitle('`🔴` Live Spiele')
-    .setDescription(matchDescriptions)
-    .setColor(0xFF0000)
+    .setTitle(`🔴 Live Spiel: ${match.homeTeam} vs ${match.awayTeam}`)
+    .setDescription(`Anpfiff: ${startTime} Uhr\nSpielminute: ${spielminute}'\n\n**${match.homeTeam}** ${scoreHome} - ${scoreAway} **${match.awayTeam}**`)
+    .setColor(0xff0000)
     .setTimestamp();
+}
+
+function createLiveMatchesSelectMenu(liveMatches) {
+  return new StringSelectMenuBuilder()
+    .setCustomId('live_match_select')
+    .setPlaceholder('Wähle ein Live-Spiel')
+    .addOptions(
+      liveMatches.map((match, idx) => ({
+        label: `${match.homeTeam} vs ${match.awayTeam}`,
+        description: `Anpfiff: ${new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`,
+        value: idx.toString(),
+      }))
+    );
 }
 
 module.exports = {
@@ -193,48 +178,141 @@ module.exports = {
     const message = await interaction.fetchReply();
 
     const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.Button
+      componentType: ComponentType.Button,
+      time: 5 * 60 * 1000,
     });
 
-    collector.on('collect', async i => {
+    // Zustand für Live-Spiel Navigation
+    let liveMatches = [];
+    let currentIndex = 0;
+    let liveMessage;
 
+    collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) {
         return i.reply({ content: 'Nur du darfst diese Buttons benutzen.', ephemeral: true });
       }
 
       if (i.customId === 'live') {
-        await i.deferReply({ ephemeral: false }); // Öffentlich, damit alle sehen und editierbar
-    
-        const liveEmbed = await createLiveMatchesEmbed();
-        const liveMessage = await i.editReply({ embeds: [liveEmbed], ephemeral: false });
-    
-        const interval = setInterval(async () => {
-          try {
-            const updatedEmbed = await createLiveMatchesEmbed();
-            await liveMessage.edit({ embeds: [updatedEmbed] });
-          } catch (error) {
-            console.error('Fehler beim Aktualisieren des Live-Embeds:', error);
-            clearInterval(interval);
-          }
-        }, 60 * 1000);
-    
-        // Stoppt Intervall, wenn Collector endet
-        collector.once('end', () => {
-          clearInterval(interval);
-        });
-    
-      } else {
-        // Andere Buttons: klassische ephemeral Antwort
-        await i.deferReply({ ephemeral: true });
-    
-        if (i.customId === 'tabelle') {
-          const tabelleEmbed = await createTabelleEmbed();
-          await i.editReply({ embeds: [tabelleEmbed], ephemeral: true });
-        } else if (i.customId === 'spieltag') {
-          const spieltagEmbed = await createNextMatchdayEmbed();
-          await i.editReply({ embeds: [spieltagEmbed], ephemeral: true });
+        await i.deferReply({ ephemeral: false });
+
+        const now = new Date();
+        liveMatches = await Match.find({
+          date: { $lte: now },
+          endDate: { $gte: now },
+        }).sort({ date: 1 });
+
+        if (liveMatches.length === 0) {
+          return i.editReply({
+            embeds: [
+              new EmbedBuilder()
+                .setTitle('🔴 Live Spiele')
+                .setDescription('Zurzeit laufen keine Spiele.')
+                .setColor(0xff0000),
+            ],
+          });
         }
+
+        currentIndex = 0;
+        liveMessage = await i.editReply({
+          embeds: [createLiveMatchEmbed(liveMatches[currentIndex])],
+          components: [
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId('prev_match')
+                .setLabel('⬅️')
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(true),
+              new ButtonBuilder()
+                .setCustomId('next_match')
+                .setLabel('➡️')
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(liveMatches.length <= 1),
+            ),
+            new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
+          ],
+        });
+
+        const filter = btnInt => btnInt.user.id === i.user.id;
+
+        const liveCollector = liveMessage.createMessageComponentCollector({
+          filter,
+          time: 5 * 60 * 1000,
+        });
+
+        liveCollector.on('collect', async btnInt => {
+          if (btnInt.isButton()) {
+            if (btnInt.customId === 'prev_match') {
+              currentIndex = Math.max(0, currentIndex - 1);
+            } else if (btnInt.customId === 'next_match') {
+              currentIndex = Math.min(liveMatches.length - 1, currentIndex + 1);
+            }
+
+            await btnInt.update({
+              embeds: [createLiveMatchEmbed(liveMatches[currentIndex])],
+              components: [
+                new ActionRowBuilder().addComponents(
+                  new ButtonBuilder()
+                    .setCustomId('prev_match')
+                    .setLabel('⬅️')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(currentIndex === 0),
+                  new ButtonBuilder()
+                    .setCustomId('next_match')
+                    .setLabel('➡️')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(currentIndex === liveMatches.length - 1),
+                ),
+                new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
+              ],
+            });
+          } else if (btnInt.isStringSelectMenu()) {
+            const selectedIndex = parseInt(btnInt.values[0], 10);
+            if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < liveMatches.length) {
+              currentIndex = selectedIndex;
+              await btnInt.update({
+                embeds: [createLiveMatchEmbed(liveMatches[currentIndex])],
+                components: [
+                  new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                      .setCustomId('prev_match')
+                      .setLabel('⬅️')
+                      .setStyle(ButtonStyle.Secondary)
+                      .setDisabled(currentIndex === 0),
+                    new ButtonBuilder()
+                      .setCustomId('next_match')
+                      .setLabel('➡️')
+                      .setStyle(ButtonStyle.Secondary)
+                      .setDisabled(currentIndex === liveMatches.length - 1),
+                  ),
+                  new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
+                ],
+              });
+            } else {
+              await btnInt.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
+            }
+          }
+        });
+
+        liveCollector.on('end', async () => {
+          try {
+            await liveMessage.edit({ components: [] });
+          } catch {}
+        });
+
+      } else if (i.customId === 'tabelle') {
+        await i.deferReply({ ephemeral: true });
+        const tabelleEmbed = await createTabelleEmbed();
+        await i.editReply({ embeds: [tabelleEmbed], ephemeral: true });
+
+      } else if (i.customId === 'spieltag') {
+        await i.deferReply({ ephemeral: true });
+        const spieltagEmbed = await createNextMatchdayEmbed();
+        await i.editReply({ embeds: [spieltagEmbed], ephemeral: true });
       }
     });
-  }
+
+    collector.on('end', () => {
+      // Collector für Hauptbuttons beendet
+    });
+  },
 };
