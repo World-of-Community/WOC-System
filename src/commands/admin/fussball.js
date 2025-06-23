@@ -291,7 +291,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`⏸️\` Spielunterbrechung (${getDisplayMinute(minute)})`);
     }
 
-    if (Math.random() < 0.05) { // 5% Chance pro Minute
+    if (Math.random() < 0.10) { // 5% Chance pro Minute
       const team = Math.random() < 0.5 ? team1 : team2;
       const teamName = team === team1 ? team1Name : team2Name;
       events.push(`\`🕹️\` ${teamName} im Ballbesitz (${getDisplayMinute(minute)})`);

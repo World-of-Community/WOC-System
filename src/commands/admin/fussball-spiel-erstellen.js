@@ -62,7 +62,7 @@ module.exports = {
 
     if (spieltag < 1 || spieltag > 34) {
       return interaction.reply({
-        content: '❌ Bitte gib einen Spieltag zwischen 1 und 34 an.',
+        content: '> `❌` » Bitte gib einen Spieltag zwischen 1 und 34 an.',
         ephemeral: true
       });
     }
