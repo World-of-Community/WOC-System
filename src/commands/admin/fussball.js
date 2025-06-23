@@ -221,11 +221,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         if (teamScored === 'team1') {
           score1++;
           xG1 += xG;
-          events.push(`\`⚽\` TOOOR! - ${team1Name} - von ${scorer} - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+          events.push(`\`⚽\` TOOOR! - ${team1Name} - von ${scorer} - ${score1} - ${score2} (${getDisplayMinute(minute)})`);
         } else {
           score2++;
           xG2 += xG;
-          events.push(`\`⚽\` TOOOR! - ${team2Name} - von ${scorer} - ${score1}-${score2} (${getDisplayMinute(minute)})`);
+          events.push(`\`⚽\` TOOOR! - ${team2Name} - von ${scorer} - ${score1} - ${score2} (${getDisplayMinute(minute)})`);
         }
       }
     }
