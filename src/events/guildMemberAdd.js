@@ -132,7 +132,7 @@ module.exports = {
         // Invite-Daten vom Discord-API holen
         const guild = member.guild;
         const newInvites = await member.guild.invites.fetch();
-        const invites = await guild.invites.fetch();
+        const Invites = await guild.invites.fetch();
       
         // Lade alten Cache aus DB
         let inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
