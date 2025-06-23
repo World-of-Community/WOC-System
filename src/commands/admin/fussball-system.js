@@ -322,8 +322,9 @@ function createLiveMatchDetailEmbed(match, statusMessage, team1, team2, team1Nam
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
     }
 
-    const fullTeam1Data = teamsData.find(t => t.name === team1.name);
-    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+    const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
+    const team1Name = team1.name;
+    const team2Name = team2.name;
 
   return new EmbedBuilder()
     .setTitle(`\`🔴\` Live-Spiel Detail: ${match.homeTeam} vs ${match.awayTeam}`)
@@ -356,10 +357,6 @@ module.exports = {
           ephemeral: true,
         });
       }
-
-      const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
-      const team1Name = team1.name;
-      const team2Name = team2.name;
   
       const odds = generateOdds();
 
