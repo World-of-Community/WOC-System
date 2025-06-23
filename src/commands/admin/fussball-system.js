@@ -174,7 +174,7 @@ function createLiveMatchesSelectMenu(liveMatches) {
 }
 
 // Detailliertes Embed zu einem Live-Spiel mit Statistiken (Beispiel)
-function createLiveMatchDetailEmbed(match, events, statusMessage, team1, team2, team1Name, team2Name, userTip) {
+function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, team2, team1Name, team2Name, userTip) {
   const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   const spielminute = formatMatchMinute(match);
   const scoreHome = match.homeScore ?? 0;
@@ -190,6 +190,7 @@ function createLiveMatchDetailEmbed(match, events, statusMessage, team1, team2, 
   const ballPossessionHome = match.ballPossessionHome ?? 50;
   const ballPossessionAway = 100 - ballPossessionHome;
 
+  let events = [];
   let score1 = 0;
   let score2 = 0;
   let yellowCardsTeam1 = 0;
