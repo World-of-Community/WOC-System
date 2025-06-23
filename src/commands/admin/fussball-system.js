@@ -209,24 +209,6 @@ function createLiveMatchDetailEmbed(match, statusMessage, team1, team2, team1Nam
 
   const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
 
-  const proLeagueTeams = await Team.find({ league: 'Pro League' });
-
-      if (!proLeagueTeams || proLeagueTeams.length < 2) {
-        return interaction.reply({
-          content: '❌ Es sind nicht genug Teams in der Pro League Datenbank.',
-          ephemeral: true,
-        });
-      }
-
-      const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
-      const team1Name = team1.name;
-      const team2Name = team2.name;
-  
-      const odds = generateOdds();
-
-      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
-      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
-
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
     let torGezaehlt = true;
     let scorer = '';
@@ -365,6 +347,25 @@ module.exports = {
     .setDescription('Zeigt die Fußball-Übersicht an'),
 
   async execute(interaction) {
+
+    const proLeagueTeams = await Team.find({ league: 'Pro League' });
+
+      if (!proLeagueTeams || proLeagueTeams.length < 2) {
+        return interaction.reply({
+          content: '❌ Es sind nicht genug Teams in der Pro League Datenbank.',
+          ephemeral: true,
+        });
+      }
+
+      const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
+      const team1Name = team1.name;
+      const team2Name = team2.name;
+  
+      const odds = generateOdds();
+
+      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+      
     // Initiales Info-Embed mit Buttons
     const overviewEmbed = new EmbedBuilder()
       .setTitle('`⚽` » Fußball Übersicht')
