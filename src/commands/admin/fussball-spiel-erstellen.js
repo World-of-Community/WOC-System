@@ -1,4 +1,3 @@
-/*
 const { SlashCommandBuilder } = require('discord.js');
 const Match = require('../../../Datenbank/matchdb');  // Import von MatchSimple ohne {}
 
@@ -138,4 +137,3 @@ module.exports = {
     }
   }
 };
-*/

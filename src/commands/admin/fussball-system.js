@@ -1,11 +1,10 @@
-const { 
-  SlashCommandBuilder, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
-  ButtonBuilder, 
-  ButtonStyle, 
-  ComponentType, 
-  PermissionFlagsBits 
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType
 } = require('discord.js');
 
 const { Team } = require('../../../Datenbank/fussballdb');
@@ -19,35 +18,6 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-const fixedTimes = [
-  { name: '00:30', value: '00:30' },
-  { name: '01:30', value: '01:30' },
-  { name: '02:00', value: '02:00' },
-  { name: '04:00', value: '04:00' },
-  { name: '06:00', value: '06:00' },
-  { name: '07:30', value: '07:30' },
-  { name: '09:00', value: '09:00' },
-  { name: '09:30', value: '09:30' },
-  { name: '10:30', value: '10:30' },
-  { name: '11:00', value: '11:00' },
-  { name: '11:30', value: '11:30' },
-  { name: '12:30', value: '12:30' },
-  { name: '13:30', value: '13:30' },
-  { name: '14:00', value: '14:00' },
-  { name: '15:00', value: '15:00' },
-  { name: '15:30', value: '15:30' },
-  { name: '16:45', value: '16:45' },
-  { name: '18:00', value: '18:00' },
-  { name: '18:30', value: '18:30' },
-  { name: '19:00', value: '19:00' },
-  { name: '19:30', value: '19:30' },
-  { name: '20:00', value: '20:00' },
-  { name: '20:30', value: '20:30' },
-  { name: '21:45', value: '21:45' },
-  { name: '23:00', value: '23:00' }
-];
-
-// Erzeugt das Tabellen-Embed mit den aktuellen Team-Daten
 async function createTabelleEmbed() {
   const allTeams = await Team.find({ league: 'Pro League' });
   const teamMap = new Map(allTeams.map(t => [t.name.trim(), t.toObject()]));
@@ -91,7 +61,6 @@ async function createTabelleEmbed() {
     .setTimestamp();
 }
 
-// Erzeugt das Embed für den nächsten Spieltag mit den nächsten Spielen
 async function createNextMatchdayEmbed() {
   const now = new Date();
 
@@ -125,136 +94,13 @@ async function createNextMatchdayEmbed() {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-system')
-    .setDescription('Fussball System')
-    // hier Subcommands/SubcommandGroups hinzufügen wie in deinem Beispiel
-    .addSubcommand((command) =>
-      command
-        .setName('fussball-match')
-        .setDescription('Starte ein Fußballspiel und tippe, wer gewinnt!')
-    )
-    .addSubcommandGroup(group =>
-      group
-        .setName('fussball-manage')
-        .setDescription('Verwalte Fußballteams')
-        .addSubcommand(sub =>
-          sub
-            .setName('add')
-            .setDescription('Füge ein Fußballteam hinzu')
-            .addStringOption(opt =>
-              opt.setName('teamname')
-                .setDescription('Name des Teams')
-                .setRequired(true))
-            .addStringOption(opt =>
-              opt.setName('emoji')
-                .setDescription('Emoji/Icon für das Team')
-                .setRequired(true))
-        )
-        .addSubcommand(sub =>
-          sub
-            .setName('remove')
-            .setDescription('Entferne ein Fußballteam')
-            .addStringOption(opt =>
-              opt.setName('teamname')
-                .setDescription('Name des Teams')
-                .setRequired(true))
-        )
-        .addSubcommand(sub =>
-          sub
-            .setName('add-player')
-            .setDescription('Füge einen Spieler zu einem Team hinzu')
-            .addStringOption(opt =>
-              opt.setName('teamname')
-                .setDescription('Name des Teams')
-                .setRequired(true))
-            .addStringOption(opt =>
-              opt.setName('spieler')
-                .setDescription('Name des Spielers')
-                .setRequired(true))
-        )
-    )
-    .addSubcommand((command) =>
-      command
-        .setName('spieler-hinzufügen')
-        .setDescription('Füge einem Team einen Spieler hinzu.')
-        .addStringOption(opt =>
-          opt.setName('team')
-            .setDescription('Name des Teams')
-            .setRequired(true))
-        .addStringOption(opt =>
-          opt.setName('spieler')
-            .setDescription('Name des Spielers')
-            .setRequired(true))
-    )
-    .addSubcommand((command) =>
-      command
-        .setName('spiel-erstellen')
-        .setDescription('Erstellt ein Spiel mit Datum und fester Uhrzeit')
-        .addStringOption(option =>
-          option.setName('heimteam')
-            .setDescription('Heimteam auswählen')
-            .setRequired(true)
-            .addChoices(...proLeagueTeams.map(team => ({ name: team, value: team }))))
-        .addStringOption(option =>
-          option.setName('auswaertsteam')
-            .setDescription('Auswärtsteam auswählen')
-            .setRequired(true)
-            .addChoices(...proLeagueTeams.map(team => ({ name: team, value: team }))))
-        .addIntegerOption(option =>
-          option.setName('spieltag')
-            .setDescription('Spieltag auswählen (1-34)')
-            .setRequired(true))
-        .addStringOption(option =>
-          option.setName('uhrzeit')
-            .setDescription('Uhrzeit auswählen')
-            .setRequired(true)
-            .addChoices(...fixedTimes))
-        .addStringOption(option =>
-          option.setName('datum')
-            .setDescription('Datum im Format YYYY-MM-DD')
-            .setRequired(true))
-    ),
+    .setDescription('Zeigt die Tabelle und den nächsten Spieltag an'),
+
   async execute(interaction) {
-    const subCommand = interaction.options.getSubcommand(false);
-    const subCommandGroup = interaction.options.getSubcommandGroup(false);
+    await interaction.deferReply();
 
-    // Beispiel für Subcommands
-    if (subCommand === 'spiel-erstellen') {
-      const heimteam = interaction.options.getString('heimteam');
-      const auswaertsteam = interaction.options.getString('auswaertsteam');
-      const spieltag = interaction.options.getInteger('spieltag');
-      const uhrzeit = interaction.options.getString('uhrzeit');
-      const datum = interaction.options.getString('datum');
-
-      // Datum & Uhrzeit kombinieren
-      const dateTimeString = `${datum}T${uhrzeit}:00`;
-      const dateObj = new Date(dateTimeString);
-      if (isNaN(dateObj)) {
-        return interaction.reply({ content: 'Ungültiges Datum oder Uhrzeit!', ephemeral: true });
-      }
-
-      // Spiel speichern
-      const newMatch = new Match({
-        homeTeam: heimteam,
-        awayTeam: auswaertsteam,
-        matchday: spieltag,
-        date: dateObj,
-        score1: null,
-        score2: null,
-        events: [],
-        yellowCards: [],
-        redCards: []
-      });
-
-      await newMatch.save();
-
-      return interaction.reply(`Spiel zwischen ${heimteam} und ${auswaertsteam} für Spieltag ${spieltag} wurde erstellt.`);
-    }
-
-    // Tabelle-Embed und Button-Row generieren
     const tabelleEmbed = await createTabelleEmbed();
-    const nextMatchdayEmbed = await createNextMatchdayEmbed();
 
-    // Buttons für Übersicht (Beispiel, du kannst sie erweitern)
     const buttonRow = new ActionRowBuilder()
       .addComponents(
         new ButtonBuilder()
@@ -264,43 +110,37 @@ module.exports = {
         new ButtonBuilder()
           .setCustomId('spieltag')
           .setLabel('Nächster Spieltag')
-          .setStyle(ButtonStyle.Success),
-        new ButtonBuilder()
-          .setCustomId('update')
-          .setLabel('Aktualisieren')
-          .setStyle(ButtonStyle.Secondary)
+          .setStyle(ButtonStyle.Success)
       );
 
-    // Antwort mit Tabelle + Buttons
-    const message = await interaction.reply({ 
-      embeds: [tabelleEmbed], 
-      components: [buttonRow], 
-      fetchReply: true 
+    const message = await interaction.followUp({
+      embeds: [tabelleEmbed],
+      components: [buttonRow],
+      fetchReply: true
     });
 
-    // Collector für Button-Interaktionen (30 Sekunden)
-    const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, time: 30000 });
+    const collector = message.createMessageComponentCollector({
+      componentType: ComponentType.Button
+    });
 
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: 'Nur der ursprüngliche Benutzer kann hier klicken.', ephemeral: true });
+        return i.reply({ content: 'Nur du darfst die Buttons benutzen.', ephemeral: true });
       }
 
       if (i.customId === 'tabelle') {
         await i.update({ embeds: [await createTabelleEmbed()] });
       } else if (i.customId === 'spieltag') {
         await i.update({ embeds: [await createNextMatchdayEmbed()] });
-      } else if (i.customId === 'update') {
-        await i.deferUpdate();
-        // Optional: Daten neu laden oder Logik ergänzen
-        await i.editReply({ embeds: [await createTabelleEmbed()] });
       }
     });
 
     collector.on('end', async () => {
       try {
         await message.edit({ components: [] });
-      } catch {}
+      } catch (e) {
+        console.error('Fehler beim Entfernen der Buttons:', e);
+      }
     });
   }
 };

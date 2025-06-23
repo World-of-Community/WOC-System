@@ -1,4 +1,3 @@
-/*
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
@@ -78,4 +77,3 @@ module.exports = {
     }
   }
 };
-*/
