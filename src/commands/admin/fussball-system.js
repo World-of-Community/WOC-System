@@ -174,7 +174,7 @@ function createLiveMatchesSelectMenu(liveMatches) {
 }
 
 // Detailliertes Embed zu einem Live-Spiel mit Statistiken (Beispiel)
-function createLiveMatchDetailEmbed(match, statusMessage, team1, team2, team1Name, team2Name, userTip) {
+function createLiveMatchDetailEmbed(match, events, statusMessage, team1, team2, team1Name, team2Name, userTip) {
   const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   const spielminute = formatMatchMinute(match);
   const scoreHome = match.homeScore ?? 0;
