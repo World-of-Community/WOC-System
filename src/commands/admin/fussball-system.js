@@ -321,7 +321,7 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     .setTitle(`\`🔴\` Live-Spiel Detail: ${match.homeTeam} vs ${match.awayTeam}`)
     .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
     .addFields(
-      { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
+      { name: 'Spielminute', value: (minute), inline: true },
       { name: 'Spielstand', value: `${scoreHome} - ${scoreAway}`, inline: true },
       { name: 'xG', value: `${xG1} : ${xG2}`, inline: true },
       { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsHome} - ${yellowCardsAway}`, inline: true },
