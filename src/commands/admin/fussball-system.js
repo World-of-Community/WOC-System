@@ -340,6 +340,7 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
       { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
     )
     .setColor(0xff0000)
+    .setFooter({ text: 'Zuletzt aktualisiert'})
     .setTimestamp();
 }}
 
