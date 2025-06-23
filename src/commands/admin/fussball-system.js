@@ -231,27 +231,35 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
 
     if (!Array.isArray(events)) events = [];
 
+    if (Math.random() < 0.4) { // Torversuch mit 40% Chance pro Minute
+    const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
+    xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+    scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+  
+    let torGezaehlt = true; // Standard: Tor wird gezählt
+  
     // VAR prüft Tor
-    if (Math.random() < 0.1) {
-      if (Math.random() < 0.5) {
+    if (Math.random() < 0.1) {  // 10% Chance auf VAR-Check
+      if (Math.random() < 0.5) { // 50% Chance auf Aberkennung
         torGezaehlt = false;
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT \`❌\` - ${score1}-${score2} (${spielminute}')`);
+        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT \`❌\` - ${score1}-${score2} (${minute}')`);
       } else {
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${spielminute}')`);
+        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${minute}')`);
       }
     }
-
+  
     if (torGezaehlt) {
       if (teamScored === 'team1') {
         score1++;
         xG1 += xG;
-        events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${spielminute}')`);
+        events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${minute}')`);
       } else {
         score2++;
         xG2 += xG;
-        events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${spielminute}')`);
+        events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${minute}')`);
       }
     }
+   }
   }
 
   if (Math.random() < 0.5) team1Passes++; else team2Passes++;
@@ -320,7 +328,7 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     .setTitle(`\`🔴\` Live-Spiel Detail: ${match.homeTeam} vs ${match.awayTeam}`)
     .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
     .addFields(
-      { name: 'Spielminute', value: `${spielminute}')`, inline: true },
+      { name: 'Spielminute', value: `${spielminute}'`, inline: true },
       { name: 'Spielstand', value: `${scoreHome} - ${scoreAway}`, inline: true },
       { name: 'xG', value: `${xG1} : ${xG2}`, inline: true },
       { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsHome} - ${yellowCardsAway}`, inline: true },
