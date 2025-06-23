@@ -95,8 +95,6 @@ module.exports = {
     .setDescription('Zeigt die Fußball-Übersicht an'),
 
   async execute(interaction) {
-    await interaction.deferReply();
-
     const overviewEmbed = new EmbedBuilder()
       .setTitle('⚽ » Fußball Übersicht')
       .setDescription(
@@ -119,14 +117,14 @@ module.exports = {
         .setStyle(ButtonStyle.Success)
     );
 
-    const message = await interaction.followUp({
-      embeds: [overviewEmbed],
-      components: [buttonRow],
-      fetchReply: true
-    });
+    await interaction.reply({ content: 'Fussball Info gesendet.', ephemeral: true })
+    await interaction.followUp({ embeds: [overviewEmbed], components: [buttonRow] });
+
+    const message = await interaction.fetchReply();
 
     const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.Button
+      componentType: ComponentType.Button,
+      time: 60000
     });
 
     collector.on('collect', async i => {
@@ -136,10 +134,10 @@ module.exports = {
 
       if (i.customId === 'tabelle') {
         const tabelleEmbed = await createTabelleEmbed();
-        await i.followUp({ embeds: [tabelleEmbed], components: [] });
+        await i.followUp({ embeds: [tabelleEmbed], ephemeral: true });
       } else if (i.customId === 'spieltag') {
         const spieltagEmbed = await createNextMatchdayEmbed();
-        await i.followUp({ embeds: [spieltagEmbed], components: [] });
+        await i.followUp({ embeds: [spieltagEmbed], ephemeral: true });
       }
     });
 
