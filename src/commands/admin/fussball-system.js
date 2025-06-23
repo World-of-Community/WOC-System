@@ -242,9 +242,9 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
     if (Math.random() < 0.1) {  // 10% Chance auf VAR-Check
       if (Math.random() < 0.5) { // 50% Chance auf Aberkennung
         torGezaehlt = false;
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT \`❌\` - ${score1}-${score2} (${minute}')`);
+        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT \`❌\` - ${score1}-${score2} (${spielminute}')`);
       } else {
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${minute}')`);
+        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${mspielinute}')`);
       }
     }
   
@@ -252,11 +252,11 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
       if (teamScored === 'team1') {
         score1++;
         xG1 += xG;
-        events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${minute}')`);
+        events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${spielminute}')`);
       } else {
         score2++;
         xG2 += xG;
-        events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${minute}')`);
+        events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${spielminute}')`);
       }
     }
    }
