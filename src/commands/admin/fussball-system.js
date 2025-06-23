@@ -123,8 +123,7 @@ module.exports = {
     const message = await interaction.fetchReply();
 
     const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.Button,
-      time: 60000
+      componentType: ComponentType.Button
     });
 
     collector.on('collect', async i => {
