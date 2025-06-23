@@ -4,8 +4,8 @@ const matchSchema = new mongoose.Schema({
   homeTeam: { type: String, required: true, trim: true },
   awayTeam: { type: String, required: true, trim: true },
   matchday: { type: Number, required: true },
-  date: { type: Date, required: true },
-  endDate: { $gte: liveNow },
+  date: { type: Date, required: true }, // Spielbeginn
+  endDate: { type: Date, required: true }, // Spielende (z. B. date + 90min)
   homeScore: { type: Number, default: null }, // Tore Heimteam, null = noch nicht gesetzt
   awayScore: { type: Number, default: null }, // Tore Auswärtsteam, null = noch nicht gesetzt
 }, {
