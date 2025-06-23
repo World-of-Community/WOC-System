@@ -117,8 +117,8 @@ module.exports = {
         .setStyle(ButtonStyle.Success)
     );
 
-    await interaction.reply({ content: 'Fussball Info gesendet.', ephemeral: true })
-    await interaction.followUp({ embeds: [overviewEmbed], components: [buttonRow] });
+    await interaction.reply({ embeds: [overviewEmbed], components: [buttonRow] })
+    await interaction.followUp({ content: 'Fussball Info gesendet.', ephemeral: true });
 
     const message = await interaction.fetchReply();
 
