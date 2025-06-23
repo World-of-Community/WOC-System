@@ -61,86 +61,61 @@ async function createTabelleEmbed() {
     .setTimestamp();
 }
 
-async function createNextMatchdayEmbed() {
-  const now = new Date();
-
-  const nextMatches = await Match.find({ date: { $gte: now } })
-    .sort({ date: 1 })
-    .limit(10);
-
-  if (!nextMatches.length) {
-    return new EmbedBuilder()
-      .setTitle('📅 Nächster Spieltag')
-      .setDescription('Keine Spiele für den nächsten Spieltag gefunden.')
-      .setColor(0x00BFFF);
-  }
-
-  const nextMatchdayNumber = nextMatches[0].matchday;
-  const matchdayGames = await Match.find({ matchday: nextMatchdayNumber }).sort({ date: 1 });
-
-  const matchdayText = matchdayGames.map(m => {
-    const dateStr = new Date(m.date).toLocaleString('de-DE', {
-      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-    });
-    return `${m.homeTeam} vs ${m.awayTeam} - ${dateStr}`;
-  }).join('\n');
-
-  return new EmbedBuilder()
-    .setTitle(`📅 Nächster Spieltag: Spieltag ${nextMatchdayNumber}`)
-    .setDescription(matchdayText)
-    .setColor(0x00BFFF);
-}
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-system')
-    .setDescription('Zeigt die Tabelle und den nächsten Spieltag an'),
+    .setDescription('Zeigt die Fußball-Übersicht an'),
 
   async execute(interaction) {
     await interaction.deferReply();
 
-    const tabelleEmbed = await createTabelleEmbed();
+    const overviewEmbed = new EmbedBuilder()
+      .setTitle('⚽ » Fußball Übersicht')
+      .setDescription(
+        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
+        '- 💥 » **Spannende Matches** mit Live-Statistiken\n' +
+        '- 🏆 » **Kampf um den Meistertitel** unter den besten Teams\n' +
+        '- 📊 » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
+        'Klicke unten, um die aktuelle Tabelle einzublenden.'
+      )
+      .setColor('Blurple');
 
-    const buttonRow = new ActionRowBuilder()
-      .addComponents(
-        new ButtonBuilder()
-          .setCustomId('tabelle')
-          .setLabel('Tabelle')
-          .setStyle(ButtonStyle.Primary),
-        new ButtonBuilder()
-          .setCustomId('spieltag')
-          .setLabel('Nächster Spieltag')
-          .setStyle(ButtonStyle.Success)
-      );
+    const buttonRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('tabelle')
+        .setLabel('📊 Tabelle anzeigen')
+        .setStyle(ButtonStyle.Primary)
+    );
 
     const message = await interaction.followUp({
-      embeds: [tabelleEmbed],
+      embeds: [overviewEmbed],
       components: [buttonRow],
       fetchReply: true
     });
 
     const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.Button
+      componentType: ComponentType.Button,
+      time: 60000
     });
 
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: 'Nur du darfst die Buttons benutzen.', ephemeral: true });
+        return i.reply({ content: 'Nur du darfst diesen Button verwenden.', ephemeral: true });
       }
 
       if (i.customId === 'tabelle') {
-        await i.update({ embeds: [await createTabelleEmbed()] });
-      } else if (i.customId === 'spieltag') {
-        await i.update({ embeds: [await createNextMatchdayEmbed()] });
+        const tabelleEmbed = await createTabelleEmbed();
+        await i.update({ embeds: [tabelleEmbed], components: [] });
       }
     });
 
     collector.on('end', async () => {
       try {
         await message.edit({ components: [] });
-      } catch (e) {
-        console.error('Fehler beim Entfernen der Buttons:', e);
+      } catch (err) {
+        console.error('Fehler beim Entfernen der Buttons:', err);
       }
     });
   }
 };
+
