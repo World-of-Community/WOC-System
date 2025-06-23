@@ -164,8 +164,6 @@ function createLiveMatchDetailEmbed(match, statusMessage, team1, team2, team1Nam
 
   let score1 = 0;
   let score2 = 0;
-  let xG1 = 0.0;
-  let xG2 = 0.0;
   let yellowCardsTeam1 = 0;
   let yellowCardsTeam2 = 0;
   let ballPossessionCountTeam1 = 0;
