@@ -365,7 +365,16 @@ module.exports = {
 
       const fullTeam1Data = teamsData.find(t => t.name === team1.name);
       const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
-      
+
+      function getTwoDifferentTeams(teams) {
+        const team1Index = Math.floor(Math.random() * teams.length);
+        let team2Index;
+        do {
+          team2Index = Math.floor(Math.random() * teams.length);
+        } while (team2Index === team1Index);
+        return [teams[team1Index], teams[team2Index]];
+      }
+
     // Initiales Info-Embed mit Buttons
     const overviewEmbed = new EmbedBuilder()
       .setTitle('`⚽` » Fußball Übersicht')
