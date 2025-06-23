@@ -306,7 +306,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
     await statusMessage.edit({ embeds: [embedUpdate] });
-    await delay(60000); // 1 Sekunde Pause pro Minute Spielzeit; hier ggf auf 60000 für 1 Minute anpassen
+    await delay(1000); // 1 Sekunde Pause pro Minute Spielzeit; hier ggf auf 60000 für 1 Minute anpassen
   }
 
   const tippErgebnis = checkTipResult(userTip, score1, score2);
