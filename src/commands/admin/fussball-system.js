@@ -219,7 +219,7 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
       xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
       scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
 
-      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
+      const fullTeam1Data = teamsData.find(t => t.name === match.team1);
       const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
       if (!Array.isArray(events)) events = [];
