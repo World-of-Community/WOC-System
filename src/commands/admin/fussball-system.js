@@ -327,12 +327,12 @@ module.exports = {
                   new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
                       .setCustomId('prev_match')
-                      .setLabel('⬅️')
+                      .setLabel('⬅️ Vorherige Seite')
                       .setStyle(ButtonStyle.Secondary)
                       .setDisabled(currentIndex === 0),
                     new ButtonBuilder()
                       .setCustomId('next_match')
-                      .setLabel('➡️')
+                      .setLabel('➡️ Nächste Seite')
                       .setStyle(ButtonStyle.Secondary)
                       .setDisabled(currentIndex === liveMatches.length - 1),
                   ),
