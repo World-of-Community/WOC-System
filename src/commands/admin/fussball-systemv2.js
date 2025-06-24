@@ -77,7 +77,7 @@ module.exports = {
     }
 
     const tabelleEmbed = new EmbedBuilder()
-      .setTitle('📊 Aktuelle Tabelle')
+      .setTitle('\`📊\` Aktuelle Tabelle')
       .setColor('#0099ff');
 
     for (const [i, team] of teams.entries()) {
