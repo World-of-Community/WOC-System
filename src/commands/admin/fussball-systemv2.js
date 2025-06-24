@@ -377,6 +377,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   const pauseStart = 45 + extraTime;
   const pauseEnd = pauseStart + 5;
 
+  const extraTimeFirstHalf = Math.floor(Math.random() * 10) + 1; // 1-10 Minuten Nachspielzeit 1. Halbzeit
+  const extraTimeSecondHalf = Math.floor(Math.random() * 20) + 1; // 1-20 Minuten Nachspielzeit 2. Halbzeit
+
   const events = [`\`🔊\` Anpfiff! Das Spiel beginnt! (0')`];
 
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
