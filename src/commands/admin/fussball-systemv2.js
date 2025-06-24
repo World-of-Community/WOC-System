@@ -212,11 +212,21 @@ function delay(ms) {
 
 function getDisplayMinute(minute, extraTime) {
   if (minute < 45) return `${minute}'`;
-  if (minute >= 45 && minute < 45 + extraTime) return `45' +${minute - 45}`;
-  if (minute >= 45 + extraTime && minute < 50 + extraTime) return `45' +${extraTime} (Pause)`;
+
+  if (minute >= 45 && minute < 45 + extraTime) {
+    return `45' +${minute - 45}`;
+  }
+
+  if (minute >= 45 + extraTime && minute <= 50 + extraTime) {
+    return `45' +${extraTime} (Pause)`;
+  }
+
   const zweiteHalbzeit = minute - (45 + extraTime + 5);
-  if (zweiteHalbzeit < 45) return `${zweiteHalbzeit}'`;
-  return `90' +${zweiteHalbzeit - 45}`;
+  const spielminute = 46 + zweiteHalbzeit;
+
+  if (spielminute <= 90) return `${spielminute}'`;
+
+  return `90' +${spielminute - 90}`;
 }
 
 function generateOdds() {
@@ -461,7 +471,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
-      events.push(`\`💥\` ${treffer}schuss von **${player}** für ${(team === team1 ? team1Name : team2Name)}! (${getDisplayMinute(minute, extraTime)})`);
+      events.push(`\`💥\` ${treffer}schuss von ${(team === team1 ? team1Name : team2Name)} durch **${player}** (${getDisplayMinute(minute, extraTime)})`);
     }
 
     if (Math.random() < 0.04) {
