@@ -244,22 +244,22 @@ function getDisplayMinute(minute, extraFirstHalf, extraSecondHalf) {
   const pauseStart = 45 + extraFirstHalf;
   const pauseEnd = pauseStart + 5;
 
+  // Erste Halbzeit (1 - 45)
   if (minute <= 45) return `${minute}'`;
 
-  if (minute > 45 && minute <= 45 + extraFirstHalf) {
-    return `45' +${minute - 45}`;
-  }
+  // Nachspielzeit der ersten Halbzeit (z. B. 45 + 3)
+  if (minute <= pauseStart) return `45' +${minute - 45}`;
 
-  if (minute > 45 + extraFirstHalf && minute <= pauseEnd) {
-    return `45' +${extraFirstHalf} (Pause)`;
-  }
+  // Pause
+  if (minute <= pauseEnd) return `45' +${extraFirstHalf} (Pause)`;
 
+  // 2. Halbzeit beginnt
   const zweiteHalbzeitMinute = minute - pauseEnd;
 
-  if (zweiteHalbzeitMinute <= 45) {
-    return `${45 + zweiteHalbzeitMinute}'`;
-  }
+  // Normale zweite Halbzeit (46 - 90)
+  if (zweiteHalbzeitMinute <= 45) return `${45 + zweiteHalbzeitMinute}'`;
 
+  // Nachspielzeit der zweiten Halbzeit
   return `90' +${zweiteHalbzeitMinute - 45}`;
 }
 
