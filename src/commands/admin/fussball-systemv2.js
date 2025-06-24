@@ -210,31 +210,6 @@ function delay(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-/*
-function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
-  if (minute < 45) return `${minute}'`;
-  
-  if (minute >= 45 && minute < 45 + extraTimeFirstHalf) {
-    return `45' +${minute - 45}`;
-  }
-
-  if (minute >= 45 + extraTimeFirstHalf && minute <= 50 + extraTimeFirstHalf) {
-    return `45' +${extraTimeFirstHalf} (Pause)`;
-  }
-
-  const zweiteHalbzeit = minute - (50 + extraTimeFirstHalf); // Pause ist 5 Min lang
-  const spielminute = 46 + zweiteHalbzeit;
-
-  if (spielminute <= 90) return `${spielminute}'`;
-
-  if (spielminute > 90 && spielminute <= 90 + extraTimeSecondHalf) {
-    return `90' +${spielminute - 90}`;
-  }
-
-  return `${spielminute}'`;
-}
-*/
-
 const extraTimeFirstHalf = Math.floor(Math.random() * 10) + 1; // 1-10 Minuten Nachspielzeit 1. Halbzeit
 const extraTimeSecondHalf = Math.floor(Math.random() * 20) + 1; // 1-20 Minuten Nachspielzeit 2. Halbzeit
 
@@ -383,6 +358,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     let torGezaehlt = true;
     let scorer = '';
     let xG = 0;
+
+    const extraTimeFirstHalf = Math.floor(Math.random() * 10) + 1; // 1-10 Minuten Nachspielzeit 1. Halbzeit
+    const extraTimeSecondHalf = Math.floor(Math.random() * 20) + 1; // 1-20 Minuten Nachspielzeit 2. Halbzeit
 
     // Halbzeitpause starten
     if (minute === pauseStart + 1) {
@@ -550,6 +528,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     await statusMessage.edit({ embeds: [statusEmbed] });
 
     await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
+
+    const extraTimeFirstHalf = Math.floor(Math.random() * 10) + 1; // 1-10 Minuten Nachspielzeit 1. Halbzeit
+    const extraTimeSecondHalf = Math.floor(Math.random() * 20) + 1; // 1-20 Minuten Nachspielzeit 2. Halbzeit
 
     if (minute === 45) {
       events.push(`\`⏳\` Nachspielzeit 1. Halbzeit: +${extraFirstHalf}'`);
