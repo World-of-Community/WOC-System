@@ -213,10 +213,10 @@ function delay(ms) {
 function getDisplayMinute(minute, extraTime) {
   if (minute < 45) return `${minute}'`;
   if (minute >= 45 && minute < 45 + extraTime) return `45 +${minute - 45}'`;
-  if (minute >= 45 + extraTime && minute < 50 + extraTime) return `45 +${extraTime}' (Pause)`;
+  if (minute >= 45 + extraTime && minute < 50 + extraTime) return `45' +${extraTime} (Pause)`;
   const zweiteHalbzeit = minute - (45 + extraTime + 5);
   if (zweiteHalbzeit < 45) return `${zweiteHalbzeit}'`;
-  return `90 +${zweiteHalbzeit - 45}'`;
+  return `90' +${zweiteHalbzeit - 45}`;
 }
 
 function generateOdds() {
