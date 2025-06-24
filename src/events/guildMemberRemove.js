@@ -13,7 +13,9 @@ module.exports = {
         const newInvites = await member.guild.invites.fetch();
         const Invites = await guild.invites.fetch();
 
-        const InviteCache = await InviteCache.findOne({ guildID: member.guild.id });
+        // Lade alten Cache aus DB
+        let inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
+        
         if (!inviteCache) return;
     
         // Suche den User, der ihn eingeladen hat
