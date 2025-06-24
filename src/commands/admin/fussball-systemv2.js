@@ -210,7 +210,7 @@ function delay(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-/*
+
 function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
   if (minute < 45) return `${minute}'`;
   
@@ -233,8 +233,8 @@ function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
 
   return `${spielminute}'`;
 }
-*/
 
+/*
 function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
   if (minute < 45) return `${minute}'`;
 
@@ -246,8 +246,7 @@ function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
     return `45' +${extraTimeFirstHalf} (Pause)`;
   }
 
-  // Minuten der 2. Halbzeit (ab 46')
-  const zweiteHalbzeit = minute - (50 + extraTimeFirstHalf); // Pause = 5 Min
+  const zweiteHalbzeit = minute - (50 + extraTimeFirstHalf); // Nach der Pause
 
   const spielminute = 46 + zweiteHalbzeit;
 
@@ -259,6 +258,7 @@ function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
 
   return `${spielminute}'`;
 }
+*/
 
 function generateOdds() {
   const probTeam1 = Math.random() * 0.5 + 0.25;
