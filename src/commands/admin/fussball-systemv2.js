@@ -210,6 +210,7 @@ function delay(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
+/*
 function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
   if (minute < 45) return `${minute}'`;
   
@@ -222,6 +223,32 @@ function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
   }
 
   const zweiteHalbzeit = minute - (50 + extraTimeFirstHalf); // Pause ist 5 Min lang
+  const spielminute = 46 + zweiteHalbzeit;
+
+  if (spielminute <= 90) return `${spielminute}'`;
+
+  if (spielminute > 90 && spielminute <= 90 + extraTimeSecondHalf) {
+    return `90' +${spielminute - 90}`;
+  }
+
+  return `${spielminute}'`;
+}
+*/
+
+function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
+  if (minute < 45) return `${minute}'`;
+
+  if (minute >= 45 && minute < 45 + extraTimeFirstHalf) {
+    return `45' +${minute - 45}`;
+  }
+
+  if (minute >= 45 + extraTimeFirstHalf && minute <= 50 + extraTimeFirstHalf) {
+    return `45' +${extraTimeFirstHalf} (Pause)`;
+  }
+
+  // Minuten der 2. Halbzeit (ab 46')
+  const zweiteHalbzeit = minute - (50 + extraTimeFirstHalf); // Pause = 5 Min
+
   const spielminute = 46 + zweiteHalbzeit;
 
   if (spielminute <= 90) return `${spielminute}'`;
