@@ -9,7 +9,11 @@ module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
 
-        const inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
+        const guild = member.guild;
+        const newInvites = await member.guild.invites.fetch();
+        const Invites = await guild.invites.fetch();
+
+        const InviteCache = await InviteCache.findOne({ guildID: member.guild.id });
         if (!inviteCache) return;
     
         // Suche den User, der ihn eingeladen hat
