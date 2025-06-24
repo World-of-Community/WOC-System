@@ -528,6 +528,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
       .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
+      .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
       .setColor('Green')
       .addFields(
         { name: 'Spielminute', value: getDisplayMinute(minute, extraTime), inline: true },
