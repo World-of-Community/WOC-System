@@ -525,6 +525,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const ballBesitzTeam1 = totalPasses ? Math.round((team1Passes / totalPasses) * 100) : 50;
     const ballBesitzTeam2 = totalPasses ? Math.max(0, Math.min(100, 100 - ballBesitzTeam1)) : 50;
 
+    const fullTeam1Data = teamsData.find(t => t.name === team1Name);
+    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
       .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
