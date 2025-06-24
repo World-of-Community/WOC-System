@@ -344,7 +344,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     // Zweite Halbzeit starten
     if (minute === pauseEnd + 1) {
-      events.push(`\`▶️\` 2. Halbzeit startet!`);
+      events.push(`\`▶️\` 2. Halbzeit startet! (${getDisplayMinute(minute - 1, extraTime)})`);
     }
 
     // Während der Pause keine Aktionen, nur warten und keine Status-Aktualisierung
