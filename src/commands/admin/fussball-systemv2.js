@@ -383,8 +383,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     // Ballbesitz in Prozent
     const totalPasses = team1Passes + team2Passes;
+    //const ballBesitzTeam1 = totalPasses ? Math.round((team1Passes / totalPasses) * 100) : 50;
+    //const ballBesitzTeam2 = 100 - ballBesitzTeam1;
+
     const ballBesitzTeam1 = totalPasses ? Math.round((team1Passes / totalPasses) * 100) : 50;
-    const ballBesitzTeam2 = 100 - ballBesitzTeam1;
+    const ballBesitzTeam2 = totalPasses ? Math.max(0, Math.min(100, 100 - ballBesitzTeam1)) : 50;
 
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
