@@ -242,7 +242,7 @@ const pauseDuration = 5; // 5 Minuten Pause
 
 const totalMatchTime = 45 + extraTimeFirstHalf + pauseDuration + 45 + extraTimeSecondHalf; // Gesamtminuten inklusive Pause
 
-function getDisplayMinute(minute) {
+function getDisplayMinute(minute, extraFirstHalf, extraSecondHalf) {
   if (minute <= 45) {
     // Erste Halbzeit normale Zeit
     return `${minute}'`;
@@ -383,9 +383,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     let torGezaehlt = true;
     let scorer = '';
     let xG = 0;
-
-    const extraTimeFirstHalf = Math.floor(Math.random() * 10) + 1; // 1-10 Minuten Nachspielzeit 1. Halbzeit
-    const extraTimeSecondHalf = Math.floor(Math.random() * 20) + 1; // 1-20 Minuten Nachspielzeit 2. Halbzeit
 
     // Halbzeitpause starten
     if (minute === pauseStart + 1) {
@@ -553,9 +550,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     await statusMessage.edit({ embeds: [statusEmbed] });
 
     await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
-
-    const extraFirstHalf = Math.floor(Math.random() * 10) + 1; // 1 bis 10 Minuten Nachspielzeit 1. Halbzeit
-    const extraSecondHalf = Math.floor(Math.random() * 20) + 1; // 1 bis 20 Minuten Nachspielzeit 2. Halbzeit
 
     if (minute === 45) {
       events.push(`\`⏳\` Nachspielzeit 1. Halbzeit: +${extraFirstHalf}'`);
