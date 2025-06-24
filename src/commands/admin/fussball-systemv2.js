@@ -337,6 +337,22 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     let scorer = '';
     let xG = 0;
 
+    // Halbzeitpause starten
+    if (minute === pauseStart + 1) {
+      events.push(`\`⏸️\` Halbzeitpause. (${getDisplayMinute(minute - 1, extraTime)})`);
+    }
+
+    // Zweite Halbzeit starten
+    if (minute === pauseEnd + 1) {
+      events.push(`\`▶️\` 2. Halbzeit startet!`);
+    }
+
+    // Während der Pause keine Aktionen, nur warten und keine Status-Aktualisierung
+    if (minute > pauseStart && minute <= pauseEnd) {
+      await delay(1200);
+      continue;
+    }
+
     // Torchance alle 4 Minuten mit 25% Wahrscheinlichkeit
     if (minute % 4 === 0 && Math.random() < 0.25) {
       const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
@@ -436,7 +452,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     if (Math.random() < 0.06) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
-      events.push(`\`💥\` Latte/Pfostenschuss von **${player}** für ${(team === team1 ? team1Name : team2Name)}! (${getDisplayMinute(minute, extraTime)})`);
+      const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
+      events.push(`\`💥\` ${treffer}schuss von **${player}** für ${(team === team1 ? team1Name : team2Name)}! (${getDisplayMinute(minute, extraTime)})`);
     }
 
     if (Math.random() < 0.04) {
