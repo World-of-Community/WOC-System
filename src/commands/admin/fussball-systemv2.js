@@ -161,6 +161,7 @@ module.exports = {
           { label: '📊 Aktuelle Tabelle', value: 'tabelle' },
           { label: '🏟️ Nächstes Spiel', value: 'naechstes_spiel' },
           { label: '📅 Nächster Spieltag', value: 'spieltag' },
+          { label: '⚽ Zufallsspiel starten', value: 'zufallsspiel' },
         )
     );
 
@@ -182,6 +183,9 @@ module.exports = {
           break;
         case 'spieltag':
           await i.followUp({ embeds: [spieltagEmbed] });
+          break;
+        case 'zufallsspiel':
+          await simulateRandomMatch(i);
           break;
       }
     });
