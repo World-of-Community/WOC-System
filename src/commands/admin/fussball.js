@@ -259,6 +259,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const player = getRandomPlayer(team);
       events.push(`\`🔥\` Gefährlicher Angriff von ${(team === team1 ? team1Name : team2Name)} durch ${player} (${getDisplayMinute(minute)})`);
     }
+    
     if (Math.random() < 0.03) {
       events.push(`\`⏸️\` Spielunterbrechung (${getDisplayMinute(minute)})`);
     }
