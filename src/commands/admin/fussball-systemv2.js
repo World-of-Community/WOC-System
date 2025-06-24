@@ -553,11 +553,13 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
 
-    if (minute === 45) {
+    const displayMinute = getDisplayMinute(minute, extraFirstHalf, extraSecondHalf);
+
+    if (displayMinute === "45'") {
       events.push(`\`⏳\` Nachspielzeit 1. Halbzeit: +${extraFirstHalf}'`);
     }
-
-    if (minute === 90) {
+    
+    if (displayMinute === "90'") {
       events.push(`\`⏳\` Nachspielzeit: +${extraSecondHalf}'`);
     }
 
