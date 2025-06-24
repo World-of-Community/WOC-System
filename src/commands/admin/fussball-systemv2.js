@@ -166,7 +166,7 @@ module.exports = {
 
     const msg = await interaction.editReply({ embeds: [overviewEmbed], components: [auswahlMenü] });
 
-    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 5 * 60 * 1000 });
+    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect });
 
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) return i.reply({ content: '> \`❌\` Nur du darfst das benutzen.', ephemeral: true });
