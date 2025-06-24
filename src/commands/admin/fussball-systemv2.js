@@ -210,7 +210,7 @@ function delay(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-
+/*
 function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
   if (minute < 45) return `${minute}'`;
   
@@ -233,32 +233,35 @@ function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
 
   return `${spielminute}'`;
 }
-
-/*
-function getDisplayMinute(minute, extraTimeFirstHalf, extraTimeSecondHalf) {
-  if (minute < 45) return `${minute}'`;
-
-  if (minute >= 45 && minute < 45 + extraTimeFirstHalf) {
-    return `45' +${minute - 45}`;
-  }
-
-  if (minute >= 45 + extraTimeFirstHalf && minute <= 50 + extraTimeFirstHalf) {
-    return `45' +${extraTimeFirstHalf} (Pause)`;
-  }
-
-  const zweiteHalbzeit = minute - (50 + extraTimeFirstHalf); // Nach der Pause
-
-  const spielminute = 46 + zweiteHalbzeit;
-
-  if (spielminute <= 90) return `${spielminute}'`;
-
-  if (spielminute > 90 && spielminute <= 90 + extraTimeSecondHalf) {
-    return `90' +${spielminute - 90}`;
-  }
-
-  return `${spielminute}'`;
-}
 */
+
+const extraTimeFirstHalf = Math.floor(Math.random() * 10) + 1; // 1-10 Minuten Nachspielzeit 1. Halbzeit
+const extraTimeSecondHalf = Math.floor(Math.random() * 20) + 1; // 1-20 Minuten Nachspielzeit 2. Halbzeit
+
+const pauseDuration = 5; // 5 Minuten Pause
+
+const totalMatchTime = 45 + extraTimeFirstHalf + pauseDuration + 45 + extraTimeSecondHalf; // Gesamtminuten inklusive Pause
+
+function getDisplayMinute(minute) {
+  if (minute <= 45) {
+    // Erste Halbzeit normale Zeit
+    return `${minute}'`;
+  } else if (minute <= 45 + extraTimeFirstHalf) {
+    // Erste Halbzeit Nachspielzeit
+    return `45' +${minute - 45}`;
+  } else if (minute <= 45 + extraTimeFirstHalf + pauseDuration) {
+    // Pause anzeigen
+    return `Pause`;
+  } else if (minute <= 45 + extraTimeFirstHalf + pauseDuration + 45) {
+    // Zweite Halbzeit normale Zeit
+    const secondHalfMinute = minute - (45 + extraTimeFirstHalf + pauseDuration);
+    return `${45 + secondHalfMinute}'`;
+  } else {
+    // Zweite Halbzeit Nachspielzeit
+    const secondHalfExtra = minute - (45 + extraTimeFirstHalf + pauseDuration + 45);
+    return `90' +${secondHalfExtra}`;
+  }
+}
 
 function generateOdds() {
   const probTeam1 = Math.random() * 0.5 + 0.25;
@@ -548,13 +551,15 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
 
+    const extraFirstHalf = Math.floor(Math.random() * 10) + 1; // 1 bis 10 Minuten Nachspielzeit 1. Halbzeit
+    const extraSecondHalf = Math.floor(Math.random() * 20) + 1; // 1 bis 20 Minuten Nachspielzeit 2. Halbzeit
+
     if (minute === 45) {
-      const extraFirstHalf = Math.floor(Math.random() * 5) + 1; // z. B. 1 bis 5 Minuten Nachspielzeit
       events.push(`\`⏳\` Nachspielzeit 1. Halbzeit: +${extraFirstHalf}'`);
     }
 
     if (minute === 90) {
-      events.push(`\`⏳\` Nachspielzeit: +${extraTime}'`);
+      events.push(`\`⏳\` Nachspielzeit: +${extraSecondHalf}'`);
     }
 
     if (minute === 90 + extraTime) {
