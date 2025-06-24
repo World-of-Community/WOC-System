@@ -377,6 +377,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   const pauseStart = 45 + extraTime;
   const pauseEnd = pauseStart + 5;
 
+  const extraFirstHalf = Math.floor(Math.random() * 10) + 1;  // +1 bis +10
+  const extraSecondHalf = Math.floor(Math.random() * 20) + 1; // +1 bis +20
+  const pauseStart = 45 + extraFirstHalf;
+  const pauseEnd = pauseStart + 5;
+
   const events = [`\`🔊\` Anpfiff! Das Spiel beginnt! (0')`];
 
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
