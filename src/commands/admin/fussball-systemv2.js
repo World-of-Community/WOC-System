@@ -217,29 +217,6 @@ const pauseDuration = 5; // 5 Minuten Pause
 
 const totalMatchTime = 45 + extraTimeFirstHalf + pauseDuration + 45 + extraTimeSecondHalf; // Gesamtminuten inklusive Pause
 
-/*
-function getDisplayMinute(minute, extraFirstHalf, extraSecondHalf) {
-  if (minute <= 45) {
-    // Erste Halbzeit normale Zeit
-    return `${minute}'`;
-  } else if (minute <= 45 + extraTimeFirstHalf) {
-    // Erste Halbzeit Nachspielzeit
-    return `45' +${minute - 45}`;
-  } else if (minute <= 45 + extraTimeFirstHalf + pauseDuration) {
-    // Pause anzeigen
-    return `Pause`;
-  } else if (minute <= 45 + extraTimeFirstHalf + pauseDuration + 45) {
-    // Zweite Halbzeit normale Zeit
-    const secondHalfMinute = minute - (45 + extraTimeFirstHalf + pauseDuration);
-    return `${45 + secondHalfMinute}'`;
-  } else {
-    // Zweite Halbzeit Nachspielzeit
-    const secondHalfExtra = minute - (45 + extraTimeFirstHalf + pauseDuration + 45);
-    return `90' +${secondHalfExtra}`;
-  }
-}
-*/
-
 function getDisplayMinute(minute, extraFirstHalf, extraSecondHalf) {
   const pauseStart = 45 + extraFirstHalf;
   const pauseEnd = pauseStart + 5;
