@@ -507,23 +507,32 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`⏳\` Nachspielzeit: +${extraTime}'`);
     }
 
-    if (getDisplayMinute(minute) === `90' +${extraTime}`) {
+    if (getDisplayMinute(minute) === 90 + extraTime) {
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
-
-      // Ergebnis auswerten, Tipp checken und abschließen
+    
+      // Ergebnis auswerten
       let result;
       if (score1 > score2) result = 'team1';
       else if (score2 > score1) result = 'team2';
       else result = 'draw';
-
+    
+      // Tipp-Text ermitteln
+      let tippText = '';
+      if (userTip === 'team1') tippText = team1Name;
+      else if (userTip === 'team2') tippText = team2Name;
+      else if (userTip === 'draw') tippText = 'Unentschieden';
+    
       // Tipp auswerten und User benachrichtigen
-      if (userTip === result) {
-        await interaction.followUp(`> \`🎉\` Dein Tipp war korrekt! Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
-      } else if (userTip) {
-        await interaction.followUp(`> \`❌\` Dein Tipp war leider falsch. Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
+      if (userTip && tippText) {
+        if (userTip === result) {
+          await interaction.followUp(`> \`🎉\` Dein Tipp auf **${tippText}** war korrekt! Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
+        } else {
+          await interaction.followUp(`> \`❌\` Dein Tipp auf **${tippText}** war leider falsch. Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
+        }
       } else {
         await interaction.followUp(`Das Spiel ist beendet. Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
       }
+    
       break;
     }
   }
