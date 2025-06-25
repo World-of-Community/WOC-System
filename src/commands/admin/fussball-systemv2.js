@@ -195,8 +195,7 @@ module.exports = {
         return; // Kein Embed + Menü nach Spiel
     }
   
-    // Update die ursprüngliche Bot-Nachricht mit neuem Embed + Menü
-    await i.update({ embeds: [embed], components: [auswahlMenü] });
+    await i.channel.send({ embeds: [embed] });
     });
   }}
 
