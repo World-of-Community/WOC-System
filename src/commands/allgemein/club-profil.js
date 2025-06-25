@@ -65,6 +65,7 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setTitle(`\`🏟️\` Club-Profil: ${team.name}`)
+      .setDescription('- `⏳` = Spiel nicht ausgewertet bzw. Ergebnis fehlt.')
       .setColor('Green')
       .addFields(
         { name: '`📊` Spiele', value: `${team.played}`, inline: true },
