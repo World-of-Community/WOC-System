@@ -485,7 +485,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
       .setColor('Green')
       .addFields(
-        { name: 'Spielminute', value: getDisplayMinute(minute, extraFirstHalf, extraSecondHalf), inline: true },
+        { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} - ${xG2.toFixed(2)}`, inline: true },
         { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
