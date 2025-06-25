@@ -48,7 +48,7 @@ module.exports = {
       match.homeScore !== null && match.awayScore !== null
     );
 
-    let formString = 'Keine Spiele';
+    let formString = 'Keine Spiele mit Ergebnis Verfügbar.';
 
     if (recentMatchesWithResult.length > 0) {
       formString = recentMatchesWithResult.map(match => {
