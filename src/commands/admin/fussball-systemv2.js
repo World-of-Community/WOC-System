@@ -166,6 +166,7 @@ module.exports = {
       }
     
       await i.followUp({ embeds: [embed], components: [auswahlMenü] });
+      await i.followUp({ content: '> ✅ Embed wurde dir angezeigt.', ephemeral: true });
     });
   }}
 
