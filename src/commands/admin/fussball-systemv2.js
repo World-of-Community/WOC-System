@@ -393,12 +393,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         }
     
         // 🟢 NEU: Objekt in `events` für Auswertung
-        //events.push({
-        //  type: 'goal',
-        //  time: minute,
-        //  player: scorer,
-        //  team: teamScored === 'team1' ? team1Name : team2Name
-        //});
+        events.push({ type: 'goal', time: minute, player: scorer, team: teamScored === 'team1' ? team1Name : team2Name });
     
         // Optional: Zusätzlich als Text anzeigen
         events.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute)})`);
