@@ -509,11 +509,30 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       return eintraege.join(' ') || '–';
     }
 
-     const toreTeam1Goals = events
-       .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team1Name);
-     
-     const toreTeam2Goals = events
-       .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team2Name);
+    function gruppiereTore(tore) {
+      const spielerTore = new Map();
+    
+      for (const tor of tore) {
+        // Sicherheitsprüfung: gültiges Objekt mit player + time
+        if (!tor || typeof tor !== 'object' || !tor.player || typeof tor.time !== 'number') continue;
+    
+        if (!spielerTore.has(tor.player)) {
+          spielerTore.set(tor.player, []);
+        }
+        spielerTore.get(tor.player).push(getDisplayMinute(tor.time));
+      }
+    
+      const eintraege = Array.from(spielerTore.entries()).map(([spieler, minuten], index) => {
+        const minutenString = minuten.join(' ');
+        const emoji = index === 0 ? '`⚽` ' : '';
+        return `${emoji}${minutenString} ${spieler}`;
+      });
+
+      return eintraege.join(' ') || '–';
+    }
+
+     const toreTeam1Goals = events.filter(e => e && typeof e === 'object' && !Array.isArray(e) && e.type === 'goal' && e.team === team1Name);
+     const toreTeam2Goals = events.filter( e => e && typeof e === 'object' && !Array.isArray(e) && e.type === 'goal' && e.team === team2Name);
      
      const toreTeam1 = gruppiereTore(toreTeam1Goals);
      const toreTeam2 = gruppiereTore(toreTeam2Goals);
