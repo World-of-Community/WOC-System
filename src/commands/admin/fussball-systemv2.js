@@ -393,13 +393,16 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       }
     }
 
-    // Gelbe Karte alle 7 Minuten mit 15% Wahrscheinlichkeit
-    if (minute % 7 === 0 && Math.random() < 0.15) {
-      const teamCard = Math.random() < 0.5 ? 'team1' : 'team2';
-      const teamName = teamCard === 'team1' ? team1Name : team2Name;
-      const player = getRandomPlayer(teamCard === 'team1' ? team1 : team2);
-      if (teamCard === 'team1') yellowCardsTeam1++; else yellowCardsTeam2++;
-      events.push(`\`🟨\` Gelbe Karte für **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
+    if (Math.random() < 0.08) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const player = getRandomPlayer(team);
+      const teamName = team === team1 ? team1Name : team2Name;
+      events.push(`\`🤕\` Foul von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
+    
+      if (Math.random() < 0.5) {
+        if (team === team1) yellowCardsTeam1++; else yellowCardsTeam2++;
+        events.push(`\`🟨\` Gelbe Karte für **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
+      }
     }
 
     // Ecken alle 5 Minuten mit 20% Wahrscheinlichkeit
@@ -440,11 +443,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`🚑\` **${player}** (${teamName}) hat sich verletzt. Kurze Unterbrechung. (${getDisplayMinute(minute)})`);
     }
 
-    if (Math.random() < 0.06) {
+    if (Math.random() < 0.05) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
-      const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
-      events.push(`\`💥\` ${treffer}schuss von ${(team === team1 ? team1Name : team2Name)} durch **${player}** (${getDisplayMinute(minute)})`);
+      const teamName = team === team1 ? team1Name : team2Name;
+      const treffer = Math.random() < 0.5 ? 'Latte' : 'Pfosten';
+      events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.04) {
