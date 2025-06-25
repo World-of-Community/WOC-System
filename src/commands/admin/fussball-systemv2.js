@@ -506,7 +506,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       }
     
       const eintraege = Array.from(spielerTore.entries()).map(([spieler, minuten], index) => {
-        const minutenString = minuten.join("' ") + "'";
+        const minutenString = minuten.join("' ") + "";
         const emoji = index === 0 ? '`⚽` ' : '';
         return `${emoji}${minutenString} ${spieler}`;
       });
