@@ -485,10 +485,22 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       return minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
     }
 
+    const toreTeam1 = events
+    .filter(e => e.type === 'goal' && e.team === team1Name)
+    .map(e => `⚽ ${e.time}' ${e.player}`)
+    .join(' ') || '–';
+
+    const toreTeam2 = events
+    .filter(e => e.type === 'goal' && e.team === team2Name)
+    .map(e => `⚽ ${e.time}' ${e.player}`)
+    .join(' ') || '–';
+
+    const torString = `${toreTeam1} - ${toreTeam2}`;
+
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
       .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
-      .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+      .setDescription(`\`📍\` Austragungsort: **${stadium}**\nTorschützen: ${torString}`)
       .setColor('Green')
       .addFields(
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
