@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,7 +9,7 @@ module.exports = {
         .addUserOption(option =>  option.setName('benutzer').setDescription('Der Benutzer, dessen Nickname geändert werden soll').setRequired(false)))
         .addSubcommand(subcommand => subcommand.setName('remove').setDescription('Entferne den Nicknamen eines Benutzers')
         .addUserOption(option =>  option.setName('benutzer').setDescription('Der Benutzer, dessen Nickname entfernt werden soll').setRequired(false)))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageNickNames),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
