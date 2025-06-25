@@ -531,15 +531,15 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     const displayMinute = getDisplayMinute(minute, extraFirstHalf, extraSecondHalf);
 
-    if (displayMinute === "45'") {
+    if (displayMinute === 45) {
       events.push(`\`⏳\` Nachspielzeit 1. Halbzeit: +${extraFirstHalf}'`);
     }
     
-    if (displayMinute === "90'") {
+    if (displayMinute === 90) {
       events.push(`\`⏳\` Nachspielzeit: +${extraSecondHalf}'`);
     }
 
-    if (displayMinute === `90' +${extraSecondHalf}`) {
+    if (displayMinute === 90 + extraSecondHalf) {
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
 
       // Ergebnis auswerten, Tipp checken und abschließen
