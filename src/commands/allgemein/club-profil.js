@@ -83,7 +83,7 @@ module.exports = {
       const m = lastMatch[0];
       embed.addFields({
         name: '`📅` Letztes Spiel',
-        value: `${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam} (${m.date.toLocaleDateString()})`
+        value: `${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam} (${m.date.toLocaleDateString('de-DE')})`
       });
     }
 
