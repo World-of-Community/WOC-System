@@ -81,9 +81,19 @@ module.exports = {
 
     if (lastMatch.length > 0) {
       const m = lastMatch[0];
+    
+      const homeScore = m.homeScore !== null ? m.homeScore : '-';
+      const awayScore = m.awayScore !== null ? m.awayScore : '-';
+    
+      const formattedDate = m.date.toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    
       embed.addFields({
         name: '`📅` Letztes Spiel',
-        value: `${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam} (${m.date.toLocaleDateString('de-DE')})`
+        value: `${m.homeTeam} ${homeScore} - ${awayScore} ${m.awayTeam} (${formattedDate})`
       });
     }
 
