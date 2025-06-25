@@ -383,6 +383,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       }
     }
   
+      const events = [];         // Nur für Datenobjekte
+      const eventMessages = [];  // Nur für Text
+
       if (torGezaehlt) {
         if (teamScored === 'team1') {
           score1++;
@@ -391,12 +394,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           score2++;
           xG2 += xG;
         }
-    
-        // 🟢 NEU: Objekt in `events` für Auswertung
+      
+        // Datenobjekt für Auswertung
         events.push({ type: 'goal', time: minute, player: scorer, team: teamScored === 'team1' ? team1Name : team2Name });
-    
-        // Optional: Zusätzlich als Text anzeigen
-        events.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+      
+        // Nur Text in anderes Array!
+        eventMessages.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute)})`);
       }
     }
 
