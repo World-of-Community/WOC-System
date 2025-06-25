@@ -43,15 +43,18 @@ module.exports = {
       date: { $lt: new Date() }
     }).sort({ date: -1 }).limit(5);
 
+    // Letzte 5 Spiele für Form (nur mit Ergebnis)
+    const recentMatchesWithResult = recentMatches.filter(match =>
+      match.homeScore !== null && match.awayScore !== null
+    );
+    
     let formString = 'Keine Spiele';
-    if (recentMatches.length > 0) {
-      formString = recentMatches.map(match => {
+    
+    if (recentMatchesWithResult.length > 0) {
+      formString = recentMatchesWithResult.map(match => {
         const isHome = match.homeTeam === teamName;
         const goalsFor = isHome ? match.homeScore : match.awayScore;
         const goalsAgainst = isHome ? match.awayScore : match.homeScore;
-    
-        // Wenn Spiel nicht ausgewertet ist (z. B. Ergebnis fehlt)
-        if (goalsFor === null || goalsAgainst === null) return '`⏳`';
     
         if (goalsFor > goalsAgainst) return '`✅`';
         if (goalsFor < goalsAgainst) return '`❌`';
