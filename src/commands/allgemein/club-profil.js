@@ -33,26 +33,20 @@ module.exports = {
 
     // Letztes Spiel
     const lastMatch = await Match.find({
-      $or: [{ homeTeam: team._id }, { awayTeam: team._id }],
+      $or: [{ homeTeam: teamName }, { awayTeam: teamName }],
       date: { $lt: new Date() }
-    })
-      .sort({ date: -1 })
-      .limit(1)
-      .populate('homeTeam awayTeam');
+    }).sort({ date: -1 }).limit(1);
 
     // Letzte 5 Spiele für Form
     const recentMatches = await Match.find({
-      $or: [{ homeTeam: team._id }, { awayTeam: team._id }],
+      $or: [{ homeTeam: teamName }, { awayTeam: teamName }],
       date: { $lt: new Date() }
-    })
-      .sort({ date: -1 })
-      .limit(5)
-      .populate('homeTeam awayTeam');
+    }).sort({ date: -1 }).limit(5);
 
     let formString = 'Keine Spiele';
     if (recentMatches.length > 0) {
       formString = recentMatches.map(match => {
-        const isHome = match.homeTeam._id.equals(team._id);
+        const isHome = match.homeTeam === teamName;
         const goalsFor = isHome ? match.homeScore : match.awayScore;
         const goalsAgainst = isHome ? match.awayScore : match.homeScore;
 
@@ -86,7 +80,7 @@ module.exports = {
       const m = lastMatch[0];
       embed.addFields({
         name: '`📅` Letztes Spiel',
-        value: `${m.homeTeam.name} ${m.homeScore} - ${m.awayScore} ${m.awayTeam.name} (${m.date.toLocaleDateString()})`
+        value: `${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam} (${m.date.toLocaleDateString()})`
       });
     }
 
