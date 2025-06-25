@@ -503,7 +503,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
     
-    if (getDisplayMinute(minute) === 90) {
+    if (getDisplayMinute(minute) === "90'") {
       events.push(`\`⏳\` Nachspielzeit: +${extraTime}'`);
     }
 
