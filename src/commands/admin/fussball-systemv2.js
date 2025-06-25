@@ -499,11 +499,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
     
-    if (displayMinute === 90) {
+    if (getDisplayMinute === 90) {
       events.push(`\`⏳\` Nachspielzeit: +${extraTime}'`);
     }
 
-    if (displayMinute === 90 + extraTime) {
+    if (getDisplayMinute === 90 + extraTime) {
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
 
       // Ergebnis auswerten, Tipp checken und abschließen
