@@ -195,8 +195,7 @@ module.exports = {
           return; // Kein Embed + Menü nach Spiel
       }
     
-      await i.update({ embeds: [embed], components: [auswahlMenü] });
-      await i.followUp({ content: '> ✅ Embed wurde dir angezeigt.', ephemeral: true });
+      await i.followUp({ embeds: [embed], components: [auswahlMenü] });
     });
   }}
 
