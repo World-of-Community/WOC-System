@@ -447,7 +447,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       const teamName = team === team1 ? team1Name : team2Name;
-      const treffer = Math.random() < 0.5 ? 'Latte' : 'Pfosten';
+      const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
       events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
     }
 
