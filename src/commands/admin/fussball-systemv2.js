@@ -141,6 +141,29 @@ module.exports = {
       spieltagEmbed.setDescription('Keine Spiele anstehend.');
     }
 
+    const overviewEmbed = new EmbedBuilder()
+      .setTitle('\⚽\ » Fußball Übersicht')
+      .setDescription(
+        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen.\n\n' +
+        '- 💥 » **Spannende Matches** mit Live-Statistiken\n' +
+        '- 🏆 » **Kampf um den Meistertitel** unter den besten Teams\n' +
+        '- 📊 » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
+        'Klicke unten, um die aktuelle Tabelle, das nächste Spiel oder den nächsten Spieltag anzuzeigen.'
+      )
+      .setColor('Blurple');
+
+    const auswahlMenü = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId('fussball-info-menu')
+        .setPlaceholder('📋 » Informationen auswählen')
+        .addOptions(
+          { label: '📊 Aktuelle Tabelle', value: 'tabelle' },
+          { label: '🏟️ Nächstes Spiel', value: 'naechstes_spiel' },
+          { label: '📅 Nächster Spieltag', value: 'spieltag' },
+          { label: '⚽ Zufallsspiel starten', value: 'zufallsspiel' },
+        )
+    );
+
     const msg = await interaction.editReply({ embeds: [overviewEmbed], components: [auswahlMenü] });
 
     const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect });
