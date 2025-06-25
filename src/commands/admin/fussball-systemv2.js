@@ -141,6 +141,10 @@ module.exports = {
       spieltagEmbed.setDescription('Keine Spiele anstehend.');
     }
 
+    const msg = await interaction.editReply({ embeds: [overviewEmbed], components: [auswahlMenü] });
+
+    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect });
+    
     // Übersicht Embed + Select-Menü
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id)
