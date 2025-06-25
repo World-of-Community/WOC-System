@@ -173,29 +173,30 @@ module.exports = {
     
     // Übersicht Embed + Select-Menü
     collector.on('collect', async i => {
-      if (i.user.id !== interaction.user.id)
-        return i.reply({ content: '> `❌` Nur du darfst das benutzen.', ephemeral: true });
-    
-      await i.deferUpdate();
-    
-      let embed;
-    
-      switch (i.values[0]) {
-        case 'tabelle':
-          embed = tabelleEmbed;
-          break;
-        case 'naechstes_spiel':
-          embed = naechstesSpielEmbed;
-          break;
-        case 'spieltag':
-          embed = spieltagEmbed;
-          break;
-        case 'zufallsspiel':
-          await simulateRandomMatch(i);
-          return; // Kein Embed + Menü nach Spiel
-      }
-    
-      await i.followUp({ embeds: [embed], components: [auswahlMenü] });
+    if (i.user.id !== interaction.user.id)
+      return i.reply({ content: '> ❌ Nur du darfst das benutzen.', ephemeral: true });
+  
+    await i.deferUpdate();
+  
+    let embed;
+  
+    switch (i.values[0]) {
+      case 'tabelle':
+        embed = tabelleEmbed;
+        break;
+      case 'naechstes_spiel':
+        embed = naechstesSpielEmbed;
+        break;
+      case 'spieltag':
+        embed = spieltagEmbed;
+        break;
+      case 'zufallsspiel':
+        await simulateRandomMatch(i);
+        return; // Kein Embed + Menü nach Spiel
+    }
+  
+    // Update die ursprüngliche Bot-Nachricht mit neuem Embed + Menü
+    await i.update({ embeds: [embed], components: [auswahlMenü] });
     });
   }}
 
