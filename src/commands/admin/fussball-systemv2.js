@@ -369,20 +369,20 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
     // Torchance alle 4 Minuten mit 25% Wahrscheinlichkeit
     if (minute % 4 === 0 && Math.random() < 0.25) {
-      const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
-      xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-      scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
-
-      // VAR-Check mit 10% Chance
-      if (Math.random() < 0.1) {
-        if (Math.random() < 0.5) {
-          torGezaehlt = false;
-          events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
-        } else {
-          events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
-        }
+    const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
+    xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+    scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+  
+    // VAR-Prüfung mit 10% Chance
+    if (Math.random() < 0.1) {
+      if (Math.random() < 0.5) {
+        torGezaehlt = false;
+        events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+      } else {
+        events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
       }
-
+    }
+  
       if (torGezaehlt) {
         if (teamScored === 'team1') {
           score1++;
@@ -391,6 +391,16 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           score2++;
           xG2 += xG;
         }
+    
+        // 🟢 NEU: Objekt in `events` für Auswertung
+        events.push({
+          type: 'goal',
+          time: minute,
+          player: scorer,
+          team: teamScored === 'team1' ? team1Name : team2Name
+        });
+    
+        // Optional: Zusätzlich als Text anzeigen
         events.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute)})`);
       }
     }
@@ -486,14 +496,14 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     }
 
     const toreTeam1 = events
-    .filter(e => e.type === 'goal' && e.team === team1Name)
+    .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team1Name)
     .map(e => `\`⚽\` ${getDisplayMinute(e.time)}' ${e.player}`)
-    .join(' ') || '–';
+    .join(' ') || '';
 
     const toreTeam2 = events
-      .filter(e => e.type === 'goal' && e.team === team2Name)
+      .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team2Name)
       .map(e => `\`⚽\` ${getDisplayMinute(e.time)}' ${e.player}`)
-      .join(' ') || '–';
+      .join(' ') || '';
     
     const torString = `${toreTeam1} - ${toreTeam2}`;
 
