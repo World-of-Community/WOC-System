@@ -65,14 +65,14 @@ module.exports = {
       .setColor('Green')
       .addFields(
         { name: '`📊` Spiele', value: `${team.played}`, inline: true },
+        { name: '`📈` Siegquote', value: `${siegquote}%`, inline: true },
+        { name: '`🏆` Punkte', value: `${team.points}`, inline: true },
         { name: '`✅` Siege', value: `${team.won}`, inline: true },
         { name: '`➖` Unentschieden', value: `${team.draw}`, inline: true },
         { name: '`❌` Niederlagen', value: `${team.lost}`, inline: true },
+        { name: '`🔢` Tordifferenz', value: `${tordifferenz}`, inline: true },
         { name: '`⚽` Tore', value: `${team.goalsFor}`, inline: true },
         { name: '`🥅` Gegentore', value: `${team.goalsAgainst}`, inline: true },
-        { name: '`🔢` Tordifferenz', value: `${tordifferenz}`, inline: true },
-        { name: '`📈` Siegquote', value: `${siegquote}%`, inline: true },
-        { name: '`🏆` Punkte', value: `${team.points}`, inline: true },
         { name: '`📉` Form (letzte 5)', value: formString, inline: true }
       );
 
