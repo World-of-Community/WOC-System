@@ -164,7 +164,7 @@ module.exports = {
         )
     );
 
-    await interaction.deferReply({ ephemeral: true });
+    //await interaction.deferReply({ ephemeral: true });
     await interaction.editReply({ content: 'Embed wird gleich gepostet...', ephemeral: true });
 
     const msg = await interaction.channel.send({ embeds: [overviewEmbed], components: [auswahlMenü] });
