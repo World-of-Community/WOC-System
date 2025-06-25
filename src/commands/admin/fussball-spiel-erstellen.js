@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { Match } = require('../../../Datenbank/matchdb');
 
 const proLeagueTeams = [
@@ -51,7 +51,8 @@ module.exports = {
     .addStringOption(option =>
       option.setName('datum')
         .setDescription('Datum im Format TT.MM.JJJJ')
-        .setRequired(true)),
+        .setRequired(true))
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const heim = interaction.options.getString('heimteam');

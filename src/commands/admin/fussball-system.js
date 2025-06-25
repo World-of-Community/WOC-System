@@ -6,6 +6,7 @@ const {
   ButtonStyle,
   ComponentType,
   StringSelectMenuBuilder,
+  PermissionFlagsBits,
 } = require('discord.js');
 
 const { Team } = require('../../../Datenbank/fussballdb');
@@ -344,7 +345,8 @@ function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, te
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-system')
-    .setDescription('Zeigt die Fußball-Übersicht an'),
+    .setDescription('Zeigt die Fußball-Übersicht an')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
 

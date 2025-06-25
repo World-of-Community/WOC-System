@@ -5,7 +5,8 @@ const {
   StringSelectMenuBuilder, 
   ButtonBuilder, 
   ButtonStyle, 
-  ComponentType 
+  ComponentType,
+  PermissionFlagsBits,
 } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const { Match } = require('../../../Datenbank/matchdb');
@@ -150,7 +151,8 @@ module.exports = {
         '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
         'Klicke unten, um die aktuelle Tabelle, das nächste Spiel oder den nächsten Spieltag anzuzeigen.'
       )
-      .setColor('Blurple');
+      .setColor('Blurple')
+      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 
     const auswahlMenü = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
