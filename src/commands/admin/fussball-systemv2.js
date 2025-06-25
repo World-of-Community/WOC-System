@@ -41,7 +41,8 @@ const teamsData = [
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-systemv2')
-    .setDescription('Zeigt die Fußball-Übersicht an und simuliert Spiele'),
+    .setDescription('Zeigt die Fußball-Übersicht an und simuliert Spiele')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     await interaction.deferReply();
@@ -151,8 +152,7 @@ module.exports = {
         '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
         'Klicke unten, um die aktuelle Tabelle, das nächste Spiel oder den nächsten Spieltag anzuzeigen.'
       )
-      .setColor('Blurple')
-      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+      .setColor('Blurple');
 
     const auswahlMenü = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
