@@ -13,7 +13,7 @@ const proLeagueTeams = [
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('club-profil')
-    .setDescription('Zeigt Informationen zu einem Fußballclub.')
+    .setDescription('» Zeigt Informationen zu einem Fußballclub. ⚽')
     .addStringOption(option =>
       option.setName('team')
         .setDescription('Name des Teams')

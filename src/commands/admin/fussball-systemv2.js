@@ -507,7 +507,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`⏳\` Nachspielzeit: +${extraTime}'`);
     }
 
-    if (getDisplayMinute(minute) === 90 + extraTime) {
+    if (minute === 90 + extraTime) {
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
     
       // Ergebnis auswerten
