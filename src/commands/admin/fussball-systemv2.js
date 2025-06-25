@@ -474,14 +474,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`🚑\` **${player}** (${teamName}) hat sich verletzt. Kurze Unterbrechung. (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
     }
 
-    if (minute % 15 === 0 && Math.random() < 0.2) {
-      const team = Math.random() < 0.5 ? team1 : team2;
-      const playerOut = getRandomPlayer(team);
-      const playerIn = getRandomPlayer(team);
-      const teamName = team === team1 ? team1Name : team2Name;
-      events.push(`\`🔁\` Auswechslung bei ${teamName}: **${playerOut}** geht raus, **${playerIn}** kommt rein. (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
-    }
-
     if (Math.random() < 0.06) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
