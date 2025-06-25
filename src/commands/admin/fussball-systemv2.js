@@ -367,8 +367,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     let scorer = '';
     let xG = 0;
 
-    // Torchance alle 4 Minuten mit 25% Wahrscheinlichkeit
-    if (minute % 4 === 0 && Math.random() < 0.25) {
+    // Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
+    if (minute % 4 === 0 && Math.random() < 0.15) {
     const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
     xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
     scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
@@ -495,21 +495,35 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       return minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
     }
 
-    const toreTeam1Goals = events
-    .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team1Name);
+    function gruppiereTore(tore) {
+      const spielerTore = new Map();
+    
+      for (const tor of tore) {
+        if (!spielerTore.has(tor.player)) {
+          spielerTore.set(tor.player, []);
+        }
+        spielerTore.get(tor.player).push(getDisplayMinute(tor.time));
+      }
+    
+      const eintraege = Array.from(spielerTore.entries()).map(([spieler, minuten], index) => {
+        const minutenString = minuten.join("' ") + "'";
+        const emoji = index === 0 ? '`⚽` ' : '';
+        return `${emoji}${minutenString} ${spieler}`;
+      });
+    
+      return eintraege.join(' ') || '–';
+    }
 
-    const toreTeam2Goals = events
-      .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team2Name);
-    
-    const toreTeam1 = toreTeam1Goals
-      .map((e, i) => `${i === 0 ? '`⚽`' : ''} ${getDisplayMinute(e.time)} ${e.player}`)
-      .join(' ').trim() || '–';
-    
-    const toreTeam2 = toreTeam2Goals
-      .map((e, i) => `${i === 0 ? '`⚽`' : ''} ${getDisplayMinute(e.time)} ${e.player}`)
-      .join(' ').trim() || '–';
-    
-    const torString = `${toreTeam1} - ${toreTeam2}`;
+     const toreTeam1Goals = events
+       .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team1Name);
+     
+     const toreTeam2Goals = events
+       .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team2Name);
+     
+     const toreTeam1 = gruppiereTore(toreTeam1Goals);
+     const toreTeam2 = gruppiereTore(toreTeam2Goals);
+     
+     const torString = `${toreTeam1} - ${toreTeam2}`;
 
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
