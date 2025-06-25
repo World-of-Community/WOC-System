@@ -58,8 +58,8 @@ module.exports = {
                     break;
 
                 case '1243964646449483788':
-                    await message.react('<a:herzen:1376447817089941544>'); // Geburtstage
-                    await message.react('<a:Cool:1376447266688208916>'); // Geburtstage
+                    await message.react('a:herzen:1376447817089941544'); // Geburtstage
+                    await message.react('a:Cool:1376447266688208916'); // Geburtstage
                     
                     break;
 
