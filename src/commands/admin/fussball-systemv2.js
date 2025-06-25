@@ -142,55 +142,32 @@ module.exports = {
     }
 
     // Übersicht Embed + Select-Menü
-    const overviewEmbed = new EmbedBuilder()
-      .setTitle('\`⚽\` » Fußball Übersicht')
-      .setDescription(
-        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen.\n\n' +
-        '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
-        '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
-        '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
-        'Klicke unten, um die aktuelle Tabelle, das nächste Spiel oder den nächsten Spieltag anzuzeigen.'
-      )
-      .setColor('Blurple');
-
-    const auswahlMenü = new ActionRowBuilder().addComponents(
-      new StringSelectMenuBuilder()
-        .setCustomId('fussball-info-menu')
-        .setPlaceholder('📋 » Informationen auswählen')
-        .addOptions(
-          { label: '📊 Aktuelle Tabelle', value: 'tabelle' },
-          { label: '🏟️ Nächstes Spiel', value: 'naechstes_spiel' },
-          { label: '📅 Nächster Spieltag', value: 'spieltag' },
-          { label: '⚽ Zufallsspiel starten', value: 'zufallsspiel' },
-        )
-    );
-
-    const msg = await interaction.editReply({ embeds: [overviewEmbed], components: [auswahlMenü] });
-
-    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect });
-
     collector.on('collect', async i => {
-      if (i.user.id !== interaction.user.id) return i.reply({ content: '> \`❌\` Nur du darfst das benutzen.', ephemeral: true });
-
+      if (i.user.id !== interaction.user.id)
+        return i.reply({ content: '> `❌` Nur du darfst das benutzen.', ephemeral: true });
+    
       await i.deferUpdate();
-
+    
+      let embed;
+    
       switch (i.values[0]) {
         case 'tabelle':
-          await i.followUp({ embeds: [tabelleEmbed] });
+          embed = tabelleEmbed;
           break;
         case 'naechstes_spiel':
-          await i.followUp({ embeds: [naechstesSpielEmbed] });
+          embed = naechstesSpielEmbed;
           break;
         case 'spieltag':
-          await i.followUp({ embeds: [spieltagEmbed] });
+          embed = spieltagEmbed;
           break;
         case 'zufallsspiel':
           await simulateRandomMatch(i);
-          break;
+          return; // Kein Embed + Menü nach Spiel
       }
+    
+      await i.followUp({ embeds: [embed], components: [auswahlMenü] });
     });
-  }
-};
+  }}
 
 function getTwoDifferentTeams(teams) {
   const idx1 = Math.floor(Math.random() * teams.length);
