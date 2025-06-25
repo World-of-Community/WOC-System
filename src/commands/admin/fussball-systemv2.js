@@ -495,22 +495,26 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       return minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
     }
 
-    const toreTeam1 = events
-    .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team1Name)
-    .map(e => `\`⚽\` ${getDisplayMinute(e.time)}' ${e.player}`)
-    .join(' ') || '';
+    const toreTeam1Goals = events
+    .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team1Name);
 
-    const toreTeam2 = events
-      .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team2Name)
-      .map(e => `\`⚽\` ${getDisplayMinute(e.time)}' ${e.player}`)
-      .join(' ') || '';
+    const toreTeam2Goals = events
+      .filter(e => typeof e === 'object' && e.type === 'goal' && e.team === team2Name);
+    
+    const toreTeam1 = toreTeam1Goals
+      .map((e, i) => `${i === 0 ? '`⚽`' : ''} ${getDisplayMinute(e.time)} ${e.player}`)
+      .join(' ').trim() || '–';
+    
+    const toreTeam2 = toreTeam2Goals
+      .map((e, i) => `${i === 0 ? '`⚽`' : ''} ${getDisplayMinute(e.time)} ${e.player}`)
+      .join(' ').trim() || '–';
     
     const torString = `${toreTeam1} - ${toreTeam2}`;
 
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
       .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
-      .setDescription(`\`📍\` Austragungsort: **${stadium}**\n\`⚽\` Torschützen: ${torString}`)
+      .setDescription(`\`📍\` Austragungsort: **${stadium}**\n${torString}`)
       .setColor('Green')
       .addFields(
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
