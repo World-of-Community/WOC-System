@@ -49,7 +49,10 @@ module.exports = {
         const isHome = match.homeTeam === teamName;
         const goalsFor = isHome ? match.homeScore : match.awayScore;
         const goalsAgainst = isHome ? match.awayScore : match.homeScore;
-
+    
+        // Wenn Spiel nicht ausgewertet ist (z. B. Ergebnis fehlt)
+        if (goalsFor === null || goalsAgainst === null) return '`⏳`';
+    
         if (goalsFor > goalsAgainst) return '`✅`';
         if (goalsFor < goalsAgainst) return '`❌`';
         return '`➖`';
