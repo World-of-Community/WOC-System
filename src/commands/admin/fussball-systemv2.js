@@ -370,22 +370,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     let scorer = '';
     let xG = 0;
 
-    // Halbzeitpause starten
-    if (minute === pauseStart + 1) {
-      events.push(`\`⏸️\` Halbzeitpause. (${getDisplayMinute(minute - 1, extraTime)})`);
-    }
-
-    // Zweite Halbzeit starten
-    if (minute === pauseEnd + 1) {
-      events.push(`\`▶️\` Anpfiff zur 2. Halbzeit!`);
-    }
-
-    // Während der Pause keine Aktionen, nur warten und keine Status-Aktualisierung
-    if (minute > pauseStart && minute <= pauseEnd) {
-      await delay(1000);
-      continue;
-    }
-
     // Torchance alle 4 Minuten mit 25% Wahrscheinlichkeit
     if (minute % 4 === 0 && Math.random() < 0.25) {
       const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
@@ -396,9 +380,9 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
           torGezaehlt = false;
-          events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` | ${score1} - ${score2} (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+          events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
         } else {
-          events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` | ${score1} - ${score2} (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+          events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
         }
       }
 
@@ -410,20 +394,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           score2++;
           xG2 += xG;
         }
-        events.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
-      }
-    }
-
-    if (Math.random() < 0.015) {
-      const team = Math.random() < 0.5 ? team1 : team2;
-      const opponentName = team === team1 ? team2Name : team1Name;
-      const teamName = team === team1 ? team1Name : team2Name;
-      const player = getRandomPlayer(team);
-    
-      if (Math.random() < 0.5) {
-        events.push(`\`🖥️\` VAR prüft ein Foul von **${player}** (${teamName}) \`✅\` Elfmeter für ${opponentName}! (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
-      } else {
-        events.push(`\`🖥️\` VAR prüft ein Foul von **${player}** (${teamName}) \`❌\` Kein Elfmeter. (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+        events.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute)})`);
       }
     }
 
@@ -433,7 +404,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const teamName = teamCard === 'team1' ? team1Name : team2Name;
       const player = getRandomPlayer(teamCard === 'team1' ? team1 : team2);
       if (teamCard === 'team1') yellowCardsTeam1++; else yellowCardsTeam2++;
-      events.push(`\`🟨\` Gelbe Karte für **${player}** (${teamName}) (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`🟨\` Gelbe Karte für **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
     }
 
     // Ecken alle 5 Minuten mit 20% Wahrscheinlichkeit
@@ -441,54 +412,54 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const teamCorner = Math.random() < 0.5 ? 'team1' : 'team2';
       const teamName = teamCorner === 'team1' ? team1Name : team2Name;
       if (teamCorner === 'team1') cornersTeam1++; else cornersTeam2++;
-      events.push(`\`🚩\` Ecke für ${teamName} (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`🚩\` Ecke für ${teamName} (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.08) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       const teamName = team === team1 ? team1Name : team2Name;
-      events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.05) {
       const team = Math.random() < 0.5 ? team1Name : team2Name;
-      events.push(`\`🎯\` Freistoß für ${team} (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`🎯\` Freistoß für ${team} (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
-      events.push(`\`🏳️\` Abseits von ${(team === team1 ? team1Name : team2Name)} durch **${player}** (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`🏳️\` Abseits von ${(team === team1 ? team1Name : team2Name)} durch **${player}** (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.15) {
       const team = Math.random() < 0.5 ? team1 : team2;
-      events.push(`\`🕹️\` ${(team === team1 ? team1Name : team2Name)} im Ballbesitz (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`🕹️\` ${(team === team1 ? team1Name : team2Name)} im Ballbesitz (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.01) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       const teamName = team === team1 ? team1Name : team2Name;
-      events.push(`\`🚑\` **${player}** (${teamName}) hat sich verletzt. Kurze Unterbrechung. (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`🚑\` **${player}** (${teamName}) hat sich verletzt. Kurze Unterbrechung. (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.06) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
       const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
-      events.push(`\`💥\` ${treffer}schuss von ${(team === team1 ? team1Name : team2Name)} durch **${player}** (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`💥\` ${treffer}schuss von ${(team === team1 ? team1Name : team2Name)} durch **${player}** (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
-      events.push(`\`🚀\` Weitschuss von **${player}** ${team === team1 ? team1Name : team2Name} knapp drüber! (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`🚀\` Weitschuss von **${player}** ${team === team1 ? team1Name : team2Name} knapp drüber! (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.03) {
-      events.push(`\`⏸️\` Spielunterbrechung (${getDisplayMinute(minute, extraFirstHalf, extraSecondHalf)})`);
+      events.push(`\`⏸️\` Spielunterbrechung (${getDisplayMinute(minute)})`);
     }
 
     // Ballbesitz & Aktionen jede Minute aktualisieren
@@ -509,6 +480,10 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const fullTeam1Data = teamsData.find(t => t.name === team1Name);
     const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
 
+    function getDisplayMinute(minute) {
+      return minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
+    }
+
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
       .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
@@ -528,18 +503,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     await statusMessage.edit({ embeds: [statusEmbed] });
 
     await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
-
-    const displayMinute = getDisplayMinute(minute, extraFirstHalf, extraSecondHalf);
-
-    if (displayMinute === 45) {
-      events.push(`\`⏳\` Nachspielzeit 1. Halbzeit: +${extraFirstHalf}'`);
-    }
     
     if (displayMinute === 90) {
-      events.push(`\`⏳\` Nachspielzeit: +${extraSecondHalf}'`);
+      events.push(`\`⏳\` Nachspielzeit: +${extraTime}'`);
     }
 
-    if (displayMinute === 90 + extraSecondHalf) {
+    if (displayMinute === 90 + extraTime) {
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
 
       // Ergebnis auswerten, Tipp checken und abschließen
