@@ -216,7 +216,7 @@ async function updateTeamEmbed(interaction) {
                 membersInArea.map(member => {
                     const mention = `<@${member.userID}>`;
                     const displayedAge = member.alter || '`➖`';
-                    return `- ${mention} (${member.beschreibung})\n⠀➥ Alter: ${displayedAge}`;
+                    return `- ${mention} (${member.beschreibung}) - (Alter: ${displayedAge})`;
                 }).join('\n') + '\n\n';
         } else {
             embedDescription += `${role}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
@@ -269,7 +269,7 @@ async function sendTeamEmbed(interaction) {
                 membersInArea.map(member => {
                     const mention = `<@${member.userID}>`;
                     const displayedAge = member.alter || '`➖`';
-                    return `- ${mention} (${member.beschreibung})\n⠀➥ Alter: ${displayedAge}`;
+                    return `- ${mention} (${member.beschreibung}) - (Alter: ${displayedAge})`;
                 }).join('\n') + '\n\n';
         } else {
             embedDescription += `${role}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
