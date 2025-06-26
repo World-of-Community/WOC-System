@@ -69,7 +69,7 @@ module.exports = {
                         .setRequired(false))
                 .addStringOption(option =>
                     option.setName('alter')
-                        .setDescription('Neues Alter')
+                        .setDescription('Neues Alter oder "remove" zum Löschen')
                         .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
@@ -151,33 +151,15 @@ module.exports = {
             const name = interaction.options.getString('name');
             let alter = interaction.options.getString('alter');
 
-            // Alter berechnen, falls nicht angegeben
-            if (!alter && (bereich || beschreibung || name)) {
-                // Falls nur Bearbeitung ohne Alter, lass Alter unverändert
-                alter = member.alter;
+            // Alter entfernen, wenn "remove" oder "none" übergeben wurde
+            if (alter && (alter.toLowerCase() === 'remove' || alter.toLowerCase() === 'none')) {
+                alter = 'Nicht angegeben'; // Hier kannst du auch null setzen, je nach DB-Schema
             } else if (!alter) {
-                // Wenn keine Änderung, dann nichts tun
+                // Alter nicht angegeben → Alter nicht ändern
                 alter = member.alter;
             }
 
-            if (alter === null) {
-                // Versuche automatisch Alter zu bestimmen, wenn alter explizit null ist (z.B. von slash)
-                const userData = await UserDB.findOne({ userId: user.id });
-                if (userData?.birthday?.jahr) {
-                    const heute = new Date();
-                    alter = heute.getFullYear() - userData.birthday.jahr;
-                    if (
-                        userData.birthday.monat > (heute.getMonth() + 1) ||
-                        (userData.birthday.monat === (heute.getMonth() + 1) && userData.birthday.tag > heute.getDate())
-                    ) {
-                        alter--;
-                    }
-                } else {
-                    alter = 'Nicht angegeben';
-                }
-            }
-
-            // Felder nur setzen, wenn sie angegeben wurden (also !== null)
+            // Felder nur setzen, wenn sie angegeben wurden (!== null)
             if (bereich !== null) member.bereich = bereich;
             if (beschreibung !== null) member.beschreibung = beschreibung;
             if (name !== null) member.name = name;
