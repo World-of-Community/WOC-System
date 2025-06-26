@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const coinSchema = new mongoose.Schema({
     userId: { type: String, required: true },
-    coins: { type: Number, default: 0 }
+    coins: { type: Number, default: 0 },
+    streak: { type: Number, default: 0 }
 });
 
 const coinConfigSchema = new mongoose.Schema({
@@ -15,4 +16,3 @@ module.exports = {
     Coin: mongoose.model('Coin', coinSchema),
     CoinConfig: mongoose.model('CoinConfig', coinConfigSchema)
 };
-
