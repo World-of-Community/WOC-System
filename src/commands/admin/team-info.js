@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const TeamMember = require('../../../Datenbank/teamdb');
+const TeamInfo = require('../../../Datenbank/teaminfodb');
 const UserDB = require('../../../Datenbank/userdb');
 
 module.exports = {
@@ -92,7 +92,6 @@ module.exports = {
                     userID: user.id,
                     name,
                     alter,
-                    role: bereich,
                     beschreibung,
                     bereich,
                 });

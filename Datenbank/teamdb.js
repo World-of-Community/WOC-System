@@ -37,25 +37,7 @@ const teamSchema = new mongoose.Schema({
         messageID: {
             type: String,
         },
-    },
-    teaminfo: {
-        userName: {  // Speichere den Namen des Nutzers
-          type: String,
-          required: false,  // optional, nicht mehr erforderlich
-        },
-        bereich: {
-          type: String,
-        },
-        beschreibung: {
-          type: String,
-        },
-        alter: {
-          type: String,
-        },
-        role: {
-          type: String,
-        },
-      },        
+    },       
 });
 
 module.exports = mongoose.model('team-data', teamSchema);
