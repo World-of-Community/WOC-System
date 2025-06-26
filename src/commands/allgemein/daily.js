@@ -1,5 +1,31 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const User = require('../../../Datenbank/userdb'); // Passe diesen Pfad ggf. an
+const User = require('../../../Datenbank/userdb'); // Pfad anpassen
+
+const bonusLevels = [
+  { days: 10,  percent: 50 },
+  { days: 20,  percent: 100 },
+  { days: 50,  percent: 150 },
+  { days: 100, percent: 200 },
+  { days: 200, percent: 250 },
+  { days: 500, percent: 300 },
+];
+
+function berechneBonusMultiplikator(streak) {
+  if (streak >= 500) return 4.0;
+  if (streak >= 200) return 3.5;
+  if (streak >= 100) return 3.0;
+  if (streak >= 50)  return 2.5;
+  if (streak >= 20)  return 2.0;
+  if (streak >= 10)  return 1.5;
+  return 1.0;
+}
+
+function generiereBonusStatus(streak) {
+  return bonusLevels.map(level => {
+    const erreicht = streak >= level.days ? '✅' : '❌';
+    return `Ab ${level.days} Tage: ${level.percent}% mehr Coins ${erreicht}`;
+  }).join('\n');
+}
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,7 +38,7 @@ module.exports = {
 
     let user = await User.findOne({ userId });
     if (!user) {
-      user = await User.create({ userId, streak: 0 }); // Streak initialisieren
+      user = await User.create({ userId, coins: 0, streak: 0 });
     }
 
     const letzteBelohnung = user.lastDaily || new Date(0);
@@ -43,14 +69,21 @@ module.exports = {
       user.streak = 1;
     }
 
-    // Belohnung + Bonus für Streak
+    // Basis-Belohnung (100–500 in 50er Schritten)
     const basisBelohnung = Math.floor(Math.random() * 9 + 2) * 50;
-    const streakBonus = user.streak * 10;
-    const gesamtBelohnung = basisBelohnung + streakBonus;
+
+    // Bonus-Multiplikator ermitteln
+    const bonusMultiplikator = berechneBonusMultiplikator(user.streak);
+
+    // Gesamt-Belohnung berechnen
+    const gesamtBelohnung = Math.floor(basisBelohnung * bonusMultiplikator);
 
     user.coins += gesamtBelohnung;
     user.lastDaily = now;
     await user.save();
+
+    // Status der Bonuslevel generieren
+    const bonusStatusText = generiereBonusStatus(user.streak);
 
     return interaction.reply({
       embeds: [
@@ -58,11 +91,14 @@ module.exports = {
           .setColor('Green')
           .setTitle('`🎁` Tägliche Belohnung')
           .setDescription(
-            `Du hast heute **${basisBelohnung.toLocaleString('de-DE')} Coins** erhalten.\n` +
-            `**+${streakBonus.toLocaleString('de-DE')} Bonus** für deine Streak von **${user.streak} Tag(en)**.\n\n` +
-            `Insgesamt: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**`
+            `Basis-Belohnung: **${basisBelohnung.toLocaleString('de-DE')} Coins**\n` +
+            `Streak: **${user.streak} Tage**\n` +
+            `Aktuell: ${user.streak}. Tag\n` +
+            `Bonus-Multiplikator: **${((bonusMultiplikator - 1) * 100).toFixed(0)}%**\n\n` +
+            `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**\n\n` +
+            `**Bonus-Level:**\n${bonusStatusText}`
           )
-          .setFooter({ text: 'Komm morgen wieder und erhöhe deine Serie!' })
+          .setFooter({ text: 'Komm morgen wieder, um deine Belohnung zu erhöhen!' })
       ]
     });
   }
