@@ -22,7 +22,7 @@ function berechneBonusMultiplikator(streak) {
 
 function generiereBonusStatus(streak) {
   return bonusLevels.map(level => {
-    const erreicht = streak >= level.days ? '✅' : '❌';
+    const erreicht = streak >= level.days ? '`✅`' : '`❌`';
     return `Ab ${level.days} Tage: ${level.percent}% mehr Coins ${erreicht}`;
   }).join('\n');
 }
@@ -69,8 +69,8 @@ module.exports = {
       user.streak = 1;
     }
 
-    // Basis-Belohnung (100–500 in 50er Schritten)
-    const basisBelohnung = Math.floor(Math.random() * 9 + 2) * 50;
+    // Basis-Belohnung immer 100
+    const basisBelohnung = 100;
 
     // Bonus-Multiplikator ermitteln
     const bonusMultiplikator = berechneBonusMultiplikator(user.streak);
@@ -99,7 +99,8 @@ module.exports = {
             `**Bonus-Level:**\n${bonusStatusText}`
           )
           .setFooter({ text: 'Komm morgen wieder, um deine Belohnung zu erhöhen!' })
-      ], ephemeral: true
-    }, );
+      ], 
+      ephemeral: true
+    });
   }
 };
