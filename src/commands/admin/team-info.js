@@ -115,7 +115,7 @@ module.exports = {
                         alter--;
                     }
                 } else {
-                    alter = 'Nicht angegeben';
+                    alter = '`➖`';
                 }
             }
 
