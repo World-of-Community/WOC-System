@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const TeamInfo = require('../../../Datenbank/teaminfodb');
+const TeamInfo = require('../../../Datenbank/teaminfodb'); // Dein Team-Schema
 const UserDB = require('../../../Datenbank/userdb');
 
 module.exports = {
@@ -66,7 +66,7 @@ module.exports = {
             const beschreibung = interaction.options.getString('beschreibung');
             let alter = interaction.options.getString('alter');
 
-            const existing = await TeamMember.findOne({ userID: user.id });
+            const existing = await TeamInfo.findOne({ userID: user.id });
             if (existing) {
                 return interaction.reply({ content: `> \`⚠️\` » ${user} ist bereits ein Teammitglied.`, ephemeral: true });
             }
@@ -88,7 +88,7 @@ module.exports = {
             }
 
             try {
-                const newMember = new TeamMember({
+                const newMember = new TeamInfo({
                     userID: user.id,
                     name,
                     alter,
@@ -107,7 +107,7 @@ module.exports = {
 
         else if (subcommand === 'remove') {
             const user = interaction.options.getUser('user');
-            const member = await TeamMember.findOneAndDelete({ userID: user.id });
+            const member = await TeamInfo.findOneAndDelete({ userID: user.id });
 
             if (member) {
                 await interaction.reply({ content: `> \`❌\` » ${user} wurde aus dem Team entfernt.`, ephemeral: true });
@@ -129,7 +129,7 @@ module.exports = {
 };
 
 async function updateTeamEmbed(interaction) {
-    const teamMembers = await TeamMember.find({});
+    const teamMembers = await TeamInfo.find({});
     const bereiche = [
         { name: 'Admin', id: '959869691529154631' },
         { name: 'Developer', id: '929349039433056276' },
@@ -142,6 +142,7 @@ async function updateTeamEmbed(interaction) {
     let embedDescription = '';
 
     bereiche.forEach(bereich => {
+        // Versuche Rolle zu holen, fallback auf Rolle-Mention-String
         const role = interaction.guild.roles.cache.get(bereich.id) || `<@&${bereich.id}>`;
         const membersInArea = teamMembers.filter(m => m.bereich === bereich.name);
 
@@ -161,22 +162,24 @@ async function updateTeamEmbed(interaction) {
         .setTimestamp();
 
     try {
-        const channel = interaction.guild.channels.cache.get('1291421526238822481'); // ✅ Channel-ID prüfen
-        const messageId = '1293559329961803950'; // ✅ Embed-Nachricht-ID prüfen
+        const channel = interaction.guild.channels.cache.get('1291421526238822481'); // Channel-ID prüfen
+        const messageId = '1293559329961803950'; // Embed-Nachricht-ID prüfen
 
+        if (!channel) return console.error('Team-Channel nicht gefunden.');
         const message = await channel.messages.fetch(messageId).catch(err => {
             console.error('Fehler beim Nachricht-Fetch:', err);
             return null;
         });
 
         if (message) await message.edit({ embeds: [TeamEmbed] });
+        else console.error('Embed-Nachricht nicht gefunden.');
     } catch (error) {
         console.error('Fehler beim Aktualisieren des Embeds:', error);
     }
 }
 
 async function sendTeamEmbed(interaction) {
-    const teamMembers = await TeamMember.find({});
+    const teamMembers = await TeamInfo.find({});
     const bereiche = [
         { name: 'Admin', id: '959869691529154631' },
         { name: 'Developer', id: '929349039433056276' },
