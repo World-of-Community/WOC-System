@@ -153,7 +153,7 @@ module.exports = {
 
             // Alter entfernen, wenn "remove" oder "none" übergeben wurde
             if (alter && (alter.toLowerCase() === 'remove' || alter.toLowerCase() === 'none')) {
-                alter = 'Nicht angegeben'; // Hier kannst du auch null setzen, je nach DB-Schema
+                alter = '`➖`'; // Hier kannst du auch null setzen, je nach DB-Schema
             } else if (!alter) {
                 // Alter nicht angegeben → Alter nicht ändern
                 alter = member.alter;
