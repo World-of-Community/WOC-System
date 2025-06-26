@@ -99,7 +99,7 @@ module.exports = {
             `**Bonus-Level:**\n${bonusStatusText}`
           )
           .setFooter({ text: 'Komm morgen wieder, um deine Belohnung zu erhöhen!' })
-      ]
-    });
+      ], ephemeral: true
+    }, );
   }
 };
