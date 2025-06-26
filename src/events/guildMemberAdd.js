@@ -128,14 +128,6 @@ module.exports = {
     }
 
         // Invite System
-
-        // Invite-Daten vom Discord-API holen
-        const guild = member.guild;
-        const newInvites = await member.guild.invites.fetch();
-        const Invites = await guild.invites.fetch();
-      
-        // Lade alten Cache aus DB
-        let InviteCache = await InviteCache.findOne({ guildID: member.guild.id });
       
         if (!inviteCache) {
           // Wenn noch kein Cache, speichern und zurück
@@ -153,6 +145,14 @@ module.exports = {
         });
       
         if (!usedInvite) return;
+
+        // Invite-Daten vom Discord-API holen
+        const guild = member.guild;
+        const newInvites = await member.guild.invites.fetch();
+        const Invites = await guild.invites.fetch();
+      
+        // Lade alten Cache aus DB
+        let InviteCache = await InviteCache.findOne({ guildID: member.guild.id });
       
         // Aktualisiere Cache in DB
         inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));

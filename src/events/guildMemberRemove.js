@@ -14,7 +14,7 @@ module.exports = {
         const Invites = await guild.invites.fetch();
 
         // Lade alten Cache aus DB
-        let inviteCache = await InviteCache.findOne({ guildID: member.guild.id });
+        let InviteCache = await InviteCache.findOne({ guildID: member.guild.id });
         
         if (!inviteCache) return;
     
