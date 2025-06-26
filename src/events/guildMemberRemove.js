@@ -12,11 +12,11 @@ module.exports = {
         const guild = member.guild;
         const newInvites = await member.guild.invites.fetch();
         const Invites = await guild.invites.fetch();
-
-        // Lade alten Cache aus DB
-        let InviteCache = await InviteCache.findOne({ guildID: member.guild.id });
         
-        if (!InviteCache) return;
+        // Lade alten Cache aus DB
+        let inviteCacheData = await InviteCache.findOne({ guildID: member.guild.id });
+        
+        if (!inviteCacheData) return;
     
         // Suche den User, der ihn eingeladen hat
         const userDoc = await User.findOne({ userID: member.id });
