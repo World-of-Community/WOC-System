@@ -23,10 +23,12 @@ module.exports = {
       });
     }
 
-    // Leaderboard-String mit Erwähnung und Streak oder ➖
+    // Leaderboard-String mit Erwähnung, Coins formatiert und Streak oder ➖
     const leaderboard = users.map((u, i) => {
-      const streakText = u.streak ? u.streak : '➖';
-      return `\`#${i + 1}\` – <@${u.userId}> mit ${u.coins} Coins (Streak: ${streakText})`;
+      const streak = u.streak || 0;
+      const streakText = streak === 1 ? '1 Tag' : streak > 1 ? `${streak} Tage` : '`➖`';
+      const coinsFormatted = u.coins.toLocaleString('de-DE');
+      return `\`#${i + 1}\` – <@${u.userId}> mit **${coinsFormatted} Coins** (Streak: ${streakText})`;
     }).join('\n');
 
     // Embed erstellen
