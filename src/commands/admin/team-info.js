@@ -41,6 +41,38 @@ module.exports = {
                         .setRequired(false)))
         .addSubcommand(subcommand =>
             subcommand
+                .setName('edit')
+                .setDescription('» Bearbeite ein bestehendes Teammitglied.')
+                .addUserOption(option =>
+                    option.setName('user')
+                        .setDescription('Welches Teammitglied soll bearbeitet werden?')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('bereich')
+                        .setDescription('Neuer Bereich des Teammitglieds')
+                        .setRequired(false)
+                        .addChoices(
+                            { name: 'Admin', value: 'Admin' },
+                            { name: 'Developer', value: 'Developer' },
+                            { name: 'Sr-Moderator', value: 'Sr-Moderator' },
+                            { name: 'Moderator', value: 'Moderator' },
+                            { name: 'Supporter', value: 'Supporter' },
+                            { name: 'Builder', value: 'Builder' },
+                        ))
+                .addStringOption(option =>
+                    option.setName('beschreibung')
+                        .setDescription('Neue Beschreibung')
+                        .setRequired(false))
+                .addStringOption(option =>
+                    option.setName('name')
+                        .setDescription('Neuer Name')
+                        .setRequired(false))
+                .addStringOption(option =>
+                    option.setName('alter')
+                        .setDescription('Neues Alter')
+                        .setRequired(false)))
+        .addSubcommand(subcommand =>
+            subcommand
                 .setName('remove')
                 .setDescription('» Entferne ein Team Mitglied. 📌')
                 .addUserOption(option =>
@@ -105,6 +137,62 @@ module.exports = {
             }
         }
 
+        else if (subcommand === 'edit') {
+            const user = interaction.options.getUser('user');
+            const member = await TeamInfo.findOne({ userID: user.id });
+
+            if (!member) {
+                return interaction.reply({ content: `> \`❗\` » ${user} ist kein Teammitglied.`, ephemeral: true });
+            }
+
+            // Optionale neue Werte holen
+            const bereich = interaction.options.getString('bereich');
+            const beschreibung = interaction.options.getString('beschreibung');
+            const name = interaction.options.getString('name');
+            let alter = interaction.options.getString('alter');
+
+            // Alter berechnen, falls nicht angegeben
+            if (!alter && (bereich || beschreibung || name)) {
+                // Falls nur Bearbeitung ohne Alter, lass Alter unverändert
+                alter = member.alter;
+            } else if (!alter) {
+                // Wenn keine Änderung, dann nichts tun
+                alter = member.alter;
+            }
+
+            if (alter === null) {
+                // Versuche automatisch Alter zu bestimmen, wenn alter explizit null ist (z.B. von slash)
+                const userData = await UserDB.findOne({ userId: user.id });
+                if (userData?.birthday?.jahr) {
+                    const heute = new Date();
+                    alter = heute.getFullYear() - userData.birthday.jahr;
+                    if (
+                        userData.birthday.monat > (heute.getMonth() + 1) ||
+                        (userData.birthday.monat === (heute.getMonth() + 1) && userData.birthday.tag > heute.getDate())
+                    ) {
+                        alter--;
+                    }
+                } else {
+                    alter = 'Nicht angegeben';
+                }
+            }
+
+            // Felder nur setzen, wenn sie angegeben wurden (also !== null)
+            if (bereich !== null) member.bereich = bereich;
+            if (beschreibung !== null) member.beschreibung = beschreibung;
+            if (name !== null) member.name = name;
+            if (alter !== null) member.alter = alter;
+
+            try {
+                await member.save();
+                await interaction.reply({ content: `> \`✅\` » Teammitglied ${user} wurde aktualisiert.`, ephemeral: true });
+                await updateTeamEmbed(interaction);
+            } catch (err) {
+                console.error('Fehler beim Aktualisieren:', err);
+                return interaction.reply({ content: '> `❌` » Fehler beim Aktualisieren des Teammitglieds.', ephemeral: true });
+            }
+        }
+
         else if (subcommand === 'remove') {
             const user = interaction.options.getUser('user');
             const member = await TeamInfo.findOneAndDelete({ userID: user.id });
@@ -142,7 +230,6 @@ async function updateTeamEmbed(interaction) {
     let embedDescription = '';
 
     bereiche.forEach(bereich => {
-        // Versuche Rolle zu holen, fallback auf Rolle-Mention-String
         const role = interaction.guild.roles.cache.get(bereich.id) || `<@&${bereich.id}>`;
         const membersInArea = teamMembers.filter(m => m.bereich === bereich.name);
 
