@@ -41,10 +41,11 @@ module.exports = {
     const member = interaction.guild.members.cache.get(user.id);
     const displayName = member ? member.displayName : user.username;
     const formattedCoins = userCoins.coins.toLocaleString('de-DE');
+    const formattedAmount = amount.toLocaleString('de-DE');
 
     const CoinEmbed = new EmbedBuilder()
       .setTitle(`\`👤\` × ${displayName}'s Coins wurden aktualisiert`)
-      .setDescription(`» **${amount} Coins** wurden von ${user} entfernt.\n\n» Aktueller Stand: **${formattedCoins} Coins**.`)
+      .setDescription(`» **${formattedAmount} Coins** wurden von ${user} entfernt.\n\n» Aktueller Stand: **${formattedCoins} Coins**.`)
       .setColor('Red')
       .setThumbnail(user.displayAvatarURL())
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })
