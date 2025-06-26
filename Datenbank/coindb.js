@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const coinSchema = new mongoose.Schema({
     userId: { type: String, required: true },
     coins: { type: Number, default: 0 },
-    streak: { type: Number, default: 0 }
+    streak: { type: Number, default: 0 },
+    lastDaily: { type: Date }
 });
 
 const coinConfigSchema = new mongoose.Schema({

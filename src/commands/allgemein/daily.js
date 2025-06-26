@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const User = require('../../../Datenbank/userdb'); // Pfad anpassen
+const { Coin } = require('../../../Datenbank/coindb');  // Hier Coin importieren
 
 const bonusLevels = [
   { days: 10,  percent: 50 },
@@ -36,20 +36,19 @@ module.exports = {
     const userId = interaction.user.id;
     const now = new Date();
 
-    let user = await User.findOne({ userId });
+    let user = await Coin.findOne({ userId });
     if (!user) {
-      user = await User.create({ userId, coins: 0, streak: 0 });
+      user = await Coin.create({ userId, coins: 0, streak: 0, lastDaily: null });
     }
 
-    const letzteBelohnung = user.lastDaily || new Date(0);
-    const stundenSeitdem = (now - letzteBelohnung) / (1000 * 60 * 60);
-    const tageSeitdem = (now - letzteBelohnung) / (1000 * 60 * 60 * 24);
+    const MS_24H = 24 * 60 * 60 * 1000;
 
-    if (stundenSeitdem < 24) {
-      const naechsteMoeglichkeit = new Date(letzteBelohnung.getTime() + 24 * 60 * 60 * 1000);
-      const verbleibend = Math.ceil((naechsteMoeglichkeit - now) / (1000 * 60));
-      const stunden = Math.floor(verbleibend / 60);
-      const minuten = verbleibend % 60;
+    if (user.lastDaily && now.getTime() < user.lastDaily.getTime() + MS_24H) {
+      const naechsteMoeglichkeit = new Date(user.lastDaily.getTime() + MS_24H);
+      const verbleibendMs = naechsteMoeglichkeit.getTime() - now.getTime();
+      const verbleibendMin = Math.ceil(verbleibendMs / (1000 * 60));
+      const stunden = Math.floor(verbleibendMin / 60);
+      const minuten = verbleibendMin % 60;
 
       return interaction.reply({
         embeds: [
@@ -62,27 +61,22 @@ module.exports = {
       });
     }
 
-    // Streak aktualisieren
+    const tageSeitdem = user.lastDaily ? (now.getTime() - user.lastDaily.getTime()) / MS_24H : Infinity;
     if (tageSeitdem <= 2) {
       user.streak = (user.streak || 0) + 1;
     } else {
       user.streak = 1;
     }
 
-    // Basis-Belohnung immer 100
     const basisBelohnung = 100;
-
-    // Bonus-Multiplikator ermitteln
     const bonusMultiplikator = berechneBonusMultiplikator(user.streak);
-
-    // Gesamt-Belohnung berechnen
     const gesamtBelohnung = Math.floor(basisBelohnung * bonusMultiplikator);
 
     user.coins += gesamtBelohnung;
     user.lastDaily = now;
+
     await user.save();
 
-    // Status der Bonuslevel generieren
     const bonusStatusText = generiereBonusStatus(user.streak);
 
     return interaction.reply({
@@ -93,13 +87,12 @@ module.exports = {
           .setDescription(
             `Basis-Belohnung: **${basisBelohnung.toLocaleString('de-DE')} Coins**\n` +
             `Streak: **${user.streak} Tage**\n` +
-            `Aktuell: **${user.streak}. Tag**\n` +
             `Bonus-Multiplikator: **${((bonusMultiplikator - 1) * 100).toFixed(0)}%**\n\n` +
             `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**\n\n` +
             `**Streak-Übersicht:**\n${bonusStatusText}`
           )
           .setFooter({ text: 'Komm morgen wieder, um deine Belohnung zu erhöhen!' })
-      ], 
+      ],
       ephemeral: true
     });
   }
