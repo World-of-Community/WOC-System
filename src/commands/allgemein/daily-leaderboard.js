@@ -28,7 +28,7 @@ module.exports = {
       const streak = u.streak || 0;
       const streakText = streak === 1 ? '1 Tag' : streak > 1 ? `${streak} Tage` : '`➖`';
       const coinsFormatted = u.coins.toLocaleString('de-DE');
-      return `\`#${i + 1}\` – <@${u.userId}> mit **${coinsFormatted} Coins** (Streak: ${streakText})`;
+      return `\`#${i + 1}\` – <@${u.userId}> mit **${coinsFormatted} Coins** (Streak: **${streakText}**)`;
     }).join('\n');
 
     // Embed erstellen
