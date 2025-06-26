@@ -3,7 +3,7 @@ const client = require('../index');
 const fs = require('fs');
 const config = JSON.parse(fs.readFileSync('src/json/config.json', 'utf-8'));
 const userdb = require("../../Datenbank/userdb");
-const inviteCache = require("../../Datenbank/inviteCachedb");
+const InviteCache = require("../../Datenbank/inviteCachedb");
 
 module.exports = {
     name: Events.GuildMemberRemove,
@@ -16,7 +16,7 @@ module.exports = {
         // Lade alten Cache aus DB
         let InviteCache = await InviteCache.findOne({ guildID: member.guild.id });
         
-        if (!inviteCache) return;
+        if (!InviteCache) return;
     
         // Suche den User, der ihn eingeladen hat
         const userDoc = await User.findOne({ userID: member.id });

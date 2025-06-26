@@ -128,6 +128,10 @@ module.exports = {
     }
 
         // Invite System
+
+        const guild = member.guild;
+        const newInvites = await member.guild.invites.fetch();
+        const Invites = await guild.invites.fetch();
       
         if (!inviteCache) {
           // Wenn noch kein Cache, speichern und zurück
