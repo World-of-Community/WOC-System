@@ -35,7 +35,8 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setColor('Gold')
       .setTitle('`🏆` Top 10 Coins Leaderboard')
-      .setDescription(leaderboard);
+      .setDescription(leaderboard)
+      .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.'});
 
     // Antwort senden und nach 30 Sekunden löschen
     const reply = await interaction.reply({ embeds: [embed] });
