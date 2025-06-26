@@ -19,42 +19,37 @@ module.exports = {
     const user = interaction.options.getUser('user');
     const amount = interaction.options.getInteger('amount');
 
-    // Überprüfe, ob der Benutzer ein Bot ist
     if (user.bot) {
         return interaction.reply({ content: '> `❌` » Bots können keine Coins haben.', ephemeral: true });
     }
 
-    // Validierung der Menge
     if (amount <= 0) {
       return interaction.reply({ content: '> `❗` » Die Anzahl der Coins muss größer als **0** sein.', ephemeral: true });
     }
 
-    // Benutzer in der Datenbank suchen
-    let userCoins = await coindb.findOne({ userId: user.id });
+    // User Coins aus DB holen
+    let userCoins = await Coin.findOne({ userId: user.id });
 
     if (!userCoins) {
-      // Wenn der Benutzer keine Coins hat
       return interaction.reply({ content: `> \`❗\` » ${user} hat keine Coins, die entfernt werden können.`, ephemeral: true });
     }
 
-    // Coins abziehen
     userCoins.coins -= amount;
-    if (userCoins.coins < 0) userCoins.coins = 0; // Verhindert negative Coins
+    if (userCoins.coins < 0) userCoins.coins = 0;
     await userCoins.save();
 
-    // Formatierung der Coins mit Tausendertrennzeichen
-    const formattedCoins = userCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
+    const member = interaction.guild.members.cache.get(user.id);
+    const displayName = member ? member.displayName : user.username;
+    const formattedCoins = userCoins.coins.toLocaleString('de-DE');
 
-    // Embed erstellen
     const CoinEmbed = new EmbedBuilder()
-      .setTitle(`\`👤\` × ${user.displayName}'s Coins wurden aktualisiert`)
-      .setDescription(`» **${amount} Coins** wurden von ${user} entfernt.\n\n» Aktueller Stand: **${formattedCoins} Coins**.`) // Hier wird der formatierte Wert angezeigt
+      .setTitle(`\`👤\` × ${displayName}'s Coins wurden aktualisiert`)
+      .setDescription(`» **${amount} Coins** wurden von ${user} entfernt.\n\n» Aktueller Stand: **${formattedCoins} Coins**.`)
       .setColor('Red')
       .setThumbnail(user.displayAvatarURL())
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })
       .setTimestamp();
 
-    // Antwort senden
     await interaction.reply({ embeds: [CoinEmbed], ephemeral: true });
   },
 };
