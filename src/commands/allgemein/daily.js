@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Coin } = require('../../../Datenbank/coindb');  // Hier Coin importieren
+const { Coin } = require('../../../Datenbank/coindb');  // Coin Modell importieren
 
 const bonusLevels = [
   { days: 10,  percent: 50 },
@@ -78,6 +78,7 @@ module.exports = {
     await user.save();
 
     const bonusStatusText = generiereBonusStatus(user.streak);
+    const streakText = user.streak === 1 ? 'Tag' : 'Tage';
 
     return interaction.reply({
       embeds: [
@@ -86,7 +87,7 @@ module.exports = {
           .setTitle('`🎁` Tägliche Belohnung')
           .setDescription(
             `Basis-Belohnung: **${basisBelohnung.toLocaleString('de-DE')} Coins**\n` +
-            `Streak: **${user.streak} Tage**\n` +
+            `Streak: **${user.streak} ${streakText}**\n` +
             `Bonus-Multiplikator: **${((bonusMultiplikator - 1) * 100).toFixed(0)}%**\n\n` +
             `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**\n\n` +
             `**Streak-Übersicht:**\n${bonusStatusText}`
