@@ -145,25 +145,21 @@ module.exports = {
                 return interaction.reply({ content: `> \`❗\` » ${user} ist kein Teammitglied.`, ephemeral: true });
             }
 
-            // Optionale neue Werte holen
             const bereich = interaction.options.getString('bereich');
             const beschreibung = interaction.options.getString('beschreibung');
             const name = interaction.options.getString('name');
             let alter = interaction.options.getString('alter');
 
-            // Alter entfernen, wenn "remove" oder "none" übergeben wurde
             if (alter && (alter.toLowerCase() === 'remove' || alter.toLowerCase() === 'none')) {
-                alter = '`➖`'; // Hier kannst du auch null setzen, je nach DB-Schema
+                alter = '`➖`';
             } else if (!alter) {
-                // Alter nicht angegeben → Alter nicht ändern
                 alter = member.alter;
             }
 
-            // Felder nur setzen, wenn sie angegeben wurden (!== null)
-            if (bereich !== null) member.bereich = bereich;
-            if (beschreibung !== null) member.beschreibung = beschreibung;
-            if (name !== null) member.name = name;
-            if (alter !== null) member.alter = alter;
+            if (bereich !== null && bereich !== undefined) member.bereich = bereich;
+            if (beschreibung !== null && beschreibung !== undefined) member.beschreibung = beschreibung;
+            if (name !== null && name !== undefined) member.name = name;
+            if (alter !== null && alter !== undefined) member.alter = alter;
 
             try {
                 await member.save();
@@ -217,7 +213,11 @@ async function updateTeamEmbed(interaction) {
 
         if (membersInArea.length > 0) {
             embedDescription += `${role}:\n` +
-                membersInArea.map(member => `- ${member} (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
+                membersInArea.map(member => {
+                    const mention = `<@${member.userID}>`;
+                    const displayedAge = member.alter || '`➖`';
+                    return `- ${mention} (${member.beschreibung})\n⠀➥ Alter: ${displayedAge}`;
+                }).join('\n') + '\n\n';
         } else {
             embedDescription += `${role}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
@@ -266,7 +266,11 @@ async function sendTeamEmbed(interaction) {
 
         if (membersInArea.length > 0) {
             embedDescription += `${role}:\n` +
-                membersInArea.map(member => `- ${member} (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
+                membersInArea.map(member => {
+                    const mention = `<@${member.userID}>`;
+                    const displayedAge = member.alter || '`➖`';
+                    return `- ${mention} (${member.beschreibung})\n⠀➥ Alter: ${displayedAge}`;
+                }).join('\n') + '\n\n';
         } else {
             embedDescription += `${role}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
