@@ -17,7 +17,7 @@ module.exports = {
           new EmbedBuilder()
             .setColor('Gold')
             .setTitle('`🏆` Top 10 Coins Leaderboard')
-            .setDescription('➖')
+            .setDescription('`❌` » Es wurden keine Nutzerdaten gefunden.')
         ],
         ephemeral: true
       });
