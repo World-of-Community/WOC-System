@@ -217,7 +217,7 @@ async function updateTeamEmbed(interaction) {
 
         if (membersInArea.length > 0) {
             embedDescription += `${role}:\n` +
-                membersInArea.map(member => `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
+                membersInArea.map(member => `- ${member} (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
             embedDescription += `${role}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
@@ -266,7 +266,7 @@ async function sendTeamEmbed(interaction) {
 
         if (membersInArea.length > 0) {
             embedDescription += `${role}:\n` +
-                membersInArea.map(member => `- ${member.name} (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
+                membersInArea.map(member => `- ${member} (${member.beschreibung})\n⠀➥ Alter: ${member.alter}`).join('\n') + '\n\n';
         } else {
             embedDescription += `${role}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
