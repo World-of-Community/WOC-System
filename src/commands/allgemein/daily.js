@@ -93,10 +93,10 @@ module.exports = {
           .setDescription(
             `Basis-Belohnung: **${basisBelohnung.toLocaleString('de-DE')} Coins**\n` +
             `Streak: **${user.streak} Tage**\n` +
-            `Aktuell: ${user.streak}. Tag\n` +
+            `Aktuell: **${user.streak}. Tag**\n` +
             `Bonus-Multiplikator: **${((bonusMultiplikator - 1) * 100).toFixed(0)}%**\n\n` +
             `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**\n\n` +
-            `**Bonus-Level:**\n${bonusStatusText}`
+            `**Streak-Übersicht:**\n${bonusStatusText}`
           )
           .setFooter({ text: 'Komm morgen wieder, um deine Belohnung zu erhöhen!' })
       ], 
