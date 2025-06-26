@@ -9,6 +9,19 @@ module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
 
+        const logchannel = member.guild.channels.cache.get("1263436406655680513");
+        if (!logchannel) return;
+
+        const leave = new EmbedBuilder()
+            .setTitle('<:user_leave:1228329456079343731> | NUTZER VERLASSEN')
+            .setDescription(`**${member.user.displayName}** hat den Server verlassen.\n\n\`📌\` | **INFORMATIONEN**\n> Username: ${member.user.username}\n> Anzeigename: ${member.user.displayName} (${member})\n> Nutzer-ID: \`${member.user.id}\`\n> Server beigetreten am: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
+            .setColor('Red')
+            .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
+            .setTimestamp();
+
+        const thread = logchannel.threads.cache.get("1269998215512457259");
+        if (thread) await thread.send({ embeds: [leave] });
+
         const guild = member.guild;
         const newInvites = await member.guild.invites.fetch();
         const Invites = await guild.invites.fetch();
@@ -30,19 +43,6 @@ module.exports = {
           { userID: inviterID },
           { $inc: { 'invites.left': 1 } }
         );
-
-        const logchannel = member.guild.channels.cache.get("1263436406655680513");
-        if (!logchannel) return;
-
-        const leave = new EmbedBuilder()
-            .setTitle('<:user_leave:1228329456079343731> | NUTZER VERLASSEN')
-            .setDescription(`**${member.user.displayName}** hat den Server verlassen.\n\n\`📌\` | **INFORMATIONEN**\n> Username: ${member.user.username}\n> Anzeigename: ${member.user.displayName} (${member})\n> Nutzer-ID: \`${member.user.id}\`\n> Server beigetreten am: <t:${Math.floor(member.joinedTimestamp / 1000)}:F>\n> Account erstellt am: <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>`)
-            .setColor('Red')
-            .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
-            .setTimestamp();
-
-        const thread = logchannel.threads.cache.get("1269998215512457259");
-        if (thread) await thread.send({ embeds: [leave] });
 
         // Nutzer-Daten abrufen und ggf. Einladungsdaten verarbeiten
         const userData = await userdb.findOne({ userID: member.user.id });
