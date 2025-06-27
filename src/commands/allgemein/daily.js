@@ -30,7 +30,7 @@ function generiereBonusStatus(streak) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('daily')
-    .setDescription('» Hole dir deine täglichen Coins. 🪙'),
+    .setDescription('» Hole dir deine tägliche Belohnung. 🪙'),
 
   async execute(interaction) {
     const userId = interaction.user.id;
