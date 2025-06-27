@@ -90,11 +90,16 @@ module.exports = {
             `Streak: **${user.streak} ${streakText}**\n` +
             `Bonus-Multiplikator: **${((bonusMultiplikator - 1) * 100).toFixed(0)}%**\n\n` +
             `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**\n\n` +
-            `**Streak-Übersicht:**\n${bonusStatusText}`
+            `**Streak-Übersicht:**\n${bonusStatusText}\n\n` +
+            `Komm morgen wieder, um deine Belohnung zu erhöhen!`
           )
-          .setFooter({ text: 'Komm morgen wieder, um deine Belohnung zu erhöhen!' })
+          .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.'})
       ],
-      ephemeral: true
     });
+
+    // Nach 30 Sekunden löschen
+    setTimeout(() => {
+      interaction.deleteReply().catch(() => {});
+    }, 30000);
   }
 };
