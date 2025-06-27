@@ -11,7 +11,6 @@ module.exports = {
     const users = await Coin.find().sort({ coins: -1 }).limit(10);
 
     if (users.length === 0) {
-      // Wenn keine Nutzer in DB sind
       return interaction.reply({
         embeds: [
           new EmbedBuilder()
@@ -23,23 +22,20 @@ module.exports = {
       });
     }
 
-    // Leaderboard-String mit Erwähnung, Coins formatiert und Streak oder ➖
+    // Leaderboard-Text zusammenbauen
     const leaderboard = users.map((u, i) => {
       const streak = u.streak || 0;
-      const streakText = streak === 1 ? '1 Tag' : streak > 1 ? `${streak} Tage` : '`➖`';
-      const coinsFormatted = u.coins.toLocaleString('de-DE');
-      return `\`#${i + 1}\` – <@${u.userId}> mit **${coinsFormatted} Coins** (Streak: **${streakText}**)`;
+      const streakText = streak > 0 ? `${streak}x Streak` : '➖';
+      return `\`#${i + 1}\` mit ${streakText} ist <@${u.userId}>`;
     }).join('\n');
 
-    // Embed erstellen
     const embed = new EmbedBuilder()
       .setColor('Gold')
       .setTitle('`🏆` Top 10 Coins Leaderboard')
       .setDescription(leaderboard)
-      .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.'});
+      .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' });
 
-    // Antwort senden und nach 30 Sekunden löschen
-    const reply = await interaction.reply({ embeds: [embed] });
+    const reply = await interaction.reply({ embeds: [embed], fetchReply: true });
 
     setTimeout(() => {
       reply.delete().catch(() => {});
