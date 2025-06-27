@@ -68,9 +68,9 @@ module.exports = {
       user.streak = 1;
     }
 
-    const basisBelohnung = 100;
+    const Belohnung = 100;
     const bonusMultiplikator = berechneBonusMultiplikator(user.streak);
-    const gesamtBelohnung = Math.floor(basisBelohnung * bonusMultiplikator);
+    const gesamtBelohnung = Math.floor(Belohnung * bonusMultiplikator);
 
     user.coins += gesamtBelohnung;
     user.lastDaily = now;
@@ -86,7 +86,7 @@ module.exports = {
           .setColor('Green')
           .setTitle('`🎁` Tägliche Belohnung')
           .setDescription(
-            `Basis-Belohnung: **${basisBelohnung.toLocaleString('de-DE')} Coins**\n` +
+            `Belohnung: **${basisBelohnung.toLocaleString('de-DE')} Coins**\n` +
             `Streak: **${user.streak} ${streakText}**\n` +
             `Bonus-Multiplikator: **${((bonusMultiplikator - 1) * 100).toFixed(0)}%**\n\n` +
             `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**\n\n` +
