@@ -50,15 +50,21 @@ module.exports = {
       const stunden = Math.floor(verbleibendMin / 60);
       const minuten = verbleibendMin % 60;
 
-      return interaction.reply({
+      await interaction.reply({
         embeds: [
           new EmbedBuilder()
             .setColor('Red')
             .setTitle('`⏳` Bereits abgeholt!')
             .setDescription(`Du kannst deine täglichen Coins wieder in **${stunden}h ${minuten}min** abholen.`)
-        ],
-        ephemeral: true
+            .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' })
+        ]
       });
+
+      setTimeout(() => {
+        interaction.deleteReply().catch(() => {});
+      }, 30000);
+
+      return;
     }
 
     const tageSeitdem = user.lastDaily ? (now.getTime() - user.lastDaily.getTime()) / MS_24H : Infinity;
@@ -97,7 +103,6 @@ module.exports = {
       ]
     });
 
-    // Nach 30 Sekunden löschen
     setTimeout(() => {
       interaction.deleteReply().catch(() => {});
     }, 30000);
