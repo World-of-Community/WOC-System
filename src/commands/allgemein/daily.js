@@ -86,7 +86,7 @@ module.exports = {
           .setColor('Green')
           .setTitle('`🎁` Tägliche Belohnung')
           .setDescription(
-            `Belohnung: **${basisBelohnung.toLocaleString('de-DE')} Coins**\n` +
+            `Belohnung: **${Belohnung.toLocaleString('de-DE')} Coins**\n` +
             `Streak: **${user.streak} ${streakText}**\n` +
             `Bonus-Multiplikator: **${((bonusMultiplikator - 1) * 100).toFixed(0)}%**\n\n` +
             `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**\n\n` +
