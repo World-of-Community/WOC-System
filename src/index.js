@@ -618,6 +618,39 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 
+// Tägliche Belohnung Erinnerung
+const CHANNEL_ID = '815922756918181898';
+
+// Variable zum Speichern der letzten Nachricht
+let lastMessageId = null;
+
+// Alle 6 Stunden (00:00, 06:00, 12:00, 18:00)
+  cron.schedule('0 */6 * * *', async () => {
+    try {
+      const channel = await client.channels.fetch(CHANNEL_ID);
+      if (!channel || channel.type !== ChannelType.GuildText) return;
+
+      // Alte Nachricht löschen, falls vorhanden
+      if (lastMessageId) {
+        try {
+          const oldMsg = await channel.messages.fetch(lastMessageId);
+          if (oldMsg) await oldMsg.delete();
+        } catch (err) {
+          // Ignorieren, falls die Nachricht schon gelöscht wurde
+        }
+      }
+
+      // Neue Nachricht senden
+      const newMsg = await channel.send('**Hast du schon deine tägliche Belohnung abgeholt?** `/daily`');
+
+      // Neue ID merken
+      lastMessageId = newMsg.id;
+
+    } catch (error) {
+      console.error('Fehler beim täglichen Reminder:', error);
+    }
+  })
+
 // Werbung
 setInterval( async () => {
     try {
