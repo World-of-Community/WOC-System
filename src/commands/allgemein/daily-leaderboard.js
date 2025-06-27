@@ -4,7 +4,7 @@ const { Coin } = require('../../../Datenbank/coindb');  // Coin Modell importier
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('daily-leaderboard')
-    .setDescription('» Zeigt das Streak-Top 10 Leaderboard an. 🔁'),
+    .setDescription('» Zeigt das Streak-Top 10 Leaderboard an. 🔥'),
 
   async execute(interaction) {
     // Top 10 Nutzer nach Streak sortieren, bei Gleichstand nach Coins
