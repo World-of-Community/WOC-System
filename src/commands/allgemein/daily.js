@@ -80,7 +80,7 @@ module.exports = {
     const bonusStatusText = generiereBonusStatus(user.streak);
     const streakText = user.streak === 1 ? 'Tag' : 'Tage';
 
-    return interaction.reply({
+    await interaction.reply({
       embeds: [
         new EmbedBuilder()
           .setColor('Green')
@@ -93,8 +93,8 @@ module.exports = {
             `**Streak-Übersicht:**\n${bonusStatusText}\n\n` +
             `Komm morgen wieder, um deine Belohnung zu erhöhen!`
           )
-          .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.'})
-      ],
+          .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' })
+      ]
     });
 
     // Nach 30 Sekunden löschen
