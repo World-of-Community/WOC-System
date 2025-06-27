@@ -641,7 +641,7 @@ let lastMessageId = null;
       }
 
       // Neue Nachricht senden
-      const newMsg = await channel.send('**Hast du schon deine tägliche Belohnung abgeholt?** `/daily`');
+      const newMsg = await channel.send('**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`');
 
       // Neue ID merken
       lastMessageId = newMsg.id;
