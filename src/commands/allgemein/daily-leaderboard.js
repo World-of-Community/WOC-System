@@ -4,18 +4,18 @@ const { Coin } = require('../../../Datenbank/coindb');  // Coin Modell importier
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('daily-leaderboard')
-    .setDescription('» Zeigt das Coins-Top 10 Leaderboard an. 🪙'),
+    .setDescription('» Zeigt das Streak-Top 10 Leaderboard an. 🔁'),
 
   async execute(interaction) {
-    // Top 10 Nutzer nach Coins sortieren
-    const users = await Coin.find().sort({ coins: -1 }).limit(10);
+    // Top 10 Nutzer nach Streak sortieren, bei Gleichstand nach Coins
+    const users = await Coin.find().sort({ streak: -1, coins: -1 }).limit(10);
 
     if (users.length === 0) {
       return interaction.reply({
         embeds: [
           new EmbedBuilder()
             .setColor('Gold')
-            .setTitle('`🏆` Top 10 Coins Leaderboard')
+            .setTitle('`🏆` Top 10 Streak Leaderboard')
             .setDescription('`❌` » Es wurden keine Nutzerdaten gefunden.')
         ],
         ephemeral: true
@@ -31,7 +31,7 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setColor('Gold')
-      .setTitle('`🏆` Top 10 Coins Leaderboard')
+      .setTitle('`🏆` Top 10 Streak Leaderboard')
       .setDescription(leaderboard)
       .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' });
 
