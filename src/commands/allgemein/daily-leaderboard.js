@@ -25,7 +25,7 @@ module.exports = {
     // Leaderboard-Text zusammenbauen
     const leaderboard = users.map((u, i) => {
       const streak = u.streak || 0;
-      const streakText = streak > 0 ? `${streak}x Streak` : '`➖`';
+      const streakText = streak > 0 ? `**${streak}**x Streak` : '`➖`';
       return `\`#${i + 1}\` mit ${streakText} ist <@${u.userId}>`;
     }).join('\n');
 
