@@ -374,18 +374,18 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
   
     // VAR-Prüfung mit 10% Chance
-    if (Math.random() < 0.1) {
-      if (Math.random() < 0.5) {
-        torGezaehlt = false;
-        events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
-      } else {
-        events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+    const events = [];         // nur Texte für Anzeige
+    const goalEvents = [];     // nur Objekte für Auswertung (Torschützen etc.)
+
+      if (Math.random() < 0.1) {
+        if (Math.random() < 0.5) {
+          torGezaehlt = false;
+          events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+        } else {
+          events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
+        }
       }
-    }
-
-      const events = [];         // nur Texte für Anzeige
-      const goalEvents = [];     // nur Objekte für Auswertung (Torschützen etc.)
-
+      
       if (torGezaehlt) {
         if (teamScored === 'team1') {
           score1++;
@@ -396,7 +396,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         }
       
         // 🟢 Nur in goalEvents speichern (Objekte!)
-        goalEvents.push({ type: 'goal', time: minute, player: scorer, team: teamScored === 'team1' ? team1Name : team2Name });
+        goalEvents.push({
+          type: 'goal',
+          time: minute,
+          player: scorer,
+          team: teamScored === 'team1' ? team1Name : team2Name
+        });
       
         // 🟢 Nur in events speichern (Text!)
         events.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute)})`);
