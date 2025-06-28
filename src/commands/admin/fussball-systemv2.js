@@ -513,7 +513,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         return `${emoji}${minutenString} ${spieler}`;
       });
     
-      return eintraege.join(' ') || '–';
+      return eintraege.join(' ') || '';
     }
     
     // Tore extrahieren und in torString zusammenfassen
