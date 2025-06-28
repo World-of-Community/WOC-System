@@ -374,8 +374,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
   
     // VAR-Prüfung mit 10% Chance
-    const events = [];         // nur Texte für Anzeige
-    const goalEvents = [];     // nur Objekte für Auswertung (Torschützen etc.)
+    const goalEvents = [];
 
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
@@ -502,7 +501,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     // Tore gruppieren und als Text formatieren
     function gruppiereTore(tore) {
       const spielerTore = new Map();
-      const goalEvents = [];     // nur Objekte für Auswertung (Torschützen etc.)
     
       for (const tor of tore) {
         if (!tor || typeof tor !== 'object' || !tor.player || typeof tor.time !== 'number') continue;
