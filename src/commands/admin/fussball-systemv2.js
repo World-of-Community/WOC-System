@@ -358,6 +358,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   let team1Tackles = 0, team2Tackles = 0;
   let team1Saves = 0, team2Saves = 0;
 
+  const goalEvents = [];
+
   const extraTime = Math.floor(Math.random() * 20) + 1;
 
   const events = [`\`🔊\` Anpfiff! Das Spiel beginnt! (0')`];
@@ -374,8 +376,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
   
     // VAR-Prüfung mit 10% Chance
-    const goalEvents = [];
-
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
           torGezaehlt = false;
