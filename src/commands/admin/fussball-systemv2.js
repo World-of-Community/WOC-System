@@ -528,7 +528,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const toreTeam2 = gruppiereTore(toreTeam2Goals);
     
     const torString =
-      toreTeam1 !== '–' && toreTeam2 !== ''
+      toreTeam1 !== '' && toreTeam2 !== ''
         ? `${toreTeam1} - ${toreTeam2}`
         : `${toreTeam1 !== '' ? toreTeam1 : ''}${toreTeam2 !== '' ? toreTeam2 : ''}`;
 
