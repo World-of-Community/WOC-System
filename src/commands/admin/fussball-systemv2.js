@@ -503,7 +503,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const spielerTore = new Map();
     
       for (const tor of tore) {
-        // Sicherheitsprüfung: gültiges Objekt mit player + time
         if (!tor || typeof tor !== 'object' || !tor.player || typeof tor.time !== 'number') continue;
     
         if (!spielerTore.has(tor.player)) {
@@ -520,21 +519,18 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     
       return eintraege.join(' ') || '';
     }
-    
-    // Tore extrahieren und in torString zusammenfassen
-    const toreTeam1Goals = events.filter(
-      e => e && typeof e === 'object' && !Array.isArray(e) && e.type === 'goal' && e.team === team1Name
-    );
-    const toreTeam2Goals = events.filter(
-      e => e && typeof e === 'object' && !Array.isArray(e) && e.type === 'goal' && e.team === team2Name
-    );
+
+    // ⚠️ Hier war vorher `events` — das ist falsch!
+    const toreTeam1Goals = goalEvents.filter(e => e.type === 'goal' && e.team === team1Name);
+    const toreTeam2Goals = goalEvents.filter(e => e.type === 'goal' && e.team === team2Name);
     
     const toreTeam1 = gruppiereTore(toreTeam1Goals);
     const toreTeam2 = gruppiereTore(toreTeam2Goals);
     
-    const torString = (toreTeam1 !== '' && toreTeam2 !== '') 
-      ? `${toreTeam1} - ${toreTeam2}` 
-      : `${toreTeam1 !== '' ? toreTeam1 : ''}${toreTeam2 !== '' ? toreTeam2 : ''}`;
+    const torString =
+      toreTeam1 !== '–' && toreTeam2 !== ''
+        ? `${toreTeam1} - ${toreTeam2}`
+        : `${toreTeam1 !== '' ? toreTeam1 : ''}${toreTeam2 !== '' ? toreTeam2 : ''}`;
 
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
