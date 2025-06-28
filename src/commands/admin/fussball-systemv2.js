@@ -383,8 +383,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       }
     }
 
-      //const events = [];         // nur Texte für Anzeige
-      //const goalEvents = [];     // nur Objekte für Auswertung (Torschützen etc.)
+      const events = [];         // nur Texte für Anzeige
+      const goalEvents = [];     // nur Objekte für Auswertung (Torschützen etc.)
 
       if (torGezaehlt) {
         if (teamScored === 'team1') {
