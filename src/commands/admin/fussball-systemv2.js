@@ -493,6 +493,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       return minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
     }
 
+    // Tore gruppieren und als Text formatieren
     function gruppiereTore(tore) {
       const spielerTore = new Map();
     
@@ -514,6 +515,21 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     
       return eintraege.join(' ') || '–';
     }
+    
+    // Tore extrahieren und in torString zusammenfassen
+    const toreTeam1Goals = events.filter(
+      e => e && typeof e === 'object' && !Array.isArray(e) && e.type === 'goal' && e.team === team1Name
+    );
+    const toreTeam2Goals = events.filter(
+      e => e && typeof e === 'object' && !Array.isArray(e) && e.type === 'goal' && e.team === team2Name
+    );
+    
+    const toreTeam1 = gruppiereTore(toreTeam1Goals);
+    const toreTeam2 = gruppiereTore(toreTeam2Goals);
+    
+    const torString = (toreTeam1 !== '' && toreTeam2 !== '') 
+      ? `${toreTeam1} - ${toreTeam2}` 
+      : `${toreTeam1 !== '' ? toreTeam1 : ''}${toreTeam2 !== '' ? toreTeam2 : ''}`;
 
     // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
