@@ -51,6 +51,7 @@ module.exports = {
       const minuten = verbleibendMin % 60;
 
       await interaction.reply({
+        ephemeral: true,
         embeds: [
           new EmbedBuilder()
             .setColor('Red')
@@ -87,6 +88,7 @@ module.exports = {
     const streakText = user.streak === 1 ? 'Tag' : 'Tage';
 
     await interaction.reply({
+      ephemeral: true,
       embeds: [
         new EmbedBuilder()
           .setColor('Green')
@@ -102,9 +104,5 @@ module.exports = {
           .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' })
       ]
     });
-
-    setTimeout(() => {
-      interaction.deleteReply().catch(() => {});
-    }, 30000);
   }
 };
