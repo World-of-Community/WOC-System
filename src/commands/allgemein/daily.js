@@ -45,10 +45,7 @@ module.exports = {
 
     if (user.lastDaily && now.getTime() < user.lastDaily.getTime() + MS_24H) {
       const naechsteMoeglichkeit = new Date(user.lastDaily.getTime() + MS_24H);
-      const verbleibendMs = naechsteMoeglichkeit.getTime() - now.getTime();
-      const verbleibendMin = Math.ceil(verbleibendMs / (1000 * 60));
-      const stunden = Math.floor(verbleibendMin / 60);
-      const minuten = verbleibendMin % 60;
+      const unixTimestamp = Math.floor(naechsteMoeglichkeit.getTime() / 1000);
 
       await interaction.reply({
         ephemeral: true,
@@ -56,7 +53,7 @@ module.exports = {
           new EmbedBuilder()
             .setColor('Red')
             .setTitle('`⏳` Bereits abgeholt!')
-            .setDescription(`Du kannst deine täglichen Coins wieder in **${stunden}h ${minuten}min** abholen.`)
+            .setDescription(`Du kannst deine täglichen Coins wieder <t:${unixTimestamp}:R> abholen.\n(<t:${unixTimestamp}:F>)`)
             .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' })
         ]
       });
@@ -104,5 +101,9 @@ module.exports = {
           .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' })
       ]
     });
+
+    setTimeout(() => {
+      interaction.deleteReply().catch(() => {});
+    }, 30000);
   }
 };
