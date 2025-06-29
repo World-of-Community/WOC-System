@@ -619,6 +619,8 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Tägliche Belohnung erinnerung
+const CHANNEL_ID = '815922756918181898';
+
 function loadLastId() {
   if (fs.existsSync(path)) {
     try {
