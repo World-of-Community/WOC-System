@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const blacklistSchema = new mongoose.Schema({
-  userId: String,
+  userId: { type: String, unique: true, sparse: true },
   username: String,
-  minecraftName: String,
+  minecraftName: { type: String, unique: true, sparse: true },
   reason: String,
   date: { type: Date, default: Date.now }
 });
