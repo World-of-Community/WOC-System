@@ -151,7 +151,7 @@ module.exports = {
             const displayName = user?.tag || entry.username || 'Unbekannt';
             return `**${index}.** \`💙\` **Discord:** <@${entry.userId}> – ${displayName} (\`${entry.userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else if (entry.minecraftName) {
-            return `**${index}.** \`🎮\` **Minecraft:** \`${entry.minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+            return `**${index}.** \`🎮\` **Minecraft:** ${entry.minecraftName}\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else {
             return `**${index}.** \`❓\` Unbekannter Eintrag`;
           }
