@@ -39,11 +39,15 @@ module.exports = {
           m.user.tag.toLowerCase() === input.toLowerCase() ||
           m.user.username.toLowerCase() === input.toLowerCase()
         );
-        if (member) {
-          user = member.user;
-        } else {
-          minecraftName = input;
-        }
+        if (member) user = member.user;
+        else minecraftName = input;
+      }
+
+      if (!user && !minecraftName) {
+        return interaction.reply({
+          content: `> \`❗\` » Nutzer konnte nicht gefunden werden. Gib eine gültige User-ID, einen Discord-Name oder Minecraft-Namen an.`,
+          ephemeral: true
+        });
       }
 
       if (user) {
@@ -55,8 +59,7 @@ module.exports = {
           });
         }
 
-        // Nur beim Hinzufügen das Datum setzen
-        await Blacklist.create({ userId: user.id, username: user.tag, reason, date: new Date() });
+        await Blacklist.create({ userId: user.id, username: user.tag, reason });
         return interaction.reply({
           content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
           ephemeral: true
@@ -72,17 +75,12 @@ module.exports = {
           });
         }
 
-        await Blacklist.create({ minecraftName: minecraftName.toLowerCase(), reason, date: new Date() });
+        await Blacklist.create({ minecraftName: minecraftName.toLowerCase(), reason });
         return interaction.reply({
           content: `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde zur Blacklist hinzugefügt.`,
           ephemeral: true
         });
       }
-
-      return interaction.reply({
-        content: `> \`❗\` » Ein unbekannter Fehler ist aufgetreten.`,
-        ephemeral: true
-      });
 
     } else if (sub === 'remove') {
       const input = interaction.options.getString('input');
@@ -135,30 +133,29 @@ module.exports = {
       const pageSize = 5;
       let currentPage = 0;
 
-      const getPageEmbed = (page) => {
+      const getPageEmbed = async (page) => {
         const start = page * pageSize;
         const end = start + pageSize;
         const pageEntries = entries.slice(start, end);
 
-        const lines = pageEntries.map((entry, i) => {
-          const userId = entry.userId;
-          const savedUsername = entry.username;
-          const minecraftName = entry.minecraftName;
+        const lines = await Promise.all(pageEntries.map(async (entry, i) => {
+          const index = start + i + 1;
           const reason = entry.reason || 'Kein Grund angegeben';
           const timestamp = entry.date ? `<t:${Math.floor(new Date(entry.date).getTime() / 1000)}:F>` : 'Unbekannt';
-          const index = start + i + 1;
 
-          if (userId) {
-            const user = interaction.client.users.cache.get(userId);
-            const displayName = user ? user.tag : savedUsername;
-
-            return `**${index}.** \`💙\` **Discord:** <@${userId}> – ${displayName} (\`${userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
-          } else if (minecraftName) {
-            return `**${index}.** \`🎮\` **Minecraft:** \`${minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+          if (entry.userId) {
+            let user;
+            try {
+              user = await interaction.client.users.fetch(entry.userId);
+            } catch {}
+            const displayName = user?.tag || entry.username || 'Unbekannt';
+            return `**${index}.** \`💙\` **Discord:** <@${entry.userId}> – ${displayName} (\`${entry.userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+          } else if (entry.minecraftName) {
+            return `**${index}.** \`🎮\` **Minecraft:** \`${entry.minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else {
             return `**${index}.** \`❓\` Unbekannter Eintrag`;
           }
-        });
+        }));
 
         return new EmbedBuilder()
           .setTitle('`📄` Blacklist Nutzer')
@@ -194,7 +191,7 @@ module.exports = {
       };
 
       const message = await interaction.reply({
-        embeds: [getPageEmbed(currentPage)],
+        embeds: [await getPageEmbed(currentPage)],
         components: getButtons(currentPage),
         ephemeral: true,
         fetchReply: true
@@ -213,7 +210,7 @@ module.exports = {
         }
 
         await i.update({
-          embeds: [getPageEmbed(currentPage)],
+          embeds: [await getPageEmbed(currentPage)],
           components: getButtons(currentPage)
         });
       });
