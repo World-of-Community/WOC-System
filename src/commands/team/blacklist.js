@@ -32,7 +32,6 @@ module.exports = {
       let user = null;
       let minecraftName = null;
 
-      // Versuche Discord-Nutzer zu finden
       try {
         user = await interaction.client.users.fetch(input);
       } catch {
@@ -43,7 +42,6 @@ module.exports = {
         if (member) {
           user = member.user;
         } else {
-          // Nicht gefunden ⇒ Als Minecraft-Name behandeln
           minecraftName = input;
         }
       }
@@ -133,28 +131,94 @@ module.exports = {
         });
       }
 
-      const lines = entries.map((entry, i) => {
-        const userId = entry.userId;
-        const username = entry.username;
-        const minecraftName = entry.minecraftName;
-        const reason = entry.reason || 'Kein Grund angegeben';
+      const pageSize = 5;
+      let currentPage = 0;
 
-        if (userId) {
-          return `**${i + 1}.** <@${userId}> – ${username} (\`${userId}\`)\n> Grund: ${reason}`;
-        } else if (minecraftName) {
-          return `**${i + 1}.** 🎮 **Minecraft:** \`${minecraftName}\`\n> Grund: ${reason}`;
-        } else {
-          return `**${i + 1}.** ❓ Unbekannter Eintrag`;
-        }
+      const getPageEmbed = (page) => {
+        const start = page * pageSize;
+        const end = start + pageSize;
+        const pageEntries = entries.slice(start, end);
+
+        const lines = pageEntries.map((entry, i) => {
+          const userId = entry.userId;
+          const username = entry.username;
+          const minecraftName = entry.minecraftName;
+          const reason = entry.reason || 'Kein Grund angegeben';
+          const timestamp = `<t:${Math.floor(new Date(entry.date).getTime() / 1000)}:F>`;
+          const index = start + i + 1;
+
+          if (userId) {
+            return `**${index}.** \`💙\` **Discord:** <@${userId}> – ${username} (\`${userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+          } else if (minecraftName) {
+            return `**${index}.** \`🎮\` **Minecraft:** \`${minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+          } else {
+            return `**${index}.** \`❓\` Unbekannter Eintrag`;
+          }
+        });
+
+        return new EmbedBuilder()
+          .setTitle('`📄` Blacklist Nutzer')
+          .setColor('Red')
+          .setDescription(
+            '**Information zu den Nutzern:**\n> Verbot bzw gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' +
+            lines.join('\n\n')
+          )
+          .setFooter({ text: `Seite ${page + 1} / ${Math.ceil(entries.length / pageSize)} · Einträge insgesamt: ${entries.length}` });
+      };
+
+      const getButtons = (page) => {
+        const maxPage = Math.ceil(entries.length / pageSize) - 1;
+        return [{
+          type: 1,
+          components: [
+            {
+              type: 2,
+              style: 1,
+              custom_id: 'blacklist_back',
+              emoji: '⏪',
+              disabled: page <= 0
+            },
+            {
+              type: 2,
+              style: 1,
+              custom_id: 'blacklist_next',
+              emoji: '⏩',
+              disabled: page >= maxPage
+            }
+          ]
+        }];
+      };
+
+      const message = await interaction.reply({
+        embeds: [getPageEmbed(currentPage)],
+        components: getButtons(currentPage),
+        ephemeral: true,
+        fetchReply: true
       });
 
-      const embed = new EmbedBuilder()
-        .setTitle('`📄` Blacklist Nutzer')
-        .setColor('Red')
-        .setDescription('**Information zu den Nutzern:**\n> Verbot bzw gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + lines.join('\n\n'))
-        .setFooter({ text: `Einträge insgesamt: ${entries.length}` });
+      const collector = message.createMessageComponentCollector({
+        filter: i => i.user.id === interaction.user.id,
+        time: 60000
+      });
 
-      return interaction.reply({ embeds: [embed], ephemeral: true });
+      collector.on('collect', async i => {
+        if (i.customId === 'blacklist_back') {
+          currentPage = Math.max(currentPage - 1, 0);
+        } else if (i.customId === 'blacklist_next') {
+          currentPage = Math.min(currentPage + 1, Math.ceil(entries.length / pageSize) - 1);
+        }
+
+        await i.update({
+          embeds: [getPageEmbed(currentPage)],
+          components: getButtons(currentPage)
+        });
+      });
+
+      collector.on('end', async () => {
+        try {
+          await message.edit({ components: [] });
+        } catch {}
+      });
     }
   }
 };
