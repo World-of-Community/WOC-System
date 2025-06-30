@@ -69,8 +69,8 @@ async function sendQuiz(channel, interaction = null) {
 
   let message;
   if (interaction) {
-    message = await interaction.reply({ embeds: [embed], components: [buttons], fetchReply: true });
-    await interaction.followUp({ content: '🎉 Emojiquiz wurde gestartet!', ephemeral: true });
+    message = await interaction.channel.send({ embeds: [embed], components: [buttons], fetchReply: true });
+    await interaction.reply({ content: '^🎉` Emojiquiz wurde gestartet!', ephemeral: true });
   } else {
     message = await channel.send({ embeds: [embed], components: [buttons] });
   }
@@ -83,7 +83,7 @@ async function sendQuiz(channel, interaction = null) {
       await i.message.delete().catch(() => {});
 
       // Ephemeral Antwort
-      await i.reply({ content: `➡️ Das Quiz wurde von ${i.user} übersprungen.`, ephemeral: true });
+      await i.reply({ content: `> \`➡️\` Das Emoji-Quiz wurde von <@${i.user.id}> übersprungen.`, ephemeral: true });
 
       // 3 Sekunden warten
       await new Promise(r => setTimeout(r, 3000));
@@ -155,7 +155,7 @@ module.exports = {
             .setRequired(true)
         )
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages),
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
