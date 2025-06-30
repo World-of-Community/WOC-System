@@ -7,7 +7,8 @@ const emojiquizVorschlagSchema = new mongoose.Schema({
   emojis: { type: String, required: true },
   schwierigkeit: { type: String, required: true },
   tipp: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now }
+  timestamp: { type: Date, default: Date.now },
+  status: { type: String, enum: ['offen', 'angenommen', 'abgelehnt'], default: 'offen' }
 });
 
 module.exports = mongoose.model('EmojiquizVorschlag', emojiquizVorschlagSchema);

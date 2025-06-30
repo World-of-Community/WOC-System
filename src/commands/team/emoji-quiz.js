@@ -264,7 +264,8 @@ module.exports = {
               begriff,
               emojis,
               schwierigkeit,
-              tipp
+              tipp,
+              status: 'offen'
             });
 
             const channel = modalInteraction.client.channels.cache.get(VORSCHLAG_CHANNEL_ID);
@@ -272,7 +273,7 @@ module.exports = {
               const embed = new EmbedBuilder()
                 .setTitle('`📨` Neuer Emojiquiz-Vorschlag')
                 .setDescription(`**Begriff:** ${begriff}\n**Emojis:** ${emojis}\n**Schwierigkeit:** ${schwierigkeit}\n**Tipp:** ${tipp}`)
-                .setFooter({ text: `Von ${modalInteraction.user.tag} (ID: ${eintrag._id})` })
+                .setFooter({ text: `Von ${modalInteraction.user.tag} (ID: ${eintrag._id})\nStatus: Offen` })
                 .setColor('Green')
                 .setTimestamp();
 
@@ -329,9 +330,7 @@ module.exports = {
 
         // Button Interaktionen: Annehmen / Ablehnen
         if (modalInteraction.isButton()) {
-          const user = modalInteraction.user;
-
-          // Nur mit ManageRoles Rechte
+          // Rechtecheck
           if (!modalInteraction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
             return modalInteraction.reply({ content: '❌ Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.', ephemeral: true });
           }
@@ -344,45 +343,35 @@ module.exports = {
               return modalInteraction.reply({ content: '❌ Vorschlag nicht gefunden.', ephemeral: true });
             }
 
+            // Status aktualisieren
+            const neuerStatus = action === 'vorschlag_accept' ? 'Angenommen' : 'Abgelehnt';
+            vorschlag.status = neuerStatus.toLowerCase();
+            await vorschlag.save();
+
             // DM an User senden
             try {
               const dmUser = await modalInteraction.client.users.fetch(vorschlag.userId);
-              if (action === 'vorschlag_accept') {
-                const embed = new EmbedBuilder()
-                  .setTitle('`✅` Vorschlag angenommen')
-                  .setDescription(
-                    `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde angenommen.` +
-                    ` Danke für deine Unterstützung!`
-                  )
-                  .setColor('Green')
-                  .setTimestamp();
-            
-                await dmUser.send({ embeds: [embed] });
-              } else {
-                const embed = new EmbedBuilder()
-                  .setTitle('`❌` Vorschlag abgelehnt')
-                  .setDescription(
-                    `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde leider abgelehnt.\n\n` +
-                    `Sei kreativ und Reiche gerne weitere Vorschläge ein.`
-                  )
-                  .setColor('Red')
-                  .setTimestamp();
-            
-                await dmUser.send({ embeds: [embed] });
-              }
+              const dmEmbed = new EmbedBuilder()
+                .setTitle(neuerStatus === 'Angenommen' ? '`✅` Vorschlag angenommen' : '`❌` Vorschlag abgelehnt')
+                .setDescription(neuerStatus === 'Angenommen' 
+                  ? `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde angenommen. Danke für deine Unterstützung!`
+                  : `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde leider abgelehnt.\n\nSei kreativ und reiche gerne weitere Vorschläge ein.`)
+                .setColor(neuerStatus === 'Angenommen' ? 'Green' : 'Red')
+                .setTimestamp();
+              await dmUser.send({ embeds: [dmEmbed] });
             } catch {
               // DM blockiert? Ignorieren
             }
 
-            // Embed anpassen
+            // Embed im Channel anpassen: Status + Bearbeiter
             const message = modalInteraction.message;
             const embed = EmbedBuilder.from(message.embeds[0])
-              .setFooter({ text: `Status: ${action === 'vorschlag_accept' ? 'Angenommen' : 'Abgelehnt'}` })
-              .setColor(action === 'vorschlag_accept' ? 'Green' : 'Red');
+              .setFooter({ text: `Status: ${neuerStatus} (Bearbeitet von ${modalInteraction.user.tag})` })
+              .setColor(neuerStatus === 'Angenommen' ? 'Green' : 'Red');
 
-            // Buttons deaktivieren
+            // Buttons deaktivieren (nicht entfernen)
             const disabledRow = new ActionRowBuilder().addComponents(
-              ...message.components[0].components.map(b => b.setDisabled(true))
+              ...message.components[0].components.map(button => button.setDisabled(true))
             );
 
             await modalInteraction.update({ embeds: [embed], components: [disabledRow] });
