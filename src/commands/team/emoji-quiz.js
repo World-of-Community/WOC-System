@@ -85,16 +85,12 @@ async function startEmojiQuiz(channel, interaction = null) {
     return { current, ersterBuchstabe };
   }
 
-  // Sendet initialen Quiz-Embed
+  // Quiz initial senden
   let { current, ersterBuchstabe } = await sendCurrentQuiz();
-
-  // Falls schon ein Collector existiert (bei Neustart), stoppe ihn
-  if (antwortCollector) antwortCollector.stop();
 
   // MessageCollector für Antworten im Channel
   antwortCollector = channel.createMessageCollector({
-    filter: m => !m.author.bot,
-    time: 30 * 60 * 1000 // optional Timeout nach 30min
+    filter: m => !m.author.bot
   });
 
   antwortCollector.on('collect', async (m) => {
@@ -112,7 +108,7 @@ async function startEmojiQuiz(channel, interaction = null) {
     }
   });
 
-  // ButtonCollector für die Buttons am Embed
+  // ButtonCollector für Interaktionen am Embed
   const buttonCollector = currentMessage.createMessageComponentCollector({
     componentType: ComponentType.Button,
     time: 30 * 60 * 1000 // optional Timeout
@@ -124,11 +120,11 @@ async function startEmojiQuiz(channel, interaction = null) {
     if (i.customId === 'ueberspringen') {
       await i.deferUpdate();
 
-      // Nächster Begriff (oder zurück zum Anfang)
+      // Zum nächsten Begriff wechseln (oder zurück zum ersten)
       aktuelleIndex++;
       if (aktuelleIndex >= begriffe.length) aktuelleIndex = 0;
 
-      // Quiz neu senden (editieren)
+      // Quiz mit neuem Begriff aktualisieren
       const res = await sendCurrentQuiz();
       current = res.current;
       ersterBuchstabe = res.ersterBuchstabe;
@@ -251,7 +247,7 @@ module.exports = {
       await interaction.showModal(modal);
     }
 
-    // Modal-Handler nur 1x registrieren
+    // Modal-Handler nur einmal registrieren
     if (!interaction.client.emojiquizModalHandlerRegistered) {
       interaction.client.on(Events.InteractionCreate, async (modalInteraction) => {
         if (!modalInteraction.isModalSubmit()) return;
