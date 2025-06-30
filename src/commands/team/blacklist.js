@@ -55,7 +55,7 @@ module.exports = {
           });
         }
 
-        // Datum nur einmal beim Erstellen setzen
+        // Nur beim Hinzufügen das Datum setzen
         await Blacklist.create({ userId: user.id, username: user.tag, reason, date: new Date() });
         return interaction.reply({
           content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
@@ -149,7 +149,6 @@ module.exports = {
           const index = start + i + 1;
 
           if (userId) {
-            // Aktuellen User aus Cache holen, falls vorhanden
             const user = interaction.client.users.cache.get(userId);
             const displayName = user ? user.tag : savedUsername;
 
