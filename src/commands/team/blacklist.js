@@ -55,7 +55,7 @@ module.exports = {
           });
         }
 
-        // Datum nur beim Erstellen setzen
+        // Datum nur einmal beim Erstellen setzen
         await Blacklist.create({ userId: user.id, username: user.tag, reason, date: new Date() });
         return interaction.reply({
           content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
@@ -142,14 +142,18 @@ module.exports = {
 
         const lines = pageEntries.map((entry, i) => {
           const userId = entry.userId;
-          const username = entry.username;
+          const savedUsername = entry.username;
           const minecraftName = entry.minecraftName;
           const reason = entry.reason || 'Kein Grund angegeben';
           const timestamp = entry.date ? `<t:${Math.floor(new Date(entry.date).getTime() / 1000)}:F>` : 'Unbekannt';
           const index = start + i + 1;
 
           if (userId) {
-            return `**${index}.** \`💙\` **Discord:** <@${userId}> – ${username} (\`${userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+            // Aktuellen User aus Cache holen, falls vorhanden
+            const user = interaction.client.users.cache.get(userId);
+            const displayName = user ? user.tag : savedUsername;
+
+            return `**${index}.** \`💙\` **Discord:** <@${userId}> – ${displayName} (\`${userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else if (minecraftName) {
             return `**${index}.** \`🎮\` **Minecraft:** \`${minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else {
