@@ -18,6 +18,13 @@ module.exports = {
         .addStringOption(opt =>
           opt.setName('input').setDescription('User-ID, Username oder Minecraft-Name').setRequired(true)))
     .addSubcommand(sub =>
+      sub.setName('edit')
+        .setDescription('» Bearbeitet den Grund eines Blacklist-Eintrags')
+        .addStringOption(opt =>
+          opt.setName('input').setDescription('User-ID, Username oder Minecraft-Name').setRequired(true))
+        .addStringOption(opt =>
+          opt.setName('grund').setDescription('Neuer Grund').setRequired(true)))
+    .addSubcommand(sub =>
       sub.setName('list')
         .setDescription('» Zeigt alle geblacklisteten Personen'))
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
@@ -25,6 +32,7 @@ module.exports = {
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
 
+    // 🟢 ADD
     if (sub === 'add') {
       const input = interaction.options.getString('input');
       const reason = interaction.options.getString('grund') || 'Kein Grund angegeben';
@@ -35,7 +43,7 @@ module.exports = {
       try {
         user = await interaction.client.users.fetch(input);
       } catch {
-        const member = interaction.guild.members.cache.find(m =>
+        const member = interaction.guild?.members.cache.find(m =>
           m.user.tag.toLowerCase() === input.toLowerCase() ||
           m.user.username.toLowerCase() === input.toLowerCase()
         );
@@ -81,33 +89,20 @@ module.exports = {
           ephemeral: true
         });
       }
+    }
 
-    } else if (sub === 'remove') {
+    // 🔴 REMOVE
+    else if (sub === 'remove') {
       const input = interaction.options.getString('input');
-      let userIdToRemove = null;
-      let minecraftNameToRemove = null;
-
-      try {
-        const user = await interaction.client.users.fetch(input);
-        userIdToRemove = user.id;
-      } catch {
-        const foundUser = await Blacklist.findOne({ username: new RegExp(`^${input}$`, 'i') });
-        if (foundUser) {
-          userIdToRemove = foundUser.userId;
-        } else {
-          const foundMC = await Blacklist.findOne({ minecraftName: new RegExp(`^${input}$`, 'i') });
-          if (foundMC) {
-            minecraftNameToRemove = foundMC.minecraftName;
-          }
-        }
-      }
-
       let removed;
-      if (userIdToRemove) {
-        removed = await Blacklist.findOneAndDelete({ userId: userIdToRemove });
-      } else if (minecraftNameToRemove) {
-        removed = await Blacklist.findOneAndDelete({ minecraftName: minecraftNameToRemove });
-      }
+
+      removed = await Blacklist.findOneAndDelete({
+        $or: [
+          { userId: input },
+          { username: new RegExp(`^${input}$`, 'i') },
+          { minecraftName: new RegExp(`^${input}$`, 'i') }
+        ]
+      });
 
       if (!removed) {
         return interaction.reply({
@@ -120,8 +115,40 @@ module.exports = {
         content: `> \`❌\` » **${removed.username || removed.minecraftName || 'Unbekannt'}** wurde von der Blacklist entfernt.`,
         ephemeral: true
       });
+    }
 
-    } else if (sub === 'list') {
+    // 🟡 EDIT
+    else if (sub === 'edit') {
+      const input = interaction.options.getString('input');
+      const newReason = interaction.options.getString('grund');
+
+      const entry = await Blacklist.findOneAndUpdate(
+        {
+          $or: [
+            { userId: input },
+            { username: new RegExp(`^${input}$`, 'i') },
+            { minecraftName: new RegExp(`^${input}$`, 'i') }
+          ]
+        },
+        { reason: newReason },
+        { new: true }
+      );
+
+      if (!entry) {
+        return interaction.reply({
+          content: `> \`❗\` » Kein Eintrag mit \`${input}\` gefunden.`,
+          ephemeral: true
+        });
+      }
+
+      return interaction.reply({
+        content: `> \`✏️\` » Grund für **${entry.username || entry.minecraftName}** wurde geändert.`,
+        ephemeral: true
+      });
+    }
+
+    // 📄 LIST
+    else if (sub === 'list') {
       const entries = await Blacklist.find();
       if (!entries.length) {
         return interaction.reply({
@@ -151,7 +178,7 @@ module.exports = {
             const displayName = user?.tag || entry.username || 'Unbekannt';
             return `**${index}.** \`💙\` **Discord:** <@${entry.userId}> – ${displayName} (\`${entry.userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else if (entry.minecraftName) {
-            return `**${index}.** \`🎮\` **Minecraft:** ${entry.minecraftName}\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+            return `**${index}.** \`🎮\` **Minecraft:** \`${entry.minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else {
             return `**${index}.** \`❓\` Unbekannter Eintrag`;
           }
@@ -198,8 +225,7 @@ module.exports = {
       });
 
       const collector = message.createMessageComponentCollector({
-        filter: i => i.user.id === interaction.user.id,
-        time: 60000
+        filter: i => i.user.id === interaction.user.id
       });
 
       collector.on('collect', async i => {
