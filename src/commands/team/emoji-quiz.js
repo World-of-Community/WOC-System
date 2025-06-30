@@ -247,69 +247,128 @@ module.exports = {
       await interaction.showModal(modal);
     }
 
-    // Modal-Handler nur einmal registrieren
+    // Modal-Handler und Button-Handler nur einmal registrieren
     if (!interaction.client.emojiquizModalHandlerRegistered) {
       interaction.client.on(Events.InteractionCreate, async (modalInteraction) => {
-        if (!modalInteraction.isModalSubmit()) return;
+        if (modalInteraction.isModalSubmit()) {
+          // Vorschlag erstellen
+          if (modalInteraction.customId === 'vorschlag_modal') {
+            const begriff = modalInteraction.fields.getTextInputValue('begriff');
+            const emojis = modalInteraction.fields.getTextInputValue('emojis');
+            const schwierigkeit = modalInteraction.fields.getTextInputValue('schwierigkeit');
+            const tipp = modalInteraction.fields.getTextInputValue('tipp');
 
-        if (modalInteraction.customId === 'vorschlag_modal') {
-          const begriff = modalInteraction.fields.getTextInputValue('begriff');
-          const emojis = modalInteraction.fields.getTextInputValue('emojis');
-          const schwierigkeit = modalInteraction.fields.getTextInputValue('schwierigkeit');
-          const tipp = modalInteraction.fields.getTextInputValue('tipp');
+            const eintrag = await EmojiquizVorschlag.create({
+              userId: modalInteraction.user.id,
+              username: modalInteraction.user.tag,
+              begriff,
+              emojis,
+              schwierigkeit,
+              tipp
+            });
 
-          const eintrag = await EmojiquizVorschlag.create({
-            userId: modalInteraction.user.id,
-            username: modalInteraction.user.tag,
-            begriff,
-            emojis,
-            schwierigkeit,
-            tipp
-          });
+            const channel = modalInteraction.client.channels.cache.get(VORSCHLAG_CHANNEL_ID);
+            if (channel?.isTextBased()) {
+              const embed = new EmbedBuilder()
+                .setTitle('`📨` Neuer Emojiquiz-Vorschlag')
+                .setDescription(`**Begriff:** ${begriff}\n**Emojis:** ${emojis}\n**Schwierigkeit:** ${schwierigkeit}\n**Tipp:** ${tipp}`)
+                .setFooter({ text: `Von ${modalInteraction.user.tag} (ID: ${eintrag._id})` })
+                .setColor('Green')
+                .setTimestamp();
 
-          const channel = modalInteraction.client.channels.cache.get(VORSCHLAG_CHANNEL_ID);
-          if (channel?.isTextBased()) {
+              const row = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setCustomId(`vorschlag_accept:${eintrag._id}`)
+                  .setLabel('✅ Annehmen')
+                  .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                  .setCustomId(`vorschlag_reject:${eintrag._id}`)
+                  .setLabel('❌ Ablehnen')
+                  .setStyle(ButtonStyle.Danger)
+              );
+
+              await channel.send({ embeds: [embed], components: [row] });
+            }
+
+            await modalInteraction.reply({ content: '> `✅` Dein Vorschlag wurde gespeichert.', ephemeral: true });
+            return;
+          }
+
+          // Vorschlag bearbeiten
+          if (modalInteraction.customId.startsWith('edit_vorschlag:')) {
+            const id = modalInteraction.customId.split(':')[1];
+            const begriff = modalInteraction.fields.getTextInputValue('begriff');
+            const emojis = modalInteraction.fields.getTextInputValue('emojis');
+            const schwierigkeit = modalInteraction.fields.getTextInputValue('schwierigkeit');
+            const tipp = modalInteraction.fields.getTextInputValue('tipp');
+
+            const update = await EmojiquizVorschlag.findByIdAndUpdate(id, {
+              begriff, emojis, schwierigkeit, tipp
+            }, { new: true });
+
+            if (!update) {
+              return modalInteraction.reply({ content: '`❌` Fehler beim Speichern!', ephemeral: true });
+            }
+
             const embed = new EmbedBuilder()
-              .setTitle('`📨` Neuer Emojiquiz-Vorschlag')
-              .setDescription(`**Begriff:** ${begriff}\n**Emojis:** ${emojis}\n**Schwierigkeit:** ${schwierigkeit}\n**Tipp:** ${tipp}`)
-              .setFooter({ text: `Von ${modalInteraction.user.tag} (ID: ${eintrag._id})` })
+              .setTitle('`✅` Vorschlag bearbeitet')
+              .addFields(
+                { name: 'Begriff', value: update.begriff, inline: true },
+                { name: 'Emojis', value: update.emojis, inline: true },
+                { name: 'Schwierigkeit', value: update.schwierigkeit, inline: true },
+                { name: 'Tipp', value: update.tipp, inline: false }
+              )
               .setColor('Green')
+              .setFooter({ text: `Bearbeitet von ${modalInteraction.user.tag}` })
               .setTimestamp();
 
-            await channel.send({ embeds: [embed] });
+            await modalInteraction.reply({ embeds: [embed], ephemeral: true });
+            return;
           }
-
-          await modalInteraction.reply({ content: '> `✅` Dein Vorschlag wurde gespeichert.', ephemeral: true });
         }
 
-        if (modalInteraction.customId.startsWith('edit_vorschlag:')) {
-          const id = modalInteraction.customId.split(':')[1];
-          const begriff = modalInteraction.fields.getTextInputValue('begriff');
-          const emojis = modalInteraction.fields.getTextInputValue('emojis');
-          const schwierigkeit = modalInteraction.fields.getTextInputValue('schwierigkeit');
-          const tipp = modalInteraction.fields.getTextInputValue('tipp');
+        // Button Interaktionen: Annehmen / Ablehnen
+        if (modalInteraction.isButton()) {
+          const user = modalInteraction.user;
 
-          const update = await EmojiquizVorschlag.findByIdAndUpdate(id, {
-            begriff, emojis, schwierigkeit, tipp
-          }, { new: true });
-
-          if (!update) {
-            return modalInteraction.reply({ content: '`❌` Fehler beim Speichern!', ephemeral: true });
+          // Nur mit ManageRoles Rechte
+          if (!modalInteraction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
+            return modalInteraction.reply({ content: '❌ Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.', ephemeral: true });
           }
 
-          const embed = new EmbedBuilder()
-            .setTitle('`✅` Vorschlag bearbeitet')
-            .addFields(
-              { name: 'Begriff', value: update.begriff, inline: true },
-              { name: 'Emojis', value: update.emojis, inline: true },
-              { name: 'Schwierigkeit', value: update.schwierigkeit, inline: true },
-              { name: 'Tipp', value: update.tipp, inline: false }
-            )
-            .setColor('Green')
-            .setFooter({ text: `Bearbeitet von ${modalInteraction.user.tag}` })
-            .setTimestamp();
+          const [action, id] = modalInteraction.customId.split(':');
 
-          await modalInteraction.reply({ embeds: [embed], ephemeral: true });
+          if (action === 'vorschlag_accept' || action === 'vorschlag_reject') {
+            const vorschlag = await EmojiquizVorschlag.findById(id);
+            if (!vorschlag) {
+              return modalInteraction.reply({ content: '❌ Vorschlag nicht gefunden.', ephemeral: true });
+            }
+
+            // DM an den User senden
+            try {
+              const dmUser = await modalInteraction.client.users.fetch(vorschlag.userId);
+              if (action === 'vorschlag_accept') {
+                await dmUser.send(`✅ Dein Emojiquiz-Vorschlag "**${vorschlag.begriff}**" wurde angenommen. Danke für deine Unterstützung!`);
+              } else {
+                await dmUser.send(`❌ Dein Emojiquiz-Vorschlag "**${vorschlag.begriff}**" wurde leider abgelehnt. `);
+              }
+            } catch {
+              // DM blockiert? Ignorieren
+            }
+
+            // Embed anpassen
+            const message = modalInteraction.message;
+            const embed = EmbedBuilder.from(message.embeds[0])
+              .setFooter({ text: `Status: ${action === 'vorschlag_accept' ? 'Angenommen' : 'Abgelehnt'}` })
+              .setColor(action === 'vorschlag_accept' ? 'Green' : 'Red');
+
+            // Buttons deaktivieren
+            const disabledRow = new ActionRowBuilder().addComponents(
+              ...message.components[0].components.map(b => b.setDisabled(true))
+            );
+
+            await modalInteraction.update({ embeds: [embed], components: [disabledRow] });
+          }
         }
       });
 
