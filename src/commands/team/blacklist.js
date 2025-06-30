@@ -222,13 +222,11 @@ module.exports = {
       const message = await interaction.reply({
         embeds: [await getPageEmbed(currentPage)],
         components: getButtons(currentPage),
-        ephemeral: true,
         fetchReply: true
       });
 
       const collector = message.createMessageComponentCollector({
-        filter: i => i.user.id === interaction.user.id,
-        time: 60000
+        filter: i => i.user.id === interaction.user.id
       });
 
       collector.on('collect', async i => {
