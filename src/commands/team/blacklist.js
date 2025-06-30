@@ -55,7 +55,8 @@ module.exports = {
           });
         }
 
-        await Blacklist.create({ userId: user.id, username: user.tag, reason });
+        // Datum nur beim Erstellen setzen
+        await Blacklist.create({ userId: user.id, username: user.tag, reason, date: new Date() });
         return interaction.reply({
           content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
           ephemeral: true
@@ -71,7 +72,7 @@ module.exports = {
           });
         }
 
-        await Blacklist.create({ minecraftName: minecraftName.toLowerCase(), reason });
+        await Blacklist.create({ minecraftName: minecraftName.toLowerCase(), reason, date: new Date() });
         return interaction.reply({
           content: `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde zur Blacklist hinzugefügt.`,
           ephemeral: true
@@ -144,7 +145,7 @@ module.exports = {
           const username = entry.username;
           const minecraftName = entry.minecraftName;
           const reason = entry.reason || 'Kein Grund angegeben';
-          const timestamp = `<t:${Math.floor(new Date(entry.date).getTime() / 1000)}:F>`;
+          const timestamp = entry.date ? `<t:${Math.floor(new Date(entry.date).getTime() / 1000)}:F>` : 'Unbekannt';
           const index = start + i + 1;
 
           if (userId) {
