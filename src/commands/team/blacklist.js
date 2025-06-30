@@ -194,7 +194,7 @@ module.exports = {
 
       if (!removed) {
         return interaction.reply({
-          content: `> \`❗\` » Nutzer oder Minecraft-Spieler \`${input}\` ist nicht auf der Blacklist.`,
+          content: `> \`❗\` » Nutzer oder Minecraft-Spieler **${input}** ist nicht auf der Blacklist.`,
           ephemeral: true
         });
       }
@@ -269,7 +269,7 @@ module.exports = {
             const displayName = user?.tag || entry.username || 'Unbekannt';
             return `**${index}.** \`💙\` **Discord:** <@${entry.userId}> – ${displayName} (\`${entry.userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else if (entry.minecraftName) {
-            return `**${index}.** \`🎮\` **Minecraft:** \`${entry.minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+            return `**${index}.** \`🎮\` **Minecraft:** ${entry.minecraftName}\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else {
             return `**${index}.** \`❓\` Unbekannter Eintrag`;
           }
