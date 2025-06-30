@@ -42,60 +42,100 @@ const begriffe = [
   }
 ];
 
-async function sendQuiz(channel, interaction = null) {
-  // Zufälligen Begriff auswählen
-  const random = begriffe[Math.floor(Math.random() * begriffe.length)];
-  const ersterBuchstabe = random.begriff[0];
+async function startEmojiQuiz(channel, interaction = null) {
+  let aktuelleIndex = Math.floor(Math.random() * begriffe.length);
+  let currentMessage;
+  let antwortCollector;
 
-  const embed = new EmbedBuilder()
-    .setDescription(`Gesuchter Begriff • ${random.emojis}\n\nSchwierigkeit: **${random.schwierigkeit}**\nBelohnung • 1 🪙\n\nTipp • **${random.tipp}**`)
-    .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button, um das Emojiquiz zu überspringen.' })
-    .setColor('Blurple');
+  async function sendCurrentQuiz() {
+    const current = begriffe[aktuelleIndex];
+    const ersterBuchstabe = current.begriff[0];
 
-  const buttons = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId('ueberspringen')
-      .setLabel('➡️ Überspringen')
-      .setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder()
-      .setCustomId('erster_buchstabe')
-      .setLabel('🅰️ Erster Buchstabe')
-      .setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder()
-      .setCustomId('neuer_begriff')
-      .setLabel('❓ Neuen Begriff vorschlagen')
-      .setStyle(ButtonStyle.Primary)
-  );
+    const embed = new EmbedBuilder()
+      .setDescription(`Gesuchter Begriff • ${current.emojis}\n\nSchwierigkeit: **${current.schwierigkeit}**\nBelohnung • 1 🪙\n\nTipp • **${current.tipp}**`)
+      .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button, um das Emojiquiz zu überspringen.' })
+      .setColor('Blurple');
 
-  let message;
-  if (interaction) {
-    message = await interaction.channel.send({ embeds: [embed], components: [buttons], fetchReply: true });
-    await interaction.reply({ content: '^🎉` Emojiquiz wurde gestartet!', ephemeral: true });
-  } else {
-    message = await channel.send({ embeds: [embed], components: [buttons] });
+    const buttons = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('ueberspringen')
+        .setLabel('➡️ Überspringen')
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('erster_buchstabe')
+        .setLabel('🅰️ Erster Buchstabe')
+        .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('neuer_begriff')
+        .setLabel('❓ Neuen Begriff vorschlagen')
+        .setStyle(ButtonStyle.Primary)
+    );
+
+    if (currentMessage) {
+      await currentMessage.edit({ embeds: [embed], components: [buttons] });
+    } else {
+      if (interaction) {
+        await interaction.reply({ embeds: [embed], components: [buttons] });
+        currentMessage = await interaction.fetchReply();
+      } else {
+        currentMessage = await channel.send({ embeds: [embed], components: [buttons] });
+      }
+    }
+
+    return { current, ersterBuchstabe };
   }
 
-  const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button });
+  // Sendet initialen Quiz-Embed
+  let { current, ersterBuchstabe } = await sendCurrentQuiz();
 
-  collector.on('collect', async i => {
+  // Falls schon ein Collector existiert (bei Neustart), stoppe ihn
+  if (antwortCollector) antwortCollector.stop();
+
+  // MessageCollector für Antworten im Channel
+  antwortCollector = channel.createMessageCollector({
+    filter: m => !m.author.bot,
+    time: 30 * 60 * 1000 // optional Timeout nach 30min
+  });
+
+  antwortCollector.on('collect', async (m) => {
+    if (m.content.trim().toLowerCase() === current.begriff.toLowerCase()) {
+      await m.reply(`🎉 Richtig, ${m.author}! Das Emojiquiz wurde gelöst.`);
+      antwortCollector.stop('gelöst');
+    } else {
+      await m.reply('❌ Falsch, versuch es nochmal!');
+    }
+  });
+
+  antwortCollector.on('end', async (collected, reason) => {
+    if (reason === 'gelöst') {
+      await channel.send('✅ Emojiquiz wurde beendet. Danke fürs Mitspielen!');
+    }
+  });
+
+  // ButtonCollector für die Buttons am Embed
+  const buttonCollector = currentMessage.createMessageComponentCollector({
+    componentType: ComponentType.Button,
+    time: 30 * 60 * 1000 // optional Timeout
+  });
+
+  buttonCollector.on('collect', async (i) => {
+    if (i.user.bot) return;
+
     if (i.customId === 'ueberspringen') {
-      // Nachricht löschen
-      await i.message.delete().catch(() => {});
+      await i.deferUpdate();
 
-      // Ephemeral Antwort
-      await i.reply({ content: `> \`➡️\` Das Emoji-Quiz wurde von <@${i.user.id}> übersprungen.`, ephemeral: true });
+      // Nächster Begriff (oder zurück zum Anfang)
+      aktuelleIndex++;
+      if (aktuelleIndex >= begriffe.length) aktuelleIndex = 0;
 
-      // 3 Sekunden warten
-      await new Promise(r => setTimeout(r, 3000));
-
-      // Neues Quiz senden
-      await sendQuiz(i.channel);
-
-      collector.stop();
+      // Quiz neu senden (editieren)
+      const res = await sendCurrentQuiz();
+      current = res.current;
+      ersterBuchstabe = res.ersterBuchstabe;
     }
 
     if (i.customId === 'erster_buchstabe') {
-      await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
+      await i.reply({ content: `🅰️ Erster Buchstabe: **${ersterBuchstabe}**`, ephemeral: true });
     }
 
     if (i.customId === 'neuer_begriff') {
@@ -161,7 +201,7 @@ module.exports = {
     const sub = interaction.options.getSubcommand();
 
     if (sub === 'start') {
-      await sendQuiz(interaction.channel, interaction);
+      await startEmojiQuiz(interaction.channel, interaction);
     } else if (sub === 'edit') {
       const id = interaction.options.getString('id');
       const vorschlag = await EmojiquizVorschlag.findById(id);
@@ -211,6 +251,7 @@ module.exports = {
       await interaction.showModal(modal);
     }
 
+    // Modal-Handler nur 1x registrieren
     if (!interaction.client.emojiquizModalHandlerRegistered) {
       interaction.client.on(Events.InteractionCreate, async (modalInteraction) => {
         if (!modalInteraction.isModalSubmit()) return;
