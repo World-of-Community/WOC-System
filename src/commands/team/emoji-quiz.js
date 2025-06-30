@@ -70,6 +70,7 @@ async function sendQuiz(channel, interaction = null) {
   let message;
   if (interaction) {
     message = await interaction.reply({ embeds: [embed], components: [buttons], fetchReply: true });
+    await interaction.followUp({ content: '🎉 Emojiquiz wurde gestartet!', ephemeral: true });
   } else {
     message = await channel.send({ embeds: [embed], components: [buttons] });
   }
@@ -256,7 +257,7 @@ module.exports = {
           }, { new: true });
 
           if (!update) {
-            return modalInteraction.reply({ content: '❌ Fehler beim Speichern!', ephemeral: true });
+            return modalInteraction.reply({ content: '`❌` Fehler beim Speichern!', ephemeral: true });
           }
 
           const embed = new EmbedBuilder()
