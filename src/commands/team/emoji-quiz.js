@@ -284,13 +284,13 @@ module.exports = {
                 new ButtonBuilder()
                   .setCustomId(`vorschlag_reject:${eintrag._id}`)
                   .setLabel('❌ Ablehnen')
-                  .setStyle(ButtonStyle.Danger)
+                  .setStyle(ButtonStyle.Secondary)
               );
 
               await channel.send({ embeds: [embed], components: [row] });
             }
 
-            await modalInteraction.reply({ content: '> `✅` Dein Vorschlag wurde gespeichert.', ephemeral: true });
+            await modalInteraction.reply({ content: '> `✅` Dein Vorschlag wurde eingereicht. Vielen Dank!', ephemeral: true });
             return;
           }
 
@@ -344,13 +344,31 @@ module.exports = {
               return modalInteraction.reply({ content: '❌ Vorschlag nicht gefunden.', ephemeral: true });
             }
 
-            // DM an den User senden
+            // DM an User senden
             try {
               const dmUser = await modalInteraction.client.users.fetch(vorschlag.userId);
               if (action === 'vorschlag_accept') {
-                await dmUser.send(`✅ Dein Emojiquiz-Vorschlag "**${vorschlag.begriff}**" wurde angenommen. Danke für deine Unterstützung!`);
+                const embed = new EmbedBuilder()
+                  .setTitle('`✅` Vorschlag angenommen')
+                  .setDescription(
+                    `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde angenommen.` +
+                    ` Danke für deine Unterstützung!`
+                  )
+                  .setColor('Green')
+                  .setTimestamp();
+            
+                await dmUser.send({ embeds: [embed] });
               } else {
-                await dmUser.send(`❌ Dein Emojiquiz-Vorschlag "**${vorschlag.begriff}**" wurde leider abgelehnt. `);
+                const embed = new EmbedBuilder()
+                  .setTitle('`❌` Vorschlag abgelehnt')
+                  .setDescription(
+                    `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde leider abgelehnt.\n\n` +
+                    `Sei kreativ und Reiche gerne weitere Vorschläge ein.`
+                  )
+                  .setColor('Red')
+                  .setTimestamp();
+            
+                await dmUser.send({ embeds: [embed] });
               }
             } catch {
               // DM blockiert? Ignorieren
