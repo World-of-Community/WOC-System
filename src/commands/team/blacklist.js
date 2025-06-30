@@ -58,21 +58,35 @@ module.exports = {
         });
       }
 
-      if (user) {
-        const exists = await Blacklist.findOne({ userId: user.id });
-        if (exists) {
-          return interaction.reply({
-            content: `> \`❗\` » Der Nutzer ${user.tag} ist bereits auf der Blacklist.`,
-            ephemeral: true
-          });
-        }
-
-        await Blacklist.create({ userId: user.id, username: user.tag, reason });
+      if (!user.id) {      
         return interaction.reply({
-          content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
+          content: '> `❗` » Ungültiger Nutzer. Die User-ID fehlt.',
           ephemeral: true
         });
       }
+
+      await Blacklist.create({
+        userId: user.id,
+        username: user.tag,
+        reason,
+        date: new Date()
+      });
+
+      //if (user) {
+      //  const exists = await Blacklist.findOne({ userId: user.id });
+      //  if (exists) {
+      //    return interaction.reply({
+      //      content: `> \`❗\` » Der Nutzer ${user.tag} ist bereits auf der Blacklist.`,
+      //      ephemeral: true
+      //    });
+      //  }
+//
+      //  await Blacklist.create({ userId: user.id, username: user.tag, reason });
+      //  return interaction.reply({
+      //    content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
+      //    ephemeral: true
+      //  });
+      //}
 
       if (minecraftName) {
         const exists = await Blacklist.findOne({ minecraftName: minecraftName.toLowerCase() });
