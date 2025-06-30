@@ -219,13 +219,14 @@ module.exports = {
         ];
       };
 
-      const message = await interaction.reply({
+      const listmessage = await interaction.channel.send({ 
         embeds: [await getPageEmbed(currentPage)],
         components: getButtons(currentPage),
         fetchReply: true
-      });
+      })
+      const message = await interaction.reply({ content: 'Blacklist embed gesendet' , ephemeral: true });
 
-      const collector = message.createMessageComponentCollector({
+      const collector = listmessage.createMessageComponentCollector({
         filter: i => i.user.id === interaction.user.id
       });
 
