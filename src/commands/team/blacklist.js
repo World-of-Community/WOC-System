@@ -308,9 +308,8 @@ module.exports = {
       })
       const message = await interaction.reply({ content: 'Blacklist embed gesendet', ephemeral: true });
 
-      const collector = message.createMessageComponentCollector({
+      const collector = listmessage.createMessageComponentCollector({
         filter: i => i.user.id === interaction.user.id,
-        time: 60000
       });
 
       collector.on('collect', async i => {
@@ -324,7 +323,7 @@ module.exports = {
       });
 
       collector.on('end', async () => {
-        try { await message.edit({ components: [] }); } catch {}
+        try { await listmessage.edit({ components: [] }); } catch {}
       });
     }
   }
