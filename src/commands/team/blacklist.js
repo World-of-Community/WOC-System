@@ -32,11 +32,9 @@ module.exports = {
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
 
-    // 🟢 ADD
     if (sub === 'add') {
       const input = interaction.options.getString('input');
       const reason = interaction.options.getString('grund') || 'Kein Grund angegeben';
-
       let user = null;
       let minecraftName = null;
 
@@ -58,35 +56,20 @@ module.exports = {
         });
       }
 
-      if (!user.id) {      
+      if (user) {
+        const exists = await Blacklist.findOne({ userId: user.id });
+        if (exists) {
+          return interaction.reply({
+            content: `> \`❗\` » Der Nutzer ${user.tag} ist bereits auf der Blacklist.`,
+            ephemeral: true
+          });
+        }
+        await Blacklist.create({ userId: user.id, username: user.tag, reason, date: new Date() });
         return interaction.reply({
-          content: '> `❗` » Ungültiger Nutzer. Die User-ID fehlt.',
+          content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
           ephemeral: true
         });
       }
-
-      await Blacklist.create({
-        userId: user.id,
-        username: user.tag,
-        reason,
-        date: new Date()
-      });
-
-      //if (user) {
-      //  const exists = await Blacklist.findOne({ userId: user.id });
-      //  if (exists) {
-      //    return interaction.reply({
-      //      content: `> \`❗\` » Der Nutzer ${user.tag} ist bereits auf der Blacklist.`,
-      //      ephemeral: true
-      //    });
-      //  }
-//
-      //  await Blacklist.create({ userId: user.id, username: user.tag, reason });
-      //  return interaction.reply({
-      //    content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
-      //    ephemeral: true
-      //  });
-      //}
 
       if (minecraftName) {
         const exists = await Blacklist.findOne({ minecraftName: minecraftName.toLowerCase() });
@@ -96,8 +79,7 @@ module.exports = {
             ephemeral: true
           });
         }
-
-        await Blacklist.create({ minecraftName: minecraftName.toLowerCase(), reason });
+        await Blacklist.create({ minecraftName: minecraftName.toLowerCase(), reason, date: new Date() });
         return interaction.reply({
           content: `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde zur Blacklist hinzugefügt.`,
           ephemeral: true
@@ -105,12 +87,9 @@ module.exports = {
       }
     }
 
-    // 🔴 REMOVE
-    else if (sub === 'remove') {
+    if (sub === 'remove') {
       const input = interaction.options.getString('input');
-      let removed;
-
-      removed = await Blacklist.findOneAndDelete({
+      const removed = await Blacklist.findOneAndDelete({
         $or: [
           { userId: input },
           { username: new RegExp(`^${input}$`, 'i') },
@@ -131,11 +110,9 @@ module.exports = {
       });
     }
 
-    // 🟡 EDIT
-    else if (sub === 'edit') {
+    if (sub === 'edit') {
       const input = interaction.options.getString('input');
       const newReason = interaction.options.getString('grund');
-
       const entry = await Blacklist.findOneAndUpdate(
         {
           $or: [
@@ -161,8 +138,7 @@ module.exports = {
       });
     }
 
-    // 📄 LIST
-    else if (sub === 'list') {
+    if (sub === 'list') {
       const entries = await Blacklist.find();
       if (!entries.length) {
         return interaction.reply({
@@ -186,9 +162,7 @@ module.exports = {
 
           if (entry.userId) {
             let user;
-            try {
-              user = await interaction.client.users.fetch(entry.userId);
-            } catch {}
+            try { user = await interaction.client.users.fetch(entry.userId); } catch {}
             const displayName = user?.tag || entry.username || 'Unbekannt';
             return `**${index}.** \`💙\` **Discord:** <@${entry.userId}> – ${displayName} (\`${entry.userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
           } else if (entry.minecraftName) {
@@ -201,10 +175,7 @@ module.exports = {
         return new EmbedBuilder()
           .setTitle('`📄` Blacklist Nutzer')
           .setColor('Red')
-          .setDescription(
-            '**Information zu den Nutzern:**\n> Verbot bzw gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' +
-            lines.join('\n\n')
-          )
+          .setDescription('**Information zu den Nutzern:**\n> Verbot bzw gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + lines.join('\n\n'))
           .setFooter({ text: `Seite ${page + 1} / ${Math.ceil(entries.length / pageSize)} · Einträge insgesamt: ${entries.length}` });
       };
 
@@ -239,15 +210,13 @@ module.exports = {
       });
 
       const collector = message.createMessageComponentCollector({
-        filter: i => i.user.id === interaction.user.id
+        filter: i => i.user.id === interaction.user.id,
+        time: 60000
       });
 
       collector.on('collect', async i => {
-        if (i.customId === 'blacklist_back') {
-          currentPage = Math.max(currentPage - 1, 0);
-        } else if (i.customId === 'blacklist_next') {
-          currentPage = Math.min(currentPage + 1, Math.ceil(entries.length / pageSize) - 1);
-        }
+        if (i.customId === 'blacklist_back') currentPage = Math.max(currentPage - 1, 0);
+        else if (i.customId === 'blacklist_next') currentPage = Math.min(currentPage + 1, Math.ceil(entries.length / pageSize) - 1);
 
         await i.update({
           embeds: [await getPageEmbed(currentPage)],
@@ -256,9 +225,7 @@ module.exports = {
       });
 
       collector.on('end', async () => {
-        try {
-          await message.edit({ components: [] });
-        } catch {}
+        try { await message.edit({ components: [] }); } catch {}
       });
     }
   }
