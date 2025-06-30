@@ -69,14 +69,14 @@ module.exports = {
       const ersterBuchstabe = random.begriff[0];
 
       const embed = new EmbedBuilder()
-        .setDescription(`Gesuchter Begriff • ${random.emojis}\n\nSchwierigkeit: **${random.schwierigkeit}**\nBelohnung: • 1 🪙\n\n**Tipp** • ${random.tipp}`)
+        .setDescription(`Gesuchter Begriff • ${random.emojis}\n\nSchwierigkeit: **${random.schwierigkeit}**\nBelohnung • 1 🪙\n\nTipp • **${random.tipp}**`)
         .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button, um das Emojiquiz zu überspringen.' })
         .setColor('Blurple');
 
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('ueberspringen')
-          .setLabel('⏭️ Überspringen')
+          .setLabel('➡️ Überspringen')
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('erster_buchstabe')
@@ -94,16 +94,16 @@ module.exports = {
         fetchReply: true
       });
 
-      const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, time: 60000 });
+      const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button });
 
       collector.on('collect', async i => {
         if (i.customId === 'ueberspringen') {
-          await i.reply({ content: `⏭️ Das Quiz wurde übersprungen.`, ephemeral: true });
+          await i.reply({ content: `> \`➡️\` » Das Quiz wurde übersprungen.`, ephemeral: true });
           collector.stop();
         }
 
         if (i.customId === 'erster_buchstabe') {
-          await i.reply({ content: `🅰️ Erster Buchstabe: **${ersterBuchstabe}**`, ephemeral: true });
+          await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
         }
 
         if (i.customId === 'neuer_begriff') {
