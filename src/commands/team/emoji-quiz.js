@@ -69,8 +69,8 @@ module.exports = {
       const ersterBuchstabe = random.begriff[0];
 
       const embed = new EmbedBuilder()
-        .setTitle('Gesuchter Begriff • ' + random.emojis)
-        .setDescription(`Schwierigkeit: **${random.schwierigkeit}**\nBelohnung: • 1 🪙\n\n💡 **Tipp:** ${random.tipp}`)
+        .setDescription(`Gesuchter Begriff • ${random.emojis}\n\nSchwierigkeit: **${random.schwierigkeit}**\nBelohnung: • 1 🪙\n\n**Tipp** • ${random.tipp}`)
+        .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button, um das Emojiquiz zu überspringen.' })
         .setColor('Blurple');
 
       const buttons = new ActionRowBuilder().addComponents(
