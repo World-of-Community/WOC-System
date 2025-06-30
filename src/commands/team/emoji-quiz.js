@@ -98,7 +98,16 @@ module.exports = {
 
       collector.on('collect', async i => {
         if (i.customId === 'ueberspringen') {
-          await i.reply({ content: `> \`➡️\` » Das Quiz wurde übersprungen.`, ephemeral: true });
+
+          // Ursprüngliche Nachricht löschen
+          await i.message.delete().catch(() => {});
+
+          // Nachricht schicken wenn übersprungen
+          await i.reply({ content: `> \`➡️\` » Das Quiz wurde von ${i.user} übersprungen.` });
+
+          // Sende ein neues Embed in den Channel
+          await i.channel.send({ embeds: [übersprungenEmbed] });
+
           collector.stop();
         }
 
@@ -109,7 +118,7 @@ module.exports = {
         if (i.customId === 'neuer_begriff') {
           const modal = new ModalBuilder()
             .setCustomId('vorschlag_modal')
-            .setTitle('🔤 Neuen Begriff vorschlagen')
+            .setTitle('Neuen Begriff vorschlagen')
             .addComponents(
               new ActionRowBuilder().addComponents(
                 new TextInputBuilder()
