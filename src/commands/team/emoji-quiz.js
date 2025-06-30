@@ -42,6 +42,101 @@ const begriffe = [
   }
 ];
 
+async function sendQuiz(channel, interaction = null) {
+  // Zufälligen Begriff auswählen
+  const random = begriffe[Math.floor(Math.random() * begriffe.length)];
+  const ersterBuchstabe = random.begriff[0];
+
+  const embed = new EmbedBuilder()
+    .setDescription(`Gesuchter Begriff • ${random.emojis}\n\nSchwierigkeit: **${random.schwierigkeit}**\nBelohnung • 1 🪙\n\nTipp • **${random.tipp}**`)
+    .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button, um das Emojiquiz zu überspringen.' })
+    .setColor('Blurple');
+
+  const buttons = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('ueberspringen')
+      .setLabel('➡️ Überspringen')
+      .setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder()
+      .setCustomId('erster_buchstabe')
+      .setLabel('🅰️ Erster Buchstabe')
+      .setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder()
+      .setCustomId('neuer_begriff')
+      .setLabel('❓ Neuen Begriff vorschlagen')
+      .setStyle(ButtonStyle.Primary)
+  );
+
+  let message;
+  if (interaction) {
+    message = await interaction.reply({ embeds: [embed], components: [buttons], fetchReply: true });
+  } else {
+    message = await channel.send({ embeds: [embed], components: [buttons] });
+  }
+
+  const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button });
+
+  collector.on('collect', async i => {
+    if (i.customId === 'ueberspringen') {
+      // Nachricht löschen
+      await i.message.delete().catch(() => {});
+
+      // Ephemeral Antwort
+      await i.reply({ content: `➡️ Das Quiz wurde von ${i.user} übersprungen.`, ephemeral: true });
+
+      // 3 Sekunden warten
+      await new Promise(r => setTimeout(r, 3000));
+
+      // Neues Quiz senden
+      await sendQuiz(i.channel);
+
+      collector.stop();
+    }
+
+    if (i.customId === 'erster_buchstabe') {
+      await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
+    }
+
+    if (i.customId === 'neuer_begriff') {
+      const modal = new ModalBuilder()
+        .setCustomId('vorschlag_modal')
+        .setTitle('Neuen Begriff vorschlagen')
+        .addComponents(
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('begriff')
+              .setLabel('Der Begriff')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('emojis')
+              .setLabel('Die Emojis')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('schwierigkeit')
+              .setLabel('Schwierigkeit (Einfach, Mittel, Schwer)')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('tipp')
+              .setLabel('Tipp')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+          )
+        );
+
+      await i.showModal(modal);
+    }
+  });
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('emojiquiz')
@@ -65,97 +160,8 @@ module.exports = {
     const sub = interaction.options.getSubcommand();
 
     if (sub === 'start') {
-      const random = begriffe[Math.floor(Math.random() * begriffe.length)];
-      const ersterBuchstabe = random.begriff[0];
-
-      const embed = new EmbedBuilder()
-        .setDescription(`Gesuchter Begriff • ${random.emojis}\n\nSchwierigkeit: **${random.schwierigkeit}**\nBelohnung • 1 🪙\n\nTipp • **${random.tipp}**`)
-        .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button, um das Emojiquiz zu überspringen.' })
-        .setColor('Blurple');
-
-      const buttons = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId('ueberspringen')
-          .setLabel('➡️ Überspringen')
-          .setStyle(ButtonStyle.Secondary),
-        new ButtonBuilder()
-          .setCustomId('erster_buchstabe')
-          .setLabel('🅰️ Erster Buchstabe')
-          .setStyle(ButtonStyle.Secondary),
-        new ButtonBuilder()
-          .setCustomId('neuer_begriff')
-          .setLabel('❓ Neuen Begriff vorschlagen')
-          .setStyle(ButtonStyle.Primary)
-      );
-
-      const message = await interaction.reply({
-        embeds: [embed],
-        components: [buttons],
-        fetchReply: true
-      });
-
-      const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button });
-
-      collector.on('collect', async i => {
-        if (i.customId === 'ueberspringen') {
-
-          // Ursprüngliche Nachricht löschen
-          await i.message.delete().catch(() => {});
-
-          // Nachricht schicken wenn übersprungen
-          await i.reply({ content: `> \`➡️\` » Das Quiz wurde von ${i.user} übersprungen.` });
-
-          // Sende ein neues Embed in den Channel
-          await i.channel.send({ embeds: [übersprungenEmbed] });
-
-          collector.stop();
-        }
-
-        if (i.customId === 'erster_buchstabe') {
-          await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
-        }
-
-        if (i.customId === 'neuer_begriff') {
-          const modal = new ModalBuilder()
-            .setCustomId('vorschlag_modal')
-            .setTitle('Neuen Begriff vorschlagen')
-            .addComponents(
-              new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
-                  .setCustomId('begriff')
-                  .setLabel('Der Begriff')
-                  .setStyle(TextInputStyle.Short)
-                  .setRequired(true)
-              ),
-              new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
-                  .setCustomId('emojis')
-                  .setLabel('Die Emojis')
-                  .setStyle(TextInputStyle.Short)
-                  .setRequired(true)
-              ),
-              new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
-                  .setCustomId('schwierigkeit')
-                  .setLabel('Schwierigkeit (Einfach, Mittel, Schwer)')
-                  .setStyle(TextInputStyle.Short)
-                  .setRequired(true)
-              ),
-              new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
-                  .setCustomId('tipp')
-                  .setLabel('Tipp')
-                  .setStyle(TextInputStyle.Short)
-                  .setRequired(true)
-              )
-            );
-
-          await i.showModal(modal);
-        }
-      });
-
+      await sendQuiz(interaction.channel, interaction);
     } else if (sub === 'edit') {
-      // Edit-Vorschlag
       const id = interaction.options.getString('id');
       const vorschlag = await EmojiquizVorschlag.findById(id);
 
@@ -204,12 +210,10 @@ module.exports = {
       await interaction.showModal(modal);
     }
 
-    // Modal-Handler nur 1x registrieren
     if (!interaction.client.emojiquizModalHandlerRegistered) {
       interaction.client.on(Events.InteractionCreate, async (modalInteraction) => {
         if (!modalInteraction.isModalSubmit()) return;
 
-        // Vorschlag erstellen
         if (modalInteraction.customId === 'vorschlag_modal') {
           const begriff = modalInteraction.fields.getTextInputValue('begriff');
           const emojis = modalInteraction.fields.getTextInputValue('emojis');
@@ -240,7 +244,6 @@ module.exports = {
           await modalInteraction.reply({ content: '> `✅` Dein Vorschlag wurde gespeichert.', ephemeral: true });
         }
 
-        // Vorschlag bearbeiten
         if (modalInteraction.customId.startsWith('edit_vorschlag:')) {
           const id = modalInteraction.customId.split(':')[1];
           const begriff = modalInteraction.fields.getTextInputValue('begriff');
