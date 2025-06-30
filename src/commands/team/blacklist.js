@@ -42,6 +42,7 @@ module.exports = {
     if (sub === 'add') {
       const input = interaction.options.getString('input');
       const reason = interaction.options.getString('grund') || 'Kein Grund angegeben';
+
       let user = null;
       let minecraftName = null;
 
@@ -55,16 +56,17 @@ module.exports = {
           m.user.username.toLowerCase() === input.toLowerCase()
         );
         if (member) user = member.user;
-        else minecraftName = input; // Wenn kein Discord User, dann MinecraftName
+        else minecraftName = input; // Wenn kein Discord User, dann MinecraftName annehmen
       }
 
       if (!user && !minecraftName) {
         return interaction.reply({
-          content: `> \`❗\` » Nutzer konnte nicht gefunden werden. Gib eine gültige User-ID, einen Discord-Name oder Minecraft-Namen an.`,
+          content: `> \`❗\` » Nutzer konnte nicht gefunden werden. Gib eine gültige User-ID, einen Discord-Namen oder Minecraft-Namen an.`,
           ephemeral: true
         });
       }
 
+      // Prüfe ob schon auf Blacklist
       if (user) {
         const exists = await Blacklist.findOne({ userId: user.id });
         if (exists) {
@@ -73,20 +75,7 @@ module.exports = {
             ephemeral: true
           });
         }
-        // Nur userId und username speichern, kein userId=null
-        await Blacklist.create({ 
-          userId: user.id, 
-          username: user.tag, 
-          reason, 
-          date: new Date()
-        });
-        return interaction.reply({
-          content: `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`,
-          ephemeral: true
-        });
-      }
-
-      if (minecraftName) {
+      } else if (minecraftName) {
         const exists = await Blacklist.findOne({ minecraftName: minecraftName.toLowerCase() });
         if (exists) {
           return interaction.reply({
@@ -94,17 +83,29 @@ module.exports = {
             ephemeral: true
           });
         }
-        // Beim Minecraft Namen nur dieses Feld speichern, userId NICHT speichern
-        await Blacklist.create({ 
-          minecraftName: minecraftName.toLowerCase(), 
-          reason, 
-          date: new Date()
-        });
-        return interaction.reply({
-          content: `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde zur Blacklist hinzugefügt.`,
-          ephemeral: true
-        });
       }
+
+      // Erstelle neuen Eintrag, niemals userId: null speichern!
+      const newEntry = {
+        reason,
+        date: new Date()
+      };
+
+      if (user) {
+        newEntry.userId = user.id;
+        newEntry.username = user.tag;
+      } else if (minecraftName) {
+        newEntry.minecraftName = minecraftName.toLowerCase();
+      }
+
+      await Blacklist.create(newEntry);
+
+      return interaction.reply({
+        content: user
+          ? `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`
+          : `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde zur Blacklist hinzugefügt.`,
+        ephemeral: true
+      });
     }
 
     if (sub === 'remove') {
@@ -133,6 +134,7 @@ module.exports = {
     if (sub === 'edit') {
       const input = interaction.options.getString('input');
       const newReason = interaction.options.getString('grund');
+
       const entry = await Blacklist.findOneAndUpdate(
         {
           $or: [
