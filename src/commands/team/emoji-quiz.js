@@ -42,17 +42,22 @@ const begriffe = [
   }
 ];
 
+// Quiz-Funktion, die immer weiter läuft
 async function startEmojiQuiz(channel, interaction = null) {
   let aktuelleIndex = Math.floor(Math.random() * begriffe.length);
   let currentMessage;
-  let antwortCollector;
 
   async function sendCurrentQuiz() {
     const current = begriffe[aktuelleIndex];
     const ersterBuchstabe = current.begriff[0];
 
     const embed = new EmbedBuilder()
-      .setDescription(`Gesuchter Begriff • ${current.emojis}\n\nSchwierigkeit: **${current.schwierigkeit}**\nBelohnung • 1 🪙\n\nTipp • **${current.tipp}**`)
+      .setDescription(
+        `Gesuchter Begriff • ${current.emojis}\n\n` +
+        `Schwierigkeit: **${current.schwierigkeit}**\n` +
+        `Belohnung • 1 🪙\n\n` +
+        `Tipp • **${current.tipp}**`
+      )
       .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button, um das Emojiquiz zu überspringen.' })
       .setColor('Blurple');
 
@@ -85,56 +90,50 @@ async function startEmojiQuiz(channel, interaction = null) {
     return { current, ersterBuchstabe };
   }
 
-  // Quiz initial senden
+  // Erste Anzeige
   let { current, ersterBuchstabe } = await sendCurrentQuiz();
 
-  // MessageCollector für Antworten im Channel
-  antwortCollector = channel.createMessageCollector({
+  // Antwort-Collector
+  const antwortCollector = channel.createMessageCollector({
     filter: m => !m.author.bot
   });
 
   antwortCollector.on('collect', async (m) => {
     if (m.content.trim().toLowerCase() === current.begriff.toLowerCase()) {
       await m.reply(`🎉 Richtig, ${m.author}! Das Emojiquiz wurde gelöst.`);
-      antwortCollector.stop('gelöst');
+      aktuelleIndex++;
+      if (aktuelleIndex >= begriffe.length) aktuelleIndex = 0;
+
+      // Nächster Begriff
+      const res = await sendCurrentQuiz();
+      current = res.current;
+      ersterBuchstabe = res.ersterBuchstabe;
     } else {
       await m.reply('❌ Falsch, versuch es nochmal!');
     }
   });
 
-  antwortCollector.on('end', async (collected, reason) => {
-    if (reason === 'gelöst') {
-      await channel.send('✅ Emojiquiz wurde beendet. Danke fürs Mitspielen!');
-    }
-  });
-
-  // ButtonCollector für Interaktionen am Embed
+  // Button-Collector für das Quiz
   const buttonCollector = currentMessage.createMessageComponentCollector({
     componentType: ComponentType.Button,
-    time: 30 * 60 * 1000 // optional Timeout
+    time: 30 * 60 * 1000
   });
 
-  buttonCollector.on('collect', async (i) => {
+  buttonCollector.on('collect', async i => {
     if (i.user.bot) return;
 
     if (i.customId === 'ueberspringen') {
       await i.deferUpdate();
 
-      // Zum nächsten Begriff wechseln (oder zurück zum ersten)
       aktuelleIndex++;
       if (aktuelleIndex >= begriffe.length) aktuelleIndex = 0;
 
-      // Quiz mit neuem Begriff aktualisieren
       const res = await sendCurrentQuiz();
       current = res.current;
       ersterBuchstabe = res.ersterBuchstabe;
-    }
-
-    if (i.customId === 'erster_buchstabe') {
+    } else if (i.customId === 'erster_buchstabe') {
       await i.reply({ content: `🅰️ Erster Buchstabe: **${ersterBuchstabe}**`, ephemeral: true });
-    }
-
-    if (i.customId === 'neuer_begriff') {
+    } else if (i.customId === 'neuer_begriff') {
       const modal = new ModalBuilder()
         .setCustomId('vorschlag_modal')
         .setTitle('Neuen Begriff vorschlagen')
@@ -177,7 +176,7 @@ async function startEmojiQuiz(channel, interaction = null) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('emojiquiz')
-    .setDescription('Emojiquiz starten oder bearbeiten')
+    .setDescription('Emojiquiz starten oder Vorschläge verwalten')
     .addSubcommand(sub =>
       sub.setName('start')
         .setDescription('Starte ein Emojiquiz')
@@ -187,7 +186,7 @@ module.exports = {
         .setDescription('Bearbeite einen Vorschlag (Admin)')
         .addStringOption(opt =>
           opt.setName('id')
-            .setDescription('Die ID des Vorschlags aus der Datenbank')
+            .setDescription('ID des Vorschlags')
             .setRequired(true)
         )
     )
@@ -247,11 +246,11 @@ module.exports = {
       await interaction.showModal(modal);
     }
 
-    // Modal-Handler und Button-Handler nur einmal registrieren
+    // Nur einmalige Registrierung des Modal- und Button-Handlers
     if (!interaction.client.emojiquizModalHandlerRegistered) {
       interaction.client.on(Events.InteractionCreate, async (modalInteraction) => {
         if (modalInteraction.isModalSubmit()) {
-          // Vorschlag erstellen
+          // Neuer Vorschlag
           if (modalInteraction.customId === 'vorschlag_modal') {
             const begriff = modalInteraction.fields.getTextInputValue('begriff');
             const emojis = modalInteraction.fields.getTextInputValue('emojis');
@@ -272,10 +271,16 @@ module.exports = {
             if (channel?.isTextBased()) {
               const embed = new EmbedBuilder()
                 .setTitle('`📨` Neuer Emojiquiz-Vorschlag')
-                .setDescription(`**Begriff:** ${begriff}\n**Emojis:** ${emojis}\n**Schwierigkeit:** ${schwierigkeit}\n**Tipp:** ${tipp}`)
-                .setFooter({ text: `Von ${modalInteraction.user.tag} (ID: ${eintrag._id})\nStatus: Offen` })
+                .setDescription(
+                  `**Begriff:** ${begriff}\n` +
+                  `**Emojis:** ${emojis}\n` +
+                  `**Schwierigkeit:** ${schwierigkeit}\n` +
+                  `**Tipp:** ${tipp}\n\n` +
+                  `Status: **Offen**`
+                )
                 .setColor('Green')
-                .setTimestamp();
+                .setTimestamp()
+                .setFooter({ text: `Von ${modalInteraction.user.tag} (ID: ${eintrag._id})` });
 
               const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
@@ -328,11 +333,10 @@ module.exports = {
           }
         }
 
-        // Button Interaktionen: Annehmen / Ablehnen
+        // Button Interaktionen für Vorschläge (Annehmen / Ablehnen)
         if (modalInteraction.isButton()) {
-          // Rechtecheck
           if (!modalInteraction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-            return modalInteraction.reply({ content: '❌ Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.', ephemeral: true });
+            return modalInteraction.reply({ content: '> `❌` Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.', ephemeral: true });
           }
 
           const [action, id] = modalInteraction.customId.split(':');
@@ -340,20 +344,19 @@ module.exports = {
           if (action === 'vorschlag_accept' || action === 'vorschlag_reject') {
             const vorschlag = await EmojiquizVorschlag.findById(id);
             if (!vorschlag) {
-              return modalInteraction.reply({ content: '❌ Vorschlag nicht gefunden.', ephemeral: true });
+              return modalInteraction.reply({ content: '> `❌` Vorschlag nicht gefunden.', ephemeral: true });
             }
 
-            // Status aktualisieren
             const neuerStatus = action === 'vorschlag_accept' ? 'Angenommen' : 'Abgelehnt';
             vorschlag.status = neuerStatus.toLowerCase();
             await vorschlag.save();
 
-            // DM an User senden
+            // DM an User senden (optional)
             try {
               const dmUser = await modalInteraction.client.users.fetch(vorschlag.userId);
               const dmEmbed = new EmbedBuilder()
                 .setTitle(neuerStatus === 'Angenommen' ? '`✅` Vorschlag angenommen' : '`❌` Vorschlag abgelehnt')
-                .setDescription(neuerStatus === 'Angenommen' 
+                .setDescription(neuerStatus === 'Angenommen'
                   ? `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde angenommen. Danke für deine Unterstützung!`
                   : `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde leider abgelehnt.\n\nSei kreativ und reiche gerne weitere Vorschläge ein.`)
                 .setColor(neuerStatus === 'Angenommen' ? 'Green' : 'Red')
@@ -366,10 +369,17 @@ module.exports = {
             // Embed im Channel anpassen: Status + Bearbeiter
             const message = modalInteraction.message;
             const embed = EmbedBuilder.from(message.embeds[0])
-              .setFooter({ text: `Status: ${neuerStatus} (Bearbeitet von ${modalInteraction.user.tag})` })
-              .setColor(neuerStatus === 'Angenommen' ? 'Green' : 'Red');
+              .setDescription(
+                `**Begriff:** ${vorschlag.begriff}\n` +
+                `**Emojis:** ${vorschlag.emojis}\n` +
+                `**Schwierigkeit:** ${vorschlag.schwierigkeit}\n` +
+                `**Tipp:** ${vorschlag.tipp}\n\n` +
+                `Status: **${neuerStatus}** (Bearbeitet von ${modalInteraction.user.displayName})`
+              )
+              .setColor(neuerStatus === 'Angenommen' ? 'Green' : 'Red')
+              .setTimestamp();
 
-            // Buttons deaktivieren (nicht entfernen)
+            // Buttons deaktivieren
             const disabledRow = new ActionRowBuilder().addComponents(
               ...message.components[0].components.map(button => button.setDisabled(true))
             );
