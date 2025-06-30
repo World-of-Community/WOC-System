@@ -8,6 +8,9 @@ const {
 } = require('discord.js');
 const Blacklist = require("../../../Datenbank/blacklistdb");
 
+const CHANNEL_ID = "877446081036836884"; // Channel für das Blacklist-Embed (z.B. Admin-Channel)
+const MESSAGE_ID = "1389198302075031695"; // Message, die das Blacklist-Embed enthält
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('blacklist')
@@ -39,6 +42,78 @@ module.exports = {
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
 
+    // Funktion zum Erstellen des Blacklist-Embeds (Seite 0 = erste Seite)
+    const createBlacklistEmbed = async (page = 0) => {
+      const entries = await Blacklist.find();
+      const pageSize = 5;
+      const start = page * pageSize;
+      const end = start + pageSize;
+      const pageEntries = entries.slice(start, end);
+
+      if (!entries.length) {
+        return new EmbedBuilder()
+          .setTitle('`📄` Blacklist Nutzer')
+          .setColor('Red')
+          .setDescription('Die Blacklist ist leer.');
+      }
+
+      const lines = await Promise.all(pageEntries.map(async (entry, i) => {
+        const index = start + i + 1;
+        const reason = entry.reason || 'Kein Grund angegeben';
+        const timestamp = entry.date ? `<t:${Math.floor(new Date(entry.date).getTime() / 1000)}:F>` : 'Unbekannt';
+
+        if (entry.userId) {
+          let user;
+          try { user = await interaction.client.users.fetch(entry.userId); } catch {}
+          const displayName = user?.tag || entry.username || 'Unbekannt';
+          return `**${index}.** \`💙\` **Discord:** <@${entry.userId}> – ${displayName} (\`${entry.userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+        } else if (entry.minecraftName) {
+          return `**${index}.** \`🎮\` **Minecraft:** \`${entry.minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+        } else {
+          return `**${index}.** \`❓\` Unbekannter Eintrag`;
+        }
+      }));
+
+      return new EmbedBuilder()
+        .setTitle('`📄` Blacklist Nutzer')
+        .setColor('Red')
+        .setDescription('**Information zu den Nutzern:**\n> Verbot bzw. gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + lines.join('\n\n'))
+        .setFooter({ text: `Seite ${page + 1} / ${Math.ceil(entries.length / pageSize)} · Einträge insgesamt: ${entries.length}` });
+    };
+
+    // Funktion zum Erstellen der Buttons für die Paginierung
+    const createButtons = (page, maxPage) => {
+      return [
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('blacklist_back')
+            .setEmoji('⏪')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(page <= 0),
+          new ButtonBuilder()
+            .setCustomId('blacklist_next')
+            .setEmoji('⏩')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(page >= maxPage)
+        )
+      ];
+    };
+
+    // Funktion, um das Blacklist-Embed in Channel und Message zu updaten
+    const updateBlacklistMessage = async () => {
+      try {
+        const channel = await interaction.client.channels.fetch(CHANNEL_ID);
+        if (!channel) return;
+        const msg = await channel.messages.fetch(MESSAGE_ID);
+        if (!msg) return;
+
+        const embed = await createBlacklistEmbed(0);
+        await msg.edit({ embeds: [embed] });
+      } catch (error) {
+        console.error('Fehler beim Aktualisieren der Blacklist-Nachricht:', error);
+      }
+    };
+
     if (sub === 'add') {
       const input = interaction.options.getString('input');
       const reason = interaction.options.getString('grund') || 'Kein Grund angegeben';
@@ -47,16 +122,14 @@ module.exports = {
       let minecraftName = null;
 
       try {
-        // Versuche Discord-User per ID zu holen
         user = await interaction.client.users.fetch(input);
       } catch {
-        // Falls nicht gefunden, versuche im Guild-Cache nach Username oder Tag zu suchen
         const member = interaction.guild?.members.cache.find(m =>
           m.user.tag.toLowerCase() === input.toLowerCase() ||
           m.user.username.toLowerCase() === input.toLowerCase()
         );
         if (member) user = member.user;
-        else minecraftName = input; // Wenn kein Discord User, dann MinecraftName annehmen
+        else minecraftName = input;
       }
 
       if (!user && !minecraftName) {
@@ -66,7 +139,6 @@ module.exports = {
         });
       }
 
-      // Prüfe ob schon auf Blacklist
       if (user) {
         const exists = await Blacklist.findOne({ userId: user.id });
         if (exists) {
@@ -85,7 +157,6 @@ module.exports = {
         }
       }
 
-      // Erstelle neuen Eintrag, niemals userId: null speichern!
       const newEntry = {
         reason,
         date: new Date()
@@ -100,12 +171,15 @@ module.exports = {
 
       await Blacklist.create(newEntry);
 
-      return interaction.reply({
+      await interaction.reply({
         content: user
           ? `> \`✅\` » **${user.tag}** wurde zur Blacklist hinzugefügt.`
           : `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde zur Blacklist hinzugefügt.`,
-        ephemeral: true
+        ephemeral: false
       });
+
+      await updateBlacklistMessage();
+      return;
     }
 
     if (sub === 'remove') {
@@ -125,10 +199,13 @@ module.exports = {
         });
       }
 
-      return interaction.reply({
+      await interaction.reply({
         content: `> \`❌\` » **${removed.username || removed.minecraftName || 'Unbekannt'}** wurde von der Blacklist entfernt.`,
-        ephemeral: true
+        ephemeral: false
       });
+
+      await updateBlacklistMessage();
+      return;
     }
 
     if (sub === 'edit') {
@@ -154,10 +231,13 @@ module.exports = {
         });
       }
 
-      return interaction.reply({
+      await interaction.reply({
         content: `> \`✏️\` » Grund für **${entry.username || entry.minecraftName}** wurde geändert.`,
-        ephemeral: true
+        ephemeral: false
       });
+
+      await updateBlacklistMessage();
+      return;
     }
 
     if (sub === 'list') {
@@ -165,12 +245,13 @@ module.exports = {
       if (!entries.length) {
         return interaction.reply({
           content: '> `❗` » Die Blacklist ist leer.',
-          ephemeral: true
+          ephemeral: false
         });
       }
 
       const pageSize = 5;
       let currentPage = 0;
+      const maxPage = Math.ceil(entries.length / pageSize) - 1;
 
       const getPageEmbed = async (page) => {
         const start = page * pageSize;
@@ -202,16 +283,17 @@ module.exports = {
       };
 
       const getButtons = (page) => {
-        const maxPage = Math.ceil(entries.length / pageSize) - 1;
         return [
           new ActionRowBuilder().addComponents(
             new ButtonBuilder()
               .setCustomId('blacklist_back')
+              .setLabel('Vorherige Seite')
               .setEmoji('⏪')
               .setStyle(ButtonStyle.Primary)
               .setDisabled(page <= 0),
             new ButtonBuilder()
               .setCustomId('blacklist_next')
+              .setLabel('Nächste Seite')
               .setEmoji('⏩')
               .setStyle(ButtonStyle.Primary)
               .setDisabled(page >= maxPage)
@@ -219,20 +301,21 @@ module.exports = {
         ];
       };
 
-      const listmessage = await interaction.channel.send({ 
+      const message = await interaction.reply({
         embeds: [await getPageEmbed(currentPage)],
         components: getButtons(currentPage),
+        ephemeral: false,
         fetchReply: true
-      })
-      const message = await interaction.reply({ content: 'Blacklist embed gesendet' , ephemeral: true });
+      });
 
-      const collector = listmessage.createMessageComponentCollector({
-        filter: i => i.user.id === interaction.user.id
+      const collector = message.createMessageComponentCollector({
+        filter: i => i.user.id === interaction.user.id,
+        time: 60000
       });
 
       collector.on('collect', async i => {
         if (i.customId === 'blacklist_back') currentPage = Math.max(currentPage - 1, 0);
-        else if (i.customId === 'blacklist_next') currentPage = Math.min(currentPage + 1, Math.ceil(entries.length / pageSize) - 1);
+        else if (i.customId === 'blacklist_next') currentPage = Math.min(currentPage + 1, maxPage);
 
         await i.update({
           embeds: [await getPageEmbed(currentPage)],
