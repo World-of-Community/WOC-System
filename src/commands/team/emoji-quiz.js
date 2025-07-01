@@ -60,21 +60,13 @@ async function startEmojiQuiz(channel, interaction = null) {
       new ButtonBuilder().setCustomId('neuer_begriff').setLabel('❓ Neuen Begriff vorschlagen').setStyle(ButtonStyle.Primary),
     );
 
-    if (currentMessage) {
-      await currentMessage.edit({ embeds: [embed], components: [buttons] });
-    } else {
-      if (interaction) {
-        // Wenn interaction existiert, nutze interaction.reply (z.B. bei repair-Command)
-        await interaction.reply({ embeds: [embed], components: [buttons] });
-        currentMessage = await interaction.fetchReply();
-      } else {
-        // Kein interaction (z.B. bei setchannel), normale Nachricht im Kanal senden
-        currentMessage = await channel.send({ embeds: [embed], components: [buttons] });
-      }
-    }
+    // Neue Nachricht senden (kein Edit!)
+    currentMessage = await channel.send({ embeds: [embed], components: [buttons] });
+
     return { current, ersterBuchstabe };
   }
 
+  // Starte erste Quiz-Nachricht
   let { current, ersterBuchstabe } = await sendCurrentQuiz();
 
   // Message Collector für Antworten
@@ -84,17 +76,34 @@ async function startEmojiQuiz(channel, interaction = null) {
 
   antwortCollector.on('collect', async (m) => {
     if (m.content.trim().toLowerCase() === current.begriff.toLowerCase()) {
+      // Antwort vom User löschen
+      try {
+        await m.delete();
+      } catch {}
+
       const countdownSek = 2; // Wartezeit bis nächste Runde
       const startNextRoundTimestamp = Math.floor(Date.now() / 1000) + countdownSek;
 
-      await m.channel.send(
+      // Alte Quiz-Nachricht löschen
+      try {
+        await currentMessage.delete();
+      } catch {}
+
+      // Erfolgsmeldung senden
+      const successMessage = await m.channel.send(
         `${m.author} hat den gesuchten Begriff erraten! Die nächste Runde beginnt <t:${startNextRoundTimestamp}:R>.`
       );
 
+      // Nach Countdown neue Quiz-Nachricht senden
       setTimeout(async () => {
         aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
-        ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+        const result = await sendCurrentQuiz();
+        current = result.current;
+        ersterBuchstabe = result.ersterBuchstabe;
         skipTracker.clear();
+
+        // Erfolgsmeldung nach 10 Sekunden löschen (optional)
+        setTimeout(() => successMessage.delete().catch(() => {}), 10000);
       }, countdownSek * 1000);
     } else {
       try {
@@ -104,7 +113,7 @@ async function startEmojiQuiz(channel, interaction = null) {
   });
 
   // Button Collector
-  const buttonCollector = currentMessage.createMessageComponentCollector({ componentType: ComponentType.Button });
+  const buttonCollector = channel.createMessageComponentCollector({ componentType: ComponentType.Button });
 
   buttonCollector.on('collect', async (i) => {
     if (i.user.bot) return;
@@ -118,20 +127,32 @@ async function startEmojiQuiz(channel, interaction = null) {
 
         if (userSkips === 0) {
           skipTracker.set(i.user.id, 1);
-          await i.followUp({ content: '> 🤨 » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
+          await i.followUp({ content: '> `🤨` » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
           return;
         } else {
           // Zweites Mal skippen erlaubt
+          try {
+            await currentMessage.delete();
+          } catch {}
+
           aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
-          ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+          const result = await sendCurrentQuiz();
+          current = result.current;
+          ersterBuchstabe = result.ersterBuchstabe;
           skipTracker.clear();
           return;
         }
       }
 
       // Für mittel und schwer sofort überspringen
+      try {
+        await currentMessage.delete();
+      } catch {}
+
       aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
-      ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+      const result = await sendCurrentQuiz();
+      current = result.current;
+      ersterBuchstabe = result.ersterBuchstabe;
       skipTracker.clear();
 
     } else if (i.customId === 'erster_buchstabe') {
@@ -353,7 +374,7 @@ module.exports = {
         channel.send({ embeds: [embed] });
       }
 
-      await interaction.reply({ content: 'Dein Vorschlag wurde gespeichert und wird geprüft!', ephemeral: true });
+      await interaction.reply({ content: 'Dein Vorschlag wurde eingereicht. Vielen Dank!', ephemeral: true });
       return true;
     } else if (interaction.customId.startsWith('edit_vorschlag_')) {
       const id = interaction.customId.replace('edit_vorschlag_', '');
