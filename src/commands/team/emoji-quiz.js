@@ -84,7 +84,7 @@ async function startEmojiQuiz(channel, interaction = null) {
       const startNextRoundTimestamp = Math.floor(Date.now() / 1000) + countdownSek;
 
       await m.channel.send(
-        `${m.author} hat den gesuchten Begriff erraten! Die nächste Runde beginnt <t:${startNextRoundTimestamp}:R>.`
+        `${m.author} hat den gesuchten Begriff erraten! Die nächste Runde beginnt **<t:${startNextRoundTimestamp}:R>**.`
       );
 
       setTimeout(async () => {
@@ -128,7 +128,7 @@ async function startEmojiQuiz(channel, interaction = null) {
         ({ current, ersterBuchstabe } = await sendCurrentQuiz());
       }
     } else if (i.customId === 'erster_buchstabe') {
-      await i.reply({ content: `🅰️ Erster Buchstabe: **${ersterBuchstabe}**`, ephemeral: true });
+      await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben:: **${ersterBuchstabe}**`, ephemeral: true });
     } else if (i.customId === 'neuer_begriff') {
       const modal = new ModalBuilder()
         .setCustomId('vorschlag_modal')
