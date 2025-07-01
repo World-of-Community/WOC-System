@@ -355,14 +355,14 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setTitle('`📨` Neuer Emojiquiz-Vorschlag')
           .setDescription(
-            `**Begriff:** ${begriff}\n` +
-            `**Emojis:** ${emojis}\n` +
-            `**Schwierigkeit:** ${schwierigkeit}\n` +
-            `**Tipp:** ${tipp}`
+            `Begriff: ${begriff}\n` +
+            `**Emojis: ${emojis}\n` +
+            `Schwierigkeit: ${schwierigkeit}\n` +
+            `Tipp: ${tipp}\n\n` +
+            `Eingereicht von ${interaction.user.tag} (ID: ${neuerVorschlag._id})`
           )
           .setColor('Green')
           .setTimestamp()
-          .setFooter({ text: `von ${interaction.user.tag} (ID: ${neuerVorschlag._id})` });
 
         const row = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
@@ -383,42 +383,61 @@ module.exports = {
     }
 
     if (interaction.customId.startsWith('edit_vorschlag_')) {
-      const id = interaction.customId.replace('edit_vorschlag_', '');
-      const begriff = interaction.fields.getTextInputValue('begriff');
-      const emojis = interaction.fields.getTextInputValue('emojis');
-      const schwierigkeit = interaction.fields.getTextInputValue('schwierigkeit');
-      const tipp = interaction.fields.getTextInputValue('tipp');
+    // Vorschlag bearbeiten
+    const id = interaction.customId.replace('edit_vorschlag_', '');
+    const begriff = interaction.fields.getTextInputValue('begriff');
+    const emojis = interaction.fields.getTextInputValue('emojis');
+    const schwierigkeit = interaction.fields.getTextInputValue('schwierigkeit');
+    const tipp = interaction.fields.getTextInputValue('tipp');
 
-      const update = await EmojiquizVorschlag.findByIdAndUpdate(id, {
-        begriff,
-        emojis,
-        schwierigkeit,
-        tipp,
-      }, { new: true });
+    const update = await EmojiquizVorschlag.findByIdAndUpdate(id, {
+      begriff,
+      emojis,
+      schwierigkeit,
+      tipp,
+    }, { new: true });
 
-      if (!update) {
-        await interaction.reply({ content: '`❌` Fehler beim Speichern!', ephemeral: true });
-        return true;
-      }
-
-      const embed = new EmbedBuilder()
-        .setTitle('`✅` Vorschlag bearbeitet')
-        .addFields(
-          { name: 'Begriff', value: update.begriff, inline: true },
-          { name: 'Emojis', value: update.emojis, inline: true },
-          { name: 'Schwierigkeit', value: update.schwierigkeit, inline: true },
-          { name: 'Tipp', value: update.tipp, inline: false }
-        )
-        .setColor('Green')
-        .setFooter({ text: `Bearbeitet von ${interaction.user.tag}` })
-        .setTimestamp();
-
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+    if (!update) {
+      await interaction.reply({ content: '`❌` Fehler beim Speichern!', ephemeral: true });
       return true;
     }
 
-    return false;
-  },
+    // Hier das neue Embed je nach Status:
+    const embedAngenommen = new EmbedBuilder()
+      .setTitle('`✅` Vorschlag bearbeitet')
+      .setDescription(
+        `Begriff: ${update.begriff}\n` +
+        `Emojis: ${update.emojis}\n` +
+        `Schwierigkeit: ${update.schwierigkeit}\n` +
+        `Tipp: ${update.tipp}\n\n` +
+        `Bearbeitet von ${interaction.user.displayName} (${interaction.user.tag} - (${interaction.user.id}))`
+      )
+      .setColor('Green')
+      .setTimestamp();
+
+    const embedAbgelehnt = new EmbedBuilder()
+      .setTitle('`❌` Vorschlag abgelehnt')
+      .setDescription(
+        `Begriff: ${update.begriff}\n` +
+        `Emojis: ${update.emojis}\n` +
+        `Schwierigkeit: ${update.schwierigkeit}\n` +
+        `Tipp: ${update.tipp}\n\n` +
+        `Bearbeitet von ${interaction.user.displayName} (${interaction.user.tag} - (${interaction.user.id}))`
+      )
+      .setColor('Red')
+      .setTimestamp();
+
+    if (update.status === 'abgelehnt') {
+      await interaction.reply({ embeds: [embedAbgelehnt], ephemeral: true });
+    } else {
+      await interaction.reply({ embeds: [embedAngenommen], ephemeral: true });
+    }
+
+    return true;
+  }
+
+  return false;
+},
 
   async handleButton(interaction) {
     if (!interaction.isButton()) return false;
