@@ -232,20 +232,21 @@ module.exports = {
     const guildId = interaction.guild.id;
 
     if (sub === 'list') {
-      const eintraege = await EmojiquizVorschlag.find({ status: 'angenommen' }).sort({ begriff: 1 });
-      if (eintraege.length === 0) {
-        return interaction.reply({ content: '> `❗` » Es sind keine angenommenen Emojiquiz-Begriffe vorhanden.', ephemeral: true });
+      if (begriffe.length === 0) {
+        return interaction.reply({ content: '> `❗` » Es sind keine Emojiquiz-Begriffe vorhanden.', ephemeral: true });
       }
     
-      const itemsPerPage = 10;
+      const itemsPerPage = 2; // z.B. 2 pro Seite, kannst du anpassen
       let page = 0;
-      const totalPages = Math.ceil(eintraege.length / itemsPerPage);
+      const totalPages = Math.ceil(begriffe.length / itemsPerPage);
     
       function generateEmbed(page) {
         const start = page * itemsPerPage;
         const end = start + itemsPerPage;
-        const currentEntries = eintraege.slice(start, end);
-        const beschreibung = currentEntries.map(e => `**${e.begriff}**: ${e.emojis}`).join('\n');
+        const currentEntries = begriffe.slice(start, end);
+        const beschreibung = currentEntries
+          .map(e => `**${e.begriff}**: ${e.emojis} (Schwierigkeit: ${e.schwierigkeit})\nTipp: ${e.tipp}`)
+          .join('\n\n');
     
         return new EmbedBuilder()
           .setTitle('`📋` Emojiquiz Begriffe & Emojis')
@@ -259,7 +260,7 @@ module.exports = {
           .setCustomId('prev')
           .setLabel('⬅️ Vorherige Seite')
           .setStyle(ButtonStyle.Primary)
-          .setDisabled(true), // Anfangs disabled, da Seite 1
+          .setDisabled(true),
         new ButtonBuilder()
           .setCustomId('next')
           .setLabel('➡️ Nächste Seite')
@@ -273,7 +274,7 @@ module.exports = {
         componentType: ComponentType.Button,
         filter: i => i.user.id === interaction.user.id,
       });
-
+    
       collector.on('collect', async i => {
         if (i.customId === 'next') {
           page++;
@@ -281,7 +282,6 @@ module.exports = {
           page--;
         }
     
-        // Buttons anpassen
         row.components[0].setDisabled(page === 0);
         row.components[1].setDisabled(page === totalPages - 1);
     
@@ -289,7 +289,6 @@ module.exports = {
       });
     
       collector.on('end', async () => {
-        // Buttons deaktivieren nach Timeout
         row.components.forEach(button => button.setDisabled(true));
         await interaction.editReply({ components: [row] }).catch(() => {});
       });
