@@ -10,7 +10,7 @@ const {
 const { DiscordBlacklist, MinecraftBlacklist } = require('../../../Datenbank/blacklistdb');
 
 const CHANNEL_ID = "877446081036836884"; // Channel für das Blacklist-Embed (optional)
-const MESSAGE_ID = "1389200829273341982"; // Message-ID vom Blacklist-Embed (optional)
+const MESSAGE_ID = "1389649798000545926"; // Message-ID vom Blacklist-Embed (optional)
 
 module.exports = {
   data: new SlashCommandBuilder()
