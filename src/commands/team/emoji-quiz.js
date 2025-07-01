@@ -105,29 +105,37 @@ async function startEmojiQuiz(channel, interaction = null) {
           await i.followUp({ content: '> `🤨` » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
           return;
         } else {
-          // Zweites Mal überspringen - überspringen und Meldung
+          // Zweites Mal überspringen - überspringen und Meldung mit 5 Sekunden Delay beim neuen Quiz
           try { await currentMessage.delete(); } catch {}
           aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
+
+          const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
+          setTimeout(() => { msg.delete().catch(() => {}); }, 3000);
+
+          await new Promise(r => setTimeout(r, 5000)); // 5 Sekunden warten
+
           const result = await sendCurrentQuiz();
           current = result.current;
           ersterBuchstabe = result.ersterBuchstabe;
           skipTracker.clear();
 
-          const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
-          setTimeout(() => { msg.delete().catch(() => {}); }, 3000);
           return;
         }
       } else {
-        // mittel oder schwer - sofort überspringen und Meldung
+        // mittel oder schwer - sofort überspringen mit Meldung und 5 Sekunden Delay
         try { await currentMessage.delete(); } catch {}
         aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
+
+        const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
+        setTimeout(() => { msg.delete().catch(() => {}); }, 3000);
+
+        await new Promise(r => setTimeout(r, 5000)); // 5 Sekunden warten
+
         const result = await sendCurrentQuiz();
         current = result.current;
         ersterBuchstabe = result.ersterBuchstabe;
         skipTracker.clear();
 
-        const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
-        setTimeout(() => { msg.delete().catch(() => {}); }, 3000);
         return;
       }
     } else if (i.customId === 'erster_buchstabe') {
