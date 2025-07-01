@@ -409,8 +409,7 @@ module.exports = {
         `Begriff: ${update.begriff}\n` +
         `Emojis: ${update.emojis}\n` +
         `Schwierigkeit: ${update.schwierigkeit}\n` +
-        `Tipp: ${update.tipp}\n\n` +
-        `Bearbeitet von ${interaction.user.displayName} (${interaction.user.tag} - (${interaction.user.id}))`
+        `Tipp: ${update.tipp}\n\n`
       )
       .setColor('Green')
       .setTimestamp();
@@ -421,8 +420,7 @@ module.exports = {
         `Begriff: ${update.begriff}\n` +
         `Emojis: ${update.emojis}\n` +
         `Schwierigkeit: ${update.schwierigkeit}\n` +
-        `Tipp: ${update.tipp}\n\n` +
-        `Bearbeitet von ${interaction.user.displayName} (${interaction.user.tag} - (${interaction.user.id}))`
+        `Tipp: ${update.tipp}\n\n`
       )
       .setColor('Red')
       .setTimestamp();
@@ -466,8 +464,8 @@ module.exports = {
       const dmEmbed = new EmbedBuilder()
         .setTitle(neuerStatus === 'angenommen' ? '`✅` Vorschlag angenommen' : '`❌` Vorschlag abgelehnt')
         .setDescription(neuerStatus === 'angenommen'
-          ? `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde angenommen! Danke für deinen Beitrag.`
-          : `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde abgelehnt.`)
+          ? `Dein Emojiquiz-Vorschlag **${vorschlag.begriff}** wurde angenommen! Danke für deinen Beitrag.`
+          : `Dein Emojiquiz-Vorschlag **${vorschlag.begriff}** wurde abgelehnt.`)
         .setColor(neuerStatus === 'angenommen' ? 'Green' : 'Red')
         .setTimestamp();
 
@@ -478,7 +476,7 @@ module.exports = {
     if (message) {
       const embed = EmbedBuilder.from(message.embeds[0])
         .setColor(neuerStatus === 'angenommen' ? 'Green' : 'Red')
-        .setFooter({ text: `Status: ${neuerStatus.charAt(0).toUpperCase() + neuerStatus.slice(1)}` });
+        .setFooter({ text: `Status: ${neuerStatus.charAt(0).toUpperCase() + neuerStatus.slice(1)} - Bearbeitet von ${interaction.user.displayName}` });
 
       await message.edit({
         embeds: [embed],
