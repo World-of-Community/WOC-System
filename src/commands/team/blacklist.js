@@ -48,12 +48,14 @@ module.exports = {
       new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('blacklist_back')
-          .setEmoji('⏪')
+          .setLabel('Vorherige Seite')
+          .setEmoji('⬅️')
           .setStyle(ButtonStyle.Primary)
           .setDisabled(page <= 0),
         new ButtonBuilder()
           .setCustomId('blacklist_next')
-          .setEmoji('⏩')
+          .setLabel('Nächste Seite')
+          .setEmoji('➡️')
           .setStyle(ButtonStyle.Primary)
           .setDisabled(page >= maxPage)
       )
@@ -122,6 +124,22 @@ module.exports = {
         .setFooter({ text: `Seite ${page + 1} / ${Math.ceil(combinedList.length / pageSize)} · Einträge insgesamt: ${combinedList.length}` });
     }
 
+    // Funktion zum automatischen Aktualisieren des Blacklist-Embeds in der zentralen Nachricht
+    async function updateBlacklistMessage(client) {
+      try {
+        const channel = await client.channels.fetch(CHANNEL_ID);
+        if (!channel) return;
+
+        const msg = await channel.messages.fetch(MESSAGE_ID);
+        if (!msg) return;
+
+        const embed = await createCombinedBlacklistEmbed(0, 10);
+        await msg.edit({ embeds: [embed] });
+      } catch (err) {
+        console.error('Fehler beim Aktualisieren der Blacklist-Nachricht:', err);
+      }
+    }
+
     // Subcommand: add
     if (sub === 'add') {
       const input = interaction.options.getString('input');
@@ -166,6 +184,8 @@ module.exports = {
           date: new Date()
         });
 
+        await updateBlacklistMessage(interaction.client);
+
         await interaction.reply({ content: `> \`✅\` » Discord Nutzer: **${user.tag}** wurde geblacklistet.`, ephemeral: false });
         return;
       } else if (minecraftName) {
@@ -182,6 +202,8 @@ module.exports = {
           reason,
           date: new Date()
         });
+
+        await updateBlacklistMessage(interaction.client);
 
         await interaction.reply({ content: `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde geblacklistet.`, ephemeral: false });
         return;
@@ -208,6 +230,8 @@ module.exports = {
       if (!removed) {
         return interaction.reply({ content: `> \`❗\` » Kein Eintrag für **${input}** gefunden.`, ephemeral: true });
       }
+
+      await updateBlacklistMessage(interaction.client);
 
       await interaction.reply({
         content: `> \`❌\` » **${removed.username || removed.minecraftName}** wurde von der Blacklist entfernt.`,
@@ -238,6 +262,8 @@ module.exports = {
       if (!entry) {
         return interaction.reply({ content: `> \`❗\` » Kein Eintrag für \`${input}\` gefunden.`, ephemeral: true });
       }
+
+      await updateBlacklistMessage(interaction.client);
 
       await interaction.reply({
         content: `> \`✏️\` » Grund für **${entry.username || entry.minecraftName}** wurde aktualisiert.`,
