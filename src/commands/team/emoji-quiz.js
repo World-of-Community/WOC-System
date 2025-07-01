@@ -356,10 +356,10 @@ module.exports = {
           .setTitle('`📨` Neuer Emojiquiz-Vorschlag')
           .setDescription(
             `Begriff: ${begriff}\n` +
-            `**Emojis: ${emojis}\n` +
+            `Emojis: ${emojis}\n` +
             `Schwierigkeit: ${schwierigkeit}\n` +
             `Tipp: ${tipp}\n\n` +
-            `Eingereicht von ${interaction.user.tag} (ID: ${neuerVorschlag._id})`
+            `Eingereicht von ${interaction.user.displayName} (${interaction.user.tag} - \`${neuerVorschlag._id}\`)`
           )
           .setColor('Green')
           .setTimestamp()
