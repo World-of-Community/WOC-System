@@ -223,14 +223,10 @@ module.exports = {
     if (sub === 'setchannel') {
       const channel = interaction.options.getChannel('channel');
 
+      await interaction.channel.send({ content: `> \`❓\` » Alles klar, ich starte meine Emojiquiz-Runden ab sofort in ${channel}.` });
+
       // Direkt starten
       await startEmojiQuiz(channel, interaction);
-
-      // Bestätigung
-      await interaction.followUp({
-        content: `Alles klar, ich starte meine Emojiquiz-Runden ab sofort in ${channel}.`,
-        ephemeral: true,
-      });
       return;
     }
 
