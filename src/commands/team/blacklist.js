@@ -7,8 +7,7 @@ const {
   ButtonStyle
 } = require('discord.js');
 
-const DiscordBlacklist = require('../../../Datenbank/discordBlacklistdb');
-const MinecraftBlacklist = require('../../../Datenbank/minecraftBlacklistdb');
+const { DiscordBlacklist, MinecraftBlacklist } = require('../../../Datenbank/blacklistdb');
 
 const CHANNEL_ID = "877446081036836884"; // Channel für das Blacklist-Embed (optional)
 const MESSAGE_ID = "1389198302075031695"; // Message-ID vom Blacklist-Embed (optional)
