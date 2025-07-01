@@ -153,7 +153,7 @@ async function startEmojiQuiz(channel) {
     } else if (i.customId === 'erster_buchstabe') {
       await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
     } else if (i.customId === 'neuer_begriff') {
-      await i.deferUpdate(); // WICHTIG!
+      //await i.deferUpdate(); // WICHTIG!
 
       const modal = new ModalBuilder()
         .setCustomId('vorschlag_modal')
