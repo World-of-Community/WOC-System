@@ -11,7 +11,6 @@ const {
   PermissionFlagsBits,
 } = require('discord.js');
 const EmojiquizVorschlag = require('../../../Datenbank/emojiquizVorschlagdb');
-// const EmojiquizSettings = require('../../../Datenbank/emojiquizSettingsdb');
 
 const VORSCHLAG_CHANNEL_ID = '1389281179148226693';
 
@@ -22,13 +21,11 @@ const begriffe = [
   { begriff: "Fußballspieler", emojis: "⚽🧍‍♂️", schwierigkeit: "mittel", tipp: "Steht oft im Abseits" }
 ];
 
-// Map für Quizzustand pro Guild
-let quizState = new Map(); // guildId -> { aktuelleIndex, currentMessage, current, ersterBuchstabe, antwortCollector, buttonCollector, skipTracker }
+let quizState = new Map(); // guildId -> { ... }
 
 async function startEmojiQuiz(channel, interaction = null) {
   const guildId = channel.guild.id;
 
-  // Alte Collector stoppen & alte Nachricht löschen
   if (quizState.has(guildId)) {
     const old = quizState.get(guildId);
     old.antwortCollector?.stop();
@@ -38,7 +35,7 @@ async function startEmojiQuiz(channel, interaction = null) {
 
   let aktuelleIndex = Math.floor(Math.random() * begriffe.length);
   let currentMessage;
-  let skipTracker = new Map(); // userId -> überspringen count
+  let skipTracker = new Map(); // userId -> skipCount
 
   async function sendCurrentQuiz() {
     const current = begriffe[aktuelleIndex];
@@ -60,59 +57,38 @@ async function startEmojiQuiz(channel, interaction = null) {
       new ButtonBuilder().setCustomId('neuer_begriff').setLabel('❓ Neuen Begriff vorschlagen').setStyle(ButtonStyle.Primary),
     );
 
-    // Neue Nachricht senden (kein Edit!)
     currentMessage = await channel.send({ embeds: [embed], components: [buttons] });
-
     return { current, ersterBuchstabe };
   }
 
-  // Starte erste Quiz-Nachricht
   let { current, ersterBuchstabe } = await sendCurrentQuiz();
 
-  // Message Collector für Antworten
   const antwortCollector = channel.createMessageCollector({
     filter: (m) => !m.author.bot,
   });
 
   antwortCollector.on('collect', async (m) => {
     if (m.content.trim().toLowerCase() === current.begriff.toLowerCase()) {
-      // Antwort vom User löschen
-      try {
-        await m.delete();
-      } catch {}
-
-      const countdownSek = 2; // Wartezeit bis nächste Runde
+      try { await m.delete(); } catch {}
+      const countdownSek = 2;
       const startNextRoundTimestamp = Math.floor(Date.now() / 1000) + countdownSek;
-
-      // Alte Quiz-Nachricht löschen
-      try {
-        await currentMessage.delete();
-      } catch {}
-
-      // Erfolgsmeldung senden
+      try { await currentMessage.delete(); } catch {}
       const successMessage = await m.channel.send(
         `${m.author} hat den gesuchten Begriff erraten! Die nächste Runde beginnt <t:${startNextRoundTimestamp}:R>.`
       );
-
-      // Nach Countdown neue Quiz-Nachricht senden
       setTimeout(async () => {
         aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
         const result = await sendCurrentQuiz();
         current = result.current;
         ersterBuchstabe = result.ersterBuchstabe;
         skipTracker.clear();
-
-        // Erfolgsmeldung nach 10 Sekunden löschen (optional)
         setTimeout(() => successMessage.delete().catch(() => {}), 10000);
       }, countdownSek * 1000);
     } else {
-      try {
-        await m.react('❌');
-      } catch {}
+      try { await m.react('❌'); } catch {}
     }
   });
 
-  // Button Collector
   const buttonCollector = channel.createMessageComponentCollector({ componentType: ComponentType.Button });
 
   buttonCollector.on('collect', async (i) => {
@@ -121,45 +97,39 @@ async function startEmojiQuiz(channel, interaction = null) {
     if (i.customId === 'ueberspringen') {
       await i.deferUpdate();
 
-      const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
-      setTimeout(() => {
-        msg.delete().catch(() => {});
-      }, 3000);
+      const userSkips = skipTracker.get(i.user.id) ?? 0;
 
-      // Skip-Logik bei "einfach"
       if (current.schwierigkeit === 'einfach') {
-        const userSkips = skipTracker.get(i.user.id) ?? 0;
-
         if (userSkips === 0) {
           skipTracker.set(i.user.id, 1);
           await i.followUp({ content: '> `🤨` » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
           return;
         } else {
-          // Zweites Mal skippen erlaubt
-          try {
-            await currentMessage.delete();
-          } catch {}
-
+          // Zweites Mal überspringen - überspringen und Meldung
+          try { await currentMessage.delete(); } catch {}
           aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
           const result = await sendCurrentQuiz();
           current = result.current;
           ersterBuchstabe = result.ersterBuchstabe;
           skipTracker.clear();
+
+          const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
+          setTimeout(() => { msg.delete().catch(() => {}); }, 3000);
           return;
         }
+      } else {
+        // mittel oder schwer - sofort überspringen und Meldung
+        try { await currentMessage.delete(); } catch {}
+        aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
+        const result = await sendCurrentQuiz();
+        current = result.current;
+        ersterBuchstabe = result.ersterBuchstabe;
+        skipTracker.clear();
+
+        const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
+        setTimeout(() => { msg.delete().catch(() => {}); }, 3000);
+        return;
       }
-
-      // Für mittel und schwer sofort überspringen
-      try {
-        await currentMessage.delete();
-      } catch {}
-
-      aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
-      const result = await sendCurrentQuiz();
-      current = result.current;
-      ersterBuchstabe = result.ersterBuchstabe;
-      skipTracker.clear();
-
     } else if (i.customId === 'erster_buchstabe') {
       await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
     } else if (i.customId === 'neuer_begriff') {
@@ -242,16 +212,12 @@ module.exports = {
     if (sub === 'setchannel') {
       const channel = interaction.options.getChannel('channel');
 
-      // Erst Bestätigung senden
       await interaction.reply({ content: `> \`❓\` » Alles klar, ich starte meine Emojiquiz-Runden ab sofort in ${channel}.`, ephemeral: false });
-
-      // Dann Quiz starten, ohne interaction (damit nicht nochmal interaction.reply genutzt wird)
       await startEmojiQuiz(channel, null);
-
       return;
     }
 
-    const quizChannel = interaction.channel; // Demo: aktuellen Channel nehmen
+    const quizChannel = interaction.channel;
 
     if (sub === 'repair') {
       await startEmojiQuiz(quizChannel, interaction);
