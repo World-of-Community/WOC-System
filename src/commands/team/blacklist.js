@@ -111,7 +111,7 @@ module.exports = {
 
           return `**${index}.** \`💙\` **Discord:** <@${entry.userId}> – ${userTag} (\`${entry.userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
         } else if (entry.type === 'minecraft') {
-          return `**${index}.** \`🎮\` **Minecraft:** \`${entry.minecraftName}\`\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
+          return `**${index}.** \`🎮\` **Minecraft:** ${entry.minecraftName}\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
         } else {
           return `**${index}.** \`❓\` Unbekannter Eintrag`;
         }
