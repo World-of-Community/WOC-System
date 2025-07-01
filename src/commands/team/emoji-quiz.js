@@ -309,19 +309,6 @@ module.exports = {
       return interaction.reply({ content: 'Emojiquiz wurde neu gestartet!', ephemeral: true });
     }
 
-    if (sub === 'help') {
-      const embed = new EmbedBuilder()
-        .setTitle('Emojiquiz Hilfe')
-        .setDescription(
-          `**Spielablauf:**\n` +
-          `Du bekommst ein Emoji-Rätsel. Schreibe die Lösung in den Chat.\n` +
-          `Du kannst den Begriff überspringen oder dir den ersten Buchstaben anzeigen lassen.\n` +
-          `Neuen Begriff vorschlagen kannst du über den Button im Quiz.\n`
-        )
-        .setColor('Blurple');
-      return interaction.reply({ embeds: [embed], ephemeral: true });
-    }
-
     if (sub === 'leaderboard') {
       return interaction.reply({ content: 'Bestenliste-Funktion ist noch nicht verfügbar.', ephemeral: true });
     }
