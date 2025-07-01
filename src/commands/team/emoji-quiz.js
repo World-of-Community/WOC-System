@@ -236,7 +236,7 @@ module.exports = {
         return interaction.reply({ content: '> `❗` » Es sind keine Emojiquiz-Begriffe vorhanden.', ephemeral: true });
       }
     
-      const itemsPerPage = 2; // z.B. 2 pro Seite, kannst du anpassen
+      const itemsPerPage = 5; // z.B. 2 pro Seite, kannst du anpassen
       let page = 0;
       const totalPages = Math.ceil(begriffe.length / itemsPerPage);
     
