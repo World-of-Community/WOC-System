@@ -215,7 +215,6 @@ module.exports = {
         )
     )
     .addSubcommand((sub) => sub.setName('repair').setDescription('Startet das Emojiquiz neu'))
-    .addSubcommand((sub) => sub.setName('help').setDescription('Zeigt Hilfe zum Emojiquiz'))
     .addSubcommand((sub) => sub.setName('leaderboard').setDescription('Emojiquiz Bestenliste anzeigen'))
     .addSubcommand((sub) => sub.setName('settings').setDescription('Aktuelle Emojiquiz-Einstellungen anzeigen'))
     .addSubcommand((sub) =>
