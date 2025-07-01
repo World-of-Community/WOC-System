@@ -121,6 +121,11 @@ async function startEmojiQuiz(channel, interaction = null) {
     if (i.customId === 'ueberspringen') {
       await i.deferUpdate();
 
+      const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
+      setTimeout(() => {
+        msg.delete().catch(() => {});
+      }, 3000);
+
       // Skip-Logik bei "einfach"
       if (current.schwierigkeit === 'einfach') {
         const userSkips = skipTracker.get(i.user.id) ?? 0;
@@ -156,7 +161,7 @@ async function startEmojiQuiz(channel, interaction = null) {
       skipTracker.clear();
 
     } else if (i.customId === 'erster_buchstabe') {
-      await i.reply({ content: `🅰️ Erster Buchstabe: **${ersterBuchstabe}**`, ephemeral: true });
+      await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
     } else if (i.customId === 'neuer_begriff') {
       const modal = new ModalBuilder()
         .setCustomId('vorschlag_modal')
