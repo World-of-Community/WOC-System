@@ -210,6 +210,23 @@ module.exports = {
         nextMidnight.setHours(24, 0, 0, 0); // Setze auf Mitternacht
         const delay = nextMidnight - now;
 
+        try {
+          if (interaction.isModalSubmit()) {
+            if(await emojiquizCommand.handleModalSubmit(interaction)) return;
+          }
+          if (interaction.isCommand()) {
+            if(interaction.commandName === 'emojiquiz') {
+              await emojiquizCommand.execute(interaction);
+              return;
+            }
+          }
+          if (interaction.isButton()) {
+            if(await emojiquizCommand.handleButton(interaction)) return;
+          }
+        } catch(e) {
+          console.error(e);
+        }
+
         // Ränge Menu
         if (interaction.customId === 'ränge-menu') {
             switch (interaction.values[0]) {

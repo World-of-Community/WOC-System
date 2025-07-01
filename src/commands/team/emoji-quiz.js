@@ -78,7 +78,7 @@ async function startEmojiQuiz(channel) {
         if (!userCoins) {
           userCoins = new Coin({ userId: m.author.id, coins: 0 });
         }
-        userCoins.coins += 1; // 1 Coin für richtigen Tipp
+        userCoins.coins += 1;
         await userCoins.save();
       } catch (error) {
         console.error('Fehler beim Coins aktualisieren:', error);
@@ -153,8 +153,6 @@ async function startEmojiQuiz(channel) {
     } else if (i.customId === 'erster_buchstabe') {
       await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
     } else if (i.customId === 'neuer_begriff') {
-      //await i.deferUpdate(); // WICHTIG!
-
       const modal = new ModalBuilder()
         .setCustomId('vorschlag_modal')
         .setTitle('Neuen Begriff vorschlagen')
@@ -345,56 +343,132 @@ module.exports = {
         emojis,
         schwierigkeit,
         tipp,
+        status: 'offen',
         createdAt: new Date(),
       });
 
       await neuerVorschlag.save();
 
-      const channel = await interaction.client.channels.fetch(VORSCHLAG_CHANNEL_ID).catch(() => null);
-      if (channel) {
+      const channel = interaction.client.channels.cache.get(VORSCHLAG_CHANNEL_ID);
+      if (channel?.isTextBased()) {
         const embed = new EmbedBuilder()
-          .setTitle('Neuer Emojiquiz-Vorschlag')
-          .addFields(
-            { name: 'Begriff', value: begriff, inline: true },
-            { name: 'Emojis', value: emojis, inline: true },
-            { name: 'Schwierigkeit', value: schwierigkeit, inline: true },
-            { name: 'Tipp', value: tipp, inline: false },
-            { name: 'Von', value: interaction.user.tag, inline: true },
-            { name: 'ID', value: neuerVorschlag._id.toString(), inline: true }
+          .setTitle('`📨` Neuer Emojiquiz-Vorschlag')
+          .setDescription(
+            `**Begriff:** ${begriff}\n` +
+            `**Emojis:** ${emojis}\n` +
+            `**Schwierigkeit:** ${schwierigkeit}\n` +
+            `**Tipp:** ${tipp}`
           )
-          .setColor('Yellow')
-          .setTimestamp();
+          .setColor('Green')
+          .setTimestamp()
+          .setFooter({ text: `von ${interaction.user.tag} (ID: ${neuerVorschlag._id})` });
 
-        channel.send({ embeds: [embed] });
+        const row = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`vorschlag_accept:${neuerVorschlag._id}`)
+            .setLabel('✅ Annehmen')
+            .setStyle(ButtonStyle.Success),
+          new ButtonBuilder()
+            .setCustomId(`vorschlag_reject:${neuerVorschlag._id}`)
+            .setLabel('❌ Ablehnen')
+            .setStyle(ButtonStyle.Secondary)
+        );
+
+        await channel.send({ embeds: [embed], components: [row] });
       }
 
-      await interaction.reply({ content: 'Dein Vorschlag wurde eingereicht. Vielen Dank!', ephemeral: true });
+      await interaction.reply({ content: '> `✅` Dein Vorschlag wurde eingereicht. Vielen Dank!', ephemeral: true });
       return true;
-    } else if (interaction.customId.startsWith('edit_vorschlag_')) {
-      const id = interaction.customId.replace('edit_vorschlag_', '');
-      const vorschlag = await EmojiquizVorschlag.findById(id);
-      if (!vorschlag) {
-        await interaction.reply({ content: 'Vorschlag nicht gefunden.', ephemeral: true });
-        return true;
-      }
+    }
 
+    if (interaction.customId.startsWith('edit_vorschlag_')) {
+      const id = interaction.customId.replace('edit_vorschlag_', '');
       const begriff = interaction.fields.getTextInputValue('begriff');
       const emojis = interaction.fields.getTextInputValue('emojis');
       const schwierigkeit = interaction.fields.getTextInputValue('schwierigkeit');
       const tipp = interaction.fields.getTextInputValue('tipp');
 
-      vorschlag.begriff = begriff;
-      vorschlag.emojis = emojis;
-      vorschlag.schwierigkeit = schwierigkeit;
-      vorschlag.tipp = tipp;
-      await vorschlag.save();
+      const update = await EmojiquizVorschlag.findByIdAndUpdate(id, {
+        begriff,
+        emojis,
+        schwierigkeit,
+        tipp,
+      }, { new: true });
 
-      await interaction.reply({ content: 'Vorschlag wurde aktualisiert!', ephemeral: true });
+      if (!update) {
+        await interaction.reply({ content: '`❌` Fehler beim Speichern!', ephemeral: true });
+        return true;
+      }
+
+      const embed = new EmbedBuilder()
+        .setTitle('`✅` Vorschlag bearbeitet')
+        .addFields(
+          { name: 'Begriff', value: update.begriff, inline: true },
+          { name: 'Emojis', value: update.emojis, inline: true },
+          { name: 'Schwierigkeit', value: update.schwierigkeit, inline: true },
+          { name: 'Tipp', value: update.tipp, inline: false }
+        )
+        .setColor('Green')
+        .setFooter({ text: `Bearbeitet von ${interaction.user.tag}` })
+        .setTimestamp();
+
+      await interaction.reply({ embeds: [embed], ephemeral: true });
       return true;
     }
 
     return false;
   },
+
+  async handleButton(interaction) {
+    if (!interaction.isButton()) return false;
+
+    if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
+      await interaction.reply({ content: '> `❌` Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.', ephemeral: true });
+      return true;
+    }
+
+    const [action, id] = interaction.customId.split(':');
+
+    if (action !== 'vorschlag_accept' && action !== 'vorschlag_reject') return false;
+
+    const vorschlag = await EmojiquizVorschlag.findById(id);
+    if (!vorschlag) {
+      await interaction.reply({ content: '> `❌` Vorschlag nicht gefunden.', ephemeral: true });
+      return true;
+    }
+
+    const neuerStatus = action === 'vorschlag_accept' ? 'angenommen' : 'abgelehnt';
+    vorschlag.status = neuerStatus;
+    await vorschlag.save();
+
+    try {
+      const dmUser = await interaction.client.users.fetch(vorschlag.userId);
+      const dmEmbed = new EmbedBuilder()
+        .setTitle(neuerStatus === 'angenommen' ? '`✅` Vorschlag angenommen' : '`❌` Vorschlag abgelehnt')
+        .setDescription(neuerStatus === 'angenommen'
+          ? `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde angenommen! Danke für deinen Beitrag.`
+          : `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde abgelehnt.`)
+        .setColor(neuerStatus === 'angenommen' ? 'Green' : 'Red')
+        .setTimestamp();
+
+      dmUser.send({ embeds: [dmEmbed] }).catch(() => {});
+    } catch {}
+
+    const message = await interaction.channel.messages.fetch(interaction.message.id).catch(() => null);
+    if (message) {
+      const embed = EmbedBuilder.from(message.embeds[0])
+        .setColor(neuerStatus === 'angenommen' ? 'Green' : 'Red')
+        .setFooter({ text: `Status: ${neuerStatus.charAt(0).toUpperCase() + neuerStatus.slice(1)}` });
+
+      await message.edit({
+        embeds: [embed],
+        components: [],
+      });
+    }
+
+    await interaction.reply({ content: `> \`${neuerStatus === 'angenommen' ? '✅' : '❌'}\` Vorschlag wurde ${neuerStatus}.`, ephemeral: true });
+    return true;
+  }
 };
 
 //
@@ -758,7 +832,6 @@ module.exports = {
                 .setDescription(neuerStatus === 'Angenommen'
                   ? `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde angenommen. Danke für deine Unterstützung!`
                   : `Dein Emojiquiz-Vorschlag **"${vorschlag.begriff}"** wurde leider abgelehnt.\n\nSei kreativ und reiche gerne weitere Vorschläge ein.`)
-                .setColor(neuerStatus === 'Angenommen' ? 'Green' : 'Red')
                 .setTimestamp();
               await dmUser.send({ embeds: [dmEmbed] });
             } catch {
@@ -773,9 +846,7 @@ module.exports = {
                 `**Emojis:** ${vorschlag.emojis}\n` +
                 `**Schwierigkeit:** ${vorschlag.schwierigkeit}\n` +
                 `**Tipp:** ${vorschlag.tipp}\n\n` +
-                `Status: **${neuerStatus}** (Bearbeitet von ${modalInteraction.user.displayName})`
               )
-              .setColor(neuerStatus === 'Angenommen' ? 'Green' : 'Red')
               .setTimestamp();
 
             // Buttons deaktivieren
