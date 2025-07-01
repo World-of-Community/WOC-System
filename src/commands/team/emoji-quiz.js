@@ -64,9 +64,11 @@ async function startEmojiQuiz(channel, interaction = null) {
       await currentMessage.edit({ embeds: [embed], components: [buttons] });
     } else {
       if (interaction) {
+        // Wenn interaction existiert, nutze interaction.reply (z.B. bei repair-Command)
         await interaction.reply({ embeds: [embed], components: [buttons] });
         currentMessage = await interaction.fetchReply();
       } else {
+        // Kein interaction (z.B. bei setchannel), normale Nachricht im Kanal senden
         currentMessage = await channel.send({ embeds: [embed], components: [buttons] });
       }
     }
@@ -116,7 +118,7 @@ async function startEmojiQuiz(channel, interaction = null) {
 
         if (userSkips === 0) {
           skipTracker.set(i.user.id, 1);
-          await i.followUp({ content: '> `🤨` » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
+          await i.followUp({ content: '> 🤨 » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
           return;
         } else {
           // Zweites Mal skippen erlaubt
@@ -211,45 +213,22 @@ module.exports = {
     const sub = interaction.options.getSubcommand();
     const guildId = interaction.guild.id;
 
-    // Wenn du EmojiquizSettings DB nutzen willst, hier entkommentieren und anpassen:
-    // let settings = await EmojiquizSettings.findOne({ guildId });
-    // if (!settings) {
-    //   settings = await EmojiquizSettings.create({ guildId, channelId: null });
-    // }
-
-    // Für Demo: Kein Settings-DB, stattdessen immer den Command-Kanal nehmen
-    // Du kannst das natürlich anpassen!
-
     if (sub === 'setchannel') {
       const channel = interaction.options.getChannel('channel');
 
-      await interaction.channel.send({ content: `> \`❓\` » Alles klar, ich starte meine Emojiquiz-Runden ab sofort in ${channel}.` });
+      // Erst Bestätigung senden
+      await interaction.reply({ content: `> \`❓\` » Alles klar, ich starte meine Emojiquiz-Runden ab sofort in ${channel}.`, ephemeral: false });
 
-      // Direkt starten
-      await startEmojiQuiz(channel, interaction);
+      // Dann Quiz starten, ohne interaction (damit nicht nochmal interaction.reply genutzt wird)
+      await startEmojiQuiz(channel, null);
+
       return;
     }
 
-    // Falls Settings benutzt: hier anpassen, sonst z.B. channel = interaction.channel;
-    // Beispiel mit DB:
-    // if (!settings.channelId) {
-    //   return interaction.reply({
-    //     content: 'Bitte setze zuerst den Emojiquiz-Kanal mit /emojiquiz setchannel.',
-    //     ephemeral: true,
-    //   });
-    // }
-    // const quizChannel = await interaction.guild.channels.fetch(settings.channelId).catch(() => null);
-    // if (!quizChannel) {
-    //   return interaction.reply({
-    //     content: 'Der Emojiquiz-Kanal ist nicht erreichbar oder wurde gelöscht. Bitte setze ihn neu.',
-    //     ephemeral: true,
-    //   });
-    // }
-
-    const quizChannel = interaction.channel; // Für Demo hier den aktuellen Channel nehmen
+    const quizChannel = interaction.channel; // Demo: aktuellen Channel nehmen
 
     if (sub === 'repair') {
-      await startEmojiQuiz(quizChannel);
+      await startEmojiQuiz(quizChannel, interaction);
       return interaction.reply({ content: 'Emojiquiz wurde neu gestartet!', ephemeral: true });
     }
 
@@ -291,7 +270,7 @@ module.exports = {
       const id = interaction.options.getString('id');
       const vorschlag = await EmojiquizVorschlag.findById(id);
       if (!vorschlag) {
-        return interaction.reply({ content: '> `❌` » Kein Vorschlag mit dieser ID gefunden.', ephemeral: true });
+        return interaction.reply({ content: '> ❌ » Kein Vorschlag mit dieser ID gefunden.', ephemeral: true });
       }
 
       const modal = new ModalBuilder()
