@@ -166,7 +166,7 @@ module.exports = {
           date: new Date()
         });
 
-        await interaction.reply({ content: `> \`✅\` » **${user.tag}** wurde geblacklistet.`, ephemeral: false });
+        await interaction.reply({ content: `> \`✅\` » Discord Nutzer: **${user.tag}** wurde geblacklistet.`, ephemeral: false });
         return;
       } else if (minecraftName) {
         if (await MinecraftBlacklist.findOne({ minecraftName: minecraftName.toLowerCase() })) {
