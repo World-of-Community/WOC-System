@@ -186,7 +186,7 @@ module.exports = {
 
         await updateBlacklistMessage(interaction.client);
 
-        await interaction.reply({ content: `> \`✅\` » Discord Nutzer: **${user.tag}** wurde geblacklistet.`, ephemeral: false });
+        await interaction.reply({ content: `> \`✅\` » Discord Nutzer: **${user.tag}** wurde geblacklistet.`, ephemeral: true });
         return;
       } else if (minecraftName) {
         if (await MinecraftBlacklist.findOne({ minecraftName: minecraftName.toLowerCase() })) {
@@ -205,7 +205,7 @@ module.exports = {
 
         await updateBlacklistMessage(interaction.client);
 
-        await interaction.reply({ content: `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde geblacklistet.`, ephemeral: false });
+        await interaction.reply({ content: `> \`✅\` » Minecraft-Spieler **${minecraftName}** wurde geblacklistet.`, ephemeral: true });
         return;
       }
     }
