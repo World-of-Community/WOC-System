@@ -174,7 +174,7 @@ module.exports = {
       }
 
       const newEntry = { reason, date: new Date() };
-      if (user) {
+      if (user?.id) {
         newEntry.userId = user.id;
         newEntry.username = user.tag;
       } else {
