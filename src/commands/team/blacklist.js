@@ -124,7 +124,8 @@ module.exports = {
           'Information zu den Nutzern:\n' +
           '> Verbot bzw. gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + 
           lines.join('\n\n'))
-        .setFooter({ text: `Seite ${page + 1} / ${Math.ceil(combinedList.length / pageSize)} · Einträge insgesamt: ${combinedList.length}` });
+        .setFooter({ text: `Seite ${page + 1} / ${Math.ceil(combinedList.length / pageSize)} · Einträge insgesamt: ${combinedList.length}` })
+        .setTimestamp();
     }
 
     // Funktion zum automatischen Aktualisieren des Blacklist-Embeds in der zentralen Nachricht
