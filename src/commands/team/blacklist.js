@@ -271,7 +271,7 @@ module.exports = {
 
       await interaction.reply({
         content: `> \`✏️\` » Grund für **${entry.username || entry.minecraftName}** wurde aktualisiert.`,
-        ephemeral: false
+        ephemeral: true
       });
       return;
     }
