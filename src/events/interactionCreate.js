@@ -210,7 +210,7 @@ module.exports = {
         nextMidnight.setHours(24, 0, 0, 0); // Setze auf Mitternacht
         const delay = nextMidnight - now;
 
-        const emojiquizCommand = require('../commands/team/emojiquiz.js');
+        const emojiquizCommand = require('../commands/team/emoji-quiz.js');
 
         try {
           if (interaction.isModalSubmit()) {
