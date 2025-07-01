@@ -11,7 +11,7 @@ const {
   PermissionFlagsBits,
 } = require('discord.js');
 const EmojiquizVorschlag = require('../../../Datenbank/emojiquizVorschlagdb');
-const Coin = require("../../../Datenbank/coindb");
+const { Coin } = require("../../../Datenbank/coindb");
 
 const VORSCHLAG_CHANNEL_ID = '1389281179148226693';
 
