@@ -355,11 +355,11 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setTitle('`📨` Neuer Emojiquiz-Vorschlag')
           .setDescription(
-            `Begriff: ${begriff}\n` +
+            `Begriff: **${begriff}**\n` +
             `Emojis: ${emojis}\n` +
-            `Schwierigkeit: ${schwierigkeit}\n` +
-            `Tipp: ${tipp}\n\n` +
-            `Eingereicht von ${interaction.user.displayName} (${interaction.user.tag} - \`${neuerVorschlag._id}\`)`
+            `Schwierigkeit: **${schwierigkeit}**\n` +
+            `Tipp: **${tipp}**\n\n` +
+            `Eingereicht von **${interaction.user.displayName}** (User: ${interaction.user.tag} - ID: \`${neuerVorschlag._id}\`)`
           )
           .setColor('Green')
           .setTimestamp()
