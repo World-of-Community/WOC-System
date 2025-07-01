@@ -338,6 +338,7 @@ module.exports = {
 
       const neuerVorschlag = new EmojiquizVorschlag({
         userId: interaction.user.id,
+        username: interaction.user.username,
         userTag: interaction.user.tag,
         begriff,
         emojis,
