@@ -46,7 +46,7 @@ async function startEmojiQuiz(channel) {
       .setDescription(
         `Gesuchter Begriff • ${current.emojis}\n\n` +
         `Schwierigkeit: **${current.schwierigkeit}**\n` +
-        `Belohnung • 1 🪙\n\n` +
+        `Belohnung • 1 \`🪙\`\n\n` +
         `Tipp • **${current.tipp}**`
       )
       .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button.' })
