@@ -87,7 +87,7 @@ async function startEmojiQuiz(channel, interaction = null) {
       const startNextRoundTimestamp = Math.floor(Date.now() / 1000) + countdownSek;
       try { await currentMessage.delete(); } catch {}
       const successMessage = await m.channel.send(
-        `${m.author} hat den gesuchten Begriff erraten! Die nächste Runde beginnt <t:${startNextRoundTimestamp}:R>.`
+        `<@${m.author.id}> hat den gesuchten Begriff erraten! Die nächste Runde beginnt **<t:${startNextRoundTimestamp}:R>**.`
       );
       setTimeout(async () => {
         aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
@@ -95,7 +95,7 @@ async function startEmojiQuiz(channel, interaction = null) {
         current = result.current;
         ersterBuchstabe = result.ersterBuchstabe;
         skipTracker.clear();
-        setTimeout(() => successMessage.delete().catch(() => {}), 10000);
+        setTimeout(() => successMessage.delete().catch(() => {}), 2000);
       }, countdownSek * 1000);
     } else {
       try { await m.react('❌'); } catch {}
