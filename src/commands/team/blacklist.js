@@ -120,7 +120,10 @@ module.exports = {
       return new EmbedBuilder()
         .setTitle('`📄` Blacklist Übersicht')
         .setColor('Red')
-        .setDescription(lines.join('\n\n'))
+        .setDescription(
+          'Information zu den Nutzern:\n' +
+          '> Verbot bzw. gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + 
+          lines.join('\n\n'))
         .setFooter({ text: `Seite ${page + 1} / ${Math.ceil(combinedList.length / pageSize)} · Einträge insgesamt: ${combinedList.length}` });
     }
 
