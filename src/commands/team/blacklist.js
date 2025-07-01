@@ -280,7 +280,7 @@ module.exports = {
         return interaction.reply({ content: '> `❗` » Die Blacklist ist leer.', ephemeral: false });
       }
 
-      const pageSize = 10;
+      const pageSize = 10; // 10 Einträge pro Seite eingestellt
       let currentPage = 0;
       const maxPage = Math.ceil(combinedList.length / pageSize) - 1;
 
