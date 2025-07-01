@@ -8,6 +8,401 @@ const {
   TextInputBuilder,
   TextInputStyle,
   ComponentType,
+  PermissionFlagsBits,
+} = require('discord.js');
+const EmojiquizVorschlag = require('../../../Datenbank/emojiquizVorschlagdb');
+// const EmojiquizSettings = require('../../../Datenbank/emojiquizSettingsdb');
+
+const VORSCHLAG_CHANNEL_ID = '1389281179148226693';
+
+const begriffe = [
+  { begriff: "Atomkraftwerk", emojis: "🔯🏭", schwierigkeit: "einfach", tipp: "Stromerzeuger" },
+  { begriff: "Wasserrutsche", emojis: "🌊🎢", schwierigkeit: "mittel", tipp: "Im Freibad zu finden" },
+  { begriff: "Eiffelturm", emojis: "🇫🇷🗼", schwierigkeit: "einfach", tipp: "Wahrzeichen in Paris" },
+  { begriff: "Fußballspieler", emojis: "⚽🧍‍♂️", schwierigkeit: "mittel", tipp: "Steht oft im Abseits" }
+];
+
+let quizState = new Map(); // guildId -> { aktuelleIndex, currentMessage, current, ersterBuchstabe, antwortCollector, buttonCollector, ueberspringer }
+
+async function startEmojiQuiz(channel, interaction = null) {
+  const guildId = channel.guild.id;
+
+  // Alte Collector aufräumen
+  if (quizState.has(guildId)) {
+    const old = quizState.get(guildId);
+    old.antwortCollector?.stop();
+    old.buttonCollector?.stop();
+    try { await old.currentMessage?.delete().catch(() => {}); } catch {}
+  }
+
+  let aktuelleIndex = Math.floor(Math.random() * begriffe.length);
+  let currentMessage;
+
+  async function sendCurrentQuiz() {
+    const current = begriffe[aktuelleIndex];
+    const ersterBuchstabe = current.begriff[0];
+
+    const embed = new EmbedBuilder()
+      .setDescription(
+        `Gesuchter Begriff • ${current.emojis}\n\n` +
+        `Schwierigkeit: **${current.schwierigkeit}**\n` +
+        `Belohnung • 1 🪙\n\n` +
+        `Tipp • **${current.tipp}**`
+      )
+      .setFooter({ text: 'Dir fällt der Begriff nicht ein? Nutze den Überspringen-Button.' })
+      .setColor('Blurple');
+
+    const buttons = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId('ueberspringen').setLabel('➡️ Überspringen').setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId('erster_buchstabe').setLabel('🅰️ Erster Buchstabe').setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId('neuer_begriff').setLabel('❓ Neuen Begriff vorschlagen').setStyle(ButtonStyle.Primary),
+    );
+
+    if (currentMessage) {
+      await currentMessage.edit({ embeds: [embed], components: [buttons] });
+    } else {
+      if (interaction) {
+        await interaction.reply({ embeds: [embed], components: [buttons] });
+        currentMessage = await interaction.fetchReply();
+      } else {
+        currentMessage = await channel.send({ embeds: [embed], components: [buttons] });
+      }
+    }
+    return { current, ersterBuchstabe };
+  }
+
+  let { current, ersterBuchstabe } = await sendCurrentQuiz();
+
+  // Message Collector für Antworten
+  const antwortCollector = channel.createMessageCollector({
+    filter: (m) => !m.author.bot,
+  });
+
+  antwortCollector.on('collect', async (m) => {
+    if (m.content.trim().toLowerCase() === current.begriff.toLowerCase()) {
+      const countdownSek = 2;
+      const startNextRoundTimestamp = Math.floor(Date.now() / 1000) + countdownSek;
+
+      await m.channel.send(
+        `${m.author} hat den gesuchten Begriff erraten! Die nächste Runde beginnt <t:${startNextRoundTimestamp}:R>.`
+      );
+
+      setTimeout(async () => {
+        aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
+        const state = quizState.get(guildId);
+        state.ueberspringer.clear();
+        ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+      }, countdownSek * 1000);
+    } else {
+      try {
+        await m.react('❌');
+      } catch {}
+    }
+  });
+
+  // Button Collector
+  const buttonCollector = currentMessage.createMessageComponentCollector({ componentType: ComponentType.Button });
+
+  buttonCollector.on('collect', async (i) => {
+    if (i.user.bot) return;
+
+    if (i.customId === 'ueberspringen') {
+      await i.deferUpdate();
+
+      const state = quizState.get(guildId);
+      if (current.schwierigkeit === 'einfach') {
+        if (!state.ueberspringer.has(i.user.id)) {
+          // erstes Mal überspringen
+          state.ueberspringer.add(i.user.id);
+          await i.followUp({ content: '> `🤨` » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
+        } else {
+          // zweites Mal überspringen: wirklich überspringen
+          aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
+          state.ueberspringer.clear();
+          ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+        }
+      } else {
+        // mittel + schwer: sofort überspringen
+        aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
+        state.ueberspringer.clear();
+        ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+      }
+    } else if (i.customId === 'erster_buchstabe') {
+      await i.reply({ content: `🅰️ Erster Buchstabe: **${ersterBuchstabe}**`, ephemeral: true });
+    } else if (i.customId === 'neuer_begriff') {
+      const modal = new ModalBuilder()
+        .setCustomId('vorschlag_modal')
+        .setTitle('Neuen Begriff vorschlagen')
+        .addComponents(
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('begriff')
+              .setLabel('Begriff')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('emojis')
+              .setLabel('Emojis')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('schwierigkeit')
+              .setLabel('Schwierigkeit (einfach, mittel, schwer)')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('tipp')
+              .setLabel('Tipp')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+          )
+        );
+      await i.showModal(modal);
+    }
+  });
+
+  quizState.set(guildId, {
+    aktuelleIndex,
+    currentMessage,
+    current,
+    ersterBuchstabe,
+    antwortCollector,
+    buttonCollector,
+    ueberspringer: new Set(),
+  });
+}
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('emojiquiz')
+    .setDescription('Emojiquiz Verwaltung')
+    .addSubcommand((sub) =>
+      sub
+        .setName('setchannel')
+        .setDescription('Setze den Emojiquiz-Kanal')
+        .addChannelOption((o) =>
+          o.setName('channel').setDescription('Zielkanal').setRequired(true)
+        )
+    )
+    .addSubcommand((sub) => sub.setName('repair').setDescription('Startet das Emojiquiz neu'))
+    .addSubcommand((sub) => sub.setName('help').setDescription('Zeigt Hilfe zum Emojiquiz'))
+    .addSubcommand((sub) => sub.setName('leaderboard').setDescription('Emojiquiz Bestenliste anzeigen'))
+    .addSubcommand((sub) => sub.setName('settings').setDescription('Aktuelle Emojiquiz-Einstellungen anzeigen'))
+    .addSubcommand((sub) =>
+      sub
+        .setName('edit')
+        .setDescription('Einen Vorschlag bearbeiten')
+        .addStringOption((o) => o.setName('id').setDescription('ID des Vorschlags').setRequired(true))
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+
+  async execute(interaction) {
+    const sub = interaction.options.getSubcommand();
+    const guildId = interaction.guild.id;
+
+    // Falls DB und Settings gewünscht, hier aktivieren und anpassen:
+    /*
+    let settings = await EmojiquizSettings.findOne({ guildId });
+    if (!settings) {
+      settings = await EmojiquizSettings.create({ guildId, channelId: null });
+    }
+    */
+
+    // Ohne DB Settings einfach festen Channel (hier: Channel aus "setchannel" Subcommand)
+    if (sub === 'setchannel') {
+      const channel = interaction.options.getChannel('channel');
+
+      // Starte Quiz sofort im Channel
+      await startEmojiQuiz(channel, interaction);
+      return;
+    }
+
+    // Für Demo: Falls du Settings hast, prüfe hier, ob Kanal gesetzt ist
+    // Beispiel:
+    // if (!settings.channelId) {
+    //   return interaction.reply({ content: 'Bitte setze zuerst den Emojiquiz-Kanal mit /emojiquiz setchannel.', ephemeral: true });
+    // }
+    // const quizChannel = await interaction.guild.channels.fetch(settings.channelId).catch(() => null);
+    // if (!quizChannel) {
+    //   return interaction.reply({ content: 'Der Emojiquiz-Kanal ist nicht erreichbar. Bitte neu setzen.', ephemeral: true });
+    // }
+
+    if (sub === 'repair') {
+      // Für Demo: channel von interaction.channel verwenden
+      await startEmojiQuiz(interaction.channel);
+      return interaction.reply({ content: 'Emojiquiz wurde neu gestartet!', ephemeral: true });
+    }
+
+    if (sub === 'help') {
+      const embed = new EmbedBuilder()
+        .setTitle('Emojiquiz Hilfe')
+        .setDescription(
+          `**Spielablauf:**\n` +
+          `Du bekommst ein Emoji-Rätsel. Schreibe die Lösung in den Chat.\n` +
+          `Du kannst den Begriff überspringen oder dir den ersten Buchstaben anzeigen lassen.\n` +
+          `Neuen Begriff vorschlagen kannst du über den Button im Quiz.\n`
+        )
+        .setColor('Blurple');
+      return interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+
+    if (sub === 'leaderboard') {
+      return interaction.reply({ content: 'Bestenliste-Funktion ist noch nicht verfügbar.', ephemeral: true });
+    }
+
+    if (sub === 'settings') {
+      // Beispiel: statische Anzeige ohne DB
+      const embed = new EmbedBuilder()
+        .setTitle('Emojiquiz Einstellungen')
+        .setDescription(
+          '/emojiquiz setchannel [channel] - Setzt den Quiz-Kanal\n' +
+          '/emojiquiz repair - Startet das Quiz neu\n' +
+          '/emojiquiz leaderboard - Zeigt die Bestenliste\n' +
+          '/emojiquiz settings - Zeigt aktuelle Einstellungen\n' +
+          '/emojiquiz edit [id] - Bearbeite einen Vorschlag\n'
+        )
+        .addFields(
+          { name: 'Anzahl Begriffe', value: begriffe.length.toString(), inline: true }
+        )
+        .setColor('Green');
+      return interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+
+    if (sub === 'edit') {
+      const id = interaction.options.getString('id');
+      const vorschlag = await EmojiquizVorschlag.findById(id);
+      if (!vorschlag) {
+        return interaction.reply({ content: '> `❌` » Kein Vorschlag mit dieser ID gefunden.', ephemeral: true });
+      }
+
+      const modal = new ModalBuilder()
+        .setCustomId(`edit_vorschlag_${id}`)
+        .setTitle('Vorschlag bearbeiten')
+        .addComponents(
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('begriff')
+              .setLabel('Begriff')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+              .setValue(vorschlag.begriff)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('emojis')
+              .setLabel('Emojis')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+              .setValue(vorschlag.emojis)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('schwierigkeit')
+              .setLabel('Schwierigkeit')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+              .setValue(vorschlag.schwierigkeit)
+          ),
+          new ActionRowBuilder().addComponents(
+            new TextInputBuilder()
+              .setCustomId('tipp')
+              .setLabel('Tipp')
+              .setStyle(TextInputStyle.Short)
+              .setRequired(true)
+              .setValue(vorschlag.tipp)
+          )
+        );
+      await interaction.showModal(modal);
+    }
+  },
+
+  // Modal Submit Handler, im Client-Liste verwenden!
+  async handleModalSubmit(interaction) {
+    if (!interaction.isModalSubmit()) return false;
+
+    if (interaction.customId === 'vorschlag_modal') {
+      const begriff = interaction.fields.getTextInputValue('begriff');
+      const emojis = interaction.fields.getTextInputValue('emojis');
+      const schwierigkeit = interaction.fields.getTextInputValue('schwierigkeit');
+      const tipp = interaction.fields.getTextInputValue('tipp');
+
+      const neuerVorschlag = new EmojiquizVorschlag({
+        userId: interaction.user.id,
+        userTag: interaction.user.tag,
+        begriff,
+        emojis,
+        schwierigkeit,
+        tipp,
+        createdAt: new Date(),
+      });
+
+      await neuerVorschlag.save();
+
+      const channel = await interaction.client.channels.fetch(VORSCHLAG_CHANNEL_ID).catch(() => null);
+      if (channel) {
+        const embed = new EmbedBuilder()
+          .setTitle('Neuer Emojiquiz-Vorschlag')
+          .addFields(
+            { name: 'Begriff', value: begriff, inline: true },
+            { name: 'Emojis', value: emojis, inline: true },
+            { name: 'Schwierigkeit', value: schwierigkeit, inline: true },
+            { name: 'Tipp', value: tipp, inline: false },
+            { name: 'Von', value: interaction.user.tag, inline: true },
+            { name: 'ID', value: neuerVorschlag._id.toString(), inline: true }
+          )
+          .setColor('Yellow')
+          .setTimestamp();
+
+        channel.send({ embeds: [embed] });
+      }
+
+      await interaction.reply({ content: 'Dein Vorschlag wurde gespeichert und wird geprüft!', ephemeral: true });
+      return true;
+    } else if (interaction.customId.startsWith('edit_vorschlag_')) {
+      const id = interaction.customId.replace('edit_vorschlag_', '');
+      const vorschlag = await EmojiquizVorschlag.findById(id);
+      if (!vorschlag) {
+        await interaction.reply({ content: '> `❌` » Vorschlag nicht gefunden.', ephemeral: true });
+        return true;
+      }
+
+      const begriff = interaction.fields.getTextInputValue('begriff');
+      const emojis = interaction.fields.getTextInputValue('emojis');
+      const schwierigkeit = interaction.fields.getTextInputValue('schwierigkeit');
+      const tipp = interaction.fields.getTextInputValue('tipp');
+
+      vorschlag.begriff = begriff;
+      vorschlag.emojis = emojis;
+      vorschlag.schwierigkeit = schwierigkeit;
+      vorschlag.tipp = tipp;
+      await vorschlag.save();
+
+      await interaction.reply({ content: '> `✅` » Vorschlag wurde aktualisiert!', ephemeral: true });
+      return true;
+    }
+
+    return false;
+  },
+};
+
+//
+/*
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ComponentType,
   Events,
   PermissionFlagsBits
 } = require('discord.js');
@@ -115,8 +510,7 @@ async function startEmojiQuiz(channel, interaction = null) {
 
   // Button-Collector für das Quiz
   const buttonCollector = currentMessage.createMessageComponentCollector({
-    componentType: ComponentType.Button,
-    time: 30 * 60 * 1000
+    componentType: ComponentType.Button
   });
 
   buttonCollector.on('collect', async i => {
@@ -132,7 +526,7 @@ async function startEmojiQuiz(channel, interaction = null) {
       current = res.current;
       ersterBuchstabe = res.ersterBuchstabe;
     } else if (i.customId === 'erster_buchstabe') {
-      await i.reply({ content: `🅰️ Erster Buchstabe: **${ersterBuchstabe}**`, ephemeral: true });
+      await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
     } else if (i.customId === 'neuer_begriff') {
       const modal = new ModalBuilder()
         .setCustomId('vorschlag_modal')
@@ -275,12 +669,11 @@ module.exports = {
                   `**Begriff:** ${begriff}\n` +
                   `**Emojis:** ${emojis}\n` +
                   `**Schwierigkeit:** ${schwierigkeit}\n` +
-                  `**Tipp:** ${tipp}\n\n` +
-                  `Status: **Offen**`
+                  `**Tipp:** ${tipp}`
                 )
                 .setColor('Green')
                 .setTimestamp()
-                .setFooter({ text: `Von ${modalInteraction.user.tag} (ID: ${eintrag._id})` });
+                .setFooter({ text: `von ${modalInteraction.user.tag} (ID: ${eintrag._id})` });
 
               const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
@@ -393,3 +786,4 @@ module.exports = {
     }
   }
 };
+*/
