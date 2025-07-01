@@ -14,7 +14,10 @@ module.exports = {
         `- Du kannst den Begriff überspringen oder dir den ersten Buchstaben anzeigen lassen.\n` +
         `- Neue Begriffe kannst du direkt im Quiz über den Button vorschlagen.\n\n` +
         `> \`❓\` **Wo finde ich das Spiel?**\n` +
-        `- Du findest das Spiel bei <#1269568327127269466>`
+        `- \`1.\` Gehe zu <id:customize>`
+        `- \`2.\` Wähle die <@&1269567512916262944>-Rolle aus.\n` +
+        `- \`3.\` Dann findest das Spiel bei <#1269568327127269466>\n` +
+        `- Viel Spaß beim Emoji Quiz! \`😎\``
       )
       .setColor('Blurple');
 
