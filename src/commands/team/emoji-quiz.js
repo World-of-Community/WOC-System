@@ -19,12 +19,12 @@ const begriffe = [
   { begriff: "Atomkraftwerk", emojis: "🔯🏭", schwierigkeit: "einfach", tipp: "Stromerzeuger" },
   { begriff: "Wasserrutsche", emojis: "🌊🎢", schwierigkeit: "mittel", tipp: "Im Freibad zu finden" },
   { begriff: "Eiffelturm", emojis: "🇫🇷🗼", schwierigkeit: "einfach", tipp: "Wahrzeichen in Paris" },
-  { begriff: "Steht oft im Abseits", emojis: "⚽🧍‍♂️", schwierigkeit: "mittel", tipp: "Fußballspieler" }
+  { begriff: "Fußballspieler", emojis: "⚽🧍‍♂️", schwierigkeit: "mittel", tipp: "Steht oft im Abseits" }
 ];
 
-let quizState = new Map(); // guildId -> { ... }
+let quizState = new Map(); // guildId -> state
 
-async function startEmojiQuiz(channel, interaction = null) {
+async function startEmojiQuiz(channel) {
   const guildId = channel.guild.id;
 
   if (quizState.has(guildId)) {
@@ -119,14 +119,13 @@ async function startEmojiQuiz(channel, interaction = null) {
           await i.followUp({ content: '> `🤨` » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
           return;
         } else {
-          // Zweites Mal überspringen - überspringen und Meldung mit 5 Sekunden Delay beim neuen Quiz
           try { await currentMessage.delete(); } catch {}
           aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
 
           const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
           setTimeout(() => { msg.delete().catch(() => {}); }, 3000);
 
-          await new Promise(r => setTimeout(r, 5000)); // 5 Sekunden warten
+          await new Promise(r => setTimeout(r, 5000));
 
           const result = await sendCurrentQuiz();
           current = result.current;
@@ -136,14 +135,13 @@ async function startEmojiQuiz(channel, interaction = null) {
           return;
         }
       } else {
-        // mittel oder schwer - sofort überspringen mit Meldung und 5 Sekunden Delay
         try { await currentMessage.delete(); } catch {}
         aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
 
         const msg = await i.channel.send(`Das Emojiquiz wurde von ${i.user} übersprungen.`);
         setTimeout(() => { msg.delete().catch(() => {}); }, 3000);
 
-        await new Promise(r => setTimeout(r, 5000)); // 5 Sekunden warten
+        await new Promise(r => setTimeout(r, 5000));
 
         const result = await sendCurrentQuiz();
         current = result.current;
@@ -155,6 +153,8 @@ async function startEmojiQuiz(channel, interaction = null) {
     } else if (i.customId === 'erster_buchstabe') {
       await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben: **${ersterBuchstabe}**`, ephemeral: true });
     } else if (i.customId === 'neuer_begriff') {
+      await i.deferUpdate(); // WICHTIG!
+
       const modal = new ModalBuilder()
         .setCustomId('vorschlag_modal')
         .setTitle('Neuen Begriff vorschlagen')
@@ -188,6 +188,7 @@ async function startEmojiQuiz(channel, interaction = null) {
               .setRequired(true)
           )
         );
+
       await i.showModal(modal);
     }
   });
@@ -235,14 +236,14 @@ module.exports = {
       const channel = interaction.options.getChannel('channel');
 
       await interaction.reply({ content: `> \`❓\` » Alles klar, ich starte meine Emojiquiz-Runden ab sofort in ${channel}.`, ephemeral: false });
-      await startEmojiQuiz(channel, null);
+      await startEmojiQuiz(channel);
       return;
     }
 
     const quizChannel = interaction.channel;
 
     if (sub === 'repair') {
-      await startEmojiQuiz(quizChannel, interaction);
+      await startEmojiQuiz(quizChannel);
       return interaction.reply({ content: 'Emojiquiz wurde neu gestartet!', ephemeral: true });
     }
 
