@@ -621,23 +621,7 @@ cron.schedule('0 0 * * *', async () => {
 // Tägliche Belohnung erinnerung
 const CHANNEL_ID = '815922756918181898';
 
-function loadLastId() {
-  if (fs.existsSync(path)) {
-    try {
-      const data = JSON.parse(fs.readFileSync(path, 'utf8'));
-      return data.lastMessageId;
-    } catch {
-      return null;
-    }
-  }
-  return null;
-}
-
-function saveLastId(id) {
-  fs.writeFileSync(path, JSON.stringify({ lastMessageId: id }));
-}
-
-let lastMessageId = loadLastId();
+let lastMessageId = null;
 
 cron.schedule('0 */6 * * *', async () => {
   try {
@@ -655,7 +639,6 @@ cron.schedule('0 */6 * * *', async () => {
 
     const newMsg = await channel.send('**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`');
     lastMessageId = newMsg.id;
-    saveLastId(newMsg.id);
 
   } catch (error) {
     console.error('Fehler beim täglichen Reminder:', error);
