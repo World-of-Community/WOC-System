@@ -70,6 +70,19 @@ async function startEmojiQuiz(channel, interaction = null) {
   antwortCollector.on('collect', async (m) => {
     if (m.content.trim().toLowerCase() === current.begriff.toLowerCase()) {
       try { await m.delete(); } catch {}
+
+      // Coins hinzufügen
+      try {
+        let userCoins = await Coin.findOne({ userId: m.author.id });
+        if (!userCoins) {
+          userCoins = new Coin({ userId: m.author.id, coins: 0 });
+        }
+        userCoins.coins += 1; // 1 Coin für richtigen Tipp
+        await userCoins.save();
+      } catch (error) {
+        console.error('Fehler beim Coins aktualisieren:', error);
+      }
+
       const countdownSek = 2;
       const startNextRoundTimestamp = Math.floor(Date.now() / 1000) + countdownSek;
       try { await currentMessage.delete(); } catch {}
