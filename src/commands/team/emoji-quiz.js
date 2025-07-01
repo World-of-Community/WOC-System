@@ -22,12 +22,13 @@ const begriffe = [
   { begriff: "Fußballspieler", emojis: "⚽🧍‍♂️", schwierigkeit: "mittel", tipp: "Steht oft im Abseits" }
 ];
 
-let quizState = new Map(); // guildId -> { aktuelleIndex, currentMessage, current, ersterBuchstabe, antwortCollector, buttonCollector, ueberspringer }
+// Map für Quizzustand pro Guild
+let quizState = new Map(); // guildId -> { aktuelleIndex, currentMessage, current, ersterBuchstabe, antwortCollector, buttonCollector, skipTracker }
 
 async function startEmojiQuiz(channel, interaction = null) {
   const guildId = channel.guild.id;
 
-  // Alte Collector aufräumen
+  // Alte Collector stoppen & alte Nachricht löschen
   if (quizState.has(guildId)) {
     const old = quizState.get(guildId);
     old.antwortCollector?.stop();
@@ -37,6 +38,7 @@ async function startEmojiQuiz(channel, interaction = null) {
 
   let aktuelleIndex = Math.floor(Math.random() * begriffe.length);
   let currentMessage;
+  let skipTracker = new Map(); // userId -> überspringen count
 
   async function sendCurrentQuiz() {
     const current = begriffe[aktuelleIndex];
@@ -80,18 +82,17 @@ async function startEmojiQuiz(channel, interaction = null) {
 
   antwortCollector.on('collect', async (m) => {
     if (m.content.trim().toLowerCase() === current.begriff.toLowerCase()) {
-      const countdownSek = 2;
+      const countdownSek = 2; // Wartezeit bis nächste Runde
       const startNextRoundTimestamp = Math.floor(Date.now() / 1000) + countdownSek;
 
       await m.channel.send(
-        `${m.author} hat den gesuchten Begriff erraten! Die nächste Runde beginnt **<t:${startNextRoundTimestamp}:R>**.`
+        `${m.author} hat den gesuchten Begriff erraten! Die nächste Runde beginnt <t:${startNextRoundTimestamp}:R>.`
       );
 
       setTimeout(async () => {
         aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
-        const state = quizState.get(guildId);
-        state.ueberspringer.clear();
         ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+        skipTracker.clear();
       }, countdownSek * 1000);
     } else {
       try {
@@ -109,26 +110,30 @@ async function startEmojiQuiz(channel, interaction = null) {
     if (i.customId === 'ueberspringen') {
       await i.deferUpdate();
 
-      const state = quizState.get(guildId);
+      // Skip-Logik bei "einfach"
       if (current.schwierigkeit === 'einfach') {
-        if (!state.ueberspringer.has(i.user.id)) {
-          // erstes Mal überspringen
-          state.ueberspringer.add(i.user.id);
+        const userSkips = skipTracker.get(i.user.id) ?? 0;
+
+        if (userSkips === 0) {
+          skipTracker.set(i.user.id, 1);
           await i.followUp({ content: '> `🤨` » Jetzt streng dich an, so schwer ist das nicht.', ephemeral: true });
+          return;
         } else {
-          // zweites Mal überspringen: wirklich überspringen
+          // Zweites Mal skippen erlaubt
           aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
-          state.ueberspringer.clear();
           ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+          skipTracker.clear();
+          return;
         }
-      } else {
-        // mittel + schwer: sofort überspringen
-        aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
-        state.ueberspringer.clear();
-        ({ current, ersterBuchstabe } = await sendCurrentQuiz());
       }
+
+      // Für mittel und schwer sofort überspringen
+      aktuelleIndex = (aktuelleIndex + 1) % begriffe.length;
+      ({ current, ersterBuchstabe } = await sendCurrentQuiz());
+      skipTracker.clear();
+
     } else if (i.customId === 'erster_buchstabe') {
-      await i.reply({ content: `> \`🅰️\` » In Ordnung, mehr Tipps werde ich dir auch nicht mehr geben:: **${ersterBuchstabe}**`, ephemeral: true });
+      await i.reply({ content: `🅰️ Erster Buchstabe: **${ersterBuchstabe}**`, ephemeral: true });
     } else if (i.customId === 'neuer_begriff') {
       const modal = new ModalBuilder()
         .setCustomId('vorschlag_modal')
@@ -174,7 +179,7 @@ async function startEmojiQuiz(channel, interaction = null) {
     ersterBuchstabe,
     antwortCollector,
     buttonCollector,
-    ueberspringer: new Set(),
+    skipTracker,
   });
 }
 
@@ -206,36 +211,49 @@ module.exports = {
     const sub = interaction.options.getSubcommand();
     const guildId = interaction.guild.id;
 
-    // Falls DB und Settings gewünscht, hier aktivieren und anpassen:
-    /*
-    let settings = await EmojiquizSettings.findOne({ guildId });
-    if (!settings) {
-      settings = await EmojiquizSettings.create({ guildId, channelId: null });
-    }
-    */
+    // Wenn du EmojiquizSettings DB nutzen willst, hier entkommentieren und anpassen:
+    // let settings = await EmojiquizSettings.findOne({ guildId });
+    // if (!settings) {
+    //   settings = await EmojiquizSettings.create({ guildId, channelId: null });
+    // }
 
-    // Ohne DB Settings einfach festen Channel (hier: Channel aus "setchannel" Subcommand)
+    // Für Demo: Kein Settings-DB, stattdessen immer den Command-Kanal nehmen
+    // Du kannst das natürlich anpassen!
+
     if (sub === 'setchannel') {
       const channel = interaction.options.getChannel('channel');
 
-      // Starte Quiz sofort im Channel
+      // Direkt starten
       await startEmojiQuiz(channel, interaction);
+
+      // Bestätigung
+      await interaction.followUp({
+        content: `Alles klar, ich starte meine Emojiquiz-Runden ab sofort in ${channel}.`,
+        ephemeral: true,
+      });
       return;
     }
 
-    // Für Demo: Falls du Settings hast, prüfe hier, ob Kanal gesetzt ist
-    // Beispiel:
+    // Falls Settings benutzt: hier anpassen, sonst z.B. channel = interaction.channel;
+    // Beispiel mit DB:
     // if (!settings.channelId) {
-    //   return interaction.reply({ content: 'Bitte setze zuerst den Emojiquiz-Kanal mit /emojiquiz setchannel.', ephemeral: true });
+    //   return interaction.reply({
+    //     content: 'Bitte setze zuerst den Emojiquiz-Kanal mit /emojiquiz setchannel.',
+    //     ephemeral: true,
+    //   });
     // }
     // const quizChannel = await interaction.guild.channels.fetch(settings.channelId).catch(() => null);
     // if (!quizChannel) {
-    //   return interaction.reply({ content: 'Der Emojiquiz-Kanal ist nicht erreichbar. Bitte neu setzen.', ephemeral: true });
+    //   return interaction.reply({
+    //     content: 'Der Emojiquiz-Kanal ist nicht erreichbar oder wurde gelöscht. Bitte setze ihn neu.',
+    //     ephemeral: true,
+    //   });
     // }
 
+    const quizChannel = interaction.channel; // Für Demo hier den aktuellen Channel nehmen
+
     if (sub === 'repair') {
-      // Für Demo: channel von interaction.channel verwenden
-      await startEmojiQuiz(interaction.channel);
+      await startEmojiQuiz(quizChannel);
       return interaction.reply({ content: 'Emojiquiz wurde neu gestartet!', ephemeral: true });
     }
 
@@ -257,7 +275,6 @@ module.exports = {
     }
 
     if (sub === 'settings') {
-      // Beispiel: statische Anzeige ohne DB
       const embed = new EmbedBuilder()
         .setTitle('Emojiquiz Einstellungen')
         .setDescription(
@@ -322,7 +339,6 @@ module.exports = {
     }
   },
 
-  // Modal Submit Handler, im Client-Liste verwenden!
   async handleModalSubmit(interaction) {
     if (!interaction.isModalSubmit()) return false;
 
@@ -368,7 +384,7 @@ module.exports = {
       const id = interaction.customId.replace('edit_vorschlag_', '');
       const vorschlag = await EmojiquizVorschlag.findById(id);
       if (!vorschlag) {
-        await interaction.reply({ content: '> `❌` » Vorschlag nicht gefunden.', ephemeral: true });
+        await interaction.reply({ content: 'Vorschlag nicht gefunden.', ephemeral: true });
         return true;
       }
 
@@ -383,7 +399,7 @@ module.exports = {
       vorschlag.tipp = tipp;
       await vorschlag.save();
 
-      await interaction.reply({ content: '> `✅` » Vorschlag wurde aktualisiert!', ephemeral: true });
+      await interaction.reply({ content: 'Vorschlag wurde aktualisiert!', ephemeral: true });
       return true;
     }
 
