@@ -19,7 +19,7 @@ const begriffe = [
   { begriff: "Atomkraftwerk", emojis: "🔯🏭", schwierigkeit: "einfach", tipp: "Stromerzeuger" },
   { begriff: "Wasserrutsche", emojis: "🌊🎢", schwierigkeit: "mittel", tipp: "Im Freibad zu finden" },
   { begriff: "Eiffelturm", emojis: "🇫🇷🗼", schwierigkeit: "einfach", tipp: "Wahrzeichen in Paris" },
-  { begriff: "Fußballspieler", emojis: "⚽🧍‍♂️", schwierigkeit: "mittel", tipp: "Steht oft im Abseits" }
+  { begriff: "Steht oft im Abseits", emojis: "⚽🧍‍♂️", schwierigkeit: "mittel", tipp: "Fußballspieler" }
 ];
 
 let quizState = new Map(); // guildId -> { ... }
