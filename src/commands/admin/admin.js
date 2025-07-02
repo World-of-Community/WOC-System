@@ -151,17 +151,6 @@ module.exports = {
                         await member.roles.remove(role);
                         await member.roles.remove(teamrole)
 
-                        const dmEmbed = new EmbedBuilder()
-                            .setTitle('`❗` | __DU WURDEST AUS DEM SERVER-TEAM ENTLASSEN__')
-                            .setDescription(`Hallo ${member}, Du wurdest aus dem Server-Team entlassen.\n\nGrund: \`${reason}\``)
-                            .setColor('Red')
-                            .setTimestamp();
-            
-                        try {
-                            await member.send({ embeds: [dmEmbed] });
-                        } catch (dmError) {
-                            console.error('Fehler beim Senden der DM:', dmError);
-                        }
                         const kickEmbed = new EmbedBuilder()
                             .setTitle('`❌` | __TEAMMITGLIED ENTFERNT__')
                             .setDescription(`Der Nutzer ${member} wurde von ${interaction.user.displayName} aus dem Server-Team **Entfernt**.\n\nGrund: \`${reason}\``)
@@ -219,7 +208,7 @@ module.exports = {
                             await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
 
                             const TeamMeetingEmbed = new EmbedBuilder()
-                            .setTitle('📅 » Eine Team-Besprechung wurde geplant.')
+                            .setTitle('`📅` » Eine Team-Besprechung wurde geplant.')
                             .setDescription(`> **Datum:** ${day}.${month}.${year} ${hour}:${minute}\n> **Beschreibung:** ${description}`)
 
                             const remindMeButton = new ButtonBuilder()
