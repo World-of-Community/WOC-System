@@ -66,14 +66,14 @@ module.exports = {
       return;
     }
 
-    // Streak prüfen
+    // Streak prüfen (wenn nicht gestern abgeholt → Streak = 0)
     const gestern = new Date(now);
     gestern.setDate(now.getDate() - 1);
 
     if (user.lastDaily && user.lastDaily.toDateString() === gestern.toDateString()) {
       user.streak += 1;
     } else {
-      user.streak = 1;
+      user.streak = 0;
     }
 
     const Belohnung = 100;
@@ -111,3 +111,4 @@ module.exports = {
     }, 30000);
   }
 };
+
