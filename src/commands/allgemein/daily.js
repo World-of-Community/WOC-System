@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Coin } = require('../../../Datenbank/coindb');  // Coin Modell importieren
+const { Coin } = require('../../../Datenbank/coindb'); // Coin Modell importieren
 
 const bonusLevels = [
   { days: 10,  percent: 50 },
@@ -41,10 +41,11 @@ module.exports = {
       user = await Coin.create({ userId, coins: 0, streak: 0, lastDaily: null });
     }
 
-    const MS_24H = 24 * 60 * 60 * 1000;
+    // Wenn bereits heute abgeholt wurde
+    if (user.lastDaily && user.lastDaily.toDateString() === now.toDateString()) {
+      const naechsteMoeglichkeit = new Date();
+      naechsteMoeglichkeit.setHours(24, 0, 0, 0); // Heute um Mitternacht = morgen 0:00
 
-    if (user.lastDaily && now.getTime() < user.lastDaily.getTime() + MS_24H) {
-      const naechsteMoeglichkeit = new Date(user.lastDaily.getTime() + MS_24H);
       const unixTimestamp = Math.floor(naechsteMoeglichkeit.getTime() / 1000);
 
       await interaction.reply({
@@ -65,9 +66,12 @@ module.exports = {
       return;
     }
 
-    const tageSeitdem = user.lastDaily ? (now.getTime() - user.lastDaily.getTime()) / MS_24H : Infinity;
-    if (tageSeitdem <= 2) {
-      user.streak = (user.streak || 0) + 1;
+    // Streak prüfen
+    const gestern = new Date(now);
+    gestern.setDate(now.getDate() - 1);
+
+    if (user.lastDaily && user.lastDaily.toDateString() === gestern.toDateString()) {
+      user.streak += 1;
     } else {
       user.streak = 1;
     }
