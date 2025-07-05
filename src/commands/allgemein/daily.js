@@ -55,13 +55,8 @@ module.exports = {
             .setColor('Red')
             .setTitle('`⏳` Bereits abgeholt!')
             .setDescription(`Du kannst deine täglichen Coins wieder <t:${unixTimestamp}:R> abholen.\n(<t:${unixTimestamp}:F>)`)
-            .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' })
         ]
       });
-
-      setTimeout(() => {
-        interaction.deleteReply().catch(() => {});
-      }, 30000);
 
       return;
     }
@@ -102,13 +97,8 @@ module.exports = {
             `**Streak-Übersicht:**\n${bonusStatusText}\n\n` +
             `Komm morgen wieder, um deine Belohnung zu erhöhen!`
           )
-          .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' })
       ]
     });
-
-    setTimeout(() => {
-      interaction.deleteReply().catch(() => {});
-    }, 30000);
   }
 };
 
