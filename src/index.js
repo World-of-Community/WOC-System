@@ -39,7 +39,7 @@ listener.start();
 listener.onStreamOnline('727437860', async (handler) => {
     console.log(handler)
 })
-    */
+*/
 
 const buttonConfig = {
     1: { label: '1🎁', style: ButtonStyle.Primary },
@@ -180,11 +180,6 @@ const pingMessages = [
     'Legt euch lieber nicht mit mir an! `😈`',
     'Ich bin sehr Aufmerksam! `❗`'
 ];
-
-// Fussball Tabelle Updaten System 
-//setInterval(() => {
-//    fussballCommand.updateLeagueTable(client);
-//  }, 60 * 1000); // 60.000 ms = 1 Minute
 
 // MongoDB
 mongoose.connection.on('connected', () => {
