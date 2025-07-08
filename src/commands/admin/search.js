@@ -13,14 +13,14 @@ module.exports = {
     .setDescription('Zeigt Mitglieder, die in einem bestimmten Jahr dem Server beigetreten sind.')
     .addIntegerOption(option =>
       option.setName('jahr')
-        .setDescription('Das Jahr, z.b. 2022')
+        .setDescription('Das Jahr, z.B. 2022')
         .setRequired(true)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const jahr = interaction.options.getInteger('jahr');
-    await interaction.deferReply({ ephemeral: true }); // 👈 HIER ephemeral
+    await interaction.deferReply({ ephemeral: true });
 
     const allMembers = await interaction.guild.members.fetch();
     const gefiltert = allMembers.filter(member =>
@@ -33,7 +33,13 @@ module.exports = {
 
     const liste = gefiltert
       .sort((a, b) => a.joinedAt - b.joinedAt)
-      .map(m => `• <@${m.id}> (${m.user.tag}) – ${m.joinedAt.toLocaleDateString('de-DE')}`);
+      .map(m => {
+        const d = m.joinedAt;
+        const tag = String(d.getDate()).padStart(2, '0');
+        const monat = String(d.getMonth() + 1).padStart(2, '0');
+        const jahr = d.getFullYear();
+        return `• <@${m.id}> (${m.user.tag}) – ${tag}.${monat}.${jahr}`;
+      });
 
     const seiten = [];
     const proSeite = 10;
