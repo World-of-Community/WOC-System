@@ -49,7 +49,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle(`Mitglieder beigetreten im Jahr ${jahr}`)
         .setDescription(seitenInhalt)
-        .setFooter({ text: `Seite ${Math.floor(i / proSeite) + 1} von ${Math.ceil(liste.length / proSeite)}` })
+        .setFooter({ text: `Seite ${Math.floor(i / proSeite) + 1} von ${Math.ceil(liste.length / proSeite)} • ${liste.length} Mitglieder insgesamt` })
         .setColor('Blurple');
       seiten.push(embed);
     }
