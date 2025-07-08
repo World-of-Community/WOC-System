@@ -1,0 +1,92 @@
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  PermissionFlagsBits
+} = require('discord.js');
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('search')
+    .setDescription('Zeigt Mitglieder, die in einem bestimmten Jahr dem Server beigetreten sind.')
+    .addIntegerOption(option =>
+      option.setName('jahr')
+        .setDescription('Das Jahr, z.b. 2022')
+        .setRequired(true)
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
+  async execute(interaction) {
+    const jahr = interaction.options.getInteger('jahr');
+    await interaction.deferReply({ ephemeral: true }); // 👈 HIER ephemeral
+
+    const allMembers = await interaction.guild.members.fetch();
+    const gefiltert = allMembers.filter(member =>
+      member.joinedAt && member.joinedAt.getFullYear() === jahr
+    );
+
+    if (gefiltert.size === 0) {
+      return interaction.editReply(`> \`🔍\` » Es wurden **keine Mitglieder** gefunden, die im Jahr **${jahr}** dem Server beigetreten sind.`);
+    }
+
+    const liste = gefiltert
+      .sort((a, b) => a.joinedAt - b.joinedAt)
+      .map(m => `• <@${m.id}> (${m.user.tag}) – ${m.joinedAt.toLocaleDateString('de-DE')}`);
+
+    const seiten = [];
+    const proSeite = 10;
+
+    for (let i = 0; i < liste.length; i += proSeite) {
+      const seitenInhalt = liste.slice(i, i + proSeite).join('\n');
+      const embed = new EmbedBuilder()
+        .setTitle(`Mitglieder beigetreten im Jahr ${jahr}`)
+        .setDescription(seitenInhalt)
+        .setFooter({ text: `Seite ${Math.floor(i / proSeite) + 1} von ${Math.ceil(liste.length / proSeite)}` })
+        .setColor('Blurple');
+      seiten.push(embed);
+    }
+
+    let aktuelleSeite = 0;
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId('zurueck')
+        .setLabel('⬅️ Vorherige Seite')
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId('weiter')
+        .setLabel('➡️ Nächste Seite')
+        .setStyle(ButtonStyle.Primary)
+    );
+
+    const message = await interaction.editReply({
+      embeds: [seiten[aktuelleSeite]],
+      components: seiten.length > 1 ? [row] : []
+    });
+
+    if (seiten.length <= 1) return;
+
+    const collector = message.createMessageComponentCollector({
+      filter: i => i.user.id === interaction.user.id,
+    });
+
+    collector.on('collect', async i => {
+      if (i.customId === 'zurueck') {
+        aktuelleSeite = (aktuelleSeite === 0) ? seiten.length - 1 : aktuelleSeite - 1;
+      } else if (i.customId === 'weiter') {
+        aktuelleSeite = (aktuelleSeite + 1) % seiten.length;
+      }
+
+      await i.update({
+        embeds: [seiten[aktuelleSeite]],
+        components: [row]
+      });
+    });
+
+    collector.on('end', async () => {
+      await message.edit({ components: [] }).catch(() => {});
+    });
+  }
+};
