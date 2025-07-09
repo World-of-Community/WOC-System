@@ -584,111 +584,111 @@ module.exports = {
         }
 
         if (interaction.isButton()) {
-    if (interaction.customId.startsWith('editBanReason_')) {
-        const userId = interaction.customId.split('_')[1];
-
-        // Modal erstellen
-        const modal = new ModalBuilder()
-            .setCustomId(`banReasonModal_${userId}`)
-            .setTitle('Ban-Grund bearbeiten');
-
-        const banReasonInput = new TextInputBuilder()
-            .setCustomId('banReasonInput')
-            .setLabel("Neuer Ban-Grund")
-            .setStyle(TextInputStyle.Paragraph)
-            .setPlaceholder("Gib hier den neuen Ban-Grund ein")
-            .setRequired(true);
-
-        const firstActionRow = new ActionRowBuilder().addComponents(banReasonInput);
-
-        modal.addComponents(firstActionRow);
-
-        await interaction.showModal(modal);
-    }
-} else if (interaction.isModalSubmit()) {
-    if (interaction.customId.startsWith('banReasonModal_')) {
-        const userId = interaction.customId.split('_')[1];
-        const newReason = interaction.fields.getTextInputValue('banReasonInput');
-
-        // Datenbank aktualisieren
-        let userData = await bandb.findOne({ userId: userId });
-        if (!userData) {
-            userData = new bandb({
-                userId: userId,      // korrektes Feld
-                reason: newReason    // direktes Feld, kein 'ban' Objekt
-            });
-        } else {
-            userData.reason = newReason; // direktes Feld aktualisieren
-        }
-        await userData.save();
-
-        // User und Member holen
-        const guild = interaction.guild;
-        const user = await client.users.fetch(userId);
-        const member = await guild.members.fetch(userId).catch(() => null);
-
-        // Timeout- und Warnanzahl laden
-        const [timeoutCount, warnCount] = await Promise.all([
-            Timeout.countDocuments({ userId, guildId: guild.id }).catch(() => 0),
-            Warn.countDocuments({ userId, guildId: guild.id }).catch(() => 0)
-        ]);
-
-        // Bannstatus aktualisieren (nur lokal für Embed)
-        const banColor = 0xED4245;
-        const banEmoji = '`🔴`';
-
-        const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
-        const joinedAt = member?.joinedTimestamp
-            ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
-            : '`Nicht auf dem Server`';
-
-        // Neuen Embed bauen
-        const embed = new EmbedBuilder()
-            .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
-            .setColor(banColor)
-            .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
-            .setDescription(
-                `**\`📌\` Benutzerinformationen**\n` +
-                `> \`👤\` » Benutzername: \`${user.username}\`\n` +
-                `> \`🆔\` » Benutzer-ID: \`${user.id}\`\n` +
-                `> \`🏷️\` » Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n` +
-                `**\`⏰\` Mitglied Seit**\n` +
-                `> \`📅\` » Erstellt: ${createdAt}\n` +
-                `> \`📅\` » Beigetreten: ${joinedAt}\n\n` +
-                `**\`👮\` Moderation**\n` +
-                `> \`⛔\` » Bannstatus: ${banEmoji} **Gebannt**\n` +
-                `> \`📄\` » Grund: \`${newReason}\`\n` +
-                `> \`🔇\` » Timeouts: \`${timeoutCount}\`\n` +
-                `> \`❗\` » Warnungen: \`${warnCount}\``
-            )
-            .setFooter({ text: `${guild.name} | Userinfo`, iconURL: guild.iconURL() || user.displayAvatarURL() })
-            .setTimestamp();
-
-        // Button zum erneuten Bearbeiten anbieten
-        const components = [
-            new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                    .setCustomId(`editBanReason_${user.id}`)
-                    .setLabel('📝 Ban-Grund ändern')
-                    .setStyle(ButtonStyle.Secondary)
-            )
-        ];
-
-        // Antwort mit neuem Embed aktualisieren (falls Modal von ephemeral Nachricht kommt, musst du interaction.message holen)
-        try {
-            if (interaction.message) {
-                // Falls Modal von Message kommt (z.B. modal response to ephemeral)
-                await interaction.update({ embeds: [embed], components });
-            } else {
-                // Falls Modal separat ohne Message, einfach antworten
-                await interaction.reply({ content: 'Ban-Grund wurde aktualisiert.', ephemeral: true });
+          if (interaction.customId.startsWith('editBanReason_')) {
+              const userId = interaction.customId.split('_')[1];
+      
+              // Modal erstellen
+              const modal = new ModalBuilder()
+                  .setCustomId(`banReasonModal_${userId}`)
+                  .setTitle('Ban-Grund bearbeiten');
+      
+              const banReasonInput = new TextInputBuilder()
+                  .setCustomId('banReasonInput')
+                  .setLabel("Neuer Ban-Grund")
+                  .setStyle(TextInputStyle.Paragraph)
+                  .setPlaceholder("Gib hier den neuen Ban-Grund ein")
+                  .setRequired(true);
+      
+              const firstActionRow = new ActionRowBuilder().addComponents(banReasonInput);
+      
+              modal.addComponents(firstActionRow);
+      
+              await interaction.showModal(modal);
+          }
+        } else if (interaction.isModalSubmit()) {
+            if (interaction.customId.startsWith('banReasonModal_')) {
+              const userId = interaction.customId.split('_')[1];
+              const newReason = interaction.fields.getTextInputValue('banReasonInput');
+      
+              // Datenbank aktualisieren
+              let userData = await bandb.findOne({ userId: userId });
+              if (!userData) {
+                  userData = new bandb({
+                      userId: userId,      // korrektes Feld
+                      reason: newReason    // direktes Feld, kein 'ban' Objekt
+                  });
+              } else {
+                  userData.reason = newReason; // direktes Feld aktualisieren
+              }
+              await userData.save();
+      
+              // User und Member holen
+              const guild = interaction.guild;
+              const user = await client.users.fetch(userId);
+              const member = await guild.members.fetch(userId).catch(() => null);
+      
+              // Timeout- und Warnanzahl laden
+              const [timeoutCount, warnCount] = await Promise.all([
+                  Timeout.countDocuments({ userId, guildId: guild.id }).catch(() => 0),
+                  Warn.countDocuments({ userId, guildId: guild.id }).catch(() => 0)
+              ]);
+      
+              // Bannstatus aktualisieren (nur lokal für Embed)
+              const banColor = 0xED4245;
+              const banEmoji = '`🔴`';
+      
+              const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
+              const joinedAt = member?.joinedTimestamp
+                  ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
+                  : '`Nicht auf dem Server`';
+      
+              // Neuen Embed bauen
+              const embed = new EmbedBuilder()
+                  .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
+                  .setColor(banColor)
+                  .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+                  .setDescription(
+                      `**\`📌\` Benutzerinformationen**\n` +
+                      `> \`👤\` » Benutzername: \`${user.username}\`\n` +
+                      `> \`🆔\` » Benutzer-ID: \`${user.id}\`\n` +
+                      `> \`🏷️\` » Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n` +
+                      `**\`⏰\` Mitglied Seit**\n` +
+                      `> \`📅\` » Erstellt: ${createdAt}\n` +
+                      `> \`📅\` » Beigetreten: ${joinedAt}\n\n` +
+                      `**\`👮\` Moderation**\n` +
+                      `> \`⛔\` » Bannstatus: ${banEmoji} **Gebannt**\n` +
+                      `> \`📄\` » Grund: \`${newReason}\`\n` +
+                      `> \`🔇\` » Timeouts: \`${timeoutCount}\`\n` +
+                      `> \`❗\` » Warnungen: \`${warnCount}\``
+                  )
+                  .setFooter({ text: `${guild.name} | Userinfo`, iconURL: guild.iconURL() || user.displayAvatarURL() })
+                  .setTimestamp();
+      
+              // Button zum erneuten Bearbeiten anbieten
+              const components = [
+                  new ActionRowBuilder().addComponents(
+                      new ButtonBuilder()
+                          .setCustomId(`editBanReason_${user.id}`)
+                          .setLabel('📝 Ban-Grund ändern')
+                          .setStyle(ButtonStyle.Secondary)
+                  )
+              ];
+      
+              // Antwort mit neuem Embed aktualisieren (falls Modal von ephemeral Nachricht kommt, musst du interaction.message holen)
+              try {
+                  if (interaction.message) {
+                      // Falls Modal von Message kommt (z.B. modal response to ephemeral)
+                      await interaction.update({ embeds: [embed], components });
+                  } else {
+                      // Falls Modal separat ohne Message, einfach antworten
+                      await interaction.reply({ content: 'Ban-Grund wurde aktualisiert.', ephemeral: true });
+                  }
+              } catch {
+                  // Fallback, falls update nicht klappt
+                  await interaction.reply({ content: 'Ban-Grund wurde aktualisiert.', ephemeral: true });
+              }
             }
-        } catch {
-            // Fallback, falls update nicht klappt
-            await interaction.reply({ content: 'Ban-Grund wurde aktualisiert.', ephemeral: true });
         }
-    }
-}
 
         if (interaction.isButton() && interaction.customId === 'create_feedback_ticket') {
             const feedbackModal = new ModalBuilder()

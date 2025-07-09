@@ -118,7 +118,7 @@ module.exports = {
             const gebanntButton = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
-                        .setCustomId('bann-ticket')
+                        .setCustomId('gebannt-ticket')
                         .setLabel('⛔ » Bann Ticket')
                         .setStyle(ButtonStyle.Primary)
                 )
