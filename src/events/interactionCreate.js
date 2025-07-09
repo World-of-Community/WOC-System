@@ -883,8 +883,8 @@ module.exports = {
                 
                 interaction.reply({ content: `<@${interaction.user.id}>`, embeds: [embed], components: [buttons] })
             }
-            else if (interaction.customId === 'bann-ticket') {
-                const bannModal = new ModalBuilder()
+            else if (interaction.customId === 'gebannt-ticket') {
+                const gebanntModal = new ModalBuilder()
                 .setTitle('⛔ - ENTBANNUNGSTICKET')
                 .setCustomId('bann-modal');
 
@@ -908,14 +908,14 @@ module.exports = {
                     .setRequired(true)
                 )
 
-                bannModal.addComponents(BanngrundInput, EntbannungsbeschreibungInput);
+                gebanntModal.addComponents(BanngrundInput, EntbannungsbeschreibungInput);
 
-                await interaction.showModal(bannModal)
+                await interaction.showModal(gebanntModal)
             }
         }
         
         if (interaction.isModalSubmit()) {
-            if (interaction.customId === "bann-modal") {
+            if (interaction.customId === "gebannt-modal") {
                 const bannInfo = await interaction.fields.getTextInputValue('banngrund');
                 const bannDescription = await interaction.fields.getTextInputValue('entbannungsbeschreibung');
                 
