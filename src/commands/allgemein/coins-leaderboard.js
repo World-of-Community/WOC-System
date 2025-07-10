@@ -28,7 +28,7 @@ module.exports = {
         user = { username: 'Unbekannter Nutzer', tag: '❓', id: userId };
       }
 
-      description += `\`#${i + 1}\` **${user.tag || user.username}** – **${coins} Coins**\n`;
+      description += `\`#${i + 1}\` mit **${coins} Coins** ist **${user.tag || user.username}**\n`;
     }
 
     const leaderboardEmbed = new EmbedBuilder()
