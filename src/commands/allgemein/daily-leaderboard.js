@@ -33,12 +33,7 @@ module.exports = {
       .setColor('Gold')
       .setTitle('`🏆` Top 10 Streak Leaderboard')
       .setDescription(leaderboard)
-      .setFooter({ text: 'Nachricht wird in 30 Sekunden gelöscht.' });
 
-    const reply = await interaction.reply({ embeds: [embed], fetchReply: true });
-
-    setTimeout(() => {
-      reply.delete().catch(() => {});
-    }, 30000);
+    const reply = await interaction.reply({ embeds: [embed], fetchReply: true, ephemeral: true });
   }
 };
