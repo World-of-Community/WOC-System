@@ -7,7 +7,6 @@ module.exports = {
     .setDescription('» Zeigt die Top 10 Nutzer mit den meisten Coins an. 🏆'),
 
   async execute(interaction) {
-    // Wichtig: ephemeral direkt beim Defer setzen
     await interaction.deferReply({ ephemeral: true });
 
     const topCoins = await Coin.find().sort({ coins: -1 }).limit(10);
@@ -21,14 +20,7 @@ module.exports = {
       const userId = topCoins[i].userId;
       const coins = topCoins[i].coins.toLocaleString('de-DE');
 
-      let user;
-      try {
-        user = await interaction.client.users.fetch(userId);
-      } catch {
-        user = { username: 'Unbekannter Nutzer', tag: '❓', id: userId };
-      }
-
-      description += `\`#${i + 1}\` mit **${coins} Coins** ist **${user.tag || user.username}**\n`;
+      description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}>\n`;
     }
 
     const leaderboardEmbed = new EmbedBuilder()
