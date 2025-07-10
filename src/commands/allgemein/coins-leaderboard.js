@@ -7,9 +7,9 @@ module.exports = {
     .setDescription('» Zeigt die Top 10 Nutzer mit den meisten Coins an. 🏆'),
 
   async execute(interaction) {
-    await interaction.deferReply();
+    // Wichtig: ephemeral direkt beim Defer setzen
+    await interaction.deferReply({ ephemeral: true });
 
-    // Top 10 Nutzer nach Coins sortiert
     const topCoins = await Coin.find().sort({ coins: -1 }).limit(10);
 
     if (!topCoins.length) {
@@ -38,6 +38,6 @@ module.exports = {
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })
       .setTimestamp();
 
-    await interaction.editReply({ embeds: [leaderboardEmbed], ephemeral: true });
+    await interaction.editReply({ embeds: [leaderboardEmbed] });
   },
 };
