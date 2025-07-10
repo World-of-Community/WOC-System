@@ -32,7 +32,7 @@ module.exports = {
     }
 
     const leaderboardEmbed = new EmbedBuilder()
-      .setTitle('🏆 Coin Leaderboard')
+      .setTitle('`🏆` Coin Leaderboard')
       .setDescription(description)
       .setColor('Gold')
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })
