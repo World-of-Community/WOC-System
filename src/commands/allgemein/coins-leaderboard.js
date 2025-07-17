@@ -22,7 +22,7 @@ module.exports = {
 
       try {
         const user = await interaction.client.users.fetch(userId);
-        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (${user.tag})\n`;
+        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (${username})\n`;
       } catch (error) {
         // Falls der User nicht gefunden werden kann
         description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (Unbekannt)\n`;
