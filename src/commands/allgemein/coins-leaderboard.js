@@ -20,7 +20,7 @@ module.exports = {
       const userId = topCoins[i].userId;
       const coins = topCoins[i].coins.toLocaleString('de-DE');
 
-      description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}>\n`;
+      description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (${user.tag})\n`;
     }
 
     const leaderboardEmbed = new EmbedBuilder()
