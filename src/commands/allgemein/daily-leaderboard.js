@@ -36,7 +36,7 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setColor('Gold')
-      .setTitle('`🏆` Top 10 Streak Leaderboard')
+      .setTitle('`🏆` Top 10 Daily-Streak Leaderboard')
       .setDescription(leaderboardLines.join('\n'))
       .setFooter({ text: `» ${interaction.guild.name} | Daily-System`, iconURL: interaction.guild.iconURL() })
       .setTimestamp();
