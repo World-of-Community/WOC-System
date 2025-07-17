@@ -20,14 +20,23 @@ module.exports = {
       const userId = topCoins[i].userId;
       const coins = topCoins[i].coins.toLocaleString('de-DE');
 
-      description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (${user.tag})\n`;
+      try {
+        const user = await interaction.client.users.fetch(userId);
+        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (${user.tag})\n`;
+      } catch (error) {
+        // Falls der User nicht gefunden werden kann
+        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (Unbekannt)\n`;
+      }
     }
 
     const leaderboardEmbed = new EmbedBuilder()
       .setTitle('`🏆` Coin Leaderboard')
       .setDescription(description)
       .setColor('Gold')
-      .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })
+      .setFooter({
+        text: `» ${interaction.guild.name} | Coin-System`,
+        iconURL: interaction.guild.iconURL()
+      })
       .setTimestamp();
 
     await interaction.editReply({ embeds: [leaderboardEmbed] });
