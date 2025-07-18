@@ -31,7 +31,7 @@ module.exports = {
         const member = await guild.members.fetch(user.userID).catch(() => null);
         const name = member?.user?.tag || `Unbekannt (${user.userID})`;
         const stunden = Math.floor(user.onlineTime / 3600000);
-        return `\`#${index + 1}.\` mit \`${stunden}h\` ist <@${user.id}> (${user.tag})`;
+        return `\`${index + 1}\` mit \`${stunden}h\` ist <@${user.userID}> (${name})`;
       }));
 
       const embed = new EmbedBuilder()
