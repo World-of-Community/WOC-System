@@ -246,6 +246,14 @@ module.exports = {
         // Onlinezeit in Stunden berechnen
         const onlineTimeHours = Math.floor((userData.onlineTime || 0) / 3600000);
 
+        const status = member.presence?.status || "offline";
+        let lastOnlineText = null;
+        
+        if (status === "offline" && userData.lastOnline instanceof Date && !isNaN(userData.lastOnline)) {
+            const timestamp = Math.floor(userData.lastOnline.getTime() / 1000);
+            lastOnlineText = `- \`📌\` » Zuletzt online: <t:${timestamp}:t> – <t:${timestamp}:d>\n`;
+        }
+
         // Embed bauen
         const embed = new EmbedBuilder()
             .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
@@ -259,6 +267,7 @@ module.exports = {
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                 `> \`🏆\` **» ALLE STATISTIKEN**\n` +
                 `- \`🟢\` » Onlinezeit: \`${onlineTimeHours}h\`\n` +
+                (lastOnlineText || '') +
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
                 `- \`🔊\` » \`${(userData.giveaway.voiceTime / 3600000).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n` +
