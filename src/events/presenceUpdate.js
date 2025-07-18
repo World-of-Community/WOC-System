@@ -1,5 +1,6 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
+const userdb = require("../../../Datenbank/userdb");
 
 module.exports = {
     name: Events.PresenceUpdate,
@@ -25,6 +26,19 @@ module.exports = {
             if (member.roles.cache.has(role.id)) {
                 await member.roles.remove(role).catch(() => {});
             }
+        }
+
+        // Wenn Statuswechsel zu "offline"
+        if (newStatus === 'offline' && oldStatus !== 'offline') {
+          try {
+            await userdb.updateOne(
+              { userId: member.id },
+              { $set: { lastOnline: new Date() } },
+              { upsert: true }
+            );
+          } catch (err) {
+            console.error(`Fehler beim Speichern von lastOnline für ${member.id}:`, err);
+          }
         }
 
         // Streamer-Aktivität prüfen
