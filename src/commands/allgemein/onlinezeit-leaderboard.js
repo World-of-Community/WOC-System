@@ -37,7 +37,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle('`🏆` Top 10 Onlinezeit Leaderboard')
         .setDescription(lines.join('\n'))
-        .setColor('Blurple')
+        .setColor('Green')
         .setFooter({ text: 'Basierend auf der Gesamt-Onlinezeit (Stunden)' })
         .setTimestamp();
 

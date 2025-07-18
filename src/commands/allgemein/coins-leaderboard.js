@@ -30,7 +30,7 @@ module.exports = {
     }
 
     const leaderboardEmbed = new EmbedBuilder()
-      .setTitle('`🏆` Coin Leaderboard')
+      .setTitle('`🏆` Top 10 Coins Leaderboard')
       .setDescription(description)
       .setColor('Gold')
       .setFooter({
