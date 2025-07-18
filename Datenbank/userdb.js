@@ -111,7 +111,9 @@ const userSchema = new mongoose.Schema({
     invitedBy: {
     type: String,
     required: false,
-    }
+    },
+
+    onlineTime: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model('user-data', userSchema)
