@@ -41,7 +41,7 @@ module.exports = {
         .setFooter({ text: 'Basierend auf der Gesamt-Onlinezeit (Stunden)' })
         .setTimestamp();
 
-      return interaction.reply({ embeds: [embed] });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
     // Wenn Nutzer angegeben: dessen Rang anzeigen
