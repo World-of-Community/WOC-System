@@ -273,7 +273,7 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        const onlineTimeHours = Math.floor((userData.onlineTime || 0) / 3.6e+6);
+        const onlineTimeHours = Math.floor((userData.onlineTime || 0) / 3600000);
 
         if (userData) {
             const embed = new EmbedBuilder()
