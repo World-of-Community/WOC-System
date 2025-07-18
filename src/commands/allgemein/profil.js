@@ -280,6 +280,8 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
+        const onlineTimeHours = Math.floor((userData.onlineTime || 0) / 3.6e+6);
+
         if (userData) {
             const embed = new EmbedBuilder()
                 .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
@@ -289,6 +291,7 @@ module.exports = {
                     `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n` +
                     //`- \`📌\` » Abzeichen: ${badgeDisplay}\n` +
                     `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
+                    `- \`🟢\` » Onlinezeit: **${onlineTimeHours}h**\n`
                     `${outputText}\n` +
                     `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                     `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
