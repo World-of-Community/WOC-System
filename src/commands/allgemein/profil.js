@@ -14,13 +14,6 @@ module.exports = {
             return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
         }
 
-        //const roleNationalität = {
-        //    'Deutschland': ':flag_de:',
-        //    'Österreich': ':flag_at:',
-        //    'Schweiz': ':flag_ch:',
-        //    'England': ':england:',
-        //};
-
         const roleBundesland = {
             'Baden-Württemberg': 'Baden-Württemberg',
             'Bayern': 'Bayern',
