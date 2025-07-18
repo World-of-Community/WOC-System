@@ -255,12 +255,12 @@ module.exports = {
                 `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n` +
                 `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
                 `${outputText}\n` +
-                `- \`🟢\` » Onlinezeit: \`${onlineTimeHours}h\`\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                 `> \`🏆\` **» ALLE STATISTIKEN**\n` +
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
+                `- \`🟢\` » Onlinezeit: \`${onlineTimeHours}h\`\n` +
                 `- \`🔊\` » \`${(userData.giveaway.voiceTime / 3600000).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n` +
                 `\`📡\` » Du hast **${inviteJoins}** User eingeladen.\n` +
                 `(\`${totalInvites}\` Gesamt, \`${inviteBonus}\` Bonus & \`${inviteLeft}\` Verlassen)\n\n` +
