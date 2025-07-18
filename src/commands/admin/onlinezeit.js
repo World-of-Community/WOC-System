@@ -77,6 +77,9 @@ module.exports = {
       }
     }
 
+    // 🟩 Immer aktualisieren: letzte Aktivität auf jetzt setzen
+    userData.lastOnline = new Date();
+
     await userData.save();
     await interaction.reply({ content: message, ephemeral: true });
   }
