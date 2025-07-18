@@ -1,6 +1,6 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
-const userdb = require("../../../Datenbank/userdb");
+const userdb = require("../../Datenbank/userdb");
 
 module.exports = {
     name: Events.PresenceUpdate,
