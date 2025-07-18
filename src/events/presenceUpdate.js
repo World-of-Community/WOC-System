@@ -28,6 +28,9 @@ module.exports = {
             }
         }
 
+        const oldStatus = oldPresence?.status;
+        const newStatus = newPresence.status;
+
         // Wenn Statuswechsel zu "offline"
         if (newStatus === 'offline' && oldStatus !== 'offline') {
           try {
