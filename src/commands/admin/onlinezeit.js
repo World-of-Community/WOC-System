@@ -46,7 +46,7 @@ module.exports = {
         const hours = interaction.options.getInteger('stunden');
         const ms = hours * 3600000;
         userData.onlineTime += ms;
-        message = `> \`✅\` » \`${hours}h\` zur Onlinezeit von ${user.username} hinzugefügt.`;
+        message = `> \`✅\` » ${user} wurde eine Onlinezeit von \`${hours}h\` hinzugefügt.`;
         break;
       }
 
@@ -62,7 +62,7 @@ module.exports = {
         const hours = interaction.options.getInteger('stunden');
         const ms = hours * 3600000;
         userData.onlineTime = ms;
-        message = `> \`✅\` » Onlinezeit von ${user.username} auf \`${hours}h\` gesetzt.`;
+        message = `> \`✅\` » Die Onlinezeit von ${user} wurde auf \`${hours}h\` gesetzt.`;
         break;
       }
 
@@ -71,7 +71,8 @@ module.exports = {
         userData.onlineTime += ms;
         if (userData.onlineTime < 0) userData.onlineTime = 0;
         const totalHours = Math.floor(userData.onlineTime / 3600000);
-        message = `> \`✅\` » Onlinezeit von ${user.username} um \`${ms} ms\` verändert. Neue Onlinezeit: \`${totalHours}h\`.`;
+        const sign = ms >= 0 ? 'hinzugefügt' : 'abgezogen';
+        message = `> \`✅\` » Onlinezeit von ${user} wurde um \`${ms}ms\` ${sign}. Neue Onlinezeit: \`${totalHours}h\`.`;
         break;
       }
     }
