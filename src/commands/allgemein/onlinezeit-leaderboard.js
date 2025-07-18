@@ -56,7 +56,7 @@ module.exports = {
     const platz = userIndex + 1;
 
     const embed = new EmbedBuilder()
-      .setTitle('📊 Onlinezeit-Rang')
+      .setTitle('`📊` Onlinezeit-Rang')
       .setDescription(
         `> \`👤\` » Nutzer: <@${selectedUser.id}> (${selectedUser.tag})\n` +
         `> \`🕐\` » Onlinezeit: \`${stunden}h\`\n` +
