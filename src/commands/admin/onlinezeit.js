@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const userdb = require('../../../Datenbank/userdb');
-const onlineMap = require("../src/Maps/onlinemap");
+const onlineMap = require("../../../Maps/onlinemap");
 
 module.exports = {
   data: new SlashCommandBuilder()
