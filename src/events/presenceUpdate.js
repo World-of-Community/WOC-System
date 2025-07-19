@@ -2,6 +2,7 @@ const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const userdb = require("../../Datenbank/userdb");
 const onlineMap = require('../Maps/onlinemap');
+const lastOnlineMap = require('../../Maps/lastOnlineMap');
 
 module.exports = {
     name: Events.PresenceUpdate,
@@ -42,6 +43,14 @@ module.exports = {
             lastOnline: Date.now(),
             // evtl. weitere Daten...
           });
+        }
+
+        // Wenn Nutzer offline oder unsichtbar wird, speichern wir den Zeitstempel
+        if (
+          (oldPresence?.status !== 'offline' && newPresence?.status === 'offline') ||
+          (oldPresence?.status !== 'invisible' && newPresence?.status === 'offline') // Unsichtbar zählt auch als offline
+        ) {
+          lastOnlineMap.set(userId, new Date());
         }
 
         // Streamer-Aktivität prüfen

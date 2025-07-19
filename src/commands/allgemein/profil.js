@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const userdb = require('../../../Datenbank/userdb');
 const onlineMap = require("../../Maps/onlinemap");
+const lastOnlineMap = require('../../Maps/lastOnlineMap');
 
 module.exports = {
     data: new SlashCommandBuilder()
