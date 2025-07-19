@@ -1,6 +1,7 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const userdb = require("../../Datenbank/userdb");
+const onlineMap = require('../../Maps/onlinemap');
 
 module.exports = {
     name: Events.PresenceUpdate,
@@ -31,17 +32,16 @@ module.exports = {
         const oldStatus = oldPresence?.status;
         const newStatus = newPresence.status;
 
-        // Wenn Statuswechsel zu "offline"
-        if (newStatus === 'offline' && oldStatus !== 'offline') {
-          try {
-            await userdb.updateOne(
-              { userId: member.id },
-              { $set: { lastOnline: new Date() } },
-              { upsert: true }
-            );
-          } catch (err) {
-            console.error(`Fehler beim Speichern von lastOnline für ${member.id}:`, err);
-          }
+        const userId = newPresence.userId;
+
+        if (!newPresence || !newPresence.status) return;
+      
+        if (newPresence.status === 'offline' || newPresence.status === 'invisible') {
+          // User offline oder unsichtbar, speichere Zeit
+          onlineMap.set(userId, {
+            lastOnline: Date.now(),
+            // evtl. weitere Daten...
+          });
         }
 
         // Streamer-Aktivität prüfen
