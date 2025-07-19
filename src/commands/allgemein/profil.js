@@ -247,12 +247,15 @@ module.exports = {
         const onlineTimeHours = onlineMap.get(member.id) || 0;
 
         const status = member.presence?.status || "offline";
-        let lastOnlineText = null;
-        
-        if (status === "offline" && userData.lastOnline && !isNaN(new Date(userData.lastOnline))) {
-            const timestamp = Math.floor(new Date(userData.lastOnline).getTime() / 1000);
-            lastOnlineText = `- \`📌\` » Zuletzt online: <t:${timestamp}:t> – <t:${timestamp}:d>\n`;
-        }
+
+        let lastOnlineText = '';
+        if (status === 'offline' && userData.lastOnline) {
+          const lastOnlineDate = new Date(userData.lastOnline);
+          // z.B. "➥ Zuletzt online: 12:00 - 25.05.2025"
+          const timeStr = lastOnlineDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+          const dateStr = lastOnlineDate.toLocaleDateString('de-DE');
+          lastOnlineText = `➥ Zuletzt online: ${timeStr} - ${dateStr}\n`;
+        } 
 
         // Embed bauen
         const embed = new EmbedBuilder()
