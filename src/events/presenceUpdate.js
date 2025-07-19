@@ -1,7 +1,7 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const userdb = require("../../Datenbank/userdb");
-const onlineMap = require('../../Maps/onlinemap');
+const onlineMap = require('../../../Maps/onlinemap');
 
 module.exports = {
     name: Events.PresenceUpdate,
