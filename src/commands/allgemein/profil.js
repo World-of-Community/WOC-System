@@ -233,7 +233,6 @@ module.exports = {
         // User-Daten aus DB abrufen
         const userData = await userdb.findOne({ userID: member.id }) || {
             giveaway: { eventWins: 0, messages: 0, voiceTime: 0 },
-            onlineTime: 0,
             invites: { joins: 0, left: 0, bonus: 0 }
         };
 
