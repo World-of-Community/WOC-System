@@ -1,4 +1,4 @@
-const onlineMap = require("../../../Maps/onlinemap");
+const onlineMap = require("../Maps/onlinemap");
 
 module.exports = (client) => {
   setInterval(async () => {
