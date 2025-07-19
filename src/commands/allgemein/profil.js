@@ -246,12 +246,14 @@ module.exports = {
         // Nur aus Map (in vollen Stunden)
         const onlineTimeHours = onlineMap.get(member.id) || 0;
 
-        const status = member.presence?.status || "offline";
+        const status = member.presence?.status || 'offline';
 
+        // Für unsichtbar gilt hier auch 'offline', daher behandeln wir beides gleich:
+        const isOfflineOrInvisible = status === 'offline';
+        
         let lastOnlineText = '';
-        if (status === 'offline' && userData.lastOnline) {
+        if (isOfflineOrInvisible && userData.lastOnline) {
           const lastOnlineDate = new Date(userData.lastOnline);
-          // z.B. "➥ Zuletzt online: 12:00 - 25.05.2025"
           const timeStr = lastOnlineDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
           const dateStr = lastOnlineDate.toLocaleDateString('de-DE');
           lastOnlineText = `➥ Zuletzt online: ${timeStr} - ${dateStr}\n`;
