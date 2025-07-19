@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const onlineMap = require("../../../Maps/onlinemap");
+const onlineMap = require("../../Maps/onlinemap");
 
 module.exports = {
     data: new SlashCommandBuilder()
