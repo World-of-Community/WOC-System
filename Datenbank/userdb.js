@@ -101,9 +101,6 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-
-    onlineTime: { type: Number, default: 0 },
-    lastOnline: { type: Number, default: 0 },
     
     invites: {
     joins: { type: Number, default: 0 },

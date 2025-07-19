@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const userdb = require("../../../Datenbank/userdb");
+const onlineMap = require("../../../Maps/onlinemap");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -243,8 +243,8 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        // Onlinezeit in Stunden berechnen
-        const onlineTimeHours = Math.floor((userData.onlineTime || 0) / 3600000);
+        // Nur aus Map (in vollen Stunden)
+        const onlineTimeHours = onlineMap.get(member.id) || 0;
 
         const status = member.presence?.status || "offline";
         let lastOnlineText = null;
