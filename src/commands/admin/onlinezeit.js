@@ -3,7 +3,7 @@ const onlineMap = require("../../Maps/onlinemap");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('onlinezeit')
+    .setName('onlinezeit-manage')
     .setDescription('» Verwalte die Onlinezeit eines Nutzers.')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand(sub =>
