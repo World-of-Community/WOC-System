@@ -246,18 +246,21 @@ module.exports = {
         // Nur aus Map (in vollen Stunden)
         const onlineTimeHours = onlineMap.get(member.id) || 0;
 
-        const status = member.presence?.status || 'offline';
-
-        // Für unsichtbar gilt hier auch 'offline', daher behandeln wir beides gleich:
-        const isOfflineOrInvisible = status === 'offline';
+        const status = member.presence?.status || "offline";
+        let lastOnlineText = null;
         
-        let lastOnlineText = '';
-        if (isOfflineOrInvisible && userData.lastOnline) {
-          const lastOnlineDate = new Date(userData.lastOnline);
-          const timeStr = lastOnlineDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-          const dateStr = lastOnlineDate.toLocaleDateString('de-DE');
-          lastOnlineText = `➥ Zuletzt online: ${timeStr} - ${dateStr}\n`;
-        } 
+        if (
+          status === "offline" &&
+          userData.lastOnline instanceof Date &&
+          !isNaN(userData.lastOnline)
+        ) {
+          const time = userData.lastOnline.toLocaleTimeString("de-DE", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const date = userData.lastOnline.toLocaleDateString("de-DE");
+          lastOnlineText = `- \`📅\` » Zuletzt online: \`${time} - ${date}\`\n`;
+        }
 
         // Embed bauen
         const embed = new EmbedBuilder()
@@ -272,7 +275,7 @@ module.exports = {
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                 `> \`🏆\` **» ALLE STATISTIKEN**\n` +
                 `- \`🟢\` » Onlinezeit: \`${onlineTimeHours}\` Stunden\n` +
-                (lastOnlineText || '') +
+                (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
                 `- \`🔊\` » \`${(userData.giveaway.voiceTime / 3600000).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n` +
