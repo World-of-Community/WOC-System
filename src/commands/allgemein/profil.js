@@ -249,8 +249,8 @@ module.exports = {
         const status = member.presence?.status || "offline";
         let lastOnlineText = null;
         
-        if (status === "offline" && userData.lastOnline instanceof Date && !isNaN(userData.lastOnline)) {
-            const timestamp = Math.floor(userData.lastOnline.getTime() / 1000);
+        if (status === "offline" && userData.lastOnline && !isNaN(new Date(userData.lastOnline))) {
+            const timestamp = Math.floor(new Date(userData.lastOnline).getTime() / 1000);
             lastOnlineText = `- \`📌\` » Zuletzt online: <t:${timestamp}:t> – <t:${timestamp}:d>\n`;
         }
 
