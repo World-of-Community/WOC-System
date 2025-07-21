@@ -78,7 +78,7 @@ module.exports = {
           const embed = new EmbedBuilder()
             .setTitle('`🌐` Minecraft-Server IP')
             .setDescription(
-                `> \`📡\` » Die IP des Servers lautet: \`${mcServerIP}\`\n` +
+                `> \`📡\` » Die IP des Servers lautet: \`\`\`${mcServerIP}\`\`\`\n` +
                 `> \`⚙️\` » Version: **ab 1.20.4**\n\n` +
                 `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`)
             .setColor('Green');
