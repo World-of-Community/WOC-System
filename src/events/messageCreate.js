@@ -80,6 +80,7 @@ module.exports = {
             .setDescription(
                 `> \`📡\` » Die IP des Servers lautet: \n` +
                 `\`\`\`${mcServerIP}\`\`\`\n` +
+                `(*Kannst du kopieren*)\n` +
                 `> \`⚙️\` » Version: **ab 1.20.4**\n\n` +
                 `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`)
             .setColor('Green');
