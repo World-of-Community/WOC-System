@@ -74,11 +74,16 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('remove')
-                .setDescription('» Entferne ein Team Mitglied. 📌')
+                .setDescription('» Entferne ein Team-Mitglied. 📌')
                 .addUserOption(option =>
                     option.setName('user')
-                        .setDescription('Welches Teammitglied soll entfernt werden?')
-                        .setRequired(true)))
+                        .setDescription('» Discord-Nutzer auswählen')
+                        .setRequired(false))
+                .addStringOption(option =>
+                    option.setName('userid')
+                        .setDescription('» Oder gib eine Discord-ID manuell ein')
+                        .setRequired(false))
+                )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
@@ -173,13 +178,31 @@ module.exports = {
 
         else if (subcommand === 'remove') {
             const user = interaction.options.getUser('user');
-            const member = await TeamInfo.findOneAndDelete({ userID: user.id });
-
+            const userId = interaction.options.getString('userid');
+            const idToRemove = user?.id || userId;
+        
+            if (!idToRemove) {
+                return interaction.reply({
+                    content: '> `❗` » Bitte gib einen Nutzer an oder eine ID ein.',
+                    ephemeral: true
+                });
+            }
+        
+            const member = await TeamInfo.findOneAndDelete({ userID: idToRemove });
+        
             if (member) {
-                await interaction.reply({ content: `> \`❌\` » ${user} wurde aus dem Team entfernt.`, ephemeral: true });
+                const displayName = user ? `${user}` : `\`${idToRemove}\``;
+                await interaction.reply({
+                    content: `> \`❌\` » ${displayName} wurde aus dem Team entfernt.`,
+                    ephemeral: true
+                });
                 await updateTeamEmbed(interaction);
             } else {
-                await interaction.reply({ content: `> \`❗\` » ${user} ist kein Teammitglied.`, ephemeral: true });
+                const displayName = user ? `${user}` : `\`${idToRemove}\``;
+                await interaction.reply({
+                    content: `> \`❗\` » ${displayName} ist kein Teammitglied.`,
+                    ephemeral: true
+                });
             }
         }
 
