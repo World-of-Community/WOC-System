@@ -341,7 +341,7 @@ try {
 client.on('error', async (error) => {
 const errorEmbed = new EmbedBuilder()
     .setTitle('`❌` | FEHLER BEI BOT')
-    .setDescription(`\`\`\`${error.message}\`\`\``)
+    .setDescription(`\`\`\`${error.stack}\`\`\``)
     .setColor('Orange')
     .setTimestamp();
 
