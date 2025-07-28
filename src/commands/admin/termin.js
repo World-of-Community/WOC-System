@@ -3,6 +3,27 @@ const Termin = require('../../../Datenbank/termindb');
 
 const remindMap = new Map();
 
+// Hilfsfunktion: Deutsches Datum parsen (z.B. 30.07.2025 18:00)
+function parseGermanDateTime(input) {
+  const regex = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/;
+  const match = input.match(regex);
+  if (!match) return NaN;
+
+  const [ , day, month, year, hour, minute ] = match.map(Number);
+  const date = new Date(year, month - 1, day, hour, minute);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day ||
+    date.getHours() !== hour ||
+    date.getMinutes() !== minute
+  ) {
+    return NaN;
+  }
+  return date.getTime();
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('termin')
@@ -22,7 +43,7 @@ module.exports = {
         .setDescription('Nutzer (für add, edit, remove)'))
     .addStringOption(opt =>
       opt.setName('zeit')
-        .setDescription('Datum & Uhrzeit (z. B. 2025-07-30 18:00) (für add, edit)'))
+        .setDescription('Datum & Uhrzeit (z. B. 30.07.2025 18:00) (für add, edit)'))
     .addUserOption(opt =>
       opt.setName('teammitglied')
         .setDescription('Optionales Teammitglied (nur für add)')),
@@ -41,9 +62,9 @@ module.exports = {
     }
 
     if (action === 'add') {
-      const timestamp = Date.parse(zeitInput);
+      const timestamp = parseGermanDateTime(zeitInput);
       if (isNaN(timestamp))
-        return interaction.reply({ content: '> `❌` » Ungültiges Datum! Beispiel: `2025-07-30 18:00`', ephemeral: true });
+        return interaction.reply({ content: '> `❌` » Ungültiges Datum! Beispiel: `30.07.2025 18:00`', ephemeral: true });
 
       const existing = await Termin.findOne({ userId: user.id });
       if (existing)
@@ -65,9 +86,9 @@ module.exports = {
     }
 
     if (action === 'edit') {
-      const timestamp = Date.parse(zeitInput);
+      const timestamp = parseGermanDateTime(zeitInput);
       if (isNaN(timestamp))
-        return interaction.reply({ content: '> `❌` » Ungültiges Datum! Beispiel: `2025-07-30 18:00`', ephemeral: true });
+        return interaction.reply({ content: '> `❌` » Ungültiges Datum! Beispiel: `30.07.2025 18:00`', ephemeral: true });
 
       const termin = await Termin.findOne({ userId: user.id });
       if (!termin)
