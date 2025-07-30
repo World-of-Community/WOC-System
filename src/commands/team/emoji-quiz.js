@@ -490,7 +490,9 @@ module.exports = {
   async handleButton(interaction) {
     if (!interaction.isButton()) return false;
 
-    if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
+    const erlaubteRolle = '1400183875774185554'; // Emoji-Quiz leitung
+
+    if (!interaction.member.permissions.has(erlaubteRolle)) {
       await interaction.reply({ content: '> `❌` Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.', ephemeral: true });
       return true;
     }
