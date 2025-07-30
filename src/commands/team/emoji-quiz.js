@@ -488,12 +488,17 @@ module.exports = {
 },
 
   async handleButton(interaction) {
+
     if (!interaction.isButton()) return false;
 
-    const erlaubteRolle = '1400183875774185554'; // Emoji-Quiz leitung
-
-    if (!interaction.member.permissions.has(erlaubteRolle)) {
-      await interaction.reply({ content: '> `❌` Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.', ephemeral: true });
+    const validCustomIds = ['vorschlag_accept', 'vorschlag_decline'];
+    if (!validCustomIds.includes(interaction.customId)) return false; // Ignoriere fremde Buttons
+    
+    if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
+      await interaction.reply({
+        content: '> `❌` Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.',
+        ephemeral: true
+      });
       return true;
     }
 
