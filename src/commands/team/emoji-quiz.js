@@ -489,18 +489,18 @@ module.exports = {
 
   async handleButton(interaction) {
 
-    if (!interaction.isButton()) return false;
+    //if (!interaction.isButton()) return false;
 
-    const validCustomIds = ['vorschlag_accept', 'vorschlag_decline'];
-    if (!validCustomIds.includes(interaction.customId)) return false; // Ignoriere fremde Buttons
-    
-    if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-      await interaction.reply({
-        content: '> `❌` Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.',
-        ephemeral: true
-      });
-      return true;
-    }
+    //const validCustomIds = ['vorschlag_accept', 'vorschlag_decline'];
+    //if (!validCustomIds.includes(interaction.customId)) return false; // Ignoriere fremde Buttons
+    //
+    //if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
+    //  await interaction.reply({
+    //    content: '> `❌` Du hast keine Berechtigung, Vorschläge zu akzeptieren oder abzulehnen.',
+    //    ephemeral: true
+    //  });
+    //  return true;
+    //}
 
     const [action, id] = interaction.customId.split(':');
 
