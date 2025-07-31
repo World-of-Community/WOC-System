@@ -45,15 +45,13 @@ module.exports = {
             const userId = interaction.user.id;
   
   try {
-    // Hole den News-Status des Benutzers aus der DB
     const newsStatus = await NewsStatus.findOne({ userId });
 
     if (interaction.customId === 'disable_news') {
       if (newsStatus) {
         newsStatus.isNewsEnabled = false;
-        await newsStatus.save(); // Speichere den Status in der DB
+        await newsStatus.save();
       } else {
-        // Wenn der Benutzer noch keinen Eintrag hat, erstelle einen
         await NewsStatus.create({ userId, isNewsEnabled: false });
       }
 
@@ -63,16 +61,15 @@ module.exports = {
     if (interaction.customId === 'enable_news') {
       if (newsStatus) {
         newsStatus.isNewsEnabled = true;
-        await newsStatus.save(); // Speichere den Status in der DB
+        await newsStatus.save();
       } else {
-        // Wenn der Benutzer noch keinen Eintrag hat, erstelle einen
         await NewsStatus.create({ userId, isNewsEnabled: true });
       }
 
       await interaction.reply({ content: '> `🔔` » Du wirst wieder Neuigkeiten per DM erhalten.', ephemeral: true });
     }
   } catch (error) {
-    console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error); // Logge den Fehler mit Details
+    console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error);
     await interaction.reply({ content: '> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.', ephemeral: true });
   }
             const now = new Date();
@@ -146,12 +143,10 @@ module.exports = {
         // Aktuelles Datum holen
         const currentDay = new Date().getDate(); // Gibt den aktuellen Tag des Monats zurück
 
-        // Button-Interaktion verarbeiten
         if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
         const [, day] = interaction.customId.split('_');
         const dayNumber = parseInt(day);
 
-        // Datenbankeintrag prüfen
         let userData = await Advent.findOne({ userId: interaction.user.id });
         if (!userData) {
             userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
@@ -531,6 +526,77 @@ module.exports = {
             }
         }
 
+        if (!interaction.isButton()) return;
+
+        const messageID = interaction.message.id;
+        const teamData = await serverdb.findOne({ guildID: interaction.guildId });
+        if (!teamData || !teamData.meetings) return;
+      
+        const meeting = teamData.meetings.find(m => m.messageID === messageID);
+        if (!meeting) {
+          return interaction.reply({ content: '> `❌` » Meeting nicht gefunden.', ephemeral: true });
+        }
+      
+        const userId = interaction.user.id;
+      
+        switch (interaction.customId) {
+          case 'attend':
+            if (!meeting.attendees.includes(userId)) {
+              meeting.attendees.push(userId);
+              meeting.nonAttendees = meeting.nonAttendees.filter(id => id !== userId);
+            }
+            await serverdb.updateOne(
+              { guildID: interaction.guildId, "meetings.messageID": messageID },
+              { $set: { "meetings.$.attendees": meeting.attendees, "meetings.$.nonAttendees": meeting.nonAttendees } }
+            );
+            await interaction.reply({ content: '> `✅` » Du hast deine Teilnahme bestätigt.', ephemeral: true });
+            break;
+      
+          case 'decline':
+            if (!meeting.nonAttendees.includes(userId)) {
+              meeting.nonAttendees.push(userId);
+              meeting.attendees = meeting.attendees.filter(id => id !== userId);
+            }
+            await serverdb.updateOne(
+              { guildID: interaction.guildId, "meetings.messageID": messageID },
+              { $set: { "meetings.$.attendees": meeting.attendees, "meetings.$.nonAttendees": meeting.nonAttendees } }
+            );
+            await interaction.reply({ content: '> `✅` » Du hast abgesagt.', ephemeral: true });
+            break;
+      
+          case 'remindMe':
+            if (!meeting.reminders.includes(userId)) {
+              meeting.reminders.push(userId);
+              await serverdb.updateOne(
+                { guildID: interaction.guildId, "meetings.messageID": messageID },
+                { $set: { "meetings.$.reminders": meeting.reminders } }
+              );
+              await interaction.reply({ content: '> `🔔` » Du wirst **10 Minuten vor dem Meeting** erinnert.', ephemeral: true });
+            } else {
+              await interaction.reply({ content: '> `ℹ️` » Du wirst bereits erinnert.', ephemeral: true });
+            }
+            break;
+      
+          case 'list':
+            const attendeesList = meeting.attendees.map(id => `<@${id}>`).join('\n') || 'Niemand';
+            const nonAttendeesList = meeting.nonAttendees.map(id => `<@${id}>`).join('\n') || 'Niemand';
+          
+            const listEmbed = new EmbedBuilder()
+              .setTitle('📋 Teilnehmerliste')
+              .addFields(
+                { name: '✅ Teilnehmen', value: attendeesList, inline: true },
+                { name: '❌ Nicht teilnehmen', value: nonAttendeesList, inline: true }
+              )
+              .setColor(0x00b0f4)
+              .setFooter({ text: 'Stand: ' + new Date().toLocaleString('de-DE') });
+          
+            await interaction.reply({
+              embeds: [listEmbed],
+              ephemeral: true,
+            });
+            break;
+        }
+
         // Server-Regeln Seite 2
         if (interaction.customId === 'seite-2') {
             const seite2Embed = new EmbedBuilder()
@@ -587,7 +653,6 @@ module.exports = {
           if (interaction.customId.startsWith('editBanReason_')) {
               const userId = interaction.customId.split('_')[1];
       
-              // Modal erstellen
               const modal = new ModalBuilder()
                   .setCustomId(`banReasonModal_${userId}`)
                   .setTitle('Ban-Grund bearbeiten');
@@ -610,30 +675,26 @@ module.exports = {
               const userId = interaction.customId.split('_')[1];
               const newReason = interaction.fields.getTextInputValue('banReasonInput');
       
-              // Datenbank aktualisieren
               let userData = await bandb.findOne({ userId: userId });
               if (!userData) {
                   userData = new bandb({
-                      userId: userId,      // korrektes Feld
-                      reason: newReason    // direktes Feld, kein 'ban' Objekt
+                      userId: userId,
+                      reason: newReason
                   });
               } else {
-                  userData.reason = newReason; // direktes Feld aktualisieren
+                  userData.reason = newReason;
               }
               await userData.save();
       
-              // User und Member holen
               const guild = interaction.guild;
               const user = await client.users.fetch(userId);
               const member = await guild.members.fetch(userId).catch(() => null);
       
-              // Timeout- und Warnanzahl laden
               const [timeoutCount, warnCount] = await Promise.all([
                   Timeout.countDocuments({ userId, guildId: guild.id }).catch(() => 0),
                   Warn.countDocuments({ userId, guildId: guild.id }).catch(() => 0)
               ]);
       
-              // Bannstatus aktualisieren (nur lokal für Embed)
               const banColor = 0xED4245;
               const banEmoji = '`🔴`';
       
@@ -836,7 +897,7 @@ module.exports = {
             });
         }    
         
-        // Bann Button
+        // Bann System
          if (interaction.isButton()) {
             if (interaction.customId === 'ticket_erledigt') {
                 const mention = interaction.message.content
@@ -963,6 +1024,7 @@ module.exports = {
                 })
             }}
         
+        // Partner System
         if (interaction.isModalSubmit()) {
             if (interaction.customId === "partner-modal") {
                 const partnerName = await interaction.fields.getTextInputValue('partner-name');

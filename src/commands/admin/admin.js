@@ -222,20 +222,25 @@ module.exports = {
 
                             const remindMeButton = new ButtonBuilder()
                                 .setCustomId('remindMe')
-                                .setLabel('Remind Me')
+                                .setLabel('🕒 Remind Me')
                                 .setStyle(ButtonStyle.Primary);
                     
                             const attendButton = new ButtonBuilder()
                                 .setCustomId('attend')
-                                .setLabel('Teilnehmen')
+                                .setLabel('✅ Teilnehmen')
                                 .setStyle(ButtonStyle.Success);
                     
                             const declineButton = new ButtonBuilder()
                                 .setCustomId('decline')
-                                .setLabel('Nicht Teilnehmen')
-                                .setStyle(ButtonStyle.Danger);
+                                .setLabel('❌ Nicht Teilnehmen')
+                                .setStyle(ButtonStyle.Secondary);
+
+                            const listButton = new ButtonBuilder()
+                                .setCustomId('list')
+                                .setLabel('📋 Teilnehmerliste')
+                                .setStyle(ButtonStyle.Secondary);
                 
-                        const row = new ActionRowBuilder().addComponents(remindMeButton, attendButton, declineButton);
+                        const row = new ActionRowBuilder().addComponents(remindMeButton, attendButton, declineButton, listButton);
                 
                         const meetingMessage = await targetChannel2.send({ embeds: [TeamMeetingEmbed], components: [row] });
 
