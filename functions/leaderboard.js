@@ -99,7 +99,7 @@ async function createLeaderboardMessage(guild) {
 }
 
 async function updateLeaderboard(client) {
-    const savedMessage = await leaderboarddb.findOne({ guildId: '1335314327107801153' });
+    const savedMessage = await leaderboarddb.findOne({ guildId: '815919809379172354' });
     if (savedMessage) {
         const guild = await client.guilds.cache.get(savedMessage.guildId);
         const leaderboardChannel = await guild.channels.cache.get(savedMessage.channelId);
