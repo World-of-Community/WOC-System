@@ -29,7 +29,7 @@ module.exports = {
       new ButtonBuilder()
         .setCustomId('shoppass_buy')
         .setLabel('🛍️ Vorteile kaufen')
-        .setStyle(ButtonStyle.Primnary),
+        .setStyle(ButtonStyle.Primary),
 
       new ButtonBuilder()
         .setCustomId('shoppass_account')
