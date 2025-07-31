@@ -650,6 +650,20 @@ module.exports = {
         }
 
         if (interaction.isButton()) {
+            const { customId } = interaction;
+
+            if (customId === 'shoppass_buy') {
+              await interaction.reply({ content: '🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
+            } else if (customId === 'shoppass_account') {
+              await interaction.reply({ content: '🪙 Dein Konto – bald verfügbar!', ephemeral: true });
+            } else if (customId === 'shoppass_help') {
+              await interaction.reply({ content: '❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
+            } else if (customId === 'shoppass_shop') {
+              await interaction.reply({ content: '🏪 Der Shop öffnet bald!', ephemeral: true });
+            }
+        }
+
+        if (interaction.isButton()) {
           if (interaction.customId.startsWith('editBanReason_')) {
               const userId = interaction.customId.split('_')[1];
       
