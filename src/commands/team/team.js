@@ -17,6 +17,13 @@ module.exports = {
         )
         .addSubcommand((command) =>
             command
+                .setName('plan')
+                .setDescription('» Plane ein Meeting 📅')
+                .addStringOption(option => option.setName('datum').setDescription('» Datum und Uhrzeit des Meetings (DD.MM.YYYY HH:MM)').setRequired(true))
+                .addStringOption(option => option.setName('beschreibung').setDescription('» Beschreibung des Meetings').setRequired(false))
+        )
+        .addSubcommand((command) =>
+            command
                 .setName('meeting')
                 .setDescription('» Schau nach wann die Nächste Team-Besprechung stattfindet. 📣')
         )
@@ -97,7 +104,7 @@ module.exports = {
                     const sortedMeetings = serverData.meetings.sort((a, b) => a.date - b.date);
 
                     const embed = new EmbedBuilder()
-                        .setTitle('📅 Geplante Team-Besprechungen')
+                        .setTitle('`📅` Geplante Team-Besprechungen')
                         .setColor('Blurple')
                         .setTimestamp();
             

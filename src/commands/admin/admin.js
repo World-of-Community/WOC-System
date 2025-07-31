@@ -39,13 +39,6 @@ module.exports = {
         )
         .addSubcommand((command) =>
             command
-                .setName('plan')
-                .setDescription('» Plane ein Meeting 📅')
-                .addStringOption(option => option.setName('datum').setDescription('» Datum und Uhrzeit des Meetings (DD.MM.YYYY HH:MM)').setRequired(true))
-                .addStringOption(option => option.setName('beschreibung').setDescription('» Beschreibung des Meetings').setRequired(false))
-        )
-        .addSubcommand((command) =>
-            command
                 .setName('aktivieren')
                 .setDescription('» Aktiviere eine Funktion. 🟢')
                 .addStringOption(option => option.setName('system').setDescription('» Welches System soll aktiviert werden?').setRequired(true)
