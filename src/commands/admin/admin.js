@@ -283,7 +283,6 @@ module.exports = {
                     case "donate":
                         const amount = interaction.options.getInteger('amount');
                         
-                        // Create confirmation buttons
                         const confirmButton = new ButtonBuilder()
                             .setCustomId('confirm')
                             .setLabel('✅ » Bestätigen')
