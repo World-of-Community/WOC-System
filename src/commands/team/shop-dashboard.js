@@ -7,6 +7,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
+    
     const embed = new EmbedBuilder()
       .setTitle('Shop Dashboard')
       .setColor('Blurple')
