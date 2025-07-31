@@ -1,10 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
 const User = require('../../../Datenbank/userdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('shoppass')
-    .setDescription('» Zeigt den Shoppass mit allen Vorteilen und der Kaufoption. 🎟️'),
+    .setDescription('» Zeigt den Shoppass mit allen Vorteilen und der Kaufoption. 🎟️')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const userData = await User.findOne({ userId: interaction.user.id }) || { shoppass: false, coins: 0 };
