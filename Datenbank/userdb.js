@@ -112,6 +112,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
     },
+
+    shoppass: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model('user-data', userSchema)

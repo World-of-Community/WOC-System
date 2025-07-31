@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const TeamInfo = require('../../../Datenbank/teaminfodb'); // Dein Team-Schema
+const TeamInfo = require('../../../Datenbank/teaminfodb');
 const UserDB = require('../../../Datenbank/userdb');
 
 module.exports = {
