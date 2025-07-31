@@ -207,14 +207,13 @@ module.exports = {
                     
                             await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
 
-                            const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-                            const date = new Date(); // oder ein beliebiges Datum
-                            const dayName = days[date.getDay()];
-                            const day = date.getDate().toString().padStart(2, '0');
-                            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                            const year = date.getFullYear();
-                            const hour = date.getHours().toString().padStart(2, '0');
-                            const minute = date.getMinutes().toString().padStart(2, '0');
+                            const localDate = new Date(meetingDateUTC.getTime() - meetingDateUTC.getTimezoneOffset() * 60000);
+                            const dayName = days[localDate.getDay()];
+                            const day = localDate.getDate().toString().padStart(2, '0');
+                            const month = (localDate.getMonth() + 1).toString().padStart(2, '0');
+                            const year = localDate.getFullYear();
+                            const hour = localDate.getHours().toString().padStart(2, '0');
+                            const minute = localDate.getMinutes().toString().padStart(2, '0');
 
                             const TeamMeetingEmbed = new EmbedBuilder()
                             .setTitle('`📅` » Eine Team-Besprechung wurde geplant.')
