@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const Meeting = require("../../../Datenbank/meetingdb");
+//const Meeting = require("../../../Datenbank/meetingdb");
 
 module.exports = {
   data: new SlashCommandBuilder()
