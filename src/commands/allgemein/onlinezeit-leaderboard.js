@@ -48,7 +48,7 @@ module.exports = {
           const hours = Math.floor(totalSeconds / 3600);
           const minutes = Math.floor((totalSeconds % 3600) / 60);
 
-          return `\`#${index + 1}\` mit \`${hours}h ${minutes}m\` ist <@${userDoc.userID}> (${name})`;
+          return `\`#${index + 1}\` mit \`${hours}\` Stunden ist <@${userDoc.userID}> (${name})`;
         });
 
         const embed = new EmbedBuilder()
@@ -80,7 +80,7 @@ module.exports = {
           .setTitle('`📊` Onlinezeit-Rang')
           .setDescription(
             `> \`👤\` Nutzer: <@${userDoc.userID}> (${userTag})\n` +
-            `> \`🕐\` Onlinezeit: \`${hours} Stunden\`\n` +
+            `> \`🕐\` Onlinezeit: \`${hours}\` Stunden\n` +
             `> \`🏅\` Rang: \`#${rank}\` von \`${allUsers.length}\``
           )
           .setColor('Green')
