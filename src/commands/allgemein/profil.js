@@ -232,7 +232,9 @@ module.exports = {
         // User-Daten aus DB abrufen
         const userData = await userdb.findOne({ userID: member.id }) || {
             giveaway: { eventWins: 0, messages: 0, voiceTime: 0 },
-            invites: { joins: 0, left: 0, bonus: 0 }
+            invites: { joins: 0, left: 0, bonus: 0 },
+            onlineTime: 0,
+            lastOnline: null
         };
 
         // Invite-Daten
@@ -244,21 +246,21 @@ module.exports = {
 
         // Onlinezeit
         let UserData = await User.findOne({ userId: member.id });
-        const onlineTimeHours = UserData?.onlineTime ?? 0;
+        const onlineTimeHours = userData?.onlineTime ?? 0;
         
         let onlineText = `- \`🟢\` » Onlinezeit: \`${onlineTimeHours}h\`\n`;
         
         let lastOnlineText = '';
         if (
           member.presence?.status === 'offline' &&
-          UserData?.lastOnline instanceof Date &&
+          userData?.lastOnline instanceof Date &&
           !isNaN(userData.lastOnline)
         ) {
-          const time = UserData.lastOnline.toLocaleTimeString('de-DE', {
+          const time = userData.lastOnline.toLocaleTimeString('de-DE', {
             hour: '2-digit',
             minute: '2-digit',
           });
-          const date = UserData.lastOnline.toLocaleDateString('de-DE');
+          const date = userData.lastOnline.toLocaleDateString('de-DE');
           lastOnlineText = `- \`📅\` » Zuletzt online: \`${time} - ${date}\`\n`;
         }
 
