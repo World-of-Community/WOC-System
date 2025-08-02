@@ -229,13 +229,27 @@ module.exports = {
             outputText = `- \`📌\` » Land/Bundesland: ❓`;
         }
 
-        // User-Daten aus DB abrufen
+        // User-Daten abrufen
         const userData = await userdb.findOne({ userID: member.id }) || {
-            giveaway: { eventWins: 0, messages: 0, voiceTime: 0 },
-            invites: { joins: 0, left: 0, bonus: 0 },
-            onlineTime: 0,
-            lastOnline: null
+          giveaway: { eventWins: 0, messages: 0, voiceTime: 0 },
+          invites: { joins: 0, left: 0, bonus: 0 },
+          onlineTime: 0,
+          lastOnline: null
         };
+
+        // Onlinezeit erhöhen und speichern (z.B. jede Stunde)
+        await userdb.updateOne(
+          { userID: member.id },    // NICHT userId !!!
+          { $inc: { onlineTime: 1 } },
+          { upsert: true }
+        );
+
+        // lastOnline speichern, wenn offline/invisible
+        await userdb.updateOne(
+          { userID: member.id },
+          { $set: { lastOnline: new Date() } },
+          { upsert: true }
+        );
 
         // Invite-Daten
         const invites = userData.invites || { joins: 0, left: 0, bonus: 0 };
@@ -245,7 +259,6 @@ module.exports = {
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
         // Onlinezeit
-        let UserData = await User.findOne({ userId: member.id });
         const onlineTimeHours = userData?.onlineTime ?? 0;
         
         let onlineText = `- \`🟢\` » Onlinezeit: \`${onlineTimeHours}h\`\n`;
