@@ -52,7 +52,7 @@ module.exports = {
         });
 
         const embed = new EmbedBuilder()
-          .setTitle('🏆 Top 10 Onlinezeit Leaderboard')
+          .setTitle('`🏆` Top 10 Onlinezeit Leaderboard')
           .setDescription(lines.join('\n'))
           .setColor('Green')
           .setFooter({ text: 'Basierend auf der Gesamt-Onlinezeit (Stunden und Minuten)' })
@@ -70,7 +70,6 @@ module.exports = {
         const userDoc = allUsers[userIndex];
         const totalSeconds = Math.floor(userDoc.onlineTime / 1000);
         const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
         const rank = userIndex + 1;
 
         // Nutzerdaten aus Guild holen
@@ -78,11 +77,11 @@ module.exports = {
         const userTag = member?.user?.tag || selectedUser.tag || 'Unbekannt';
 
         const embed = new EmbedBuilder()
-          .setTitle('📊 Onlinezeit-Rang')
+          .setTitle('`📊` Onlinezeit-Rang')
           .setDescription(
-            `> 👤 Nutzer: <@${userDoc.userID}> (${userTag})\n` +
-            `> 🕐 Onlinezeit: \`${hours}h ${minutes}m\`\n` +
-            `> 🏅 Rang: \`#${rank}\` von \`${allUsers.length}\``
+            `> \`👤\` Nutzer: <@${userDoc.userID}> (${userTag})\n` +
+            `> \`🕐\` Onlinezeit: \`${hours} Stunden\`\n` +
+            `> \`🏅\` Rang: \`#${rank}\` von \`${allUsers.length}\``
           )
           .setColor('Green')
           .setTimestamp();
