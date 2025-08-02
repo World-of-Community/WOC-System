@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const onlineMap = require("../../Maps/onlinemap");
+const userdb = require('../../../Datenbank/userdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -37,32 +37,43 @@ module.exports = {
   async execute(interaction) {
     const subcommand = interaction.options.getSubcommand();
     const user = interaction.options.getUser('nutzer');
-    const userData = await userdb.findOne({ userID: user.id }) || new userdb({ userID: user.id, onlineTime: 0 });
+
+    // Nutzer-Dokument oder neu anlegen mit Onlinezeit 0
+    let userData = await userdb.findOne({ userID: user.id });
+    if (!userData) {
+      userData = new userdb({ userID: user.id, onlineTime: 0 });
+    }
 
     let message = '';
 
     switch (subcommand) {
       case 'add': {
         const hours = interaction.options.getInteger('stunden');
+        if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+
         const ms = hours * 3600000;
         userData.onlineTime += ms;
-        message = `> \`✅\` » ${user} wurde eine Onlinezeit von \`${hours}h\` hinzugefügt.`;
+        message = `> \`✅\` » <@${user.id}> wurde eine Onlinezeit von \`${hours}h\` hinzugefügt.`;
         break;
       }
 
       case 'remove': {
         const hours = interaction.options.getInteger('stunden');
+        if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+
         const ms = hours * 3600000;
         userData.onlineTime = Math.max(0, userData.onlineTime - ms);
-        message = `> \`✅\` » \`${hours}h\` von der Onlinezeit von ${user.username} entfernt.`;
+        message = `> \`✅\` » \`${hours}h\` von der Onlinezeit von <@${user.id}> entfernt.`;
         break;
       }
 
       case 'set': {
         const hours = interaction.options.getInteger('stunden');
+        if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+
         const ms = hours * 3600000;
         userData.onlineTime = ms;
-        message = `> \`✅\` » Die Onlinezeit von ${user} wurde auf \`${hours}h\` gesetzt.`;
+        message = `> \`✅\` » Die Onlinezeit von <@${user.id}> wurde auf \`${hours}h\` gesetzt.`;
         break;
       }
 
@@ -70,17 +81,20 @@ module.exports = {
         const ms = interaction.options.getInteger('millisekunden');
         userData.onlineTime += ms;
         if (userData.onlineTime < 0) userData.onlineTime = 0;
+
         const totalHours = Math.floor(userData.onlineTime / 3600000);
         const sign = ms >= 0 ? 'hinzugefügt' : 'abgezogen';
-        message = `> \`✅\` » Onlinezeit von ${user} wurde um \`${ms}ms\` ${sign}. Neue Onlinezeit: \`${totalHours}h\`.`;
+
+        message = `> \`✅\` » Onlinezeit von <@${user.id}> wurde um \`${ms}ms\` ${sign}. Neue Onlinezeit: \`${totalHours}h\`.`;
         break;
       }
     }
 
-    // 🟩 Immer aktualisieren: letzte Aktivität auf jetzt setzen
+    // Letzte Aktivität aktualisieren
     userData.lastOnline = new Date();
 
     await userData.save();
+
     await interaction.reply({ content: message, ephemeral: true });
   }
 };
