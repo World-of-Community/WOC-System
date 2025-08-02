@@ -33,7 +33,7 @@ module.exports = {
         const newStatus = newPresence.status ?? 'offline';
         
         if (newStatus === 'offline' || newStatus === 'invisible') {
-          await User.updateOne(
+          await userdb.updateOne(
             { userId: member.id },
             { $set: { lastOnline: new Date() } },
             { upsert: true }
