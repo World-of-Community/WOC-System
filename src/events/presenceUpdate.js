@@ -27,21 +27,19 @@ module.exports = {
                 await member.roles.remove(role).catch(() => {});
             }
         }
-
-        client.on('presenceUpdate', async (oldPresence, newPresence) => {
-                const member = newPresence.member;
-                if (!member || member.user.bot) return;
-              
-                const newStatus = newPresence.status ?? 'offline';
-              
-                if (newStatus === 'offline' || newStatus === 'invisible') {
-                  await User.updateOne(
-                    { userId: member.id },
-                    { $set: { lastOnline: new Date() } },
-                    { upsert: true }
-                  );
-                }
-        });
+        
+        const member = newPresence.member;
+        if (!member || member.user.bot) return;
+        
+        const newStatus = newPresence.status ?? 'offline';
+        
+        if (newStatus === 'offline' || newStatus === 'invisible') {
+          await User.updateOne(
+            { userId: member.id },
+            { $set: { lastOnline: new Date() } },
+            { upsert: true }
+          );
+        }
 
         // Streamer-Aktivität prüfen
         const isStreaming = activities?.some(a => a.type === ActivityType.Streaming);
