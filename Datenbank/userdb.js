@@ -114,6 +114,9 @@ const userSchema = new mongoose.Schema({
     },
 
     shoppass: { type: Boolean, default: false },
+
+    onlineTime: { type: Number, default: 0 }, // Nur volle Stunden
+    lastOnline: { type: Date, default: null },
 });
 
 module.exports = mongoose.model('user-data', userSchema)

@@ -1,8 +1,6 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const userdb = require("../../Datenbank/userdb");
-const onlineMap = require('../Maps/onlinemap');
-const lastOnlineMap = require('../Maps/lastOnlineMap');
 
 module.exports = {
     name: Events.PresenceUpdate,
@@ -30,28 +28,20 @@ module.exports = {
             }
         }
 
-        const oldStatus = oldPresence?.status;
-        const newStatus = newPresence.status;
-
-        const userId = newPresence.userId;
-
-        if (!newPresence || !newPresence.status) return;
-      
-        if (newPresence.status === 'offline' || newPresence.status === 'invisible') {
-          // User offline oder unsichtbar, speichere Zeit
-          onlineMap.set(userId, {
-            lastOnline: Date.now(),
-            // evtl. weitere Daten...
-          });
-        }
-
-        // Wenn Nutzer offline oder unsichtbar wird, speichern wir den Zeitstempel
-        if (
-          (oldPresence?.status !== 'offline' && newPresence?.status === 'offline') ||
-          (oldPresence?.status !== 'invisible' && newPresence?.status === 'offline') // Unsichtbar zählt auch als offline
-        ) {
-          lastOnlineMap.set(userId, new Date());
-        }
+        client.on('presenceUpdate', async (oldPresence, newPresence) => {
+                const member = newPresence.member;
+                if (!member || member.user.bot) return;
+              
+                const newStatus = newPresence.status ?? 'offline';
+              
+                if (newStatus === 'offline' || newStatus === 'invisible') {
+                  await User.updateOne(
+                    { userId: member.id },
+                    { $set: { lastOnline: new Date() } },
+                    { upsert: true }
+                  );
+                }
+        });
 
         // Streamer-Aktivität prüfen
         const isStreaming = activities?.some(a => a.type === ActivityType.Streaming);

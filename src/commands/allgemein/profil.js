@@ -1,7 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const userdb = require('../../../Datenbank/userdb');
-const onlineMap = require("../../Maps/onlinemap");
-const lastOnlineMap = require('../../Maps/lastOnlineMap');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -244,26 +242,26 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        // Nur aus Map (in vollen Stunden)
-        const onlineTimeHours = onlineMap.get(member.id) || 0;
-
-        const status = member.presence?.status || "offline";
-        let lastOnlineText = null;
+        const userData = await User.findOne({ userId: member.id });
+        const onlineTimeHours = userData?.onlineTime ?? 0;
         
+        let onlineText = `- \`🟢\` » Onlinezeit: \`${onlineTimeHours}h\`\n`;
+        
+        let lastOnlineText = '';
         if (
-          status === "offline" &&
-          userData.lastOnline instanceof Date &&
+          member.presence?.status === 'offline' &&
+          userData?.lastOnline instanceof Date &&
           !isNaN(userData.lastOnline)
         ) {
-          const time = userData.lastOnline.toLocaleTimeString("de-DE", {
-            hour: "2-digit",
-            minute: "2-digit",
+          const time = userData.lastOnline.toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit',
           });
-          const date = userData.lastOnline.toLocaleDateString("de-DE");
+          const date = userData.lastOnline.toLocaleDateString('de-DE');
           lastOnlineText = `- \`📅\` » Zuletzt online: \`${time} - ${date}\`\n`;
         }
 
-        // Embed bauen
+        // Embed
         const embed = new EmbedBuilder()
             .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
             .setDescription(
