@@ -34,7 +34,7 @@ module.exports = {
         
         if (newStatus === 'offline' || newStatus === 'invisible') {
           await userdb.updateOne(
-            { userId: member.id },
+            { userID: member.id },
             { $set: { lastOnline: new Date() } },
             { upsert: true }
           );
