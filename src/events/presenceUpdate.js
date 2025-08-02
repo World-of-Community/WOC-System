@@ -28,7 +28,6 @@ module.exports = {
             }
         }
         
-        const member = newPresence.member;
         if (!member || member.user.bot) return;
         
         const newStatus = newPresence.status ?? 'offline';
