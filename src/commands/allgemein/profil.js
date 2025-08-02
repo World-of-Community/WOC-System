@@ -242,7 +242,6 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-
         // Onlinezeit
         let userData = await User.findOne({ userId: member.id });
         const onlineTimeHours = userData?.onlineTime ?? 0;
