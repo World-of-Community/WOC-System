@@ -242,6 +242,8 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
+
+        // Onlinezeit
         let userData = await User.findOne({ userId: member.id });
         const onlineTimeHours = userData?.onlineTime ?? 0;
         
@@ -250,14 +252,14 @@ module.exports = {
         let lastOnlineText = '';
         if (
           member.presence?.status === 'offline' &&
-          userData?.lastOnline instanceof Date &&
+          UserData?.lastOnline instanceof Date &&
           !isNaN(userData.lastOnline)
         ) {
-          const time = userData.lastOnline.toLocaleTimeString('de-DE', {
+          const time = UserData.lastOnline.toLocaleTimeString('de-DE', {
             hour: '2-digit',
             minute: '2-digit',
           });
-          const date = userData.lastOnline.toLocaleDateString('de-DE');
+          const date = UserData.lastOnline.toLocaleDateString('de-DE');
           lastOnlineText = `- \`📅\` » Zuletzt online: \`${time} - ${date}\`\n`;
         }
 
