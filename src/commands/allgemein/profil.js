@@ -259,8 +259,8 @@ module.exports = {
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
         // Onlinezeit
-        const onlineTimeHours = userData?.onlineTime ?? 0;
-        const displayHours = onlineTimeHours > 1000 ? 0 : onlineTimeHours;
+        const onlineTimeMs = userData?.onlineTime ?? 0;
+        const displayHours = Math.floor((userData?.onlineTime ?? 0) / 3600000);
         
         let lastOnlineText = '';
         if (
