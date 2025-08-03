@@ -10,7 +10,7 @@ module.exports = {
       sub.setName('create')
         .setDescription('» Erstellt ein neues Team-Meeting. ➕')
         .addStringOption(opt => opt.setName('beschreibung').setDescription('Beschreibung des Team-Meetings').setRequired(true))
-        .addStringOption(opt => opt.setName('datum').setDescription('Datum des Team-Meetings (ISO-Format oder lesbar)').setRequired(true)))
+        .addStringOption(opt => opt.setName('datum').setDescription('Datum des Team-Meetings (z.b. 25.05.2025 12:00)').setRequired(true)))
     .addSubcommand(sub =>
       sub.setName('edit')
         .setDescription('» Editiert ein Team-Meeting. ✍️')
