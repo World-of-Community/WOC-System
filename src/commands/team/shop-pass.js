@@ -31,16 +31,18 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('shoppass_show')
-        .setLabel('🎟️ ShopPass anzeigen')
+        .setLabel('ShopPass anzeigen')
+        .setEmoji('🎟️')
         .setStyle(ButtonStyle.Primary),
 
       new ButtonBuilder()
         .setCustomId('shoppass_buy')
         .setLabel('Alle Rewards freischalten')
-        .setStyle(userData.shoppass ? ButtonStyle.Success : ButtonStyle.Primary)
-        .setDisabled(userData.shoppass)
+        .setStyle(ButtonStyle.Link)
+        .setURL('https://deinshoplink.de')
     );
 
-    await interaction.reply({ embeds: [embed], components: [row] });
+    await interaction.channel.send({ embeds: [embeds], components: [row] })
+    await interaction.reply({ content: 'ShopPass Embed gesendet.', ephemeral: true });
   },
 };
