@@ -3,7 +3,7 @@ const userdb = require('../../../Datenbank/userdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('onlinezeit')
+    .setName('onlinezeit-leaderboard')
     .setDescription('» Zeigt das Onlinezeit Leaderboard an.'),
 
   async execute(interaction) {
