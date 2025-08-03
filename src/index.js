@@ -650,7 +650,7 @@ setInterval(async () => {
     if (member.user.bot) continue;
     if (!member.presence || member.presence.status !== "online") continue;
 
-    await User.updateOne(
+    await userdb.updateOne(
       { userId: member.id },
       { $inc: { onlineTime: 1 } },
       { upsert: true }
