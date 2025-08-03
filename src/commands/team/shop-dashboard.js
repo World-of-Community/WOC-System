@@ -23,7 +23,8 @@ module.exports = {
         'Erfahre Näheres zu Shop, Vorteilen, ShopCoins, wie man diese verdienen kann und vielem mehr.\n' +
         '🏪 **Shop**\n' +
         'Erhalte im Gegenzug zur Unterstützung des Servers zu kleinem Preis ShopCoins und weitere Bonusinhalte!'
-      );
+      )
+      .setThumbnail('https://cdn.discordapp.com/attachments/1269339944766144574/1401611554750730360/info-icon-png.jpg?ex=6890e7fb&is=688f967b&hm=e4f0901f6c10baa219d4165e029d5f80857b2c6850036fec4447f0e657d5fef9&');
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
