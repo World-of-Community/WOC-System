@@ -41,6 +41,6 @@ module.exports = {
         .setDisabled(userData.shoppass)
     );
 
-    await interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
+    await interaction.reply({ embeds: [embed], components: [row] });
   },
 };
