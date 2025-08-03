@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
 const meetingSchema = new mongoose.Schema({
-  guildId: String,
-  channelId: String,
-  messageId: String,
-  description: String,
-  time: datum,
-  participants: [String], // user IDs, die teilnehmen
-  nonParticipants: [String], // user IDs, die nicht teilnehmen
+  guildId: { type: String, required: true },
+  channelId: { type: String, required: true },
+  messageId: { type: String, required: true },
+  description: { type: String, required: true },
+  time: { type: Date, required: true }, // Zeit als Date speichern
+  participants: { type: [String], default: [] }, // User-IDs
+  nonParticipants: { type: [String], default: [] },
 });
 
 const Meeting = mongoose.model('Meeting', meetingSchema);
+
+module.exports = Meeting;
