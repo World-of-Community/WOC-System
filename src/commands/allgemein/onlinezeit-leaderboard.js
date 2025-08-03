@@ -26,61 +26,70 @@ module.exports = {
     const selectedUser = interaction.options.getUser('nutzer') || interaction.user;
 
     try {
-      // Alle User mit Onlinezeit > 0 aus DB holen und sortieren (absteigend)
-      const allUsers = await userdb.find({ onlineTime: { $gt: 0 } }, 'userID onlineTime').sort({ onlineTime: -1 }).exec();
+      // Nutzer mit Onlinezeit aus der Datenbank
+      const allUsers = await userdb
+        .find({ onlineTime: { $gt: 0 } }, 'userID onlineTime')
+        .sort({ onlineTime: -1 })
+        .exec();
 
-      if (!allUsers || allUsers.length === 0) {
-        return interaction.reply({ content: '> `❌` » Noch keine Nutzerdaten mit Onlinezeit vorhanden.', ephemeral: true });
+      if (!allUsers.length) {
+        return interaction.reply({
+          content: '> `❌` » Noch keine Nutzerdaten mit Onlinezeit vorhanden.',
+          ephemeral: true,
+        });
       }
 
+      // Leaderboard anzeigen
       if (option === 'leaderboard') {
         const topUsers = allUsers.slice(0, 10);
-        const userIDs = topUsers.map(u => u.userID);
 
-        // User-Member im Guild-Cache / API holen
-        await Promise.all(userIDs.map(id => guild.members.fetch(id).catch(() => null)));
+        await Promise.all(topUsers.map(u => guild.members.fetch(u.userID).catch(() => null)));
 
         const lines = topUsers.map((userDoc, index) => {
           const member = guild.members.cache.get(userDoc.userID);
-          const name = member?.user?.tag || `Unbekannt (${userDoc.userID})`;
+          const displayName = member?.displayName || `Unbekannt (${userDoc.userID})`;
 
-          const totalSeconds = Math.floor(userDoc.onlineTime / 1000);
-          const hours = Math.floor(totalSeconds / 3600);
-          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const totalMinutes = Math.floor(userDoc.onlineTime / 1000 / 60);
+          const hours = Math.floor(totalMinutes / 60);
+          const minutes = totalMinutes % 60;
 
-          return `\`#${index + 1}\` mit \`${hours}\` Stunden ist <@${userDoc.userID}> (${name})`;
+          return `\`#${index + 1}\` mit \`${hours}h ${minutes}m\` ist <@${userDoc.userID}> (${displayName})`;
         });
 
         const embed = new EmbedBuilder()
-          .setTitle('`🏆` Top 10 Onlinezeit Leaderboard')
+          .setTitle('🏆 Onlinezeit Leaderboard')
           .setDescription(lines.join('\n'))
           .setColor('Green')
-          .setFooter({ text: 'Basierend auf der Gesamt-Onlinezeit (Stunden und Minuten)' })
+          .setFooter({ text: 'Basierend auf der Gesamt-Onlinezeit' })
           .setTimestamp();
 
         return interaction.reply({ embeds: [embed], ephemeral: true });
       }
-      else if (option === 'nutzer') {
-        // Rang vom Nutzer ermitteln
+
+      // Einzelner Nutzer-Rang
+      if (option === 'nutzer') {
         const userIndex = allUsers.findIndex(u => u.userID === selectedUser.id);
         if (userIndex === -1) {
-          return interaction.reply({ content: `> \`❌\` » Keine Onlinezeit für ${selectedUser} gefunden.`, ephemeral: true });
+          return interaction.reply({
+            content: `> \`❌\` » Keine Onlinezeit für ${selectedUser} gefunden.`,
+            ephemeral: true,
+          });
         }
 
         const userDoc = allUsers[userIndex];
-        const totalSeconds = Math.floor(userDoc.onlineTime / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
+        const totalMinutes = Math.floor(userDoc.onlineTime / 1000 / 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
         const rank = userIndex + 1;
 
-        // Nutzerdaten aus Guild holen
-        const member = guild.members.cache.get(userDoc.userID) || await guild.members.fetch(userDoc.userID).catch(() => null);
-        const userTag = member?.user?.tag || selectedUser.tag || 'Unbekannt';
+        const member = await guild.members.fetch(userDoc.userID).catch(() => null);
+        const displayName = member?.displayName || selectedUser.tag || 'Unbekannt';
 
         const embed = new EmbedBuilder()
           .setTitle('`📊` Onlinezeit-Rang')
           .setDescription(
-            `> \`👤\` Nutzer: <@${userDoc.userID}> (${userTag})\n` +
-            `> \`🕐\` Onlinezeit: \`${hours}\` Stunden\n` +
+            `> \`👤\` Nutzer: <@${userDoc.userID}> (${displayName})\n` +
+            `> \`🕐\` Onlinezeit: \`${hours}h ${minutes}m\`\n` +
             `> \`🏅\` Rang: \`#${rank}\` von \`${allUsers.length}\``
           )
           .setColor('Green')
@@ -88,10 +97,12 @@ module.exports = {
 
         return interaction.reply({ embeds: [embed], ephemeral: true });
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Fehler bei /onlinezeit:', error);
-      return interaction.reply({ content: '> `❌` » Ein Fehler ist aufgetreten.', ephemeral: true });
+      return interaction.reply({
+        content: '> `❌` » Ein unerwarteter Fehler ist aufgetreten.',
+        ephemeral: true,
+      });
     }
-  }
+  },
 };

@@ -35,66 +35,69 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    const subcommand = interaction.options.getSubcommand();
-    const user = interaction.options.getUser('nutzer');
+    try {
+      const subcommand = interaction.options.getSubcommand();
+      const user = interaction.options.getUser('nutzer');
 
-    // Nutzer-Dokument oder neu anlegen mit Onlinezeit 0
-    let userData = await userdb.findOne({ userID: user.id });
-    if (!userData) {
-      userData = new userdb({ userID: user.id, onlineTime: 0 });
+      let userData = await userdb.findOne({ userID: user.id });
+      if (!userData) {
+        userData = new userdb({ userID: user.id, onlineTime: 0 });
+      }
+
+      let message = '';
+
+      switch (subcommand) {
+        case 'add': {
+          const hours = interaction.options.getInteger('stunden');
+          if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+
+          const ms = hours * 3600000;
+          userData.onlineTime += ms;
+          message = `> \`✅\` » <@${user.id}> wurde eine Onlinezeit von \`${hours}h\` hinzugefügt.`;
+          break;
+        }
+
+        case 'remove': {
+          const hours = interaction.options.getInteger('stunden');
+          if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+
+          const ms = hours * 3600000;
+          userData.onlineTime = Math.max(0, userData.onlineTime - ms);
+          message = `> \`✅\` » \`${hours}h\` von der Onlinezeit von <@${user.id}> entfernt.`;
+          break;
+        }
+
+        case 'set': {
+          const hours = interaction.options.getInteger('stunden');
+          if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+
+          const ms = hours * 3600000;
+          userData.onlineTime = ms;
+          message = `> \`✅\` » Die Onlinezeit von <@${user.id}> wurde auf \`${hours}h\` gesetzt.`;
+          break;
+        }
+
+        case 'edit': {
+          const ms = interaction.options.getInteger('millisekunden');
+          userData.onlineTime += ms;
+          if (userData.onlineTime < 0) userData.onlineTime = 0;
+
+          const totalHours = Math.floor(userData.onlineTime / 3600000);
+          const sign = ms >= 0 ? 'hinzugefügt' : 'abgezogen';
+
+          message = `> \`✅\` » Onlinezeit von <@${user.id}> wurde um \`${ms}ms\` ${sign}. Neue Onlinezeit: \`${totalHours}h\`.`;
+          break;
+        }
+      }
+
+      userData.lastOnline = new Date();
+      await userData.save();
+
+      await interaction.reply({ content: message, ephemeral: true });
+
+    } catch (err) {
+      console.error('Fehler bei /onlinezeit-manage:', err);
+      await interaction.reply({ content: '> `❌` » Es ist ein Fehler aufgetreten.', ephemeral: true });
     }
-
-    let message = '';
-
-    switch (subcommand) {
-      case 'add': {
-        const hours = interaction.options.getInteger('stunden');
-        if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
-
-        const ms = hours * 3600000;
-        userData.onlineTime += ms;
-        message = `> \`✅\` » <@${user.id}> wurde eine Onlinezeit von \`${hours}h\` hinzugefügt.`;
-        break;
-      }
-
-      case 'remove': {
-        const hours = interaction.options.getInteger('stunden');
-        if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
-
-        const ms = hours * 3600000;
-        userData.onlineTime = Math.max(0, userData.onlineTime - ms);
-        message = `> \`✅\` » \`${hours}h\` von der Onlinezeit von <@${user.id}> entfernt.`;
-        break;
-      }
-
-      case 'set': {
-        const hours = interaction.options.getInteger('stunden');
-        if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
-
-        const ms = hours * 3600000;
-        userData.onlineTime = ms;
-        message = `> \`✅\` » Die Onlinezeit von <@${user.id}> wurde auf \`${hours}h\` gesetzt.`;
-        break;
-      }
-
-      case 'edit': {
-        const ms = interaction.options.getInteger('millisekunden');
-        userData.onlineTime += ms;
-        if (userData.onlineTime < 0) userData.onlineTime = 0;
-
-        const totalHours = Math.floor(userData.onlineTime / 3600000);
-        const sign = ms >= 0 ? 'hinzugefügt' : 'abgezogen';
-
-        message = `> \`✅\` » Onlinezeit von <@${user.id}> wurde um \`${ms}ms\` ${sign}. Neue Onlinezeit: \`${totalHours}h\`.`;
-        break;
-      }
-    }
-
-    // Letzte Aktivität aktualisieren
-    userData.lastOnline = new Date();
-
-    await userData.save();
-
-    await interaction.reply({ content: message, ephemeral: true });
   }
 };
