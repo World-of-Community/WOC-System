@@ -649,6 +649,40 @@ module.exports = {
             });
         }
 
+        if (!interaction.customId.startsWith('meeting_')) return;
+
+        const meeting = await Meeting.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
+        if (!meeting) return interaction.reply({ content: '> `❌` Team-Meeting nicht gefunden.', ephemeral: true });
+    
+        const userId = interaction.user.id;
+    
+        if (interaction.customId === 'meeting_join') {
+          if (!meeting.participants.includes(userId)) meeting.participants.push(userId);
+          meeting.nonParticipants = meeting.nonParticipants.filter(id => id !== userId);
+          await meeting.save();
+          return interaction.reply({ content: '> `✅` » Du nimmst am Team-Meeting teil.', ephemeral: true });
+        }
+        else if (interaction.customId === 'meeting_leave') {
+          if (!meeting.nonParticipants.includes(userId)) meeting.nonParticipants.push(userId);
+          meeting.participants = meeting.participants.filter(id => id !== userId);
+          await meeting.save();
+          return interaction.reply({ content: '> `❌` » Du nimmst nun nicht mehr am Team-Meeting teil.', ephemeral: true });
+        }
+        else if (interaction.customId === 'meeting_show') {
+          const participants = meeting.participants.length ? meeting.participants.map(id => `<@${id}>`).join('\n') : 'Keine Teilnehmer';
+          const nonParticipants = meeting.nonParticipants.length ? meeting.nonParticipants.map(id => `<@${id}>`).join('\n') : 'Keine Abmeldungen';
+    
+          const embed = new EmbedBuilder()
+            .setTitle('Teilnehmer-Liste')
+            .addFields(
+              { name: 'Teilnehmer', value: participants, inline: true },
+              { name: 'Nicht teilnehmen', value: nonParticipants, inline: true }
+            )
+            .setColor('Green');
+    
+          return interaction.reply({ embeds: [embed], ephemeral: true });
+        }
+
         //if (interaction.isButton()) {
         //    const { customId } = interaction;
 
