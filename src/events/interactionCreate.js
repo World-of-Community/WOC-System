@@ -685,7 +685,7 @@ module.exports = {
           }
         }
 
-        if (interaction.isButton()) {
+        if (!interaction.isButton()) return; {
           const customId = interaction.customId;
 
           if (customId === 'shoppass_buy') {
