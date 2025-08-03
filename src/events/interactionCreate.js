@@ -686,6 +686,8 @@ module.exports = {
         }
 
         if (interaction.isButton()) {
+          const customId = interaction.customId;
+
           if (customId === 'shoppass_buy') {
             await interaction.reply({ content: '🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
           } else if (customId === 'shoppass_account') {
