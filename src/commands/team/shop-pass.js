@@ -39,7 +39,7 @@ module.exports = {
         .setCustomId('shoppass_buy')
         .setLabel('Alle Rewards freischalten')
         .setStyle(ButtonStyle.Link)
-        .setURL('https://deinshoplink.de')
+        .setURL('https://www.patreon.com/profile/creators?u=84745341')
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] })
