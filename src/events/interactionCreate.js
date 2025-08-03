@@ -686,13 +686,13 @@ module.exports = {
         }
 
         if (interaction.isButton()) {
-          const customId = interaction.customId;
+          //const customId = interaction.customId;
         
-          if (customId === 'shoppass_buy') {
+          if (interaction.customId === 'shoppass_buy') {
             await interaction.reply({ content: '🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
-          } else if (customId === 'shoppass_account') {
+          } else if (interaction.customId === 'shoppass_account') {
             await interaction.reply({ content: '🪙 Dein Konto – bald verfügbar!', ephemeral: true });
-          } else if (customId === 'shoppass_help') {
+          } else if (interaction.customId === 'shoppass_help') {
             await interaction.reply({ content: '❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
           }
         }
