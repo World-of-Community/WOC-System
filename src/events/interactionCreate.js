@@ -650,6 +650,18 @@ module.exports = {
         }
 
         if (interaction.isButton()) {
+          const customId = interaction.customId;
+        
+          if (interaction.customId === 'shoppass_buy') {
+            await interaction.reply({ content: '🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
+          } else if (interaction.customId === 'shoppass_account') {
+            await interaction.reply({ content: '🪙 Dein Konto – bald verfügbar!', ephemeral: true });
+          } else if (interaction.customId === 'shoppass_help') {
+            await interaction.reply({ content: '❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
+          }
+        }
+
+        if (interaction.isButton()) {
           if (!interaction.customId.startsWith('meeting_')) return;
   
           const meeting = await Meeting.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
@@ -682,18 +694,6 @@ module.exports = {
               .setColor('Green');
       
             return interaction.reply({ embeds: [embed], ephemeral: true });
-          }
-        }
-
-        if (interaction.isButton()) {
-          //const customId = interaction.customId;
-        
-          if (interaction.customId === 'shoppass_buy') {
-            await interaction.reply({ content: '🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
-          } else if (interaction.customId === 'shoppass_account') {
-            await interaction.reply({ content: '🪙 Dein Konto – bald verfügbar!', ephemeral: true });
-          } else if (interaction.customId === 'shoppass_help') {
-            await interaction.reply({ content: '❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
           }
         }
 
