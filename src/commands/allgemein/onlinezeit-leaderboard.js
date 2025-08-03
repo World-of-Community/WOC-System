@@ -26,7 +26,6 @@ module.exports = {
     const selectedUser = interaction.options.getUser('nutzer') || interaction.user;
 
     try {
-      // Nutzer mit Onlinezeit aus der Datenbank
       const allUsers = await userdb
         .find({ onlineTime: { $gt: 0 } }, 'userID onlineTime')
         .sort({ onlineTime: -1 })
@@ -39,7 +38,6 @@ module.exports = {
         });
       }
 
-      // Leaderboard anzeigen
       if (option === 'leaderboard') {
         const topUsers = allUsers.slice(0, 10);
 
@@ -49,11 +47,9 @@ module.exports = {
           const member = guild.members.cache.get(userDoc.userID);
           const displayName = member?.displayName || `Unbekannt (${userDoc.userID})`;
 
-          const totalMinutes = Math.floor(userDoc.onlineTime / 1000 / 60);
-          const hours = Math.floor(totalMinutes / 60);
-          const minutes = totalMinutes % 60;
+          const hours = Math.floor(userDoc.onlineTime / 1000 / 60 / 60);
 
-          return `\`#${index + 1}\` mit \`${hours}h ${minutes}m\` ist <@${userDoc.userID}> (${displayName})`;
+          return `\`#${index + 1}\` mit \`${hours}h\` ist <@${userDoc.userID}> (${displayName})`;
         });
 
         const embed = new EmbedBuilder()
@@ -66,7 +62,6 @@ module.exports = {
         return interaction.reply({ embeds: [embed], ephemeral: true });
       }
 
-      // Einzelner Nutzer-Rang
       if (option === 'nutzer') {
         const userIndex = allUsers.findIndex(u => u.userID === selectedUser.id);
         if (userIndex === -1) {
@@ -77,19 +72,17 @@ module.exports = {
         }
 
         const userDoc = allUsers[userIndex];
-        const totalMinutes = Math.floor(userDoc.onlineTime / 1000 / 60);
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
+        const hours = Math.floor(userDoc.onlineTime / 1000 / 60 / 60);
         const rank = userIndex + 1;
 
         const member = await guild.members.fetch(userDoc.userID).catch(() => null);
         const displayName = member?.displayName || selectedUser.tag || 'Unbekannt';
 
         const embed = new EmbedBuilder()
-          .setTitle('`📊` Onlinezeit-Rang')
+          .setTitle('📊 Onlinezeit-Rang')
           .setDescription(
             `> \`👤\` Nutzer: <@${userDoc.userID}> (${displayName})\n` +
-            `> \`🕐\` Onlinezeit: \`${hours}h ${minutes}m\`\n` +
+            `> \`🕐\` Onlinezeit: \`${hours}h\`\n` +
             `> \`🏅\` Rang: \`#${rank}\` von \`${allUsers.length}\``
           )
           .setColor('Green')
