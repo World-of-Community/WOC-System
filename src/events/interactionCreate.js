@@ -692,8 +692,6 @@ module.exports = {
             await interaction.reply({ content: '🪙 Dein Konto – bald verfügbar!', ephemeral: true });
           } else if (customId === 'shoppass_help') {
             await interaction.reply({ content: '❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
-          } else if (customId === 'shoppass_shop') {
-            await interaction.reply({ content: '🏪 Der Shop öffnet bald!', ephemeral: true });
           }
         }
 

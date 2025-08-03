@@ -28,23 +28,26 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('shoppass_buy')
-        .setLabel('🛍️ Vorteile kaufen')
+        .setLabel('Vorteile kaufen')
+        .setEmoji('🛍️')
         .setStyle(ButtonStyle.Primary),
 
       new ButtonBuilder()
         .setCustomId('shoppass_account')
-        .setLabel('🪙 Konto')
+        .setLabel('Konto')
+        .setEmoji('🪙')
         .setStyle(ButtonStyle.Primary),
 
       new ButtonBuilder()
         .setCustomId('shoppass_help')
-        .setLabel('❓ Hilfe')
+        .setLabel('Hilfe')
+        .setEmoji('❓')
         .setStyle(ButtonStyle.Primary),
 
       new ButtonBuilder()
-        .setCustomId('shoppass_shop')
-        .setLabel('🏪 Shop')
-        .setStyle(ButtonStyle.Secondary)
+        .setLabel('Shop')
+        .setStyle(ButtonStyle.Link)
+        .setURL('https://www.patreon.com/profile/creators?u=84745341')
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] })
