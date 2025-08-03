@@ -47,7 +47,7 @@ module.exports = {
         .setStyle(ButtonStyle.Secondary)
     );
 
-    await interaction.channel.send({ embeds: [embeds], components: [row] })
+    await interaction.channel.send({ embeds: [embed], components: [row] })
     await interaction.reply({ content: 'Shop Dashboard Embed gesendet.', ephemeral: true });
   },
 };

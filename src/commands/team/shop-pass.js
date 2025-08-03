@@ -42,7 +42,7 @@ module.exports = {
         .setURL('https://deinshoplink.de')
     );
 
-    await interaction.channel.send({ embeds: [embeds], components: [row] })
+    await interaction.channel.send({ embeds: [embed], components: [row] })
     await interaction.reply({ content: 'ShopPass Embed gesendet.', ephemeral: true });
   },
 };
