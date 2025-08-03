@@ -685,9 +685,9 @@ module.exports = {
           }
         }
 
-        if (!interaction.isButton()) return; {
+        if (interaction.isButton()) {
           const customId = interaction.customId;
-
+        
           if (customId === 'shoppass_buy') {
             await interaction.reply({ content: '🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
           } else if (customId === 'shoppass_account') {
@@ -697,7 +697,6 @@ module.exports = {
           }
         }
 
-        
         if (interaction.isButton()) {
           if (interaction.customId.startsWith('editBanReason_')) {
               const userId = interaction.customId.split('_')[1];
