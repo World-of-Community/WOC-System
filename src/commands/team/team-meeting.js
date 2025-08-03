@@ -38,7 +38,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle('`📅` Eine Team-Besprechung wurde geplant')
         .setDescription(
-          `> **Datum:** <t:${unixTimestamp}:f>\n` +
+          `> **Datum:** <t:${unixTimestamp}:F>\n` +
           `> **Beschreibung:** ${description || 'Keine Beschreibung angegeben.'}`
         )
         .setColor('Orange')
