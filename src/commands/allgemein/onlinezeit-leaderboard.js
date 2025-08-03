@@ -58,7 +58,7 @@ module.exports = {
         .setTitle('`🏆` Top 10 Onlinezeit Leaderboard')
         .setDescription(lines.join('\n'))
         .setColor('Green')
-        .setFooter({ text: 'Basierend auf der Gesamt-Onlinezeit (Stunden)' })
+        .setFooter({ text: `Gesamte-Onlinezeit auf ${interaction.guild.name}` })
         .setTimestamp();
 
       return interaction.reply({ embeds: [embed], ephemeral: true });
