@@ -329,12 +329,23 @@ async function simulateRandomMatch(interaction) {
   let userTip;
 
   collector.on('collect', async i => {
+    let userTip;
     switch (i.customId) {
       case 'win_team1': userTip = 'team1'; break;
       case 'draw': userTip = 'draw'; break;
       case 'win_team2': userTip = 'team2'; break;
     }
+
     await i.update({ content: '\`⏳\` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
+
+    const TippEmbed = new EmbedBuilder()
+      .setTitle('Tipp abgegeben')
+      .setDescription(`${i.user} hat getippt: **${userTip}**`)
+      .setColor('Orange')
+      .setTimestamp();
+
+    await interaction.followUp({ embeds: [tipEmbed], ephemeral: true });
+
     collector.stop();
     await delay(3000);
     await interaction.followUp({ content: '\`🔊\` **Anpfiff! Das Spiel beginnt!** \`⚽\`' });
