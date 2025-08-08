@@ -662,6 +662,14 @@ module.exports = {
         }
 
         if (interaction.isButton()) {
+          const customId = interaction.customId;
+
+          if (interaction.customId = 'shoppass_show') {
+            await interaction.reply({ content: '🎟️ ShopPass anzeigen - Coming Soon!', ephemeral: true });
+          }
+        }
+
+        if (interaction.isButton()) {
           if (!interaction.customId.startsWith('meeting_')) return;
   
           const meeting = await Meeting.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });

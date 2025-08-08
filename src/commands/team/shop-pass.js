@@ -3,7 +3,7 @@ const User = require('../../../Datenbank/userdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('shoppass')
+    .setName('shop-pass')
     .setDescription('» Zeigt den Shoppass mit allen Vorteilen und der Kaufoption. 🎟️')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
