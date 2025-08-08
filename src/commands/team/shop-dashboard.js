@@ -16,7 +16,7 @@ module.exports = {
         '**Tipp:** Schreibst du regelmäßig, erhältst du automatisch genug ShopCoins, um nach und nach alle Vorteile permanent freizuschalten!\n\n' +
         '*Folgendes kannst du von hier aus tun:*\n' +
         '> `🛍️` - **Vorteile kaufen**\n' +
-        '» Erwirb Zugriff auf verschiedene Vorteile, oder wie wär\'s mit einem ganz eigenem? Von exklusiven Werbevorteilen bis Premium Vanity URL ist hier alles mit dabei!\n' +
+        '» Erwirb Zugriff auf verschiedene Vorteile, oder wie wär\'s mit einem ganz eigenem? Von exklusiven Schreibevorteilen bis Premium Rang ist hier alles mit dabei!\n' +
         '> `🪙` - **Konto**\n' +
         '» Sieh dein Guthaben ein und verwalte dein Konto.\n' +
         '> `❓` - **Hilfe**\n' +
