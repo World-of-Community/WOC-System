@@ -331,9 +331,15 @@ async function simulateRandomMatch(interaction) {
   collector.on('collect', async i => {
     let userTip;
     switch (i.customId) {
-      case 'win_team1': userTip = 'team1'; break;
-      case 'draw': userTip = 'draw'; break;
-      case 'win_team2': userTip = 'team2'; break;
+      case 'win_team1': 
+        userTip = team1Name;  // Variable team1Name (z.B. "Baum")
+        break;
+      case 'draw': 
+        userTip = 'Unentschieden'; // Klarer Text
+        break;
+      case 'win_team2': 
+        userTip = team2Name;  // Variable team2Name (z.B. "Eiche")
+        break;
     }
 
     await i.update({ content: '\`⏳\` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
@@ -346,7 +352,7 @@ async function simulateRandomMatch(interaction) {
       .setFooter({ text: '🍀 Viel Glück beim Fussball-Spiel! ⚽', iconURL: interaction.client.user.displayAvatarURL() })
       .setTimestamp();
 
-    await interaction.followUp({ embeds: [TippEmbed], ephemeral: true });
+    await interaction.followUp({ embeds: [TippEmbed] });
 
     collector.stop();
     await delay(3000);
