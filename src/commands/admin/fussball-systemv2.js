@@ -339,12 +339,14 @@ async function simulateRandomMatch(interaction) {
     await i.update({ content: '\`⏳\` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
 
     const TippEmbed = new EmbedBuilder()
-      .setTitle('Tipp abgegeben')
-      .setDescription(`${i.user} hat getippt: **${userTip}**`)
+      .setTitle('`🎯` Tipp abgegeben!')
+      .setDescription(`${i.user} hat auf **${userTip}** getippt.`)
       .setColor('Orange')
+      .setThumbnail(i.user.displayAvatarURL({ dynamic: true }))
+      .setFooter({ text: '🍀 Viel Glück beim Fussball-Spiel! ⚽', iconURL: interaction.client.user.displayAvatarURL() })
       .setTimestamp();
 
-    await interaction.followUp({ embeds: [tipEmbed], ephemeral: true });
+    await interaction.followUp({ embeds: [TippEmbed], ephemeral: true });
 
     collector.stop();
     await delay(3000);
