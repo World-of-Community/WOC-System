@@ -4,7 +4,7 @@ const User = require('../../../Datenbank/userdb');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('shop-pass')
-    .setDescription('» Zeigt den Shoppass mit allen Vorteilen und der Kaufoption. 🎟️')
+    .setDescription('» Zeigt den Shoppass mit allen Vorteilen und der Kaufoption. 🎫')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {

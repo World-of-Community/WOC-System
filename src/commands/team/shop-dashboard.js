@@ -3,7 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, Butt
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('shop-dashboard')
-    .setDescription('» Zeigt das Shop-Dashboard an. 🛍️')
+    .setDescription('» Zeigt das Shop-Dashboard an. 🏡')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
