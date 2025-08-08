@@ -658,13 +658,7 @@ module.exports = {
             await interaction.reply({ content: '> 🪙 Dein Konto – bald verfügbar!', ephemeral: true });
           } else if (interaction.customId === 'shoppass_help') {
             await interaction.reply({ content: '> ❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
-          }
-        }
-
-        if (interaction.isButton()) {
-          const customId = interaction.customId;
-
-          if (interaction.customId = 'shoppass_show') {
+          } else if (interaction.customId = 'shoppass_show') {
             await interaction.reply({ content: '> 🎟️ ShopPass anzeigen - Coming Soon!', ephemeral: true });
           }
         }
