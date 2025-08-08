@@ -653,11 +653,11 @@ module.exports = {
           const customId = interaction.customId;
         
           if (interaction.customId === 'shoppass_buy') {
-            await interaction.reply({ content: '🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
+            await interaction.reply({ content: '> 🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
           } else if (interaction.customId === 'shoppass_account') {
-            await interaction.reply({ content: '🪙 Dein Konto – bald verfügbar!', ephemeral: true });
+            await interaction.reply({ content: '> 🪙 Dein Konto – bald verfügbar!', ephemeral: true });
           } else if (interaction.customId === 'shoppass_help') {
-            await interaction.reply({ content: '❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
+            await interaction.reply({ content: '> ❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
           }
         }
 
@@ -665,7 +665,7 @@ module.exports = {
           const customId = interaction.customId;
 
           if (interaction.customId = 'shoppass_show') {
-            await interaction.reply({ content: '🎟️ ShopPass anzeigen - Coming Soon!', ephemeral: true });
+            await interaction.reply({ content: '> 🎟️ ShopPass anzeigen - Coming Soon!', ephemeral: true });
           }
         }
 
