@@ -730,7 +730,7 @@ module.exports = {
             meeting.nonParticipants = meeting.nonParticipants.filter(id => id !== userId);
             await meeting.save();
             return interaction.reply({ 
-                content: '> `✅` » Du nimmst nun am Team-Meeting teil.\n> `❗` » **Hinweis:** Bitte überprüfe, ob ich dir **Direktnachrichten** senden kann, damit du die Erinnerung 10 Minuten vorher erhältst.', 
+                content: '> `✅` » Du nimmst nun am Team-Meeting teil.\n> `❗` » **Hinweis:** Bitte überprüfe, ob ich dir **Direktnachrichten** senden kann,\ndamit du die Erinnerung **10 Minuten** vorher erhältst.', 
                 ephemeral: true 
             });
           }
