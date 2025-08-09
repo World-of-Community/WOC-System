@@ -666,7 +666,7 @@ module.exports = {
         if (interaction.isButton()) {
           if (!interaction.customId.startsWith('meeting_')) return;
   
-          const meeting = await Meeting.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
+          const meeting = await meetingdb.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
           if (!meeting) return interaction.reply({ content: '> `❌` Team-Meeting nicht gefunden.', ephemeral: true });
       
           const userId = interaction.user.id;
