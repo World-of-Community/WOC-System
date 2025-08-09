@@ -752,7 +752,7 @@ module.exports = {
             
               const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
               return interaction.reply({ 
-                content: `> \`❌\` » Du nimmst nun nicht mehr am Team-Meeting teil,\nwelches am <t:${unixTimestamp}:F> stattfindet.`, 
+                content: `> \`❌\` » Du nimmst nun nicht mehr am Team-Meeting teil,\n> welches am <t:${unixTimestamp}:F> stattfindet.`, 
                 ephemeral: true 
               });
           }
