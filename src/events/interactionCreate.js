@@ -713,17 +713,8 @@ module.exports = {
           });
 
           const now = new Date();
-          const formattedDate = now.toLocaleDateString('de-DE', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-          });
-          const formattedTime = now.toLocaleTimeString('de-DE', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          });
+          const formattedDate = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          const formattedTime = now.toLocaleTimeString('de-DE', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
       
           if (interaction.customId === 'meeting_join') {
             if (!meeting.participants.includes(userId)) meeting.participants.push(userId);
