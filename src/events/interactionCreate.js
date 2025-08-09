@@ -738,6 +738,7 @@ module.exports = {
             if (!meeting.nonParticipants.includes(userId)) meeting.nonParticipants.push(userId);
             meeting.participants = meeting.participants.filter(id => id !== userId);
             await meeting.save();
+            const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
             return interaction.reply({ content: `> \`❌\` » Du nimmst nun nicht mehr am Team-Meeting Teil,\nwelches am <t:${unixTimestamp}:F> stattfindet.`, ephemeral: true });
           }
           else if (interaction.customId === 'meeting_show') {
