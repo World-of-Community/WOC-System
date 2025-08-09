@@ -711,6 +711,19 @@ module.exports = {
                   scheduleReminder(m, client);
               }
           });
+
+          const now = new Date();
+          const formattedDate = now.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+          const formattedTime = now.toLocaleTimeString('de-DE', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          });
       
           if (interaction.customId === 'meeting_join') {
             if (!meeting.participants.includes(userId)) meeting.participants.push(userId);
@@ -744,7 +757,7 @@ module.exports = {
                       { name: '`🔴` Nicht teilnehmen', value: nonParticipants, inline: true }
                   )
                   .setColor('Orange')
-                  .setFooter({ text: `Stand: ${new Date().toLocaleString('de-DE')}` })
+                  .setFooter({ text: `Stand: ${formattedDate} ${formattedTime}` })
                   .setTimestamp();
           
               return interaction.reply({ embeds: [embed], ephemeral: true });
