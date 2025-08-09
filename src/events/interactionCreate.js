@@ -7,6 +7,7 @@ const NewsStatus = require("../../Datenbank/newsdb");
 const Timeout = require('../../Datenbank/timeoutdb');
 const Warn = require('../../Datenbank/warndb');
 const bandb = require('../../Datenbank/bandb');
+const Meeting = require('../../../Datenbank/meetingdb');
 
 // Belohnungen definieren
 const rewards = {
@@ -666,7 +667,7 @@ module.exports = {
         if (interaction.isButton()) {
           if (!interaction.customId.startsWith('meeting_')) return;
   
-          const meeting = await meetingdb.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
+          const meeting = await Meeting.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
           if (!meeting) return interaction.reply({ content: '> `❌` Team-Meeting nicht gefunden.', ephemeral: true });
       
           const userId = interaction.user.id;
