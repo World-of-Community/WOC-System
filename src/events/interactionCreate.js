@@ -728,18 +728,26 @@ module.exports = {
             return interaction.reply({ content: '> `❌` » Du nimmst nun nicht mehr am Team-Meeting teil.', ephemeral: true });
           }
           else if (interaction.customId === 'meeting_show') {
-            const participants = meeting.participants.length ? meeting.participants.map(id => `<@${id}>`).join('\n') : 'Keine Teilnehmer';
-            const nonParticipants = meeting.nonParticipants.length ? meeting.nonParticipants.map(id => `<@${id}>`).join('\n') : 'Keine Abmeldungen';
-      
-            const embed = new EmbedBuilder()
-              .setTitle('Teilnehmer-Liste')
-              .addFields(
-                { name: 'Teilnehmer', value: participants, inline: true },
-                { name: 'Nicht teilnehmen', value: nonParticipants, inline: true }
-              )
-              .setColor('Green');
-      
-            return interaction.reply({ embeds: [embed], ephemeral: true });
+              const participants = meeting.participants.length 
+                  ? meeting.participants.map(id => `\`✅\` <@${id}>`).join('\n') 
+                  : '`❌` Keine Teilnehmer';
+              
+              const nonParticipants = meeting.nonParticipants.length 
+                  ? meeting.nonParticipants.map(id => `\`🚫\` <@${id}>`).join('\n') 
+                  : '`✅` Keine Abmeldungen';
+          
+              const embed = new EmbedBuilder()
+                  .setTitle(`\`📋\` Teilnehmerliste (${meeting.participants.length} Zusagen, ${meeting.nonParticipants.length} Absagen)`)
+                  .setDescription('Hier siehst du den aktuellen Stand der Zusagen und Absagen für das Meeting.')
+                  .addFields(
+                      { name: '`🟢` Teilnehmer', value: participants, inline: true },
+                      { name: '`🔴` Nicht teilnehmen', value: nonParticipants, inline: true }
+                  )
+                  .setColor('Orange')
+                  .setFooter({ text: `Stand: ${new Date().toLocaleString('de-DE')}` })
+                  .setTimestamp();
+          
+              return interaction.reply({ embeds: [embed], ephemeral: true });
           }
         }
 
