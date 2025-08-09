@@ -7,7 +7,7 @@ const NewsStatus = require("../../Datenbank/newsdb");
 const Timeout = require('../../Datenbank/timeoutdb');
 const Warn = require('../../Datenbank/warndb');
 const bandb = require('../../Datenbank/bandb');
-const Meeting = require('../../../Datenbank/meetingdb');
+const Meeting = require('../../Datenbank/meetingdb');
 
 // Belohnungen definieren
 const rewards = {
