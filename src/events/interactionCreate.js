@@ -735,11 +735,26 @@ module.exports = {
             });
           }
           else if (interaction.customId === 'meeting_leave') {
-            if (!meeting.nonParticipants.includes(userId)) meeting.nonParticipants.push(userId);
-            meeting.participants = meeting.participants.filter(id => id !== userId);
-            await meeting.save();
-            const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
-            return interaction.reply({ content: `> \`❌\` » Du nimmst nun nicht mehr am Team-Meeting Teil,\nwelches am <t:${unixTimestamp}:F> stattfindet.`, ephemeral: true });
+              const userId = interaction.user.id;
+            
+              if (!meeting) {
+                return interaction.reply({ content: '> `❌` » Kein Meeting gefunden.', ephemeral: true });
+              }
+              const dateObj = new Date(meeting.time);
+              if (isNaN(dateObj.getTime())) {
+                return interaction.reply({ content: '> `❌` » Ungültiges Meeting-Datum.', ephemeral: true });
+              }
+            
+              if (!meeting.nonParticipants.includes(userId)) meeting.nonParticipants.push(userId);
+              meeting.participants = meeting.participants.filter(id => id !== userId);
+            
+              await meeting.save();
+            
+              const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
+              return interaction.reply({ 
+                content: `> \`❌\` » Du nimmst nun nicht mehr am Team-Meeting teil,\nwelches am <t:${unixTimestamp}:F> stattfindet.`, 
+                ephemeral: true 
+              });
           }
           else if (interaction.customId === 'meeting_show') {
               const participants = meeting.participants.length 
