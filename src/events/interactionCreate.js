@@ -671,12 +671,55 @@ module.exports = {
           if (!meeting) return interaction.reply({ content: '> `❌` Team-Meeting nicht gefunden.', ephemeral: true });
       
           const userId = interaction.user.id;
+
+          // Funktion für Reminder-Planung (Embed-Version)
+          const scheduleReminder = (meeting, client) => {
+              const meetingTime = new Date(meeting.time).getTime();
+              const reminderTime = meetingTime - 10 * 60 * 1000; // 10 Minuten vorher
+              const delay = reminderTime - Date.now();
+      
+              if (delay <= 0) return; // zu spät für Reminder
+      
+              setTimeout(async () => {
+                  const updatedMeeting = await Meeting.findById(meeting._id);
+                  if (!updatedMeeting) return;
+      
+                  const reminderEmbed = new EmbedBuilder()
+                      .setTitle('`📅` Team-Meeting Erinnerung')
+                      .setDescription(`Dein Team-Meeting startet in **10 Minuten**!\n\n**Thema:** ${updatedMeeting.description}`)
+                      .addFields({ name: 'Beginn', value: `<t:${Math.floor(new Date(updatedMeeting.time).getTime() / 1000)}:F>` })
+                      .setColor('Orange')
+                      .setFooter({ text: 'Bitte sei pünktlich!' })
+                      .setTimestamp();
+      
+                  for (const id of updatedMeeting.participants) {
+                      try {
+                          const user = await interaction.client.users.fetch(id);
+                          await user.send({ embeds: [reminderEmbed] });
+                      } catch (err) {
+                          console.error(`Konnte DM an ${id} nicht senden:`, err);
+                      }
+                  }
+              }, delay);
+          };
+
+          // Beim Bot-Start Reminder für alle kommenden Meetings setzen
+          client.once('ready', async () => {
+              console.log('✅  | Meeting Reminder-System aktiviert');
+              const upcomingMeetings = await Meeting.find({ time: { $gte: new Date() } });
+              for (const m of upcomingMeetings) {
+                  scheduleReminder(m, client);
+              }
+          });
       
           if (interaction.customId === 'meeting_join') {
             if (!meeting.participants.includes(userId)) meeting.participants.push(userId);
             meeting.nonParticipants = meeting.nonParticipants.filter(id => id !== userId);
             await meeting.save();
-            return interaction.reply({ content: '> `✅` » Du nimmst am Team-Meeting teil.', ephemeral: true });
+            return interaction.reply({ 
+                content: '> `✅` » Du nimmst nun am Team-Meeting teil.\n> `❗` » **Hinweis:** Bitte überprüfe, ob ich dir **Direktnachrichten** senden kann, damit du die Erinnerung 10 Minuten vorher erhältst.', 
+                ephemeral: true 
+            });
           }
           else if (interaction.customId === 'meeting_leave') {
             if (!meeting.nonParticipants.includes(userId)) meeting.nonParticipants.push(userId);
