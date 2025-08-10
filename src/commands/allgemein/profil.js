@@ -129,7 +129,6 @@ module.exports = {
             '1230568420240527462', // Gratis Spiele Ping 
             '1231257421016469596', // Gaming News Ping
             '1231257532844998666', // Mediathek Ping
-            '1231257309313765396', // Welt News Ping
         ];
 
         // Initial Werte
