@@ -364,30 +364,31 @@ client.on('guildMemberAdd', async member => {
     if (member.guild.id !== "815919809379172354") return;
 
     const newInvites = await member.guild.invites.fetch();
-
-    // Suche die verwendete Einladung
-    let invite = newInvites.find(i => oldInvites.has(i.code) && i.uses > oldInvites.get(i.code));
-
     const oldInvites = invites.get(member.guild.id);
 
-    // Überprüfe, ob alte Einladungen definiert sind
+    // Falls wir noch keine gespeicherten Einladungen haben → jetzt speichern und return
     if (!oldInvites) {
         invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
         return;
     }
 
-    if (invite) {
-        const inviter = invite.inviter;
-        const inviteUses = invite.uses;
+    // Finde die benutzte Einladung
+    const usedInvite = newInvites.find(i => oldInvites.has(i.code) && i.uses > oldInvites.get(i.code));
+
+    if (usedInvite) {
+        const inviter = usedInvite.inviter;
+        const inviteUses = usedInvite.uses;
+
         const InviteEmbed = new EmbedBuilder()
-            .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName}**\n\n> × Einladungscode: [${invite.code}](https://discord.gg/${invite.code})\n\n> × Er/Sie hat nun **${inviteUses}** Einladungen\n`)
+            .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName || inviter.username}**\n\n> × Einladungscode: [${usedInvite.code}](https://discord.gg/${usedInvite.code})\n\n> × Er/Sie hat nun **${inviteUses}** Einladungen`)
             .setColor('Blurple')
             .setTimestamp();
 
-            await sendLog(ThreadIDs.INVITE, InviteEmbed)
-
-        invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
+        await sendLog(ThreadIDs.INVITE, InviteEmbed);
     }
+
+    // Speichere den aktuellen Stand der Einladungen
+    invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
 });
 
 const typeMap = {
