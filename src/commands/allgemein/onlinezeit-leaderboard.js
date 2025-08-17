@@ -59,7 +59,7 @@ module.exports = {
           lines.push(`\n...`);
         }
 
-        lines.push(`Dein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`);
+        lines.push(`\nDein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`);
       }
 
       // Embed bauen und antworten
