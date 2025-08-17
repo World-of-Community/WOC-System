@@ -290,7 +290,7 @@ module.exports = {
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                 `> \`🏆\` **» ALLE STATISTIKEN**\n` +
-                `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden (Beta-Funktion)\n` +
+                `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +

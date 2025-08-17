@@ -24,12 +24,16 @@ module.exports = {
       // Top 10 aus der Liste
       const topUsers = allUsers.slice(0, 10);
 
-      // Member-Daten im Cache/Aktualisierung holen
-      await Promise.all(topUsers.map(u => guild.members.fetch(u.userID).catch(() => null)));
+      // Member-Daten im Server holen
+      const membersMap = new Map();
+      await Promise.all(topUsers.map(async u => {
+        const member = await guild.members.fetch(u.userID).catch(() => null);
+        membersMap.set(u.userID, member);
+      }));
 
       // Ausgabe-Zeilen für Embed bauen (Top 10)
       const lines = topUsers.map((userDoc, index) => {
-        const member = guild.members.cache.get(userDoc.userID);
+        const member = membersMap.get(userDoc.userID);
         const displayName = member?.displayName || `Unbekannt (${userDoc.userID})`;
 
         // Onlinezeit in Stunden berechnen
@@ -47,7 +51,7 @@ module.exports = {
       } else if (userIndex >= 10) {
         const userRank = userIndex + 1;
         const userDoc = allUsers[userIndex];
-        const member = guild.members.cache.get(userDoc.userID);
+        const member = await guild.members.fetch(userDoc.userID).catch(() => null);
         const displayName = member?.displayName || `Unbekannt (${userDoc.userID})`;
         const hours = Math.floor(userDoc.onlineTime / 3600000);
         const hourLabel = hours === 1 ? "Stunde" : "Stunden";
@@ -58,13 +62,14 @@ module.exports = {
 
       // Embed bauen und antworten
       const embed = new EmbedBuilder()
-        .setTitle('`🏆` Top 10 Onlinezeit Leaderboard')
+        .setTitle('🏆 Top 10 Onlinezeit Leaderboard')
         .setDescription(lines.join('\n'))
         .setColor('Green')
-        .setFooter({ text: `Gesamte-Onlinezeit auf ${interaction.guild.name}` })
+        .setFooter({ text: `Gesamte Onlinezeit auf ${interaction.guild.name}` })
         .setTimestamp();
 
       return interaction.reply({ embeds: [embed], ephemeral: true });
+
     } catch (error) {
       console.error('Fehler bei /onlinezeit-leaderboard:', error);
       return interaction.reply({
