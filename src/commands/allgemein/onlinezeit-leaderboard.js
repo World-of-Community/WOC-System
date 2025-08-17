@@ -34,30 +34,32 @@ module.exports = {
       // Ausgabe-Zeilen für Embed bauen (Top 10)
       const lines = topUsers.map((userDoc, index) => {
         const member = membersMap.get(userDoc.userID);
-        const displayName = member?.displayName || `Unbekannt (${userDoc.userID})`;
+        const username = member?.user.username || `Unbekannt (${userDoc.userID})`;
 
-        // Onlinezeit in Stunden berechnen
         const hours = Math.floor(userDoc.onlineTime / 3600000);
         const hourLabel = hours === 1 ? "Stunde" : "Stunden";
 
-        return `\`#${index + 1}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${displayName})`;
+        return `\`#${index + 1}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`;
       });
 
-      // Rang des Abfragenden finden
+      // Rang des Abfragenden berechnen
       const userIndex = allUsers.findIndex(u => u.userID === userId);
-
       if (userIndex === -1) {
         lines.push(`\nDein Rang: \`Nicht in der Liste\``);
-      } else if (userIndex >= 10) {
+      } else {
         const userRank = userIndex + 1;
         const userDoc = allUsers[userIndex];
         const member = await guild.members.fetch(userDoc.userID).catch(() => null);
-        const username = member?.username || `Unbekannt (${userDoc.userID})`;
+        const username = member?.user.username || `Unbekannt (${userDoc.userID})`;
         const hours = Math.floor(userDoc.onlineTime / 3600000);
         const hourLabel = hours === 1 ? "Stunde" : "Stunden";
 
-        lines.push(`\n...`);
-        lines.push(`Dein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${userame})`);
+        // Wenn er nicht in den Top 10 ist, ... einfügen
+        if (userIndex >= 10) {
+          lines.push(`\n...`);
+        }
+
+        lines.push(`Dein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`);
       }
 
       // Embed bauen und antworten
