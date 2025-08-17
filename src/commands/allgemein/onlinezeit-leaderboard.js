@@ -62,7 +62,7 @@ module.exports = {
 
       // Embed bauen und antworten
       const embed = new EmbedBuilder()
-        .setTitle('🏆 Top 10 Onlinezeit Leaderboard')
+        .setTitle('`🏆` Top 10 Onlinezeit Leaderboard')
         .setDescription(lines.join('\n'))
         .setColor('Green')
         .setFooter({ text: `Gesamte Onlinezeit auf ${interaction.guild.name}` })
