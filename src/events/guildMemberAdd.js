@@ -3,7 +3,7 @@ const client = require('../index');
 const fs = require('fs');
 const serverdb = require("../../Datenbank/serverdb");
 const userdb = require("../../Datenbank/userdb");
-const inviteCache = require("../../Datenbank/inviteCachedb");
+const InviteCacheModel = require("../../Datenbank/inviteCachedb");
 const { once } = require("events");
 
 module.exports = {
@@ -126,28 +126,45 @@ module.exports = {
             console.error(`Fehler bei der Verarbeitung von ${member.user.tag}:`, error);
         }
     }
-
         // Invite System
-
         const guild = member.guild;
-        const newInvites = await member.guild.invites.fetch();
-        const Invites = await guild.invites.fetch();
-      
+        const newInvites = await guild.invites.fetch();
+        
         // Lade alten Cache aus DB
-        let InviteCache = await InviteCache.findOne({ guildID: member.guild.id });
-
-        // Aktualisiere Cache in DB
-        inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));
-        await inviteCache.save();
-      
+        let inviteCache = await InviteCacheModel.findOne({ guildID: guild.id });
+        
         if (!inviteCache) {
-          // Wenn noch kein Cache, speichern und zurück
-          await InviteCache.create({
-            guildID: member.guild.id,
+          // Wenn noch kein Cache existiert → neu anlegen
+          inviteCache = await InviteCacheModel.create({
+            guildID: guild.id,
             invites: newInvites.map(i => ({ code: i.code, uses: i.uses }))
           });
-          return;
+        } else {
+          // Cache aktualisieren
+          inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));
+          await inviteCache.save();
         }
+
+        //// Invite System
+        //const guild = member.guild;
+        //const newInvites = await member.guild.invites.fetch();
+        //const Invites = await guild.invites.fetch();
+      
+        //// Lade alten Cache aus DB
+        //let InviteCache = await InviteCacheModel.findOne({ guildID: member.guild.id });
+
+        //// Aktualisiere Cache in DB
+        //inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));
+        //await inviteCache.save();
+      
+        //if (!inviteCache) {
+        //  // Wenn noch kein Cache, speichern und zurück
+        //  await InviteCache.create({
+        //    guildID: member.guild.id,
+        //    invites: newInvites.map(i => ({ code: i.code, uses: i.uses }))
+        //  });
+        //  return;
+        //}
       
         // Finde die Einladung mit geänderter Nutzungszahl
         const usedInvite = newInvites.find(i => {
