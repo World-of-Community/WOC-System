@@ -33,25 +33,28 @@ module.exports = {
         const displayName = member?.displayName || `Unbekannt (${userDoc.userID})`;
 
         // Onlinezeit in Stunden berechnen
-        const totalMinutes = Math.floor(userDoc.onlineTime / 1000 / 60);
-        const hours = Math.floor(totalMinutes / 60);
+        const hours = Math.floor(userDoc.onlineTime / 3600000);
+        const hourLabel = hours === 1 ? "Stunde" : "Stunden";
 
-        return `\`#${index + 1}\` mit \`${hours}h\` ist <@${userDoc.userID}> (${displayName})`;
+        return `\`#${index + 1}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${displayName})`;
       });
 
       // Rang des Abfragenden finden
       const userIndex = allUsers.findIndex(u => u.userID === userId);
 
       if (userIndex === -1) {
-        // Nutzer nicht in der DB
         lines.push(`\nDein Rang: \`Nicht in der Liste\``);
       } else if (userIndex >= 10) {
-        // Nutzer nicht in Top 10, aber in Liste
         const userRank = userIndex + 1;
+        const userDoc = allUsers[userIndex];
+        const member = guild.members.cache.get(userDoc.userID);
+        const displayName = member?.displayName || `Unbekannt (${userDoc.userID})`;
+        const hours = Math.floor(userDoc.onlineTime / 3600000);
+        const hourLabel = hours === 1 ? "Stunde" : "Stunden";
+
         lines.push(`\n...`);
-        lines.push(`Dein Rang: \`#${userRank}\` mit \`${hours}h\` ist <@${userDoc.userID}> (${displayName})`);
+        lines.push(`Dein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${displayName})`);
       }
-      // Falls der Nutzer in Top 10 ist, wird sein Rang schon angezeigt in der Liste
 
       // Embed bauen und antworten
       const embed = new EmbedBuilder()
@@ -63,7 +66,7 @@ module.exports = {
 
       return interaction.reply({ embeds: [embed], ephemeral: true });
     } catch (error) {
-      console.error('Fehler bei /onlinezeit:', error);
+      console.error('Fehler bei /onlinezeit-leaderboard:', error);
       return interaction.reply({
         content: '> `❌` » Ein unerwarteter Fehler ist aufgetreten.',
         ephemeral: true,

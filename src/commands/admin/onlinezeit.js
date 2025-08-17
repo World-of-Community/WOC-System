@@ -52,7 +52,7 @@ module.exports = {
           if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
 
           const ms = hours * 3600000;
-          userData.onlineTime += ms;
+          userData.onlineTime = (userData.onlineTime || 0) + ms;
           message = `> \`✅\` » <@${user.id}> wurde eine Onlinezeit von \`${hours}h\` hinzugefügt.`;
           break;
         }
@@ -62,7 +62,7 @@ module.exports = {
           if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
 
           const ms = hours * 3600000;
-          userData.onlineTime = Math.max(0, userData.onlineTime - ms);
+          userData.onlineTime = Math.max(0, (userData.onlineTime || 0) - ms);
           message = `> \`✅\` » \`${hours}h\` von der Onlinezeit von <@${user.id}> entfernt.`;
           break;
         }
@@ -71,15 +71,14 @@ module.exports = {
           const hours = interaction.options.getInteger('stunden');
           if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
 
-          const ms = hours * 3600000;
-          userData.onlineTime = ms;
+          userData.onlineTime = hours * 3600000;
           message = `> \`✅\` » Die Onlinezeit von <@${user.id}> wurde auf \`${hours}h\` gesetzt.`;
           break;
         }
 
         case 'edit': {
           const ms = interaction.options.getInteger('millisekunden');
-          userData.onlineTime += ms;
+          userData.onlineTime = (userData.onlineTime || 0) + ms;
           if (userData.onlineTime < 0) userData.onlineTime = 0;
 
           const totalHours = Math.floor(userData.onlineTime / 3600000);
@@ -90,6 +89,7 @@ module.exports = {
         }
       }
 
+      // Optional: letzter Onlinezeitpunkt aktualisieren
       userData.lastOnline = new Date();
       await userData.save();
 
