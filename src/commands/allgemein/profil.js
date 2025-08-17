@@ -260,7 +260,7 @@ module.exports = {
         // Onlinezeit in Stunden berechnen
         //const displayHours = Math.floor(userData.onlineTime / 3600000);
 
-        const timestamp = Math.floor(new Date(lastOnline).getTime() / 1000);
+        const timestamp = Math.floor(new Date(lastOnlineText).getTime() / 1000);
         
         let lastOnlineText = '';
         if (
