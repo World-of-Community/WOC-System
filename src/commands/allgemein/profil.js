@@ -258,7 +258,9 @@ module.exports = {
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
         // Onlinezeit in Stunden berechnen
-        const displayHours = Math.floor(userData.onlineTime / 3600000);
+        //const displayHours = Math.floor(userData.onlineTime / 3600000);
+
+        const timestamp = Math.floor(new Date(lastOnline).getTime() / 1000);
         
         let lastOnlineText = '';
         if (
@@ -266,16 +268,16 @@ module.exports = {
           userData?.lastOnline instanceof Date &&
           !isNaN(userData.lastOnline)
         ) {
-          const time = userData.lastOnline.toLocaleTimeString('de-DE', {
-            hour: '2-digit',
-            minute: '2-digit',
-          });
-          const date = userData.lastOnline.toLocaleDateString('de-DE', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          });
-          lastOnlineText = `- \`📅\` » Zuletzt online: \`${date} - ${time}\`\n`;
+          //const time = userData.lastOnline.toLocaleTimeString('de-DE', {
+          //  hour: '2-digit',
+          //  minute: '2-digit',
+          //});
+          //const date = userData.lastOnline.toLocaleDateString('de-DE', {
+          //  day: '2-digit',
+          //  month: '2-digit',
+          //  year: 'numeric',
+          //});
+          lastOnlineText = `- \`📅\` » Zuletzt online: <t:${timestamp}:f>\n`;
         }
 
         // Embed
