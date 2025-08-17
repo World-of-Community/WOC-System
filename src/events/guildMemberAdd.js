@@ -144,27 +144,6 @@ module.exports = {
           inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));
           await inviteCache.save();
         }
-
-        //// Invite System
-        //const guild = member.guild;
-        //const newInvites = await member.guild.invites.fetch();
-        //const Invites = await guild.invites.fetch();
-      
-        //// Lade alten Cache aus DB
-        //let InviteCache = await InviteCacheModel.findOne({ guildID: member.guild.id });
-
-        //// Aktualisiere Cache in DB
-        //inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));
-        //await inviteCache.save();
-      
-        //if (!inviteCache) {
-        //  // Wenn noch kein Cache, speichern und zurück
-        //  await InviteCache.create({
-        //    guildID: member.guild.id,
-        //    invites: newInvites.map(i => ({ code: i.code, uses: i.uses }))
-        //  });
-        //  return;
-        //}
       
         // Finde die Einladung mit geänderter Nutzungszahl
         const usedInvite = newInvites.find(i => {
