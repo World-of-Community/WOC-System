@@ -29,8 +29,8 @@ module.exports = {
         .setDescription('» Onlinezeit manuell verändern.')
         .addUserOption(opt => opt.setName('nutzer').setDescription('» Nutzer').setRequired(true))
         .addIntegerOption(opt =>
-          opt.setName('millisekunden')
-            .setDescription('» Wert (positiv oder negativ) in Millisekunden')
+          opt.setName('stunden')
+            .setDescription('» Wert (positiv oder negativ) in Stunden')
             .setRequired(true))
     ),
 
@@ -77,14 +77,16 @@ module.exports = {
         }
 
         case 'edit': {
-          const ms = interaction.options.getInteger('millisekunden');
+          const hours = interaction.options.getInteger('stunden'); // jetzt Stunden
+          const ms = hours * 3600000;
+
           userData.onlineTime = (userData.onlineTime || 0) + ms;
           if (userData.onlineTime < 0) userData.onlineTime = 0;
 
           const totalHours = Math.floor(userData.onlineTime / 3600000);
-          const sign = ms >= 0 ? 'hinzugefügt' : 'abgezogen';
+          const sign = hours >= 0 ? 'hinzugefügt' : 'abgezogen';
 
-          message = `> \`✅\` » Onlinezeit von <@${user.id}> wurde um \`${ms}ms\` ${sign}. Neue Onlinezeit: \`${totalHours}h\`.`;
+          message = `> \`✅\` » Onlinezeit von <@${user.id}> wurde um \`${hours}h\` ${sign}. Neue Onlinezeit: \`${totalHours}h\`.`;
           break;
         }
       }
