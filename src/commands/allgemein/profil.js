@@ -266,8 +266,16 @@ module.exports = {
           userData?.lastOnline instanceof Date &&
           !isNaN(userData.lastOnline)
         ) {
-          const timestamp = Math.floor(userData.lastOnline.getTime() / 1000);
-          lastOnlineText = `- \`📅\` » Zuletzt online: <t:${timestamp}:f>\n`;
+          const date = userData.lastOnline.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          });
+          const time = userData.lastOnline.toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+          lastOnlineText = `- \`📅\` » Zuletzt online: \`${date} - ${time}\`\n`;
         }
 
         // Embed
