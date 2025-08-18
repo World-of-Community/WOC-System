@@ -305,9 +305,9 @@ module.exports = {
                 `${outputText}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
-                `> \`\` **» SERVER ERFOLGE**\n` +
+                `> \`🏆\` **» SERVER ERFOLGE**\n` +
                 `${erfolgeAnzeige}\n\n` +
-                `> \`🏆\` **» ALLE STATISTIKEN**\n` +
+                `> \`📊\` **» ALLE STATISTIKEN**\n` +
                 `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
