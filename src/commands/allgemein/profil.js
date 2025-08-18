@@ -131,6 +131,16 @@ module.exports = {
             '1231257532844998666', // Mediathek Ping
         ];
 
+        const erfolgRollenIDs = [
+            "972193356333604874", // 1 Jahr Server Mitglied
+            "1147250265641201724", // Informant
+            "1147250982967836823", // Teil des Rats
+            "992008555987222548", // Supporter der ersten Stunde
+            "1312780135530889326", // Adventskalender 2024
+            "1124598019862573096", // Event-Gewinner
+            "882240367632744508" // Server Eröffnung 2021
+        ];
+
         // Initial Werte
         let userBundesland = '❓';
         let userNationalität = '❓';
@@ -228,20 +238,10 @@ module.exports = {
             outputText = `- \`📌\` » Land/Bundesland: ❓`;
         }
 
-        // IDs der "Erfolge"-Rollen
-        const erfolgRollen = {
-            "972193356333604874": "1 Jahr Server Mitglied",
-            "1147250265641201724": "Informant",
-            "1147250982967836823": "Teil des Rats",
-            "992008555987222548": "Supporter der ersten Stunde",
-            "1312780135530889326": "Adventskalender 2024",
-            "1124598019862573096": "Event-Gewinner",
-            "882240367632744508": "Server Eröffnung 2021",
-        };
-
         // Check ob User Rolle hat
-        const erfolgeAnzeige = Object.entries(erfolgRollen).map(([name, roleId]) => {
-          return `- ${roleId} ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
+        const erfolgeAnzeige = Object.entries(erfolgRollen).map(([roleId, name]) => {
+          const role = interaction.guild.roles.cache.get(roleId);
+          return `- ${role ? `<@&${roleId}>` : name}: ${member.roles.cache.has(roleId) ? "✅" : "❌"}`;
         }).join("\n");
 
         // User-Daten abrufen
