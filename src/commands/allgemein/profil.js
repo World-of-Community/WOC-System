@@ -238,10 +238,10 @@ module.exports = {
             outputText = `- \`📌\` » Land/Bundesland: ❓`;
         }
 
-        // Check ob User Rolle hat
-        const erfolgeAnzeige = Object.entries(erfolgRollenIDs).map(([roleId, name]) => {
+        // Check ob User Rolle hat (mit Array)
+        const erfolgeAnzeige = erfolgRollenIDs.map(roleId => {
           const role = interaction.guild.roles.cache.get(roleId);
-          return `- ${role ? `<@&${roleId}>` : name}: ${member.roles.cache.has(roleId) ? "✅" : "❌"}`;
+          return `- ${role ? `<@&${roleId}>` : `Unbekannte Rolle (${roleId})`}: ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
         }).join("\n");
 
         // User-Daten abrufen
