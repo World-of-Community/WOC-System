@@ -142,9 +142,9 @@ module.exports = {
         ];
 
         // Initial Werte
-        let userBundesland = '❓';
-        let userNationalität = '❓';
-        let userGeschlecht = '❓';
+        let userBundesland = '`❓`';
+        let userNationalität = '`❓`';
+        let userGeschlecht = '`❓`';
         let roleGamesList = [];
         let rolePingsList = [];
         let teamRoleMention = '';
@@ -206,12 +206,12 @@ module.exports = {
 
             // Nationalität aus Mapping ermitteln
             if (NationalitätRoleIds.includes(role.id)) {
-                userNationalität = roleNationalität[role.name] || '❓';
+                userNationalität = roleNationalität[role.name] || '`❓`';
             }
 
             // Geschlecht aus Mapping ermitteln
             if (GeschlechtRoleIds.includes(role.id)) {
-                userGeschlecht = roleGeschlecht[role.name] || '❓';
+                userGeschlecht = roleGeschlecht[role.name] || '`❓`';
             }
 
             // Spiele-Rollen sammeln
@@ -235,7 +235,7 @@ module.exports = {
         } else if (userBundesland !== '❓') {
             outputText = `- \`📌\` » Bundesland: ${userBundesland}`;
         } else {
-            outputText = `- \`📌\` » Land/Bundesland: ❓`;
+            outputText = `- \`📌\` » Land/Bundesland: \`❓\``;
         }
 
         // Check ob User Rolle hat (mit Array)
