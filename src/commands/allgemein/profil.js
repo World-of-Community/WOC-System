@@ -241,7 +241,7 @@ module.exports = {
 
         // Check ob User Rolle hat
         const erfolgeAnzeige = Object.entries(erfolgRollen).map(([name, roleId]) => {
-          return `- <@&${roleId}> ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
+          return `- ${roleId} ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
         }).join("\n");
 
         // User-Daten abrufen
