@@ -239,7 +239,7 @@ module.exports = {
         }
 
         // Check ob User Rolle hat
-        const erfolgeAnzeige = Object.entries(erfolgRollen).map(([roleId, name]) => {
+        const erfolgeAnzeige = Object.entries(erfolgRollenIDs).map(([roleId, name]) => {
           const role = interaction.guild.roles.cache.get(roleId);
           return `- ${role ? `<@&${roleId}>` : name}: ${member.roles.cache.has(roleId) ? "✅" : "❌"}`;
         }).join("\n");
