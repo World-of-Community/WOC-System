@@ -228,6 +228,22 @@ module.exports = {
             outputText = `- \`📌\` » Land/Bundesland: ❓`;
         }
 
+        // IDs der "Erfolge"-Rollen
+        const erfolgRollen = {
+            "972193356333604874": "1 Jahr Server Mitglied",
+            "1147250265641201724": "Informant",
+            "1147250982967836823": "Teil des Rats",
+            "992008555987222548": "Supporter der ersten Stunde",
+            "1312780135530889326": "Adventskalender 2024",
+            "1124598019862573096": "Event-Gewinner",
+            "882240367632744508": "Server Eröffnung 2021",
+        };
+
+        // Check ob User Rolle hat
+        const erfolgeAnzeige = Object.entries(erfolgRollen).map(([name, roleId]) => {
+          return `- ${name}: ${member.roles.cache.has(roleId) ? "✅" : "❌"}`;
+        }).join("\n");
+
         // User-Daten abrufen
         const userData = await userdb.findOne({ userID: member.id }) || {
           giveaway: { eventWins: 0, messages: 0, voiceTime: 0 },
@@ -289,6 +305,8 @@ module.exports = {
                 `${outputText}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
+                `> \`\` **» SERVER ERFOLGE**\n` +
+                `${erfolgeAnzeige}\n\n` +
                 `> \`🏆\` **» ALLE STATISTIKEN**\n` +
                 `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
