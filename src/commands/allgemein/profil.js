@@ -131,6 +131,11 @@ module.exports = {
             '1231257532844998666', // Mediathek Ping
         ];
 
+        const ExklusiveRollenIDs = [
+            "1391760378924630109", // OG
+            "1010105569866174574", // Unterstützer (Vanity/TAG)
+        ]
+
         const erfolgRollenIDs = [
             "972193356333604874", // 1 Jahr Server Mitglied
             "1147250265641201724", // Informant
@@ -238,10 +243,14 @@ module.exports = {
             outputText = `- \`📌\` » Land/Bundesland: \`❓\``;
         }
 
-        // Check ob User Rolle hat (mit Array)
         const erfolgeAnzeige = erfolgRollenIDs.map(roleId => {
-          const role = interaction.guild.roles.cache.get(roleId);
-          return `- ${role ? `<@&${roleId}>` : `Unbekannte Rolle (${roleId})`}: ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
+            const role = interaction.guild.roles.cache.get(roleId);
+            return `- ${role ? `<@&${roleId}>` : `Unbekannte Rolle (${roleId})`}: ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
+        }).join("\n");
+
+        const ExklusiveAnzeige = ExklusiveRollenIDs.map(roleId => {
+            const role = interaction.guild.roles.cache.get(roleId);
+            return `- ${role ? `<@&${roleId}>` : `Unbekannte Rolle (${roleId})`}: ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
         }).join("\n");
 
         // User-Daten abrufen
@@ -305,6 +314,8 @@ module.exports = {
                 `${outputText}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
+                `> \`👑\` **» Exklusiv**\n` +
+                `${ExklusiveAnzeige}\n\n` +
                 `> \`🏆\` **» SERVER ERFOLGE**\n` +
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
