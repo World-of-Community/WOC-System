@@ -579,19 +579,23 @@ module.exports = {
             });
         }
 
-        if (interaction.isButton()) {
-          const customId = interaction.customId;
-        
-          if (customId === 'shoppass_buy') {
-            await interaction.reply({ content: '> 🛍️ Vorteile kaufen – Coming soon!', ephemeral: true });
-          } else if (customId === 'shoppass_account') {
-            await interaction.reply({ content: '> 🪙 Dein Konto – bald verfügbar!', ephemeral: true });
-          } else if (customId === 'shoppass_help') {
-            await interaction.reply({ content: '> ❓ Hilfe zum Shop-System – bald verfügbar!', ephemeral: true });
-          } else if (customId === 'shoppass_show') {
-            await interaction.reply({ content: '> 🎟️ ShopPass anzeigen - Coming Soon!', ephemeral: true });
-          }
+        if (!interaction.isButton()) return;
 
+        // Mapping aller Button-Antworten
+        const buttonMap = {
+          shoppass_buy: '> 🛍️ Vorteile kaufen – Coming soon!',
+          shoppass_account: '> 🪙 Dein Konto – bald verfügbar!',
+          shoppass_help: '> ❓ Hilfe zum Shop-System – bald verfügbar!',
+          shoppass_show: '> 🎟️ ShopPass anzeigen - Coming Soon!'
+          // weitere Buttons hier hinzufügen
+        };
+      
+        // Passende Antwort anhand der customId finden
+        const response = buttonMap[interaction.customId];
+      
+        // Wenn es eine passende Antwort gibt → senden
+        if (response) {
+          await interaction.reply({ content: response, ephemeral: true });
           return;
         }
 
