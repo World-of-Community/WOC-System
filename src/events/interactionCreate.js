@@ -591,6 +591,8 @@ module.exports = {
           } else if (customId === 'shoppass_show') {
             await interaction.reply({ content: '> 🎟️ ShopPass anzeigen - Coming Soon!', ephemeral: true });
           }
+
+          return;
         }
 
         if (interaction.isButton()) {
