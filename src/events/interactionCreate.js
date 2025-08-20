@@ -579,6 +579,7 @@ module.exports = {
             });
         }
 
+        /*
         if (!interaction.isButton()) return;
 
         // Mapping aller Button-Antworten
@@ -598,6 +599,7 @@ module.exports = {
           await interaction.reply({ content: response, ephemeral: true });
           return;
         }
+        */
 
         if (interaction.isButton()) {
           if (!interaction.customId.startsWith('meeting_')) return;
