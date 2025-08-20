@@ -32,14 +32,14 @@ module.exports = {
         if (!inviteCacheData) return;
     
         // Suche den User, der ihn eingeladen hat
-        const userDoc = await User.findOne({ userID: member.id });
+        const userDoc = await userdb.findOne({ userID: member.id });
         if (!userDoc) return;
     
         // Optional: Wer hat den User eingeladen?
         const inviterID = userDoc.invitedBy;
         if (!inviterID) return;
     
-        await User.findOneAndUpdate(
+        await userdb.findOneAndUpdate(
           { userID: inviterID },
           { $inc: { 'invites.left': 1 } }
         );

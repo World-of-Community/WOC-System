@@ -154,14 +154,14 @@ module.exports = {
         if (!usedInvite) return;
       
         // Update Einladungs-Statistik im User-Dokument
-        await User.findOneAndUpdate(
+        await userdb.findOneAndUpdate(
           { userID: usedInvite.inviter.id },
           { $inc: { 'invites.joins': 1 } },
           { upsert: true }
         );
 
         // Speichere, von wem der Member eingeladen wurde
-        await User.findOneAndUpdate(
+        await userdb.findOneAndUpdate(
           { userID: member.id },
           { invitedBy: usedInvite.inviter.id },
           { upsert: true }
