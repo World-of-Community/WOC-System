@@ -159,21 +159,32 @@ module.exports = {
 
     // Hauptchat Beschreibung
     setInterval(async () => {
-      const channel = await client.channels.fetch(config.willkommen);
-      const messageData = await messagedb.findOne({ guildID: config.server });
-
-      if (!messageData) return;
-      const messages = messageData.messages;
-      await channel.setTopic(
-        `<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n` +
-        `𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n` +
-        `<a:Information:1007267420316106903> **| __WICHTIGE INFORMATION__**\n` +
-        `» Bleib freundlich & halte dich an die **Regeln**: <#815922286502346773>\n\n` +
-        `:information_source: | __Du möchtest ein Mitglied melden?__\n` +
-        `» Benutze: **/report <user> <grund>** – Missbrauch wird bestraft!\n` +
-        `:pushpin: » Solltest du **Fragen** haben, zögere nicht und Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`
-      );
-    }, 1000 * 60); // 1 Minute
+      try {
+        const channel = await client.channels.fetch(config.willkommen);
+        const messageData = await messagedb.findOne({ guildID: config.server });
+        if (!messageData) return;
+    
+        const messages = messageData.messages;
+        const newTopic =
+          `<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n` +
+          `𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n` +
+          `<a:Information:1007267420316106903> **| __WICHTIGE INFORMATION__**\n` +
+          `» Bleib freundlich & halte dich an die **Regeln**: <#815922286502346773>\n\n` +
+          `:information_source: | __Du möchtest ein Mitglied melden?__\n` +
+          `» Benutze: **/report <user> <grund>** – Missbrauch wird bestraft!\n` +
+          `:pushpin: » Solltest du **Fragen** haben, zögere nicht und Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`;
+    
+        if (newTopic.length > 1024) {
+          console.error("Topic zu lang:", newTopic.length);
+          return;
+        }
+    
+        await channel.setTopic(newTopic);
+        console.log("Kanalbeschreibung aktualisiert!");
+      } catch (err) {
+        console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
+      }
+    }, 1000 * 60);
 
     // Ban Liste
     function scheduleBanUpdate() {
