@@ -183,13 +183,7 @@ module.exports = {
         if (!messageData) return;
     
         const messages = messageData.messages;
-        await channel.setTopic(
-          `<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n` +
-          `𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n` +
-          `ℹ️ **| __WICHTIGE INFORMATION__**\n` +
-          `» Bleib freundlich & halte dich an die **Regeln**: <#815922286502346773>\n\n` +
-          `📌 » Solltest du **Fragen** haben, dann Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`
-        );
+        await channel.setTopic(`<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\nℹ️ **| __WICHTIGE INFORMATION__**\n» Bleib freundlich & halte dich an die **Regeln**: <#815922286502346773>\n\n📌 » Solltest du **Fragen** haben, dann Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`);
     
         console.log("Kanalbeschreibung aktualisiert!");
       } catch (err) {
