@@ -64,7 +64,7 @@ module.exports = {
         const customStatus = `💖 | mit ${username}`;
         await client.user.setActivity(customStatus, { type: ActivityType.Playing });
       } catch (err) {
-        console.error('Status-Update Fehler:', err);
+        console.error('❗  | Status-Update Fehler:', err);
       }
     
       // nächstes Update
@@ -99,7 +99,7 @@ module.exports = {
         await guild.channels.cache.get(config.category5)?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
     
       } catch (err) {
-        console.error('Channel-Update Fehler:', err);
+        console.error('❗  | Channel-Update Fehler:', err);
       }
     
       // nächstes Update
