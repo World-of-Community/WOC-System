@@ -1,4 +1,4 @@
-const { Events, ActivityType, EmbedBuilder, ChannelType } = require("discord.js");
+const { Events, ActivityType, EmbedBuilder, ChannelType, PermissionsBitField } = require("discord.js");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const func = require("../ressources/funktionen");
