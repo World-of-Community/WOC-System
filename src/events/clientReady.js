@@ -174,6 +174,11 @@ module.exports = {
     setInterval(async () => {
       try {
         const channel = await client.channels.fetch(config.willkommen);
+        if (!channel || channel.type !== 0) {
+          console.log("Kanal ist kein Textkanal!");
+          return;
+        }
+    
         const messageData = await messagedb.findOne({ guildID: config.server });
         if (!messageData) return;
     
@@ -184,12 +189,13 @@ module.exports = {
           `<a:Information:1007267420316106903> **| __WICHTIGE INFORMATION__**\n` +
           `» Bleib freundlich & halte dich an die **Regeln**: <#815922286502346773>\n\n` +
           `:pushpin: » Solltest du **Fragen** haben, dann Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`
-        )
+        );
+    
         console.log("Kanalbeschreibung aktualisiert!");
       } catch (err) {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }
-    }, 1000 * 60);
+    }, 1000 * 60); // jede Minute
 
     // Ban Liste
     function scheduleBanUpdate() {
