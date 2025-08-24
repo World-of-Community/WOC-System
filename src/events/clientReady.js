@@ -44,6 +44,73 @@ module.exports = {
       processRSSFeed(client, lastEntries);
     }, 60000);
 
+    function getInterval() {
+      const hour = new Date().getHours();
+      // Nacht: 22:00–08:00 → 5 Minuten
+      if (hour >= 22 || hour < 8) return 300000;
+      // Tag: 2,5 Minuten
+      return 150000;
+    }
+
+    // =================== STATUS ROTATION ===================
+    async function updateStatus() {
+      try {
+        const onlineMembers = guild.members.cache.filter(m => !m.user.bot);
+        if (onlineMembers.size === 0) return;
+    
+        const randomMember = onlineMembers.random();
+        const username = randomMember.displayName;
+    
+        const customStatus = `💖 | mit ${username}`;
+        await client.user.setActivity(customStatus, { type: ActivityType.Playing });
+      } catch (err) {
+        console.error('Status-Update Fehler:', err);
+      }
+    
+      // nächstes Update
+      setTimeout(updateStatus, getInterval());
+    }
+    
+    // =================== CHANNEL UPDATES ===================
+    async function updateChannels() {
+      try {
+        // Online-Mitglieder zählen
+        const onlineMembersCount = guild.members.cache.filter(m =>
+          ['online', 'idle', 'dnd'].includes(m.presence?.status) && !m.user.bot
+        ).size.toLocaleString('de-DE');
+    
+        // Gesamt-Mitglieder
+        const memberCount = guild.memberCount.toLocaleString('de-DE');
+    
+        // Partner-Daten
+        const serverData = await serverDB.findOne({ guildID: "815919809379172354" });
+        const count = serverData?.partner?.partners?.length || 0;
+    
+        // Kategorie-Channel zählen
+        const category = guild.channels.cache.get('1230540006439915610');
+        const totalChannels = category ? category.children.cache.size : 0;
+        const totalGameChannels = guild.channels.cache.filter(c => c.parentId === config.category5).size;
+    
+        // Channel-Namen setzen
+        await guild.channels.cache.get(config.category1)?.setName(`(🌍) - [INFOS] - (USER: ${memberCount})`);
+        await guild.channels.cache.get(config.category2)?.setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembersCount})`);
+        await guild.channels.cache.get(config.category3)?.setName(`(⚡) - [ADS] - (PARTNER: ${count})`);
+        await guild.channels.cache.get(config.category4)?.setName(`(📰) - [NEWS] - (ABOS: ${totalChannels})`);
+        await guild.channels.cache.get(config.category5)?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
+    
+      } catch (err) {
+        console.error('Channel-Update Fehler:', err);
+      }
+    
+      // nächstes Update
+      setTimeout(updateChannels, getInterval());
+    }
+    
+    // =================== START ===================
+    setTimeout(updateStatus, getInterval());
+    setTimeout(updateChannels, getInterval());
+
+    /*
     // Wechsel Status
     setInterval(async () => {
       await guild.members.fetch().then(async (members) => {
@@ -88,6 +155,7 @@ module.exports = {
             await guild.channels.cache.get(config.category4).setName(`(📰) - [NEWS] - (ABOS: ${totalChannels})`)
             await guild.channels.cache.get(config.category5).setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
         }, 120000); // 2 Minuten
+        */
 
     // Hauptchat Beschreibung
     setInterval(async () => {
