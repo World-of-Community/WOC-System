@@ -9,23 +9,39 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
+    // Top 10 laden
     const topCoins = await Coin.find().sort({ coins: -1 }).limit(10);
 
     if (!topCoins.length) {
       return interaction.editReply({ content: '> `❌` » Es sind noch keine Coins vorhanden.' });
     }
 
+    // Alle User laden, um den eigenen Rang zu ermitteln
+    const allUsers = await Coin.find().sort({ coins: -1 });
+    const userId = interaction.user.id;
+    const userIndex = allUsers.findIndex(entry => entry.userId === userId);
+    const userRank = userIndex !== -1 ? userIndex + 1 : null;
+
     let description = '';
     for (let i = 0; i < topCoins.length; i++) {
-      const userId = topCoins[i].userId;
-      const coins = topCoins[i].coins.toLocaleString('de-DE');
+      const entry = topCoins[i];
+      const coins = entry.coins.toLocaleString('de-DE');
+      try {
+        const user = await interaction.client.users.fetch(entry.userId);
+        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${entry.userId}> (${user.username})\n`;
+      } catch {
+        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${entry.userId}> (Unbekannt)\n`;
+      }
+    }
 
+    // Falls User nicht in Top 10 ist, unten anzeigen
+    if (userRank && userRank > 10) {
+      const userCoins = allUsers[userIndex].coins.toLocaleString('de-DE');
       try {
         const user = await interaction.client.users.fetch(userId);
-        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (${user.username})\n`;
-      } catch (error) {
-        // Falls der User nicht gefunden werden kann
-        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${userId}> (Unbekannt)\n`;
+        description += `\n...\nDein Rang: \`#${userRank}\` mit **${userCoins} Coins** ist <@${userId}> (${user.username})`;
+      } catch {
+        description += `\n...\nDein Rang: \`#${userRank}\` mit **${userCoins} Coins** ist <@${userId}> (Unbekannt)`;
       }
     }
 
