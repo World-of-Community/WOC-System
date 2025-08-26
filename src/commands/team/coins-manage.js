@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const { Coin, CoinConfig } = require('../../../Datenbank/coindb');
+const { Coin } = require('../../../Datenbank/coindb');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,11 +19,15 @@ module.exports = {
             .setRequired(true)))
     .addSubcommand(sub =>
       sub.setName('remove')
-        .setDescription('Entfernt Coins von einem Benutzer (Ping oder ID).')
+        .setDescription('Entfernt Coins von einem Benutzer.')
+        .addUserOption(option =>
+          option.setName('user')
+            .setDescription('Der Benutzer (Ping)')
+            .setRequired(false))
         .addStringOption(option =>
-          option.setName('nutzer')
-            .setDescription('Der Benutzer (Ping oder ID)')
-            .setRequired(true))
+          option.setName('userid')
+            .setDescription('Die Benutzer-ID')
+            .setRequired(false))
         .addIntegerOption(option =>
           option.setName('amount')
             .setDescription('Die Anzahl der Coins, die entfernt werden sollen')
@@ -67,20 +71,28 @@ module.exports = {
     }
 
     if (subcommand === 'remove') {
-      const userInput = interaction.options.getString('nutzer');
+      const userPing = interaction.options.getUser('user');
+      const userIdInput = interaction.options.getString('userid');
       const amount = interaction.options.getInteger('amount');
 
       if (amount <= 0) {
         return interaction.reply({ content: '> `❗` » Die Anzahl der Coins muss größer als **0** sein.', ephemeral: true });
       }
 
-      const userId = userInput.replace(/[<@!>]/g, '');
+      // Validierung: entweder Ping ODER ID muss angegeben werden
+      if (!userPing && !userIdInput) {
+        return interaction.reply({ content: '> `❗` » Du musst entweder einen Benutzer **pingen** oder eine **ID angeben**.', ephemeral: true });
+      }
 
-      let user;
-      try {
-        user = await interaction.client.users.fetch(userId);
-      } catch {
-        user = null;
+      const userId = userPing?.id || userIdInput;
+      let user = userPing;
+
+      if (!user && userIdInput) {
+        try {
+          user = await interaction.client.users.fetch(userIdInput);
+        } catch {
+          user = null;
+        }
       }
 
       if (user?.bot) {
@@ -113,4 +125,3 @@ module.exports = {
     }
   }
 };
-
