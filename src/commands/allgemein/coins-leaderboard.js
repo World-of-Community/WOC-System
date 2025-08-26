@@ -16,10 +16,10 @@ module.exports = {
       return interaction.editReply({ content: '> `❌` » Es sind noch keine Coins vorhanden.' });
     }
 
-    // Alle User laden, um den eigenen Rang zu ermitteln
+    // Alle User laden für eigenen Rang
     const allUsers = await Coin.find().sort({ coins: -1 });
     const userId = interaction.user.id;
-    const userIndex = allUsers.findIndex(entry => entry.userId === userId);
+    const userIndex = allUsers.findIndex(entry => String(entry.userId) === String(userId));
     const userRank = userIndex !== -1 ? userIndex + 1 : null;
 
     let description = '';
@@ -34,7 +34,7 @@ module.exports = {
       }
     }
 
-    // Falls User nicht in Top 10 ist, unten anzeigen
+    // Falls User nicht in Top 10 ist → anzeigen
     if (userRank && userRank > 10) {
       const userCoins = allUsers[userIndex].coins.toLocaleString('de-DE');
       try {
