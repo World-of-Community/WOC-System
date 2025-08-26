@@ -23,8 +23,11 @@ module.exports = {
     const userRank = userIndex !== -1 ? userIndex + 1 : null;
 
     let description = '';
+    const topUserIds = [];
+
     for (let i = 0; i < topCoins.length; i++) {
       const entry = topCoins[i];
+      topUserIds.push(String(entry.userId)); // merken, welche User in Top 10 sind
       const coins = entry.coins.toLocaleString('de-DE');
       try {
         const user = await interaction.client.users.fetch(entry.userId);
@@ -34,7 +37,7 @@ module.exports = {
       }
     }
 
-    // Eigenen Rang immer unten anzeigen
+    // Eigenen Rang immer unten anzeigen, auch wenn in Top 10
     if (userRank) {
       const userCoins = allUsers[userIndex].coins.toLocaleString('de-DE');
       try {
