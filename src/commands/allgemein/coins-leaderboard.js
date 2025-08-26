@@ -34,8 +34,8 @@ module.exports = {
       }
     }
 
-    // Falls User nicht in Top 10 ist → anzeigen
-    if (userRank && userRank > 10) {
+    // Eigenen Rang immer unten anzeigen
+    if (userRank) {
       const userCoins = allUsers[userIndex].coins.toLocaleString('de-DE');
       try {
         const user = await interaction.client.users.fetch(userId);
