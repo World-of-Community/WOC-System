@@ -20,6 +20,10 @@ module.exports = {
     .addSubcommand(sub =>
       sub.setName('remove')
         .setDescription('Entfernt Coins von einem Benutzer.')
+        .addIntegerOption(option =>
+          option.setName('amount')
+            .setDescription('Die Anzahl der Coins, die entfernt werden sollen')
+            .setRequired(true))
         .addUserOption(option =>
           option.setName('user')
             .setDescription('Der Benutzer (Ping)')
@@ -27,11 +31,7 @@ module.exports = {
         .addStringOption(option =>
           option.setName('userid')
             .setDescription('Die Benutzer-ID')
-            .setRequired(false))
-        .addIntegerOption(option =>
-          option.setName('amount')
-            .setDescription('Die Anzahl der Coins, die entfernt werden sollen')
-            .setRequired(true))),
+            .setRequired(false))),
 
   async execute(interaction) {
     const subcommand = interaction.options.getSubcommand();
