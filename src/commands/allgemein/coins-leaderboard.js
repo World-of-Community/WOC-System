@@ -42,9 +42,9 @@ module.exports = {
       const userCoins = allUsers[userIndex].coins.toLocaleString('de-DE');
       try {
         const user = await interaction.client.users.fetch(userId);
-        description += `\n...\nDein Rang: \`#${userRank}\` mit **${userCoins} Coins** ist <@${userId}> (${user.username})`;
+        description += `\n\nDein Rang: \`#${userRank}\` mit **${userCoins} Coins** ist <@${userId}> (${user.username})`;
       } catch {
-        description += `\n...\nDein Rang: \`#${userRank}\` mit **${userCoins} Coins** ist <@${userId}> (Unbekannt)`;
+        description += `\n\nDein Rang: \`#${userRank}\` mit **${userCoins} Coins** ist <@${userId}> (Unbekannt)`;
       }
     }
 
