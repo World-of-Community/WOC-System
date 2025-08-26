@@ -47,9 +47,9 @@ module.exports = {
       const streakText = `\`${userStreak}\`x Streak`; // Auch hier 0x Streak
       try {
         const user = await interaction.client.users.fetch(userId);
-        leaderboardLines.push(`\n\nDein Rang: \`#${userRank}\` mit ${streakText} ist <@${userId}> (${user.tag})`);
+        leaderboardLines.push(`\nDein Rang: \`#${userRank}\` mit ${streakText} ist <@${userId}> (${user.tag})`);
       } catch {
-        leaderboardLines.push(`\n\nDein Rang: \`#${userRank}\` mit ${streakText} ist <@${userId}> (\`➖\`)`);
+        leaderboardLines.push(`\nDein Rang: \`#${userRank}\` mit ${streakText} ist <@${userId}> (\`➖\`)`);
       }
     }
 
