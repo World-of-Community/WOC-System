@@ -179,5 +179,26 @@ module.exports = {
             });
             await newUser.save()
         }
+
+        try {
+          const userId = member.id;
+          let userData = await Coin.findOne({ userId });
+    
+          if (!userData) {
+            console.log(`[DAILY-STREAK] ${member.user.tag} tritt neu bei – kein Datensatz vorhanden, kein Reset nötig.`);
+            return;
+          }
+    
+          // Streak bleibt 0, falls sie schon zurückgesetzt wurde
+          if (userData.streak !== 0) {
+            userData.streak = 0;
+            await userData.save();
+            console.log(`[DAILY-STREAK] ${member.user.tag} ist zurückgekehrt – Streak auf 0 gesetzt.`);
+          } else {
+            console.log(`[DAILY-STREAK] ${member.user.tag} ist zurückgekehrt – Streak war bereits 0.`);
+          }
+        } catch (error) {
+          console.error('Fehler beim Zurücksetzen der Streak beim Beitritt:', error);
+        }
     }
 }

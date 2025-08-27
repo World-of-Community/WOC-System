@@ -26,13 +26,13 @@ module.exports = {
     // Alle Nutzer laden für eigenen Rang
     const allUsers = await Coin.find().sort({ streak: -1, coins: -1 });
     const userId = interaction.user.id;
-    const userIndex = allUsers.findIndex(entry => entry.userId === userId);
+    const userIndex = allUsers.findIndex(entry => String(entry.userId) === String(userId));
     const userRank = userIndex !== -1 ? userIndex + 1 : null;
 
     // Top 10 Einträge generieren
     const leaderboardLines = await Promise.all(topUsers.map(async (u, i) => {
       const streak = u.streak || 0;
-      const streakText = `\`${streak}\`x Streak`; // Immer 0x Streak, auch wenn kein Wert
+      const streakText = `\`${streak}\`x Streak`;
       try {
         const user = await interaction.client.users.fetch(u.userId);
         return `\`#${i + 1}\` mit ${streakText} ist <@${u.userId}> (${user.tag})`;
@@ -41,16 +41,18 @@ module.exports = {
       }
     }));
 
-    // Falls User nicht in Top 10 ist → anzeigen
-    if (userRank && userRank > 10) {
+    // Eigenen Rang immer anzeigen
+    if (userRank !== null) {
       const userStreak = allUsers[userIndex].streak || 0;
-      const streakText = `\`${userStreak}\`x Streak`; // Auch hier 0x Streak
+      const streakText = `\`${userStreak}\`x Streak`;
       try {
         const user = await interaction.client.users.fetch(userId);
         leaderboardLines.push(`\nDein Rang: \`#${userRank}\` mit ${streakText} ist <@${userId}> (${user.tag})`);
       } catch {
         leaderboardLines.push(`\nDein Rang: \`#${userRank}\` mit ${streakText} ist <@${userId}> (\`➖\`)`);
       }
+    } else {
+      leaderboardLines.push(`\n> \`❗\` » Du bist aktuell nicht im Leaderboard vertreten.`);
     }
 
     const embed = new EmbedBuilder()

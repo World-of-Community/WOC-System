@@ -75,5 +75,23 @@ module.exports = {
         } catch (error) {
             console.log('Fehler beim Abrufen oder Löschen von Nachrichten:', error);
         }
+
+        try {
+          const userId = member.id;
+          const userData = await Coin.findOne({ userId });
+    
+          if (!userData) {
+            console.log(`[DAILY-STREAK] Kein Eintrag für ${member.user.tag} gefunden.`);
+            return;
+          }
+    
+          // Nur Streak zurücksetzen
+          userData.streak = 0;
+          await userData.save();
+    
+          console.log(`[DAILY-STREAK] ${member.user.tag} (${userId}) hat den Server verlassen – Streak auf 0 gesetzt.`);
+        } catch (error) {
+          console.error('Fehler beim Zurücksetzen der Streak beim Verlassen des Servers:', error);
+        }
     }
 }
