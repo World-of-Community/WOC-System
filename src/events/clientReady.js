@@ -200,7 +200,7 @@ module.exports = {
       } catch (err) {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }
-    }, 1000 * 60 * 10); // 10 Minuten
+    }, 1000 * 60 * 5); // 5 Minuten
 
     // Ban Liste
     function scheduleBanUpdate() {
