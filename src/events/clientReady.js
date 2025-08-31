@@ -188,7 +188,7 @@ module.exports = {
       } catch (err) {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }
-    }, 1000 * 60 * 5); // alle 5 Minuten
+    }, 1000 * 60); // aktuell 1 Min sonst * 5 für alle 5 Minuten
 
     /*
     // Hauptchat Beschreibung
