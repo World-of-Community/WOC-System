@@ -186,15 +186,17 @@ module.exports = {
         }
     
         const messageData = await messagedb.findOne({ guildID: config.server });
-        if (!messageData) {
-          console.log("Keine Nachrichtendaten gefunden!");
+        if (!messageData || typeof messageData.messages !== 'number') {
+          console.log("Keine gültigen Nachrichtendaten gefunden!");
           return;
         }
     
-        const messages = messageData.messages;
+        // Tausender-Trennzeichen ohne extra Funktion (lokales Format)
+        const messages = messageData.messages.toLocaleString('de-DE');
+    
         await channel.setTopic(
           `<a:cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n` +
-          `𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n` +
+          `𑁉 **${messages}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n` +
           `ℹ️ **| __WICHTIGE INFORMATION__**\n` +
           `» Bleib freundlich & halte dich an die **Regeln**: <#815922286502346773>\n\n` +
           `📌 » Solltest du **Fragen** haben, dann öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`
@@ -204,7 +206,7 @@ module.exports = {
       } catch (err) {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }
-    }, 1000 * 60 * 5); // Alle 5 Minuten
+    }, 1000 * 60 * 5); // alle 5 Minuten
 
     /*
     // Hauptchat Beschreibung
