@@ -198,7 +198,8 @@ module.exports = {
           `<a:cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n` +
           `𑁉 **${messages}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns! - das macht **garantiert Spaß**!\n\n` +
           `<a:Information:1007267420316106903> **| __WICHTIGE INFORMATION__**\n` +
-          `» Um eine friedliche Atmosphäre beizubehalten, denke bitte stets daran, dich an unsere **Regeln** zu halten: <#815922286502346773>\n\n` +
+          `» Um eine friedliche Atmosphäre beizubehalten, denke bitte stets daran, dich an unsere **Regeln** zu halten:\n` +
+          `<#815922286502346773>\n\n` +
           `📌 » Solltest du **Fragen** haben, dann öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`
         );
     
