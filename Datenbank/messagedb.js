@@ -1,15 +1,15 @@
-const Discord = require('discord.js');
 const mongoose = require('mongoose');
 
-const serverSchema = new mongoose.Schema({
+const messageSchema = new mongoose.Schema({
     guildID: {
         type: String,
         required: true,
+        unique: true // Nur eine ID zulassen
     },
     messages: {
-        type: String,
-        required: false
+        type: Number, // Muss eine Zahl sein!
+        default: 0
     }
 });
 
-module.exports = mongoose.model('message-data', serverSchema)
+module.exports = mongoose.model('message-data', messageSchema);
