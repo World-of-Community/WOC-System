@@ -167,7 +167,7 @@ module.exports = {
           return;
         }
     
-        console.log("Gefundener Kanaltyp:", channel.type);
+        //console.log("Gefundener Kanaltyp:", channel.type);
     
         if (channel.type !== ChannelType.GuildText) {
           console.log("Kein Textkanal!");
@@ -203,7 +203,7 @@ module.exports = {
           `📌 » Solltest du **Fragen** haben, dann öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`
         );
     
-        console.log("Kanalbeschreibung erfolgreich gesetzt!");
+        //console.log("Kanalbeschreibung erfolgreich gesetzt!");
       } catch (err) {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }
