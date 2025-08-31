@@ -175,23 +175,24 @@ module.exports = {
         }
     
         const perms = channel.permissionsFor(client.user);
-        if (!perms) {
-          console.log("Konnte keine Berechtigungen abrufen!");
-          return;
-        }
-    
-        if (!perms.has(PermissionsBitField.Flags.ManageChannels)) {
+        if (!perms?.has(PermissionsBitField.Flags.ManageChannels)) {
           console.log("Bot hat keine Berechtigung zum Ändern des Themas!");
           return;
         }
     
-        const messageData = await messagedb.findOne({ guildID: config.server });
-        if (!messageData || typeof messageData.messages !== 'number') {
-          console.log("Keine gültigen Nachrichtendaten gefunden!");
-          return;
+        let messageData = await messagedb.findOne({ guildID: config.server });
+    
+        if (!messageData) {
+          console.log("Kein Eintrag gefunden, erstelle neuen...");
+          messageData = await messagedb.create({ guildID: config.server, messages: 0 });
         }
     
-        // Tausender-Trennzeichen ohne extra Funktion (lokales Format)
+        if (typeof messageData.messages !== 'number') {
+          console.log("Falscher Datentyp für messages, konvertiere...");
+          messageData.messages = Number(messageData.messages) || 0;
+          await messageData.save();
+        }
+    
         const messages = messageData.messages.toLocaleString('de-DE');
     
         await channel.setTopic(
