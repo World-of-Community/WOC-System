@@ -156,7 +156,6 @@ module.exports = {
             await guild.channels.cache.get(config.category5).setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
         }, 120000); // 2 Minuten
         */
-
     
     // Hauptchat Beschreibung
     setInterval(async () => {
@@ -208,40 +207,6 @@ module.exports = {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }
     }, 1000 * 60 * 5); // alle 5 Minuten
-
-    /*
-    // Hauptchat Beschreibung
-    setInterval(async () => {
-      try {
-        const channel = await client.channels.fetch(config.willkommen);
-        if (!channel || channel.type !== ChannelType.GuildText) {
-          console.log("Kanal ist kein Textkanal!");
-          return;
-        }
-    
-        if (!channel.permissionsFor(client.user).has(PermissionsBitField.Flags.ManageChannels)) {
-          console.log("Bot hat keine Berechtigung, das Kanal-Thema zu ändern!");
-          return;
-        }
-    
-        const messageData = await messagedb.findOne({ guildID: config.server });
-        if (!messageData) return;
-    
-        const messages = messageData.messages;
-        const topic = `<a:7523cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\nℹ️ **| __WICHTIGE INFORMATION__**\n» Bleib freundlich & halte dich an die **Regeln**: <#815922286502346773>\n\n📌 » Solltest du **Fragen** haben, dann Öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`;
-    
-        if (topic.length > 1024) {
-          console.log("Kanalbeschreibung zu lang!");
-          return;
-        }
-    
-        await channel.setTopic(topic);
-        console.log("Kanalbeschreibung aktualisiert!");
-      } catch (err) {
-        console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
-      }
-    }, 1000 * 60 * 5); // 5 Minuten
-    */
 
     // Ban Liste
     function scheduleBanUpdate() {
