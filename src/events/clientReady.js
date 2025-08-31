@@ -162,20 +162,36 @@ module.exports = {
     setInterval(async () => {
       try {
         const channel = await client.channels.fetch(config.willkommen);
-        if (!channel || channel.type !== ChannelType.GuildText) {
-          console.log("Kein Textkanal gefunden!");
+        if (!channel) {
+          console.log("Kanal nicht gefunden!");
           return;
         }
     
-        if (!channel.permissionsFor(client.user).has(PermissionsBitField.Flags.ManageChannels)) {
-          console.log("Bot hat keine Berechtigung, das Kanal-Thema zu ändern!");
+        console.log("Gefundener Kanaltyp:", channel.type);
+    
+        if (channel.type !== ChannelType.GuildText) {
+          console.log("Kein Textkanal!");
+          return;
+        }
+    
+        const perms = channel.permissionsFor(client.user);
+        if (!perms) {
+          console.log("Konnte keine Berechtigungen abrufen!");
+          return;
+        }
+    
+        if (!perms.has(PermissionsBitField.Flags.ManageChannels)) {
+          console.log("Bot hat keine Berechtigung zum Ändern des Themas!");
           return;
         }
     
         const messageData = await messagedb.findOne({ guildID: config.server });
-        if (!messageData) return;
-        const messages = messageData.messages;
+        if (!messageData) {
+          console.log("Keine Nachrichtendaten gefunden!");
+          return;
+        }
     
+        const messages = messageData.messages;
         await channel.setTopic(
           `<a:cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n` +
           `𑁉 **${await func.tausender(messages)}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns!\n\n` +
@@ -188,7 +204,7 @@ module.exports = {
       } catch (err) {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }
-    }, 1000 * 60); // aktuell 1 Min sonst * 5 für alle 5 Minuten
+    }, 1000 * 60 * 5); // Alle 5 Minuten
 
     /*
     // Hauptchat Beschreibung
