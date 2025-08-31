@@ -158,7 +158,7 @@ module.exports = {
         */
 
     
-    // Test
+    // Hauptchat Beschreibung
     setInterval(async () => {
       try {
         const channel = await client.channels.fetch(config.willkommen);
