@@ -27,7 +27,7 @@ module.exports = {
 
             return new EmbedBuilder()
                 .setTitle(`Benutzer mit der Rolle:`)
-                .setDescription(`${role.toString()} (\`${membersWithRole.size} Mitglieder\`)\n\n> ${currentMembers.join('\n> ')}`)
+                .setDescription(`${role.toString()} (\`${membersWithRole.size}👥\`)\n\n> ${currentMembers.join('\n> ')}`)
                 .setFooter({ text: `Seite ${page + 1} von ${totalPages}` })
                 .setColor('Blurple');
         };
