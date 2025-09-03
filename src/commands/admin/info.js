@@ -20,7 +20,7 @@ module.exports = {
 
         // Erstelle das Embed mit der Anzahl und den Mitgliedern
         const InfoEmbed = new EmbedBuilder()
-            .setDescription(`**Benutzer mit der Rolle:** ${role} (\`${membersWithRole.size}👥\`\n\n> ${memberList || 'Keine Benutzer gefunden.'}`)
+            .setDescription(`**Benutzer mit der Rolle:**\n${role} (\`${membersWithRole.size}👥\`)\n\n> ${memberList || 'Keine Benutzer gefunden.'}`)
             .setColor('Blurple');
 
         // Sende das Embed
