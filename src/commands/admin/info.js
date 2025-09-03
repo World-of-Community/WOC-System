@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,15 +15,68 @@ module.exports = {
             return interaction.reply({ content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role}`, ephemeral: true });
         }
 
-        // Erstelle die Liste der Mitglieder mit der Rolle
-        const memberList = membersWithRole.map(member => member.toString()).join('\n> ');
+        const membersArray = membersWithRole.map(member => member.toString());
+        const itemsPerPage = 10;
+        const totalPages = Math.ceil(membersArray.length / itemsPerPage);
+        let currentPage = 0;
 
-        // Erstelle das Embed mit der Anzahl und den Mitgliedern
-        const InfoEmbed = new EmbedBuilder()
-            .setDescription(`**Benutzer mit der Rolle:**\n${role} (\`${membersWithRole.size}👥\`)\n\n> ${memberList || 'Keine Benutzer gefunden.'}`)
-            .setColor('Blurple');
+        const generateEmbed = (page) => {
+            const start = page * itemsPerPage;
+            const end = start + itemsPerPage;
+            const currentMembers = membersArray.slice(start, end);
 
-        // Sende das Embed
-        return interaction.reply({ embeds: [InfoEmbed], ephemeral: true });
+            return new EmbedBuilder()
+                .setTitle(`Benutzer mit der Rolle: ${role}`)
+                .setDescription(currentMembers.join('\n'))
+                .setFooter({ text: `Seite ${page + 1} von ${totalPages} • Insgesamt ${membersWithRole.size} Mitglieder` })
+                .setColor('Blurple');
+        };
+
+        const row = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('prev')
+                    .setLabel('⬅️ Zurück')
+                    .setStyle(ButtonStyle.Primary)
+                    .setDisabled(true),
+                new ButtonBuilder()
+                    .setCustomId('next')
+                    .setLabel('➡️ Weiter')
+                    .setStyle(ButtonStyle.Primary)
+                    .setDisabled(totalPages <= 1)
+            );
+
+        const message = await interaction.reply({ embeds: [generateEmbed(currentPage)], components: [row], ephemeral: true });
+
+        const collector = message.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 0 // kein Timeout
+        });
+
+        collector.on('collect', async (btnInteraction) => {
+            if (btnInteraction.user.id !== interaction.user.id) {
+                return btnInteraction.reply({ content: 'Nur der Command-Nutzer kann diese Buttons benutzen.', ephemeral: true });
+            }
+
+            if (btnInteraction.customId === 'next') currentPage++;
+            if (btnInteraction.customId === 'prev') currentPage--;
+
+            // Buttons aktualisieren
+            const newRow = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('prev')
+                        .setLabel('⬅️ Zurück')
+                        .setStyle(ButtonStyle.Primary)
+                        .setDisabled(currentPage === 0),
+                    new ButtonBuilder()
+                        .setCustomId('next')
+                        .setLabel('➡️ Weiter')
+                        .setStyle(ButtonStyle.Primary)
+                        .setDisabled(currentPage === totalPages - 1)
+                );
+
+            await btnInteraction.update({ embeds: [generateEmbed(currentPage)], components: [newRow] });
+        });
     },
 };
