@@ -12,7 +12,7 @@ module.exports = {
         const membersWithRole = interaction.guild.members.cache.filter(member => member.roles.cache.has(role.id));
 
         if (membersWithRole.size === 0) {
-            return interaction.reply({ content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role}`, ephemeral: true });
+            return interaction.reply({ content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role.toString()}`, ephemeral: true });
         }
 
         const membersArray = membersWithRole.map(member => member.toString());
@@ -26,7 +26,7 @@ module.exports = {
             const currentMembers = membersArray.slice(start, end);
 
             return new EmbedBuilder()
-                .setTitle(`Benutzer mit der Rolle: ${role}`)
+                .setTitle(`Benutzer mit der Rolle: ${role.name}`)
                 .setDescription(currentMembers.join('\n'))
                 .setFooter({ text: `Seite ${page + 1} von ${totalPages} • Insgesamt ${membersWithRole.size} Mitglieder` })
                 .setColor('Blurple');
