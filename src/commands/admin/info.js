@@ -16,11 +16,11 @@ module.exports = {
         }
 
         // Erstelle die Liste der Mitglieder mit der Rolle
-        const memberList = membersWithRole.map(member => member.toString()).join('\n> ');  // Verwende .toString() für die Erwähnung
+        const memberList = membersWithRole.map(member => member.toString()).join('\n> ');
 
-        // Erstelle das Embed mit den Mitgliedern
+        // Erstelle das Embed mit der Anzahl und den Mitgliedern
         const InfoEmbed = new EmbedBuilder()
-            .setDescription(`**Benutzer mit der Rolle:** ${role}\n\n> ${memberList || 'Keine Benutzer gefunden.'}`)
+            .setDescription(`**Benutzer mit der Rolle:** ${role} (\`${membersWithRole.size}👥\`\n\n> ${memberList || 'Keine Benutzer gefunden.'}`)
             .setColor('Blurple');
 
         // Sende das Embed
