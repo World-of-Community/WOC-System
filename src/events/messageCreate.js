@@ -23,73 +23,83 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
 
+        const erlaubteChannels = [
+            '815922756918181898', // Hauptchat
+            '896743941813207081', // Spielersuche
+            '979431125053227068' // Bots verwenden
+        ];
+
         // Fragen wegen Minecraft Server
         if (message.author.bot) return;
-    
+        
+        // Prüfen, ob Channel erlaubt ist
+        if (!erlaubteChannels.includes(message.channel.id)) return;
+        
         const frage = message.content.toLowerCase();
-      
-        const suchbegriffe = [
-            'wie ist die ip',
-            'was ist die ip',
-            'server ip',
-            'minecraft ip',
-            'ip',
-            'ip?',
-            'ip ?',
-            'ip bitte',
-            'ip vom server',
-            'ip vom mc server',
-            'was ist die ip vom server',
-            'was ist die ip vom mc server',
-            'wie lautet die ip',
-            'kannst du mir die ip geben',
-            'was ist die ip adresse',
-            'ip adresse',
-            'serveradresse',
-            'adresse vom server',
-            'mc ip',
-            'mc-ip',
-            'ip des servers',
-            'minecraft server ip',
-            'wie komme ich auf den server',
-            'wie kann ich joinen',
-            'wie joine ich',
-            'join ip',
-            'wie komme ich auf den mc server',
-            'ip pls',
-            'ip plz',
-            'ip pls?',
-            'ip pls!',
-            'ip pls',
-            'ip pls :D',
-            'ip pls :)',
-            'ip? :)',
-            'wie ist nochmal die ip',
-            'wie ist nochmal die ip?',
-            'wie war nochmal die ip',
-            'wie war nochmal die ip?',
-            'ip vom minecraft server'
+        
+        const suchbegriffe = [ 
+            'wie ist die ip', 
+            'was ist die ip', 
+            'server ip', 
+            'minecraft ip', 
+            'ip', 
+            'ip?', 
+            'ip ?', 
+            'ip bitte', 
+            'ip vom server', 
+            'ip vom mc server', 
+            'was ist die ip vom server', 
+            'was ist die ip vom mc server', 
+            'wie lautet die ip', 
+            'kannst du mir die ip geben', 
+            'was ist die ip adresse', 
+            'ip adresse', 
+            'serveradresse', 
+            'adresse vom server', 
+            'mc ip', 
+            'mc-ip', 
+            'ip des servers', 
+            'minecraft server ip', 
+            'wie komme ich auf den server', 
+            'wie kann ich joinen', 
+            'wie joine ich', 
+            'join ip', 
+            'wie komme ich auf den mc server', 
+            'ip pls', 
+            'ip plz', 
+            'ip pls?', 
+            'ip pls!', 
+            'ip pls', 
+            'ip pls :D', 
+            'ip pls :)', 
+            'ip? :)', 
+            'wie ist nochmal die ip', 
+            'wie ist nochmal die ip?', 
+            'wie war nochmal die ip', 
+            'wie war nochmal die ip?', 
+            'ip vom minecraft server' 
         ];
-      
+        
         if (suchbegriffe.some(begriff => frage.includes(begriff))) {
-          const deleteAfter = 30 * 1000; // 30 Sekunden in Millisekunden
-          const timestamp = Math.floor((Date.now() + deleteAfter) / 1000); // UNIX-Timestamp in Sekunden
-      
-          const embed = new EmbedBuilder()
-            .setTitle('`🌐` Minecraft-Server IP')
-            .setDescription(
-                `> \`📡\` » Die IP des Servers lautet: \n` +
-                `\`\`\`${mcServerIP}\`\`\`\n` +
-                `> \`⚙️\` » Version: **ab 1.20.4**\n\n` +
-                `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`)
-            .setColor('Green');
-      
-          const reply = await message.reply({ embeds: [embed] });
-      
-          setTimeout(() => {
-            reply.delete().catch(() => {});        // Bot-Antwort löschen
-            message.delete().catch(() => {});      // User-Nachricht löschen
-          }, deleteAfter);
+            const deleteAfter = 30 * 1000; // 30 Sekunden
+            const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
+        
+            const embed = new EmbedBuilder()
+                .setTitle('`🌐` Minecraft-Server IP')
+                .setDescription(
+                    `> \`📡\` » Die IP des Servers lautet: \n` +
+                    `\`\`\`${mcServerIP}\`\`\`\n` +
+                    `> \`⚙️\` » Version: **ab 1.20.4**\n\n` +
+                    `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`
+                )
+                .setColor('Green');
+        
+            const reply = await message.reply({ embeds: [embed] });
+        
+            setTimeout(() => {
+                reply.delete().catch(() => {});
+                message.delete().catch(() => {});
+            }, deleteAfter);
         }
             
         if (!message.guild) return
