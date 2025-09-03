@@ -26,9 +26,9 @@ module.exports = {
             const currentMembers = membersArray.slice(start, end);
 
             return new EmbedBuilder()
-                .setTitle(`Benutzer mit der Rolle: ${role.name}`)
-                .setDescription(currentMembers.join('\n'))
-                .setFooter({ text: `Seite ${page + 1} von ${totalPages} • Insgesamt ${membersWithRole.size} Mitglieder` })
+                .setTitle(`Benutzer mit der Rolle:`)
+                .setDescription(`${role.toString()} (\`${membersWithRole.size} Mitglieder\`)\n\n> ${currentMembers.join('\n> ')}`)
+                .setFooter({ text: `Seite ${page + 1} von ${totalPages}` })
                 .setColor('Blurple');
         };
 
@@ -61,7 +61,6 @@ module.exports = {
             if (btnInteraction.customId === 'next') currentPage++;
             if (btnInteraction.customId === 'prev') currentPage--;
 
-            // Buttons aktualisieren
             const newRow = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
