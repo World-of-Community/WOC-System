@@ -47,7 +47,6 @@ module.exports = {
         if (!userId || newPresence.user.bot) return;
 
         const oldStatus = oldPresence?.status || "offline";
-        const newStatus = newPresence?.status || "offline";
 
         // Status, die als "online" zählen
         const onlineStatuses = ["online", "idle", "dnd"];
