@@ -263,12 +263,12 @@ module.exports = {
           lastOnline: null
         };
 
-        // lastOnline speichern, wenn offline/invisible
-        await userdb.updateOne(
-          { userID: member.id },
-          { $set: { lastOnline: new Date() } },
-          { upsert: true }
-        );
+        //// lastOnline speichern, wenn offline/invisible
+        //await userdb.updateOne(
+        //  { userID: member.id },
+        //  { $set: { lastOnline: new Date() } },
+        //  { upsert: true }
+        //);
 
         // Invite-Daten
         const invites = userData.invites || { joins: 0, left: 0, bonus: 0 };
