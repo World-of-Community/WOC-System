@@ -263,13 +263,6 @@ module.exports = {
           lastOnline: null
         };
 
-        // Onlinezeit erhöhen und speichern (z.B. jede Stunde)
-        await userdb.updateOne(
-          { userID: member.id },    // NICHT userId !!!
-          { $inc: { onlineTime: 1 } },
-          { upsert: true }
-        );
-
         // lastOnline speichern, wenn offline/invisible
         await userdb.updateOne(
           { userID: member.id },

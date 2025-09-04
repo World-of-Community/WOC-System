@@ -2,6 +2,9 @@ const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const userdb = require("../../Datenbank/userdb");
 
+// Globale Map
+const onlineMap = new Map();
+
 module.exports = {
     name: Events.PresenceUpdate,
     async execute(oldPresence, newPresence) {
@@ -38,6 +41,36 @@ module.exports = {
             { $set: { lastOnline: new Date() } },
             { upsert: true }
           );
+        }
+
+        const userId = newPresence.user?.id;
+        if (!userId || newPresence.user.bot) return;
+
+        const oldStatus = oldPresence?.status || "offline";
+        const newStatus = newPresence?.status || "offline";
+
+        // Status, die als "online" zählen
+        const onlineStatuses = ["online", "idle", "dnd"];
+
+        // Wenn Nutzer jetzt online ist und vorher nicht
+        if (!onlineStatuses.includes(oldStatus) && onlineStatuses.includes(newStatus)) {
+            onlineMap.set(userId, Date.now());
+        }
+
+        // Wenn Nutzer offline/unsichtbar wird und vorher online war
+        if (onlineStatuses.includes(oldStatus) && !onlineStatuses.includes(newStatus)) {
+            const start = onlineMap.get(userId);
+            if (!start) return;
+
+            const sessionTime = Date.now() - start; // Millisekunden
+
+            await userdb.updateOne(
+                { userID: userId },
+                { $inc: { onlineTime: sessionTime } },
+                { upsert: true }
+            );
+
+            onlineMap.delete(userId);
         }
 
         // Streamer-Aktivität prüfen
