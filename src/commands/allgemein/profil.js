@@ -263,12 +263,12 @@ module.exports = {
           lastOnline: null
         };
 
-        //// lastOnline speichern, wenn offline/invisible
-        //await userdb.updateOne(
-        //  { userID: member.id },
-        //  { $set: { lastOnline: new Date() } },
-        //  { upsert: true }
-        //);
+        // lastOnline speichern, wenn offline/invisible
+        await userdb.updateOne(
+          { userID: member.id },
+          { $set: { lastOnline: new Date() } },
+          { upsert: true }
+        );
 
         // Invite-Daten
         const invites = userData.invites || { joins: 0, left: 0, bonus: 0 };
@@ -326,7 +326,7 @@ module.exports = {
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
                 `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden\n` +
-                `- \`📊\` » Gesamt: \`${days}d ${hours}h ${minutes}m ${seconds}s\`\n`
+                `- \`📊\` » Gesamt: \`${days}d ${hours}h ${minutes}m ${seconds}s\`\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
