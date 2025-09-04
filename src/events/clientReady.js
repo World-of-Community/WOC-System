@@ -209,27 +209,27 @@ module.exports = {
       }
     }, 1000 * 60 * 5); // alle 5 Minuten
 
-    setInterval(async () => {
-        const guild = client.guilds.cache.get('DEINE_GUILD_ID'); // Server-ID
-        if (!guild) return;
-    
-        guild.members.fetch().then(async members => {
-            for (const member of members.values()) {
-                // Bot ignorieren
-                if (member.user.bot) continue;
-    
-                // Status prüfen: nur online, idle, dnd
-                const status = member.presence?.status;
-                if (status === 'online' || status === 'idle' || status === 'dnd') {
-                    await userdb.updateOne(
-                        { userID: member.id },
-                        { $inc: { onlineTime: 60000 } }, // +60000 ms = 1 Minute
-                        { upsert: true }
-                    );
-                }
-            }
-        });
-    }, 60000); // alle 60 Sekunden
+    //setInterval(async () => {
+    //    const guild = client.guilds.cache.get('815919809379172354'); // Server-ID
+    //    if (!guild) return;
+    //
+    //    guild.members.fetch().then(async members => {
+    //        for (const member of members.values()) {
+    //            // Bot ignorieren
+    //            if (member.user.bot) continue;
+    //
+    //            // Status prüfen: nur online, idle, dnd
+    //            const status = member.presence?.status;
+    //            if (status === 'online' || status === 'idle' || status === 'dnd') {
+    //                await userdb.updateOne(
+    //                    { userID: member.id },
+    //                    { $inc: { onlineTime: 60000 } }, // +60000 ms = 1 Minute
+    //                    { upsert: true }
+    //                );
+    //            }
+    //        }
+    //    });
+    //}, 60000); // alle 60 Sekunden
 
     // Ban Liste
     function scheduleBanUpdate() {

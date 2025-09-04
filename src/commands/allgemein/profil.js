@@ -277,19 +277,13 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        // Onlinezeit in Millisekunden (aus DB)
-        const onlineTime = userData?.onlineTime || 0;
+        //// Onlinezeit in Millisekunden (aus DB)
+        //const onlineTime = userData?.onlineTime || 0;
 
-        // In Stunden (vereinfacht)
-        const displayHours = Math.floor(onlineTime / 3600000);
+        //// In Stunden (vereinfacht)
+        //const displayHours = Math.floor(onlineTime / 3600000);
 
-        // Detaillierte Anzeige (Tage, Stunden, Minuten, Sekunden)
-        const days = Math.floor(onlineTime / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((onlineTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((onlineTime % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((onlineTime % (1000 * 60)) / 1000);
-
-        //const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
+        const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
 
         let lastOnlineText = '';
         if (
@@ -326,7 +320,6 @@ module.exports = {
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
                 `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden\n` +
-                `- \`📊\` » Gesamt: \`${days}d ${hours}h ${minutes}m ${seconds}s\`\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
