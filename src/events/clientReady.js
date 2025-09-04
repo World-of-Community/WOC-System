@@ -209,105 +209,127 @@ module.exports = {
       }
     }, 1000 * 60 * 5); // alle 5 Minuten
 
+    setInterval(async () => {
+        const guild = client.guilds.cache.get('DEINE_GUILD_ID'); // Server-ID
+        if (!guild) return;
+    
+        guild.members.fetch().then(async members => {
+            for (const member of members.values()) {
+                // Bot ignorieren
+                if (member.user.bot) continue;
+    
+                // Status prüfen: nur online, idle, dnd
+                const status = member.presence?.status;
+                if (status === 'online' || status === 'idle' || status === 'dnd') {
+                    await userdb.updateOne(
+                        { userID: member.id },
+                        { $inc: { onlineTime: 60000 } }, // +60000 ms = 1 Minute
+                        { upsert: true }
+                    );
+                }
+            }
+        });
+    }, 60000); // alle 60 Sekunden
+
     // Ban Liste
     function scheduleBanUpdate() {
-  const now = new Date();
-  const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-
-  setTimeout(() => {
-    runBanUpdate(); // Update einmal direkt zur vollen Minute starten
-
-    // Ab jetzt jede Minute synchron laufen lassen
-    setInterval(runBanUpdate, 60 * 1000);
-  }, msUntilNextMinute);
-}
-
-async function runBanUpdate() {
-  try {
-    const server = await client.guilds.fetch("815919809379172354");
-
-    async function getMemberList(server, roleID) {
-      const list = [];
-      const role = server.roles.cache.get(roleID);
-      if (!role) return list;
-
-      for (const member of role.members.values()) {
-        try {
-          const banData = await bandb.findOne({ userId: member.id });
-          if (banData) {
-            list.push(`${member} - ${member.user.username} (\`${banData.reason}\`)`);
-          } else {
-            list.push(`${member} - ${member.user.username} (\`Kein Grund angegeben\`)`);
-          }
-        } catch (error) {
-          console.error(`Fehler bei Ban-Daten für ${member.id}:`, error);
-        }
-      }
-      return list;
+      const now = new Date();
+      const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+    
+      setTimeout(() => {
+        runBanUpdate(); // Update einmal direkt zur vollen Minute starten
+    
+        // Ab jetzt jede Minute synchron laufen lassen
+        setInterval(runBanUpdate, 60 * 1000);
+      }, msUntilNextMinute);
     }
 
-    const gebannt = server.roles.cache.get("886989738244964362");
-    if (!gebannt) return console.log("Rolle für Gebannte nicht gefunden.");
-
-    const bans = await getMemberList(server, gebannt.id);
-
-    const channel = await server.channels.fetch("1217020305671983205");
-    if (!channel) return console.log("Kanal nicht gefunden.");
-
-    const messages = await channel.messages.fetch({ limit: 1 });
-    const message = messages.first();
-    if (!message) return console.log("Keine Nachricht gefunden zum Bearbeiten.");
-
-    const currentTime = new Date().toLocaleDateString('de-DE', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    });
-
-    const bannembed = new EmbedBuilder()
-      .setTitle("Information zu den Gebannten Nutzern")
-      .setDescription(
-        `Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`)\n\n` +
-          (bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden.")
-      )
-      .setColor("Red")
-      .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: server.iconURL() })
-      .setTimestamp();
-
-    await message.edit({ embeds: [bannembed] });
-  } catch (error) {
-    console.error("Fehler im Bann-Update:", error);
-  }
-}
-
-// Timer starten
-scheduleBanUpdate();
-
-    // Globale Variablen zum Speichern von Kanal- und Nachrichten-IDs
-    let lastChannelId = null;
-    let lastMessageId = null;
-
-    client.once('ready', async () => {
-        console.log(`${client.user.tag} ist online!`);
-
-    // Sende die Nachricht, dass der Bot wieder online ist
-    if (lastChannelId) {
-        try {
-            const channel = await client.channels.fetch(lastChannelId);
-
-            if (channel) {
-                await channel.send({ text: '> `✅` » Der Bot ist wieder online und einsatzbereit.', ephemeral: true });
+    async function runBanUpdate() {
+      try {
+        const server = await client.guilds.fetch("815919809379172354");
+    
+        async function getMemberList(server, roleID) {
+          const list = [];
+          const role = server.roles.cache.get(roleID);
+          if (!role) return list;
+    
+          for (const member of role.members.values()) {
+            try {
+              const banData = await bandb.findOne({ userId: member.id });
+              if (banData) {
+                list.push(`${member} - ${member.user.username} (\`${banData.reason}\`)`);
+              } else {
+                list.push(`${member} - ${member.user.username} (\`Kein Grund angegeben\`)`);
+              }
+            } catch (error) {
+              console.error(`Fehler bei Ban-Daten für ${member.id}:`, error);
             }
-        } catch (error) {
-            console.error('Fehler beim Senden der Wieder-Online-Nachricht:', error);
+          }
+          return list;
         }
-
-        // Variablen zurücksetzen
-        lastChannelId = null;
-        lastMessageId = null;
+    
+        const gebannt = server.roles.cache.get("886989738244964362");
+        if (!gebannt) return console.log("Rolle für Gebannte nicht gefunden.");
+    
+        const bans = await getMemberList(server, gebannt.id);
+    
+        const channel = await server.channels.fetch("1217020305671983205");
+        if (!channel) return console.log("Kanal nicht gefunden.");
+    
+        const messages = await channel.messages.fetch({ limit: 1 });
+        const message = messages.first();
+        if (!message) return console.log("Keine Nachricht gefunden zum Bearbeiten.");
+    
+        const currentTime = new Date().toLocaleDateString('de-DE', {
+          weekday: 'long',
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        });
+    
+        const bannembed = new EmbedBuilder()
+          .setTitle("Information zu den Gebannten Nutzern")
+          .setDescription(
+            `Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`)\n\n` +
+              (bans.length > 0 ? bans.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden.")
+          )
+          .setColor("Red")
+          .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: server.iconURL() })
+          .setTimestamp();
+    
+        await message.edit({ embeds: [bannembed] });
+      } catch (error) {
+        console.error("Fehler im Bann-Update:", error);
+      }
     }
-});
+
+    // Timer starten
+    scheduleBanUpdate();
+    
+        // Globale Variablen zum Speichern von Kanal- und Nachrichten-IDs
+        let lastChannelId = null;
+        let lastMessageId = null;
+    
+        client.once('ready', async () => {
+            console.log(`${client.user.tag} ist online!`);
+    
+        // Sende die Nachricht, dass der Bot wieder online ist
+        if (lastChannelId) {
+            try {
+                const channel = await client.channels.fetch(lastChannelId);
+    
+                if (channel) {
+                    await channel.send({ text: '> `✅` » Der Bot ist wieder online und einsatzbereit.', ephemeral: true });
+                }
+            } catch (error) {
+                console.error('Fehler beim Senden der Wieder-Online-Nachricht:', error);
+            }
+    
+            // Variablen zurücksetzen
+            lastChannelId = null;
+            lastMessageId = null;
+        }
+    });
 
     cron.schedule("0 0 * * *", async () => {
       const channel = await client.channels.fetch("896743941813207081");
