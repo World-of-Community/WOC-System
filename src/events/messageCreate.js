@@ -23,6 +23,16 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
 
+        try {
+            await messagedb.findOneAndUpdate(
+                { guildID: message.guild.id },
+                { $inc: { messages: 1 } }, // Zählt jede Nachricht hoch
+                { new: true, upsert: true } // Falls nicht vorhanden, erstellen
+            );
+        } catch (err) {
+            console.error("Fehler beim Hochzählen der Nachrichten:", err);
+        }
+
         const erlaubteChannels = [
             '815922756918181898', // Hauptchat
             '896743941813207081', // Spielersuche
