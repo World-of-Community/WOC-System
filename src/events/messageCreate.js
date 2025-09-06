@@ -23,11 +23,15 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
 
+        const erlaubterKanal = "815922756918181898"; // Haupt chat
+
+        if (message.channel.id !== erlaubterKanal) return; // Bricht ab, wenn es nicht der Kanal ist
+        
         try {
             await messagedb.findOneAndUpdate(
                 { guildID: message.guild.id },
-                { $inc: { messages: 1 } }, // Zählt jede Nachricht hoch
-                { new: true, upsert: true } // Falls nicht vorhanden, erstellen
+                { $inc: { messages: 1 } }, // Zählt nur hoch, wenn im richtigen Kanal
+                { new: true, upsert: true }
             );
         } catch (err) {
             console.error("Fehler beim Hochzählen der Nachrichten:", err);
