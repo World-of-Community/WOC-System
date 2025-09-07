@@ -936,6 +936,8 @@ function determineEmoji(priceInput) {
         return "<a:basic:1186636165567229972>";
     } else if (priceInput.toLowerCase().includes("guthaben")) {
         return "<a:guthaben:1186636139281530970>";
+    } else if (priceInput.toLowerCase().includes("coins")) {
+        return "🪙";
     } else {
         return "<a:Diamond:1018911546430210128>";
     }
