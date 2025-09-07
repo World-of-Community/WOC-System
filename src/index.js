@@ -934,10 +934,10 @@ function determineEmoji(priceInput) {
         return "<a:nitro:1186636151335944283>";
     } else if (priceInput.toLowerCase().includes("nitro") && priceInput.toLowerCase().includes("basic")) {
         return "<a:basic:1186636165567229972>";
+    } else if (priceInput.toLowerCase().includes("coins") && priceInput.toLowerCase().includes("coins")) {
+        return "`🪙`";
     } else if (priceInput.toLowerCase().includes("guthaben")) {
         return "<a:guthaben:1186636139281530970>";
-    } else if (priceInput.toLowerCase().includes("coins")) {
-        return "🪙";
     } else {
         return "<a:Diamond:1018911546430210128>";
     }
