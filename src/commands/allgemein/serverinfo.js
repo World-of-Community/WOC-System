@@ -21,7 +21,12 @@ function formatBoostDuration(boostTimestamp) {
     if (months > 0) parts.push(`${months} ${months === 1 ? "Monat" : "Monaten"}`);
     if (days > 0) parts.push(`${days} ${days === 1 ? "Tag" : "Tagen"}`);
 
-    return parts.join(", ");
+    if (parts.length > 1) {
+        const last = parts.pop();
+        return parts.join(", ") + " und " + last;
+    }
+
+    return parts[0];
 }
 
 module.exports = {
@@ -34,7 +39,7 @@ module.exports = {
         const members = await guild.members.fetch();
         const botCount = members.filter(member => member.user.bot).size;
         const userCount = members.filter(member => !member.user.bot).size;
-        
+
         const onlineMembers = members.filter(m =>
             m.presence?.status === 'online' ||
             m.presence?.status === 'idle' ||
@@ -71,7 +76,7 @@ module.exports = {
                     if (boostSince) {
                         const formatted = formatBoostDuration(boostSince);
                         if (formatted) {
-                            durationText = ` – Boostet seit ${formatted}`;
+                            durationText = ` – **seit ${formatted}**`;
                         }
                     }
                     return `${member.toString()}${durationText}`;
@@ -89,7 +94,7 @@ module.exports = {
                 `> \`🟢\` » **Online:** \`${onlineMembers.toLocaleString("de-DE")}\`\n` +
                 `> \`📈\` » **Erreichte Useranzahl:** \`${serverData.highestUserCount.toLocaleString("de-DE")}\`\n\n` +
                 `> <a:nitro:1186636151335944283> » Boost Level: **${guild.premiumTier}** (**${guild.premiumSubscriptionCount}** Boosts)\n` +
-                `> \`💖\` » **Server Booster:**\n${boosterMentions}\n\n` +
+                `> \`💖\` » **Server Booster:**\n> ${boosterMentions}\n\n` +
                 `> \`🎭\` » Wir haben aktuell **${emojiCount}** Emotes.`
             )
             .setColor('Blurple')
