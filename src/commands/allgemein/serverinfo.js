@@ -80,7 +80,7 @@ module.exports = {
                         }
                     }
                     return `${member.toString()}${durationText}`;
-                }).join('\n');
+                }).join('\n> ');
             }
         }
 
