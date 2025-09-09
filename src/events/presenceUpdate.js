@@ -80,11 +80,11 @@ module.exports = {
         let lastStatus = null;
         let offlineMessage = null; // Speichert die Offline-Nachricht
         
-        client.on("presenceUpdate", async (oldPresence, newPresence) => {
+        bot.on("presenceUpdate", async (oldPresence, newPresence) => {
             if (!newPresence || newPresence.user?.id !== BOT_ID) return;
             const status = newPresence.status; // online, idle, dnd, offline
         
-            const channel = await client.channels.fetch(CHANNEL_ID);
+            const channel = await bot.channels.fetch(CHANNEL_ID);
             if (!channel || !channel.isTextBased()) return;
         
             // Wenn der Bot offline geht
