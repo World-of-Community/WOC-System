@@ -80,40 +80,47 @@ module.exports = {
         let lastStatus = null;
         let offlineMessage = null; // Speichert die Offline-Nachricht
         
-        bot.on("presenceUpdate", async (oldPresence, newPresence) => {
-            if (!newPresence || newPresence.user?.id !== BOT_ID) return;
-            const status = newPresence.status; // online, idle, dnd, offline
-        
-            const channel = await bot.channels.fetch(CHANNEL_ID);
-            if (!channel || !channel.isTextBased()) return;
-        
-            // Wenn der Bot offline geht
-            if (status === "offline" && lastStatus !== "offline") {
-                offlineMessage = await channel.send(
-                    "`❗` » **Aktuell ist der Ticket Support offline.**\nWir bitten um Entschuldigung. Bitte nutze in der Zwischenzeit den **Schrift-Support**."
-                );
-            }
-        
-            // Wenn der Bot wieder online geht
-            if (status === "online" && lastStatus === "offline") {
-                // Alte Offline-Nachricht löschen, falls vorhanden
-                if (offlineMessage) {
-                    try { await offlineMessage.delete(); } catch (e) {}
-                    offlineMessage = null;
-                }
-        
-                // 1 Minute warten und dann eine "wieder online"-Nachricht senden
-                setTimeout(async () => {
-                    const onlineMsg = await channel.send(
-                        "> `✅` » **Der Ticket Support ist nun wieder online!**"
+        if (!newPresence || newPresence.user?.id !== BOT_ID) return;
+        const status = newPresence.status; // online, idle, dnd, offline
+    
+        // Wenn der Bot offline geht
+        if (status === "offline" && lastStatus !== "offline") {
+            for (const channelId of CHANNEL_IDS) {
+                try {
+                    const channel = await client.channels.fetch(channelId);
+                    if (!channel?.isTextBased()) continue;
+    
+                    const msg = await channel.send(
+                        "⚠️ **Aktuell ist der Ticket Support offline.**\nWir bitten um Entschuldigung. Bitte nutze in der Zwischenzeit den **Schrift-Support**."
                     );
-                    // Nachricht nach 1 Minute automatisch löschen
-                    setTimeout(() => onlineMsg.delete().catch(() => {}), 60_000);
-                }, 60_000);
+                    offlineMessages.set(channelId, msg);
+                } catch (e) {
+                    console.error(`Fehler beim Senden in Kanal ${channelId}:`, e);
+                }
             }
-        
-            lastStatus = status;
-        });
+        }
+
+    // Wenn der Bot wieder online geht
+    if (status === "online" && lastStatus === "offline") {
+        for (const [channelId, msg] of offlineMessages.entries()) {
+            try { await msg.delete(); } catch (e) {}
+            offlineMessages.delete(channelId);
+
+            // 1 Minute warten, dann Online-Meldung senden und nach 1 Minute löschen
+            setTimeout(async () => {
+                try {
+                    const channel = await client.channels.fetch(channelId);
+                    if (!channel?.isTextBased()) return;
+
+                    const onlineMsg = await channel.send(
+                        "✅ **Der Ticket Support ist nun wieder online!**"
+                    );
+                    setTimeout(() => onlineMsg.delete().catch(() => {}), 60_000);
+                } catch (e) {
+                    console.error(`Fehler beim Senden der Online-Meldung in Kanal ${channelId}:`, e);
+                }
+            }, 60_000);
+        }
 
         // Streamer-Aktivität prüfen
         const isStreaming = activities?.some(a => a.type === ActivityType.Streaming);
@@ -145,7 +152,7 @@ module.exports = {
             console.log(`🕓  | Datum: ${datumUhrzeit}`);
         }
     }
-};
+}};
 
 /*
 
