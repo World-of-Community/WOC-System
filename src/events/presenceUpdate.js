@@ -72,6 +72,49 @@ module.exports = {
             onlineMap.delete(userId);
         }
 
+        const BOT_ID = "1031487336783028274"; // Bot-ID des Ticket-Support-Bots
+        const CHANNEL_IDS = [
+            "819555839362072606", // Ticket Support
+            "1006143436677726300" // Team Bewerben
+        ];
+        let lastStatus = null;
+        let offlineMessage = null; // Speichert die Offline-Nachricht
+        
+        client.on("presenceUpdate", async (oldPresence, newPresence) => {
+            if (!newPresence || newPresence.user?.id !== BOT_ID) return;
+            const status = newPresence.status; // online, idle, dnd, offline
+        
+            const channel = await client.channels.fetch(CHANNEL_ID);
+            if (!channel || !channel.isTextBased()) return;
+        
+            // Wenn der Bot offline geht
+            if (status === "offline" && lastStatus !== "offline") {
+                offlineMessage = await channel.send(
+                    "`❗` » **Aktuell ist der Ticket Support offline.**\nWir bitten um Entschuldigung. Bitte nutze in der Zwischenzeit den **Schrift-Support**."
+                );
+            }
+        
+            // Wenn der Bot wieder online geht
+            if (status === "online" && lastStatus === "offline") {
+                // Alte Offline-Nachricht löschen, falls vorhanden
+                if (offlineMessage) {
+                    try { await offlineMessage.delete(); } catch (e) {}
+                    offlineMessage = null;
+                }
+        
+                // 1 Minute warten und dann eine "wieder online"-Nachricht senden
+                setTimeout(async () => {
+                    const onlineMsg = await channel.send(
+                        "> `✅` » **Der Ticket Support ist nun wieder online!**"
+                    );
+                    // Nachricht nach 1 Minute automatisch löschen
+                    setTimeout(() => onlineMsg.delete().catch(() => {}), 60_000);
+                }, 60_000);
+            }
+        
+            lastStatus = status;
+        });
+
         // Streamer-Aktivität prüfen
         const isStreaming = activities?.some(a => a.type === ActivityType.Streaming);
 
