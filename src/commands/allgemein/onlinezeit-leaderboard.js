@@ -24,8 +24,6 @@ module.exports = {
       // **Gesamte Onlinezeit berechnen**
       const totalMs = allUsers.reduce((acc, u) => acc + (u.onlineTime || 0), 0);
       const totalHours = Math.floor(totalMs / 3600000);
-      const totalDays = Math.floor(totalHours / 24);
-      const hoursRemainder = totalHours % 24;
 
       // Top 10 aus der Liste
       const topUsers = allUsers.slice(0, 10);
@@ -69,7 +67,7 @@ module.exports = {
       // Embed bauen und antworten
       const embed = new EmbedBuilder()
         .setTitle('`🏆` Top 10 Onlinezeit Leaderboard')
-        .setDescription(lines.join(`\n`) + (`\nGesamte Onlinezeit beträgt \`${totalDays}d\` und \`${hoursRemainder}h\``))
+        .setDescription(lines.join(`\n`) + (`\n\n\`👥\` » Gesamte Onlinezeit beträgt \`${totalHours} Stunden\``))
         .setColor('Green')
         .setFooter({ text: `Gesamte Onlinezeit auf ${interaction.guild.name}` })
         .setTimestamp();
