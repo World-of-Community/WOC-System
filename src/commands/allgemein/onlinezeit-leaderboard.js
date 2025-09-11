@@ -56,10 +56,8 @@ module.exports = {
 
         // Wenn er nicht in den Top 10 ist, ... einfügen
         if (userIndex >= 10) {
-          lines.push(`\n...`);
+          lines.push(`\nDein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`);
         }
-
-        lines.push(`\nDein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`);
       }
 
       // Embed bauen und antworten
