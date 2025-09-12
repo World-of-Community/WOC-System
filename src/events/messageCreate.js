@@ -35,16 +35,10 @@ module.exports = {
             console.error("Fehler beim Hochzählen der Nachrichten:", err);
         }
     
-        // Dauer, bis die Nachricht gelöscht wird (in ms)
         const deleteAfter = 30 * 1000;
-        
-        // Deine Minecraft-Server-IP hier einfügen
         const mcServerIP = "worldofcommunity.de";
-        
-        // Nachricht des Users in Kleinbuchstaben
         const frage = message.content.toLowerCase();
-        
-        // Liste aller möglichen IP-Anfragen
+    
         const suchbegriffe = [
             'wie ist die ip',
             'was ist die ip',
@@ -86,14 +80,10 @@ module.exports = {
             'wie war nochmal die ip?',
             'ip vom minecraft server'
         ];
-        
-        // Prüfen, ob die Nachricht eines der Schlüsselwörter enthält
-        if (suchbegriffe.some(begriff => frage.includes(begriff))) {
-        
-            // Zeitstempel für Discord-Timestamps
+    
+        if (suchbegriffe.some(begriff => frage.includes(begriff.toLowerCase()))) {
             const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
-        
-            // Embed erstellen
+    
             const embed = new EmbedBuilder()
                 .setTitle('`🌐` Minecraft-Server IP')
                 .setDescription(
@@ -103,8 +93,7 @@ module.exports = {
                     `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`
                 )
                 .setColor('Green');
-        
-            // Antwort senden und nach 30 Sekunden löschen
+    
             const reply = await message.reply({ embeds: [embed] });
             setTimeout(() => {
                 reply.delete().catch(console.error);
