@@ -23,8 +23,11 @@ module.exports = {
       });
     }
 
-    // Alle Nutzer laden für eigenen Rang
+    // Alle Nutzer laden für eigenen Rang & Gesamtsumme
     const allUsers = await Coin.find().sort({ streak: -1, coins: -1 });
+    const totalStreaks = allUsers.reduce((acc, u) => acc + (u.streak || 0), 0);
+    const totalStreaksFormatted = totalStreaks.toLocaleString("de-DE");
+
     const userId = interaction.user.id;
     const userIndex = allUsers.findIndex(entry => String(entry.userId) === String(userId));
     const userRank = userIndex !== -1 ? userIndex + 1 : null;
@@ -53,7 +56,7 @@ module.exports = {
       const userStreak = allUsers[userIndex].streak || 0;
       const streakText = `\`${userStreak}\`x Streak`;
 
-      // Platzsymbol für eigenen Rang (auch wenn nicht in Top 10)
+      // Platzsymbol für eigenen Rang
       let placeIcon = `#${userRank}`;
       if (userRank === 1) placeIcon = "🥇";
       else if (userRank === 2) placeIcon = "🥈";
@@ -68,6 +71,9 @@ module.exports = {
     } else {
       leaderboardLines.push(`\n> \`❗\` » Du bist aktuell nicht im Leaderboard vertreten.`);
     }
+
+    // Gesamtsumme anhängen
+    leaderboardLines.push(`\n\n\`📅\` » Insgesamt wurden **${totalStreaksFormatted}** Tage gestreakt`);
 
     const embed = new EmbedBuilder()
       .setColor('Gold')
