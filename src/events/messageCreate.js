@@ -37,63 +37,54 @@ module.exports = {
             console.error("Fehler beim Hochzählen der Nachrichten:", err);
         }
 
-        // Erlaubte Channels
-        const erlaubteChannels = [
-            '815922756918181898', // Hauptchat
-            '896743941813207081', // Spielersuche
-            '979431125053227068'  // Bots verwenden
-        ];
-
-        // Prüfen, ob Channel erlaubt ist
-        if (!erlaubteChannels.includes(message.channel.id)) return;
-    
-        // Andere Bots ignorieren
+        // Andere Bots ignorieren, eigener Bot reagiert normal
         if (message.author.bot && message.author.id !== client.user.id) return;
     
         const frage = message.content.toLowerCase();
     
-        const suchbegriffe = [ 
-            'wie ist die ip', 
-            'was ist die ip', 
-            'server ip', 
-            'minecraft ip', 
-            'ip', 
-            'ip?', 
-            'ip ?', 
-            'ip bitte', 
-            'ip vom server', 
-            'ip vom mc server', 
-            'was ist die ip vom server', 
-            'was ist die ip vom mc server', 
-            'wie lautet die ip', 
-            'kannst du mir die ip geben', 
-            'was ist die ip adresse', 
-            'ip adresse', 
-            'serveradresse', 
-            'adresse vom server', 
-            'mc ip', 
-            'mc-ip', 
-            'ip des servers', 
-            'minecraft server ip', 
-            'wie komme ich auf den server', 
-            'wie kann ich joinen', 
-            'wie joine ich', 
-            'join ip', 
-            'wie komme ich auf den mc server', 
-            'ip pls', 
-            'ip plz', 
-            'ip pls?', 
-            'ip pls!', 
-            'ip pls :D', 
-            'ip pls :)', 
-            'ip? :)', 
-            'wie ist nochmal die ip', 
-            'wie ist nochmal die ip?', 
-            'wie war nochmal die ip', 
-            'wie war nochmal die ip?', 
-            'ip vom minecraft server' 
+        const suchbegriffe = [
+            'wie ist die ip',
+            'was ist die ip',
+            'server ip',
+            'minecraft ip',
+            'ip',
+            'ip?',
+            'ip ?',
+            'ip bitte',
+            'ip vom server',
+            'ip vom mc server',
+            'was ist die ip vom server',
+            'was ist die ip vom mc server',
+            'wie lautet die ip',
+            'kannst du mir die ip geben',
+            'was ist die ip adresse',
+            'ip adresse',
+            'serveradresse',
+            'adresse vom server',
+            'mc ip',
+            'mc-ip',
+            'ip des servers',
+            'minecraft server ip',
+            'wie komme ich auf den server',
+            'wie kann ich joinen',
+            'wie joine ich',
+            'join ip',
+            'wie komme ich auf den mc server',
+            'ip pls',
+            'ip plz',
+            'ip pls?',
+            'ip pls!',
+            'ip pls :D',
+            'ip pls :)',
+            'ip? :)',
+            'wie ist nochmal die ip',
+            'wie ist nochmal die ip?',
+            'wie war nochmal die ip',
+            'wie war nochmal die ip?',
+            'ip vom minecraft server'
         ];
     
+        // Prüfen, ob die Nachricht einen Suchbegriff enthält
         if (suchbegriffe.some(begriff => frage.includes(begriff))) {
             const deleteAfter = 30 * 1000; // 30 Sekunden
             const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
