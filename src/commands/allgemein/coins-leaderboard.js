@@ -29,34 +29,48 @@ module.exports = {
     for (let i = 0; i < topCoins.length; i++) {
       const entry = topCoins[i];
       const coins = entry.coins.toLocaleString('de-DE');
+
+      // Platz-Symbole setzen
+      let placeIcon = `#${i + 1}`;
+      if (i === 0) placeIcon = "🥇";
+      else if (i === 1) placeIcon = "🥈";
+      else if (i === 2) placeIcon = "🥉";
+
       try {
         const user = await interaction.client.users.fetch(entry.userId);
-        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${entry.userId}> (${user.username})\n`;
+        description += `\`${placeIcon}\` mit **${coins} Coins** ist <@${entry.userId}> (${user.username})\n`;
       } catch {
-        description += `\`#${i + 1}\` mit **${coins} Coins** ist <@${entry.userId}> (Unbekannt)\n`;
+        description += `\`${placeIcon}\` mit **${coins} Coins** ist <@${entry.userId}> (Unbekannt)\n`;
       }
     }
 
     // Eigenen Rang immer unten anzeigen
     if (userRank) {
       const userCoins = allUsers[userIndex].coins.toLocaleString('de-DE');
+
+      // Platz-Symbol auch für eigenen Rang setzen
+      let userPlaceIcon = `#${userRank}`;
+      if (userRank === 1) userPlaceIcon = "🥇";
+      else if (userRank === 2) userPlaceIcon = "🥈";
+      else if (userRank === 3) userPlaceIcon = "🥉";
+
       try {
         const user = await interaction.client.users.fetch(userId);
-        description += `\nDein Rang: \`#${userRank}\` mit **${userCoins} Coins** ist <@${userId}> (${user.username})`;
+        description += `\nDein Rang: \`${userPlaceIcon}\` mit **${userCoins} Coins** ist <@${userId}> (${user.username})`;
       } catch {
-        description += `\nDein Rang: \`#${userRank}\` mit **${userCoins} Coins** ist <@${userId}> (Unbekannt)`;
+        description += `\nDein Rang: \`${userPlaceIcon}\` mit **${userCoins} Coins** ist <@${userId}> (Unbekannt)`;
       }
     }
 
     // Gesamtsumme in die Beschreibung anhängen
-    description += `\n\n\`💰\` » Coins Ingesamt: **${totalCoinsFormatted}**`;
+    description += `\n\n\`👥\` » Insgesamt: **${totalCoinsFormatted}** Coins`;
 
     const leaderboardEmbed = new EmbedBuilder()
       .setTitle('`🏆` Top 10 Coins Leaderboard')
       .setDescription(description)
       .setColor('Gold')
       .setFooter({
-        text: `» ${interaction.guild.name} | Coin-System | Gesamt: ${totalCoinsFormatted} Coins`,
+        text: `» ${interaction.guild.name} | Coin-System`,
         iconURL: interaction.guild.iconURL()
       })
       .setTimestamp();
