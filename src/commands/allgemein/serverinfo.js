@@ -6,24 +6,20 @@ function formatBoostDuration(boostTimestamp) {
     const boostStart = DateTime.fromJSDate(boostTimestamp);
     const now = DateTime.now();
 
-    const diff = now.diff(boostStart, ["years", "months", "days"]).toObject();
-    const years = Math.floor(diff.years || 0);
-    const months = Math.floor(diff.months || 0);
-    const days = Math.floor(diff.days || 0);
+    // Gesamte Tage seit Boost
+    const totalDays = Math.floor(now.diff(boostStart, "days").days);
+    const years = Math.floor(totalDays / 365);
+    const days = totalDays % 365;
 
-    // Nur anzeigen, wenn mindestens 1 Tag vergangen ist
-    if (years === 0 && months === 0 && days < 1) {
-        return null;
-    }
+    if (years === 0 && days < 1) return null;
 
     let parts = [];
     if (years > 0) parts.push(`${years} ${years === 1 ? "Jahr" : "Jahren"}`);
-    if (months > 0) parts.push(`${months} ${months === 1 ? "Monat" : "Monaten"}`);
     if (days > 0) parts.push(`${days} ${days === 1 ? "Tag" : "Tagen"}`);
 
     if (parts.length > 1) {
         const last = parts.pop();
-        return parts.join(", ") + " und " + last;
+        return parts.join(" und ") + " " + last;
     }
 
     return parts[0];
@@ -44,7 +40,7 @@ module.exports = {
             m.presence?.status === 'online' ||
             m.presence?.status === 'idle' ||
             m.presence?.status === 'dnd'
-        ).filter(member => !member.user.bot).size.toLocaleString() || 0;
+        ).filter(member => !member.user.bot).size.toLocaleString("de-DE") || 0;
 
         let serverData = await Server.findOne({ guildId: guild.id });
         if (!serverData) {
