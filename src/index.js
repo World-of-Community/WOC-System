@@ -6,8 +6,8 @@ const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');
 const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
-const fussballCommand = require('../src/commands/admin/fussball-tabelle');
-const ReminderDB = require('../Datenbank/dailyreminderdb');
+const fussballCommand = require('../src/commands/admin/fussball-tabelle');  
+const Reminder = require('../Datenbank/dailyreminderdb');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
@@ -616,37 +616,44 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 
-// Tägliche Belohnung erinnerung
 const CHANNEL_ID = '815922756918181898';
-const REMINDER_ID = 'dailyReminder'; // eindeutige ID für diesen Reminder
+const REMINDER_ID = 'dailyReminder';
 
+// Tägliche Belohnung erinnerung
 cron.schedule('0 */6 * * *', async () => {
-  try {
-    const channel = await client.channels.fetch(CHANNEL_ID);
-    if (!channel || channel.type !== ChannelType.GuildText) return;
+    try {
+      const channel = await client.channels.fetch(CHANNEL_ID);
+      if (!channel || channel.type !== ChannelType.GuildText) return;
 
-    // Letzte Nachricht aus der DB holen
-    const reminder = await ReminderDB.getReminder(REMINDER_ID);
+      // letzten Reminder aus DB holen
+      const reminder = await Reminder.findById(REMINDER_ID);
 
-    if (reminder && reminder.messageId) {
-      try {
-        const oldMsg = await channel.messages.fetch(reminder.messageId);
-        if (oldMsg) await oldMsg.delete();
-      } catch (err) {
-        console.log('Konnte alte Nachricht nicht löschen:', err.message);
+      // alte Nachricht löschen
+      if (reminder && reminder.messageId) {
+        try {
+          const oldMsg = await channel.messages.fetch(reminder.messageId);
+          if (oldMsg) await oldMsg.delete().catch(() => {});
+        } catch {
+          console.log(`Alte Reminder-Nachricht ${reminder.messageId} nicht gefunden.`);
+        }
       }
+
+      // neue Nachricht senden
+      const newMsg = await channel.send(
+        '**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`'
+      );
+
+      // Reminder-Eintrag in DB updaten/erstellen
+      await Reminder.findByIdAndUpdate(
+        REMINDER_ID,
+        { _id: REMINDER_ID, messageId: newMsg.id },
+        { upsert: true }
+      );
+
+    } catch (error) {
+      console.error('Fehler beim täglichen Reminder:', error);
     }
-
-    // Neue Nachricht senden
-    const newMsg = await channel.send('**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`');
-
-    // In der DB speichern
-    await ReminderDB.setReminder(REMINDER_ID, newMsg.id);
-
-  } catch (error) {
-    console.error('Fehler beim täglichen Reminder:', error);
-  }
-});
+  });
 
 // Onlinezeit (Profil.js)
 setInterval(async () => {
