@@ -6,7 +6,8 @@ const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');
 const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
-const fussballCommand = require('../src/commands/admin/fussball-tabelle'); // Pfad anpassen
+const fussballCommand = require('../src/commands/admin/fussball-tabelle');
+const ReminderDB = require('../Datenbank/dailyreminderdb');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
@@ -617,25 +618,30 @@ cron.schedule('0 0 * * *', async () => {
 
 // Tägliche Belohnung erinnerung
 const CHANNEL_ID = '815922756918181898';
-
-let lastMessageId = null;
+const REMINDER_ID = 'dailyReminder'; // eindeutige ID für diesen Reminder
 
 cron.schedule('0 */6 * * *', async () => {
   try {
     const channel = await client.channels.fetch(CHANNEL_ID);
     if (!channel || channel.type !== ChannelType.GuildText) return;
 
-    if (lastMessageId) {
+    // Letzte Nachricht aus der DB holen
+    const reminder = await ReminderDB.getReminder(REMINDER_ID);
+
+    if (reminder && reminder.messageId) {
       try {
-        const oldMsg = await channel.messages.fetch(lastMessageId);
+        const oldMsg = await channel.messages.fetch(reminder.messageId);
         if (oldMsg) await oldMsg.delete();
       } catch (err) {
         console.log('Konnte alte Nachricht nicht löschen:', err.message);
       }
     }
 
+    // Neue Nachricht senden
     const newMsg = await channel.send('**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`');
-    lastMessageId = newMsg.id;
+
+    // In der DB speichern
+    await ReminderDB.setReminder(REMINDER_ID, newMsg.id);
 
   } catch (error) {
     console.error('Fehler beim täglichen Reminder:', error);
