@@ -7,8 +7,6 @@ const teamdb = require("../../Datenbank/teamdb");
 const bumpdb = require("../../Datenbank/bumpdb");
 const { time } = require("console");
 
-const mcServerIP = 'worldofcommunity.de'; // IP deines Servers
-
 const TeamRoleIds = [
     '959869691529154631', // Admin
     '893423428558782465', // Team-leitung
@@ -36,17 +34,17 @@ module.exports = {
         } catch (err) {
             console.error("Fehler beim Hochzählen der Nachrichten:", err);
         }
-
-        const ipChannels = [
-            '815922756918181898', // Hauptchat
-            '896743941813207081', // Spielersuche
-            '979431125053227068'  // Bots verwenden
-        ];
-
-        if (!ipChannels.includes(message.channel.id)) return;
     
+        // Dauer, bis die Nachricht gelöscht wird (in ms)
+        const deleteAfter = 30 * 1000;
+        
+        // Deine Minecraft-Server-IP hier einfügen
+        const mcServerIP = "worldofcommunity.de";
+        
+        // Nachricht des Users in Kleinbuchstaben
         const frage = message.content.toLowerCase();
-
+        
+        // Liste aller möglichen IP-Anfragen
         const suchbegriffe = [
             'wie ist die ip',
             'was ist die ip',
@@ -89,25 +87,28 @@ module.exports = {
             'ip vom minecraft server'
         ];
         
+        // Prüfen, ob die Nachricht eines der Schlüsselwörter enthält
         if (suchbegriffe.some(begriff => frage.includes(begriff))) {
-            const deleteAfter = 30 * 1000;
+        
+            // Zeitstempel für Discord-Timestamps
             const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
         
+            // Embed erstellen
             const embed = new EmbedBuilder()
                 .setTitle('`🌐` Minecraft-Server IP')
                 .setDescription(
-                    `> \`📡\` » Die IP des Servers lautet: \n` +
+                    `> \`📡\` » Die IP des Servers lautet:\n` +
                     `\`\`\`${mcServerIP}\`\`\`\n` +
                     `> \`⚙️\` » Version: **ab 1.20.4**\n\n` +
                     `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`
                 )
                 .setColor('Green');
         
+            // Antwort senden und nach 30 Sekunden löschen
             const reply = await message.reply({ embeds: [embed] });
-        
             setTimeout(() => {
-                reply.delete().catch(() => {});
-                message.delete().catch(() => {});
+                reply.delete().catch(console.error);
+                message.delete().catch(console.error);
             }, deleteAfter);
         }
             
