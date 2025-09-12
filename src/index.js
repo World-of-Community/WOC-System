@@ -1,4 +1,19 @@
-const { Client, GatewayIntentBits, Partials, ChannelType, EmbedBuilder, Collection, AuditLogEvent, ApplicationCommandType, ActionRowBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles, ComponentType } = require('discord.js')
+const { 
+    Client, 
+    GatewayIntentBits, 
+    Partials, 
+    ChannelType, 
+    EmbedBuilder, 
+    Collection, 
+    AuditLogEvent, 
+    ApplicationCommandType, 
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonStyle, 
+    time, 
+    TimestampStyles, 
+    ComponentType 
+} = require('discord.js')
 const path = require('node:path');
 const fs = require('fs');
 const config = require('../src/json/config.json')
