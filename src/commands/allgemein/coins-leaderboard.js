@@ -16,18 +16,18 @@ module.exports = {
       return interaction.editReply({ content: '> `❌` » Es sind noch keine Coins vorhanden.' });
     }
 
-    // Alle User laden für eigenen Rang
+    // Alle User laden für eigenen Rang + Gesamtsumme
     const allUsers = await Coin.find().sort({ coins: -1 });
+    const totalCoins = allUsers.reduce((acc, u) => acc + (u.coins || 0), 0);
+    const totalCoinsFormatted = totalCoins.toLocaleString('de-DE');
+
     const userId = interaction.user.id;
     const userIndex = allUsers.findIndex(entry => String(entry.userId) === String(userId));
     const userRank = userIndex !== -1 ? userIndex + 1 : null;
 
     let description = '';
-    const topUserIds = [];
-
     for (let i = 0; i < topCoins.length; i++) {
       const entry = topCoins[i];
-      topUserIds.push(String(entry.userId)); // merken, welche User in Top 10 sind
       const coins = entry.coins.toLocaleString('de-DE');
       try {
         const user = await interaction.client.users.fetch(entry.userId);
@@ -37,7 +37,7 @@ module.exports = {
       }
     }
 
-    // Eigenen Rang immer unten anzeigen, auch wenn in Top 10
+    // Eigenen Rang immer unten anzeigen
     if (userRank) {
       const userCoins = allUsers[userIndex].coins.toLocaleString('de-DE');
       try {
@@ -53,7 +53,7 @@ module.exports = {
       .setDescription(description)
       .setColor('Gold')
       .setFooter({
-        text: `» ${interaction.guild.name} | Coin-System`,
+        text: `» ${interaction.guild.name} | Coin-System | Gesamt: ${totalCoinsFormatted} Coins`,
         iconURL: interaction.guild.iconURL()
       })
       .setTimestamp();

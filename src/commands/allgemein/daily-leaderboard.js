@@ -33,11 +33,18 @@ module.exports = {
     const leaderboardLines = await Promise.all(topUsers.map(async (u, i) => {
       const streak = u.streak || 0;
       const streakText = `\`${streak}\`x Streak`;
+
+      // Platzierungssymbole
+      let placeIcon = `#${i + 1}`;
+      if (i === 0) placeIcon = "🥇";
+      else if (i === 1) placeIcon = "🥈";
+      else if (i === 2) placeIcon = "🥉";
+
       try {
         const user = await interaction.client.users.fetch(u.userId);
-        return `\`#${i + 1}\` mit ${streakText} ist <@${u.userId}> (${user.tag})`;
+        return `\`${placeIcon}\` mit ${streakText} ist <@${u.userId}> (${user.tag})`;
       } catch {
-        return `\`#${i + 1}\` mit ${streakText} ist <@${u.userId}> (\`➖\`)`;
+        return `\`${placeIcon}\` mit ${streakText} ist <@${u.userId}> (\`➖\`)`;
       }
     }));
 
@@ -45,11 +52,18 @@ module.exports = {
     if (userRank !== null) {
       const userStreak = allUsers[userIndex].streak || 0;
       const streakText = `\`${userStreak}\`x Streak`;
+
+      // Platzsymbol für eigenen Rang (auch wenn nicht in Top 10)
+      let placeIcon = `#${userRank}`;
+      if (userRank === 1) placeIcon = "🥇";
+      else if (userRank === 2) placeIcon = "🥈";
+      else if (userRank === 3) placeIcon = "🥉";
+
       try {
         const user = await interaction.client.users.fetch(userId);
-        leaderboardLines.push(`\nDein Rang: \`#${userRank}\` mit ${streakText} ist <@${userId}> (${user.tag})`);
+        leaderboardLines.push(`\nDein Rang: \`${placeIcon}\` mit ${streakText} ist <@${userId}> (${user.tag})`);
       } catch {
-        leaderboardLines.push(`\nDein Rang: \`#${userRank}\` mit ${streakText} ist <@${userId}> (\`➖\`)`);
+        leaderboardLines.push(`\nDein Rang: \`${placeIcon}\` mit ${streakText} ist <@${userId}> (\`➖\`)`);
       }
     } else {
       leaderboardLines.push(`\n> \`❗\` » Du bist aktuell nicht im Leaderboard vertreten.`);

@@ -67,9 +67,15 @@ module.exports = {
         const hours = Math.floor(userDoc.onlineTime / 3600000);
         const hourLabel = hours === 1 ? "Stunde" : "Stunden";
 
+        // Platzsymbol für eigenen Rang
+        let placeIcon = `#${userRank}`;
+        if (userRank === 1) placeIcon = "🥇";
+        else if (userRank === 2) placeIcon = "🥈";
+        else if (userRank === 3) placeIcon = "🥉";
+
         // Wenn er nicht in den Top 10 ist, extra anzeigen
         if (userIndex >= 10) {
-          lines.push(`\nDein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`);
+          lines.push(`\nDein Rang: \`${placeIcon}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`);
         }
       }
 
