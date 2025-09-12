@@ -22,7 +22,6 @@ const { ApiClient } = require('@twurple/api');
 const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
 const fussballCommand = require('../src/commands/admin/fussball-tabelle');  
-const Reminder = require('../Datenbank/dailyreminderdb');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
@@ -631,44 +630,39 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 
+// Tägliche Belohnung Erinnerung
 const CHANNEL_ID = '815922756918181898';
-const REMINDER_ID = 'dailyReminder';
 
-// Tägliche Belohnung erinnerung
+let lastMessageId = null; // nur im RAM gespeichert
+
 cron.schedule('0 */6 * * *', async () => {
-    try {
-      const channel = await client.channels.fetch(CHANNEL_ID);
-      if (!channel || channel.type !== ChannelType.GuildText) return;
+  try {
+    const channel = await client.channels.fetch(CHANNEL_ID);
+    if (!channel || channel.type !== ChannelType.GuildText) return;
 
-      // letzten Reminder aus DB holen
-      const reminder = await Reminder.findById(REMINDER_ID);
-
-      // alte Nachricht löschen
-      if (reminder && reminder.messageId) {
-        try {
-          const oldMsg = await channel.messages.fetch(reminder.messageId);
-          if (oldMsg) await oldMsg.delete().catch(() => {});
-        } catch {
-          console.log(`Alte Reminder-Nachricht ${reminder.messageId} nicht gefunden.`);
-        }
+    // Letzte Nachricht löschen
+    if (lastMessageId) {
+      try {
+        const oldMsg = await channel.messages.fetch(lastMessageId);
+        if (oldMsg) await oldMsg.delete();
+      } catch (err) {
+        console.log('Konnte alte Nachricht nicht löschen:', err.message);
       }
-
-      // neue Nachricht senden
-      const newMsg = await channel.send(
-        '**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`'
-      );
-
-      // Reminder-Eintrag in DB updaten/erstellen
-      await Reminder.findByIdAndUpdate(
-        REMINDER_ID,
-        { _id: REMINDER_ID, messageId: newMsg.id },
-        { upsert: true }
-      );
-
-    } catch (error) {
-      console.error('Fehler beim täglichen Reminder:', error);
     }
-  });
+
+    // Neue Nachricht senden
+    const newMsg = await channel.send(
+      '**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ /daily'
+    );
+
+    // ID merken
+    lastMessageId = newMsg.id;
+
+  } catch (error) {
+    console.error('Fehler beim täglichen Reminder:', error);
+  }
+});
+
 
 // Onlinezeit (Profil.js)
 setInterval(async () => {
