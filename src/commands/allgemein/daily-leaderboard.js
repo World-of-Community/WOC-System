@@ -73,7 +73,7 @@ module.exports = {
     }
 
     // Gesamtsumme anhängen
-    leaderboardLines.push(`\n\`📅\` » Insgesamt ${totalStreaksFormatted} Tage hintereinander aktiv`);
+    leaderboardLines.push(`\n\`📅\` » Insgesamt **${totalStreaksFormatted} Tage** hintereinander aktiv`);
 
     const embed = new EmbedBuilder()
       .setColor('Gold')
