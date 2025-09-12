@@ -48,6 +48,9 @@ module.exports = {
       }
     }
 
+    // Gesamtsumme in die Beschreibung anhängen
+    description += `\n\n\`💰\` » Coins Ingesamt: **${totalCoinsFormatted}**`;
+
     const leaderboardEmbed = new EmbedBuilder()
       .setTitle('`🏆` Top 10 Coins Leaderboard')
       .setDescription(description)
