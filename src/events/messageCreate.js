@@ -36,9 +36,6 @@ module.exports = {
         } catch (err) {
             console.error("Fehler beim Hochzählen der Nachrichten:", err);
         }
-
-        // Andere Bots ignorieren, eigener Bot reagiert normal
-        if (message.author.bot && message.author.id !== client.user.id) return;
     
         const frage = message.content.toLowerCase();
     
