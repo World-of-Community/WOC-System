@@ -46,7 +46,13 @@ module.exports = {
         const hours = Math.floor(userDoc.onlineTime / 3600000);
         const hourLabel = hours === 1 ? "Stunde" : "Stunden";
 
-        return `\`#${index + 1}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`;
+        // Platzierungssymbole
+        let placeIcon = `#${index + 1}`;
+        if (index === 0) placeIcon = "🥇";
+        else if (index === 1) placeIcon = "🥈";
+        else if (index === 2) placeIcon = "🥉";
+
+        return `\`${placeIcon}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`;
       });
 
       // Rang des Abfragenden berechnen
@@ -61,7 +67,7 @@ module.exports = {
         const hours = Math.floor(userDoc.onlineTime / 3600000);
         const hourLabel = hours === 1 ? "Stunde" : "Stunden";
 
-        // Wenn er nicht in den Top 10 ist, ... einfügen
+        // Wenn er nicht in den Top 10 ist, extra anzeigen
         if (userIndex >= 10) {
           lines.push(`\nDein Rang: \`#${userRank}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`);
         }
