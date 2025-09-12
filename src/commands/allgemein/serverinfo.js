@@ -6,8 +6,8 @@ function formatBoostDuration(boostTimestamp) {
     const boostStart = DateTime.fromJSDate(boostTimestamp);
     const now = DateTime.now();
 
-    // Gesamte Tage seit Boost
-    const totalDays = Math.floor(now.diff(boostStart, "days").days);
+    // Gesamte Tage seit Boost, aufgerundet
+    const totalDays = Math.ceil(now.diff(boostStart, "days").days);
     const years = Math.floor(totalDays / 365);
     const days = totalDays % 365;
 
