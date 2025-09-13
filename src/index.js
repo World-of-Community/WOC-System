@@ -652,7 +652,7 @@ cron.schedule('0 */6 * * *', async () => {
 
     // Neue Nachricht senden
     const newMsg = await channel.send(
-      '**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ /daily'
+      '**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`'
     );
 
     // ID merken
