@@ -744,7 +744,7 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Changelog Embed
-cron.schedule('6 0 * * 1', async () => {
+cron.schedule('0 0 * * 1', async () => {
     try {
         const channel = await client.channels.cache.get(config.changelog);
         if (!channel) return;
