@@ -33,6 +33,6 @@ module.exports = {
       .setDescription(`> \`🕒\` » Insgesamt **${hours} Stunden** online`)
       .setColor("Blurple");
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 };
