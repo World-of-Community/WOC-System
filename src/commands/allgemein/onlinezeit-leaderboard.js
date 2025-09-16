@@ -106,7 +106,7 @@ module.exports = {
         }
 
         return new EmbedBuilder()
-          .setTitle(`🏆 Top ${limit} Onlinezeit Leaderboard`)
+          .setTitle(`\`🏆\` Top ${limit} Onlinezeit Leaderboard`)
           .setDescription(
             lines.join("\n") +
               `\n\n\`👥\` » Gesamte Onlinezeit beträgt \`${totalHoursFormatted} Stunden\``
