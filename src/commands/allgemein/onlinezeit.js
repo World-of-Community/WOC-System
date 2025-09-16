@@ -18,7 +18,7 @@ module.exports = {
     // DB nach Onlinezeit durchsuchen
     const userData = await userdb.findOne({ userId: user.id });
 
-    if (!userData || typeof userData.onlineTime !== "number") {
+    if (!userData || typeof userData.onlineTime !== "Number") {
       return interaction.reply({
         content: `> \`📌\` Für ${user} wurde noch keine Onlinezeit gespeichert.`,
         ephemeral: true
