@@ -280,14 +280,14 @@ module.exports = {
         // Rang des Abfragenden
         //const userIndex = onlineTime.findIndex(u => u.userId === interaction.user.id);
         
-        // Platz-Emoji bestimmen
-        let lbPlace = 'Nicht in der Liste';
-        if (userIndex !== -1) {
-          lbPlace = `#${userIndex + 1}`;
-          if (userIndex === 0) placeEmoji = '🥇';
-          else if (userIndex === 1) placeEmoji = '🥈';
-          else if (userIndex === 2) placeEmoji = '🥉';
-        }
+        //// Platz-Emoji bestimmen
+        //let lbPlace = 'Nicht in der Liste';
+        //if (userIndex !== -1) {
+        //  lbPlace = `#${userIndex + 1}`;
+        //  if (userIndex === 0) placeEmoji = '🥇';
+        //  else if (userIndex === 1) placeEmoji = '🥈';
+        //  else if (userIndex === 2) placeEmoji = '🥉';
+        //}
 
         const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
 
