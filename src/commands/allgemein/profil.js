@@ -297,29 +297,31 @@ module.exports = {
         //  else lbPlace = `#${userIndex + 1}`;
         //}
 
-        // DB abrufen und sortieren
-        const allUsers = await userdb.find({ onlineTime: { $gt: 0 } }).sort({ onlineTime: -1 });
-        
-        // Nur Mitglieder, die aktuell auf dem Server sind
-        const membersMap = new Map();
-        await Promise.all(allUsers.map(async u => {
-            const m = await interaction.guild.members.fetch(u.userId).catch(() => null); // oder u.userID
-            if (m) membersMap.set(u.userId, m);
-        }));
-        
-        const onlineUsers = allUsers.filter(u => membersMap.has(u.userId));
-        
-        // Rang des aktuellen Members bestimmen
-        const userIndex = onlineUsers.findIndex(u => u.userId === member.id);
-        
-        // Platz-Emoji festlegen
-        let lbPlace = 'Nicht in der Liste';
-        if (userIndex !== -1) {
-            if (userIndex === 0) lbPlace = '🥇';
-            else if (userIndex === 1) lbPlace = '🥈';
-            else if (userIndex === 2) lbPlace = '🥉';
-            else lbPlace = `#${userIndex + 1}`;
-        }
+        //// DB abrufen und sortieren
+        //const allUsers = await userdb.find({ onlineTime: { $gt: 0 } }).sort({ onlineTime: -1 });
+        //
+        //// Nur Mitglieder, die aktuell auf dem Server sind
+        //const membersMap = new Map();
+        //await Promise.all(allUsers.map(async u => {
+        //    const m = await interaction.guild.members.fetch(u.userId).catch(() => null); // oder u.userID
+        //    if (m) membersMap.set(u.userId, m);
+        //}));
+        //
+        //const onlineUsers = allUsers.filter(u => membersMap.has(u.userId));
+        //
+        //// Rang des aktuellen Members bestimmen
+        //const userIndex = onlineUsers.findIndex(u => u.userId === member.id);
+        //
+        //// Platz-Emoji festlegen
+        //let lbPlace = 'Nicht in der Liste';
+        //if (userIndex !== -1) {
+        //    if (userIndex === 0) lbPlace = '🥇';
+        //    else if (userIndex === 1) lbPlace = '🥈';
+        //    else if (userIndex === 2) lbPlace = '🥉';
+        //    else lbPlace = `#${userIndex + 1}`;
+        //}
+
+        // (\`${lbPlace}\`)
 
         const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
 
@@ -357,7 +359,7 @@ module.exports = {
                 `> \`🏆\` **» SERVER ERFOLGE**\n` +
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
-                `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden (\`${lbPlace}\`)\n` +
+                `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
