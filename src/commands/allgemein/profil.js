@@ -277,24 +277,48 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        // --- Leaderboard-Rang bestimmen ---
+        //// --- Leaderboard-Rang bestimmen ---
+        //const allUsers = await userdb.find({ onlineTime: { $gt: 0 } }).sort({ onlineTime: -1 });
+        //const membersMap = new Map();
+        //await Promise.all(allUsers.map(async u => {
+        //  const m = await interaction.guild.members.fetch(u.userId).catch(() => null);
+        //  if (m) membersMap.set(u.userId, m);
+        //}));
+        //const onlineUsers = allUsers.filter(u => membersMap.has(u.userId));
+        //
+        //const userIndex = onlineUsers.findIndex(u => u.userId === member.id);
+        //
+        //// Platz-Symbol bestimmen
+        //let lbPlace = 'Nicht in der Liste';
+        //if (userIndex !== -1) {
+        //  if (userIndex === 0) lbPlace = '🥇';
+        //  else if (userIndex === 1) lbPlace = '🥈';
+        //  else if (userIndex === 2) lbPlace = '🥉';
+        //  else lbPlace = `#${userIndex + 1}`;
+        //}
+
+        // DB abrufen und sortieren
         const allUsers = await userdb.find({ onlineTime: { $gt: 0 } }).sort({ onlineTime: -1 });
+        
+        // Nur Mitglieder, die aktuell auf dem Server sind
         const membersMap = new Map();
         await Promise.all(allUsers.map(async u => {
-          const m = await interaction.guild.members.fetch(u.userId).catch(() => null);
-          if (m) membersMap.set(u.userId, m);
+            const m = await interaction.guild.members.fetch(u.userId).catch(() => null); // oder u.userID
+            if (m) membersMap.set(u.userId, m);
         }));
+        
         const onlineUsers = allUsers.filter(u => membersMap.has(u.userId));
         
+        // Rang des aktuellen Members bestimmen
         const userIndex = onlineUsers.findIndex(u => u.userId === member.id);
         
-        // Platz-Symbol bestimmen
+        // Platz-Emoji festlegen
         let lbPlace = 'Nicht in der Liste';
         if (userIndex !== -1) {
-          if (userIndex === 0) lbPlace = '🥇';
-          else if (userIndex === 1) lbPlace = '🥈';
-          else if (userIndex === 2) lbPlace = '🥉';
-          else lbPlace = `#${userIndex + 1}`;
+            if (userIndex === 0) lbPlace = '🥇';
+            else if (userIndex === 1) lbPlace = '🥈';
+            else if (userIndex === 2) lbPlace = '🥉';
+            else lbPlace = `#${userIndex + 1}`;
         }
 
         const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
