@@ -12,12 +12,12 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    const user = interaction.options.getUser("user");
+    const user = interaction.options.getUser("user");      // Discord-User (API)
+    const member = interaction.options.getMember("user");  // GuildMember (Server)
 
     // DB nach Onlinezeit durchsuchen
     const userData = await userdb.findOne({ userId: user.id });
 
-    // Falls keine Daten existieren
     if (!userData || typeof userData.onlineTime !== "number") {
       return interaction.reply({
         content: `> \`📌\` Für ${user} wurde noch keine Onlinezeit gespeichert.`,
@@ -25,11 +25,16 @@ module.exports = {
       });
     }
 
-    // Onlinezeit nur in Stunden
+    // Onlinezeit nur in Stunden (DB speichert Minuten)
     const hours = Math.floor(userData.onlineTime / 60);
 
+    const displayName = member ? member.displayName : user.username;
+
     const embed = new EmbedBuilder()
-      .setAuthor({ name: `${user.displayName} – Onlinezeit`, iconURL: user.displayAvatarURL() })
+      .setAuthor({
+        name: `${displayName} – Onlinezeit`,
+        iconURL: user.displayAvatarURL()
+      })
       .setDescription(`> \`🕒\` » Insgesamt **${hours} Stunden** online`)
       .setColor("Blurple");
 

@@ -21,7 +21,7 @@ module.exports = {
         });
       }
 
-      // **Gesamte Onlinezeit berechnen**
+      // Gesamte Onlinezeit berechnen
       const totalMs = allUsers.reduce((acc, u) => acc + (u.onlineTime || 0), 0);
       const totalHours = Math.floor(totalMs / 3600000);
 
