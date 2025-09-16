@@ -4,40 +4,46 @@ const userdb = require("../../../Datenbank/userdb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("onlinezeit")
-    .setDescription("» Zeigt die Onlinezeit eines Nutzers an. 📊")
+    .setDescription("📊 Zeigt die Onlinezeit eines Nutzers an.")
     .addUserOption(option =>
-      option.setName("user")
-        .setDescription("Wähle den Nutzer aus")
-        .setRequired(true)
+      option
+        .setName("nutzer")
+        .setDescription("Der Nutzer, dessen Onlinezeit angezeigt werden soll")
+        .setRequired(false)
     ),
 
   async execute(interaction) {
-    const user = interaction.options.getUser("user");      // Discord-User (API)
-    const member = interaction.options.getMember("user");  // GuildMember (Server)
+    try {
+      const targetUser = interaction.options.getUser("nutzer") || interaction.user;
 
-    // DB nach Onlinezeit durchsuchen
-    const userData = await userdb.findOne({ userId: user.id });
+      // Nutzer in der DB suchen
+      let userData = await userdb.findOne({ userId: targetUser.id });
 
-    if (!userData || typeof userData.onlineTime !== "Number") {
-      return interaction.reply({
-        content: `> \`📌\` Für ${user} wurde noch keine Onlinezeit gespeichert.`,
-        ephemeral: true
+      if (!userData) {
+        // Falls noch nicht vorhanden → anlegen
+        userData = await userdb.create({
+          userId: targetUser.id,
+          onlineTime: 0
+        });
+      }
+
+      // Onlinezeit (in Stunden)
+      const onlineHours = userData.onlineTime || 0;
+
+      const embed = new EmbedBuilder()
+        .setAuthor({ name: targetUser.username, iconURL: targetUser.displayAvatarURL() })
+        .setDescription(`🕒 **Onlinezeit:** ${onlineHours}h`)
+        .setColor("Blurple")
+        .setFooter({ text: "Gesamte erfasste Zeit" })
+        .setTimestamp();
+
+      await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      console.error("/onlinezeit Fehler:", error);
+      await interaction.reply({
+        content: "❌ Es gab einen Fehler beim Abrufen der Onlinezeit.",
+        ephemeral: true,
       });
     }
-
-    // Onlinezeit nur in Stunden (DB speichert Minuten)
-    const hours = Math.floor(userData.onlineTime / 60);
-
-    const displayName = member ? member.displayName : user.username;
-
-    const embed = new EmbedBuilder()
-      .setAuthor({
-        name: `${displayName} – Onlinezeit`,
-        iconURL: user.displayAvatarURL()
-      })
-      .setDescription(`> \`🕒\` » Insgesamt **${hours} Stunden** online`)
-      .setColor("Blurple");
-
-    await interaction.reply({ embeds: [embed], ephemeral: true });
-  }
+  },
 };
