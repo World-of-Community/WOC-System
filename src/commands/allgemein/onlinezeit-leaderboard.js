@@ -41,7 +41,7 @@ module.exports = {
             pageUsers.forEach((user, index) => {
                 // Falls onlinezeit in Minuten gespeichert ist → hier Stunden berechnen
                 const stunden = Math.floor(user.onlinezeit / 60);
-                description += `**#${start + index + 1}** mit \`${stunden}h\` ist <@${user.userId}>\n`;
+                description += `#${start + index + 1} mit \`${stunden}h\` ist <@${user.userId}>\n`;
             });
 
             embed.setDescription(description || "Keine Daten vorhanden.");
