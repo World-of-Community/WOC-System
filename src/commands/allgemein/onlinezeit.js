@@ -9,7 +9,7 @@ module.exports = {
       option
         .setName("nutzer")
         .setDescription("Der Nutzer, dessen Onlinezeit angezeigt werden soll")
-        .setRequired(false)
+        .setRequired(true)
     ),
 
   async execute(interaction) {
@@ -23,16 +23,19 @@ module.exports = {
         // Falls noch nicht vorhanden → anlegen
         userData = await userdb.create({
           userId: targetUser.id,
-          onlineTime: 0
+          giveaway: { eventWins: 0, messages: 0, voiceTime: 0 },
+          invites: { joins: 0, left: 0, bonus: 0 },
+          onlineTime: 0,
+          lastOnline: null
         });
       }
 
-      // Onlinezeit (in Stunden)
-      const onlineHours = userData.onlineTime || 0;
+      // Onlinezeit (Millisekunden → Stunden)
+      const displayHours = Math.floor((userData.onlineTime || 0) / 3600000);
 
       const embed = new EmbedBuilder()
         .setAuthor({ name: targetUser.username, iconURL: targetUser.displayAvatarURL() })
-        .setDescription(`**Onlinezeit:** \`${onlineHours}h\``)
+        .setDescription(`**Onlinezeit:** \`${displayHours}h\``)
         .setColor("Blurple")
         .setFooter({ text: "Gesamte erfasste Zeit" })
         .setTimestamp();
@@ -41,7 +44,7 @@ module.exports = {
     } catch (error) {
       console.error("/onlinezeit Fehler:", error);
       await interaction.reply({
-        content: "❌ Es gab einen Fehler beim Abrufen der Onlinezeit.",
+        content: "> `❌` » Es gab einen Fehler beim Abrufen der Onlinezeit.",
         ephemeral: true,
       });
     }
