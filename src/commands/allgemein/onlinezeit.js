@@ -29,7 +29,7 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setAuthor({ name: member.username, iconURL: member.displayAvatarURL() })
-        .setDescription(`**Onlinezeit:** \`${displayHours}h\``)
+        .setDescription(`Onlinezeit von ${member} beträgt \`${displayHours}h\``)
         .setColor("Blurple")
         .setFooter({ text: "Gesamte erfasste Zeit" })
         .setTimestamp();
