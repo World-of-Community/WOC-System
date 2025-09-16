@@ -1,10 +1,112 @@
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const userdb = require("../../../Datenbank/userdb");
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName("onlinezeit-leaderboard")
+        .setDescription("» Zeigt das Leaderboard der Onlinezeit an. 📊")
+        .addStringOption(option =>
+            option.setName("typ")
+                .setDescription("» Wähle zwischen Top 10, 100 oder 200")
+                .setRequired(true)
+                .addChoices(
+                    { name: "Top 10", value: "10" },
+                    { name: "Top 100", value: "100" },
+                    { name: "Top 200", value: "200" },
+                )
+        ),
+
+    async execute(interaction) {
+        const typ = interaction.options.getString("typ");
+        const limit = parseInt(typ);
+
+        // Onlinezeit sortieren (descending)
+        const users = await userdb.find().sort({ onlinezeit: -1 }).limit(limit);
+
+        let currentPage = 0;
+        const pageSize = 10; // pro Seite 10 User
+        const totalPages = Math.ceil(users.length / pageSize);
+
+        const generateEmbed = (page) => {
+            const start = page * pageSize;
+            const end = start + pageSize;
+            const pageUsers = users.slice(start, end);
+
+            const embed = new EmbedBuilder()
+                .setTitle(`\`🏆\` Onlinezeit Leaderboard Top ${limit}`)
+                .setColor("Green")
+                .setFooter({ text: `Seite ${page + 1} / ${totalPages}` });
+
+            let description = "";
+            pageUsers.forEach((user, index) => {
+                // Falls onlinezeit in Minuten gespeichert ist → hier Stunden berechnen
+                const stunden = Math.floor(user.onlinezeit / 60);
+                description += `**#${start + index + 1}** mit \`${stunden}h\` ist <@${user.userId}>\n`;
+            });
+
+            embed.setDescription(description || "Keine Daten vorhanden.");
+            return embed;
+        };
+
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setCustomId("prev")
+                .setLabel("⬅️ Zurück")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(currentPage === 0),
+            new ButtonBuilder()
+                .setCustomId("next")
+                .setLabel("➡️ Weiter")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(currentPage === totalPages - 1)
+        );
+
+        const message = await interaction.reply({
+            embeds: [generateEmbed(currentPage)],
+            components: [row],
+            ephemeral: true
+        });
+
+        const collector = message.createMessageComponentCollector();
+
+        collector.on("collect", async (i) => {
+            if (i.user.id !== interaction.user.id) {
+                return i.reply({ content: "`❌` » Das ist nicht dein Leaderboard.", ephemeral: true });
+            }
+
+            if (i.customId === "prev" && currentPage > 0) currentPage--;
+            if (i.customId === "next" && currentPage < totalPages - 1) currentPage++;
+
+            const newRow = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId("prev")
+                    .setLabel("⬅️ Zurück")
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(currentPage === 0),
+                new ButtonBuilder()
+                    .setCustomId("next")
+                    .setLabel("➡️ Weiter")
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(currentPage === totalPages - 1)
+            );
+
+            await i.update({
+                embeds: [generateEmbed(currentPage)],
+                components: [newRow],
+                ephemeral: true
+            });
+        });
+    }
+};
+
+/*
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const userdb = require('../../../Datenbank/userdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('onlinezeit-leaderboard')
-    .setDescription('» Zeigt das Onlinezeit Leaderboard an.'),
+    .setDescription('» Zeigt das Onlinezeit Leaderboard an. 📊'),
 
   async execute(interaction) {
     const guild = interaction.guild;
@@ -98,3 +200,4 @@ module.exports = {
     }
   },
 };
+*/
