@@ -277,17 +277,25 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        // Rang des Abfragenden
-        //const userIndex = onlineTime.findIndex(u => u.userId === interaction.user.id);
+        // --- Leaderboard-Rang bestimmen ---
+        const allUsers = await userdb.find({ onlineTime: { $gt: 0 } }).sort({ onlineTime: -1 });
+        const membersMap = new Map();
+        await Promise.all(allUsers.map(async u => {
+          const m = await interaction.guild.members.fetch(u.userId).catch(() => null);
+          if (m) membersMap.set(u.userId, m);
+        }));
+        const onlineUsers = allUsers.filter(u => membersMap.has(u.userId));
         
-        //// Platz-Emoji bestimmen
-        //let lbPlace = 'Nicht in der Liste';
-        //if (userIndex !== -1) {
-        //  lbPlace = `#${userIndex + 1}`;
-        //  if (userIndex === 0) placeEmoji = '🥇';
-        //  else if (userIndex === 1) placeEmoji = '🥈';
-        //  else if (userIndex === 2) placeEmoji = '🥉';
-        //}
+        const userIndex = onlineUsers.findIndex(u => u.userId === member.id);
+        
+        // Platz-Symbol bestimmen
+        let lbPlace = 'Nicht in der Liste';
+        if (userIndex !== -1) {
+          if (userIndex === 0) lbPlace = '🥇';
+          else if (userIndex === 1) lbPlace = '🥈';
+          else if (userIndex === 2) lbPlace = '🥉';
+          else lbPlace = `#${userIndex + 1}`;
+        }
 
         const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
 
@@ -325,7 +333,7 @@ module.exports = {
                 `> \`🏆\` **» SERVER ERFOLGE**\n` +
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
-                `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden (Leaderboard \`${lbPlace}\` Platz)\n` +
+                `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden (\`${lbPlace}\`)\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
