@@ -4,7 +4,7 @@ const userdb = require("../../../Datenbank/userdb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("onlinezeit")
-    .setDescription("📊 Zeigt die Onlinezeit eines Nutzers an.")
+    .setDescription("» Zeigt die Onlinezeit eines Nutzers an. 🕒")
     .addUserOption(option =>
       option
         .setName("nutzer")
@@ -32,12 +32,12 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setAuthor({ name: targetUser.username, iconURL: targetUser.displayAvatarURL() })
-        .setDescription(`🕒 **Onlinezeit:** ${onlineHours}h`)
+        .setDescription(`**Onlinezeit:** \`${onlineHours}h\``)
         .setColor("Blurple")
         .setFooter({ text: "Gesamte erfasste Zeit" })
         .setTimestamp();
 
-      await interaction.reply({ embeds: [embed] });
+      await interaction.reply({ embeds: [embed], ephemeral: true });
     } catch (error) {
       console.error("/onlinezeit Fehler:", error);
       await interaction.reply({
