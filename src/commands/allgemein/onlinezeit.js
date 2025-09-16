@@ -16,19 +16,13 @@ module.exports = {
     try {
       const targetUser = interaction.options.getUser("nutzer") || interaction.user;
 
-      // Nutzer in der DB suchen
-      let userData = await userdb.findOne({ userId: targetUser.id });
-
-      if (!userData) {
-        // Falls noch nicht vorhanden → anlegen
-        userData = await userdb.create({
-          userId: targetUser.id,
+      // User-Daten abrufen
+        const userData = await userdb.findOne({ userID: member.id }) || {
           giveaway: { eventWins: 0, messages: 0, voiceTime: 0 },
           invites: { joins: 0, left: 0, bonus: 0 },
           onlineTime: 0,
           lastOnline: null
-        });
-      }
+        };
 
       // Onlinezeit (Millisekunden → Stunden)
       const displayHours = Math.floor((userData.onlineTime || 0) / 3600000);
