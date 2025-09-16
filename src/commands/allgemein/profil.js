@@ -277,11 +277,17 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        //// Onlinezeit in Millisekunden (aus DB)
-        //const onlineTime = userData?.onlineTime || 0;
-
-        //// In Stunden (vereinfacht)
-        //const displayHours = Math.floor(onlineTime / 3600000);
+        // Rang des Abfragenden
+        const userIndex = onlineUsers.findIndex(u => u.userId === interaction.user.id);
+        
+        // Platz-Emoji bestimmen
+        let lbPlace = 'Nicht in der Liste';
+        if (userIndex !== -1) {
+          lbPlace = `#${userIndex + 1}`;
+          if (userIndex === 0) placeEmoji = '🥇';
+          else if (userIndex === 1) placeEmoji = '🥈';
+          else if (userIndex === 2) placeEmoji = '🥉';
+        }
 
         const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
 
@@ -319,7 +325,7 @@ module.exports = {
                 `> \`🏆\` **» SERVER ERFOLGE**\n` +
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
-                `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden\n` +
+                `- \`🟢\` » Onlinezeit: \`${displayHours}\` Stunden (Leaderboard \`${lbPlace}\` Platz)\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
