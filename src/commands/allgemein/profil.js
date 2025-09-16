@@ -278,7 +278,7 @@ module.exports = {
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
         // Rang des Abfragenden
-        const userIndex = onlineUsers.findIndex(u => u.userId === interaction.user.id);
+        const userIndex = onlineTime.findIndex(u => u.userId === interaction.user.id);
         
         // Platz-Emoji bestimmen
         let lbPlace = 'Nicht in der Liste';
