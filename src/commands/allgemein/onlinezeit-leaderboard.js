@@ -2,101 +2,170 @@ const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, Butt
 const userdb = require("../../../Datenbank/userdb");
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("onlinezeit-leaderboard")
-        .setDescription("» Zeigt das Leaderboard der Onlinezeit an. 📊")
-        .addStringOption(option =>
-            option.setName("typ")
-                .setDescription("» Wähle zwischen Top 10, 100 oder 200")
-                .setRequired(true)
-                .addChoices(
-                    { name: "Top 10", value: "10" },
-                    { name: "Top 100", value: "100" },
-                    { name: "Top 200", value: "200" },
-                )
-        ),
+  data: new SlashCommandBuilder()
+    .setName("onlinezeit-leaderboard")
+    .setDescription("» Zeigt das Onlinezeit Leaderboard an. 📊")
+    .addStringOption((option) =>
+      option
+        .setName("typ")
+        .setDescription("Wähle zwischen Top 10, 100 oder 200")
+        .setRequired(true)
+        .addChoices(
+          { name: "Top 10", value: "10" },
+          { name: "Top 100", value: "100" },
+          { name: "Top 200", value: "200" }
+        )
+    ),
 
-    async execute(interaction) {
-        const typ = interaction.options.getString("typ");
-        const limit = parseInt(typ);
+  async execute(interaction) {
+    const guild = interaction.guild;
+    const userId = interaction.user.id;
+    const limit = parseInt(interaction.options.getString("typ"));
 
-        // Onlinezeit sortieren (descending)
-        const users = await userdb.find().sort({ onlinezeit: -1 }).limit(limit);
+    try {
+      // Alle User mit Onlinezeit > 0 aus DB holen, absteigend sortiert
+      const allUsers = await userdb
+        .find({ onlineTime: { $gt: 0 } }, "userID onlineTime")
+        .sort({ onlineTime: -1 })
+        .limit(limit)
+        .exec();
 
-        let currentPage = 0;
-        const pageSize = 10; // pro Seite 10 User
-        const totalPages = Math.ceil(users.length / pageSize);
+      if (!allUsers.length) {
+        return interaction.reply({
+          content: "> `❌` » Noch keine Nutzerdaten mit Onlinezeit vorhanden.",
+          ephemeral: true,
+        });
+      }
 
-        const generateEmbed = (page) => {
-            const start = page * pageSize;
-            const end = start + pageSize;
-            const pageUsers = users.slice(start, end);
+      // Gesamte Onlinezeit berechnen
+      const totalMs = allUsers.reduce((acc, u) => acc + (u.onlineTime || 0), 0);
+      const totalHours = Math.floor(totalMs / 3600000);
+      const totalHoursFormatted = totalHours.toLocaleString("de-DE");
 
-            const embed = new EmbedBuilder()
-                .setTitle(`\`🏆\` Onlinezeit Leaderboard Top ${limit}`)
-                .setColor("Green")
-                .setFooter({ text: `Seite ${page + 1} / ${totalPages}` });
+      let currentPage = 0;
+      const pageSize = 10;
+      const totalPages = Math.ceil(allUsers.length / pageSize);
 
-            let description = "";
-            pageUsers.forEach((user, index) => {
-                // Falls onlinezeit in Minuten gespeichert ist → hier Stunden berechnen
-                const stunden = Math.floor(user.onlinezeit / 60);
-                description += `#${start + index + 1} mit \`${stunden}h\` ist <@${user.userId}>\n`;
-            });
+      const generateEmbed = async (page) => {
+        const start = page * pageSize;
+        const end = start + pageSize;
+        const pageUsers = allUsers.slice(start, end);
 
-            embed.setDescription(description || "Keine Daten vorhanden.");
-            return embed;
-        };
-
-        const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setCustomId("prev")
-                .setLabel("⬅️ Zurück")
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(currentPage === 0),
-            new ButtonBuilder()
-                .setCustomId("next")
-                .setLabel("➡️ Weiter")
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(currentPage === totalPages - 1)
+        const membersMap = new Map();
+        await Promise.all(
+          pageUsers.map(async (u) => {
+            const member = await guild.members.fetch(u.userID).catch(() => null);
+            membersMap.set(u.userID, member);
+          })
         );
 
-        const message = await interaction.reply({
-            embeds: [generateEmbed(currentPage)],
-            components: [row],
-            ephemeral: true
+        const lines = pageUsers.map((userDoc, index) => {
+          const member = membersMap.get(userDoc.userID);
+          const username =
+            member?.user.username || `Unbekannt (${userDoc.userID})`;
+
+          const hours = Math.floor(userDoc.onlineTime / 3600000);
+          const hourLabel = hours === 1 ? "Stunde" : "Stunden";
+
+          // Platzierungssymbole
+          const globalIndex = start + index;
+          let placeIcon = `#${globalIndex + 1}`;
+          if (globalIndex === 0) placeIcon = "🥇";
+          else if (globalIndex === 1) placeIcon = "🥈";
+          else if (globalIndex === 2) placeIcon = "🥉";
+
+          return `\`${placeIcon}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`;
         });
 
-        const collector = message.createMessageComponentCollector();
+        // eigenen Rang berechnen
+        const userIndex = allUsers.findIndex((u) => u.userID === userId);
+        if (userIndex === -1) {
+          lines.push(`\nDein Rang: \`Nicht in der Liste\``);
+        } else {
+          const userRank = userIndex + 1;
+          const userDoc = allUsers[userIndex];
+          const member = await guild.members
+            .fetch(userDoc.userID)
+            .catch(() => null);
+          const username =
+            member?.user.username || `Unbekannt (${userDoc.userID})`;
+          const hours = Math.floor(userDoc.onlineTime / 3600000);
+          const hourLabel = hours === 1 ? "Stunde" : "Stunden";
+
+          let placeIcon = `#${userRank}`;
+          if (userRank === 1) placeIcon = "🥇";
+          else if (userRank === 2) placeIcon = "🥈";
+          else if (userRank === 3) placeIcon = "🥉";
+
+          // Nur anzeigen, wenn nicht sowieso schon auf dieser Seite
+          if (userRank <= start || userRank > end) {
+            lines.push(
+              `\nDein Rang: \`${placeIcon}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`
+            );
+          }
+        }
+
+        return new EmbedBuilder()
+          .setTitle(`🏆 Top ${limit} Onlinezeit Leaderboard`)
+          .setDescription(
+            lines.join("\n") +
+              `\n\n\`👥\` » Gesamte Onlinezeit beträgt \`${totalHoursFormatted} Stunden\``
+          )
+          .setColor("Green")
+          .setFooter({
+            text: `Seite ${page + 1} / ${totalPages} • Onlinezeit auf ${guild.name}`,
+          })
+          .setTimestamp();
+      };
+
+      const getRow = () =>
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId("prev")
+            .setLabel("⬅️ Zurück")
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(currentPage === 0),
+          new ButtonBuilder()
+            .setCustomId("next")
+            .setLabel("➡️ Weiter")
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(currentPage === totalPages - 1)
+        );
+
+      const msg = await interaction.reply({
+        embeds: [await generateEmbed(currentPage)],
+        components: totalPages > 1 ? [getRow()] : [],
+        ephemeral: true,
+      });
+
+      if (totalPages > 1) {
+        const collector = msg.createMessageComponentCollector();
 
         collector.on("collect", async (i) => {
-            if (i.user.id !== interaction.user.id) {
-                return i.reply({ content: "`❌` » Das ist nicht dein Leaderboard.", ephemeral: true });
-            }
-
-            if (i.customId === "prev" && currentPage > 0) currentPage--;
-            if (i.customId === "next" && currentPage < totalPages - 1) currentPage++;
-
-            const newRow = new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                    .setCustomId("prev")
-                    .setLabel("⬅️ Zurück")
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentPage === 0),
-                new ButtonBuilder()
-                    .setCustomId("next")
-                    .setLabel("➡️ Weiter")
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentPage === totalPages - 1)
-            );
-
-            await i.update({
-                embeds: [generateEmbed(currentPage)],
-                components: [newRow],
-                ephemeral: true
+          if (i.user.id !== interaction.user.id) {
+            return i.reply({
+              content: "❌ Das ist nicht dein Leaderboard.",
+              ephemeral: true,
             });
+          }
+
+          if (i.customId === "prev" && currentPage > 0) currentPage--;
+          if (i.customId === "next" && currentPage < totalPages - 1) currentPage++;
+
+          await i.update({
+            embeds: [await generateEmbed(currentPage)],
+            components: [getRow()],
+          });
         });
+      }
+    } catch (error) {
+      console.error("Fehler bei /onlinezeit-leaderboard:", error);
+      return interaction.reply({
+        content: "> `❌` » Ein unerwarteter Fehler ist aufgetreten.",
+        ephemeral: true,
+      });
     }
+  },
 };
 
 /*
