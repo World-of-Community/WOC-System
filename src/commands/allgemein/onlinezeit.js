@@ -7,14 +7,14 @@ module.exports = {
     .setDescription("» Zeigt die Onlinezeit eines Nutzers an. 🕒")
     .addUserOption(option =>
       option
-        .setName("nutzer")
+        .setName("user")
         .setDescription("Der Nutzer, dessen Onlinezeit angezeigt werden soll")
         .setRequired(true)
     ),
 
   async execute(interaction) {
     try {
-      const targetUser = interaction.options.getUser("nutzer") || interaction.user;
+      const member = interaction.options.getUser("user") || interaction.user;
 
       // User-Daten abrufen
         const userData = await userdb.findOne({ userID: member.id }) || {
@@ -28,7 +28,7 @@ module.exports = {
       const displayHours = Math.floor((userData.onlineTime || 0) / 3600000);
 
       const embed = new EmbedBuilder()
-        .setAuthor({ name: targetUser.username, iconURL: targetUser.displayAvatarURL() })
+        .setAuthor({ name: member.username, iconURL: member.displayAvatarURL() })
         .setDescription(`**Onlinezeit:** \`${displayHours}h\``)
         .setColor("Blurple")
         .setFooter({ text: "Gesamte erfasste Zeit" })
