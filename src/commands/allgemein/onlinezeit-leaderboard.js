@@ -105,7 +105,7 @@ module.exports = {
 
         // eigene Platzierung immer anhängen (auch wenn man auf der Seite sichtbar ist)
         lines.push(
-          `\nDein Rang: \`${placeIcon}\` » \`${hours} ${hourLabel}\` — <@${userId}> (\`${username}\`)`
+          `\nDein Rang: \`${placeIcon}\` mit \`${hours} ${hourLabel}\` - <@${userId}> (\`${username}\`)`
         );
 
         return new EmbedBuilder()
