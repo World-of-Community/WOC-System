@@ -54,7 +54,7 @@ module.exports = {
     // Eigenen Rang immer anzeigen
     if (userRank !== null) {
       const userStreak = allUsers[userIndex].streak || 0;
-      const streakText = `\`${userStreak}\`x Streak`;
+      const streakText = `\`${userStreak}x\` Streak`;
 
       // Platzsymbol für eigenen Rang
       let placeIcon = `#${userRank}`;
