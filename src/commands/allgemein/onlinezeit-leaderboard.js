@@ -62,7 +62,7 @@ module.exports = {
 
         const lines = pageUsers.map((userDoc, index) => {
           const member = membersMap.get(userDoc.userID);
-          const username = member?.user.username || `Unbekannt (${userDoc.userID})`;
+          const username = member?.user.username || `\`${userDoc.userID}\``;
 
           const hours = Math.floor((userDoc.onlineTime || 0) / 3600000);
           const hourLabel = hours === 1 ? "Stunde" : "Stunden";
