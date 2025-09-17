@@ -341,7 +341,8 @@ module.exports = {
                 `> \`🏆\` **» SERVER ERFOLGE**\n` +
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
-                `- \`🟢\` » Onlinezeit: \`${displayHours} Stunden\` (${rankEmoji} ${Math.abs(rankDiff)} Plätze, Leaderboard: \`${placeIcon} Platz\`)\n` +
+                `- \`🟢\` » Onlinezeit: \`${displayHours} Stunden\`\n` +
+                `➥ ${rankEmoji} ${Math.abs(rankDiff)} Plätze, Leaderboard: \`${placeIcon} Platz\`)\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
