@@ -35,7 +35,7 @@ module.exports = {
     // Top 10 Einträge generieren
     const leaderboardLines = await Promise.all(topUsers.map(async (u, i) => {
       const streak = u.streak || 0;
-      const streakText = `\`${streak}\`x Streak`;
+      const streakText = `\`${streak}x\` Streak`;
 
       // Platzierungssymbole
       let placeIcon = `#${i + 1}`;
