@@ -290,14 +290,14 @@ module.exports = {
 
         // Rangvergleich
         let rankDiff = 0;
-        let rankEmoji = "`➖";
+        let rankEmoji = "➖";
         
         // lastRank aus DB holen
         if (!userData.lastRank) userData.lastRank = position + 1; // Falls noch kein Wert existiert
         rankDiff = userData.lastRank - (position + 1);
         
-        if (rankDiff > 0) rankEmoji = "`⬆️";      // Aufgestiegen
-        else if (rankDiff < 0) rankEmoji = "`⬇️"; // Abgestiegen
+        if (rankDiff > 0) rankEmoji = "⬆️";      // Aufgestiegen
+        else if (rankDiff < 0) rankEmoji = "⬇️"; // Abgestiegen
         
         // Update letzten Rang in DB speichern
         await userdb.updateOne(
@@ -342,7 +342,7 @@ module.exports = {
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
                 `- \`🟢\` » Onlinezeit: \`${displayHours} Stunden\`\n` +
-                `⠀⠀➥ ${rankEmoji} ${Math.abs(rankDiff)} Plätze\`, Leaderboard: \`${placeIcon} Platz\`\n` +
+                `⠀⠀➥ \`${rankEmoji} ${Math.abs(rankDiff)} Plätze\`, Leaderboard: \`${placeIcon} Platz\`\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
