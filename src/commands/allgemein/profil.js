@@ -290,19 +290,25 @@ module.exports = {
 
         // Rangvergleich
         let rankDiff = 0;
-        let rankEmoji = "➖";
+        let rankEmoji = "➖"; // neutral
         
-        // lastRank aus DB holen
-        if (!userData.lastRank) userData.lastRank = position + 1; // Falls noch kein Wert existiert
-        rankDiff = userData.lastRank - (position + 1);
+        // Berechne Rangunterschied nur, wenn lastRank existiert
+        if (userData.lastRank) {
+            rankDiff = userData.lastRank - (position + 1);
+        }
         
+        // Setze Emoji
         if (rankDiff > 0) rankEmoji = "⬆️";      // Aufgestiegen
         else if (rankDiff < 0) rankEmoji = "⬇️"; // Abgestiegen
         
-        // Update letzten Rang in DB speichern
+        // Aktualisiere lastRank für die nächste Berechnung
+        userData.lastRank = position + 1;
+        
+        // Letzten Rang in DB speichern (nach Berechnung!)
         await userdb.updateOne(
           { userID: member.id },
-          { $set: { lastRank: position + 1 } }
+          { $set: { lastRank: position + 1 } },
+          { upsert: true } // falls User noch nicht existiert
         );
 
         const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
