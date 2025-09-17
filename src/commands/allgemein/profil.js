@@ -288,6 +288,23 @@ module.exports = {
         else if (position === 2) placeIcon = "🥉";
         else placeIcon = `#${position + 1}`;
 
+        // Rangvergleich
+        let rankDiff = 0;
+        let rankEmoji = "`➖`";
+        
+        // lastRank aus DB holen
+        if (!userData.lastRank) userData.lastRank = position + 1; // Falls noch kein Wert existiert
+        rankDiff = userData.lastRank - (position + 1);
+        
+        if (rankDiff > 0) rankEmoji = "`⬆️`";      // Aufgestiegen
+        else if (rankDiff < 0) rankEmoji = "`⬇️`"; // Abgestiegen
+        
+        // Update letzten Rang in DB speichern
+        await userdb.updateOne(
+          { userID: member.id },
+          { $set: { lastRank: position + 1 } }
+        );
+
         const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
 
         let lastOnlineText = '';
@@ -324,7 +341,7 @@ module.exports = {
                 `> \`🏆\` **» SERVER ERFOLGE**\n` +
                 `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
-                `- \`🟢\` » Onlinezeit: \`${displayHours} Stunden\` (Leaderboard: \`${placeIcon} Platz\`)\n` +
+                `- \`🟢\` » Onlinezeit: \`${displayHours} Stunden\` (${rankEmoji} ${Math.abs(rankDiff)} Plätze, Leaderboard: \`${placeIcon} Platz\`)\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
