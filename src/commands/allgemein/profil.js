@@ -288,27 +288,25 @@ module.exports = {
         else if (position === 2) placeIcon = "🥉";
         else placeIcon = `#${position + 1}`;
 
-        // Rangvergleich
+        // Alten Rang aus DB merken
+        let oldRank = userData.lastRank ?? null;
+        
         let rankDiff = 0;
         let rankEmoji = "➖"; // neutral
         
-        // Berechne Rangunterschied nur, wenn lastRank existiert
-        if (userData.lastRank) {
-            rankDiff = userData.lastRank - (position + 1);
+        // Wenn es einen alten Rang gibt -> Differenz berechnen
+        if (oldRank !== null) {
+            rankDiff = oldRank - (position + 1);
+        
+            if (rankDiff > 0) rankEmoji = "⬆️";      // Aufgestiegen
+            else if (rankDiff < 0) rankEmoji = "⬇️"; // Abgestiegen
         }
         
-        // Setze Emoji
-        if (rankDiff > 0) rankEmoji = "⬆️";      // Aufgestiegen
-        else if (rankDiff < 0) rankEmoji = "⬇️"; // Abgestiegen
-        
-        // Aktualisiere lastRank für die nächste Berechnung
-        userData.lastRank = position + 1;
-        
-        // Letzten Rang in DB speichern (nach Berechnung!)
+        // Neuen Rang nach Berechnung speichern
         await userdb.updateOne(
           { userID: member.id },
           { $set: { lastRank: position + 1 } },
-          { upsert: true } // falls User noch nicht existiert
+          { upsert: true }
         );
 
         const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
