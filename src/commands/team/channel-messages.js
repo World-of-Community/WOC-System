@@ -3,7 +3,7 @@ const messagedb = require("../../../Datenbank/messagedb"); // anpassen
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("messages")
+    .setName("channel-messages")
     .setDescription("» Nachrichtenanzahl verwalten 📊")
     .addSubcommand(sub =>
       sub
