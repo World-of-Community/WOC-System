@@ -21,6 +21,8 @@ module.exports = {
 
         const activities = member.presence?.activities;
 
+        if (member.user.bot) return;
+
         // Vanity-Link + TAG prüfen
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
         
