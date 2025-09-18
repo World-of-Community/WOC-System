@@ -26,27 +26,29 @@ module.exports = {
         // Vanity-Link + TAG prüfen
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
 
+        // Vanity-Link prüfen (beide Varianten)
         const hasVanity =
-        customActivity?.state?.toLowerCase().includes(`.gg/${config.vanity.toLowerCase()}`) ||
-        customActivity?.state?.toLowerCase().includes(`discord.gg/${config.vanity.toLowerCase()}`);
-
+          customActivity?.state?.toLowerCase().includes(`.gg/${config.vanity.toLowerCase()}`) ||
+          customActivity?.state?.toLowerCase().includes(`discord.gg/${config.vanity.toLowerCase()}`);
+        
         // Namen + Username in Kleinbuchstaben umwandeln
         const cleanDisplayName = member.displayName.toLowerCase();
         const cleanUsername = member.user.username.toLowerCase();
         
         // Tag prüfen (funktioniert auch mit Emojis davor/dahinter)
         const hasTag =
-            cleanDisplayName.includes(config.tag.toLowerCase()) ||
-            cleanUsername.includes(config.tag.toLowerCase());
+          cleanDisplayName.includes(config.tag.toLowerCase()) ||
+          cleanUsername.includes(config.tag.toLowerCase());
         
+        // Rolle hinzufügen/entfernen, wenn Vanity-Link oder Tag vorhanden ist
         if (hasVanity || hasTag) {
-            if (!member.roles.cache.has(role.id)) {
-                await member.roles.add(role).catch(() => {});
-            }
+          if (!member.roles.cache.has(role.id)) {
+            await member.roles.add(role).catch(() => {});
+          }
         } else {
-            if (member.roles.cache.has(role.id)) {
-                await member.roles.remove(role).catch(() => {});
-            }
+          if (member.roles.cache.has(role.id)) {
+            await member.roles.remove(role).catch(() => {});
+          }
         }
         
         // Vanity-Link prüfen
