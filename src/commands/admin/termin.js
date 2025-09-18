@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const Termin = require('../../../Datenbank/termindb');
 
 const remindMap = new Map();
@@ -46,7 +46,8 @@ module.exports = {
         .setDescription('Datum & Uhrzeit (z. B. 30.07.2025 18:00) (für add, edit)'))
     .addUserOption(opt =>
       opt.setName('teammitglied')
-        .setDescription('Optionales Teammitglied (nur für add)')),
+        .setDescription('Optionales Teammitglied (nur für add)'))
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const action = interaction.options.getString('action');
