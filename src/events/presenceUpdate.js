@@ -28,7 +28,9 @@ module.exports = {
           customActivity?.state?.includes(`.gg/${config.vanity}`) ||
           customActivity?.state?.includes(`discord.gg/${config.vanity}`);
         
-        const hasTag = member.user.username.includes(config.tag) || member.displayName.includes(config.tag);
+        const hasTag =
+          member.user.username.includes(config.tag) ||
+          member.displayName.includes(config.tag);
         
         if (hasVanity || hasTag) {
             // Rolle geben
