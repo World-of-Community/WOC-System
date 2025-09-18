@@ -25,20 +25,18 @@ module.exports = {
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
         
         const hasVanity =
-          customActivity?.state?.includes(`.gg/${config.vanity}`) ||
-          customActivity?.state?.includes(`discord.gg/${config.vanity}`);
-        
+        customActivity?.state?.toLowerCase().includes(`.gg/${config.vanity}`) ||
+        customActivity?.state?.toLowerCase().includes(`discord.gg/${config.vanity}`);
+
         const hasTag =
-          member.user.username.includes(config.tag) ||
-          member.displayName.includes(config.tag);
-        
+            member.user.username.toLowerCase().includes(config.tag.toLowerCase()) ||
+            member.displayName.toLowerCase().includes(config.tag.toLowerCase());
+    
         if (hasVanity || hasTag) {
-            // Rolle geben
             if (!member.roles.cache.has(role.id)) {
                 await member.roles.add(role).catch(() => {});
             }
         } else {
-            // Rolle entfernen
             if (member.roles.cache.has(role.id)) {
                 await member.roles.remove(role).catch(() => {});
             }
