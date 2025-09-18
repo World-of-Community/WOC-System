@@ -21,15 +21,36 @@ module.exports = {
 
         const activities = member.presence?.activities;
 
-        // Vanity-Link prüfen
+        // Vanity-Link + TAG prüfen
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
-        if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
-            await member.roles.add(role).catch(() => {});
+        
+        const hasVanity =
+          customActivity?.state?.includes(`.gg/${config.vanity}`) ||
+          customActivity?.state?.includes(`discord.gg/${config.vanity}`);
+        
+        const hasTag = member.user.username.includes(config.tag) || member.displayName.includes(config.tag);
+        
+        if (hasVanity || hasTag) {
+            // Rolle geben
+            if (!member.roles.cache.has(role.id)) {
+                await member.roles.add(role).catch(() => {});
+            }
         } else {
+            // Rolle entfernen
             if (member.roles.cache.has(role.id)) {
                 await member.roles.remove(role).catch(() => {});
             }
         }
+
+        // Vanity-Link prüfen
+        //const customActivity = activities?.find(a => a.type === ActivityType.Custom);
+        //if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
+        //    await member.roles.add(role).catch(() => {});
+        //} else {
+        //    if (member.roles.cache.has(role.id)) {
+        //        await member.roles.remove(role).catch(() => {});
+        //    }
+        //}
         
         if (!member || member.user.bot) return;
         
