@@ -25,15 +25,20 @@ module.exports = {
 
         // Vanity-Link + TAG prüfen
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
-        
-        const hasVanity =
-        customActivity?.state?.toLowerCase().includes(`.gg/${config.vanity}`) ||
-        customActivity?.state?.toLowerCase().includes(`discord.gg/${config.vanity}`);
 
+        const hasVanity =
+        customActivity?.state?.toLowerCase().includes(`.gg/${config.vanity.toLowerCase()}`) ||
+        customActivity?.state?.toLowerCase().includes(`discord.gg/${config.vanity.toLowerCase()}`);
+
+        // Namen + Username in Kleinbuchstaben umwandeln
+        const cleanDisplayName = member.displayName.toLowerCase();
+        const cleanUsername = member.user.username.toLowerCase();
+        
+        // Tag prüfen (funktioniert auch mit Emojis davor/dahinter)
         const hasTag =
-            member.user.username.toLowerCase().includes(config.tag.toLowerCase()) ||
-            member.displayName.toLowerCase().includes(config.tag.toLowerCase());
-    
+            cleanDisplayName.includes(config.tag.toLowerCase()) ||
+            cleanUsername.includes(config.tag.toLowerCase());
+        
         if (hasVanity || hasTag) {
             if (!member.roles.cache.has(role.id)) {
                 await member.roles.add(role).catch(() => {});
@@ -43,7 +48,7 @@ module.exports = {
                 await member.roles.remove(role).catch(() => {});
             }
         }
-
+        
         // Vanity-Link prüfen
         //const customActivity = activities?.find(a => a.type === ActivityType.Custom);
         //if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
