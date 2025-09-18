@@ -23,6 +23,13 @@ module.exports = {
 
         const deleteAfter = 30 * 1000;
         const mcServerIP = "worldofcommunity.de";
+
+        const allowedChannels = [
+          "815922756918181898", // Hauptchat
+          "896743941813207081", // Spielersuche
+          "979431125053227068",  // Bots verwenden
+          "1284823233761251328" // Schrift Support
+        ];
         const frage = message.content.toLowerCase();
     
         const suchbegriffe = [
@@ -67,24 +74,27 @@ module.exports = {
             'ip vom minecraft server'
         ];
     
+        // nur reagieren, wenn der Channel erlaubt ist
+        if (!allowedChannels.includes(message.channel.id)) return;
+      
         if (suchbegriffe.some(begriff => frage.includes(begriff.toLowerCase()))) {
-            const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
-    
-            const embed = new EmbedBuilder()
-                .setTitle('`🌐` Minecraft-Server IP')
-                .setDescription(
-                    `> \`📡\` » Die IP des Servers lautet:\n` +
-                    `\`\`\`${mcServerIP}\`\`\`\n` +
-                    `> \`⚙️\` » Version: **ab 1.20.4**\n\n` +
-                    `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`
-                )
-                .setColor('Green');
-    
-            const reply = await message.reply({ embeds: [embed] });
-            setTimeout(() => {
-                reply.delete().catch(console.error);
-                message.delete().catch(console.error);
-            }, deleteAfter);
+          const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
+      
+          const embed = new EmbedBuilder()
+            .setTitle("`🌐` Minecraft-Server IP")
+            .setDescription(
+              `> \`📡\` » Die IP des Servers lautet:\n` +
+              `\`\`\`${mcServerIP}\`\`\`\n` +
+              `> \`⚙️\` » Version: **ab 1.20.4**\n\n` +
+              `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`
+            )
+            .setColor("Green");
+      
+          const reply = await message.reply({ embeds: [embed] });
+          setTimeout(() => {
+            reply.delete().catch(console.error);
+            message.delete().catch(console.error);
+          }, deleteAfter);
         }
 
         const erlaubterKanal = "815922756918181898"; // Haupt chat
