@@ -25,7 +25,6 @@ module.exports = {
 
         // 1) Custom Status prüfen (Vanity)
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
-        const status = customActivity?.state?.toLowerCase() || "";
       
         const hasVanity =
           status.includes(`.gg/${config.vanity.toLowerCase()}`) ||
