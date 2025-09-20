@@ -23,29 +23,22 @@ module.exports = {
 
         if (member.user.bot) return;
 
-        // Vanity-Link + TAG prüfen
-        const customActivity = activities?.find(a => a.type === ActivityType.Custom);
-        
-        // Vanity-Link prüfen (beide Varianten)
         const hasVanity =
-          customActivity?.state?.toLowerCase().includes(`.gg/${config.vanity.toLowerCase()}`) ||
-          customActivity?.state?.toLowerCase().includes(`discord.gg/${config.vanity.toLowerCase()}`);
-        
-        // Namen + Username in Kleinbuchstaben umwandeln
+          status.includes(`.gg/${config.vanity.toLowerCase()}`) ||
+          status.includes(`discord.gg/${config.vanity.toLowerCase()}`);
+
+        // 2) Nickname / Username prüfen
         const cleanDisplayName = member.displayName.toLowerCase();
         const cleanUsername = member.user.username.toLowerCase();
-        
-        // Tag prüfen (funktioniert auch mit Emojis davor/dahinter)
+      
         const hasTag =
           cleanDisplayName.includes(config.tag.toLowerCase()) ||
           cleanUsername.includes(config.tag.toLowerCase());
-        
+      
         // Debugging
-        console.log("Activities:", activities?.map(a => ({ type: a.type, state: a.state })));
-        console.log("hasVanity:", hasVanity);
-        console.log("hasTag:", hasTag);
-        
-        // Rolle hinzufügen/entfernen
+        console.log(`[${member.user.tag}] hasVanity:`, hasVanity, " | hasTag:", hasTag);
+      
+        // 3) Rolle hinzufügen/entfernen
         if (hasVanity || hasTag) {
           if (!member.roles.cache.has(role.id)) {
             await member.roles.add(role).catch(() => {});
