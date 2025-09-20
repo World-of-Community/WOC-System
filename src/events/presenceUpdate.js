@@ -23,11 +23,15 @@ module.exports = {
 
         if (member.user.bot) return;
 
+        // 1) Custom Status prüfen (Vanity)
+        const customActivity = activities?.find(a => a.type === ActivityType.Custom);
+        const status = customActivity?.state?.toLowerCase() || "";
+      
         const hasVanity =
           status.includes(`.gg/${config.vanity.toLowerCase()}`) ||
           status.includes(`discord.gg/${config.vanity.toLowerCase()}`);
-
-        // 2) Nickname / Username prüfen
+      
+        // 2) Nickname / Username prüfen (Tag)
         const cleanDisplayName = member.displayName.toLowerCase();
         const cleanUsername = member.user.username.toLowerCase();
       
@@ -36,7 +40,7 @@ module.exports = {
           cleanUsername.includes(config.tag.toLowerCase());
       
         // Debugging
-        console.log(`[${member.user.tag}] hasVanity:`, hasVanity, " | hasTag:", hasTag);
+        console.log(`[${member.user.tag}] Vanity: ${hasVanity} | Tag: ${hasTag}`);
       
         // 3) Rolle hinzufügen/entfernen
         if (hasVanity || hasTag) {
