@@ -22,45 +22,16 @@ module.exports = {
         const activities = member.presence?.activities;
 
         if (member.user.bot) return;
-
-        // 1) Custom Status prüfen (Vanity)
-        const customActivity = activities?.find(a => a.type === ActivityType.Custom);
-      
-        const hasVanity =
-          status.includes(`.gg/${config.vanity.toLowerCase()}`) ||
-          status.includes(`discord.gg/${config.vanity.toLowerCase()}`);
-      
-        // 2) Nickname / Username prüfen (Tag)
-        const cleanDisplayName = member.displayName.toLowerCase();
-        const cleanUsername = member.user.username.toLowerCase();
-      
-        const hasTag =
-          cleanDisplayName.includes(config.tag.toLowerCase()) ||
-          cleanUsername.includes(config.tag.toLowerCase());
-      
-        // Debugging
-        console.log(`[${member.user.tag}] Vanity: ${hasVanity} | Tag: ${hasTag}`);
-      
-        // 3) Rolle hinzufügen/entfernen
-        if (hasVanity || hasTag) {
-          if (!member.roles.cache.has(role.id)) {
-            await member.roles.add(role).catch(() => {});
-          }
-        } else {
-          if (member.roles.cache.has(role.id)) {
-            await member.roles.remove(role).catch(() => {});
-          }
-        }
         
         // Vanity-Link prüfen
-        //const customActivity = activities?.find(a => a.type === ActivityType.Custom);
-        //if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
-        //    await member.roles.add(role).catch(() => {});
-        //} else {
-        //    if (member.roles.cache.has(role.id)) {
-        //        await member.roles.remove(role).catch(() => {});
-        //    }
-        //}
+        const customActivity = activities?.find(a => a.type === ActivityType.Custom);
+        if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
+            await member.roles.add(role).catch(() => {});
+        } else {
+            if (member.roles.cache.has(role.id)) {
+                await member.roles.remove(role).catch(() => {});
+            }
+        }
         
         if (!member || member.user.bot) return;
         
