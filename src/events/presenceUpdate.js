@@ -25,7 +25,7 @@ module.exports = {
 
         // Vanity-Link + TAG prüfen
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
-
+        
         // Vanity-Link prüfen (beide Varianten)
         const hasVanity =
           customActivity?.state?.toLowerCase().includes(`.gg/${config.vanity.toLowerCase()}`) ||
@@ -40,7 +40,12 @@ module.exports = {
           cleanDisplayName.includes(config.tag.toLowerCase()) ||
           cleanUsername.includes(config.tag.toLowerCase());
         
-        // Rolle hinzufügen/entfernen, wenn Vanity-Link oder Tag vorhanden ist
+        // Debugging
+        console.log("Activities:", activities?.map(a => ({ type: a.type, state: a.state })));
+        console.log("hasVanity:", hasVanity);
+        console.log("hasTag:", hasTag);
+        
+        // Rolle hinzufügen/entfernen
         if (hasVanity || hasTag) {
           if (!member.roles.cache.has(role.id)) {
             await member.roles.add(role).catch(() => {});
