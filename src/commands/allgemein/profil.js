@@ -168,8 +168,8 @@ module.exports = {
         let userGeschlecht = '`❓`';
         let roleGamesList = [];
         let rolePingsList = [];
+        let leitungRoleMentions = [];
         let teamRoleMention = '';
-        let leitungRoleMention = '';
         let bundeslandRoleMention = '';
         let nationalitätRoleMention = '';
         let exklusivRoleMention = '';
@@ -187,7 +187,7 @@ module.exports = {
 
         const hasLeitungRole = LeitungRoleIds.some(roleId => {
             if (member.roles.cache.has(roleId)) {
-                leitungRoleMention.push(`<@&${roleId}>`);
+                leitungRoleMentions.push(`<@&${roleId}>`);
                 return true;
             }
             return false;
