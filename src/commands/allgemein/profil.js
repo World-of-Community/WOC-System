@@ -187,7 +187,7 @@ module.exports = {
 
         const hasLeitungRole = LeitungRoleIds.some(roleId => {
             if (member.roles.cache.has(roleId)) {
-                leitungRoleMentions.push(`<@&${roleId}>`);
+                leitungRoleMention.push(`<@&${roleId}>`);
                 return true;
             }
             return false;
