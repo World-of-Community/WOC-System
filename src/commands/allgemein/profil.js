@@ -56,6 +56,7 @@ module.exports = {
         ];
 
         const LeitungRoleIds = [
+            '1399454355349835917', // Team Leitung
             '1154345358030282782', // Dev Leitung
             '1155080722466488351', // Support Leitung
             '1258773853249863734', // Builder Leitung
