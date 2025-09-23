@@ -55,6 +55,20 @@ module.exports = {
             '1263645368441241700', // Builder
         ];
 
+        const LeitungRoleIds = [
+            '1154345358030282782', // Dev Leitung
+            '1155080722466488351', // Support Leitung
+            '1258773853249863734', // Builder Leitung
+            '1269384021402714263', // Creator Leitung
+            '1269383970349650087', // Clan Leitung
+            '1175879013688954980', // Partner Leitung
+            '1290377533984079923', // Social Media Leitung
+            '1399156593802612908', // Content Leitung
+            '1246368940318392411', // Event Leitung
+            '1269370651500609586', // Bewerbung Leitung
+            '1400183875774185554', // Emoji Quiz Leitung
+        ];
+
         const ExklusivRoleIds = [
             '815920219247214644', // Creator
             '862708375698538507', // VIP
@@ -232,6 +246,15 @@ module.exports = {
             }
         }
 
+        let leitungRoleMention = '';
+        const hasLeitungRole = LeitungRoleIds.some(roleId => {
+            if (member.roles.cache.has(roleId)) {
+                leitungRoleMention = `<@&${roleId}>`;
+                return true;
+            }
+            return false;
+        });
+
         // outputText bauen
         if (nationalitätRoleMention) {
             outputText = `- \`📌\` » Land: ${nationalitätRoleMention}`;
@@ -335,7 +358,7 @@ module.exports = {
             .setDescription(
                 `» **Alle Statistiken** von \`${member.user.username}\`\n\n` +
                 `> \`👤\` **» SERVER PROFIL**\n` +
-                `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))}\n` +
+                `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))} (${leitungroleids}) ${hasLeitungRole ? ` (${leitungRoleMention})` : ''}\n` +
                 `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
                 `${outputText}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
