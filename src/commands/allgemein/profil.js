@@ -169,6 +169,7 @@ module.exports = {
         let roleGamesList = [];
         let rolePingsList = [];
         let teamRoleMention = '';
+        let leitungRoleMention = '';
         let bundeslandRoleMention = '';
         let nationalitätRoleMention = '';
         let exklusivRoleMention = '';
@@ -179,6 +180,14 @@ module.exports = {
         const hasTeamRole = TeamRoleIds.some(roleId => {
             if (member.roles.cache.has(roleId)) {
                 teamRoleMention = `<@&${roleId}>`;
+                return true;
+            }
+            return false;
+        });
+
+        const hasLeitungRole = LeitungRoleIds.some(roleId => {
+            if (member.roles.cache.has(roleId)) {
+                leitungRoleMention = `<@&${roleId}>`;
                 return true;
             }
             return false;
@@ -245,15 +254,6 @@ module.exports = {
                 rolePingsList.push(`<@&${role.id}>`);
             }
         }
-
-        let leitungRoleMention = '';
-        const hasLeitungRole = LeitungRoleIds.some(roleId => {
-            if (member.roles.cache.has(roleId)) {
-                leitungRoleMention = `<@&${roleId}>`;
-                return true;
-            }
-            return false;
-        });
 
         // outputText bauen
         if (nationalitätRoleMention) {
