@@ -187,7 +187,7 @@ module.exports = {
 
         const hasLeitungRole = LeitungRoleIds.some(roleId => {
             if (member.roles.cache.has(roleId)) {
-                leitungRoleMention = `<@&${roleId}>`;
+                leitungRoleMentions.push(`<@&${roleId}>`);
                 return true;
             }
             return false;
@@ -358,7 +358,7 @@ module.exports = {
             .setDescription(
                 `» **Alle Statistiken** von \`${member.user.username}\`\n\n` +
                 `> \`👤\` **» SERVER PROFIL**\n` +
-                `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))} (${leitungroleids}) ${hasLeitungRole ? ` (${leitungRoleMention})` : ''}\n` +
+                `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))} ${leitungRoleMentions.length > 0 ? ` (${leitungRoleMentions.join(', ')})` : ''}\n` +
                 `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
                 `${outputText}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
