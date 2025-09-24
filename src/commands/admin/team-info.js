@@ -237,7 +237,7 @@ async function updateTeamEmbed(interaction) {
         const countDisplay = `(${membersInArea.length}👥)`;
 
         if (membersInArea.length > 0) {
-            embedDescription += `${role}:\n` +
+            embedDescription += `${role} ${countDisplay}:\n` +
                 membersInArea.map(member => {
                     const mention = `<@${member.userID}>`;
                     const displayedAge = member.alter || '`➖`';
@@ -292,7 +292,7 @@ async function sendTeamEmbed(interaction) {
         const countDisplay = `(${membersInArea.length}👥)`;
 
         if (membersInArea.length > 0) {
-            embedDescription += `${role}:\n` +
+            embedDescription += `${role} ${countDisplay}:\n` +
                 membersInArea.map(member => {
                     const mention = `<@${member.userID}>`;
                     const displayedAge = member.alter || '`➖`';
