@@ -234,6 +234,8 @@ async function updateTeamEmbed(interaction) {
         const role = interaction.guild.roles.cache.get(bereich.id) || `<@&${bereich.id}>`;
         const membersInArea = teamMembers.filter(m => m.bereich === bereich.name);
 
+        const countDisplay = `(${membersInArea.length}👥)`;
+
         if (membersInArea.length > 0) {
             embedDescription += `${role}:\n` +
                 membersInArea.map(member => {
@@ -242,7 +244,7 @@ async function updateTeamEmbed(interaction) {
                     return `- ${mention} (${member.beschreibung}) - (Alter: ${displayedAge})`;
                 }).join('\n') + '\n\n';
         } else {
-            embedDescription += `${role}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `${role} ${countDisplay}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
@@ -287,6 +289,8 @@ async function sendTeamEmbed(interaction) {
         const role = interaction.guild.roles.cache.get(bereich.id) || `<@&${bereich.id}>`;
         const membersInArea = teamMembers.filter(m => m.bereich === bereich.name);
 
+        const countDisplay = `(${membersInArea.length}👥)`;
+
         if (membersInArea.length > 0) {
             embedDescription += `${role}:\n` +
                 membersInArea.map(member => {
@@ -295,7 +299,7 @@ async function sendTeamEmbed(interaction) {
                     return `- ${mention} (${member.beschreibung}) - (Alter: ${displayedAge})`;
                 }).join('\n') + '\n\n';
         } else {
-            embedDescription += `${role}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
+            embedDescription += `${role} ${countDisplay}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
         }
     });
 
