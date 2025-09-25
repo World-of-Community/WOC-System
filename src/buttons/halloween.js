@@ -1,3 +1,4 @@
+/*
 const { EmbedBuilder } = require('discord.js');
 const { isEventActive, eventPeriods } = require('../../functions/events');
 
@@ -12,3 +13,4 @@ module.exports = {
         await interaction.reply({ embeds: [HalloweenEmbed], ephemeral: true });
     }
 };
+*/

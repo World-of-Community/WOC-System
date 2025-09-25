@@ -9,6 +9,17 @@ const Warn = require('../../Datenbank/warndb');
 const bandb = require('../../Datenbank/bandb');
 const Meeting = require('../../Datenbank/meetingdb');
 
+// Beta Features (Buttons & Modals)
+//const editBanReason = require("./interactions/buttons/editBanReason");
+//const banReasonModal = require("./interactions/modals/banReasonModal");
+//const feedbackButton = require("./interactions/buttons/feedbackButton");
+//const feedbackModal = require("./interactions/modals/feedbackModal");
+//const ticketButton = require("./interactions/buttons/ticketButton");
+//const unbanModal = require("./interactions/modals/unbanModal");
+//const partnerButton = require("./interactions/partnerButton");
+//const partnerModal = require("./interactions/partnerModal");
+
+
 // Belohnungen definieren
 const rewards = {
     1: { type: 'coins', value: 100 },
@@ -708,6 +719,7 @@ module.exports = {
           }
         }
 
+        /*
         if (interaction.isButton()) {
           if (interaction.customId.startsWith('editBanReason_')) {
               const userId = interaction.customId.split('_')[1];
@@ -809,7 +821,9 @@ module.exports = {
               }
             }
         }
-
+        */
+        
+        /*
         if (interaction.isButton() && interaction.customId === 'create_feedback_ticket') {
             const feedbackModal = new ModalBuilder()
                 .setTitle('Feedback einreichen')
@@ -954,8 +968,10 @@ module.exports = {
                 embeds: [rejectEmbed],
                 components: []
             });
-        }    
+        }
+        */
         
+        /*
         // Bann System
          if (interaction.isButton()) {
             if (interaction.customId === 'ticket_erledigt') {
@@ -1003,6 +1019,7 @@ module.exports = {
                 
                 interaction.reply({ content: `<@${interaction.user.id}>`, embeds: [embed], components: [buttons] })
             }
+
             else if (interaction.customId === 'gebannt-ticket') {
                 const gebanntModal = new ModalBuilder()
                 .setTitle('⛔ - ENTBANNUNGSTICKET')
@@ -1082,7 +1099,8 @@ module.exports = {
                     })
                 })
             }}
-        
+            */
+        /*
         // Partner System
         if (interaction.isModalSubmit()) {
             if (interaction.customId === "partner-modal") {
@@ -1179,6 +1197,7 @@ module.exports = {
                 await interaction.reply(`> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** abgelehnt.`)
             }
         }
+        */
 
         if (interaction.isChatInputCommand() || interaction.type === 2 || interaction.type === 3) {
 
