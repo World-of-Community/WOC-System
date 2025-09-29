@@ -33,7 +33,8 @@ module.exports = {
             roles = roleCount > 0 
                 ? member.roles.cache
                     .filter(r => r.id !== interaction.guild.id)
-                    .map(r => `<@&${r.id}>`) // 👉 Rollen als Erwähnung
+                    .sort((a, b) => b.position - a.position) // 👉 nach Position sortieren (oben nach unten)
+                    .map(r => `<@&${r.id}>`) // 👉 Erwähnung
                     .join(", ")
                 : "Keine besonderen Rollen";
         }
@@ -49,7 +50,7 @@ module.exports = {
             ? user.flags.toArray().join(", ") 
             : "Keine sichtbar";
 
-        // Fake-Wahrscheinlichkeit (noch ausführlicher)
+        // Fake-Wahrscheinlichkeit
         let suspicion = 0;
         if (accountAge < 7) suspicion += 40; // unter 7 Tage alt
         if (!user.avatar) suspicion += 25; // kein Avatar
