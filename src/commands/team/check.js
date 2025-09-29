@@ -31,7 +31,10 @@ module.exports = {
             nickname = member.nickname || "Kein Nickname";
             roleCount = member.roles.cache.size - 1; // ohne @everyone
             roles = roleCount > 0 
-                ? member.roles.cache.filter(r => r.id !== interaction.guild.id).map(r => r.name).join(", ")
+                ? member.roles.cache
+                    .filter(r => r.id !== interaction.guild.id)
+                    .map(r => `<@&${r.id}>`) // 👉 Rollen als Erwähnung
+                    .join(", ")
                 : "Keine besonderen Rollen";
         }
 
