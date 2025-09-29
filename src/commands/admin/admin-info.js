@@ -2,7 +2,7 @@ const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('info')
+        .setName('admin-info')
         .setDescription('» Zeigt eine Liste von Benutzern mit einer bestimmten Rolle an. 🎭')
         .addRoleOption(option => option.setName('rolle').setDescription('Die Rolle, die abgefragt werden soll').setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
