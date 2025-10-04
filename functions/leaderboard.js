@@ -51,6 +51,11 @@ async function createLeaderboardMessage(guild) {
             })
             .join('\n').slice(0, 1024);
 
+        // automatisch auf 1024 Zeichen kürzen, wenn nötig
+        if (messageLeaderboardText.length > 1024) {
+            messageLeaderboardText = messageLeaderboardText.substring(0, 1020) + '...';
+        }
+
         const voiceLeaderboardText = topVoiceMembers
             .filter(user => user.member)
             .map((user, index) => {
@@ -58,6 +63,10 @@ async function createLeaderboardMessage(guild) {
                 return `${positionEmojis[index]} » ${memberMention} - **${user.member.user.username}**\n> \`${user.timeText}\``;
             })
             .join('\n').slice(0, 1024);
+
+        if (voiceLeaderboardText.length > 1024) {
+            voiceLeaderboardText = voiceLeaderboardText.substring(0, 1020) + '...';
+        }
 
         const currentMonth = getCurrentMonth();
 
@@ -107,7 +116,7 @@ async function updateLeaderboard(client) {
 
         const messageContent = await createLeaderboardMessage(guild);
 
-        if(leaderboardMessage) {
+        if (leaderboardMessage) {
             leaderboardMessage.edit({ embeds: messageContent.embeds })
         }
     }
