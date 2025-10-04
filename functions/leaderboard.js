@@ -129,11 +129,20 @@ async function resetLeaderboardStats(client) {
         const topMessagesMembers = await userdb.find().sort({ "stats.messages": -1 }).limit(3);
         const topVoiceMembers = await userdb.find().sort({ "stats.voiceTime": -1 }).limit(3);
 
-        const roleAssignments = [...topMessagesMembers, ...topVoiceMembers].map(async user => {
-            const member = await guild.members.fetch(user.userID).catch(() => null);
-            if (member) {
-                await member.roles.add(role).then(r => {
-                    leaderboardChannel.send({ content: `${member} hat für die hohe Aktivität, die ${role} Rolle erhalten` })
+        // Doppelte User rausfiltern
+        const uniqueUserIds = [...new Set([...topMessagesMembers, ...topVoiceMembers].map(u => u.userID))];
+
+        const roleAssignments = uniqueUserIds.map(async userID => {
+            const member = await guild.members.fetch(userID).catch(() => null);
+            if (member && !member.roles.cache.has(role.id)) {
+                await member.roles.add(role).then(msg => {
+                    leaderboardChannel.send({ 
+                        content: `${member} hat für die hohe Aktivität die ${role} Rolle erhalten`
+                    }).then(m => {
+                        setTimeout(() => {
+                            m.delete().catch(() => null);
+                        }, 5 * 60 * 1000); // Nachricht nach 5 Minuten löschen
+                    });
                 }).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
             }
         });

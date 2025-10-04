@@ -698,15 +698,15 @@ setInterval( async () => {
             '> `✨` » **Selbst** Programmierte Bots mit **einzigartigen Features!**\n' +
             '> `👥` » **Freundliche & Hilfsbereite** Community!\n' +
             '> `📄` » **Täglich neue Nachrichten** sowie **Gaming- & Film-News**\n' +
-            '> `🎮` » Ein **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n' +
-            '> `📰` » **Freie Werbung** senden. (außer für andere Minecraft-Server)\n' +
+            '> `🎮` » **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n' +
+            '> `📰` » **Freie Werbung** senden. (Keine anderen Minecraft-Server)\n' +
             '> `🎥` » Eine **exklusive Live-Streamer** Rolle wenn du **Live** bist!\n' +
             '> `⚽` » Eine **Fußball-Simulation**, bei der du Fan eines Clubs werden kannst\n' +
             '`🔍` - **Wir suchen Verstärkung für unser Team:**\n\n' +
             '> `🔧` - Developer\n' +
-            '> `🧩` - ~~Supporter~~ (Geschlossen)\n' +
+            '> `🧩` - Supporter\n' +
             '> `👷` - Builder (**dringend Gesucht**)\n\n' +
-            '> `📌` | **Gib uns eine Chance und Betrete noch heute unseren Discord-Server!**\n\n' +
+            '> `📌` **| Wir freuen uns auf dich!**\n\n' +
             'Kleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schon mal jemanden kennst!\n\n' +
             '» Link: https://discord.gg/686M8Cxsaa'
         )
