@@ -663,6 +663,24 @@ cron.schedule('0 */6 * * *', async () => {
   }
 });
 
+const CHANNEL_ID = '815922756918181898';
+
+// Cron-Job: alle 2 Stunden
+cron.schedule('0 */2 * * *', async () => {
+    try {
+        const channel = await client.channels.fetch(CHANNEL_ID);
+        if (!channel) return console.log('Channel nicht gefunden!');
+        const embed = new EmbedBuilder()
+            .setTitle('`🔔` Bump Reminder')
+            .setDescription(`Der Server kann wieder gebumpt werden!\nNutze den Befehl \`/bump\` in <#979431125053227068> um den Server zu bumpen.\n\n*Du kannst alle 2 Stunden bumpen!*`)
+            .setColor('Blurple')
+            .setTimestamp();
+        await channel.send({ embeds: [embed] });
+        console.log('Bump-Reminder gesendet!');
+    } catch (error) {
+        console.error('Fehler beim Senden des Bump-Reminders:', error);
+    }
+});
 
 // Onlinezeit (Profil.js)
 setInterval(async () => {
