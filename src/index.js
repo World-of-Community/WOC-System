@@ -664,7 +664,7 @@ cron.schedule('0 */6 * * *', async () => {
 });
 
 const BUMPCHANNEL_ID = '815922756918181898';
-let lastMessageId = null; // ID der letzten Reminder-Nachricht
+let bumplastMessageId = null; // ID der letzten Reminder-Nachricht
 
 // Cron-Job: alle 2 Stunden
 cron.schedule('0 */2 * * *', async () => {
@@ -673,9 +673,9 @@ cron.schedule('0 */2 * * *', async () => {
         if (!channel) return console.log('Channel nicht gefunden!');
 
         // Alte Nachricht löschen, falls vorhanden
-        if (lastMessageId) {
+        if (bumplastMessageId) {
             try {
-                const oldMsg = await channel.messages.fetch(lastMessageId);
+                const oldMsg = await channel.messages.fetch(bumplastMessageId);
                 if (oldMsg) await oldMsg.delete();
             } catch {
                 // Alte Nachricht evtl. schon gelöscht oder nicht mehr verfügbar
@@ -689,7 +689,7 @@ cron.schedule('0 */2 * * *', async () => {
             .setTimestamp();
 
         const msg = await channel.send({ embeds: [embed] });
-        lastMessageId = msg.id; // ID der neuen Nachricht speichern
+        bumplastMessageId = msg.id; // ID der neuen Nachricht speichern
 
         console.log('Bump-Reminder gesendet!');
     } catch (error) {
