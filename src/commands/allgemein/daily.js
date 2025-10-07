@@ -41,14 +41,14 @@ module.exports = {
       user = await Coin.create({ userId, coins: 0, streak: 0, lastDaily: null });
     }
 
-    // Wenn bereits heute abgeholt wurde
+    // Bereits heute abgeholt
     if (user.lastDaily && user.lastDaily.toDateString() === now.toDateString()) {
       const naechsteMoeglichkeit = new Date();
-      naechsteMoeglichkeit.setHours(24, 0, 0, 0); // Heute um Mitternacht = morgen 0:00
+      naechsteMoeglichkeit.setHours(24, 0, 0, 0); // Mitternacht
 
       const unixTimestamp = Math.floor(naechsteMoeglichkeit.getTime() / 1000);
 
-      await interaction.reply({
+      return await interaction.reply({
         ephemeral: true,
         embeds: [
           new EmbedBuilder()
@@ -57,20 +57,19 @@ module.exports = {
             .setDescription(`Du kannst deine täglichen Coins wieder <t:${unixTimestamp}:R> abholen.\n(<t:${unixTimestamp}:F>)`)
         ]
       });
-
-      return;
     }
 
-    // Streak prüfen (wenn nicht gestern abgeholt → Streak = 0)
+    // Streak prüfen: zurücksetzen, wenn nicht gestern
     const gestern = new Date(now);
     gestern.setDate(now.getDate() - 1);
 
     if (user.lastDaily && user.lastDaily.toDateString() === gestern.toDateString()) {
-      user.streak += 1;
+      user.streak += 1; // gestern abgeholt → streak erhöhen
     } else {
-      user.streak = 0;
+      user.streak = 0; // nicht gestern abgeholt → streak zurücksetzen
     }
 
+    // Belohnung berechnen
     const Belohnung = 10;
     const bonusMultiplikator = berechneBonusMultiplikator(user.streak);
     const gesamtBelohnung = Math.floor(Belohnung * bonusMultiplikator);
@@ -101,4 +100,3 @@ module.exports = {
     });
   }
 };
-
