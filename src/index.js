@@ -663,13 +663,13 @@ cron.schedule('0 */6 * * *', async () => {
   }
 });
 
-const CHANNEL_ID = '815922756918181898';
+const BUMPCHANNEL_ID = '815922756918181898';
 let lastMessageId = null; // ID der letzten Reminder-Nachricht
 
 // Cron-Job: alle 2 Stunden
 cron.schedule('0 */2 * * *', async () => {
     try {
-        const channel = await client.channels.fetch(CHANNEL_ID);
+        const channel = await client.channels.fetch(BUMPCHANNEL_ID);
         if (!channel) return console.log('Channel nicht gefunden!');
 
         // Alte Nachricht löschen, falls vorhanden
