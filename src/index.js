@@ -664,18 +664,33 @@ cron.schedule('0 */6 * * *', async () => {
 });
 
 const CHANNEL_ID = '815922756918181898';
+let lastMessageId = null; // ID der letzten Reminder-Nachricht
 
 // Cron-Job: alle 2 Stunden
 cron.schedule('0 */2 * * *', async () => {
     try {
         const channel = await client.channels.fetch(CHANNEL_ID);
         if (!channel) return console.log('Channel nicht gefunden!');
+
+        // Alte Nachricht löschen, falls vorhanden
+        if (lastMessageId) {
+            try {
+                const oldMsg = await channel.messages.fetch(lastMessageId);
+                if (oldMsg) await oldMsg.delete();
+            } catch {
+                // Alte Nachricht evtl. schon gelöscht oder nicht mehr verfügbar
+            }
+        }
+
         const embed = new EmbedBuilder()
             .setTitle('`🔔` Bump Reminder')
             .setDescription(`Der Server kann wieder gebumpt werden!\nNutze den Befehl \`/bump\` in <#979431125053227068> um den Server zu bumpen.\n\n*Du kannst alle 2 Stunden bumpen!*`)
             .setColor('Blurple')
             .setTimestamp();
-        await channel.send({ embeds: [embed] });
+
+        const msg = await channel.send({ embeds: [embed] });
+        lastMessageId = msg.id; // ID der neuen Nachricht speichern
+
         console.log('Bump-Reminder gesendet!');
     } catch (error) {
         console.error('Fehler beim Senden des Bump-Reminders:', error);
