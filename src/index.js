@@ -663,7 +663,7 @@ cron.schedule('0 */6 * * *', async () => {
   }
 });
 
-const BUMPCHANNEL_ID = '815922756918181898';
+const BUMPCHANNEL_ID = '1426670515011194890';
 let bumplastMessageId = null; // ID der letzten Reminder-Nachricht
 
 // Cron-Job: alle 2 Stunden
@@ -683,15 +683,13 @@ cron.schedule('0 */2 * * *', async () => {
         }
 
         const embed = new EmbedBuilder()
-            .setTitle('`🔔` Bump Reminder')
-            .setDescription(`Der Server kann wieder gebumpt werden!\nNutze den Befehl \`/bump\` in <#979431125053227068> um den Server zu bumpen.\n\n*Du kannst alle 2 Stunden bumpen!*`)
+            .setTitle('`🔔` Bump-Reminder')
+            .setDescription(`Der Server kann wieder gebumpt werden!\n» \`/bump\`.\n\n*Du kannst alle 2 Stunden bumpen!*`)
             .setColor('Blurple')
             .setTimestamp();
 
-        const msg = await channel.send({ embeds: [embed] });
+        const msg = await channel.send({ content: '<@&1426669989842391210>', embeds: [embed] });
         bumplastMessageId = msg.id; // ID der neuen Nachricht speichern
-
-        console.log('Bump-Reminder gesendet!');
     } catch (error) {
         console.error('Fehler beim Senden des Bump-Reminders:', error);
     }
