@@ -1,10 +1,193 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const userdb = require("../../Datenbank/userdb");
+const { Coin } = require('../../../Datenbank/coindb');
+const StreamSession = require('../../../Datenbank/streamSession'); // neue Collection für laufende Streams
+
+const onlineMap = new Map();
+const offlineMessages = new Map();
+const timers = new Map();
+const sessionEarned = new Map();
+const sessionStart = new Map();
+const lastEnded = new Map();
+
+const INTERVAL_MINUTES = 5;
+const REWARD_MIN = 100;
+const REWARD_MAX = 250;
+const MAX_STREAM_MINUTES = 7 * 24 * 60;
+const COOLDOWN_AFTER_STREAM_MINUTES = 0;
+
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+module.exports = {
+  name: Events.PresenceUpdate,
+  async execute(oldPresence, newPresence, client) {
+    try {
+      const file = fs.readFileSync('src/json/config.json', 'utf-8');
+      const config = JSON.parse(file);
+      if (newPresence.guild.id !== config.server) return;
+
+      const member = newPresence.member;
+      if (!member || member.user.bot) return;
+
+      const streamerRole = newPresence.guild.roles.cache.get('1266095218239995968');
+      if (!streamerRole) return;
+
+      const isStreaming = member.presence?.activities?.some(a => a.type === ActivityType.Streaming);
+
+      // Neustart-gesicherte Session starten
+      const existingSession = await StreamSession.findOne({ userId: member.id });
+      if (isStreaming && !timers.has(member.id) && existingSession) {
+        restoreStreamSession(member, existingSession);
+      }
+
+      const wasStreaming = oldPresence?.activities?.some(a => a.type === ActivityType.Streaming) || false;
+
+      if (!wasStreaming && isStreaming) await startStreamSession(member);
+      if (wasStreaming && !isStreaming) await clearSession(member.id, "stream ended", member);
+
+    } catch (err) {
+      console.error("Error in PresenceUpdate handler:", err);
+    }
+  }
+};
+
+// ------------------ Hilfsfunktionen ------------------
+
+async function restoreStreamSession(member, sessionData) {
+  const userId = member.id;
+  const intervalMs = INTERVAL_MINUTES * 60 * 1000;
+
+  sessionEarned.set(userId, sessionData.earned);
+  sessionStart.set(userId, sessionData.start);
+
+  const interval = setInterval(async () => {
+    const stillStreaming = member.presence?.activities?.some(a => a.type === ActivityType.Streaming);
+    if (!stillStreaming) return clearSession(userId, "stream stopped", member);
+
+    const diffMin = (Date.now() - sessionStart.get(userId).getTime()) / 1000 / 60;
+    if (MAX_STREAM_MINUTES && diffMin > MAX_STREAM_MINUTES) {
+      return clearSession(userId, "max time reached", member);
+    }
+
+    const reward = randInt(REWARD_MIN, REWARD_MAX);
+    sessionEarned.set(userId, (sessionEarned.get(userId) || 0) + reward);
+    await addCoinsToUser(userId, reward);
+
+    // Update DB
+    await StreamSession.updateOne({ userId }, { $set: { earned: sessionEarned.get(userId) } });
+  }, intervalMs);
+
+  timers.set(userId, interval);
+  console.log(`[StreamReward] ${member.user.tag} restored stream session.`);
+}
+
+async function startStreamSession(member) {
+  const userId = member.id;
+
+  if (COOLDOWN_AFTER_STREAM_MINUTES > 0 && lastEnded.has(userId)) {
+    const diffMin = (Date.now() - lastEnded.get(userId).getTime()) / 1000 / 60;
+    if (diffMin < COOLDOWN_AFTER_STREAM_MINUTES) return;
+  }
+
+  sessionEarned.set(userId, 0);
+  sessionStart.set(userId, new Date());
+
+  await StreamSession.updateOne(
+    { userId },
+    { $set: { start: sessionStart.get(userId), earned: 0 } },
+    { upsert: true }
+  );
+
+  const intervalMs = INTERVAL_MINUTES * 60 * 1000;
+  const interval = setInterval(async () => {
+    const stillStreaming = member.presence?.activities?.some(a => a.type === ActivityType.Streaming);
+    if (!stillStreaming) return clearSession(userId, "stream stopped", member);
+
+    const diffMin = (Date.now() - sessionStart.get(userId).getTime()) / 1000 / 60;
+    if (MAX_STREAM_MINUTES && diffMin > MAX_STREAM_MINUTES) {
+      return clearSession(userId, "max time reached", member);
+    }
+
+    const reward = randInt(REWARD_MIN, REWARD_MAX);
+    sessionEarned.set(userId, (sessionEarned.get(userId) || 0) + reward);
+    await addCoinsToUser(userId, reward);
+    await StreamSession.updateOne({ userId }, { $set: { earned: sessionEarned.get(userId) } });
+
+  }, intervalMs);
+
+  timers.set(userId, interval);
+  console.log(`[StreamReward] ${member.user.tag} started stream session.`);
+}
+
+// clearSession wie vorher, aber StreamSession DB löschen
+async function clearSession(userId, reason = "ended", memberInstance = null) {
+  if (timers.has(userId)) {
+    clearInterval(timers.get(userId));
+    timers.delete(userId);
+  }
+
+  const earned = sessionEarned.get(userId) || 0;
+  const start = sessionStart.get(userId) || null;
+  const end = new Date();
+
+  sessionEarned.delete(userId);
+  sessionStart.delete(userId);
+  lastEnded.set(userId, end);
+
+  // DB löschen
+  await StreamSession.deleteOne({ userId });
+
+  // DM senden...
+  const finalBalance = await getUserCoins(userId);
+  let durationText = "unbekannt";
+  if (start) {
+    const diffMs = end - start;
+    durationText = `${Math.floor(diffMs / 60000)}m ${Math.floor((diffMs % 60000)/1000)}s`;
+  }
+
+  const embed = new EmbedBuilder()
+    .setTitle("`🎥` Stream-Belohnung – Übersicht")
+    .setDescription("Danke fürs Streamen! Hier ist deine Belohnung:")
+    .addFields(
+      { name: "`🕒` Dauer", value: durationText, inline: true },
+      { name: "`💰` Verdient", value: `${earned} Coins`, inline: true },
+      { name: "`🏦` Kontostand", value: `${finalBalance} Coins`, inline: false }
+    )
+    .setFooter({ text: `Grund: ${reason}` })
+    .setTimestamp();
+
+  if (memberInstance?.user) await memberInstance.user.send({ embeds: [embed] }).catch(() => {});
+
+  console.log(`[StreamReward] ${memberInstance?.user?.tag ?? userId} endet stream, Erhalten: ${earned}.`);
+}
+
+/*
+const { Events, ActivityType, EmbedBuilder } = require("discord.js");
+const fs = require('fs');
+const userdb = require("../../Datenbank/userdb");
+const { Coin } = require('../../../Datenbank/coindb');
 
 // Globale Map
 const onlineMap = new Map();
 const offlineMessages = new Map(); // Für Ticket-Bot-Nachrichten
+
+// --- KONFIG ---
+const INTERVAL_MINUTES = 5;            // Auszahlung alle X Minuten
+const REWARD_MIN = 100;                // min Coins pro Intervall
+const REWARD_MAX = 250;                // max Coins pro Intervall
+const MAX_STREAM_MINUTES = 7 * 24 * 60; // 7 Tage
+const COOLDOWN_AFTER_STREAM_MINUTES = 0; // Cooldown nach Stream (0 = keiner)
+// -----------------
+
+const timers = new Map();       // userId → IntervalObject
+const sessionEarned = new Map(); // userId → total earned this session
+const sessionStart = new Map();  // userId → start time
+const lastEnded = new Map();     // userId → last stream end
+
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 module.exports = {
     name: Events.PresenceUpdate,
@@ -144,7 +327,7 @@ module.exports = {
                 }, 60_000);
             }
         }
-    }
+  }}
 };
 
 /*

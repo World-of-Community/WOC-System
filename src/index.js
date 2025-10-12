@@ -736,7 +736,7 @@ setInterval( async () => {
             '`🔍` - **Wir suchen Verstärkung für unser Team:**\n\n' +
             '> `🔧` - Developer\n' +
             '> `🧩` - Supporter\n' +
-            '> `👷` - Builder (**dringend Gesucht**)\n\n' +
+            '> `👷` - Builder\n\n' +
             '> `📌` **| Wir freuen uns auf dich!**\n\n' +
             'Kleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schon mal jemanden kennst!\n\n' +
             '» Link: https://discord.gg/686M8Cxsaa'
@@ -1134,8 +1134,6 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         }
     } 
     else if (oldState.channelId && !newState.channelId) {
-
-        //console.log(`Benutzer ${oldState.member.user.username} hat einen Sprachkanal verlassen.`);
 
         const user = oldState.member?.user || newState.member?.user;
         if (!user) return;
