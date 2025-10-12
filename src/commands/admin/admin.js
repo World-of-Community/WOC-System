@@ -103,7 +103,7 @@ module.exports = {
                     // Embed für das Rollenupdate erstellen
                     const RangUpdateembed = new EmbedBuilder()
                         .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
-                        .setDescription(`Der Nutzer ${member} wurde **herabgestuft.**\n\n**__Rang__**:\n${role}`)
+                        .setDescription(`${member} wurde **herabgestuft.**\n\n**__Rang__**:\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
                 
@@ -146,7 +146,7 @@ module.exports = {
 
                         const kickEmbed = new EmbedBuilder()
                             .setTitle('`❌` | __TEAMMITGLIED ENTFERNT__')
-                            .setDescription(`Der Nutzer ${member} wurde von ${interaction.user.displayName} aus dem Server-Team **Entfernt**.\n\nGrund: \`${reason}\``)
+                            .setDescription(`${member} wurde von ${interaction.user.displayName} aus dem Server-Team **Entfernt**.\n\nGrund: \`${reason}\``)
                             .setColor('Red')
                             .setTimestamp();
 
