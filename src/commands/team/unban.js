@@ -1,4 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const ms = require("ms");
+const bandb = require("../../../Datenbank/bandb");
 
 module.exports = {
     data: new SlashCommandBuilder()
