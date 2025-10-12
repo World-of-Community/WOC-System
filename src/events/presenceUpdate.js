@@ -2,7 +2,7 @@ const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
 const userdb = require("../../Datenbank/userdb");
 const { Coin } = require('../../../Datenbank/coindb');
-const StreamSession = require('../../../Datenbank/streamSession'); // neue Collection für laufende Streams
+const StreamSession = require('../../../Datenbank/streamSession');
 
 const onlineMap = new Map();
 const offlineMessages = new Map();
