@@ -15,9 +15,9 @@ module.exports = {
     .addSubcommand(sub => sub.setName("priority").setDescription("» Setzt die Priorität einer Aufgabe. ⚡").addIntegerOption(opt => opt.setName("index").setDescription("Nummer der Aufgabe").setRequired(true)).addStringOption(opt => opt.setName("level").setDescription("Priorität: niedrig/mittel/hoch").setRequired(true)))
     
     // CONFIG
-    .addSubcommand(sub => sub.setName("config setup").setDescription("» Erstellt die Grundkonfiguration für die ToDo-Liste. ⚙️"))
-    .addSubcommand(sub => sub.setName("config edit").setDescription("» Bearbeitet bestehende Konfigurationen. ⚙️").addStringOption(opt => opt.setName("key").setDescription("Konfigurationsschlüssel").setRequired(true)).addStringOption(opt => opt.setName("value").setDescription("Neuer Wert").setRequired(true)))
-    .addSubcommand(sub => sub.setName("config rename").setDescription("» Ändert den Namen der ToDo-Liste. ⚙️").addStringOption(opt => opt.setName("name").setDescription("Neuer Name").setRequired(true)))
+    .addSubcommand(sub => sub.setName("config-setup").setDescription("» Erstellt die Grundkonfiguration für die ToDo-Liste. ⚙️"))
+    .addSubcommand(sub => sub.setName("config-edit").setDescription("» Bearbeitet bestehende Konfigurationen. ⚙️").addStringOption(opt => opt.setName("key").setDescription("Konfigurationsschlüssel").setRequired(true)).addStringOption(opt => opt.setName("value").setDescription("Neuer Wert").setRequired(true)))
+    .addSubcommand(sub => sub.setName("config-rename").setDescription("» Ändert den Namen der ToDo-Liste. ⚙️").addStringOption(opt => opt.setName("name").setDescription("Neuer Name").setRequired(true)))
     
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
