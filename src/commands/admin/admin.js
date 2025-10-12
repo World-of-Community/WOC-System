@@ -146,7 +146,7 @@ module.exports = {
 
                         const kickEmbed = new EmbedBuilder()
                             .setTitle('`❌` | __TEAMMITGLIED ENTFERNT__')
-                            .setDescription(`${member} wurde von ${interaction.user.displayName} aus dem Server-Team **Entfernt**.\n\nGrund: \`${reason}\``)
+                            .setDescription(`${member} wurde von **${interaction.user.displayName}** aus dem Server-Team **Entfernt**.\n\nGrund: \`${reason}\``)
                             .setColor('Red')
                             .setTimestamp();
 
