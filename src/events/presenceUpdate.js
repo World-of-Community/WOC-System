@@ -1,5 +1,258 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require('fs');
+const { Coin } = require('../../Datenbank/coindb');
+const StreamSession = require('../../Datenbank/streamSessiondb');
+
+// --- In-Memory State ---
+const timers = new Map();
+const sessionEarned = new Map();
+const sessionStart = new Map();
+const lastEnded = new Map();
+
+// --- Konfiguration ---
+const INTERVAL_MINUTES = 5; // Belohnung alle X Minuten
+const REWARD_MIN = 100;
+const REWARD_MAX = 250;
+const MAX_STREAM_MINUTES = 7 * 24 * 60; // Sicherheitslimit (Minuten)
+const COOLDOWN_AFTER_STREAM_MINUTES = 0;
+const STREAMER_ROLE_ID = '1266095218239995968';
+
+// Config laden (einmalig). Falls die Datei nicht existiert, wird der Handler trotzdem weiterlaufen.
+let CONFIG = {};
+try {
+  const file = fs.readFileSync('src/json/config.json', 'utf-8');
+  CONFIG = JSON.parse(file);
+} catch (e) {
+  console.warn('[StreamReward] Keine oder fehlerhafte config.json gefunden. Stelle sicher, dass src/json/config.json existiert.');
+}
+
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+module.exports = {
+  name: Events.PresenceUpdate,
+  /**
+   * @param {import('discord.js').Presence} oldPresence
+   * @param {import('discord.js').Presence} newPresence
+   */
+  async execute(oldPresence, newPresence) {
+    try {
+      const client = newPresence?.client || oldPresence?.client;
+
+      // Quick sanity checks to avoid spam
+      if (!newPresence) return;
+      if (!newPresence.guild) return; // manchmal undefined
+      if (CONFIG.server && newPresence.guild.id !== CONFIG.server) return;
+
+      // Member existenz prüfen
+      const member = newPresence.member ?? await newPresence.guild.members.fetch(newPresence.userId).catch(() => null);
+      if (!member || member.user?.bot) return;
+
+      // Optional: check if member has streamer role (falls gewünscht)
+      const streamerRole = newPresence.guild.roles.cache.get(STREAMER_ROLE_ID);
+      if (streamerRole && !member.roles.cache.has(streamerRole.id)) return;
+
+      // Prüfen ob stream-activity vorhanden ist
+      const wasStreaming = oldPresence?.activities?.some(a => a.type === ActivityType.Streaming) || false;
+      const isStreaming = newPresence?.activities?.some(a => a.type === ActivityType.Streaming) || false;
+
+      // Schutz gegen Doppelstarts
+      if (!wasStreaming && isStreaming) {
+        if (timers.has(member.id)) {
+          console.log(`[StreamReward] Timer already exists for ${member.user.tag}, ignoring duplicate start.`);
+        } else {
+          await startStreamSession(member);
+        }
+      }
+
+      // Ende des Streams
+      if (wasStreaming && !isStreaming) {
+        await clearSession(member.id, 'stream ended', member);
+      }
+
+      // Falls ein Eintrag in DB existiert (z.B. Bot-Neustart) aber noch kein laufender Timer, wiederherstellen
+      if (isStreaming && !timers.has(member.id)) {
+        const existingSession = await StreamSession.findOne({ userId: member.id }).catch(() => null);
+        if (existingSession) await restoreStreamSession(member, existingSession);
+      }
+
+    } catch (err) {
+      console.error("[StreamReward] Error in PresenceUpdate handler:", err);
+    }
+  }
+};
+
+// ------------------ Hilfsfunktionen ------------------
+
+async function restoreStreamSession(member, sessionData) {
+  const userId = member.id;
+  if (timers.has(userId)) return; // bereits wiederhergestellt
+
+  // sessionData.start kann String oder Date sein
+  const startDate = sessionData.start ? new Date(sessionData.start) : new Date();
+  sessionStart.set(userId, startDate);
+  sessionEarned.set(userId, sessionData.earned || 0);
+
+  const intervalMs = INTERVAL_MINUTES * 60 * 1000;
+  const interval = setInterval(async () => {
+    try {
+      const stillStreaming = member.presence?.activities?.some(a => a.type === ActivityType.Streaming);
+      if (!stillStreaming) return clearSession(userId, 'stream stopped (restore)', member);
+
+      const diffMin = (Date.now() - sessionStart.get(userId).getTime()) / 1000 / 60;
+      if (MAX_STREAM_MINUTES && diffMin > MAX_STREAM_MINUTES) {
+        return clearSession(userId, 'max time reached', member);
+      }
+
+      const reward = randInt(REWARD_MIN, REWARD_MAX);
+      sessionEarned.set(userId, (sessionEarned.get(userId) || 0) + reward);
+      await addCoinsToUser(userId, reward);
+
+      // Update DB
+      await StreamSession.updateOne({ userId }, { $set: { earned: sessionEarned.get(userId) } }).catch(() => {});
+
+    } catch (err) {
+      console.error('[StreamReward] Error during restore interval for', userId, err);
+    }
+  }, intervalMs);
+
+  timers.set(userId, interval);
+  console.log(`[StreamReward] ${member.user.tag} restored stream session.`);
+}
+
+async function startStreamSession(member) {
+  const userId = member.id;
+
+  if (COOLDOWN_AFTER_STREAM_MINUTES > 0 && lastEnded.has(userId)) {
+    const diffMin = (Date.now() - lastEnded.get(userId).getTime()) / 1000 / 60;
+    if (diffMin < COOLDOWN_AFTER_STREAM_MINUTES) {
+      console.log(`[StreamReward] ${member.user.tag} is still on cooldown (${Math.round(diffMin)}m).`);
+      return;
+    }
+  }
+
+  if (timers.has(userId)) {
+    console.log(`[StreamReward] ${member.user.tag} already has a timer. Skip start.`);
+    return;
+  }
+
+  sessionEarned.set(userId, 0);
+  sessionStart.set(userId, new Date());
+
+  await StreamSession.updateOne(
+    { userId },
+    { $set: { start: sessionStart.get(userId), earned: 0 } },
+    { upsert: true }
+  ).catch(err => console.error('[StreamReward] DB write error (start):', err));
+
+  const intervalMs = INTERVAL_MINUTES * 60 * 1000;
+  const interval = setInterval(async () => {
+    try {
+      const stillStreaming = member.presence?.activities?.some(a => a.type === ActivityType.Streaming);
+      if (!stillStreaming) return clearSession(userId, 'stream stopped', member);
+
+      const diffMin = (Date.now() - sessionStart.get(userId).getTime()) / 1000 / 60;
+      if (MAX_STREAM_MINUTES && diffMin > MAX_STREAM_MINUTES) {
+        return clearSession(userId, 'max time reached', member);
+      }
+
+      const reward = randInt(REWARD_MIN, REWARD_MAX);
+      sessionEarned.set(userId, (sessionEarned.get(userId) || 0) + reward);
+      await addCoinsToUser(userId, reward);
+      await StreamSession.updateOne({ userId }, { $set: { earned: sessionEarned.get(userId) } }).catch(() => {});
+
+    } catch (err) {
+      console.error('[StreamReward] Error during interval for', userId, err);
+    }
+  }, intervalMs);
+
+  timers.set(userId, interval);
+  console.log(`[StreamReward] ${member.user.tag} started stream session.`);
+}
+
+// clearSession löscht auch die DB-Session
+async function clearSession(userId, reason = "ended", memberInstance = null) {
+  try {
+    if (timers.has(userId)) {
+      clearInterval(timers.get(userId));
+      timers.delete(userId);
+    }
+
+    const earned = sessionEarned.get(userId) || 0;
+    const start = sessionStart.get(userId) || null;
+    const end = new Date();
+
+    sessionEarned.delete(userId);
+    sessionStart.delete(userId);
+    lastEnded.set(userId, end);
+
+    // DB löschen (Session abgeschlossen)
+    await StreamSession.deleteOne({ userId }).catch(() => {});
+
+    // DM senden...
+    const finalBalance = await getUserCoins(userId);
+    let durationText = "unbekannt";
+    if (start) {
+      const diffMs = end - start;
+      durationText = `${Math.floor(diffMs / 60000)}m ${Math.floor((diffMs % 60000)/1000)}s`;
+    }
+
+    const embed = new EmbedBuilder()
+      .setTitle("🎥 Stream-Belohnung – Übersicht")
+      .setDescription("Danke fürs Streamen! Hier ist deine Belohnung:")
+      .addFields(
+        { name: "🕒 Dauer", value: durationText, inline: true },
+        { name: "💰 Verdient", value: `${earned} Coins`, inline: true },
+        { name: "🏦 Kontostand", value: `${finalBalance} Coins`, inline: false }
+      )
+      .setFooter({ text: `Grund: ${reason}` })
+      .setTimestamp();
+
+    if (memberInstance?.user) await memberInstance.user.send({ embeds: [embed] }).catch(() => {});
+
+    console.log(`[StreamReward] ${memberInstance?.user?.tag ?? userId} ended stream, earned: ${earned}. Reason: ${reason}`);
+
+  } catch (err) {
+    console.error('[StreamReward] Error in clearSession:', err);
+  }
+}
+
+// ------------------ Simple Coin Helpers ------------------
+async function addCoinsToUser(userId, amount) {
+  try {
+    const res = await Coin.findOneAndUpdate(
+      { userId },
+      { $inc: { coins: amount } },
+      { upsert: true, new: true }
+    );
+    return res.coins;
+  } catch (err) {
+    console.error('[StreamReward] addCoinsToUser error:', err);
+    return null;
+  }
+}
+
+async function getUserCoins(userId) {
+  try {
+    const res = await Coin.findOne({ userId });
+    return res?.coins || 0;
+  } catch (err) {
+    console.error('[StreamReward] getUserCoins error:', err);
+    return 0;
+  }
+}
+
+// Optional: clear timers on process exit to be tidy
+process.on('SIGINT', () => {
+  timers.forEach(clearInterval);
+  console.log('[StreamReward] Cleared all timers on shutdown.');
+  process.exit(0);
+});
+
+
+// Alte Version des Handlers (nur zur Referenz)*
+/*
+const { Events, ActivityType, EmbedBuilder } = require("discord.js");
+const fs = require('fs');
 const userdb = require("../../Datenbank/userdb");
 const { Coin } = require('../../Datenbank/coindb');
 const StreamSession = require('../../Datenbank/streamSessiondb');
