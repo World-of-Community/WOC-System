@@ -38,6 +38,39 @@ module.exports = {
     try {
       const client = newPresence?.client || oldPresence?.client;
 
+      // Rolle, die gegeben/entfernt werden soll
+        const streamRoleId = '123456789012345678'; // <-- deine Streamer-Rollen-ID hier
+
+        // Sicherstellen, dass Daten vorhanden sind
+        if (!newPresence || !newPresence.member) return;
+        const member = newPresence.member;
+
+        // Prüfen, ob der Nutzer gerade streamt
+        const isStreaming = newPresence.activities.some(
+            (activity) => activity.type === 1 && activity.url // type 1 = Streaming
+        );
+
+        // Alte Presence prüfen, ob vorher gestreamt wurde
+        const wasStreaming = oldPresence?.activities.some(
+            (activity) => activity.type === 1 && activity.url
+        );
+
+        // Wenn Nutzer neu anfängt zu streamen → Rolle geben
+        if (!wasStreaming && isStreaming) {
+            if (!member.roles.cache.has(streamRoleId)) {
+                await member.roles.add(streamRoleId).catch(console.error);
+                console.log(`🎥 ${member.user.tag} streamt jetzt – Rolle hinzugefügt.`);
+            }
+        }
+
+        // Wenn Nutzer aufhört zu streamen → Rolle entfernen
+        if (wasStreaming && !isStreaming) {
+            if (member.roles.cache.has(streamRoleId)) {
+                await member.roles.remove(streamRoleId).catch(console.error);
+                console.log(`🛑 ${member.user.tag} hat aufgehört zu streamen – Rolle entfernt.`);
+            }
+        }
+
       // Quick sanity checks to avoid spam
       if (!newPresence) return;
       if (!newPresence.guild) return; // manchmal undefined
