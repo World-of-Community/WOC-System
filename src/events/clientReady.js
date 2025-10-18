@@ -61,7 +61,7 @@ module.exports = {
         const randomMember = onlineMembers.random();
         const username = randomMember.displayName;
     
-        const customStatus = `💖 | mit ${username}`;
+        const customStatus = `Spielt 💖 | mit ${username}`;
         await client.user.setActivity(customStatus, { type: ActivityType.Playing });
       } catch (err) {
         console.error('❗  | Status-Update Fehler:', err);
