@@ -1,7 +1,7 @@
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
-const fs = require('fs');
-const { Coin } = require('../../Datenbank/coindb');
-const StreamSession = require('../../Datenbank/streamSessiondb');
+const fs = require("fs");
+const { Coin } = require("../../Datenbank/coindb");
+const StreamSession = require("../../Datenbank/streamSessiondb");
 
 // --- In-Memory State ---
 const timers = new Map();
@@ -10,23 +10,30 @@ const sessionStart = new Map();
 const lastEnded = new Map();
 
 // --- Konfiguration ---
-const INTERVAL_MINUTES = 5; // Belohnung alle X Minuten
+const INTERVAL_MINUTES = 5;
 const REWARD_MIN = 100;
 const REWARD_MAX = 250;
-const MAX_STREAM_MINUTES = 7 * 24 * 60; // Sicherheitslimit (Minuten)
+const MAX_STREAM_MINUTES = 7 * 24 * 60;
 const COOLDOWN_AFTER_STREAM_MINUTES = 0;
-const STREAMER_ROLE_ID = '1266095218239995968';
 
-// Config laden (einmalig). Falls die Datei nicht existiert, wird der Handler trotzdem weiterlaufen.
+// ⚙️ IDs anpassen
+const STREAMER_ROLE_ID = "1266095218239995968"; // Optional: Rolle, die streamen darf
+const LIVE_ROLE_ID = "1300000000000000000";     // 🟣 Rolle, die beim Streamen vergeben wird
+
+// --- Config-Datei laden (optional) ---
 let CONFIG = {};
 try {
-  const file = fs.readFileSync('src/json/config.json', 'utf-8');
+  const file = fs.readFileSync("src/json/config.json", "utf-8");
   CONFIG = JSON.parse(file);
-} catch (e) {
-  console.warn('[StreamReward] Keine oder fehlerhafte config.json gefunden. Stelle sicher, dass src/json/config.json existiert.');
+} catch {
+  console.warn(
+    "[StreamReward] Keine oder fehlerhafte config.json gefunden. Stelle sicher, dass src/json/config.json existiert."
+  );
 }
 
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 module.exports = {
   name: Events.PresenceUpdate,
@@ -36,91 +43,70 @@ module.exports = {
    */
   async execute(oldPresence, newPresence) {
     try {
-      const client = newPresence?.client || oldPresence?.client;
-
-      // Rolle, die gegeben/entfernt werden soll
-        const streamRoleId = '123456789012345678'; // <-- deine Streamer-Rollen-ID hier
-
-        // Sicherstellen, dass Daten vorhanden sind
-        if (!newPresence || !newPresence.member) return;
-        const member = newPresence.member;
-
-        // Prüfen, ob der Nutzer gerade streamt
-        const isStreaming = newPresence.activities.some(
-            (activity) => activity.type === 1 && activity.url // type 1 = Streaming
-        );
-
-        // Alte Presence prüfen, ob vorher gestreamt wurde
-        const wasStreaming = oldPresence?.activities.some(
-            (activity) => activity.type === 1 && activity.url
-        );
-
-        // Wenn Nutzer neu anfängt zu streamen → Rolle geben
-        if (!wasStreaming && isStreaming) {
-            if (!member.roles.cache.has(streamRoleId)) {
-                await member.roles.add(streamRoleId).catch(console.error);
-                console.log(`🎥 ${member.user.tag} streamt jetzt – Rolle hinzugefügt.`);
-            }
-        }
-
-        // Wenn Nutzer aufhört zu streamen → Rolle entfernen
-        if (wasStreaming && !isStreaming) {
-            if (member.roles.cache.has(streamRoleId)) {
-                await member.roles.remove(streamRoleId).catch(console.error);
-                console.log(`🛑 ${member.user.tag} hat aufgehört zu streamen – Rolle entfernt.`);
-            }
-        }
-
-      // Quick sanity checks to avoid spam
-      if (!newPresence) return;
-      if (!newPresence.guild) return; // manchmal undefined
+      if (!newPresence?.guild) return;
       if (CONFIG.server && newPresence.guild.id !== CONFIG.server) return;
 
-      // Member existenz prüfen
-      const member = newPresence.member ?? await newPresence.guild.members.fetch(newPresence.userId).catch(() => null);
+      const member =
+        newPresence.member ??
+        (await newPresence.guild.members
+          .fetch(newPresence.userId)
+          .catch(() => null));
       if (!member || member.user?.bot) return;
 
-      // Optional: check if member has streamer role (falls gewünscht)
-      const streamerRole = newPresence.guild.roles.cache.get(STREAMER_ROLE_ID);
+      const guild = newPresence.guild;
+
+      const wasStreaming = Array.isArray(oldPresence?.activities)
+        ? oldPresence.activities.some((a) => a.type === ActivityType.Streaming)
+        : false;
+
+      const isStreaming = Array.isArray(newPresence?.activities)
+        ? newPresence.activities.some((a) => a.type === ActivityType.Streaming)
+        : false;
+
+      // Nur Streamer-Rolle erlaubt (optional)
+      const streamerRole = guild.roles.cache.get(STREAMER_ROLE_ID);
       if (streamerRole && !member.roles.cache.has(streamerRole.id)) return;
 
-      // Prüfen ob stream-activity vorhanden ist
-      const wasStreaming = oldPresence?.activities?.some(a => a.type === ActivityType.Streaming) || false;
-      const isStreaming = newPresence?.activities?.some(a => a.type === ActivityType.Streaming) || false;
+      // Live-Status prüfen
+      const liveRole = guild.roles.cache.get(LIVE_ROLE_ID);
 
-      // Schutz gegen Doppelstarts
+      // 🔴 Stream gestartet
       if (!wasStreaming && isStreaming) {
-        if (timers.has(member.id)) {
-          console.log(`[StreamReward] Timer already exists for ${member.user.tag}, ignoring duplicate start.`);
-        } else {
-          await startStreamSession(member);
+        if (liveRole && !member.roles.cache.has(LIVE_ROLE_ID)) {
+          await member.roles.add(LIVE_ROLE_ID).catch(() => {});
+          console.log(`[StreamReward] ${member.user.tag} ist jetzt LIVE.`);
         }
+        if (!timers.has(member.id)) await startStreamSession(member);
       }
 
-      // Ende des Streams
+      // ⚫️ Stream beendet
       if (wasStreaming && !isStreaming) {
-        await clearSession(member.id, 'stream ended', member);
+        if (liveRole && member.roles.cache.has(LIVE_ROLE_ID)) {
+          await member.roles.remove(LIVE_ROLE_ID).catch(() => {});
+          console.log(`[StreamReward] ${member.user.tag} ist nicht mehr live.`);
+        }
+        await clearSession(member.id, "stream ended", member);
       }
 
-      // Falls ein Eintrag in DB existiert (z.B. Bot-Neustart) aber noch kein laufender Timer, wiederherstellen
+      // Restore bei Bot-Neustart
       if (isStreaming && !timers.has(member.id)) {
-        const existingSession = await StreamSession.findOne({ userId: member.id }).catch(() => null);
+        const existingSession = await StreamSession.findOne({
+          userId: member.id,
+        }).catch(() => null);
         if (existingSession) await restoreStreamSession(member, existingSession);
       }
-
     } catch (err) {
       console.error("[StreamReward] Error in PresenceUpdate handler:", err);
     }
-  }
+  },
 };
 
 // ------------------ Hilfsfunktionen ------------------
 
 async function restoreStreamSession(member, sessionData) {
   const userId = member.id;
-  if (timers.has(userId)) return; // bereits wiederhergestellt
+  if (timers.has(userId)) return;
 
-  // sessionData.start kann String oder Date sein
   const startDate = sessionData.start ? new Date(sessionData.start) : new Date();
   sessionStart.set(userId, startDate);
   sessionEarned.set(userId, sessionData.earned || 0);
@@ -128,23 +114,25 @@ async function restoreStreamSession(member, sessionData) {
   const intervalMs = INTERVAL_MINUTES * 60 * 1000;
   const interval = setInterval(async () => {
     try {
-      const stillStreaming = member.presence?.activities?.some(a => a.type === ActivityType.Streaming);
-      if (!stillStreaming) return clearSession(userId, 'stream stopped (restore)', member);
+      const stillStreaming = member.presence?.activities?.some(
+        (a) => a.type === ActivityType.Streaming
+      );
+      if (!stillStreaming) return clearSession(userId, "stream stopped", member);
 
-      const diffMin = (Date.now() - sessionStart.get(userId).getTime()) / 1000 / 60;
-      if (MAX_STREAM_MINUTES && diffMin > MAX_STREAM_MINUTES) {
-        return clearSession(userId, 'max time reached', member);
-      }
+      const diffMin =
+        (Date.now() - sessionStart.get(userId).getTime()) / 1000 / 60;
+      if (diffMin > MAX_STREAM_MINUTES)
+        return clearSession(userId, "max time reached", member);
 
       const reward = randInt(REWARD_MIN, REWARD_MAX);
       sessionEarned.set(userId, (sessionEarned.get(userId) || 0) + reward);
       await addCoinsToUser(userId, reward);
-
-      // Update DB
-      await StreamSession.updateOne({ userId }, { $set: { earned: sessionEarned.get(userId) } }).catch(() => {});
-
+      await StreamSession.updateOne(
+        { userId },
+        { $set: { earned: sessionEarned.get(userId) } }
+      );
     } catch (err) {
-      console.error('[StreamReward] Error during restore interval for', userId, err);
+      console.error("[StreamReward] Error during restore interval:", err);
     }
   }, intervalMs);
 
@@ -156,16 +144,16 @@ async function startStreamSession(member) {
   const userId = member.id;
 
   if (COOLDOWN_AFTER_STREAM_MINUTES > 0 && lastEnded.has(userId)) {
-    const diffMin = (Date.now() - lastEnded.get(userId).getTime()) / 1000 / 60;
+    const diffMin =
+      (Date.now() - lastEnded.get(userId).getTime()) / 1000 / 60;
     if (diffMin < COOLDOWN_AFTER_STREAM_MINUTES) {
-      console.log(`[StreamReward] ${member.user.tag} is still on cooldown (${Math.round(diffMin)}m).`);
+      console.log(
+        `[StreamReward] ${member.user.tag} is still on cooldown (${Math.round(
+          diffMin
+        )}m).`
+      );
       return;
     }
-  }
-
-  if (timers.has(userId)) {
-    console.log(`[StreamReward] ${member.user.tag} already has a timer. Skip start.`);
-    return;
   }
 
   sessionEarned.set(userId, 0);
@@ -175,26 +163,30 @@ async function startStreamSession(member) {
     { userId },
     { $set: { start: sessionStart.get(userId), earned: 0 } },
     { upsert: true }
-  ).catch(err => console.error('[StreamReward] DB write error (start):', err));
+  ).catch((err) => console.error("[StreamReward] DB write error:", err));
 
   const intervalMs = INTERVAL_MINUTES * 60 * 1000;
   const interval = setInterval(async () => {
     try {
-      const stillStreaming = member.presence?.activities?.some(a => a.type === ActivityType.Streaming);
-      if (!stillStreaming) return clearSession(userId, 'stream stopped', member);
+      const stillStreaming = member.presence?.activities?.some(
+        (a) => a.type === ActivityType.Streaming
+      );
+      if (!stillStreaming) return clearSession(userId, "stream stopped", member);
 
-      const diffMin = (Date.now() - sessionStart.get(userId).getTime()) / 1000 / 60;
-      if (MAX_STREAM_MINUTES && diffMin > MAX_STREAM_MINUTES) {
-        return clearSession(userId, 'max time reached', member);
-      }
+      const diffMin =
+        (Date.now() - sessionStart.get(userId).getTime()) / 1000 / 60;
+      if (diffMin > MAX_STREAM_MINUTES)
+        return clearSession(userId, "max time reached", member);
 
       const reward = randInt(REWARD_MIN, REWARD_MAX);
       sessionEarned.set(userId, (sessionEarned.get(userId) || 0) + reward);
       await addCoinsToUser(userId, reward);
-      await StreamSession.updateOne({ userId }, { $set: { earned: sessionEarned.get(userId) } }).catch(() => {});
-
+      await StreamSession.updateOne(
+        { userId },
+        { $set: { earned: sessionEarned.get(userId) } }
+      );
     } catch (err) {
-      console.error('[StreamReward] Error during interval for', userId, err);
+      console.error("[StreamReward] Error during interval:", err);
     }
   }, intervalMs);
 
@@ -202,7 +194,6 @@ async function startStreamSession(member) {
   console.log(`[StreamReward] ${member.user.tag} started stream session.`);
 }
 
-// clearSession löscht auch die DB-Session
 async function clearSession(userId, reason = "ended", memberInstance = null) {
   try {
     if (timers.has(userId)) {
@@ -211,45 +202,52 @@ async function clearSession(userId, reason = "ended", memberInstance = null) {
     }
 
     const earned = sessionEarned.get(userId) || 0;
-    const start = sessionStart.get(userId) || null;
+    const start = sessionStart.get(userId);
     const end = new Date();
 
     sessionEarned.delete(userId);
     sessionStart.delete(userId);
     lastEnded.set(userId, end);
 
-    // DB löschen (Session abgeschlossen)
-    await StreamSession.deleteOne({ userId }).catch(() => {});
+    await StreamSession.deleteOne({ userId });
 
-    // DM senden...
-    const finalBalance = await getUserCoins(userId);
-    let durationText = "unbekannt";
-    if (start) {
-      const diffMs = end - start;
-      durationText = `${Math.floor(diffMs / 60000)}m ${Math.floor((diffMs % 60000)/1000)}s`;
+    if (memberInstance?.user) {
+      const finalBalance = await getUserCoins(userId);
+      let durationText = "unbekannt";
+      if (start) {
+        const diffMs = end - start;
+        durationText = `${Math.floor(diffMs / 60000)}m ${Math.floor(
+          (diffMs % 60000) / 1000
+        )}s`;
+      }
+
+      const embed = new EmbedBuilder()
+        .setTitle("🎥 Stream-Belohnung")
+        .setDescription("Danke fürs Streamen! Hier ist deine Belohnung:")
+        .addFields(
+          { name: "🕒 Dauer", value: durationText, inline: true },
+          { name: "💰 Verdient", value: `${earned} Coins`, inline: true },
+          { name: "🏦 Kontostand", value: `${finalBalance} Coins`, inline: false }
+        )
+        .setFooter({ text: `Grund: ${reason}` })
+        .setTimestamp();
+
+      await memberInstance.user
+        .send({ embeds: [embed] })
+        .catch(() =>
+          console.log(`[StreamReward] Konnte DM an ${userId} nicht senden.`)
+        );
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle("🎥 Stream-Belohnung – Übersicht")
-      .setDescription("Danke fürs Streamen! Hier ist deine Belohnung:")
-      .addFields(
-        { name: "🕒 Dauer", value: durationText, inline: true },
-        { name: "💰 Verdient", value: `${earned} Coins`, inline: true },
-        { name: "🏦 Kontostand", value: `${finalBalance} Coins`, inline: false }
-      )
-      .setFooter({ text: `Grund: ${reason}` })
-      .setTimestamp();
-
-    if (memberInstance?.user) await memberInstance.user.send({ embeds: [embed] }).catch(() => {});
-
-    console.log(`[StreamReward] ${memberInstance?.user?.tag ?? userId} ended stream, earned: ${earned}. Reason: ${reason}`);
-
+    console.log(
+      `[StreamReward] ${memberInstance?.user?.tag ?? userId} stream ended. Earned: ${earned}.`
+    );
   } catch (err) {
-    console.error('[StreamReward] Error in clearSession:', err);
+    console.error("[StreamReward] Error in clearSession:", err);
   }
 }
 
-// ------------------ Simple Coin Helpers ------------------
+// ------------------ Coin Helpers ------------------
 async function addCoinsToUser(userId, amount) {
   try {
     const res = await Coin.findOneAndUpdate(
@@ -259,7 +257,7 @@ async function addCoinsToUser(userId, amount) {
     );
     return res.coins;
   } catch (err) {
-    console.error('[StreamReward] addCoinsToUser error:', err);
+    console.error("[StreamReward] addCoinsToUser error:", err);
     return null;
   }
 }
@@ -269,18 +267,17 @@ async function getUserCoins(userId) {
     const res = await Coin.findOne({ userId });
     return res?.coins || 0;
   } catch (err) {
-    console.error('[StreamReward] getUserCoins error:', err);
+    console.error("[StreamReward] getUserCoins error:", err);
     return 0;
   }
 }
 
-// Optional: clear timers on process exit to be tidy
-process.on('SIGINT', () => {
+// Sauberes Beenden
+process.on("SIGINT", () => {
   timers.forEach(clearInterval);
-  console.log('[StreamReward] Cleared all timers on shutdown.');
+  console.log("[StreamReward] Alle Timer beim Shutdown beendet.");
   process.exit(0);
 });
-
 
 // Alte Version des Handlers (nur zur Referenz)*
 /*
