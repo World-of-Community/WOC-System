@@ -47,14 +47,14 @@ module.exports = {
 
             // Bestätigung
             await interaction.reply({
-                content: '> ✅ » Das **Feedback-System** wurde erfolgreich gesendet.',
+                content: '> `✅` » Das **Feedback-System** wurde erfolgreich gesendet.',
                 ephemeral: true
             });
 
         } catch (err) {
             console.error('Fehler beim Senden des Feedback-Embeds:', err);
             return interaction.reply({
-                content: '❌ Beim Senden des Feedback-Systems ist ein Fehler aufgetreten.',
+                content: '> `❌` » Beim Senden des Feedback-Systems ist ein Fehler aufgetreten.',
                 ephemeral: true
             });
         }
