@@ -23,7 +23,7 @@ module.exports = {
             // Text-Embed (Beschreibung)
             const infoEmbed = new EmbedBuilder()
                 .setColor('#00FFFF')
-                .setTitle('💬 » Feedback')
+                .setTitle('Feedback')
                 .setDescription(
                     'Du hast eine **Idee**, einen **Verbesserungsvorschlag** oder möchtest ein **Feature** anregen?\n' +
                     'Dann eröffne jetzt ein **Feedback-Ticket** und teile deine Gedanken mit uns! 💡'
