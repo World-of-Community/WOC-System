@@ -1,32 +1,62 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, PermissionFlagsBits } = require('discord.js');
+const {
+    SlashCommandBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    EmbedBuilder,
+    PermissionFlagsBits
+} = require('discord.js');
 
 module.exports = {
-  data: new SlashCommandBuilder()
-  .setName('feedback')
-  .setDescription('» Schickt das Feedback System')
-  .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
-  async execute(interaction) {
+    data: new SlashCommandBuilder()
+        .setName('feedback')
+        .setDescription('» Sendet das Feedback-System in den aktuellen Kanal.')
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
-    const FeedbackBild = new EmbedBuilder()
-      .setColor('Aqua')
-      .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1280172685694996572/WOC_Banner_Information_Feedback.jpg?ex=67a4c738&is=67a375b8&hm=ed8af1095ccc443555be6401fd3f7215442952b99925a039b491512945004e54&')
+    async execute(interaction) {
+        try {
+            // Hauptbild-Embed (Banner)
+            const bannerEmbed = new EmbedBuilder()
+                .setColor('#00FFFF')
+                .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1280172685694996572/WOC_Banner_Information_Feedback.jpg');
 
-    const FeedbackEmbed = new EmbedBuilder()
-      .setTitle('Feedback')
-      .setDescription('Du hast einen Verbesserungsvorschlag oder eine Idee, welche du loswerden willst? Dann bist du hier genau richtig!')
-      .setColor('Aqua')
-      .setImage('https://images-ext-1.discordapp.net/external/FXl45Y5BGOgY0JGxnjCg5pK0J7wFF-m2qjyp-u0_q-Y/https/imgur.com/kekDug7.png?format=webp&quality=lossless&width=1260&height=6')
+            // Text-Embed (Beschreibung)
+            const infoEmbed = new EmbedBuilder()
+                .setColor('#00FFFF')
+                .setTitle('💬 » Feedback')
+                .setDescription(
+                    'Du hast eine **Idee**, einen **Verbesserungsvorschlag** oder möchtest ein **Feature** anregen?\n' +
+                    'Dann eröffne jetzt ein **Feedback-Ticket** und teile deine Gedanken mit uns! 💡'
+                )
+                .setImage('https://imgur.com/kekDug7.png')
+                .setFooter({ text: 'Wir freuen uns über jedes Feedback!' });
 
-    const FeedbackButton = new ActionRowBuilder()
-      .addComponents(
-        new ButtonBuilder()
-          .setCustomId('create_feedback_ticket')
-          .setLabel('Ticket öffnen')
-          .setEmoji('🗳️')
-          .setStyle(ButtonStyle.Primary)
-      );
+            // Button für Feedback-Erstellung
+            const feedbackButton = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId('create_feedback_ticket')
+                    .setLabel('🗳️ Ticket öffnen')
+                    .setStyle(ButtonStyle.Primary)
+            );
 
-    await interaction.channel.send({ embeds: [FeedbackBild, FeedbackEmbed], components: [FeedbackButton] })
-    await interaction.reply({ content: `> \`✅\` » Das **Feedback**-Embed wurde erfolgreich gesendet.`, ephemeral: true });
-  },
+            // Nachricht senden
+            await interaction.channel.send({
+                embeds: [bannerEmbed, infoEmbed],
+                components: [feedbackButton]
+            });
+
+            // Bestätigung
+            await interaction.reply({
+                content: '> ✅ » Das **Feedback-System** wurde erfolgreich gesendet.',
+                ephemeral: true
+            });
+
+        } catch (err) {
+            console.error('Fehler beim Senden des Feedback-Embeds:', err);
+            return interaction.reply({
+                content: '❌ Beim Senden des Feedback-Systems ist ein Fehler aufgetreten.',
+                ephemeral: true
+            });
+        }
+    },
 };
