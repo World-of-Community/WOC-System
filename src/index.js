@@ -631,38 +631,39 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Tägliche Belohnung Erinnerung
-const CHANNEL_ID = '815922756918181898';
+//const CHANNEL_ID = '815922756918181898';
+//
+//let lastMessageId = null; // nur im RAM gespeichert
+//
+//cron.schedule('0 */6 * * *', async () => {
+//  try {
+//    const channel = await client.channels.fetch(CHANNEL_ID);
+//    if (!channel || channel.type !== ChannelType.GuildText) return;
+//
+//    // Letzte Nachricht löschen
+//    if (lastMessageId) {
+//      try {
+//        const oldMsg = await channel.messages.fetch(lastMessageId);
+//        if (oldMsg) await oldMsg.delete();
+//      } catch (err) {
+//        console.log('Konnte alte Nachricht nicht löschen:', err.message);
+//      }
+//    }
+//
+//    // Neue Nachricht senden
+//    const newMsg = await channel.send(
+//      '**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`'
+//    );
+//
+//    // ID merken
+//    lastMessageId = newMsg.id;
+//
+//  } catch (error) {
+//    console.error('Fehler beim täglichen Reminder:', error);
+//  }
+//});
 
-let lastMessageId = null; // nur im RAM gespeichert
-
-cron.schedule('0 */6 * * *', async () => {
-  try {
-    const channel = await client.channels.fetch(CHANNEL_ID);
-    if (!channel || channel.type !== ChannelType.GuildText) return;
-
-    // Letzte Nachricht löschen
-    if (lastMessageId) {
-      try {
-        const oldMsg = await channel.messages.fetch(lastMessageId);
-        if (oldMsg) await oldMsg.delete();
-      } catch (err) {
-        console.log('Konnte alte Nachricht nicht löschen:', err.message);
-      }
-    }
-
-    // Neue Nachricht senden
-    const newMsg = await channel.send(
-      '**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`'
-    );
-
-    // ID merken
-    lastMessageId = newMsg.id;
-
-  } catch (error) {
-    console.error('Fehler beim täglichen Reminder:', error);
-  }
-});
-
+// Bump Reminder
 const BUMPCHANNEL_ID = '1426670515011194890';
 let bumplastMessageId = null; // ID der letzten Reminder-Nachricht
 
