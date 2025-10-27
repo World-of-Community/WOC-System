@@ -3,15 +3,15 @@ const User = require('../../../Datenbank/userdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('shop-pass')
-    .setDescription('» Zeigt den Shoppass mit allen Vorteilen und der Kaufoption. 🎫')
+    .setName('season-pass')
+    .setDescription('» Zeigt den Seasonpass mit allen Vorteilen und der Kaufoption. 🎫')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const userData = await User.findOne({ userId: interaction.user.id }) || { shoppass: false, coins: 0 };
 
     const embed = new EmbedBuilder()
-      .setTitle('🎟️ ShopPass')
+      .setTitle('🎟️ SeasonPass')
       .setColor('Blurple')
       .setDescription( 
        'Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 20 Rewards!\n\n' +
@@ -31,7 +31,7 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('shoppass_show')
-        .setLabel('ShopPass anzeigen')
+        .setLabel('SeasonPass anzeigen')
         .setEmoji('🎟️')
         .setStyle(ButtonStyle.Primary),
 
@@ -42,6 +42,6 @@ module.exports = {
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] })
-    await interaction.reply({ content: 'ShopPass Embed gesendet.', ephemeral: true });
+    await interaction.reply({ content: 'SeaosnPass Embed gesendet.', ephemeral: true });
   },
 };
