@@ -663,39 +663,6 @@ cron.schedule('0 */6 * * *', async () => {
   }
 });
 
-// Bump Reminder
-const BUMPCHANNEL_ID = '1426670515011194890';
-let bumplastMessageId = null; // ID der letzten Reminder-Nachricht
-
-// Cron-Job: alle 2 Stunden
-cron.schedule('0 */2 * * *', async () => {
-    try {
-        const channel = await client.channels.fetch(BUMPCHANNEL_ID);
-        if (!channel) return console.log('Channel nicht gefunden!');
-
-        // Alte Nachricht löschen, falls vorhanden
-        if (bumplastMessageId) {
-            try {
-                const oldMsg = await channel.messages.fetch(bumplastMessageId);
-                if (oldMsg) await oldMsg.delete();
-            } catch {
-                // Alte Nachricht evtl. schon gelöscht oder nicht mehr verfügbar
-            }
-        }
-
-        const embed = new EmbedBuilder()
-            .setTitle('`🔔` Bump-Reminder')
-            .setDescription(`Der Server kann wieder gebumpt werden!\n» \`/bump\`.\n\n*Du kannst alle 2 Stunden bumpen!*`)
-            .setColor('Blurple')
-            .setTimestamp();
-
-        const msg = await channel.send({ content: '<@&1426669989842391210>', embeds: [embed] });
-        bumplastMessageId = msg.id; // ID der neuen Nachricht speichern
-    } catch (error) {
-        console.error('Fehler beim Senden des Bump-Reminders:', error);
-    }
-});
-
 // Onlinezeit (Profil.js)
 setInterval(async () => {
   const guild = client.guilds.cache.get("815919809379172354");
