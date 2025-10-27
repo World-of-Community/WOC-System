@@ -24,7 +24,7 @@ module.exports = {
        '» Du erhältst XP, mit denen du Rewards freischaltest\n' +
        '» 450 XP wenn du am vorherigen Tag auch geworben hast\n' +
        '» Ansonsten nur 300 XP - aktives Schreiben wird belohnt!\n\n' +
-       '`📌` [Premium Pass](https://www.patreon.com/profile/creators?u=84745341): Alle Rewards inkl. **__Nitro__** (10€) und **5000 ShopCoins**!\n' +
+       '`📌` [Premium Pass](https://www.patreon.com/profile/creators?u=84745341): Alle Rewards inkl. **__Nitro__** (10€) und **5000 Coins**!\n' +
        '- Nitro (10€) - Aktuell nicht Verfügbar.'
       )
 
