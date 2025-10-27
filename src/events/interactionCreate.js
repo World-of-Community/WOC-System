@@ -12,7 +12,7 @@ const Meeting = require('../../Datenbank/meetingdb');
 // Beta Features (Buttons & Modals)
 //const editBanReason = require("./interactions/buttons/editBanReason");
 //const banReasonModal = require("./interactions/modals/banReasonModal");
-//const feedbackButton = require("./interactions/buttons/feedbackButton");
+const feedbackButton = require("../buttons/feedbackButton");
 //const feedbackModal = require("./interactions/modals/feedbackModal");
 //const ticketButton = require("./interactions/buttons/ticketButton");
 //const unbanModal = require("./interactions/modals/unbanModal");
@@ -84,6 +84,22 @@ module.exports = {
     console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error);
     await interaction.reply({ content: '> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.', ephemeral: true });
   }
+
+            // Feedback Button Handler
+            if (interaction.customId === 'create_feedback_ticket' || 
+                interaction.customId === 'close_feedback_ticket' || 
+                interaction.customId === 'feedback_accept_close' || 
+                interaction.customId === 'feedback_reject_open') {
+                return await feedbackButton.execute(interaction);
+            }
+
+            // Partner Button Handler
+            if (interaction.customId === 'partner' || 
+                interaction.customId.startsWith('partner_accept_') || 
+                interaction.customId.startsWith('partner_deny_')) {
+                return await partnerButton.execute(interaction);
+            }
+
             const now = new Date();
           
             // Event-Zeitspannen
@@ -222,6 +238,100 @@ module.exports = {
         try {
           if (interaction.isModalSubmit()) {
             if(await emojiquizCommand.handleModalSubmit(interaction)) return;
+            
+            // Feedback Modal Handler
+            if (interaction.customId === 'feedback-modal') {
+                
+                try {
+                // Defer immediately to prevent timeout
+                await interaction.deferReply({ ephemeral: true });
+                
+                const title = interaction.fields.getTextInputValue('feedback-title');
+                const description = interaction.fields.getTextInputValue('feedback-description');
+            
+                const threadName = `🗳️ ${title} - ${interaction.user.username}`;
+                // TODO: Update this channel ID for your server
+                // This is the channel where feedback threads will be created
+                // To find channel ID: Right-click channel > Copy ID (Developer Mode must be enabled)
+                const feedbackChannelId = '1336720916591149137'; // Feedback channel
+                const supportRoleId = '1011207481357238272'; // Team-Rolle
+            
+                // Get the feedback channel
+                const feedbackChannel = interaction.guild.channels.cache.get(feedbackChannelId);
+                if (!feedbackChannel) {
+                    return interaction.editReply({ 
+                        content: '> `❌` » Feedback-Kanal nicht gefunden. Bitte kontaktiere einen Administrator.', 
+                        ephemeral: true 
+                    });
+                }
+            
+                // Check if user already has an active feedback thread
+                const activeThreads = await feedbackChannel.threads.fetchActive();
+                const existingThread = activeThreads.threads.find(thread => 
+                    thread.name.includes(interaction.user.username) && !thread.archived
+                );
+                
+                if (existingThread) {
+                    return interaction.editReply({ 
+                        content: `> ⚠️ Du hast bereits ein offenes Feedback-Ticket: ${existingThread}`, 
+                        ephemeral: true 
+                    });
+                }
+            
+                const thread = await feedbackChannel.threads.create({
+                    name: threadName,
+                    type: ChannelType.PrivateThread,
+                    autoArchiveDuration: 10080, // 24 Stunden
+                    reason: `Feedback von ${interaction.user.tag}`
+                });
+                
+                
+                // Add user to thread
+                await thread.members.add(interaction.user.id);
+            
+                const ticketEmbed = new EmbedBuilder()
+                    .setDescription(`**Hey ${interaction.user}!**\n\nDanke für dein Feedback!\nDein Ticket wird zeitnah von unserem Server-Team bearbeitet.`)
+                    .setColor('Aqua')
+                    .setImage('https://imgur.com/kekDug7.png')
+
+                const ticketEmbed2 = new EmbedBuilder()
+                    .setDescription(`**Kurztitel des Themas**\n${title}\n\n**Detaillierte Beschreibung**\n${description}`)
+                    .setColor('Aqua')
+                    .setImage('https://imgur.com/kekDug7.png')
+            
+                const closeButtonRow = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('close_feedback_ticket')
+                        .setLabel('❌ Ticket schließen')
+                        .setStyle(ButtonStyle.Secondary)
+                );
+            
+                await thread.send({
+                    content: `<@${interaction.user.id}> <@&${supportRoleId}>`,
+                    embeds: [ticketEmbed, ticketEmbed2],
+                    components: [closeButtonRow]
+                });
+            
+                await interaction.editReply({ content: `> \`✅\` » Dein **Feedback-Ticket** wurde erstellt: ${thread}` });
+                } catch (err) {
+                    try {
+                        if (interaction.deferred && !interaction.replied) {
+                            await interaction.editReply({
+                                content: "> `❌` » Beim Erstellen des Feedback-Tickets ist ein Fehler aufgetreten. Bitte kontaktiere einen Administrator."
+                            });
+                        } else if (!interaction.replied && !interaction.deferred) {
+                            await interaction.reply({
+                                content: "> `❌` » Beim Erstellen des Feedback-Tickets ist ein Fehler aufgetreten. Bitte kontaktiere einen Administrator.",
+                                
+                            });
+                        }
+                    } catch (replyErr) {
+                        console.error("[FEEDBACK-MODAL] Failed to send error message:", replyErr);
+                    }
+                }
+                return;
+
+            }
           }
           if (interaction.isCommand()) {
             if(interaction.commandName === 'emojiquiz') {
@@ -668,7 +778,7 @@ module.exports = {
             if (!meeting.participants.includes(userId)) meeting.participants.push(userId);
             meeting.nonParticipants = meeting.nonParticipants.filter(id => id !== userId);
             await meeting.save();
-            return interaction.reply({ 
+            return interaction.editReply({ 
                 content: '> `✅` » Du nimmst nun am Team-Meeting teil.\n> `❗` » **Hinweis:** Bitte überprüfe, ob ich dir **Direktnachrichten** senden kann,\ndamit du die Erinnerung **10 Minuten** vorher erhältst.', 
                 ephemeral: true 
             });
@@ -690,7 +800,7 @@ module.exports = {
               await meeting.save();
             
               const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
-              return interaction.reply({ 
+              return interaction.editReply({ 
                 content: `> \`❌\` » Du nimmst nun nicht mehr am Team-Meeting teil,\n> welches am <t:${unixTimestamp}:F> stattfindet.`, 
                 ephemeral: true 
               });
@@ -821,6 +931,7 @@ module.exports = {
               }
             }
         }
+
         */
         
         /*
@@ -904,7 +1015,7 @@ module.exports = {
                     .setStyle(ButtonStyle.Secondary)
             );
         
-            await ticketChannel.send({
+            await thread.send({
                 embeds: [ticketEmbed, ticketEmbed2],
                 components: [closeButtonRow]
             });

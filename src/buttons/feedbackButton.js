@@ -12,12 +12,19 @@ const {
 
 module.exports = {
     async execute(interaction) {
-        if (!interaction.guild) return; // verhindert Nutzung in DMs
+        
+        if (!interaction.guild) {
+            return;
+        }
 
         try {
             // --- Feedback-Ticket erstellen ---
             if (interaction.isButton() && interaction.customId === 'create_feedback_ticket') {
-                if (interaction.replied || interaction.deferred) return; // verhindert Doppelmodal
+                
+                if (interaction.replied || interaction.deferred) {
+                    return;
+                }
+                
                 const feedbackModal = new ModalBuilder()
                     .setTitle('Feedback einreichen')
                     .setCustomId('feedback-modal');
@@ -43,11 +50,13 @@ module.exports = {
                 );
 
                 feedbackModal.addComponents(titleInput, descriptionInput);
-                return interaction.showModal(feedbackModal);
+                await interaction.showModal(feedbackModal);
+                return;
             }
 
             // --- Ticket schließen ---
             if (interaction.isButton() && interaction.customId === 'close_feedback_ticket') {
+                
                 const decisionEmbed = new EmbedBuilder()
                     .setTitle('`❓` » Schließ-Anfrage')
                     .setDescription(`${interaction.user} hat das Schließen dieses Tickets angefordert.\n\nBitte akzeptiere oder verweigere mit den untenstehenden Schaltflächen.`)
@@ -66,53 +75,74 @@ module.exports = {
                         .setStyle(ButtonStyle.Secondary)
                 );
 
-                return interaction.reply({
+                await interaction.reply({
                     content: `<@${interaction.user.id}>`,
                     embeds: [decisionEmbed],
                     components: [decisionButtons],
                     ephemeral: false
                 });
+                return;
             }
 
             // --- Akzeptieren & schließen ---
             if (interaction.isButton() && interaction.customId === 'feedback_accept_close') {
+                
+                // Defer immediately to prevent timeout
+                await interaction.deferUpdate();
+                
                 const acceptEmbed = new EmbedBuilder()
                     .setTitle('`🗑️` » Ticket wird geschlossen')
                     .setDescription('Dieses Ticket wird in **5 Sekunden** geschlossen.')
                     .setColor('Green');
 
-                await interaction.update({
+                await interaction.editReply({
                     embeds: [acceptEmbed],
                     components: []
                 });
 
                 setTimeout(async () => {
-                    if (interaction.channel?.deletable) {
-                        await interaction.channel.delete().catch(() => {});
+                    if (interaction.channel?.isThread()) {
+                        await interaction.channel.setArchived(true, 'Feedback-Ticket geschlossen').catch((err) => {
+                        });
+                    } else if (interaction.channel?.deletable) {
+                        // Fallback no longer used
+                        await interaction.channel.delete().catch((err) => {
+                        });
+                    } else {
+                        console.log('[FEEDBACK-BUTTON] Channel/Thread not closeable');
                     }
                 }, 5000);
+                return;
             }
 
             // --- Ablehnen & offen lassen ---
             if (interaction.isButton() && interaction.customId === 'feedback_reject_open') {
+                
+                // Defer immediately to prevent timeout
+                await interaction.deferUpdate();
+                
                 const rejectEmbed = new EmbedBuilder()
                     .setTitle('`🔓` » Ticket bleibt weiterhin offen')
                     .setDescription('Das Ticket bleibt weiterhin geöffnet.')
                     .setColor('Red');
 
-                return interaction.update({
+                await interaction.editReply({
                     embeds: [rejectEmbed],
                     components: []
                 });
+                return;
             }
 
         } catch (err) {
-            console.error('Feedback-Handler-Fehler:', err);
-            if (!interaction.replied && !interaction.deferred) {
-                await interaction.reply({
-                    content: '> `❌` » Es ist ein Fehler beim Ausführen dieser Aktion aufgetreten.',
-                    ephemeral: true
-                });
+            try {
+                if (!interaction.replied && !interaction.deferred) {
+                    await interaction.reply({
+                        content: '> `❌` » Es ist ein Fehler beim Ausführen dieser Aktion aufgetreten.',
+                        ephemeral: true
+                    });
+                }
+            } catch (replyErr) {
+                console.error('[FEEDBACK-BUTTON] Failed to send error message:', replyErr);
             }
         }
     }

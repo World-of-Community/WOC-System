@@ -14,7 +14,12 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
+        console.log(`[FEEDBACK-SYSTEM] Command executed by ${interaction.user.tag} in ${interaction.guild?.name}`);
+        
         try {
+            // Defer the reply immediately to prevent timeout
+            await interaction.deferReply({ ephemeral: true });
+
             // Hauptbild-Embed (Banner)
             const bannerEmbed = new EmbedBuilder()
                 .setColor('#00FFFF')
@@ -46,17 +51,26 @@ module.exports = {
             });
 
             // Bestätigung
-            await interaction.reply({
-                content: '> `✅` » Das **Feedback-System** wurde erfolgreich gesendet.',
-                ephemeral: true
+            await interaction.editReply({
+                ephemeral: true,
+                content: '> `✅` » Das **Feedback-System** wurde erfolgreich gesendet.'
             });
 
-        } catch (err) {
-            console.error('Fehler beim Senden des Feedback-Embeds:', err);
-            return interaction.reply({
-                content: '> `❌` » Beim Senden des Feedback-Systems ist ein Fehler aufgetreten.',
-                ephemeral: true
-            });
+        } catch (err) {            
+            try {
+                if (interaction.deferred) {
+                    await interaction.editReply({
+                        content: '> `❌` » Beim Senden des Feedback-Systems ist ein Fehler aufgetreten.'
+                    });
+                } else if (!interaction.replied) {
+                    await interaction.reply({
+                        content: '> `❌` » Beim Senden des Feedback-Systems ist ein Fehler aufgetreten.',
+                        ephemeral: true
+                    });
+                }
+            } catch (replyErr) {
+                console.error('[FEEDBACK-SYSTEM] Failed to send error message:', replyErr);
+            }
         }
     },
 };
