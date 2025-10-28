@@ -1,10 +1,11 @@
-const { 
-  SlashCommandBuilder, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
-  StringSelectMenuBuilder, 
-  ButtonBuilder, 
-  ButtonStyle, 
+// Datei: fussball-systemv2.js
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  StringSelectMenuBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   ComponentType,
   PermissionFlagsBits,
 } = require('discord.js');
@@ -18,14 +19,22 @@ const teamsData = [
   { name: "TSV Eiche", players: ["Bauer", "Koch", "Richter", "Klein"], stadium: "Stadion am Eichenweg" },
   { name: "SC Blau", players: ["Wolf", "Neumann", "Schröder", "Krüger"], stadium: "Blau-Weiß Arena" },
   { name: "VfB Stern", players: ["Hartmann", "Lange", "Schmitt", "Werner"], stadium: "Sternenfelder Stadion" },
-  // ... (kannst weitere Teams hier hinzufügen)
+  { name: "FC Rot-Weiß", players: ["Krause", "Meier", "Schulz", "Hahn"], stadium: "RW Arena" },
+  { name: "SV Grünwald", players: ["König", "Fuchs", "Bergmann", "Lorenz"], stadium: "Grünwaldstadion" },
+  { name: "TSV Nord", players: ["Frank", "Mayer", "Jung", "Albrecht"], stadium: "Nordstadion" },
+  { name: "SC Süd", players: ["Böhm", "Engel", "Jäger", "Brandt"], stadium: "Südpark Stadion" },
+  { name: "VfB West", players: ["Peters", "Simon", "Vogel", "Friedrich"], stadium: "Stadion am Westufer" },
 ];
 
 // --- Globale Map, speichert laufende Spiele ---
 // Struktur: matchId -> { team1Name, team2Name, score1, score2, minute, interval, statusMessageId, channelId, events[] }
 const liveMatchesMap = new Map();
 
-// Hilfsfunktionen
+// Globale Referenz auf das "Laufende Spiele"-Embed (Message-ID + Channel-ID)
+let liveOverviewMessage = null; // { messageId, channelId }
+
+/* -------------------- Hilfsfunktionen -------------------- */
+
 function getTwoDifferentTeams(teams) {
   const idx1 = Math.floor(Math.random() * teams.length);
   let idx2;
@@ -88,7 +97,65 @@ function buildMainMenu() {
   );
 }
 
-// ---------- Simulation mit Interval (ermöglicht Mehrfach-Simultaneität) ----------
+/* -------------------- Live-Overview Update -------------------- */
+
+async function updateLiveOverviewEmbed(client) {
+  // Wenn keine Übersicht gesichert ist, nichts tun
+  if (!liveOverviewMessage) return;
+
+  try {
+    const channel = await client.channels.fetch(liveOverviewMessage.channelId).catch(() => null);
+    if (!channel) {
+      liveOverviewMessage = null;
+      return;
+    }
+
+    const msg = await channel.messages.fetch(liveOverviewMessage.messageId).catch(() => null);
+    if (!msg) {
+      liveOverviewMessage = null;
+      return;
+    }
+
+    // Wenn keine Spiele laufen -> Nachricht anpassen und Referenz löschen
+    if (liveMatchesMap.size === 0) {
+      await msg.edit({ content: '`⚽` Es laufen aktuell keine Spiele.', embeds: [], components: [] }).catch(() => {});
+      liveOverviewMessage = null;
+      return;
+    }
+
+    const overview = new EmbedBuilder()
+      .setTitle('`🔴` Aktuell laufende Spiele')
+      .setColor('Red')
+      .setFooter({ text: `Stand: ${formatDate(new Date())}` });
+
+    for (const [id, m] of liveMatchesMap.entries()) {
+      overview.addFields({
+        name: `${m.team1Name} vs ${m.team2Name}`,
+        value: `${m.score1 ?? 0} - ${m.score2 ?? 0} (${m.minute ?? 0}')`,
+        inline: false,
+      });
+    }
+
+    const menu = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId('select_live_game')
+        .setPlaceholder('Wähle ein laufendes Spiel')
+        .addOptions(
+          ...Array.from(liveMatchesMap.entries()).slice(0, 25).map(([id, mm]) => ({
+            label: `${mm.team1Name} vs ${mm.team2Name}`,
+            value: id,
+          }))
+        )
+    );
+
+    await msg.edit({ content: null, embeds: [overview], components: [menu] }).catch(() => {});
+  } catch (err) {
+    console.error('Fehler beim Aktualisieren des Live-Overview-Embeds:', err);
+  }
+}
+
+/* -------------------- Simulation (Interval-basiert) -------------------- */
+
 async function simulateMatchInterval(client, channel, matchId, matchObj) {
   // matchObj initial state: { team1Name, team2Name, stadium, userTip(optional) }
   const { team1Name, team2Name, stadium } = matchObj;
@@ -117,12 +184,20 @@ async function simulateMatchInterval(client, channel, matchId, matchObj) {
     .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
   // Nachricht posten
-  const statusMessage = await channel.send({ embeds: [statusEmbed] });
+  const statusMessage = await channel.send({ embeds: [statusEmbed] }).catch(() => null);
+  if (!statusMessage) {
+    console.warn('Konnte Status-Nachricht nicht posten, Match nicht gestartet:', matchId);
+    return;
+  }
+
   // speichern
   matchObj.statusMessageId = statusMessage.id;
   matchObj.channelId = channel.id;
   matchObj.score1 = score1; matchObj.score2 = score2; matchObj.minute = minute; matchObj.events = events;
   liveMatchesMap.set(matchId, matchObj);
+
+  // Update Live Overview (falls aktiv)
+  await updateLiveOverviewEmbed(channel.client).catch(() => {});
 
   // Interval: jede Sekunde = 1 Minute (konfigurierbar)
   const interval = setInterval(async () => {
@@ -197,6 +272,9 @@ async function simulateMatchInterval(client, channel, matchId, matchObj) {
       matchObj.score1 = score1; matchObj.score2 = score2; matchObj.minute = minute; matchObj.events = events;
       liveMatchesMap.set(matchId, matchObj);
 
+      // Update die Live-Overview (wenn sie existiert)
+      await updateLiveOverviewEmbed(channel.client).catch(() => {});
+
       // Ende (nach 90 + extraTime Minuten)
       if (minute >= 90 + extraTime) {
         events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
@@ -215,12 +293,16 @@ async function simulateMatchInterval(client, channel, matchId, matchObj) {
         clearInterval(interval);
         // aus Map entfernen
         liveMatchesMap.delete(matchId);
+
+        // Update die Live-Overview (entferne das beendete Spiel dort)
+        await updateLiveOverviewEmbed(channel.client).catch(() => {});
       }
 
     } catch (err) {
       console.error('Fehler im Match-Interval', err);
       clearInterval(interval);
       liveMatchesMap.delete(matchId);
+      await updateLiveOverviewEmbed(channel.client).catch(() => {});
     }
   }, 1000); // 1 Sekunde = 1 Spielminute
 
@@ -229,10 +311,11 @@ async function simulateMatchInterval(client, channel, matchId, matchObj) {
   liveMatchesMap.set(matchId, matchObj);
 }
 
-// ---------- Command Definition ----------
+/* -------------------- Command Definition -------------------- */
+
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('fussball-system-t')
+    .setName('fussball-systemv2')
     .setDescription('Zeigt die Fußball-Übersicht an und simuliert Spiele')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand(sub => sub.setName('overview').setDescription('Zeigt die Hauptübersicht mit Menü'))
@@ -294,19 +377,20 @@ module.exports = {
         } else if (val === 'zufallsspiel') {
           await simulateRandomMatch(interaction);
         } else if (val === 'lives_overview') {
-          // show lives
+          // show lives overview - post a persistent message and store reference
           if (liveMatchesMap.size === 0) return i.channel.send('`⚽` Es laufen aktuell keine Spiele.');
           const overview = new EmbedBuilder().setTitle('`🔴` Aktuell laufende Spiele').setColor('Red');
           for (const [id, m] of liveMatchesMap.entries()) {
             overview.addFields({ name: `${m.team1Name} vs ${m.team2Name}`, value: `${m.score1 ?? 0} - ${m.score2 ?? 0} (${m.minute ?? 0}')`, inline: false });
           }
-          // Select-Menü um ein Spiel auszuwählen
           const menu = new ActionRowBuilder().addComponents(
             new StringSelectMenuBuilder().setCustomId('select_live_game').setPlaceholder('Wähle ein laufendes Spiel').addOptions(
               ...Array.from(liveMatchesMap.entries()).slice(0, 25).map(([id, mm]) => ({ label: `${mm.team1Name} vs ${mm.team2Name}`, value: id }))
             )
           );
-          await i.channel.send({ embeds: [overview], components: [menu] });
+          const posted = await i.channel.send({ embeds: [overview], components: [menu] });
+          // save reference
+          liveOverviewMessage = { messageId: posted.id, channelId: posted.channel.id };
         }
       });
 
@@ -320,17 +404,26 @@ module.exports = {
     }
 
     if (sub === 'lives') {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ ephemeral: false });
       if (liveMatchesMap.size === 0) return interaction.editReply({ content: '`⚽` Es laufen aktuell keine Spiele.' });
       const overview = new EmbedBuilder().setTitle('`🔴` Aktuell laufende Spiele').setColor('Red');
       for (const [id, m] of liveMatchesMap.entries()) overview.addFields({ name: `${m.team1Name} vs ${m.team2Name}`, value: `${m.score1 ?? 0} - ${m.score2 ?? 0} (${m.minute ?? 0}')`, inline: false });
-      await interaction.editReply({ embeds: [overview] });
+      const posted = await interaction.editReply({ embeds: [overview] }).catch(() => null);
+      // store reference if it's a Message (editReply returns the message)
+      if (posted && posted.id && posted.channel) {
+        liveOverviewMessage = { messageId: posted.id, channelId: posted.channel.id };
+      } else {
+        // fallback: send a new message
+        const sent = await interaction.channel.send({ embeds: [overview] }).catch(() => null);
+        if (sent) liveOverviewMessage = { messageId: sent.id, channelId: sent.channel.id };
+      }
       return;
     }
   }
 };
 
-// ---------- Hilfsfunktion: Zufallsspiel starten (extern aufrufbar) ----------
+/* -------------------- Hilfsfunktion: Zufallsspiel starten -------------------- */
+
 async function simulateRandomMatch(interaction) {
   // interaction kann vom SlashCommand oder von Collector kommen
   const channel = interaction.channel || interaction.message?.channel;
@@ -387,6 +480,9 @@ async function simulateRandomMatch(interaction) {
     const matchObj = { team1Name, team2Name, stadium, userTip };
     await simulateMatchInterval(client, channel, matchId, matchObj);
     await interaction.followUp({ content: `\`🔊\` **Anpfiff!** ${team1Name} vs ${team2Name} (Match-ID: ${matchId})` });
+
+    // Update Live Overview (falls aktiv) — in simulateMatchInterval wird ebenfalls geupdated, das ist hier praktisch redundant aber sicher.
+    await updateLiveOverviewEmbed(client).catch(() => {});
   });
 }
 
