@@ -315,7 +315,7 @@ async function simulateMatchInterval(client, channel, matchId, matchObj) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('fussball-systemv2')
+    .setName('fussball-system-t')
     .setDescription('Zeigt die Fußball-Übersicht an und simuliert Spiele')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand(sub => sub.setName('overview').setDescription('Zeigt die Hauptübersicht mit Menü'))
