@@ -31,7 +31,7 @@ module.exports = {
         if (member.user.bot) return; 
         if (serverData.deactivated.includes("willkommensnachrichten")) return;
         
-        const welcomeChannel = await member.guild.channels.cache.get('815922756918181898') // Willkommenskanal
+        const welcomeChannel = await member.guild.channels.cache.get('1433189396475023380') // Willkommenskanal
 
         // Falls man Mitgliederzahl sehen möchte bei Willkommensnachrichten -> (\`#${member.guild.memberCount}\`)
 
