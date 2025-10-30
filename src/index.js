@@ -613,7 +613,7 @@ cron.schedule('0 0 * * *', async () => {
                 content: `🎂 𑁉 ${birthdayMessage}\nWünscht dem **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"}** alles Gute! <a:2herzen:1196502635465932984>\nTrage auch deinen Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
             });
 
-            await birthdaymessage.react("<a:herzen:974633994840854608>");
+            await birthdaymessage.react("<a:herzen:1394561549602914386> ");
             await birthdaymessage.react("<a:Cool:915211628755169301>");
 
         } //else {
