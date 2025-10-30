@@ -269,16 +269,6 @@ module.exports = {
             outputText = `- \`📌\` » Land/Bundesland: \`❓\``;
         }
 
-        const erfolgeAnzeige = erfolgRollenIDs.map(roleId => {
-            const role = interaction.guild.roles.cache.get(roleId);
-            return `- ${role ? `<@&${roleId}>` : `Unbekannte Rolle (${roleId})`}: ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
-        }).join("\n");
-
-        const ExklusiveAnzeige = ExklusiveRollenIDs.map(roleId => {
-            const role = interaction.guild.roles.cache.get(roleId);
-            return `- ${role ? `<@&${roleId}>` : `Unbekannte Rolle (${roleId})`}: ${member.roles.cache.has(roleId) ? "`✅`" : "`❌`"}`;
-        }).join("\n");
-
         // User-Daten abrufen
         const userData = await userdb.findOne({ userID: member.id }) || {
           giveaway: { eventWins: 0, messages: 0, voiceTime: 0 },
@@ -364,10 +354,6 @@ module.exports = {
                 `${outputText}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
-                `> \`💎\` **» EXKLUSIV**\n` +
-                `${ExklusiveAnzeige}\n\n` +
-                `> \`🏆\` **» SERVER ERFOLGE**\n` +
-                `${erfolgeAnzeige}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
                 `- \`🟢\` » Onlinezeit: \`${displayHours} Stunden\` (Leaderboard: \`${placeIcon} Platz\`)\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
