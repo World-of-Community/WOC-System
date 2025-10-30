@@ -14,11 +14,13 @@ const proLeagueTeams = [
 // -------------------- Tabelle erstellen --------------------
 async function createTabelleEmbed() {
   const allTeams = await Team.find({ league: 'Pro League' });
-  const teamMap = new Map(allTeams.map(t => [t.name.trim(), t.toObject()]));
+  const teamMap = new Map(allTeams.map(t => [t.name.trim().toLowerCase(), t.toObject()]));
 
+  // Füge fehlende Teams hinzu
   for (const name of proLeagueTeams) {
-    if (!teamMap.has(name)) {
-      teamMap.set(name, {
+    const key = name.trim().toLowerCase();
+    if (!teamMap.has(key)) {
+      teamMap.set(key, {
         name,
         played: 0,
         won: 0,
@@ -32,15 +34,17 @@ async function createTabelleEmbed() {
     }
   }
 
-  // Live-Spiele
+  // Live-Spiele abrufen
   const liveMatches = await Match.find({ status: 'live' });
-  const liveTeamsMap = new Map(); // Teamname => aktueller Spielstand
+  const liveTeamsMap = new Map(); // teamNameLowerCase => aktueller Score
   for (const m of liveMatches) {
-    liveTeamsMap.set(m.team1.trim(), `${m.score1}-${m.score2}`);
-    liveTeamsMap.set(m.team2.trim(), `${m.score1}-${m.score2}`);
+    const t1 = m.team1.trim().toLowerCase();
+    const t2 = m.team2.trim().toLowerCase();
+    liveTeamsMap.set(t1, `${m.score1}-${m.score2}`);
+    liveTeamsMap.set(t2, `${m.score1}-${m.score2}`);
   }
 
-  // Punkte, Differenz berechnen
+  // Punkte und Differenz berechnen
   const proLeagueData = Array.from(teamMap.values())
     .map(t => {
       t.goalDifference = t.goalsFor - t.goalsAgainst;
@@ -51,10 +55,8 @@ async function createTabelleEmbed() {
 
   // Beschreibung erstellen
   const description = proLeagueData.map((t, i) => {
-    let liveMark = '';
-    if (liveTeamsMap.has(t.name.trim())) {
-      liveMark = `\`🔴\` ${liveTeamsMap.get(t.name.trim())}`;
-    }
+    const key = t.name.trim().toLowerCase();
+    const liveMark = liveTeamsMap.has(key) ? `\`🔴\` ${liveTeamsMap.get(key)}` : '';
     return `**${i + 1}. ${t.name} ${liveMark}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`;
   }).join('\n');
 
