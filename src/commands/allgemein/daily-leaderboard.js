@@ -9,93 +9,80 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
-    const now = new Date();
+    try {
+      const now = new Date();
 
-    // Alle Nutzer laden
-    const allUsers = await Coin.find();
+      // Alle Nutzer laden
+      let allUsers = await Coin.find();
 
-    // Streaks zurücksetzen, wenn Daily verpasst wurde
-    await Promise.all(allUsers.map(async (u) => {
-      if (!u.lastDaily) return; // kein Daily bisher
-
-      const lastDaily = new Date(u.lastDaily);
-      const diffTime = now - lastDaily;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays >= 2) { // Nutzer hat Daily verpasst (nicht gestern)
-        u.streak = 0;
-        await u.save();
+      // Entferne User, die nicht mehr auf dem Server sind
+      for (const u of allUsers) {
+        const member = await interaction.guild.members.fetch(u.userId).catch(() => null);
+        if (!member) {
+          await Coin.deleteOne({ userId: u.userId });
+        }
       }
-    }));
 
-    // Top 10 laden (nach aktualisiertem Streak sortieren)
-    const topUsers = await Coin.find().sort({ streak: -1, coins: -1 }).limit(10);
+      // Aktualisiere die Liste nach Entfernen inaktive Mitglieder
+      allUsers = await Coin.find();
 
-    if (topUsers.length === 0) {
-      return interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
+      // Streaks zurücksetzen, wenn Daily verpasst wurde
+      for (const u of allUsers) {
+        if (!u.lastDaily) continue;
+        const diffDays = Math.floor((now - new Date(u.lastDaily)) / (1000*60*60*24));
+        if (diffDays >= 2) {
+          u.streak = 0;
+          await u.save();
+        }
+      }
+
+      // Nach Streak sortieren und Top 10 nehmen
+      const sortedUsers = allUsers.sort((a, b) => b.streak - a.streak || b.coins - a.coins);
+      const topUsers = sortedUsers.slice(0, 10);
+
+      if (topUsers.length === 0) {
+        return interaction.editReply({
+          embeds: [new EmbedBuilder()
             .setColor('Gold')
             .setTitle('`🏆` Top 10 Daily-Streak Leaderboard')
             .setDescription('`❌` » Es wurden keine Nutzerdaten gefunden.')
-        ]
+          ]
+        });
+      }
+
+      // Leaderboard bauen
+      const leaderboardLines = topUsers.map((u, i) => {
+        const streakText = `\`${u.streak || 0}x\` Streak`;
+        const placeIcon = ['🥇', '🥈', '🥉'][i] || `#${i + 1}`;
+        const userTag = interaction.client.users.cache.get(u.userId)?.tag || '➖';
+        return `\`${placeIcon}\` mit ${streakText} ist <@${u.userId}> (${userTag})`;
       });
-    }
 
-    // Nach Streak sortieren
-    const sortedUsers = await Coin.find().sort({ streak: -1, coins: -1 });
-    const totalStreaks = sortedUsers.reduce((acc, u) => acc + (u.streak || 0), 0);
-    const totalStreaksFormatted = totalStreaks.toLocaleString("de-DE");
-
-    const userId = interaction.user.id;
-    const userIndex = sortedUsers.findIndex(entry => String(entry.userId) === String(userId));
-    const userRank = userIndex !== -1 ? userIndex + 1 : null;
-
-    const leaderboardLines = await Promise.all(topUsers.map(async (u, i) => {
-      const streak = u.streak || 0;
-      const streakText = `\`${streak}x\` Streak`;
-
-      let placeIcon = `#${i + 1}`;
-      if (i === 0) placeIcon = "🥇";
-      else if (i === 1) placeIcon = "🥈";
-      else if (i === 2) placeIcon = "🥉";
-
-      try {
-        const user = await interaction.client.users.fetch(u.userId);
-        return `\`${placeIcon}\` mit ${streakText} ist <@${u.userId}> (${user.tag})`;
-      } catch {
-        return `\`${placeIcon}\` mit ${streakText} ist <@${u.userId}> (\`➖\`)`;
+      // Rang des Interaktierenden
+      const userIndex = sortedUsers.findIndex(u => u.userId === interaction.user.id);
+      if (userIndex !== -1) {
+        const userStreak = sortedUsers[userIndex].streak || 0;
+        const placeIcon = ['🥇', '🥈', '🥉'][userIndex] || `#${userIndex + 1}`;
+        leaderboardLines.push(`\nDein Rang: \`${placeIcon}\` mit \`${userStreak}x\` Streak ist <@${interaction.user.id}> (${interaction.user.tag})`);
+      } else {
+        leaderboardLines.push(`\n> \`❗\` » Du bist aktuell nicht im Leaderboard vertreten.`);
       }
-    }));
 
-    if (userRank !== null) {
-      const userStreak = sortedUsers[userIndex].streak || 0;
-      const streakText = `\`${userStreak}x\` Streak`;
+      const totalStreaks = sortedUsers.reduce((acc, u) => acc + (u.streak || 0), 0);
+      leaderboardLines.push(`\n\`📅\` » Insgesamt **${totalStreaks.toLocaleString('de-DE')} Tage** hintereinander aktiv`);
 
-      let placeIcon = `#${userRank}`;
-      if (userRank === 1) placeIcon = "🥇";
-      else if (userRank === 2) placeIcon = "🥈";
-      else if (userRank === 3) placeIcon = "🥉";
+      const embed = new EmbedBuilder()
+        .setColor('Gold')
+        .setTitle('`🏆` Top 10 Daily-Streak Leaderboard')
+        .setDescription(leaderboardLines.join('\n'))
+        .setFooter({ text: `» ${interaction.guild.name} | Daily-System`, iconURL: interaction.guild.iconURL() })
+        .setTimestamp();
 
-      try {
-        const user = await interaction.client.users.fetch(userId);
-        leaderboardLines.push(`\nDein Rang: \`${placeIcon}\` mit ${streakText} ist <@${userId}> (${user.tag})`);
-      } catch {
-        leaderboardLines.push(`\nDein Rang: \`${placeIcon}\` mit ${streakText} ist <@${userId}> (\`➖\`)`);
-      }
-    } else {
-      leaderboardLines.push(`\n> \`❗\` » Du bist aktuell nicht im Leaderboard vertreten.`);
+      await interaction.editReply({ embeds: [embed] });
+
+    } catch (err) {
+      console.error(err);
+      await interaction.editReply({ content: 'Es ist ein Fehler aufgetreten.', ephemeral: true });
     }
-
-    leaderboardLines.push(`\n\`📅\` » Insgesamt **${totalStreaksFormatted} Tage** hintereinander aktiv`);
-
-    const embed = new EmbedBuilder()
-      .setColor('Gold')
-      .setTitle('`🏆` Top 10 Daily-Streak Leaderboard')
-      .setDescription(leaderboardLines.join('\n'))
-      .setFooter({ text: `» ${interaction.guild.name} | Daily-System`, iconURL: interaction.guild.iconURL() })
-      .setTimestamp();
-
-    await interaction.editReply({ embeds: [embed] });
   }
 };
