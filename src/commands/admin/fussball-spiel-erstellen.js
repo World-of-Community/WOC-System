@@ -15,7 +15,8 @@ const fixedTimes = [
   '20:30','21:45','23:00'
 ];
 
-const startDatum = new Date(2025, 7, 1); // 01.08.2025
+// Startdatum: 30.10.2025 um 21:00 Uhr
+const startDatum = new Date(2025, 9, 30, 21, 0);
 
 module.exports = {
   data: new SlashCommandBuilder()
