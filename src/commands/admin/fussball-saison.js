@@ -40,6 +40,7 @@ module.exports = {
       const spieltage = 34;
       const embeds = [];
 
+      // Funktion: Paarungen pro Spieltag generieren (jedes Team nur einmal)
       function generateMatchesForSpieltag(teams) {
         const available = [...teams];
         const matches = [];
@@ -53,6 +54,9 @@ module.exports = {
         return matches;
       }
 
+      // --------------------------
+      // Saison generieren
+      // --------------------------
       for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
         const matchData = generateMatchesForSpieltag(teams);
         const matches = [];
@@ -61,11 +65,11 @@ module.exports = {
         for (let index = 0; index < matchData.length; index++) {
           const m = matchData[index];
 
-          // Zeit wählen: erstes Spiel heute = 21:45, sonst aus fixedTimes
+          // Zeit wählen: erstes Spiel heute = 22:00, sonst aus fixedTimes
           let timeStr;
           const today = new Date();
           if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
-            timeStr = '22:00'; // erstes Spiel heute
+            timeStr = '22:05';
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
@@ -73,7 +77,7 @@ module.exports = {
           const [hour, minute] = timeStr.split(':').map(Number);
           const matchDate = new Date(matchDayDate.getTime());
           matchDate.setHours(hour, minute, 0, 0);
-          const endDate = new Date(matchDate.getTime() + 1000);
+          const endDate = new Date(matchDate.getTime() + 90 * 60000); // 90 Minuten Spielzeit
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
@@ -128,21 +132,27 @@ module.exports = {
         });
 
         if (filteredLive.length > 0) {
-          const lines = filteredLive.map(m => {
-            const diff = Math.floor((now - m.date) / 60000);
-            const minute = diff <= 45 ? `${diff}'` : diff <= 50 ? `45' +${diff-45} (Pause)` : `${45 + (diff-50)}'`;
-            return `${m.homeTeam} ${m.homeScore ?? 0} - ${m.awayScore ?? 0} ${m.awayTeam} (${minute})`;
-          });
+          for (const m of filteredLive) {
+            let minute = 0;
 
-          const embed = new EmbedBuilder()
-            .setTitle(filteredLive.length > 1 ? '`⚽` Live-Konferenz' : `\`🏟️\` Live: ${filteredLive[0].homeTeam} vs ${filteredLive[0].awayTeam}`)
-            .setColor(filteredLive.length > 1 ? 'Orange' : 'Green')
-            .setDescription(lines.join('\n'));
+            while (minute <= 90) {
+              const diff = minute;
+              const displayMinute = diff <= 45 ? `${diff}'` : diff <= 50 ? `45' +${diff-45} (Pause)` : `${45 + (diff-50)}'`;
 
-          const messages = await channel.messages.fetch({ limit: 10 });
-          const liveMsg = messages.find(m => m.author.id === interaction.client.user.id && m.embeds[0]?.title.includes('Live'));
-          if (liveMsg) await liveMsg.edit({ embeds: [embed] });
-          else await channel.send({ embeds: [embed] });
+              const embed = new EmbedBuilder()
+                .setTitle(filteredLive.length > 1 ? '`⚽` Live-Konferenz' : `\`🏟️\` Live: ${m.homeTeam} vs ${m.awayTeam}`)
+                .setColor(filteredLive.length > 1 ? 'Orange' : 'Green')
+                .setDescription(`${m.homeTeam} ${m.homeScore ?? 0} - ${m.awayScore ?? 0} ${m.awayTeam} (${displayMinute})`);
+
+              const messages = await channel.messages.fetch({ limit: 10 });
+              const liveMsg = messages.find(msg => msg.author.id === interaction.client.user.id && msg.embeds[0]?.title.includes('Live'));
+              if (liveMsg) await liveMsg.edit({ embeds: [embed] });
+              else await channel.send({ embeds: [embed] });
+
+              minute++;
+              await delay(1000); // 1 Sekunde pro Spielminute
+            }
+          }
         }
 
         // 10 Minuten vorher Konferenz nur 1x
