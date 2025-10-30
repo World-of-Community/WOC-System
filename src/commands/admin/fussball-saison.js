@@ -15,16 +15,19 @@ const fixedTimes = [
   '20:30','21:45','23:00'
 ];
 
-// Startdatum: 30.10.2025, 21:00 Uhr
+// Spezielle Zeiten für den 30.10.2025 ab 21 Uhr
+const specialTimes = ['21:00','21:15','21:30','21:45','22:00','22:15','22:30','22:45','23:00'];
+
+// Startdatum: 30.10.2025
 const startDatum = new Date(2025, 9, 30, 21, 0);
 
-// ID des Kanals, in dem Live-Spiele angezeigt werden sollen
+// ID des Kanals für Live-Updates
 const LIVE_CHANNEL_ID = '1375803752375648266';
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-saison-generieren')
-    .setDescription('Generiert die komplette Saison und startet Live-Updates.')
+    .setDescription('Generiert die komplette Saison ab dem 30.10.2025 und startet Live-Updates.')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
@@ -42,9 +45,17 @@ module.exports = {
           const heimTeam = shuffledTeams[i];
           const auswaertsTeam = shuffledTeams[i + 1];
 
-          const uhrzeit = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
-          const [stunde, minute] = uhrzeit.split(':').map(Number);
+          // Uhrzeit automatisch auswählen
+          let uhrzeit;
+          if (spieltag === 1) {
+            // 30.10.2025 → zufällige Zeit ab 21 Uhr
+            uhrzeit = specialTimes[Math.floor(Math.random() * specialTimes.length)];
+          } else {
+            // andere Spieltage → normale fixedTimes
+            uhrzeit = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
+          }
 
+          const [stunde, minute] = uhrzeit.split(':').map(Number);
           const matchDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
           matchDate.setHours(stunde, minute);
 
@@ -67,13 +78,14 @@ module.exports = {
 
       await interaction.followUp('✅ Saison erfolgreich generiert! Live-Updates werden gestartet.');
 
-      // Live-Update starten
+      // Live-Update
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('❌ Kanal nicht gefunden.');
 
       async function updateLive() {
         const now = new Date();
         const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
+
         if (!liveMatches.length) {
           return setTimeout(updateLive, 1000);
         }
