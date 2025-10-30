@@ -68,7 +68,7 @@ module.exports = {
           let timeStr;
           const today = new Date();
           if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
-            timeStr = '22:05';
+            timeStr = '22:08';
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
