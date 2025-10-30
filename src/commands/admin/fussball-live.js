@@ -9,8 +9,9 @@ const { Team, Match } = require('../../../Datenbank/fussballdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('live-spiele')
-    .setDescription('Zeigt alle laufenden Spiele in Einzel- oder Konferenzmodus an.'),
+    .setName('fussball-live')
+    .setDescription('Zeigt alle laufenden Spiele in Einzel- oder Konferenzmodus an.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     await interaction.deferReply();
