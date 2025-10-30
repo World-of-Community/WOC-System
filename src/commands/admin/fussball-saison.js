@@ -9,15 +9,7 @@ const proLeagueTeams = [
   'FC Donner','SV Schatten','TSV Nebel','SC Licht'
 ];
 
-const fixedTimes = [
-  '00:30','01:30','02:00','04:00','06:00','07:30','09:00','09:30','10:30','11:00','11:30',
-  '12:30','13:30','14:00','15:00','15:30','16:45','18:00','18:30','19:00','19:30','20:00',
-  '20:30','21:45','23:00'
-];
-
-const specialTimes = ['21:00','21:15','21:30','21:45','22:00','22:15','22:30','22:45','23:00'];
-
-const startDatum = new Date(2025, 9, 30, 21, 0);
+const startDatum = new Date(2025, 9, 30, 21, 30); // erstes Spiel um 21:30
 const LIVE_CHANNEL_ID = '1375803752375648266';
 
 module.exports = {
@@ -50,14 +42,12 @@ module.exports = {
         const matchData = generateMatchesForSpieltag(teams);
         const matches = [];
 
-        for (const m of matchData) {
-          let uhrzeit = spieltag === 1
-            ? specialTimes[Math.floor(Math.random() * specialTimes.length)]
-            : fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
+        for (let index = 0; index < matchData.length; index++) {
+          const m = matchData[index];
 
-          const [stunde, minute] = uhrzeit.split(':').map(Number);
+          // erstes Spiel = 21:30, danach 5 Min Abstand pro Spiel
           const matchDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
-          matchDate.setHours(stunde, minute);
+          matchDate.setMinutes(matchDate.getMinutes() + index * 5);
 
           const endDate = new Date(matchDate.getTime() + 90 * 60000);
 
@@ -75,8 +65,7 @@ module.exports = {
         await Match.insertMany(matches);
 
         // Übersicht-Embed pro Spieltag
-        const sortedMatches = matches.sort((a,b) => a.date - b.date);
-        const spielListe = sortedMatches.map(m => {
+        const spielListe = matches.map(m => {
           const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
           const dateStr = m.date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
           return `${m.homeTeam} vs ${m.awayTeam} (${timeStr} Uhr, ${dateStr})`;
@@ -91,14 +80,12 @@ module.exports = {
         console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
       }
 
-      // Übersicht der ersten 10 Spieltage posten
       await interaction.followUp({ content: '`📅` Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0,10) });
 
       // Kanal für Live-Updates
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('`❌` Kanal nicht gefunden.');
 
-      // Tracken, welche Spiele Konferenz bereits hatten
       const announcedMatches = new Set();
 
       async function updateLive() {
