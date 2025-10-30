@@ -21,8 +21,8 @@ const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');
 const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
-//const fussballCommand = require('../src/commands/admin/fussball-tabelle');  
-const fussballTabelle = require('./commands/fussball/fussball-tabelle'); // Pfad anpassen
+const fussballCommand = require('./commands/admin/fussball-tabelle');  
+const fussballTabelle = require('./commands/fussball/fussball-tabelle');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
