@@ -25,8 +25,8 @@ module.exports = {
                 new EmbedBuilder()
                     .setDescription(`${interaction.user} hat mit ${mitglied} eine Brofist vollzogen. Wie cool! <a:Cool:915211628755169301>`)
                     .setImage(gif)
-                    .setColor('Aqua')
-                    .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
+                    .setColor('Blurple')
+                    .setFooter({ text: "Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
             ]
         })
     }

@@ -28,8 +28,8 @@ module.exports = {
                 new EmbedBuilder()
                     .setDescription(`${interaction.user} streichelt ${mitglied}. Wie niedlich! <a:pet_WOC:1120286364626333706>`)
                     .setImage(gif)
-                    .setColor('Purple')
-                    .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
+                    .setColor('Blurple')
+                    .setFooter({ text: "Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
             ]
         })
     }

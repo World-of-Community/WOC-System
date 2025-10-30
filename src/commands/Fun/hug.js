@@ -35,7 +35,7 @@ module.exports = {
                     .setDescription(`${interaction.user} hat ${mitglied} umarmt. Einfach süß die beiden! <:dogsmiley:1037783082620698746>`)
                     .setImage(gif)
                     .setColor('Green')
-                    .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
+                    .setFooter({ text: "Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
             ]
         })
     }

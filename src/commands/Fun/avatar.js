@@ -25,7 +25,7 @@ module.exports = {
             .setDescription(`${text}`)
             .setImage(user.displayAvatarURL({ dynamic: true, size: 1024 }))
             .setColor('Blurple')
-            .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
+            .setFooter({ text: "Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
         
             interaction.reply({ embeds: [avatarEmbed] })
     }

@@ -26,7 +26,7 @@ module.exports = {
                     { name: "Grund", value: `${banInfo.reason || "Kein Grund angegeben."}`, inline: false },
                     { name: "Status", value: `Dieser Benutzer ist aktuell **gebannt**.`, inline: false }
                 )
-                .setFooter({ text: `©️ ${interaction.guild.name} | Ban-System`, iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: `${interaction.guild.name} | Ban-System`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
 
             return interaction.reply({ embeds: [bannedEmbed], ephemeral: true });

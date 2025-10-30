@@ -33,7 +33,7 @@ module.exports = {
             .setTitle('`🔢` » Zahlen Spiel Information')
             .setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **\`${countingData.highestCount}\`**`)
             .setColor('Blurple')
-            .setFooter({ text: `» ${interaction.guild.name} - System Information`, iconURL: interaction.guild.iconURL() })
+            .setFooter({ text: `» ${interaction.guild.name} - System Information` })
             .setTimestamp();
 
         const countingEmbedMessage = await selectedChannel.send({ embeds: [countingEmbed] });

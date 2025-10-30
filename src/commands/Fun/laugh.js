@@ -31,7 +31,7 @@ module.exports = {
                     .setDescription(`${interaction.user} lacht ${mitglied} aus. Autsch!`)
                     .setImage(laughgif)
                     .setColor('Orange')
-                    .setFooter({ text: "© Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
+                    .setFooter({ text: "Alle Fun-Befehle von WOC siehst du mit /help", iconURL: `${interaction.guild.iconURL()}` })
             ]
         })
     }
