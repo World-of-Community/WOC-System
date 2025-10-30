@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
+const { Match } = require('../../../Datenbank/matchdb');
 const EmbedDB = require('../../../Datenbank/embeddb');
 
 const proLeagueTeams = [
@@ -10,6 +11,7 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
+// -------------------- Tabelle erstellen --------------------
 async function createTabelleEmbed() {
   const allTeams = await Team.find({ league: 'Pro League' });
   const teamMap = new Map(allTeams.map(t => [t.name.trim(), t.toObject()]));
@@ -32,6 +34,7 @@ async function createTabelleEmbed() {
     }
   }
 
+  // Punkte und Differenz berechnen
   const proLeagueData = Array.from(teamMap.values())
     .map(t => {
       t.goalDifference = t.goalsFor - t.goalsAgainst;
@@ -41,17 +44,18 @@ async function createTabelleEmbed() {
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
 
   const description = proLeagueData.map((t, i) =>
-    `**${i + 1}. ${t.name}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkte: ${t.points}`
+    `**${i + 1}. ${t.name}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`
   ).join('\n');
 
   return new EmbedBuilder()
-    .setTitle('⚽ Pro League Tabelle')
+    .setTitle('`⚽` Pro League Tabelle')
     .setDescription(description)
-    .setColor('Blue')
-    .setFooter({ text: 'Zuletzt aktualisiert'})
+    .setColor('Blurple')
+    .setFooter({ text: 'Zuletzt aktualisiert' })
     .setTimestamp();
 }
 
+// -------------------- Tabelle updaten --------------------
 async function updateLeagueTable(client) {
   const dbEntry = await EmbedDB.findOne({ name: 'proleague_tabelle' });
   if (!dbEntry) return;
@@ -66,6 +70,47 @@ async function updateLeagueTable(client) {
   await message.edit({ embeds: [embed] });
 }
 
+// -------------------- Match-End Trigger --------------------
+async function onMatchEnd(client, matchId) {
+  const match = await Match.findById(matchId);
+  if (!match) return;
+
+  // Teamstatistiken updaten
+  const team1 = await Team.findOne({ name: match.team1 });
+  const team2 = await Team.findOne({ name: match.team2 });
+
+  if (!team1 || !team2) return;
+
+  // Gespielte Spiele
+  team1.played += 1;
+  team2.played += 1;
+
+  // Tore
+  team1.goalsFor += match.score1;
+  team1.goalsAgainst += match.score2;
+  team2.goalsFor += match.score2;
+  team2.goalsAgainst += match.score1;
+
+  // Punkte und Siege/Niederlagen
+  if (match.score1 > match.score2) {
+    team1.won += 1;
+    team2.lost += 1;
+  } else if (match.score1 < match.score2) {
+    team2.won += 1;
+    team1.lost += 1;
+  } else {
+    team1.draw += 1;
+    team2.draw += 1;
+  }
+
+  await team1.save();
+  await team2.save();
+
+  // Tabelle updaten
+  await updateLeagueTable(client);
+}
+
+// -------------------- Slash Command --------------------
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-tabelle')
@@ -74,7 +119,6 @@ module.exports = {
 
   async execute(interaction) {
     const embed = await createTabelleEmbed();
-    
     const message = await interaction.channel.send({ embeds: [embed] });
 
     await EmbedDB.findOneAndUpdate(
@@ -87,8 +131,9 @@ module.exports = {
       { upsert: true }
     );
 
-    await interaction.reply({ content: '✅ Tabelle gesendet und gespeichert!', ephemeral: true });
+    await interaction.reply({ content: '> `✅` Tabelle gesendet und gespeichert!', ephemeral: true });
   },
 
-  updateLeagueTable
+  updateLeagueTable,
+  onMatchEnd
 };

@@ -1,4 +1,3 @@
-// Datenbank/embeddb.js
 const mongoose = require('mongoose');
 
 const embedSchema = new mongoose.Schema({
