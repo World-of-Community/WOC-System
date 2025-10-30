@@ -21,7 +21,7 @@ const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');
 const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
-const { updateLeagueTable } = require('./commands/fussball-system/commands/fussball-tabelle');
+const { updateLeagueTable } = require('./commands/fussball-tabelle');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
