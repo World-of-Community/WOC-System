@@ -1,6 +1,10 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const { Match } = require('../../../Datenbank/fussballdb');
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const proLeagueTeams = [
   'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
   'FC Rot-Weiß','SV Grünwald','TSV Nord','SC Süd','VfB West',
@@ -30,13 +34,12 @@ module.exports = {
     try {
       // 🔹 Alle bisherigen Matches löschen
       await Match.deleteMany({});
-      console.log('✅ Alle bisherigen Matches wurden gelöscht.');
+      console.log('✅  | Alle bisherigen Matches wurden gelöscht.');
 
       const teams = [...proLeagueTeams];
       const spieltage = 34;
       const embeds = [];
 
-      // Funktion: Paarungen pro Spieltag generieren (jedes Team nur einmal)
       function generateMatchesForSpieltag(teams) {
         const available = [...teams];
         const matches = [];
@@ -53,7 +56,6 @@ module.exports = {
       for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
         const matchData = generateMatchesForSpieltag(teams);
         const matches = [];
-
         const matchDayDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
 
         for (let index = 0; index < matchData.length; index++) {
@@ -63,7 +65,7 @@ module.exports = {
           let timeStr;
           const today = new Date();
           if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
-            timeStr = '21:45'; // erstes Spiel heute
+            timeStr = '21:50'; // erstes Spiel heute
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
@@ -71,8 +73,7 @@ module.exports = {
           const [hour, minute] = timeStr.split(':').map(Number);
           const matchDate = new Date(matchDayDate.getTime());
           matchDate.setHours(hour, minute, 0, 0);
-
-          const endDate = new Date(matchDate.getTime() + 90 * 60000); // 90 Minuten Spielzeit
+          const endDate = new Date(matchDate.getTime() + 90 * 60000);
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
@@ -87,7 +88,6 @@ module.exports = {
 
         await Match.insertMany(matches);
 
-        // Übersicht-Embed
         const spielListe = matches.map(m => {
           const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
           const dateStr = m.date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -106,7 +106,7 @@ module.exports = {
       await interaction.followUp({ content: '`📅` Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0, 10) });
 
       // ---------------------------
-      // Live-Updates
+      // Live-Updates starten
       // ---------------------------
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('`❌` Kanal nicht gefunden.');
@@ -116,9 +116,9 @@ module.exports = {
       async function updateLive() {
         const now = new Date();
 
-        // Live-Konferenz
         const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
 
+        // Doppelungen vermeiden
         const seenTeams = new Set();
         const filteredLive = liveMatches.filter(m => {
           if (seenTeams.has(m.homeTeam) || seenTeams.has(m.awayTeam)) return false;
