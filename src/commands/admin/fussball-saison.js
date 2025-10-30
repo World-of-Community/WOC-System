@@ -15,19 +15,15 @@ const fixedTimes = [
   '20:30','21:45','23:00'
 ];
 
-// Spezielle Zeiten für den 30.10.2025 ab 21 Uhr
 const specialTimes = ['21:00','21:15','21:30','21:45','22:00','22:15','22:30','22:45','23:00'];
 
-// Startdatum: 30.10.2025
 const startDatum = new Date(2025, 9, 30, 21, 0);
-
-// ID des Kanals für Live-Updates
 const LIVE_CHANNEL_ID = '1375803752375648266';
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-saison-generieren')
-    .setDescription('Generiert die komplette Saison ab dem 30.10.2025 und startet Live-Updates.')
+    .setDescription('Generiert die komplette Saison ab dem 30.10.2025 mit Übersicht und startet Live-Updates.')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
@@ -36,6 +32,7 @@ module.exports = {
     try {
       const teams = [...proLeagueTeams];
       const spieltage = 34;
+      const embeds = []; // Für Übersicht der Spieltage
 
       for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
         const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
@@ -45,13 +42,10 @@ module.exports = {
           const heimTeam = shuffledTeams[i];
           const auswaertsTeam = shuffledTeams[i + 1];
 
-          // Uhrzeit automatisch auswählen
           let uhrzeit;
           if (spieltag === 1) {
-            // 30.10.2025 → zufällige Zeit ab 21 Uhr
             uhrzeit = specialTimes[Math.floor(Math.random() * specialTimes.length)];
           } else {
-            // andere Spieltage → normale fixedTimes
             uhrzeit = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
 
@@ -74,11 +68,26 @@ module.exports = {
 
         await Match.insertMany(matches);
         console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
+
+        // Übersicht-Embed für diesen Spieltag
+        const sortedMatches = matches.sort((a,b) => a.date - b.date);
+        const spielListe = sortedMatches.map(m => {
+          const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+          const dateStr = m.date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          return `${m.homeTeam} vs ${m.awayTeam} (${timeStr} Uhr, ${dateStr})`;
+        }).join('\n');
+
+        embeds.push(new EmbedBuilder()
+          .setTitle(`Spieltag ${spieltag}`)
+          .setDescription(spielListe)
+          .setColor('Blue')
+        );
       }
 
-      await interaction.followUp('✅ Saison erfolgreich generiert! Live-Updates werden gestartet.');
+      // Übersicht der ersten 10 Spieltage posten
+      await interaction.followUp({ content: '📅 Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0,10) });
 
-      // Live-Update
+      // Live-Update starten
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('❌ Kanal nicht gefunden.');
 
