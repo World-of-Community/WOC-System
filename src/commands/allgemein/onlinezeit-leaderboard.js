@@ -18,6 +18,8 @@ module.exports = {
     ),
 
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
+
     const guild = interaction.guild;
     const userId = interaction.user.id;
     const limit = parseInt(interaction.options.getString("typ"));
@@ -26,13 +28,12 @@ module.exports = {
       // Alle Nutzer laden
       let allUsersForTotal = await userdb.find({}, "userID onlineTime").exec();
       if (!allUsersForTotal.length) {
-        return interaction.reply({
+        return interaction.editReply({
           content: "> `❌` » Noch keine Nutzerdaten vorhanden.",
-          ephemeral: true,
         });
       }
 
-      // ❌ Entferne Nutzer, die nicht mehr auf dem Server sind
+      // Entferne Nutzer, die nicht mehr auf dem Server sind
       for (const u of allUsersForTotal) {
         const member = await guild.members.fetch(u.userID).catch(() => null);
         if (!member) {
@@ -75,11 +76,9 @@ module.exports = {
         const lines = pageUsers.map((userDoc, index) => {
           const member = membersMap.get(userDoc.userID);
           const username = member?.user.username || `\`${userDoc.userID}\``;
-
           const hours = Math.floor((userDoc.onlineTime || 0) / 3600000);
           const hourLabel = hours === 1 ? "Stunde" : "Stunden";
 
-          // Platzierungssymbole
           const globalIndex = start + index;
           let placeIcon = `#${globalIndex + 1}`;
           if (globalIndex === 0) placeIcon = "🥇";
@@ -89,7 +88,7 @@ module.exports = {
           return `\`${placeIcon}\` mit \`${hours} ${hourLabel}\` ist <@${userDoc.userID}> (${username})`;
         });
 
-        // eigenen Rang berechnen (auch wenn 0h)
+        // Eigenen Rang berechnen
         const sortedAll = allUsersForTotal.sort((a, b) => (b.onlineTime || 0) - (a.onlineTime || 0));
         const userIndex = sortedAll.findIndex((u) => u.userID === userId);
 
@@ -114,21 +113,13 @@ module.exports = {
           else if (userRank === 3) placeIcon = "🥉";
         }
 
-        // eigene Platzierung immer anhängen
-        lines.push(
-          `\nDein Rang: \`${placeIcon}\` mit \`${hours} ${hourLabel}\` - <@${userId}> (\`${username}\`)`
-        );
+        lines.push(`\nDein Rang: \`${placeIcon}\` mit \`${hours} ${hourLabel}\` - <@${userId}> (\`${username}\`)`);
 
         return new EmbedBuilder()
           .setTitle(`\`🏆\` Top ${limit} Onlinezeit Leaderboard`)
-          .setDescription(
-            lines.join("\n") +
-              `\n\n\`👥\` » Gesamte Onlinezeit beträgt \`${totalHoursFormatted} Stunden\``
-          )
+          .setDescription(lines.join("\n") + `\n\n\`👥\` » Gesamte Onlinezeit beträgt \`${totalHoursFormatted} Stunden\``)
           .setColor("Green")
-          .setFooter({
-            text: `Seite ${page + 1} / ${totalPages} • Onlinezeit auf ${guild.name}`,
-          })
+          .setFooter({ text: `Seite ${page + 1} / ${totalPages} • Onlinezeit auf ${guild.name}` })
           .setTimestamp();
       };
 
@@ -146,14 +137,13 @@ module.exports = {
             .setDisabled(currentPage === totalPages - 1)
         );
 
-      const msg = await interaction.reply({
+      const msg = await interaction.editReply({
         embeds: [await generateEmbed(currentPage)],
         components: totalPages > 1 ? [getRow()] : [],
-        ephemeral: true,
       });
 
       if (totalPages > 1) {
-        const collector = msg.createMessageComponentCollector();
+        const collector = (await interaction.fetchReply()).createMessageComponentCollector({ time: 60000 });
 
         collector.on("collect", async (i) => {
           if (i.user.id !== interaction.user.id) {
@@ -174,10 +164,15 @@ module.exports = {
       }
     } catch (error) {
       console.error("Fehler bei /onlinezeit-leaderboard:", error);
-      return interaction.reply({
-        content: "> `❌` » Ein unerwarteter Fehler ist aufgetreten.",
-        ephemeral: true,
-      });
+      try {
+        await interaction.editReply({
+          content: "> `❌` » Ein unerwarteter Fehler ist aufgetreten.",
+          embeds: [],
+          components: [],
+        });
+      } catch {
+        // Interaction schon invalid → nichts tun
+      }
     }
   },
 };
