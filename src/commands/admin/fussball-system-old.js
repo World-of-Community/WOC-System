@@ -39,7 +39,7 @@ const teamsData = [
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('fussball-system')
+    .setName('fussball-system-old')
     .setDescription('Zeigt die Fußball-Übersicht an und simuliert Spiele')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
