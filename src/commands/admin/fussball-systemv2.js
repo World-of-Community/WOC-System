@@ -429,7 +429,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           xG,
         });
       }
-    }
   
     //// Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
     //if (minute % 4 === 0 && Math.random() < 0.15) {
@@ -644,3 +643,4 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       break;
     }
   }
+}
