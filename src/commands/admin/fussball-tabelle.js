@@ -9,7 +9,7 @@ const { Match } = require('../../../Datenbank/matchdb');
 const ProLeagueEmbed = require('../../../Datenbank/proleaguembeddb');
 
 // ------------------------------------------------------
-// ⚽ KONFIGURATION
+// ⚙️ KONFIGURATION
 // ------------------------------------------------------
 const PRO_LEAGUE_TEAMS = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
@@ -23,31 +23,36 @@ const PRO_LEAGUE_TEAMS = [
 // 🧮 FUNKTION: Tabelle berechnen
 // ------------------------------------------------------
 async function buildLeagueTable() {
-  // Alle Teams aus der DB abrufen
   const dbTeams = await Team.find({ league: 'Pro League' });
   const teamMap = new Map(dbTeams.map(t => [t.name.trim().toLowerCase(), t.toObject()]));
 
-  // Fehlende Teams hinzufügen (falls noch nicht in DB)
+  // Fehlende Teams hinzufügen
   for (const name of PRO_LEAGUE_TEAMS) {
     const key = name.trim().toLowerCase();
     if (!teamMap.has(key)) {
       teamMap.set(key, {
         name,
-        played: 0, won: 0, draw: 0, lost: 0,
-        goalsFor: 0, goalsAgainst: 0, goalDifference: 0, points: 0
+        played: 0,
+        won: 0,
+        draw: 0,
+        lost: 0,
+        goalsFor: 0,
+        goalsAgainst: 0,
+        goalDifference: 0,
+        points: 0
       });
     }
   }
 
-  // Live-Spiele ermitteln
+  // Live-Spiele finden
   const liveMatches = await Match.find({ status: 'live' });
-  const liveTeams = new Map();
+  const liveTeams = new Set();
   for (const m of liveMatches) {
-    liveTeams.set(m.team1.trim().toLowerCase(), `${m.score1}-${m.score2}`);
-    liveTeams.set(m.team2.trim().toLowerCase(), `${m.score1}-${m.score2}`);
+    liveTeams.add(m.team1.trim().toLowerCase());
+    liveTeams.add(m.team2.trim().toLowerCase());
   }
 
-  // Daten berechnen und sortieren
+  // Tabelle berechnen
   const sortedTeams = Array.from(teamMap.values())
     .map(t => ({
       ...t,
@@ -57,7 +62,8 @@ async function buildLeagueTable() {
     .sort((a, b) => (
       b.points - a.points ||
       b.goalDifference - a.goalDifference ||
-      b.goalsFor - a.goalsFor
+      b.goalsFor - a.goalsFor ||
+      a.name.localeCompare(b.name)
     ));
 
   return { sortedTeams, liveTeams };
@@ -71,13 +77,13 @@ async function createTableEmbed() {
 
   const rows = sortedTeams.map((t, i) => {
     const key = t.name.trim().toLowerCase();
-    const liveMark = liveTeams.has(key) ? ` 🔴 ${liveTeams.get(key)}` : '';
-    return `**${i + 1}. ${t.name}${liveMark}**  —  ${t.points} Pkt  |  ${t.won}-${t.draw}-${t.lost}  |  ${t.goalsFor}:${t.goalsAgainst}  (TD: ${t.goalDifference})`;
+    const liveMark = liveTeams.has(key) ? ' `🔴`' : '';
+    return `**${i + 1}. ${t.name}${liveMark}**  —  ${t.points} Pkt | S: ${t.won} U: ${t.draw} N:${t.lost} | ${t.goalsFor}:${t.goalsAgainst} (TD: ${t.goalDifference})`;
   }).join('\n');
 
   return new EmbedBuilder()
     .setTitle('⚽ Pro League — Aktuelle Tabelle')
-    .setDescription(rows || 'Noch keine Teams vorhanden.')
+    .setDescription(rows || '*Keine Teams vorhanden.*')
     .setColor('Blurple')
     .setFooter({ text: 'Wird automatisch aktualisiert, wenn Spiele stattfinden' })
     .setTimestamp();
@@ -87,13 +93,13 @@ async function createTableEmbed() {
 // 🔁 FUNKTION: Tabelle aktualisieren
 // ------------------------------------------------------
 async function updateLeagueTable(client) {
-  const savedEmbed = await ProLeagueEmbed.findOne({ name: 'proleague_tabelle' });
-  if (!savedEmbed) return;
+  const entry = await ProLeagueEmbed.findOne({ name: 'proleague_tabelle' });
+  if (!entry) return;
 
-  const channel = await client.channels.fetch(savedEmbed.channelId).catch(() => null);
+  const channel = await client.channels.fetch(entry.channelId).catch(() => null);
   if (!channel || channel.type !== ChannelType.GuildText) return;
 
-  const message = await channel.messages.fetch(savedEmbed.messageId).catch(() => null);
+  const message = await channel.messages.fetch(entry.messageId).catch(() => null);
   if (!message) return;
 
   const embed = await createTableEmbed();
@@ -107,6 +113,8 @@ async function onMatchStart(client, matchId) {
   const match = await Match.findById(matchId);
   if (!match) return;
 
+  if (match.status === 'live') return; // Verhindert doppelte Updates
+
   match.status = 'live';
   await match.save();
 
@@ -119,6 +127,8 @@ async function onMatchStart(client, matchId) {
 async function onMatchEnd(client, matchId) {
   const match = await Match.findById(matchId);
   if (!match) return;
+
+  if (match.status === 'finished') return; // Doppelte Vermeidung
 
   match.status = 'finished';
   await match.save();
@@ -165,11 +175,11 @@ module.exports = {
 
     await ProLeagueEmbed.findOneAndUpdate(
       { name: 'proleague_tabelle' },
-      { channelId: interaction.channel.id, messageId: message.id },
+      { name: 'proleague_tabelle', channelId: interaction.channel.id, messageId: message.id },
       { upsert: true }
     );
 
-    await interaction.reply({ content: '> ✅ Tabelle wurde gesendet und gespeichert!', ephemeral: true });
+    await interaction.reply({ content: '✅ Tabelle wurde gesendet und gespeichert!', ephemeral: true });
   },
 
   updateLeagueTable,
