@@ -73,7 +73,7 @@ module.exports = {
           const [hour, minute] = timeStr.split(':').map(Number);
           const matchDate = new Date(matchDayDate.getTime());
           matchDate.setHours(hour, minute, 0, 0);
-          const endDate = new Date(matchDate.getTime() + 90 * 60000);
+          const endDate = new Date(matchDate.getTime() + 90 * 1000);
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
