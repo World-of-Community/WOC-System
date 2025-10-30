@@ -71,7 +71,7 @@ module.exports = {
         );
       }
 
-      await interaction.followUp({ content: '✅ Saison erfolgreich generiert!', embeds: embeds.slice(0, 10) });
+      await interaction.followUp({ content: '> `✅` Saison erfolgreich generiert!', embeds: embeds.slice(0, 10) });
       // Hinweis: nur die ersten 10 Spieltage auf einmal anzeigen, bei Bedarf kannst du Paginierung einbauen
 
     } catch (err) {
