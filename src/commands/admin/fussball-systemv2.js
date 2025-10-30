@@ -330,17 +330,6 @@ async function simulateRandomMatch(interaction) {
 
   collector.on('collect', async i => {
     let userTip;
-    //switch (i.customId) {
-    //  case 'win_team1': 
-    //    userTip = team1Name;  // Variable team1Name (z.B. "Baum")
-    //    break;
-    //  case 'draw': 
-    //    userTip = 'Unentschieden'; // Klarer Text
-    //    break;
-    //  case 'win_team2': 
-    //    userTip = team2Name;  // Variable team2Name (z.B. "Eiche")
-    //    break;
-    //}
 
     switch (i.customId) {
       case 'win_team1': userTip = 'team1'; break;
@@ -349,16 +338,6 @@ async function simulateRandomMatch(interaction) {
     }
 
     await i.update({ content: '\`⏳\` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
-
-    //const TippEmbed = new EmbedBuilder()
-    //  .setTitle('`🎯` Tipp abgegeben!')
-    //  .setDescription(`${i.user} hat auf **${userTip}** getippt.`)
-    //  .setColor('Orange')
-    //  .setThumbnail(i.user.displayAvatarURL({ dynamic: true }))
-    //  .setFooter({ text: '🍀 Viel Glück beim Fussball-Spiel! ⚽', iconURL: interaction.client.user.displayAvatarURL() })
-    //  .setTimestamp();
-
-    //await interaction.followUp({ embeds: [TippEmbed] });
 
     collector.stop();
     await delay(3000);
@@ -389,16 +368,74 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
   const events = [`\`🔊\` Anpfiff! Das Spiel beginnt! (0')`];
 
+  let goals = 0;
+  const minGoals = 4;
+  const goalMinutes = [];
+  
+  // 4 zufällige Minuten zwischen 1 und 90 auswählen
+  while (goalMinutes.length < minGoals) {
+    const rand = Math.floor(Math.random() * 90) + 1;
+    if (!goalMinutes.includes(rand)) goalMinutes.push(rand);
+  }
+  
+  goalMinutes.sort((a, b) => a - b);
+
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
     let torGezaehlt = true;
     let scorer = '';
     let xG = 0;
 
-    // Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
+    // --- garantiertes Tor in dieser Minute ---
+    if (goalMinutes.includes(minute)) {
+      const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
+      const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+      const scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+  
+      events.push({
+        minute,
+        type: 'goal',
+        team: teamScored,
+        scorer,
+        xG,
+      });
+  
+      if (teamScored === 'team1') score1++;
+      else score2++;
+    }
+  
+    // --- deine bestehenden Torchancen ---
     if (minute % 4 === 0 && Math.random() < 0.15) {
-    const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
-    xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-    scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+      const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
+      const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+      const scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+  
+      // 30% Chance, dass Torchance auch ein Tor wird
+      if (Math.random() < 0.3) {
+        events.push({
+          minute,
+          type: 'goal',
+          team: teamScored,
+          scorer,
+          xG,
+        });
+  
+        if (teamScored === 'team1') score1++;
+        else score2++;
+      } else {
+        events.push({
+          minute,
+          type: 'chance',
+          team: teamScored,
+          xG,
+        });
+      }
+    }
+  
+    //// Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
+    //if (minute % 4 === 0 && Math.random() < 0.15) {
+    //const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
+    //xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+    //scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
   
     // VAR-Prüfung mit 10% Chance
       if (Math.random() < 0.1) {
@@ -607,4 +644,3 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       break;
     }
   }
-}
