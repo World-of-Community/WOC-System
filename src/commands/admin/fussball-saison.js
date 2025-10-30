@@ -28,10 +28,15 @@ module.exports = {
     await interaction.reply('`⚡` Saison wird generiert... bitte warten!');
 
     try {
+      // 🔹 Alle bisherigen Matches löschen
+      await Match.deleteMany({});
+      console.log('✅ Alle bisherigen Matches wurden gelöscht.');
+
       const teams = [...proLeagueTeams];
       const spieltage = 34;
       const embeds = [];
 
+      // Funktion: Paarungen pro Spieltag generieren (jedes Team nur einmal)
       function generateMatchesForSpieltag(teams) {
         const available = [...teams];
         const matches = [];
@@ -48,25 +53,26 @@ module.exports = {
       for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
         const matchData = generateMatchesForSpieltag(teams);
         const matches = [];
+
         const matchDayDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
 
         for (let index = 0; index < matchData.length; index++) {
           const m = matchData[index];
 
+          // Zeit wählen: erstes Spiel heute = 21:45, sonst aus fixedTimes
           let timeStr;
-          // Nur für den ersten Spieltag (heute) erstes Spiel = 21:45
-          if(spieltag === 1 && index === 0){
-            timeStr = '21:45';
+          const today = new Date();
+          if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
+            timeStr = '21:45'; // erstes Spiel heute
           } else {
-            const availableTimes = fixedTimes.filter(t => !(spieltag === 1 && t === '21:45')); // 21:45 nur für erstes Spiel heute
-            timeStr = availableTimes[Math.floor(Math.random() * availableTimes.length)];
+            timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
 
           const [hour, minute] = timeStr.split(':').map(Number);
           const matchDate = new Date(matchDayDate.getTime());
           matchDate.setHours(hour, minute, 0, 0);
 
-          const endDate = new Date(matchDate.getTime() + 90 * 60000);
+          const endDate = new Date(matchDate.getTime() + 90 * 60000); // 90 Minuten Spielzeit
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
@@ -110,6 +116,7 @@ module.exports = {
       async function updateLive() {
         const now = new Date();
 
+        // Live-Konferenz
         const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
 
         const seenTeams = new Set();
@@ -138,6 +145,7 @@ module.exports = {
           else await channel.send({ embeds: [embed] });
         }
 
+        // 10 Minuten vorher Konferenz nur 1x
         const upcomingMatches = await Match.find({
           date: { $gt: now, $lte: new Date(now.getTime() + 10 * 60000) }
         }).sort({ date: 1 });
