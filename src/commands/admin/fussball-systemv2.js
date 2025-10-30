@@ -367,16 +367,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   const extraTime = Math.floor(Math.random() * 20) + 1;
 
   const events = [`\`🔊\` Anpfiff! Das Spiel beginnt! (0')`];
-
-  let goals = 0;
-  const minGoals = 4;
-  const goalMinutes = [];
-  
-  // 4 zufällige Minuten zwischen 1 und 90 auswählen
-  while (goalMinutes.length < minGoals) {
-    const rand = Math.floor(Math.random() * 90) + 1;
-    if (!goalMinutes.includes(rand)) goalMinutes.push(rand);
-  }
   
   goalMinutes.sort((a, b) => a - b);
 
@@ -384,57 +374,12 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     let torGezaehlt = true;
     let scorer = '';
     let xG = 0;
-
-    // --- garantiertes Tor in dieser Minute ---
-    if (goalMinutes.includes(minute)) {
-      const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
-      const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-      const scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
   
-      events.push({
-        minute,
-        type: 'goal',
-        team: teamScored,
-        scorer,
-        xG,
-      });
-  
-      if (teamScored === 'team1') score1++;
-      else score2++;
-    }
-  
-    // --- deine bestehenden Torchancen ---
+    // Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
     if (minute % 4 === 0 && Math.random() < 0.15) {
-      const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
-      const xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-      const scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
-  
-      // 30% Chance, dass Torchance auch ein Tor wird
-      if (Math.random() < 0.3) {
-        events.push({
-          minute,
-          type: 'goal',
-          team: teamScored,
-          scorer,
-          xG,
-        });
-  
-        if (teamScored === 'team1') score1++;
-        else score2++;
-      } else {
-        events.push({
-          minute,
-          type: 'chance',
-          team: teamScored,
-          xG,
-        });
-      }
-  
-    //// Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
-    //if (minute % 4 === 0 && Math.random() < 0.15) {
-    //const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
-    //xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-    //scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+    const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
+    xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+    scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
   
     // VAR-Prüfung mit 10% Chance
       if (Math.random() < 0.1) {
