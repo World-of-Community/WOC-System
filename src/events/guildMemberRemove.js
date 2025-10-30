@@ -9,6 +9,48 @@ module.exports = {
     name: Events.GuildMemberRemove,
     async execute(member) {
 
+    const serverData = await serverdb.findOne({ guildID: member.guild.id });
+    if (!serverData) return;
+    if (member.user.bot) return;
+    if (serverData.deactivated.includes("willkommensnachrichten")) return;
+
+    const leaveChannel = member.guild.channels.cache.get('1433189396475023380'); // gleicher Kanal wie Willkommen
+    if (!leaveChannel) return;
+
+    const contents = [
+        `<a:leave:1433256832851251411> **${member.user.tag} hat uns verlassen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat das Schiff verlassen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} ist verschwunden...** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat die Party verlassen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} ist in den Sonnenuntergang geritten.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} konnte dem Chaos nicht standhalten.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **Bye ${member.user.tag} – vielleicht sieht man sich wieder.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} ist vom Server gefallen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat sich verabschiedet.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat das Abenteuer beendet.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat den Ausgang gefunden.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **Oh nein! ${member.user.tag} ist einfach gegangen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat den Server heimlich verlassen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat das Lager verlassen – Ruhe in Frieden, Inventar.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat das Weite gesucht.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **Der Platz von ${member.user.tag} ist nun leer...** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} konnte der Versuchung des „Verlassen“-Buttons nicht widerstehen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} ist durch ein Portal verschwunden.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat genug vom Abenteuer.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat sich aus dem Staub gemacht.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **Wir werden ${member.user.tag} vermissen...** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat den Server verlassen** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} wurde vom Wind davongetragen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} ist gegangen, bevor die Party richtig losging.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat sich verabschiedet – vielleicht kommt er ja wieder?** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} hat einen eleganten Abgang hingelegt.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **${member.user.tag} konnte dem Ruf der Freiheit nicht widerstehen.** <a:winken:1086560167442796544>`,
+        `<a:leave:1433256832851251411> **Und da war es nur noch einer weniger... ${member.user.tag} ist gegangen.** <a:winken:1086560167442796544>`
+    ];
+    
+    const rndContent = Math.floor(Math.random() * contents.length);
+    await leaveChannel.send({ content: contents[rndContent] });
+
         const logchannel = member.guild.channels.cache.get("1263436406655680513");
         if (!logchannel) return;
 
