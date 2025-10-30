@@ -348,6 +348,10 @@ async function simulateMatch(interaction, statusMessage, leagueDoc, team1, team2
       const xg = parseFloat((Math.random() * 0.6 + 0.05).toFixed(2));
       let goalCounted = true;
 
+      // xG wird immer hinzugefügt, egal ob Tor oder nicht
+      if (teamScored === 'team1') xG1 += xG;
+      else xG2 += xG;
+
       // VAR Chance
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
