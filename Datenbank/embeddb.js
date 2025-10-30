@@ -6,4 +6,4 @@ const embedSchema = new mongoose.Schema({
   messageId: { type: String, required: true }
 });
 
-module.exports = mongoose.model('EmbedDB', embedSchema);
+module.exports = mongoose.model('ProLeagueEmbed', embedSchema);

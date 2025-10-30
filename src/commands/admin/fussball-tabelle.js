@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const { Match } = require('../../../Datenbank/matchdb');
-const LeagueEmbed = require('../../../Datenbank/leaguembeddb');
+const ProLeagueEmbed = require('../../../Datenbank/proleaguembeddb');
 
 const proLeagueTeams = [
   'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
