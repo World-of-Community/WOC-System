@@ -1,86 +1,108 @@
-const { SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ChannelType,
+  PermissionFlagsBits
+} = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const { Match } = require('../../../Datenbank/matchdb');
 const ProLeagueEmbed = require('../../../Datenbank/proleaguembeddb');
 
-const proLeagueTeams = [
-  'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
-  'FC Rot-Weiß','SV Grünwald','TSV Nord','SC Süd','VfB West',
-  'FC Ostwind','SV Nordstern','TSV Berg','SC Tal','VfB See',
-  'FC Sturm','SV Blitz','TSV Vulkan','SC Frost','VfB Flamme',
-  'FC Donner','SV Schatten','TSV Nebel','SC Licht'
+// ------------------------------------------------------
+// ⚽ KONFIGURATION
+// ------------------------------------------------------
+const PRO_LEAGUE_TEAMS = [
+  'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
+  'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
+  'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
+  'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
+  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-// -------------------- Tabelle erstellen --------------------
-async function createTabelleEmbed() {
-  const allTeams = await Team.find({ league: 'Pro League' });
-  const teamMap = new Map(allTeams.map(t => [t.name.trim().toLowerCase(), t.toObject()]));
+// ------------------------------------------------------
+// 🧮 FUNKTION: Tabelle berechnen
+// ------------------------------------------------------
+async function buildLeagueTable() {
+  // Alle Teams aus der DB abrufen
+  const dbTeams = await Team.find({ league: 'Pro League' });
+  const teamMap = new Map(dbTeams.map(t => [t.name.trim().toLowerCase(), t.toObject()]));
 
-  for (const name of proLeagueTeams) {
+  // Fehlende Teams hinzufügen (falls noch nicht in DB)
+  for (const name of PRO_LEAGUE_TEAMS) {
     const key = name.trim().toLowerCase();
     if (!teamMap.has(key)) {
       teamMap.set(key, {
         name,
-        played: 0,
-        won: 0,
-        draw: 0,
-        lost: 0,
-        goalsFor: 0,
-        goalsAgainst: 0,
-        goalDifference: 0,
-        points: 0
+        played: 0, won: 0, draw: 0, lost: 0,
+        goalsFor: 0, goalsAgainst: 0, goalDifference: 0, points: 0
       });
     }
   }
 
-  // Live-Spiele abrufen
+  // Live-Spiele ermitteln
   const liveMatches = await Match.find({ status: 'live' });
-  const liveTeamsMap = new Map();
+  const liveTeams = new Map();
   for (const m of liveMatches) {
-    const t1 = m.team1.trim().toLowerCase();
-    const t2 = m.team2.trim().toLowerCase();
-    liveTeamsMap.set(t1, `${m.score1}-${m.score2}`);
-    liveTeamsMap.set(t2, `${m.score1}-${m.score2}`);
+    liveTeams.set(m.team1.trim().toLowerCase(), `${m.score1}-${m.score2}`);
+    liveTeams.set(m.team2.trim().toLowerCase(), `${m.score1}-${m.score2}`);
   }
 
-  const proLeagueData = Array.from(teamMap.values())
-    .map(t => {
-      t.goalDifference = t.goalsFor - t.goalsAgainst;
-      t.points = (t.won * 3) + t.draw;
-      return t;
-    })
-    .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
+  // Daten berechnen und sortieren
+  const sortedTeams = Array.from(teamMap.values())
+    .map(t => ({
+      ...t,
+      goalDifference: t.goalsFor - t.goalsAgainst,
+      points: (t.won * 3) + t.draw
+    }))
+    .sort((a, b) => (
+      b.points - a.points ||
+      b.goalDifference - a.goalDifference ||
+      b.goalsFor - a.goalsFor
+    ));
 
-  const description = proLeagueData.map((t, i) => {
+  return { sortedTeams, liveTeams };
+}
+
+// ------------------------------------------------------
+// 🏗️ FUNKTION: Embed erstellen
+// ------------------------------------------------------
+async function createTableEmbed() {
+  const { sortedTeams, liveTeams } = await buildLeagueTable();
+
+  const rows = sortedTeams.map((t, i) => {
     const key = t.name.trim().toLowerCase();
-    const liveMark = liveTeamsMap.has(key) ? `\`🔴\` ${liveTeamsMap.get(key)}` : '';
-    return `**${i + 1}. ${t.name} ${liveMark}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`;
+    const liveMark = liveTeams.has(key) ? ` 🔴 ${liveTeams.get(key)}` : '';
+    return `**${i + 1}. ${t.name}${liveMark}**  —  ${t.points} Pkt  |  ${t.won}-${t.draw}-${t.lost}  |  ${t.goalsFor}:${t.goalsAgainst}  (TD: ${t.goalDifference})`;
   }).join('\n');
 
   return new EmbedBuilder()
-    .setTitle('`⚽` Pro League Tabelle')
-    .setDescription(description)
+    .setTitle('⚽ Pro League — Aktuelle Tabelle')
+    .setDescription(rows || 'Noch keine Teams vorhanden.')
     .setColor('Blurple')
-    .setFooter({ text: 'Zuletzt aktualisiert' })
+    .setFooter({ text: 'Wird automatisch aktualisiert, wenn Spiele stattfinden' })
     .setTimestamp();
 }
 
-// -------------------- Tabelle updaten --------------------
+// ------------------------------------------------------
+// 🔁 FUNKTION: Tabelle aktualisieren
+// ------------------------------------------------------
 async function updateLeagueTable(client) {
-  const dbEntry = await ProLeagueEmbed.findOne({ name: 'proleague_tabelle' });
-  if (!dbEntry) return;
+  const savedEmbed = await ProLeagueEmbed.findOne({ name: 'proleague_tabelle' });
+  if (!savedEmbed) return;
 
-  const channel = await client.channels.fetch(dbEntry.channelId).catch(() => null);
+  const channel = await client.channels.fetch(savedEmbed.channelId).catch(() => null);
   if (!channel || channel.type !== ChannelType.GuildText) return;
 
-  const message = await channel.messages.fetch(dbEntry.messageId).catch(() => null);
+  const message = await channel.messages.fetch(savedEmbed.messageId).catch(() => null);
   if (!message) return;
 
-  const embed = await createTabelleEmbed();
+  const embed = await createTableEmbed();
   await message.edit({ embeds: [embed] });
 }
 
-// -------------------- Match-Start Trigger --------------------
+// ------------------------------------------------------
+// 🟢 FUNKTION: Spiel gestartet
+// ------------------------------------------------------
 async function onMatchStart(client, matchId) {
   const match = await Match.findById(matchId);
   if (!match) return;
@@ -88,10 +110,12 @@ async function onMatchStart(client, matchId) {
   match.status = 'live';
   await match.save();
 
-  await updateLeagueTable(client); // 🔴 wird jetzt angezeigt
+  await updateLeagueTable(client);
 }
 
-// -------------------- Match-End Trigger --------------------
+// ------------------------------------------------------
+// 🔴 FUNKTION: Spiel beendet
+// ------------------------------------------------------
 async function onMatchEnd(client, matchId) {
   const match = await Match.findById(matchId);
   if (!match) return;
@@ -103,6 +127,7 @@ async function onMatchEnd(client, matchId) {
   const team2 = await Team.findOne({ name: match.team2 });
   if (!team1 || !team2) return;
 
+  // Statistiken aktualisieren
   team1.played += 1;
   team2.played += 1;
 
@@ -112,43 +137,42 @@ async function onMatchEnd(client, matchId) {
   team2.goalsAgainst += match.score1;
 
   if (match.score1 > match.score2) {
-    team1.won += 1;
-    team2.lost += 1;
+    team1.won++; team2.lost++;
   } else if (match.score1 < match.score2) {
-    team2.won += 1;
-    team1.lost += 1;
+    team2.won++; team1.lost++;
   } else {
-    team1.draw += 1;
-    team2.draw += 1;
+    team1.draw++; team2.draw++;
   }
 
   await team1.save();
   await team2.save();
 
-  await updateLeagueTable(client); // 🔴 verschwindet nach Ende
+  await updateLeagueTable(client);
 }
 
-// -------------------- Slash Command --------------------
+// ------------------------------------------------------
+// 💬 SLASH COMMAND: /fussball-tabelle
+// ------------------------------------------------------
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-tabelle')
-    .setDescription('Sendet die Pro League Tabelle und speichert die Nachricht')
+    .setDescription('Sendet die aktuelle Pro League Tabelle und speichert sie für automatische Updates.')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    const embed = await createTabelleEmbed();
+    const embed = await createTableEmbed();
     const message = await interaction.channel.send({ embeds: [embed] });
 
     await ProLeagueEmbed.findOneAndUpdate(
       { name: 'proleague_tabelle' },
-      { name: 'proleague_tabelle', channelId: interaction.channel.id, messageId: message.id },
+      { channelId: interaction.channel.id, messageId: message.id },
       { upsert: true }
     );
 
-    await interaction.reply({ content: '> `✅` Tabelle gesendet und gespeichert!', ephemeral: true });
+    await interaction.reply({ content: '> ✅ Tabelle wurde gesendet und gespeichert!', ephemeral: true });
   },
 
   updateLeagueTable,
-  onMatchStart,  // neu
+  onMatchStart,
   onMatchEnd
 };
