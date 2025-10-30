@@ -3,7 +3,8 @@ const {
   EmbedBuilder, 
   ActionRowBuilder, 
   StringSelectMenuBuilder,
-  ComponentType
+  ComponentType,
+  PermissionFlagsBits
 } = require('discord.js');
 const { Team, Match } = require('../../../Datenbank/fussballdb');
 
