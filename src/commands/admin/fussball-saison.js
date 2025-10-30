@@ -76,7 +76,7 @@ module.exports = {
           let timeStr;
           const today = new Date();
           if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
-            timeStr = '22:12';
+            timeStr = '22:16';
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
@@ -165,7 +165,7 @@ module.exports = {
 
         if (liveMatches.length > 0) {
           const lines = liveMatches.map(m => {
-            const diff = Math.floor((now - m.date) / 60000);
+            const diff = Math.floor((now - m.date) / 1000); // Unterschied in Sekunden
             const minute = diff <= 45 ? `${diff}'` : diff <= 50 ? `45' +${diff-45} (Pause)` : `${45 + (diff-50)}'`;
             return `${m.homeTeam} ${m.homeScore ?? 0} - ${m.awayScore ?? 0} ${m.awayTeam} (${minute})`;
           });
