@@ -33,11 +33,11 @@ async function createTabelleEmbed() {
   }
 
   // Live-Spiele
-  const liveMatches = await Match.find({ status: 'live' }); // laufende Spiele
-  const liveTeams = new Set();
+  const liveMatches = await Match.find({ status: 'live' });
+  const liveTeamsMap = new Map(); // Teamname => aktueller Spielstand
   for (const m of liveMatches) {
-    liveTeams.add(m.team1);
-    liveTeams.add(m.team2);
+    liveTeamsMap.set(m.team1.trim(), `${m.score1}-${m.score2}`);
+    liveTeamsMap.set(m.team2.trim(), `${m.score1}-${m.score2}`);
   }
 
   // Punkte, Differenz berechnen
@@ -51,7 +51,10 @@ async function createTabelleEmbed() {
 
   // Beschreibung erstellen
   const description = proLeagueData.map((t, i) => {
-    const liveMark = liveTeams.has(t.name) ? '`🔴`' : ''; // 🔴 bei Live-Spielen
+    let liveMark = '';
+    if (liveTeamsMap.has(t.name.trim())) {
+      liveMark = `\`🔴\` ${liveTeamsMap.get(t.name.trim())}`;
+    }
     return `**${i + 1}. ${t.name} ${liveMark}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`;
   }).join('\n');
 
