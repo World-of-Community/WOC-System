@@ -69,9 +69,8 @@ module.exports = {
 
           // Uhrzeit festlegen
           let timeStr;
-          const today = new Date();
           if (spieltag === 1 && index === 0) {
-            timeStr = '22:31'; // erstes Spiel feste Zeit
+            timeStr = '22:38'; // erstes Spiel feste Zeit
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
@@ -161,18 +160,18 @@ module.exports = {
           const lines = [];
 
           for (const m of liveMatches) {
-            const diffMinutes = Math.floor((now - m.date) / 60000);
+            const diffSeconds = Math.floor((now - m.date) / 1000); // Sekunden seit Spielbeginn
             let minuteDisplay;
 
-            if (diffMinutes < 45) {
-              minuteDisplay = `${diffMinutes}'`;
-            } else if (diffMinutes < 46) {
+            if (diffSeconds < 45 * 60) {
+              minuteDisplay = `${Math.floor(diffSeconds / 60)}'`;
+            } else if (diffSeconds < 45 * 60 + 1) {
               minuteDisplay = `45' (Pause)`;
-            } else if (diffMinutes <= maxNormalTime) {
-              minuteDisplay = `${diffMinutes}'`;
+            } else if (diffSeconds <= 90 * 60) {
+              minuteDisplay = `${Math.floor(diffSeconds / 60)}'`;
             } else {
-              const extra = Math.min(diffMinutes - maxNormalTime, maxExtraTime);
-              minuteDisplay = `${maxNormalTime}' +${extra}`;
+              const extra = Math.min(Math.floor(diffSeconds / 60) - 90, maxExtraTime);
+              minuteDisplay = `90' +${extra}`;
             }
 
             // Zufällige Tore
