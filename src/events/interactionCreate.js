@@ -331,15 +331,6 @@ module.exports = {
 
             }
           }
-          if (interaction.isCommand()) {
-            if(interaction.commandName === 'emojiquiz') {
-              await emojiquizCommand.execute(interaction);
-              return;
-            }
-          }
-          if (interaction.isButton()) {
-            if(await emojiquizCommand.handleButton(interaction)) return;
-          }
         } catch(e) {
           console.error(e);
         }
