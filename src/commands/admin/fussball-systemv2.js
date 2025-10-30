@@ -367,8 +367,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   const extraTime = Math.floor(Math.random() * 20) + 1;
 
   const events = [`\`🔊\` Anpfiff! Das Spiel beginnt! (0')`];
-  
-  goalMinutes.sort((a, b) => a - b);
 
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
     let torGezaehlt = true;
