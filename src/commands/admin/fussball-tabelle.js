@@ -78,11 +78,11 @@ async function createTableEmbed() {
   const rows = sortedTeams.map((t, i) => {
     const key = t.name.trim().toLowerCase();
     const liveMark = liveTeams.has(key) ? ' `🔴`' : '';
-    return `**${i + 1}. ${t.name}${liveMark}**  —  ${t.points} Pkt | S: ${t.won} U: ${t.draw} N:${t.lost} | ${t.goalsFor}:${t.goalsAgainst} (TD: ${t.goalDifference})`;
+    return `**${i + 1}. ${t.name}${liveMark}**  —  ${t.points} Pkt | S: ${t.won} U: ${t.draw} N: ${t.lost} | ${t.goalsFor}:${t.goalsAgainst} (TD: ${t.goalDifference})`;
   }).join('\n');
 
   return new EmbedBuilder()
-    .setTitle('⚽ Pro League — Aktuelle Tabelle')
+    .setTitle('`⚽` Pro League — Aktuelle Tabelle')
     .setDescription(rows || '*Keine Teams vorhanden.*')
     .setColor('Blurple')
     .setFooter({ text: 'Wird automatisch aktualisiert, wenn Spiele stattfinden' })

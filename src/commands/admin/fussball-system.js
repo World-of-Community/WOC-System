@@ -1,25 +1,31 @@
+// /fussball-system.js
+// Ein komplettes, automatisches Fußballsystem in EINER MongoDB-Collection (League).
+// Benötigt: discord.js v14, mongoose bereits verbunden (z.B. in bot startup).
+// Einfach einbauen und bei Bedarf anpassen.
+
 const {
   SlashCommandBuilder,
   EmbedBuilder,
   ActionRowBuilder,
+  StringSelectMenuBuilder,
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
-  StringSelectMenuBuilder,
   PermissionFlagsBits,
 } = require('discord.js');
 
-const { Team } = require('../../../Datenbank/fussballdb');
-const { Match } = require('../../../Datenbank/matchdb');
+const mongoose = require('mongoose');
 
-const proLeagueTeams = [
-  'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
-  'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
-  'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
-  'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
-  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
-];
+// ------------------------------
+// ⚠️ Stelle sicher, dass Mongoose bereits verbunden ist.
+// Beispiel (in deinem bot-startup): 
+// const mongoose = require('mongoose');
+// mongoose.connect(process.env.MONGO_URI);
+// ------------------------------
 
+// ------------------------------
+// Initial TeamsData (deine Liste, kannst du erweitern/ändern)
+// ------------------------------
 const teamsData = [
   { name: "FC Adler", players: ["Müller", "Schmidt", "Fischer", "Weber"], stadium: "Adler Arena" },
   { name: "SV Löwen", players: ["Schneider", "Wagner", "Becker", "Hoffmann"], stadium: "Löwenstein-Stadion" },
@@ -47,947 +53,441 @@ const teamsData = [
   { name: "SC Licht", players: ["Günther", "Kaiser", "Sachs", "Mayer"], stadium: "Lichtstadion" }
 ];
 
-// Erstellt das Tabellen-Embed
-async function createTabelleEmbed() {
-  const allTeams = await Team.find({ league: 'Pro League' });
-  const liveNow = new Date();
-  const liveMatches = await Match.find({
-    date: { $lte: liveNow },
-    endDate: { $gte: liveNow }
-  });
+// ------------------------------
+// Mongoose: League Schema (ein Dokument hält Teams + Matches + Settings)
+// ------------------------------
+const TeamSubSchema = new mongoose.Schema({
+  name: String,
+  players: [String],
+  stadium: String,
+  // Statistik-Felder
+  played: { type: Number, default: 0 },
+  won: { type: Number, default: 0 },
+  draw: { type: Number, default: 0 },
+  lost: { type: Number, default: 0 },
+  goalsFor: { type: Number, default: 0 },
+  goalsAgainst: { type: Number, default: 0 },
+  points: { type: Number, default: 0 }
+}, { _id: false });
 
-  const liveTeams = new Set();
-  for (const m of liveMatches) {
-    liveTeams.add(m.homeTeam);
-    liveTeams.add(m.awayTeam);
+const MatchSubSchema = new mongoose.Schema({
+  homeTeam: String,
+  awayTeam: String,
+  date: Date,
+  matchday: Number,
+  score1: { type: Number, default: null },
+  score2: { type: Number, default: null },
+  events: [String],
+  live: { type: Boolean, default: false },
+  endDate: Date
+}, { _id: false });
+
+const LeagueSchema = new mongoose.Schema({
+  name: { type: String, default: 'Pro League' },
+  teams: [TeamSubSchema],
+  matches: [MatchSubSchema],
+  settings: {
+    minuteDurationMs: { type: Number, default: 1000 }, // 1s per minute simulated (anpassen)
   }
+});
 
-  const teamMap = new Map(allTeams.map(t => [t.name.trim(), t.toObject()]));
+const League = mongoose.models.League || mongoose.model('League', LeagueSchema);
 
-  for (const name of proLeagueTeams) {
-    if (!teamMap.has(name)) {
-      teamMap.set(name, {
-        name,
-        played: 0,
-        won: 0,
-        draw: 0,
-        lost: 0,
-        goalsFor: 0,
-        goalsAgainst: 0,
-        goalDifference: 0,
-        points: 0
-      });
-    }
-  }
-
-  const proLeagueData = Array.from(teamMap.values())
-    .map(t => {
-      t.goalDifference = t.goalsFor - t.goalsAgainst;
-      t.points = (t.won * 3) + t.draw;
-      return t;
-    })
-    .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
-
-  const description = proLeagueData.map((t, i) => {
-    const isLive = liveTeams.has(t.name);
-    const platz = (i + 1).toString().padStart(2, ' ');
-    const teamDisplay = `${isLive ? '`🔴`' : ''} ${t.name}`.padEnd(17);
-    return `**${platz}.** ${teamDisplay} | Sp: ${t.played.toString().padStart(2)} | S: ${t.won.toString().padStart(2)} | U: ${t.draw.toString().padStart(2)} | N: ${t.lost.toString().padStart(2)} | T: ${t.goalsFor.toString().padStart(2)} | GT: ${t.goalsAgainst.toString().padStart(2)} | TD: ${t.goalDifference.toString().padStart(3)} | Pkte: ${t.points.toString().padStart(3)}`;
-  }).join('\n');
-
-  return new EmbedBuilder()
-    .setTitle('🏆 Pro League Tabelle')
-    .setDescription(description || 'Keine Daten vorhanden')
-    .setColor(0xFFD700)
-    .setFooter({ text: '🔴 = Team spielt aktuell live | Zuletzt aktualisiert' })
-    .setTimestamp();
-}
-
-// Erstellt das Embed für den nächsten Spieltag
-async function createNextMatchdayEmbed() {
-  const now = new Date();
-
-  const nextMatches = await Match.find({ date: { $gte: now } })
-    .sort({ date: 1 })
-    .limit(10);
-
-  if (!nextMatches.length) {
-    return new EmbedBuilder()
-      .setTitle('`📅` Nächster Spieltag')
-      .setDescription('Keine Spiele für den nächsten Spieltag gefunden.')
-      .setColor(0x00BFFF);
-  }
-
-  const nextMatchdayNumber = nextMatches[0].matchday;
-  const matchdayGames = await Match.find({ matchday: nextMatchdayNumber }).sort({ date: 1 });
-
-  const matchdayText = matchdayGames.map(m => {
-    const dateStr = new Date(m.date).toLocaleString('de-DE', {
-      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-    });
-    return `${m.homeTeam} vs ${m.awayTeam} - ${dateStr}`;
-  }).join('\n');
-
-  return new EmbedBuilder()
-    .setTitle(`\`📅\` Nächster Spieltag: Spieltag ${nextMatchdayNumber}`)
-    .setDescription(matchdayText)
-    .setColor(0x00BFFF);
-}
-
-// Formatiert Spielminute
-function formatMatchMinute(match) {
-  const now = new Date();
-  const diffMin = Math.floor((now - match.date) / 60000);
-  if (diffMin < 0 && diffMin >= -5) return `0 (startet in ${Math.abs(diffMin)} Min)`;
-  if (diffMin >= 0 && diffMin <= 90) return diffMin.toString();
-  if (diffMin > 90 && diffMin <= 110) return `90+${diffMin - 90}`;
-  if (diffMin < -5) return '0';
-  return 'Ende';
-}
-
-// Einfaches Live Match Embed (Übersicht)
-function createLiveMatchEmbed(match, liveCount) {
-  const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-  const spielminute = formatMatchMinute(match);
-  const scoreHome = match.homeScore ?? 0;
-  const scoreAway = match.awayScore ?? 0;
-
-  return new EmbedBuilder()
-    .setTitle(`\`🔴\` Live Spiele: ${liveCount}`)
-    .setDescription(`${match.homeTeam} ${scoreHome} - ${scoreAway} ${match.awayTeam} (Anpfiff: ${startTime} Uhr, Spielminute: ${spielminute}')`)
-    .setColor(0xff0000)
-    .setFooter({ text: 'Zuletzt aktualisiert'})
-    .setTimestamp();
-}
-
-// Select Menü für Live Spiele Übersicht
-function createLiveMatchesSelectMenu(liveMatches) {
-  return new StringSelectMenuBuilder()
-    .setCustomId('live_match_select')
-    .setPlaceholder('Wähle ein Live-Spiel')
-    .addOptions(
-      liveMatches.map((match, idx) => ({
-        label: `${match.homeTeam} vs ${match.awayTeam}`,
-        description: `Anpfiff: ${new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`,
-        value: idx.toString(),
-      }))
-    );
-}
-
+// ------------------------------
+// Helferfunktionen
+// ------------------------------
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 function getRandomPlayer(team) {
-  const validPlayers = Array.isArray(team.players) ? team.players.filter(p => typeof p === 'string' && p.trim() !== '') : [];
-  return validPlayers.length > 0 ? validPlayers[Math.floor(Math.random() * validPlayers.length)] : 'Unbekannter Spieler';
+  if (!team || !team.players || team.players.length === 0) return 'Unbekannter Spieler';
+  return team.players[Math.floor(Math.random() * team.players.length)];
+}
+function getTwoDifferentIndices(len) {
+  const a = Math.floor(Math.random() * len);
+  let b;
+  do { b = Math.floor(Math.random() * len); } while (b === a);
+  return [a, b];
+}
+function formatDateDE(date) {
+  return new Date(date).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' }).replace(',', ' -');
 }
 
-// Detailliertes Embed zu einem Live-Spiel mit Statistiken (Beispiel)
-function createLiveMatchDetailEmbed(match, events = [], statusMessage, team1, team2, team1Name, team2Name, userTip) {
-  const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-  const spielminute = formatMatchMinute(match);
-  const scoreHome = match.homeScore ?? 0;
-  const scoreAway = match.awayScore ?? 0;
-
-  // Beispielwerte, bitte mit echten Daten ersetzen, falls vorhanden
-  const xG1 = (match.xGHome ?? 0).toFixed(2);
-  const xG2 = (match.xGAway ?? 0).toFixed(2);
-  const yellowCardsHome = match.yellowCardsHome ?? 0;
-  const yellowCardsAway = match.yellowCardsAway ?? 0;
-  const cornersHome = match.cornersHome ?? 0;
-  const cornersAway = match.cornersAway ?? 0;
-  const ballPossessionHome = match.ballPossessionHome ?? 50;
-  const ballPossessionAway = 100 - ballPossessionHome;
-
-  let score1 = 0;
-  let score2 = 0;
-  let yellowCardsTeam1 = 0;
-  let yellowCardsTeam2 = 0;
-  let ballPossessionCountTeam1 = 0;
-  let ballPossessionCountTeam2 = 0;
-  let cornersTeam1 = 0;
-  let cornersTeam2 = 0;
-  let team1Passes = 0;
-  let team2Passes = 0;
-  let team1Shots = 0;
-  let team2Shots = 0;
-  let team1Tackles = 0;
-  let team2Tackles = 0;
-  let team1Saves = 0;
-  let team2Saves = 0;
-
-  const extraTime = Math.floor(Math.random() * 20) + 1;  // 1 bis 20 Minuten
-
-  for (let minute = 1; minute <= 90 + extraTime; minute++) {
-  const eventsBefore = events.length;  // Anzahl Events zu Beginn der Minute
-
-  let torGezaehlt = true;
-  let scorer = '';
-  let xG = 0;
-
-  if (minute % 4 === 0 && Math.random() < 0.25) {
-    const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
-    xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-    scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
-
-    const fullTeam1Data = teamsData.find(t => t.name === match.team1);
-    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
-
-    if (!Array.isArray(events)) events = [];
-
-    if (Math.random() < 0.4) { // Torversuch mit 40% Chance pro Minute
-    const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
-    xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
-    scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
-  
-    let torGezaehlt = true; // Standard: Tor wird gezählt
-  
-    // VAR prüft Tor
-    if (Math.random() < 0.1) {  // 10% Chance auf VAR-Check
-      if (Math.random() < 0.5) { // 50% Chance auf Aberkennung
-        torGezaehlt = false;
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird ABERKANNT \`❌\` - ${score1}-${score2} (${spielminute}')`);
-      } else {
-        events.push(`\`🖥️\` VAR-Überprüfung: Tor von **${scorer}** wird bestätigt \`✅\` - ${score1}-${score2} (${mspielinute}')`);
-      }
-    }
-  
-    if (torGezaehlt) {
-      if (teamScored === 'team1') {
-        score1++;
-        xG1 += xG;
-        events.push(`\`⚽\` TOOOR! - ${team1Name} - von **${scorer}** - ${score1}-${score2} (${spielminute}')`);
-      } else {
-        score2++;
-        xG2 += xG;
-        events.push(`\`⚽\` TOOOR! - ${team2Name} - von **${scorer}** - ${score1}-${score2} (${spielminute}')`);
-      }
-    }
-   }
+// Bereite League-Dokument vor (falls leer -> initialisiere Teams)
+async function getOrCreateLeague() {
+  let league = await League.findOne({});
+  if (!league) {
+    const teams = teamsData.map(t => ({
+      name: t.name, players: t.players, stadium: t.stadium
+    }));
+    league = await League.create({ teams, matches: [] });
   }
+  return league;
+}
 
-  if (Math.random() < 0.5) team1Passes++; else team2Passes++;
-  if (Math.random() < 0.3) team1Shots++; else team2Shots++;
-  if (Math.random() < 0.2) team1Tackles++; else team2Tackles++;
+// Tabelle sortieren (Punkte, Tordifferenz, Tore)
+function sortTable(teams) {
+  return teams.slice().sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    const gdA = a.goalsFor - a.goalsAgainst;
+    const gdB = b.goalsFor - b.goalsAgainst;
+    if (gdB !== gdA) return gdB - gdA;
+    return b.goalsFor - a.goalsFor;
+  });
+}
 
-  if (Math.random() < 0.15 && minute % 6 === 0) {
-    const team = Math.random() < 0.5 ? 'team1' : 'team2';
-    const player = getRandomPlayer(team === 'team1' ? team1 : team2);
-    if (team === 'team1') yellowCardsTeam1++;
-    else yellowCardsTeam2++;
-    events.push(`\`🟨\` Gelbe Karte für **${player}** (${spielminute}')`);
-  }
-
-  if (Math.random() < 0.05) {
-    const team = Math.random() < 0.5 ? team1Name : team2Name;
-    const teamName = team === team1 ? team1Name : team2Name;
-    events.push(`\`🎯\` Freistoß für ${teamName} (${spielminute}')`);
-  }
-
-  if (Math.random() < 0.04) {
-    const team = Math.random() < 0.5 ? team1 : team2;
-    const teamName = team === team1 ? team1Name : team2Name;
-    const player = getRandomPlayer(team);
-    events.push(`\`🏳️\` Abseits von ${teamName} durch **${player}** (${spielminute}')`);
-  }
-
-  if (Math.random() < 0.08) {
-    const team = Math.random() < 0.5 ? team1 : team2;
-    const teamName = team === team1 ? team1Name : team2Name;
-    const player = getRandomPlayer(team);
-    events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** (${spielminute}')`);
-  }
-
-  if (Math.random() < 0.03) {
-    events.push(`\`⏸️\` Spielunterbrechung (${spielminute}')`);
-  }
-
-  if (Math.random() < 0.1) {
-    const team = Math.random() < 0.5 ? 'team1' : 'team2';
-    if (team === 'team1') cornersTeam1++;
-    else cornersTeam2++;
-
-    const teamName = team === 'team1' ? team1Name : team2Name;
-    events.push(`\`🚩\` Ecke für ${teamName} (${spielminute}')`);
-  }
-
-  // *** HIER: Prüfen, ob mindestens ein Event in dieser Minute hinzugefügt wurde ***
-  if (events.length === eventsBefore) {
-    const neutralTeam = Math.random() < 0.5 ? team1Name : team2Name;
-    events.push(`\`🕹️\` ${neutralTeam} im Ballbesitz (${spielminute}')`);
-  }
-
-  // Beispiel für Nachspielzeit und Schlusspfiff
-  if (spielminute === 90) {
-    events.push(`\`⏳\` Nachspielzeit beginnt! (+${extraTime}')`);
-  }
-  if (spielminute === 90 + extraTime) {
-    events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
-  }
-
-    const fullTeam1Data = teamsData.find(t => t.name === match.team1);
-    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
-
-  return new EmbedBuilder()
-    .setTitle(`\`🔴\` Live-Spiel Detail: ${match.homeTeam} vs ${match.awayTeam}`)
-    .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
-    .addFields(
-      { name: 'Spielminute', value: `${spielminute}'`, inline: true },
-      { name: 'Spielstand', value: `${scoreHome} - ${scoreAway}`, inline: true },
-      { name: 'xG', value: `${xG1} : ${xG2}`, inline: true },
-      { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsHome} - ${yellowCardsAway}`, inline: true },
-      { name: 'Ballbesitz', value: `${ballPossessionHome}% - ${ballPossessionAway}%`, inline: true },
-      { name: 'Ecken', value: `\`🚩\` ${cornersHome} - ${cornersAway}`, inline: true },
-      { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
-    )
-    .setColor(0xff0000)
-    .setFooter({ text: 'Zuletzt aktualisiert'})
-    .setTimestamp();
-}}
-
+// ------------------------------
+// Haupt-Command-Export
+// ------------------------------
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fussball-system')
-    .setDescription('Zeigt die Fußball-Übersicht an')
+    .setDescription('Automatisches Fußballsystem (Pro League) — Tabelle, Live-Simulation, Zufallsspiel')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
+    await interaction.deferReply();
 
-    const proLeagueTeams = await Team.find({ league: 'Pro League' });
+    const league = await getOrCreateLeague();
+    const now = new Date();
 
-      if (!proLeagueTeams || proLeagueTeams.length < 2) {
-        return interaction.reply({
-          content: '❌ Es sind nicht genug Teams in der Pro League Datenbank.',
-          ephemeral: true,
-        });
-      }
+    // Lade anstehende Matches (>= jetzt)
+    const upcomingMatches = (league.matches || []).filter(m => !m.score1 && (!m.date || m.date >= now)).sort((a,b) => (a.date||0) - (b.date||0));
+    const liveMatches = (league.matches || []).filter(m => m.live);
 
-      const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
-      const team1Name = team1.name;
-      const team2Name = team2.name;
-  
-      const odds = generateOdds();
+    // Erstelle Tabelle-Embed
+    const tableSorted = sortTable(league.teams);
+    const tabelleEmbed = new EmbedBuilder()
+      .setTitle('`📊` Aktuelle Tabelle')
+      .setColor('#0099ff');
 
-      const fullTeam1Data = teamsData.find(t => t.name === team1.name);
-      const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
-
-      function getTwoDifferentTeams(teams) {
-        const team1Index = Math.floor(Math.random() * teams.length);
-        let team2Index;
-        do {
-          team2Index = Math.floor(Math.random() * teams.length);
-        } while (team2Index === team1Index);
-        return [teams[team1Index], teams[team2Index]];
-      }
-
-      function generateOdds() {
-        const probTeam1 = Math.random() * 0.5 + 0.25;
-        const probTeam2 = Math.random() * (1 - probTeam1);
-        const probDraw = 1 - probTeam1 - probTeam2;
-      
-        return {
-          team1: 1 / probTeam1,
-          draw: 1 / probDraw,
-          team2: 1 / probTeam2,
-        };
-      }
-
-    // Initiales Info-Embed mit Buttons
-    const overviewEmbed = new EmbedBuilder()
-      .setTitle('`⚽` » Fußball Übersicht')
-      .setDescription(
-        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
-        '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
-        '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
-        '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
-        'Klicke unten, um die aktuelle Tabelle, den nächsten Spieltag oder die Live-Spiele anzuzeigen.'
-      )
-      .setColor('Blurple');
-
-    const buttonRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('tabelle')
-        .setLabel('📊 Tabelle')
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId('live')
-        .setLabel('🔴 Live Spiele (BETA)')
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId('spieltag')
-        .setLabel('📅 Nächster Spieltag')
-        .setStyle(ButtonStyle.Secondary)
-    );
-
-    await interaction.reply({ embeds: [overviewEmbed], components: [buttonRow] });
-
-    const message = await interaction.fetchReply();
-
-    // Collector für die Buttons
-    const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.Button,
-      time: 5 * 60 * 1000,
-    });
-
-    // State für Live-Spiel Navigation
-    let liveMatches = [];
-    let currentIndex = 0;
-    let liveMessage;
-    let updateInterval;
-
-    collector.on('collect', async i => {
-      if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: 'Nur du darfst diese Buttons benutzen.', ephemeral: true });
-      }
-
-      if (i.customId === 'tabelle') {
-        await i.deferReply({ ephemeral: true });
-        const tabelleEmbed = await createTabelleEmbed();
-        await i.editReply({ embeds: [tabelleEmbed], ephemeral: true });
-
-      } else if (i.customId === 'spieltag') {
-        await i.deferReply({ ephemeral: true });
-        const spieltagEmbed = await createNextMatchdayEmbed();
-        await i.editReply({ embeds: [spieltagEmbed], ephemeral: true });
-
-      } else if (i.customId === 'live') {
-        await i.deferReply({ ephemeral: false });
-
-        const now = new Date();
-        liveMatches = await Match.find({
-          date: { $lte: now },
-          endDate: { $gte: now },
-        }).sort({ date: 1 });
-
-        if (liveMatches.length === 0) {
-          return i.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('`🔴` Live Spiele: 0')
-                .setDescription('Zurzeit laufen keine Spiele.')
-                .setColor(0xff0000),
-            ],
-            components: [],
-          });
-        }
-
-        currentIndex = 0;
-        liveMessage = await i.editReply({
-          embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
-          components: [
-            new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setCustomId('prev_match')
-                .setLabel('⬅️ Vorherige Seite')
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(true),
-              new ButtonBuilder()
-                .setCustomId('next_match')
-                .setLabel('➡️ Nächste Seite')
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(liveMatches.length <= 1),
-            ),
-            new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
-          ],
-        });
-
-        updateInterval = setInterval(async () => {
-          try {
-            const now = new Date();
-            liveMatches = await Match.find({
-              date: { $lte: now },
-              endDate: { $gte: now },
-            }).sort({ date: 1 });
-
-            if (liveMatches.length === 0) {
-              await liveMessage.edit({
-                embeds: [
-                  new EmbedBuilder()
-                    .setTitle('`🔴` Live Spiele: 0')
-                    .setDescription('Zurzeit laufen keine Spiele.')
-                    .setColor(0xff0000),
-                ],
-                components: [],
-              });
-              clearInterval(updateInterval);
-              return;
-            }
-
-            if (currentIndex >= liveMatches.length) currentIndex = liveMatches.length - 1;
-            if (currentIndex < 0) currentIndex = 0;
-
-            await liveMessage.edit({
-              embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
-              components: [
-                new ActionRowBuilder().addComponents(
-                  new ButtonBuilder()
-                    .setCustomId('prev_match')
-                    .setLabel('⬅️ Vorherige Seite')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentIndex === 0),
-                  new ButtonBuilder()
-                    .setCustomId('next_match')
-                    .setLabel('➡️ Nächste Seite')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentIndex === liveMatches.length - 1),
-                ),
-                new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
-              ],
-            });
-          } catch (error) {
-            console.error('Fehler beim Aktualisieren des Live-Embeds:', error);
-            clearInterval(updateInterval);
-          }
-        }, 60 * 1000);
-
-        const filter = btnInt => btnInt.user.id === i.user.id;
-
-        const liveCollector = liveMessage.createMessageComponentCollector({
-          filter,
-          time: 5 * 60 * 1000,
-        });
-
-        liveCollector.on('collect', async btnInt => {
-          if (btnInt.isButton()) {
-            if (btnInt.customId === 'prev_match') {
-              currentIndex = Math.max(0, currentIndex - 1);
-            } else if (btnInt.customId === 'next_match') {
-              currentIndex = Math.min(liveMatches.length - 1, currentIndex + 1);
-            }
-
-            await btnInt.update({
-              embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
-              components: [
-                new ActionRowBuilder().addComponents(
-                  new ButtonBuilder()
-                    .setCustomId('prev_match')
-                    .setLabel('⬅️ Vorherige Seite')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentIndex === 0),
-                  new ButtonBuilder()
-                    .setCustomId('next_match')
-                    .setLabel('➡️ Nächste Seite')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentIndex === liveMatches.length - 1),
-                ),
-                new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
-              ],
-            });
-          } else if (btnInt.isStringSelectMenu()) {
-            const selectedIndex = parseInt(btnInt.values[0], 10);
-            if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < liveMatches.length) {
-              currentIndex = selectedIndex;
-
-              // Bei Auswahl detailliertes Live-Spiel-Embed zeigen
-              const detailEmbed = createLiveMatchDetailEmbed(liveMatches[currentIndex]);
-
-              await btnInt.update({
-                embeds: [detailEmbed],
-                components: [
-                  new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                      .setCustomId('prev_match')
-                      .setLabel('⬅️ Vorherige Seite')
-                      .setStyle(ButtonStyle.Secondary)
-                      .setDisabled(currentIndex === 0),
-                    new ButtonBuilder()
-                      .setCustomId('next_match')
-                      .setLabel('➡️ Nächste Seite')
-                      .setStyle(ButtonStyle.Secondary)
-                      .setDisabled(currentIndex === liveMatches.length - 1),
-                  ),
-                  new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
-                ],
-              });
-            } else {
-              await btnInt.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
-            }
-          }
-        });
-
-        liveCollector.on('end', async () => {
-          clearInterval(updateInterval);
-          try {
-            await liveMessage.edit({ components: [] });
-          } catch {}
-        });
-      }
-    });
-
-    collector.on('end', () => {
-      clearInterval(updateInterval);
-      // Optional: clean up or disable buttons
-    });
-  },
-};
-
-/*
-const {
-  SlashCommandBuilder,
-  EmbedBuilder,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ComponentType,
-  StringSelectMenuBuilder,
-} = require('discord.js');
-
-const { Team } = require('../../../Datenbank/fussballdb');
-const { Match } = require('../../../Datenbank/matchdb');
-
-const proLeagueTeams = [
-  'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
-  'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
-  'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
-  'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
-  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
-];
-
-async function createTabelleEmbed() {
-  const allTeams = await Team.find({ league: 'Pro League' });
-  const liveNow = new Date();
-  const liveMatches = await Match.find({
-    date: { $lte: liveNow },
-    endDate: { $gte: liveNow }
-  });
-
-  const liveTeams = new Set();
-  for (const m of liveMatches) {
-    liveTeams.add(m.homeTeam);
-    liveTeams.add(m.awayTeam);
-  }
-
-  const teamMap = new Map(allTeams.map(t => [t.name.trim(), t.toObject()]));
-
-  for (const name of proLeagueTeams) {
-    if (!teamMap.has(name)) {
-      teamMap.set(name, {
-        name,
-        played: 0,
-        won: 0,
-        draw: 0,
-        lost: 0,
-        goalsFor: 0,
-        goalsAgainst: 0,
-        goalDifference: 0,
-        points: 0
+    for (let i = 0; i < tableSorted.length; i++) {
+      const team = tableSorted[i];
+      const displayName = (liveMatches.some(lm => lm.homeTeam === team.name || lm.awayTeam === team.name)) ? `\`🔴\` ${team.name}` : team.name;
+      tabelleEmbed.addFields({
+        name: `${i + 1}. ${displayName}`,
+        value: `Spiele: ${team.played} | S: ${team.won} | U: ${team.draw} | N: ${team.lost} | Tore: ${team.goalsFor} | GT: ${team.goalsAgainst} | TD: ${team.goalsFor - team.goalsAgainst} | Pkte: **${team.points}**`,
+        inline: false
       });
     }
-  }
 
-  const proLeagueData = Array.from(teamMap.values())
-    .map(t => {
-      t.goalDifference = t.goalsFor - t.goalsAgainst;
-      t.points = (t.won * 3) + t.draw;
-      return t;
-    })
-    .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
+    // Nächstes Spiel-Embed
+    const nextMatch = upcomingMatches[0];
+    const naechstesSpielEmbed = new EmbedBuilder().setTitle('`🏟️` Nächstes Spiel').setColor('#00cc66');
+    if (nextMatch) {
+      naechstesSpielEmbed.setDescription(`**${nextMatch.homeTeam}** vs **${nextMatch.awayTeam}**\n\`📅\` ${formatDateDE(nextMatch.date)} Uhr`);
+    } else {
+      naechstesSpielEmbed.setDescription('Kein Spiel geplant.');
+    }
 
-  const description = proLeagueData.map((t, i) => {
-    const isLive = liveTeams.has(t.name);
-    const platz = (i + 1).toString().padStart(2, ' ');
-    const teamDisplay = `${isLive ? '`🔴`' : ''} ${t.name}`.padEnd(17);
-    return `**${platz}.** ${teamDisplay} | Sp: ${t.played.toString().padStart(2)} | S: ${t.won.toString().padStart(2)} | U: ${t.draw.toString().padStart(2)} | N: ${t.lost.toString().padStart(2)} | T: ${t.goalsFor.toString().padStart(2)} | GT: ${t.goalsAgainst.toString().padStart(2)} | TD: ${t.goalDifference.toString().padStart(3)} | Pkte: ${t.points.toString().padStart(3)}`;
-  }).join('\n');
-
-  return new EmbedBuilder()
-    .setTitle('🏆 Pro League Tabelle')
-    .setDescription(description || 'Keine Daten vorhanden')
-    .setColor(0xFFD700)
-    .setFooter({ text: '🔴 = Team spielt aktuell live | Zuletzt aktualisiert' })
-    .setTimestamp();
-}
-
-async function createNextMatchdayEmbed() {
-  const now = new Date();
-
-  const nextMatches = await Match.find({ date: { $gte: now } })
-    .sort({ date: 1 })
-    .limit(10);
-
-  if (!nextMatches.length) {
-    return new EmbedBuilder()
-      .setTitle('\`📅\` Nächster Spieltag')
-      .setDescription('Keine Spiele für den nächsten Spieltag gefunden.')
-      .setColor(0x00BFFF);
-  }
-
-  const nextMatchdayNumber = nextMatches[0].matchday;
-  const matchdayGames = await Match.find({ matchday: nextMatchdayNumber }).sort({ date: 1 });
-
-  const matchdayText = matchdayGames.map(m => {
-    const dateStr = new Date(m.date).toLocaleString('de-DE', {
-      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-    });
-    return `${m.homeTeam} vs ${m.awayTeam} - ${dateStr}`;
-  }).join('\n');
-
-  return new EmbedBuilder()
-    .setTitle(`\`📅\` Nächster Spieltag: Spieltag ${nextMatchdayNumber}`)
-    .setDescription(matchdayText)
-    .setColor(0x00BFFF);
-}
-
-function formatMatchMinute(match) {
-  const now = new Date();
-  const diffMin = Math.floor((now - match.date) / 60000);
-  if (diffMin < 0 && diffMin >= -5) return `0 (startet in ${Math.abs(diffMin)} Min)`;
-  if (diffMin >= 0 && diffMin <= 90) return diffMin.toString();
-  if (diffMin > 90 && diffMin <= 110) return `90+${diffMin - 90}`;
-  if (diffMin < -5) return '0';
-  return 'Ende';
-}
-
-function createLiveMatchEmbed(match, liveCount) {
-  const startTime = new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-  const spielminute = formatMatchMinute(match);
-  const scoreHome = match.homeScore ?? 0;
-  const scoreAway = match.awayScore ?? 0;
-
-  return new EmbedBuilder()
-    .setTitle(`\`🔴\` Live Spiele: ${liveCount}`)
-    .setDescription(`${match.homeTeam} ${scoreHome} - ${scoreAway} ${match.awayTeam} (Anpfiff: ${startTime} Uhr, Spielminute: ${spielminute}')`)
-    .setColor(0xff0000)
-    .setTimestamp();
-}
-
-function createLiveMatchesSelectMenu(liveMatches) {
-  return new StringSelectMenuBuilder()
-    .setCustomId('live_match_select')
-    .setPlaceholder('Wähle ein Live-Spiel')
-    .addOptions(
-      liveMatches.map((match, idx) => ({
-        label: `${match.homeTeam} vs ${match.awayTeam}`,
-        description: `Anpfiff: ${new Date(match.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`,
-        value: idx.toString(),
-      }))
-    );
-}
-
-module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('fussball-system')
-    .setDescription('Zeigt die Fußball-Übersicht an'),
-
-  async execute(interaction) {
+    // Overview Embed + Auswahlmenü
     const overviewEmbed = new EmbedBuilder()
       .setTitle('`⚽` » Fußball Übersicht')
-      .setDescription(
-        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen. Nur die stärksten Teams schaffen es in diese Liga – hier zählen Taktik, Teamgeist und Strategie.\n\n' +
-        '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
-        '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
-        '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
-        'Klicke unten, um die aktuelle Tabelle, den nächsten Spieltag oder die Live-Spiele anzuzeigen.'
-      )
+      .setDescription('Wähle eine Option: Tabelle, Nächstes Spiel, Zufallsspiel starten.')
       .setColor('Blurple');
 
-    const buttonRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId('tabelle')
-        .setLabel('📊 Tabelle')
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId('live')
-        .setLabel('🔴 Live Spiele (BETA)')
-        .setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId('spieltag')
-        .setLabel('📅 Nächster Spieltag')
-        .setStyle(ButtonStyle.Secondary)
+    const auswahlMenü = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId('fussball-info-menu')
+        .setPlaceholder('📋 » Informationen auswählen')
+        .addOptions(
+          { label: '📊 Aktuelle Tabelle', value: 'tabelle' },
+          { label: '🏟️ Nächstes Spiel', value: 'naechstes_spiel' },
+          { label: '⚽ Zufallsspiel starten', value: 'zufallsspiel' },
+        )
     );
 
-    await interaction.reply({ embeds: [overviewEmbed], components: [buttonRow] });
-    await interaction.followUp({ content: 'Fußball Info gesendet.', ephemeral: true });
+    await interaction.editReply({ content: 'Übersicht erstellt — wähle unten eine Option (ephemeral).', ephemeral: true });
+    const msg = await interaction.channel.send({ embeds: [overviewEmbed], components: [auswahlMenü] });
 
-    const message = await interaction.fetchReply();
-
-    const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.Button,
-      time: 5 * 60 * 1000,
-    });
-
-    // Zustand für Live-Spiel Navigation
-    let liveMatches = [];
-    let currentIndex = 0;
-    let liveMessage;
-    let updateInterval;
+    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 60_000 });
 
     collector.on('collect', async i => {
       if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: 'Nur du darfst diese Buttons benutzen.', ephemeral: true });
+        return i.reply({ content: '> ❌ Nur du darfst das benutzen.', ephemeral: true });
       }
+      await i.deferUpdate();
 
-      if (i.customId === 'live') {
-        await i.deferReply({ ephemeral: false });
-
-        let now = new Date();
-        liveMatches = await Match.find({
-          date: { $lte: now },
-          endDate: { $gte: now },
-        }).sort({ date: 1 });
-
-        if (liveMatches.length === 0) {
-          return i.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle(`\`🔴\` Live Spiele: 0`)
-                .setDescription('Zurzeit laufen keine Spiele.')
-                .setColor(0xff0000),
-            ],
-            components: [],
-          });
-        }
-
-        currentIndex = 0;
-        liveMessage = await i.editReply({
-          embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
-          components: [
-            new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setCustomId('prev_match')
-                .setLabel('⬅️ Vorherige Seite')
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(true),
-              new ButtonBuilder()
-                .setCustomId('next_match')
-                .setLabel('➡️ Nächste Seite')
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(liveMatches.length <= 1),
-            ),
-            new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
-          ],
-        });
-
-        // Alle 60 Sekunden automatisch aktualisieren
-        updateInterval = setInterval(async () => {
-          try {
-            now = new Date();
-            liveMatches = await Match.find({
-              date: { $lte: now },
-              endDate: { $gte: now },
-            }).sort({ date: 1 });
-
-            if (liveMatches.length === 0) {
-              await liveMessage.edit({
-                embeds: [
-                  new EmbedBuilder()
-                    .setTitle(`\`🔴\` Live Spiele: 0`)
-                    .setDescription('Zurzeit laufen keine Spiele.')
-                    .setColor(0xff0000),
-                ],
-                components: [],
-              });
-              clearInterval(updateInterval);
-              return;
-            }
-
-            if (currentIndex >= liveMatches.length) currentIndex = liveMatches.length - 1;
-            if (currentIndex < 0) currentIndex = 0;
-
-            await liveMessage.edit({
-              embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
-              components: [
-                new ActionRowBuilder().addComponents(
-                  new ButtonBuilder()
-                    .setCustomId('prev_match')
-                    .setLabel('⬅️ Vorherige Seite')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentIndex === 0),
-                  new ButtonBuilder()
-                    .setCustomId('next_match')
-                    .setLabel('➡️ Nächste Seite')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentIndex === liveMatches.length - 1),
-                ),
-                new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
-              ],
-            });
-          } catch (error) {
-            console.error('Fehler beim Aktualisieren des Live-Embeds:', error);
-            clearInterval(updateInterval);
-          }
-        }, 60 * 1000);
-
-        const filter = btnInt => btnInt.user.id === i.user.id;
-
-        const liveCollector = liveMessage.createMessageComponentCollector({
-          filter,
-          time: 5 * 60 * 1000,
-        });
-
-        liveCollector.on('collect', async btnInt => {
-          if (btnInt.isButton()) {
-            if (btnInt.customId === 'prev_match') {
-              currentIndex = Math.max(0, currentIndex - 1);
-            } else if (btnInt.customId === 'next_match') {
-              currentIndex = Math.min(liveMatches.length - 1, currentIndex + 1);
-            }
-
-            await btnInt.update({
-              embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
-              components: [
-                new ActionRowBuilder().addComponents(
-                  new ButtonBuilder()
-                    .setCustomId('prev_match')
-                    .setLabel('⬅️ Vorherige Seite')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentIndex === 0),
-                  new ButtonBuilder()
-                    .setCustomId('next_match')
-                    .setLabel('➡️ Nächste Seite')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(currentIndex === liveMatches.length - 1),
-                ),
-                new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
-              ],
-            });
-          } else if (btnInt.isStringSelectMenu()) {
-            const selectedIndex = parseInt(btnInt.values[0], 10);
-            if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < liveMatches.length) {
-              currentIndex = selectedIndex;
-              await btnInt.update({
-                embeds: [createLiveMatchEmbed(liveMatches[currentIndex], liveMatches.length)],
-                components: [
-                  new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                      .setCustomId('prev_match')
-                      .setLabel('⬅️ Vorherige Seite')
-                      .setStyle(ButtonStyle.Secondary)
-                      .setDisabled(currentIndex === 0),
-                    new ButtonBuilder()
-                      .setCustomId('next_match')
-                      .setLabel('➡️ Nächste Seite')
-                      .setStyle(ButtonStyle.Secondary)
-                      .setDisabled(currentIndex === liveMatches.length - 1),
-                  ),
-                  new ActionRowBuilder().addComponents(createLiveMatchesSelectMenu(liveMatches)),
-                ],
-              });
-            } else {
-              await btnInt.reply({ content: 'Ungültige Auswahl.', ephemeral: true });
-            }
-          }
-        });
-
-        liveCollector.on('end', async () => {
-          clearInterval(updateInterval);
-          try {
-            await liveMessage.edit({ components: [] });
-          } catch {}
-        });
-
-      } else if (i.customId === 'tabelle') {
-        await i.deferReply({ ephemeral: true });
-        const tabelleEmbed = await createTabelleEmbed();
-        await i.editReply({ embeds: [tabelleEmbed], ephemeral: true });
-
-      } else if (i.customId === 'spieltag') {
-        await i.deferReply({ ephemeral: true });
-        const spieltagEmbed = await createNextMatchdayEmbed();
-        await i.editReply({ embeds: [spieltagEmbed], ephemeral: true });
+      switch (i.values[0]) {
+        case 'tabelle':
+          await i.channel.send({ embeds: [tabelleEmbed] });
+          break;
+        case 'naechstes_spiel':
+          await i.channel.send({ embeds: [naechstesSpielEmbed] });
+          break;
+        case 'zufallsspiel':
+          await startRandomMatch(interaction);
+          break;
+        default:
+          await i.channel.send('Unbekannte Option.');
       }
     });
 
     collector.on('end', () => {
-      // Haupt-Collector Ende
+      // optional: Komponenten entfernen
+      try { msg.edit({ components: [] }); } catch (e) { /* ignore */ }
     });
-  },
+  }
 };
-*/
+
+// ------------------------------
+// Zufallsspiel starten -> benutzt League-Dokument, aktualisiert Matches + Teams
+// ------------------------------
+async function startRandomMatch(interaction) {
+  const league = await getOrCreateLeague();
+  if (!league.teams || league.teams.length < 2) {
+    return interaction.followUp({ content: '`❌` Nicht genug Teams in der Liga.', ephemeral: true });
+  }
+
+  const [i1, i2] = getTwoDifferentIndices(league.teams.length);
+  const team1 = league.teams[i1];
+  const team2 = league.teams[i2];
+  const stadium = team1.stadium || 'Unbekanntes Stadion';
+
+  // Erstelle Match-Eintrag und setze live = true
+  const matchEntry = {
+    homeTeam: team1.name,
+    awayTeam: team2.name,
+    date: new Date(),
+    matchday: (league.matches.length ? league.matches.length + 1 : 1),
+    score1: null,
+    score2: null,
+    events: [],
+    live: true,
+    endDate: null
+  };
+  league.matches.push(matchEntry);
+  await league.save();
+
+  // Odds & Embeds
+  const odds = {
+    team1: (Math.random() * 1.5 + 1.2).toFixed(2),
+    draw: (Math.random() * 2 + 2.0).toFixed(2),
+    team2: (Math.random() * 1.5 + 1.2).toFixed(2)
+  };
+
+  const statusEmbed = new EmbedBuilder()
+    .setTitle(`\`🏟️\` Fußballspiel: ${team1.name} vs. ${team2.name}`)
+    .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
+    .setColor('Green')
+    .addFields(
+      { name: 'Spielminute', value: "0'", inline: true },
+      { name: 'Spielstand', value: '0 - 0', inline: true },
+      { name: 'xG', value: '0.00 - 0.00', inline: true },
+      { name: 'Gelbe Karten', value: '`🟨` 0-0', inline: true },
+      { name: 'Ballbesitz', value: '0% - 0%', inline: true },
+      { name: 'Ecken', value: '`🚩` 0-0', inline: true },
+      { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
+    )
+    .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg');
+
+  const lineupEmbed = new EmbedBuilder()
+    .setTitle('`📋` Aufstellungen')
+    .setColor('Blue')
+    .setDescription(`**${team1.name}:**\n${team1.players.join(', ') || 'Keine Daten'}\n\n**${team2.name}:**\n${team2.players.join(', ') || 'Keine Daten'}`);
+
+  const buttons = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId('win_team1').setLabel(`${team1.name} gewinnt (${odds.team1})`).setStyle(ButtonStyle.Primary),
+    new ButtonBuilder().setCustomId('draw').setLabel(`Unentschieden (${odds.draw})`).setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('win_team2').setLabel(`${team2.name} gewinnt (${odds.team2})`).setStyle(ButtonStyle.Primary),
+  );
+
+  // Send status + lineup
+  const statusMessage = await interaction.followUp({ embeds: [statusEmbed], fetchReply: true });
+  await interaction.followUp({ embeds: [lineupEmbed], components: [buttons] });
+
+  // Tipp-Collector (nur der Aufrufer darf tippen)
+  const filter = i => i.user.id === interaction.user.id;
+  const collector = statusMessage.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 20_000 });
+
+  let userTip = null;
+
+  collector.on('collect', async i => {
+    switch (i.customId) {
+      case 'win_team1': userTip = 'team1'; break;
+      case 'draw': userTip = 'draw'; break;
+      case 'win_team2': userTip = 'team2'; break;
+    }
+    await i.update({ content: '`⏳` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
+    collector.stop();
+    await delay(1500);
+    await interaction.followUp({ content: '`🔊` **Anpfiff!**' });
+    // Starte Simulation
+    await simulateMatch(interaction, statusMessage, league, team1, team2, userTip);
+  });
+
+  collector.on('end', async collected => {
+    if (collected.size === 0) {
+      // Wenn keiner getippt hat, starte trotzdem
+      await interaction.followUp({ content: '`⏱️` Zeit abgelaufen, kein Tipp. Starte trotzdem...' });
+      await delay(1000);
+      await simulateMatch(interaction, statusMessage, league, team1, team2, null);
+    }
+  });
+}
+
+// ------------------------------
+// Simulation einer Partie (aktualisiert League-Dokument)
+// ------------------------------
+async function simulateMatch(interaction, statusMessage, leagueDoc, team1, team2, userTip) {
+  let score1 = 0, score2 = 0;
+  let xG1 = 0, xG2 = 0;
+  let yellow1 = 0, yellow2 = 0;
+  let corners1 = 0, corners2 = 0;
+  let passes1 = 0, passes2 = 0;
+  const goalEvents = [];
+  const events = [`\`🔊\` Anpfiff! (0')`];
+
+  const extraTime = Math.floor(Math.random() * 6) + 1; // kurze Nachspielzeit
+  const minuteMs = leagueDoc.settings?.minuteDurationMs || 1000;
+
+  // Simuliere Minuten 1..90+extra
+  for (let minute = 1; minute <= 90 + extraTime; minute++) {
+    // Torchance
+    if (minute % 4 === 0 && Math.random() < 0.15) {
+      const which = Math.random() < 0.5 ? 'team1' : 'team2';
+      const scorer = getRandomPlayer(which === 'team1' ? team1 : team2);
+      const xg = parseFloat((Math.random() * 0.6 + 0.05).toFixed(2));
+      let goalCounted = true;
+
+      // VAR Chance
+      if (Math.random() < 0.1) {
+        if (Math.random() < 0.5) {
+          goalCounted = false;
+          events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` (${minute}')`);
+        } else {
+          events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` (${minute}')`);
+        }
+      }
+
+      if (goalCounted) {
+        if (which === 'team1') { score1++; xG1 += xg; }
+        else { score2++; xG2 += xg; }
+        goalEvents.push({ type: 'goal', time: minute, player: scorer, team: which === 'team1' ? team1.name : team2.name });
+        events.push(`\`⚽\` TOOOR! ${which === 'team1' ? team1.name : team2.name} — **${scorer}** (${minute}') — ${score1} - ${score2}`);
+      }
+    }
+
+    // Fouls / Karten
+    if (Math.random() < 0.08) {
+      const which = Math.random() < 0.5 ? 'team1' : 'team2';
+      const player = getRandomPlayer(which === 'team1' ? team1 : team2);
+      events.push(`\`🤕\` Foul von **${player}** (${which === 'team1' ? team1.name : team2.name}) (${minute}')`);
+      if (Math.random() < 0.5) {
+        if (which === 'team1') yellow1++; else yellow2++;
+        events.push(`\`🟨\` Gelbe Karte für **${player}** (${minute}')`);
+      }
+    }
+
+    // Ecken
+    if (minute % 5 === 0 && Math.random() < 0.22) {
+      if (Math.random() < 0.5) { corners1++; events.push(`\`🚩\` Ecke für ${team1.name} (${minute}')`); }
+      else { corners2++; events.push(`\`🚩\` Ecke für ${team2.name} (${minute}')`); }
+    }
+
+    // Weitere Aktionen (Angriff, Freistoß, Abseits)
+    if (Math.random() < 0.12) events.push(`\`🔥\` Angriff (${minute}')`);
+    if (Math.random() < 0.05) events.push(`\`🎯\` Freistoß (${minute}')`);
+    if (Math.random() < 0.04) events.push(`\`🏳️\` Abseits (${minute}')`);
+
+    // Statistik-Aktionen
+    passes1 += Math.floor(Math.random() * 5);
+    passes2 += Math.floor(Math.random() * 5);
+
+    const totalPasses = passes1 + passes2;
+    const possession1 = totalPasses ? Math.round((passes1 / totalPasses) * 100) : 50;
+    const possession2 = 100 - possession1;
+
+    // Gruppiere Tore pro Spieler für Embed-Display
+    const groupGoals = (goals, teamName) => {
+      const map = new Map();
+      for (const g of goals) {
+        if (g.team !== teamName) continue;
+        if (!map.has(g.player)) map.set(g.player, []);
+        map.get(g.player).push(`${g.time}'`);
+      }
+      const arr = [];
+      let first = true;
+      for (const [player, mins] of map.entries()) {
+        arr.push(`${first ? '`⚽` ' : ''}${mins.join(' ')} ${player}`);
+        first = false;
+      }
+      return arr.join(' ');
+    };
+    const goalsTeam1 = groupGoals(goalEvents, team1.name);
+    const goalsTeam2 = groupGoals(goalEvents, team2.name);
+    const goalString = (goalsTeam1 || goalsTeam2) ? `${goalsTeam1} ${goalsTeam2}`.trim() : '';
+
+    // Update Embed
+    const minuteDisplay = minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
+    const statusEmbed = new EmbedBuilder()
+      .setTitle(`\`🏟️\` ${team1.name} vs ${team2.name}`)
+      .setDescription(`\`📍\` ${team1.stadium || 'Unbekanntes Stadion'}\n\n${goalString || ''}`)
+      .setColor('Green')
+      .addFields(
+        { name: 'Spielminute', value: minuteDisplay, inline: true },
+        { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
+        { name: 'xG', value: `${xG1.toFixed(2)} - ${xG2.toFixed(2)}`, inline: true },
+        { name: 'Gelbe Karten', value: `\`🟨\` ${yellow1}-${yellow2}`, inline: true },
+        { name: 'Ballbesitz', value: `${possession1}% - ${possession2}%`, inline: true },
+        { name: 'Ecken', value: `\`🚩\` ${corners1}-${corners2}`, inline: true },
+        { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
+      )
+      .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg');
+
+    try { await statusMessage.edit({ embeds: [statusEmbed] }); } catch (e) { /* ignore if message deleted */ }
+
+    // kleine Pause pro Minute
+    await delay(minuteMs);
+
+    // Ende?
+    if (minute === 90 + extraTime) {
+      events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1.name} ${score1} - ${score2} ${team2.name}**`);
+
+      // Update League-Dokument: finalize match
+      // Finde match (live=true) zwischen den Teams, setze Ergebnisse
+      const league = await League.findOne({});
+      const matchIdx = league.matches.findIndex(m => m.live && m.homeTeam === team1.name && m.awayTeam === team2.name);
+      if (matchIdx >= 0) {
+        league.matches[matchIdx].score1 = score1;
+        league.matches[matchIdx].score2 = score2;
+        league.matches[matchIdx].events = events;
+        league.matches[matchIdx].live = false;
+        league.matches[matchIdx].endDate = new Date();
+      }
+
+      // Tabelle aktualisieren
+      const t1 = league.teams.find(t => t.name === team1.name);
+      const t2 = league.teams.find(t => t.name === team2.name);
+      if (t1 && t2) {
+        t1.played++; t2.played++;
+        t1.goalsFor += score1; t1.goalsAgainst += score2;
+        t2.goalsFor += score2; t2.goalsAgainst += score1;
+        if (score1 > score2) { t1.won++; t1.points += 3; t2.lost++; }
+        else if (score2 > score1) { t2.won++; t2.points += 3; t1.lost++; }
+        else { t1.draw++; t2.draw++; t1.points += 1; t2.points += 1; }
+      }
+
+      await league.save();
+
+      // Ergebnis posten + Tipp auswerten
+      let result;
+      if (score1 > score2) result = 'team1';
+      else if (score2 > score1) result = 'team2';
+      else result = 'draw';
+
+      let tippText = userTip === 'team1' ? team1.name : userTip === 'team2' ? team2.name : userTip === 'draw' ? 'Unentschieden' : null;
+      if (userTip && tippText) {
+        if (userTip === result) {
+          await interaction.followUp(`> \`🎉\` Dein Tipp auf **${tippText}** war korrekt! Endstand **${team1.name} ${score1} - ${score2} ${team2.name}**`);
+        } else {
+          await interaction.followUp(`> \`❌\` Dein Tipp auf **${tippText}** war falsch. Endstand **${team1.name} ${score1} - ${score2} ${team2.name}**`);
+        }
+      } else {
+        await interaction.followUp(`\`🔚\` Spiel beendet: **${team1.name} ${score1} - ${score2} ${team2.name}**`);
+      }
+
+      break;
+    }
+  } // Ende Schleife Minute
+} // Ende simulateMatch
+
+// fertig
