@@ -50,7 +50,7 @@ async function createTabelleEmbed() {
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
 
   // Beschreibung erstellen
-  const description = ProLeagueEmbedData.map((t, i) => {
+  const description = proLeagueData.map((t, i) => {
     const liveMark = liveTeams.has(t.name) ? '`🔴`' : ''; // 🔴 bei Live-Spielen
     return `**${i + 1}. ${t.name} ${liveMark}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`;
   }).join('\n');
