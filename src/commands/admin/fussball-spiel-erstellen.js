@@ -59,9 +59,14 @@ module.exports = {
         await Match.insertMany(matches);
         console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
 
-        // Embed für diesen Spieltag erstellen
-        const spielListe = matches.map(m => {
-          return `${m.homeTeam} vs ${m.awayTeam} (${m.date.toLocaleString('de-DE', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })})`;
+        // Spiele nach Datum + Uhrzeit sortieren
+        const sortedMatches = matches.sort((a, b) => a.date - b.date);
+
+        // Konferenzartige Anzeige: alle Spiele pro Datum/Uhrzeit
+        const spielListe = sortedMatches.map(m => {
+          const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+          const dateStr = m.date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          return `${m.homeTeam} vs ${m.awayTeam} (${timeStr} Uhr, ${dateStr})`;
         }).join('\n');
 
         embeds.push(new EmbedBuilder()
@@ -72,7 +77,6 @@ module.exports = {
       }
 
       await interaction.followUp({ content: '> `✅` Saison erfolgreich generiert!', embeds: embeds.slice(0, 10) });
-      // Hinweis: nur die ersten 10 Spieltage auf einmal anzeigen, bei Bedarf kannst du Paginierung einbauen
 
     } catch (err) {
       console.error(err);
