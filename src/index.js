@@ -21,7 +21,7 @@ const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');
 const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
-const fussballTabelle = require('./commands/admin/fussball-tabelle');  
+const { updateLeagueTable } = require('./commands/fussball-system/commands/fussball-tabelle');
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
@@ -204,6 +204,9 @@ mongoose.connection.on('connected', () => {
 mongoose.connection.on('error', (err) => {
     console.error(`⚠️  | Verbindungsfehler: ${err.message}`);
 });
+
+// Tabelle alle 30 Sekunden automatisch aktualisieren
+  setInterval(() => updateLeagueTable(client), 30_000);
 
 // Täglich um Mitternacht (Adventskalender)
 cron.schedule('00 00 * * *', async () => {
