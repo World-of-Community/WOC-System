@@ -1,4 +1,12 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const { 
+  SlashCommandBuilder, 
+  PermissionFlagsBits, 
+  EmbedBuilder, 
+  ActionRowBuilder, 
+  ButtonBuilder, 
+  ButtonStyle, 
+  ComponentType 
+} = require('discord.js');
 const { Match } = require('../../../Datenbank/fussballdb');
 
 function delay(ms) {
@@ -40,6 +48,7 @@ module.exports = {
       const spieltage = 34;
       const embeds = [];
 
+      // Funktion: Paarungen pro Spieltag generieren
       function generateMatchesForSpieltag(teams) {
         const available = [...teams];
         const matches = [];
@@ -64,7 +73,6 @@ module.exports = {
         for (let index = 0; index < matchData.length; index++) {
           const m = matchData[index];
 
-          // Zeit wählen: erstes Spiel heute = 22:00, sonst aus fixedTimes
           let timeStr;
           const today = new Date();
           if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
@@ -76,7 +84,7 @@ module.exports = {
           const [hour, minute] = timeStr.split(':').map(Number);
           const matchDate = new Date(matchDayDate.getTime());
           matchDate.setHours(hour, minute, 0, 0);
-          const endDate = new Date(matchDate.getTime() + 90 * 60000); // 90 Minuten Spielzeit
+          const endDate = new Date(matchDate.getTime() + 90 * 60000);
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
@@ -106,7 +114,40 @@ module.exports = {
         console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
       }
 
-      await interaction.followUp({ content: '`📅` Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0, 10) });
+      // --------------------------
+      // Spieltage per Button anzeigen
+      // --------------------------
+      let page = 0;
+      const row = new ActionRowBuilder()
+        .addComponents(
+          new ButtonBuilder()
+            .setCustomId('prev')
+            .setLabel('⬅️ Zurück')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(true),
+          new ButtonBuilder()
+            .setCustomId('next')
+            .setLabel('➡️ Weiter')
+            .setStyle(ButtonStyle.Primary)
+            .setDisabled(embeds.length <= 1)
+        );
+
+      const msg = await interaction.followUp({ embeds: [embeds[page]], components: [row] });
+
+      const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button, time: 600000 });
+
+      collector.on('collect', async i => {
+        if (i.user.id !== interaction.user.id) 
+          return i.reply({ content: 'Nur der Command-Ersteller kann navigieren.', ephemeral: true });
+
+        if (i.customId === 'next') page++;
+        if (i.customId === 'prev') page--;
+
+        row.components[0].setDisabled(page === 0);
+        row.components[1].setDisabled(page === embeds.length - 1);
+
+        await i.update({ embeds: [embeds[page]], components: [row] });
+      });
 
       // ---------------------------
       // Live-Updates starten
@@ -114,6 +155,7 @@ module.exports = {
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('`❌` Kanal nicht gefunden.');
 
+      let liveMsg; // für Live-Embed
       const announcedMatches = new Set();
 
       async function updateLive() {
@@ -133,13 +175,14 @@ module.exports = {
             .setColor(liveMatches.length > 1 ? 'Orange' : 'Green')
             .setDescription(lines.join('\n'));
 
-          const messages = await channel.messages.fetch({ limit: 10 });
-          const liveMsg = messages.find(msg => msg.author.id === interaction.client.user.id && msg.embeds[0]?.title.includes('Live'));
-          if (liveMsg) await liveMsg.edit({ embeds: [embed] });
-          else await channel.send({ embeds: [embed] });
+          if (liveMsg) {
+            await liveMsg.edit({ embeds: [embed] });
+          } else {
+            liveMsg = await channel.send({ embeds: [embed] });
+          }
         }
 
-        // 10 Minuten vorher Konferenz nur 1x
+        // Konferenz für Spiele, die in 10 Minuten starten
         const upcomingMatches = await Match.find({
           date: { $gt: now, $lte: new Date(now.getTime() + 10 * 60000) }
         }).sort({ date: 1 });
@@ -160,7 +203,7 @@ module.exports = {
           newMatches.forEach(m => announcedMatches.add(m.id));
         }
 
-        setTimeout(updateLive, 1000); // jede Sekunde = 1 Spielminute
+        setTimeout(updateLive, 1000); // jede Sekunde
       }
 
       updateLive();
