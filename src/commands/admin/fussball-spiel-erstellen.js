@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { Match } = require('../../../Datenbank/matchdb');
+const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
 
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',

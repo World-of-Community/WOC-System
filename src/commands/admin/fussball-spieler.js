@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb');
+const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
 
 module.exports = {
   data: new SlashCommandBuilder()

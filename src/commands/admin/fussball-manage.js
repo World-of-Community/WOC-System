@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -62,7 +63,7 @@ module.exports = {
 
       if (team.players.includes(spielerName)) {
         return interaction.reply({
-          content: `⚠️ Spieler **${spielerName}** ist bereits im Team **${teamName}**.`,
+          content: `> ⚠️ Spieler **${spielerName}** ist bereits im Team **${teamName}**.`,
           ephemeral: true,
         });
       }
@@ -71,7 +72,7 @@ module.exports = {
       await team.save();
 
       return interaction.reply({
-        content: `✅ Spieler **${spielerName}** wurde zum Team **${teamName}** hinzugefügt.`,
+        content: `> \`✅\` Spieler **${spielerName}** wurde zum Team **${teamName}** hinzugefügt.`,
         ephemeral: true,
       });
     }

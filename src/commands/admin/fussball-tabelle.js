@@ -4,9 +4,7 @@ const {
   ChannelType,
   PermissionFlagsBits
 } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb');
-const { Match } = require('../../../Datenbank/matchdb');
-const ProLeagueEmbed = require('../../../Datenbank/proleaguembeddb');
+const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
 
 // ------------------------------------------------------
 // ⚙️ KONFIGURATION
