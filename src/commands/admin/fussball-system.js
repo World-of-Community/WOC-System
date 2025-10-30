@@ -1,31 +1,16 @@
-// /fussball-system.js
-// Ein komplettes, automatisches Fußballsystem in EINER MongoDB-Collection (League).
-// Benötigt: discord.js v14, mongoose bereits verbunden (z.B. in bot startup).
-// Einfach einbauen und bei Bedarf anpassen.
-
-const {
-  SlashCommandBuilder,
-  EmbedBuilder,
-  ActionRowBuilder,
-  StringSelectMenuBuilder,
-  ButtonBuilder,
-  ButtonStyle,
+const { 
+  SlashCommandBuilder, 
+  EmbedBuilder, 
+  ActionRowBuilder, 
+  StringSelectMenuBuilder, 
+  ButtonBuilder, 
+  ButtonStyle, 
   ComponentType,
   PermissionFlagsBits,
 } = require('discord.js');
+const { Team } = require('../../../Datenbank/fussballdb');
+const { Match } = require('../../../Datenbank/matchdb');
 
-const mongoose = require('mongoose');
-
-// ------------------------------
-// ⚠️ Stelle sicher, dass Mongoose bereits verbunden ist.
-// Beispiel (in deinem bot-startup): 
-// const mongoose = require('mongoose');
-// mongoose.connect(process.env.MONGO_URI);
-// ------------------------------
-
-// ------------------------------
-// Initial TeamsData (deine Liste, kannst du erweitern/ändern)
-// ------------------------------
 const teamsData = [
   { name: "FC Adler", players: ["Müller", "Schmidt", "Fischer", "Weber"], stadium: "Adler Arena" },
   { name: "SV Löwen", players: ["Schneider", "Wagner", "Becker", "Hoffmann"], stadium: "Löwenstein-Stadion" },
@@ -53,135 +38,120 @@ const teamsData = [
   { name: "SC Licht", players: ["Günther", "Kaiser", "Sachs", "Mayer"], stadium: "Lichtstadion" }
 ];
 
-// ------------------------------
-// Mongoose: League Schema (ein Dokument hält Teams + Matches + Settings)
-// ------------------------------
-const TeamSubSchema = new mongoose.Schema({
-  name: String,
-  players: [String],
-  stadium: String,
-  // Statistik-Felder
-  played: { type: Number, default: 0 },
-  won: { type: Number, default: 0 },
-  draw: { type: Number, default: 0 },
-  lost: { type: Number, default: 0 },
-  goalsFor: { type: Number, default: 0 },
-  goalsAgainst: { type: Number, default: 0 },
-  points: { type: Number, default: 0 }
-}, { _id: false });
-
-const MatchSubSchema = new mongoose.Schema({
-  homeTeam: String,
-  awayTeam: String,
-  date: Date,
-  matchday: Number,
-  score1: { type: Number, default: null },
-  score2: { type: Number, default: null },
-  events: [String],
-  live: { type: Boolean, default: false },
-  endDate: Date
-}, { _id: false });
-
-const LeagueSchema = new mongoose.Schema({
-  name: { type: String, default: 'Pro League' },
-  teams: [TeamSubSchema],
-  matches: [MatchSubSchema],
-  settings: {
-    minuteDurationMs: { type: Number, default: 1000 }, // 1s per minute simulated (anpassen)
-  }
-});
-
-const League = mongoose.models.League || mongoose.model('League', LeagueSchema);
-
-// ------------------------------
-// Helferfunktionen
-// ------------------------------
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-function getRandomPlayer(team) {
-  if (!team || !team.players || team.players.length === 0) return 'Unbekannter Spieler';
-  return team.players[Math.floor(Math.random() * team.players.length)];
-}
-function getTwoDifferentIndices(len) {
-  const a = Math.floor(Math.random() * len);
-  let b;
-  do { b = Math.floor(Math.random() * len); } while (b === a);
-  return [a, b];
-}
-function formatDateDE(date) {
-  return new Date(date).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' }).replace(',', ' -');
-}
-
-// Bereite League-Dokument vor (falls leer -> initialisiere Teams)
-async function getOrCreateLeague() {
-  let league = await League.findOne({});
-  if (!league) {
-    const teams = teamsData.map(t => ({
-      name: t.name, players: t.players, stadium: t.stadium
-    }));
-    league = await League.create({ teams, matches: [] });
-  }
-  return league;
-}
-
-// Tabelle sortieren (Punkte, Tordifferenz, Tore)
-function sortTable(teams) {
-  return teams.slice().sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points;
-    const gdA = a.goalsFor - a.goalsAgainst;
-    const gdB = b.goalsFor - b.goalsAgainst;
-    if (gdB !== gdA) return gdB - gdA;
-    return b.goalsFor - a.goalsFor;
-  });
-}
-
-// ------------------------------
-// Haupt-Command-Export
-// ------------------------------
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('fussball-system')
-    .setDescription('Automatisches Fußballsystem (Pro League) — Tabelle, Live-Simulation, Zufallsspiel')
+    .setName('fussball-systemv2')
+    .setDescription('Zeigt die Fußball-Übersicht an und simuliert Spiele')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     await interaction.deferReply();
 
-    const league = await getOrCreateLeague();
-    const now = new Date();
-
-    // Lade anstehende Matches (>= jetzt)
-    const upcomingMatches = (league.matches || []).filter(m => !m.score1 && (!m.date || m.date >= now)).sort((a,b) => (a.date||0) - (b.date||0));
-    const liveMatches = (league.matches || []).filter(m => m.live);
-
-    // Erstelle Tabelle-Embed
-    const tableSorted = sortTable(league.teams);
-    const tabelleEmbed = new EmbedBuilder()
-      .setTitle('`📊` Aktuelle Tabelle')
-      .setColor('#0099ff');
-
-    for (let i = 0; i < tableSorted.length; i++) {
-      const team = tableSorted[i];
-      const displayName = (liveMatches.some(lm => lm.homeTeam === team.name || lm.awayTeam === team.name)) ? `\`🔴\` ${team.name}` : team.name;
-      tabelleEmbed.addFields({
-        name: `${i + 1}. ${displayName}`,
-        value: `Spiele: ${team.played} | S: ${team.won} | U: ${team.draw} | N: ${team.lost} | Tore: ${team.goalsFor} | GT: ${team.goalsAgainst} | TD: ${team.goalsFor - team.goalsAgainst} | Pkte: **${team.points}**`,
-        inline: false
-      });
+    function formatDate(date) {
+      return date.toLocaleString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Europe/Berlin'
+      }).replace(',', ' -');
     }
 
-    // Nächstes Spiel-Embed
+    // Aktuelle Zeit
+    const now = new Date();
+
+    // Teams + Spiele laden
+    const teams = await Team.find().sort({ points: -1, goalsFor: -1 });
+    const upcomingMatches = await Match.find({ date: { $gte: now } }).sort({ date: 1 });
+
+    // Live-Spiele: Spiele die gerade laufen (Start <= jetzt < Ende)
+    const liveMatches = await Match.find({
+      date: { $lte: now },
+      endDate: { $gte: now }
+    });
+
+    // Set mit allen Teamnamen, die gerade live spielen
+    const liveTeams = new Set();
+    for (const match of liveMatches) {
+      liveTeams.add(match.homeTeam);
+      liveTeams.add(match.awayTeam);
+    }
+
+    const tabelleEmbed = new EmbedBuilder()
+      .setTitle('\`📊\` Aktuelle Tabelle')
+      .setColor('#0099ff');
+
+    for (const [i, team] of teams.entries()) {
+      const displayName = liveTeams.has(team.name) ? `\`🔴\` ${team.name}` : team.name;
+
+      const recentMatches = await Match.find({
+        $or: [
+          { homeTeam: team.name },
+          { awayTeam: team.name }
+        ],
+        score1: { $ne: null },
+        score2: { $ne: null },
+        date: { $lt: now }
+      }).sort({ date: -1 }).limit(5);
+
+      const last5 = recentMatches.map(match => {
+        const isHome = match.homeTeam === team.name;
+        const teamGoals = isHome ? match.score1 : match.score2;
+        const opponentGoals = isHome ? match.score2 : match.score1;
+        if (teamGoals > opponentGoals) return '`✅`';
+        if (teamGoals < opponentGoals) return '`❌`';
+        return '`➖`';
+      }).join(' ');
+
+      tabelleEmbed.addFields({
+        name: `${i + 1}. ${displayName}`,
+        value: `Spiele: ${team.played} | S: ${team.won} | U: ${team.draw} | N: ${team.lost} | Tore: ${team.goalsFor} | GT: ${team.goalsAgainst} | TD: ${team.goalsFor - team.goalsAgainst} | Pkte: **${team.points}**\nLetzte 5: ${last5 || '–'}`,
+        inline: false
+      })
+    }
+
+    // Nächstes Spiel Embed
     const nextMatch = upcomingMatches[0];
-    const naechstesSpielEmbed = new EmbedBuilder().setTitle('`🏟️` Nächstes Spiel').setColor('#00cc66');
+    const naechstesSpielEmbed = new EmbedBuilder()
+      .setTitle('\`🏟️\` Nächstes Spiel')
+      .setColor('#00cc66');
     if (nextMatch) {
-      naechstesSpielEmbed.setDescription(`**${nextMatch.homeTeam}** vs **${nextMatch.awayTeam}**\n\`📅\` ${formatDateDE(nextMatch.date)} Uhr`);
+      naechstesSpielEmbed.setDescription(
+        `**${nextMatch.homeTeam}** vs **${nextMatch.awayTeam}**\n` +
+        `\`📅\` ${formatDate(nextMatch.date)} Uhr`
+      );
     } else {
       naechstesSpielEmbed.setDescription('Kein Spiel geplant.');
     }
 
-    // Overview Embed + Auswahlmenü
+    // Spieltag Embed
+    const ersterSpieltag = nextMatch?.matchday ?? null;
+    const spieltagMatches = await Match.find({ matchday: ersterSpieltag }).sort({ date: 1 });
+    const spieltagEmbed = new EmbedBuilder()
+      .setTitle(`\`📅\` Spieltag: ${ersterSpieltag ?? 'N/A'}`)
+      .setColor('#ffaa00');
+    if (spieltagMatches.length) {
+      for (const match of spieltagMatches) {
+        spieltagEmbed.addFields({
+          name: `${match.homeTeam} vs ${match.awayTeam}`,
+          value: `\`🕒\` ${formatDate(match.date)} Uhr`,
+          inline: false
+        });
+      }
+    } else {
+      spieltagEmbed.setDescription('Keine Spiele anstehend.');
+    }
+
     const overviewEmbed = new EmbedBuilder()
-      .setTitle('`⚽` » Fußball Übersicht')
-      .setDescription('Wähle eine Option: Tabelle, Nächstes Spiel, Zufallsspiel starten.')
+      .setTitle('\`⚽\` » Fußball Übersicht')
+      .setDescription(
+        'Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen.\n\n' +
+        '- `💥` » **Spannende Matches** mit Live-Statistiken\n' +
+        '- `🏆` » **Kampf um den Meistertitel** unter den besten Teams\n' +
+        '- `📊` » **Detaillierte Spielerwerte** und Teamdaten\n\n' +
+        'Klicke unten, um die aktuelle Tabelle, das nächste Spiel oder den nächsten Spieltag anzuzeigen.'
+      )
       .setColor('Blurple');
 
     const auswahlMenü = new ActionRowBuilder().addComponents(
@@ -191,307 +161,429 @@ module.exports = {
         .addOptions(
           { label: '📊 Aktuelle Tabelle', value: 'tabelle' },
           { label: '🏟️ Nächstes Spiel', value: 'naechstes_spiel' },
+          { label: '📅 Nächster Spieltag', value: 'spieltag' },
           { label: '⚽ Zufallsspiel starten', value: 'zufallsspiel' },
         )
     );
 
-    await interaction.editReply({ content: 'Übersicht erstellt — wähle unten eine Option (ephemeral).', ephemeral: true });
+    //await interaction.deferReply({ ephemeral: true });
+    await interaction.editReply({ content: 'Embed wird gleich gepostet...', ephemeral: true });
+
     const msg = await interaction.channel.send({ embeds: [overviewEmbed], components: [auswahlMenü] });
 
-    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 60_000 });
-
+    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect });
+    
+    // Übersicht Embed + Select-Menü
     collector.on('collect', async i => {
-      if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: '> ❌ Nur du darfst das benutzen.', ephemeral: true });
-      }
-      await i.deferUpdate();
-
-      switch (i.values[0]) {
-        case 'tabelle':
-          await i.channel.send({ embeds: [tabelleEmbed] });
-          break;
-        case 'naechstes_spiel':
-          await i.channel.send({ embeds: [naechstesSpielEmbed] });
-          break;
-        case 'zufallsspiel':
-          await startRandomMatch(interaction);
-          break;
-        default:
-          await i.channel.send('Unbekannte Option.');
-      }
+    if (i.user.id !== interaction.user.id)
+      return i.reply({ content: '> ❌ Nur du darfst das benutzen.', ephemeral: true });
+  
+    await i.deferUpdate();
+  
+    let embed;
+  
+    switch (i.values[0]) {
+      case 'tabelle':
+        embed = tabelleEmbed;
+        break;
+      case 'naechstes_spiel':
+        embed = naechstesSpielEmbed;
+        break;
+      case 'spieltag':
+        embed = spieltagEmbed;
+        break;
+      case 'zufallsspiel':
+        await simulateRandomMatch(i);
+        return; // Kein Embed + Menü nach Spiel
+    }
+  
+    await i.channel.send({ embeds: [embed] });
     });
+  }}
 
-    collector.on('end', () => {
-      // optional: Komponenten entfernen
-      try { msg.edit({ components: [] }); } catch (e) { /* ignore */ }
-    });
-  }
-};
+function getTwoDifferentTeams(teams) {
+  const idx1 = Math.floor(Math.random() * teams.length);
+  let idx2;
+  do {
+    idx2 = Math.floor(Math.random() * teams.length);
+  } while (idx2 === idx1);
+  return [teams[idx1], teams[idx2]];
+}
 
-// ------------------------------
-// Zufallsspiel starten -> benutzt League-Dokument, aktualisiert Matches + Teams
-// ------------------------------
-async function startRandomMatch(interaction) {
-  const league = await getOrCreateLeague();
-  if (!league.teams || league.teams.length < 2) {
-    return interaction.followUp({ content: '`❌` Nicht genug Teams in der Liga.', ephemeral: true });
-  }
+function getRandomPlayer(team) {
+  if (!team.players || team.players.length === 0) return 'Unbekannter Spieler';
+  return team.players[Math.floor(Math.random() * team.players.length)];
+}
 
-  const [i1, i2] = getTwoDifferentIndices(league.teams.length);
-  const team1 = league.teams[i1];
-  const team2 = league.teams[i2];
-  const stadium = team1.stadium || 'Unbekanntes Stadion';
+function delay(ms) {
+  return new Promise(res => setTimeout(res, ms));
+}
 
-  // Erstelle Match-Eintrag und setze live = true
-  const matchEntry = {
-    homeTeam: team1.name,
-    awayTeam: team2.name,
-    date: new Date(),
-    matchday: (league.matches.length ? league.matches.length + 1 : 1),
-    score1: null,
-    score2: null,
-    events: [],
-    live: true,
-    endDate: null
+const extraTimeFirstHalf = Math.floor(Math.random() * 10) + 1; // 1-10 Minuten Nachspielzeit 1. Halbzeit
+const extraTimeSecondHalf = Math.floor(Math.random() * 20) + 1; // 1-20 Minuten Nachspielzeit 2. Halbzeit
+
+const pauseDuration = 5; // 5 Minuten Pause
+
+const totalMatchTime = 45 + extraTimeFirstHalf + pauseDuration + 45 + extraTimeSecondHalf; // Gesamtminuten inklusive Pause
+
+function getDisplayMinute(minute, extraFirstHalf, extraSecondHalf) {
+  const pauseStart = 45 + extraFirstHalf;
+  const pauseEnd = pauseStart + 5;
+
+  // Erste Halbzeit (1 - 45)
+  if (minute <= 45) return `${minute}'`;
+
+  // Nachspielzeit der ersten Halbzeit (z. B. 45 + 3)
+  if (minute <= pauseStart) return `45' +${minute - 45}`;
+
+  // Pause
+  if (minute <= pauseEnd) return `45' +${extraFirstHalf} (Pause)`;
+
+  // 2. Halbzeit beginnt
+  const zweiteHalbzeitMinute = minute - pauseEnd;
+
+  // Normale zweite Halbzeit (46 - 90)
+  if (zweiteHalbzeitMinute <= 45) return `${45 + zweiteHalbzeitMinute}'`;
+
+  // Nachspielzeit der zweiten Halbzeit
+  return `90' +${zweiteHalbzeitMinute - 45}`;
+}
+
+function generateOdds() {
+  const probTeam1 = Math.random() * 0.5 + 0.25;
+  const probTeam2 = Math.random() * (1 - probTeam1);
+  const probDraw = 1 - probTeam1 - probTeam2;
+
+  return {
+    team1: 1 / probTeam1,
+    draw: 1 / probDraw,
+    team2: 1 / probTeam2,
   };
-  league.matches.push(matchEntry);
-  await league.save();
+}
 
-  // Odds & Embeds
-  const odds = {
-    team1: (Math.random() * 1.5 + 1.2).toFixed(2),
-    draw: (Math.random() * 2 + 2.0).toFixed(2),
-    team2: (Math.random() * 1.5 + 1.2).toFixed(2)
-  };
+async function simulateRandomMatch(interaction) {
+  const proLeagueTeams = await Team.find({ league: 'Pro League' });
+  if (!proLeagueTeams || proLeagueTeams.length < 2) {
+    return interaction.followUp({ content: '> \`❌\` Nicht genug Teams in Pro League.', ephemeral: true });
+  }
 
-  const statusEmbed = new EmbedBuilder()
-    .setTitle(`\`🏟️\` Fußballspiel: ${team1.name} vs. ${team2.name}`)
+  const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
+  const team1Name = team1.name;
+  const team2Name = team2.name;
+  const fullTeam1Data = teamsData.find(t => t.name === team1Name);
+  const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
+  const odds = generateOdds();
+
+  const embedStatus = new EmbedBuilder()
+    .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
     .setDescription(`\`📍\` Austragungsort: **${stadium}**`)
     .setColor('Green')
     .addFields(
-      { name: 'Spielminute', value: "0'", inline: true },
+      { name: 'Spielminute', value: '0\'', inline: true },
       { name: 'Spielstand', value: '0 - 0', inline: true },
       { name: 'xG', value: '0.00 - 0.00', inline: true },
-      { name: 'Gelbe Karten', value: '`🟨` 0-0', inline: true },
+      { name: 'Gelbe Karten', value: '\`🟨\` 0-0', inline: true },
       { name: 'Ballbesitz', value: '0% - 0%', inline: true },
-      { name: 'Ecken', value: '`🚩` 0-0', inline: true },
+      { name: 'Ecken', value: '\`🚩\` 0-0', inline: true },
       { name: 'Ereignisse', value: 'Noch keine Ereignisse...' }
     )
-    .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg');
+    .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
-  const lineupEmbed = new EmbedBuilder()
-    .setTitle('`📋` Aufstellungen')
+  // Aufstellung Embed
+  const players1 = teamsData.find(t => t.name === team1Name)?.players || [];
+  const players2 = teamsData.find(t => t.name === team2Name)?.players || [];
+  const embedLineup = new EmbedBuilder()
+    .setTitle('\`📋\` Aufstellung')
     .setColor('Blue')
-    .setDescription(`**${team1.name}:**\n${team1.players.join(', ') || 'Keine Daten'}\n\n**${team2.name}:**\n${team2.players.join(', ') || 'Keine Daten'}`);
+    .setDescription(
+      `**${team1Name}:**\n${players1.length ? players1.join(', ') : 'Keine Spieler-Daten'}\n\n` +
+      `**${team2Name}:**\n${players2.length ? players2.join(', ') : 'Keine Spieler-Daten'}`
+    );
 
+  // Tipp-Buttons
   const buttons = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId('win_team1').setLabel(`${team1.name} gewinnt (${odds.team1})`).setStyle(ButtonStyle.Primary),
-    new ButtonBuilder().setCustomId('draw').setLabel(`Unentschieden (${odds.draw})`).setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder().setCustomId('win_team2').setLabel(`${team2.name} gewinnt (${odds.team2})`).setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId('win_team1')
+      .setLabel(`${team1Name} gewinnt (${odds.team1.toFixed(2)})`)
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId('draw')
+      .setLabel(`Unentschieden (${odds.draw.toFixed(2)})`)
+      .setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder()
+      .setCustomId('win_team2')
+      .setLabel(`${team2Name} gewinnt (${odds.team2.toFixed(2)})`)
+      .setStyle(ButtonStyle.Primary),
   );
 
-  // Send status + lineup
-  const statusMessage = await interaction.followUp({ embeds: [statusEmbed], fetchReply: true });
-  await interaction.followUp({ embeds: [lineupEmbed], components: [buttons] });
+  // Erstes Reply (Status)
+  const statusMessage = await interaction.followUp({ embeds: [embedStatus], fetchReply: true });
+  // Zweites Reply (Aufstellung + Buttons)
+  await interaction.followUp({ embeds: [embedLineup], components: [buttons] });
 
-  // Tipp-Collector (nur der Aufrufer darf tippen)
+  // Button Collector für Tipps
   const filter = i => i.user.id === interaction.user.id;
-  const collector = statusMessage.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 20_000 });
+  const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button });
 
-  let userTip = null;
+  let userTip;
 
   collector.on('collect', async i => {
+    let userTip;
+
     switch (i.customId) {
       case 'win_team1': userTip = 'team1'; break;
       case 'draw': userTip = 'draw'; break;
       case 'win_team2': userTip = 'team2'; break;
     }
-    await i.update({ content: '`⏳` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
+
+    await i.update({ content: '\`⏳\` Anpfiff in wenigen Sekunden...', embeds: [], components: [] });
+
     collector.stop();
-    await delay(1500);
-    await interaction.followUp({ content: '`🔊` **Anpfiff!**' });
-    // Starte Simulation
-    await simulateMatch(interaction, statusMessage, league, team1, team2, userTip);
+    await delay(3000);
+    await interaction.followUp({ content: '\`🔊\` **Anpfiff! Das Spiel beginnt!** \`⚽\`' });
+    await simulateMatch(interaction, statusMessage, team1, team2, team1Name, team2Name, userTip);
   });
 
   collector.on('end', async collected => {
     if (collected.size === 0) {
-      // Wenn keiner getippt hat, starte trotzdem
-      await interaction.followUp({ content: '`⏱️` Zeit abgelaufen, kein Tipp. Starte trotzdem...' });
-      await delay(1000);
-      await simulateMatch(interaction, statusMessage, league, team1, team2, null);
+      await interaction.followUp({ content: '\`⏱️\` Zeit abgelaufen, kein Tipp abgegeben.' });
     }
   });
 }
 
-// ------------------------------
-// Simulation einer Partie (aktualisiert League-Dokument)
-// ------------------------------
-async function simulateMatch(interaction, statusMessage, leagueDoc, team1, team2, userTip) {
+async function simulateMatch(interaction, statusMessage, team1, team2, team1Name, team2Name, userTip) {
   let score1 = 0, score2 = 0;
   let xG1 = 0, xG2 = 0;
-  let yellow1 = 0, yellow2 = 0;
-  let corners1 = 0, corners2 = 0;
-  let passes1 = 0, passes2 = 0;
+  let yellowCardsTeam1 = 0, yellowCardsTeam2 = 0;
+  let cornersTeam1 = 0, cornersTeam2 = 0;
+  let team1Passes = 0, team2Passes = 0;
+  let team1Shots = 0, team2Shots = 0;
+  let team1Tackles = 0, team2Tackles = 0;
+  let team1Saves = 0, team2Saves = 0;
+
   const goalEvents = [];
-  const events = [`\`🔊\` Anpfiff! (0')`];
 
-  const extraTime = Math.floor(Math.random() * 6) + 1; // kurze Nachspielzeit
-  const minuteMs = leagueDoc.settings?.minuteDurationMs || 1000;
+  const extraTime = Math.floor(Math.random() * 20) + 1;
 
-  // Simuliere Minuten 1..90+extra
+  const events = [`\`🔊\` Anpfiff! Das Spiel beginnt! (0')`];
+
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
-    // Torchance
+    let torGezaehlt = true;
+    let scorer = '';
+    let xG = 0;
+  
+    // Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
     if (minute % 4 === 0 && Math.random() < 0.15) {
-      const which = Math.random() < 0.5 ? 'team1' : 'team2';
-      const scorer = getRandomPlayer(which === 'team1' ? team1 : team2);
-      const xg = parseFloat((Math.random() * 0.6 + 0.05).toFixed(2));
-      let goalCounted = true;
-
-      // xG wird immer hinzugefügt, egal ob Tor oder nicht
-      if (teamScored === 'team1') xG1 += xG;
-      else xG2 += xG;
-
-      // VAR Chance
+    const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
+    xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
+    scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+  
+    // VAR-Prüfung mit 10% Chance
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
-          goalCounted = false;
-          events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` (${minute}')`);
+          torGezaehlt = false;
+          events.push(`\`🖥️\` VAR: Tor von **${scorer}** aberkannt \`❌\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
         } else {
-          events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` (${minute}')`);
+          events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
         }
       }
-
-      if (goalCounted) {
-        if (which === 'team1') { score1++; xG1 += xg; }
-        else { score2++; xG2 += xg; }
-        goalEvents.push({ type: 'goal', time: minute, player: scorer, team: which === 'team1' ? team1.name : team2.name });
-        events.push(`\`⚽\` TOOOR! ${which === 'team1' ? team1.name : team2.name} — **${scorer}** (${minute}') — ${score1} - ${score2}`);
+      
+      if (torGezaehlt) {
+        if (teamScored === 'team1') {
+          score1++;
+          xG1 += xG;
+        } else {
+          score2++;
+          xG2 += xG;
+        }
+      
+        // 🟢 Nur in goalEvents speichern (Objekte!)
+        goalEvents.push({
+          type: 'goal',
+          time: minute,
+          player: scorer,
+          team: teamScored === 'team1' ? team1Name : team2Name
+        });
+      
+        // 🟢 Nur in events speichern (Text!)
+        events.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute)})`);
       }
     }
 
-    // Fouls / Karten
     if (Math.random() < 0.08) {
-      const which = Math.random() < 0.5 ? 'team1' : 'team2';
-      const player = getRandomPlayer(which === 'team1' ? team1 : team2);
-      events.push(`\`🤕\` Foul von **${player}** (${which === 'team1' ? team1.name : team2.name}) (${minute}')`);
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const player = getRandomPlayer(team);
+      const teamName = team === team1 ? team1Name : team2Name;
+      events.push(`\`🤕\` Foul von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
+    
       if (Math.random() < 0.5) {
-        if (which === 'team1') yellow1++; else yellow2++;
-        events.push(`\`🟨\` Gelbe Karte für **${player}** (${minute}')`);
+        if (team === team1) yellowCardsTeam1++; else yellowCardsTeam2++;
+        events.push(`\`🟨\` Gelbe Karte für **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
       }
     }
 
-    // Ecken
-    if (minute % 5 === 0 && Math.random() < 0.22) {
-      if (Math.random() < 0.5) { corners1++; events.push(`\`🚩\` Ecke für ${team1.name} (${minute}')`); }
-      else { corners2++; events.push(`\`🚩\` Ecke für ${team2.name} (${minute}')`); }
+    // Ecken alle 5 Minuten mit 20% Wahrscheinlichkeit
+    if (minute % 5 === 0 && Math.random() < 0.2) {
+      const teamCorner = Math.random() < 0.5 ? 'team1' : 'team2';
+      const teamName = teamCorner === 'team1' ? team1Name : team2Name;
+      if (teamCorner === 'team1') cornersTeam1++; else cornersTeam2++;
+      events.push(`\`🚩\` Ecke für ${teamName} (${getDisplayMinute(minute)})`);
     }
 
-    // Weitere Aktionen (Angriff, Freistoß, Abseits)
-    if (Math.random() < 0.12) events.push(`\`🔥\` Angriff (${minute}')`);
-    if (Math.random() < 0.05) events.push(`\`🎯\` Freistoß (${minute}')`);
-    if (Math.random() < 0.04) events.push(`\`🏳️\` Abseits (${minute}')`);
+    if (Math.random() < 0.08) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const player = getRandomPlayer(team);
+      const teamName = team === team1 ? team1Name : team2Name;
+      events.push(`\`🔥\` Gefährlicher Angriff von ${teamName} durch **${player}** (${getDisplayMinute(minute)})`);
+    }
 
-    // Statistik-Aktionen
-    passes1 += Math.floor(Math.random() * 5);
-    passes2 += Math.floor(Math.random() * 5);
+    if (Math.random() < 0.05) {
+      const team = Math.random() < 0.5 ? team1Name : team2Name;
+      events.push(`\`🎯\` Freistoß für ${team} (${getDisplayMinute(minute)})`);
+    }
 
-    const totalPasses = passes1 + passes2;
-    const possession1 = totalPasses ? Math.round((passes1 / totalPasses) * 100) : 50;
-    const possession2 = 100 - possession1;
+    if (Math.random() < 0.04) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const player = getRandomPlayer(team);
+      events.push(`\`🏳️\` Abseits von ${(team === team1 ? team1Name : team2Name)} durch **${player}** (${getDisplayMinute(minute)})`);
+    }
 
-    // Gruppiere Tore pro Spieler für Embed-Display
-    const groupGoals = (goals, teamName) => {
-      const map = new Map();
-      for (const g of goals) {
-        if (g.team !== teamName) continue;
-        if (!map.has(g.player)) map.set(g.player, []);
-        map.get(g.player).push(`${g.time}'`);
+    if (Math.random() < 0.15) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      events.push(`\`🕹️\` ${(team === team1 ? team1Name : team2Name)} im Ballbesitz (${getDisplayMinute(minute)})`);
+    }
+
+    if (Math.random() < 0.01) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const player = getRandomPlayer(team);
+      const teamName = team === team1 ? team1Name : team2Name;
+      events.push(`\`🚑\` **${player}** (${teamName}) hat sich verletzt. Kurze Unterbrechung. (${getDisplayMinute(minute)})`);
+    }
+
+    if (Math.random() < 0.05) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const player = getRandomPlayer(team);
+      const teamName = team === team1 ? team1Name : team2Name;
+      const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
+      events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
+    }
+
+    if (Math.random() < 0.04) {
+      const team = Math.random() < 0.5 ? team1 : team2;
+      const player = getRandomPlayer(team);
+      events.push(`\`🚀\` Weitschuss von **${player}** ${team === team1 ? team1Name : team2Name} knapp drüber! (${getDisplayMinute(minute)})`);
+    }
+
+    if (Math.random() < 0.03) {
+      events.push(`\`⏸️\` Spielunterbrechung (${getDisplayMinute(minute)})`);
+    }
+
+    // Ballbesitz & Aktionen jede Minute aktualisieren
+    team1Passes += Math.floor(Math.random() * 5);
+    team2Passes += Math.floor(Math.random() * 5);
+    team1Shots += Math.floor(Math.random() * 2);
+    team2Shots += Math.floor(Math.random() * 2);
+    team1Tackles += Math.floor(Math.random() * 2);
+    team2Tackles += Math.floor(Math.random() * 2);
+    team1Saves += Math.floor(Math.random() * 1);
+    team2Saves += Math.floor(Math.random() * 1);
+
+    // Ballbesitz in Prozent
+    const totalPasses = team1Passes + team2Passes;
+    const ballBesitzTeam1 = totalPasses ? Math.round((team1Passes / totalPasses) * 100) : 50;
+    const ballBesitzTeam2 = totalPasses ? Math.max(0, Math.min(100, 100 - ballBesitzTeam1)) : 50;
+
+    const fullTeam1Data = teamsData.find(t => t.name === team1Name);
+    const stadium = fullTeam1Data?.stadium || 'Unbekanntes Stadion';
+
+    function getDisplayMinute(minute) {
+      return minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
+    }
+
+
+    // Tore gruppieren und als Text formatieren
+    function gruppiereTore(tore) {
+      const spielerTore = new Map();
+    
+      for (const tor of tore) {
+        if (!tor || typeof tor !== 'object' || !tor.player || typeof tor.time !== 'number') continue;
+    
+        if (!spielerTore.has(tor.player)) {
+          spielerTore.set(tor.player, []);
+        }
+        spielerTore.get(tor.player).push(getDisplayMinute(tor.time));
       }
-      const arr = [];
-      let first = true;
-      for (const [player, mins] of map.entries()) {
-        arr.push(`${first ? '`⚽` ' : ''}${mins.join(' ')} ${player}`);
-        first = false;
-      }
-      return arr.join(' ');
-    };
-    const goalsTeam1 = groupGoals(goalEvents, team1.name);
-    const goalsTeam2 = groupGoals(goalEvents, team2.name);
-    const goalString = (goalsTeam1 || goalsTeam2) ? `${goalsTeam1} ${goalsTeam2}`.trim() : '';
+    
+      const eintraege = Array.from(spielerTore.entries()).map(([spieler, minuten], index) => {
+        const minutenString = minuten.join(' ');
+        const emoji = index === 0 ? '`⚽` ' : '';
+        return `${emoji}${minutenString} ${spieler}`;
+      });
+    
+      return eintraege.join(' ') || '';
+    }
 
-    // Update Embed
-    const minuteDisplay = minute <= 90 ? `${minute}'` : `90' +${minute - 90}`;
+    // ⚠️ Hier war vorher `events` — das ist falsch!
+    const toreTeam1Goals = goalEvents.filter(e => e.type === 'goal' && e.team === team1Name);
+    const toreTeam2Goals = goalEvents.filter(e => e.type === 'goal' && e.team === team2Name);
+    
+    const toreTeam1 = gruppiereTore(toreTeam1Goals);
+    const toreTeam2 = gruppiereTore(toreTeam2Goals);
+    
+    const torString = toreTeam1 !== '' && toreTeam2 !== '' ? `${toreTeam1} - ${toreTeam2}` : `${toreTeam1 !== '' ? toreTeam1 : ''}${toreTeam2 !== '' ? toreTeam2 : ''}`;
+
+    // Status-Embed aktualisieren
     const statusEmbed = new EmbedBuilder()
-      .setTitle(`\`🏟️\` ${team1.name} vs ${team2.name}`)
-      .setDescription(`\`📍\` ${team1.stadium || 'Unbekanntes Stadion'}\n\n${goalString || ''}`)
+      .setTitle(`\`🏟️\` Fußballspiel: ${team1Name} vs. ${team2Name}`)
+      .setDescription(`\`📍\` Austragungsort: **${stadium}**\n\n${torString}`)
       .setColor('Green')
       .addFields(
-        { name: 'Spielminute', value: minuteDisplay, inline: true },
+        { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} - ${xG2.toFixed(2)}`, inline: true },
-        { name: 'Gelbe Karten', value: `\`🟨\` ${yellow1}-${yellow2}`, inline: true },
-        { name: 'Ballbesitz', value: `${possession1}% - ${possession2}%`, inline: true },
-        { name: 'Ecken', value: `\`🚩\` ${corners1}-${corners2}`, inline: true },
+        { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
+        { name: 'Ballbesitz', value: `${ballBesitzTeam1}% - ${ballBesitzTeam2}%`, inline: true },
+        { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
         { name: 'Ereignisse', value: events.slice(-5).join('\n') || 'Noch keine Ereignisse...' }
       )
-      .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg');
+      .setImage('https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=');
 
-    try { await statusMessage.edit({ embeds: [statusEmbed] }); } catch (e) { /* ignore if message deleted */ }
+    await statusMessage.edit({ embeds: [statusEmbed] });
 
-    // kleine Pause pro Minute
-    await delay(minuteMs);
+    await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
+    
+    if (getDisplayMinute(minute) === "90'") {
+      events.push(`\`⏳\` Nachspielzeit: +${extraTime}'`);
+    }
 
-    // Ende?
     if (minute === 90 + extraTime) {
-      events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1.name} ${score1} - ${score2} ${team2.name}**`);
-
-      // Update League-Dokument: finalize match
-      // Finde match (live=true) zwischen den Teams, setze Ergebnisse
-      const league = await League.findOne({});
-      const matchIdx = league.matches.findIndex(m => m.live && m.homeTeam === team1.name && m.awayTeam === team2.name);
-      if (matchIdx >= 0) {
-        league.matches[matchIdx].score1 = score1;
-        league.matches[matchIdx].score2 = score2;
-        league.matches[matchIdx].events = events;
-        league.matches[matchIdx].live = false;
-        league.matches[matchIdx].endDate = new Date();
-      }
-
-      // Tabelle aktualisieren
-      const t1 = league.teams.find(t => t.name === team1.name);
-      const t2 = league.teams.find(t => t.name === team2.name);
-      if (t1 && t2) {
-        t1.played++; t2.played++;
-        t1.goalsFor += score1; t1.goalsAgainst += score2;
-        t2.goalsFor += score2; t2.goalsAgainst += score1;
-        if (score1 > score2) { t1.won++; t1.points += 3; t2.lost++; }
-        else if (score2 > score1) { t2.won++; t2.points += 3; t1.lost++; }
-        else { t1.draw++; t2.draw++; t1.points += 1; t2.points += 1; }
-      }
-
-      await league.save();
-
-      // Ergebnis posten + Tipp auswerten
+      events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
+    
+      // Ergebnis auswerten
       let result;
       if (score1 > score2) result = 'team1';
       else if (score2 > score1) result = 'team2';
       else result = 'draw';
-
-      let tippText = userTip === 'team1' ? team1.name : userTip === 'team2' ? team2.name : userTip === 'draw' ? 'Unentschieden' : null;
+    
+      // Tipp-Text ermitteln
+      let tippText = '';
+      if (userTip === 'team1') tippText = team1Name;
+      else if (userTip === 'team2') tippText = team2Name;
+      else if (userTip === 'draw') tippText = 'Unentschieden';
+    
+      // Tipp auswerten und User benachrichtigen
       if (userTip && tippText) {
         if (userTip === result) {
-          await interaction.followUp(`> \`🎉\` Dein Tipp auf **${tippText}** war korrekt! Endstand **${team1.name} ${score1} - ${score2} ${team2.name}**`);
+          await interaction.followUp(`> \`🎉\` Dein Tipp auf **${tippText}** war korrekt! Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
         } else {
-          await interaction.followUp(`> \`❌\` Dein Tipp auf **${tippText}** war falsch. Endstand **${team1.name} ${score1} - ${score2} ${team2.name}**`);
+          await interaction.followUp(`> \`❌\` Dein Tipp auf **${tippText}** war leider falsch. Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
         }
       } else {
-        await interaction.followUp(`\`🔚\` Spiel beendet: **${team1.name} ${score1} - ${score2} ${team2.name}**`);
+        await interaction.followUp(`Das Spiel ist beendet. Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
       }
-
+    
       break;
     }
-  } // Ende Schleife Minute
-} // Ende simulateMatch
-
-// fertig
+  }
+}
