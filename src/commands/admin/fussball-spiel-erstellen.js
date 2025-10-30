@@ -20,7 +20,7 @@ const startDatum = new Date(2025, 9, 30, 21, 0);
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('fussball-saison-generieren')
+    .setName('fussball-spiel-erstellen')
     .setDescription('Erstellt automatisch die komplette Saison mit allen Spieltagen und Spielen.')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
