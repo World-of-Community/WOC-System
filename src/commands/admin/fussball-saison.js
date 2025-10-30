@@ -9,10 +9,6 @@ const {
 } = require('discord.js');
 const { Match } = require('../../../Datenbank/fussballdb');
 
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 const proLeagueTeams = [
   'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
   'FC Rot-Weiß','SV Grünwald','TSV Nord','SC Süd','VfB West',
@@ -22,12 +18,11 @@ const proLeagueTeams = [
 ];
 
 const fixedTimes = [
-  '00:30','01:30','02:00','04:00','06:00','07:30','09:00','09:30','10:30','11:00','11:30',
   '12:30','13:30','14:00','15:00','15:30','16:45','18:00','18:30','19:00','19:30','20:00',
-  '20:30','21:45','23:00'
+  '20:30','21:45'
 ];
 
-const startDatum = new Date(2025, 9, 30); // Spieltag-Startdatum
+const startDatum = new Date(2025, 9, 30); // 30.10.2025
 const LIVE_CHANNEL_ID = '1375803752375648266';
 
 module.exports = {
@@ -40,7 +35,6 @@ module.exports = {
     await interaction.reply('`⚡` Saison wird generiert... bitte warten!');
 
     try {
-      // 🔹 Alle bisherigen Matches löschen
       await Match.deleteMany({});
       console.log('✅  | Alle bisherigen Matches wurden gelöscht.');
 
@@ -48,7 +42,6 @@ module.exports = {
       const spieltage = 34;
       const embeds = [];
 
-      // Funktion: Paarungen pro Spieltag generieren
       function generateMatchesForSpieltag(teams) {
         const available = [...teams];
         const matches = [];
@@ -68,23 +61,25 @@ module.exports = {
       for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
         const matchData = generateMatchesForSpieltag(teams);
         const matches = [];
-        const matchDayDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
+        const matchDayDate = new Date(startDatum);
+        matchDayDate.setDate(startDatum.getDate() + (spieltag - 1));
 
         for (let index = 0; index < matchData.length; index++) {
           const m = matchData[index];
 
+          // Uhrzeit festlegen
           let timeStr;
           const today = new Date();
-          if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
-            timeStr = '22:24';
+          if (spieltag === 1 && index === 0) {
+            timeStr = '22:31'; // erstes Spiel feste Zeit
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
 
           const [hour, minute] = timeStr.split(':').map(Number);
-          const matchDate = new Date(matchDayDate.getTime());
+          const matchDate = new Date(matchDayDate);
           matchDate.setHours(hour, minute, 0, 0);
-          const endDate = new Date(matchDate.getTime() + 90 * 60000); // 90 Minuten
+          const endDate = new Date(matchDate.getTime() + 90 * 60000); // reguläre Spielzeit
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
@@ -110,8 +105,6 @@ module.exports = {
           .setDescription(spielListe)
           .setColor('Blue')
         );
-
-        console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
       }
 
       // --------------------------
@@ -149,39 +142,37 @@ module.exports = {
         await i.update({ embeds: [embeds[page]], components: [row] });
       });
 
-      // ---------------------------
-      // Live-Updates starten
-      // ---------------------------
+      // --------------------------
+      // Live-Updates
+      // --------------------------
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('`❌` Kanal nicht gefunden.');
 
       let liveMsg;
       const announcedMatches = new Set();
-
-      const maxNormalTime = 90; // reguläre Spielzeit
-      const maxExtraTime = 20;  // maximale Nachspielzeit
+      const maxNormalTime = 90;
+      const maxExtraTime = 20;
 
       async function updateLive() {
         const now = new Date();
-
         const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
 
         if (liveMatches.length > 0) {
           const lines = [];
 
           for (const m of liveMatches) {
-            const diff = Math.floor((now - m.date) / 1000); // 1 Sekunde = 1 Minute
-
-            // Minute inkl. Nachspielzeit
+            const diffMinutes = Math.floor((now - m.date) / 60000);
             let minuteDisplay;
-            if (diff <= 45) {
-              minuteDisplay = `${diff}'`;
-            } else if (diff <= 50) {
-              minuteDisplay = `45' +${diff-45} (Pause)`;
+
+            if (diffMinutes < 45) {
+              minuteDisplay = `${diffMinutes}'`;
+            } else if (diffMinutes < 46) {
+              minuteDisplay = `45' (Pause)`;
+            } else if (diffMinutes <= maxNormalTime) {
+              minuteDisplay = `${diffMinutes}'`;
             } else {
-              let extra = Math.min(diff - maxNormalTime, maxExtraTime);
-              let min = Math.min(diff, maxNormalTime + extra);
-              minuteDisplay = min <= maxNormalTime ? `${min}'` : `${maxNormalTime}' +${extra}`;
+              const extra = Math.min(diffMinutes - maxNormalTime, maxExtraTime);
+              minuteDisplay = `${maxNormalTime}' +${extra}`;
             }
 
             // Zufällige Tore
@@ -206,7 +197,7 @@ module.exports = {
 
         // Spiele, die in 10 Sekunden starten
         const upcomingMatches = await Match.find({
-          date: { $gt: now, $lte: new Date(now.getTime() + 10 * 1000) }
+          date: { $gt: now, $lte: new Date(now.getTime() + 10000) }
         }).sort({ date: 1 });
 
         const newMatches = upcomingMatches.filter(m => !announcedMatches.has(m.id));
@@ -217,7 +208,7 @@ module.exports = {
           });
 
           const embed = new EmbedBuilder()
-            .setTitle('`⚽` Konferenz startet in 10 Sekunden')
+            .setTitle('`⚽` Spiele starten in wenigen Sekunden')
             .setColor('Purple')
             .setDescription(lines.join('\n'));
 
@@ -225,7 +216,7 @@ module.exports = {
           newMatches.forEach(m => announcedMatches.add(m.id));
         }
 
-        setTimeout(updateLive, 1000);
+        setTimeout(updateLive, 1000); // Simulation jede Sekunde
       }
 
       updateLive();
