@@ -32,6 +32,7 @@ module.exports = {
       const spieltage = 34;
       const embeds = [];
 
+      // Funktion: Paarungen pro Spieltag generieren (jedes Team nur einmal)
       function generateMatchesForSpieltag(teams) {
         const available = [...teams];
         const matches = [];
@@ -49,23 +50,19 @@ module.exports = {
         const matchData = generateMatchesForSpieltag(teams);
         const matches = [];
 
-        const matchStart = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
+        const matchDayDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
 
         for (let index = 0; index < matchData.length; index++) {
           const m = matchData[index];
 
-          let timeStr;
-          if (index === 0) {
-            timeStr = '21:30'; // erstes Spiel immer 21:30
-          } else {
-            timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
-          }
-
+          // Zeit wählen: erstes Spiel = 21:30, restliche aus fixedTimes
+          let timeStr = index === 0 ? '21:30' : fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           const [hour, minute] = timeStr.split(':').map(Number);
-          const matchDate = new Date(matchStart.getTime());
+
+          const matchDate = new Date(matchDayDate.getTime());
           matchDate.setHours(hour, minute, 0, 0);
 
-          const endDate = new Date(matchDate.getTime() + 90 * 60000);
+          const endDate = new Date(matchDate.getTime() + 90 * 60000); // 90 Minuten Spielzeit
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
@@ -80,7 +77,7 @@ module.exports = {
 
         await Match.insertMany(matches);
 
-        // Übersicht-Embed pro Spieltag
+        // Übersicht-Embed
         const spielListe = matches.map(m => {
           const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
           const dateStr = m.date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -96,11 +93,11 @@ module.exports = {
         console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
       }
 
-      await interaction.followUp({ content: '`📅` Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0,10) });
+      await interaction.followUp({ content: '`📅` Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0, 10) });
 
-      // ------------------------------------------------
+      // ---------------------------
       // Live-Updates
-      // ------------------------------------------------
+      // ---------------------------
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('`❌` Kanal nicht gefunden.');
 
@@ -112,7 +109,6 @@ module.exports = {
         // Live-Konferenz
         const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
 
-        // Doppelungen vermeiden
         const seenTeams = new Set();
         const filteredLive = liveMatches.filter(m => {
           if (seenTeams.has(m.homeTeam) || seenTeams.has(m.awayTeam)) return false;
@@ -133,16 +129,13 @@ module.exports = {
             .setColor(filteredLive.length > 1 ? 'Orange' : 'Green')
             .setDescription(lines.join('\n'));
 
-          let messages = await channel.messages.fetch({ limit: 10 });
-          let liveMsg = messages.find(m => m.author.id === interaction.client.user.id && m.embeds[0]?.title.includes('Live'));
-          if (liveMsg) {
-            await liveMsg.edit({ embeds: [embed] });
-          } else {
-            await channel.send({ embeds: [embed] });
-          }
+          const messages = await channel.messages.fetch({ limit: 10 });
+          const liveMsg = messages.find(m => m.author.id === interaction.client.user.id && m.embeds[0]?.title.includes('Live'));
+          if (liveMsg) await liveMsg.edit({ embeds: [embed] });
+          else await channel.send({ embeds: [embed] });
         }
 
-        // 10 Minuten vorher Konferenz nur 1x senden
+        // 10 Minuten vorher Konferenz nur 1x
         const upcomingMatches = await Match.find({
           date: { $gt: now, $lte: new Date(now.getTime() + 10 * 60000) }
         }).sort({ date: 1 });
@@ -160,7 +153,6 @@ module.exports = {
             .setDescription(lines.join('\n'));
 
           await channel.send({ embeds: [embed] });
-
           newMatches.forEach(m => announcedMatches.add(m.id));
         }
 
