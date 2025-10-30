@@ -27,21 +27,30 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    await interaction.reply('⚡ Saison wird generiert... bitte warten!');
+    await interaction.reply('`⚡` Saison wird generiert... bitte warten!');
 
     try {
       const teams = [...proLeagueTeams];
       const spieltage = 34;
       const embeds = [];
 
+      // Funktion: Generiert Paarungen pro Spieltag (jedes Team nur einmal)
+      function generateMatchesForSpieltag(teams) {
+        const shuffled = [...teams].sort(() => Math.random() - 0.5);
+        const matches = [];
+        for (let i = 0; i < shuffled.length; i += 2) {
+          if (shuffled[i + 1]) {
+            matches.push({ homeTeam: shuffled[i], awayTeam: shuffled[i + 1] });
+          }
+        }
+        return matches;
+      }
+
       for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
-        const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+        const matchData = generateMatchesForSpieltag(teams);
         const matches = [];
 
-        for (let i = 0; i < shuffledTeams.length; i += 2) {
-          const heimTeam = shuffledTeams[i];
-          const auswaertsTeam = shuffledTeams[i + 1];
-
+        for (const m of matchData) {
           let uhrzeit = spieltag === 1
             ? specialTimes[Math.floor(Math.random() * specialTimes.length)]
             : fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
@@ -53,8 +62,8 @@ module.exports = {
           const endDate = new Date(matchDate.getTime() + 90 * 60000);
 
           matches.push(new Match({
-            homeTeam: heimTeam,
-            awayTeam: auswaertsTeam,
+            homeTeam: m.homeTeam,
+            awayTeam: m.awayTeam,
             matchday: spieltag,
             date: matchDate,
             endDate,
@@ -65,6 +74,7 @@ module.exports = {
 
         await Match.insertMany(matches);
 
+        // Übersicht-Embed pro Spieltag
         const sortedMatches = matches.sort((a,b) => a.date - b.date);
         const spielListe = sortedMatches.map(m => {
           const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -81,12 +91,14 @@ module.exports = {
         console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
       }
 
-      await interaction.followUp({ content: '📅 Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0,10) });
+      // Übersicht der ersten 10 Spieltage posten
+      await interaction.followUp({ content: '`📅` Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0,10) });
 
+      // Kanal für Live-Updates
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
-      if (!channel) return console.error('❌ Kanal nicht gefunden.');
+      if (!channel) return console.error('`❌` Kanal nicht gefunden.');
 
-      // Track, welche Spiele die Konferenz bereits bekommen haben
+      // Tracken, welche Spiele Konferenz bereits hatten
       const announcedMatches = new Set();
 
       async function updateLive() {
@@ -102,7 +114,7 @@ module.exports = {
           });
 
           const embed = new EmbedBuilder()
-            .setTitle(liveMatches.length > 1 ? '⚽ Live-Konferenz' : `🏟️ Live: ${liveMatches[0].homeTeam} vs ${liveMatches[0].awayTeam}`)
+            .setTitle(liveMatches.length > 1 ? '`⚽` Live-Konferenz' : `\`🏟️\` Live: ${liveMatches[0].homeTeam} vs ${liveMatches[0].awayTeam}`)
             .setColor(liveMatches.length > 1 ? 'Orange' : 'Green')
             .setDescription(lines.join('\n'));
 
@@ -128,13 +140,12 @@ module.exports = {
           });
 
           const embed = new EmbedBuilder()
-            .setTitle('⚽ Konferenz startet in 10 Minuten')
+            .setTitle('`⚽` Konferenz startet in 10 Minuten')
             .setColor('Purple')
             .setDescription(lines.join('\n'));
 
           await channel.send({ embeds: [embed] });
 
-          // Alle angekündigten Matches speichern
           newMatches.forEach(m => announcedMatches.add(m.id));
         }
 
