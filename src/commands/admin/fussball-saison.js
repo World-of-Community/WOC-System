@@ -65,7 +65,7 @@ module.exports = {
           let timeStr;
           const today = new Date();
           if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
-            timeStr = '21:55'; // erstes Spiel heute
+            timeStr = '22:00'; // erstes Spiel heute
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
@@ -73,7 +73,7 @@ module.exports = {
           const [hour, minute] = timeStr.split(':').map(Number);
           const matchDate = new Date(matchDayDate.getTime());
           matchDate.setHours(hour, minute, 0, 0);
-          const endDate = new Date(matchDate.getTime() + 90 * 1000);
+          const endDate = new Date(matchDate.getTime() + 1000);
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
