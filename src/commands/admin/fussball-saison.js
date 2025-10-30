@@ -76,7 +76,7 @@ module.exports = {
           let timeStr;
           const today = new Date();
           if (spieltag === 1 && matchDayDate.toDateString() === today.toDateString() && index === 0) {
-            timeStr = '22:16';
+            timeStr = '22:24';
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
@@ -84,7 +84,7 @@ module.exports = {
           const [hour, minute] = timeStr.split(':').map(Number);
           const matchDate = new Date(matchDayDate.getTime());
           matchDate.setHours(hour, minute, 0, 0);
-          const endDate = new Date(matchDate.getTime() + 90 * 60000);
+          const endDate = new Date(matchDate.getTime() + 90 * 60000); // 90 Minuten
 
           matches.push(new Match({
             homeTeam: m.homeTeam,
@@ -155,8 +155,11 @@ module.exports = {
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('`❌` Kanal nicht gefunden.');
 
-      let liveMsg; // für Live-Embed
+      let liveMsg;
       const announcedMatches = new Set();
+
+      const maxNormalTime = 90; // reguläre Spielzeit
+      const maxExtraTime = 20;  // maximale Nachspielzeit
 
       async function updateLive() {
         const now = new Date();
@@ -164,11 +167,30 @@ module.exports = {
         const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
 
         if (liveMatches.length > 0) {
-          const lines = liveMatches.map(m => {
-            const diff = Math.floor((now - m.date) / 1000); // Unterschied in Sekunden
-            const minute = diff <= 45 ? `${diff}'` : diff <= 50 ? `45' +${diff-45} (Pause)` : `${45 + (diff-50)}'`;
-            return `${m.homeTeam} ${m.homeScore ?? 0} - ${m.awayScore ?? 0} ${m.awayTeam} (${minute})`;
-          });
+          const lines = [];
+
+          for (const m of liveMatches) {
+            const diff = Math.floor((now - m.date) / 1000); // 1 Sekunde = 1 Minute
+
+            // Minute inkl. Nachspielzeit
+            let minuteDisplay;
+            if (diff <= 45) {
+              minuteDisplay = `${diff}'`;
+            } else if (diff <= 50) {
+              minuteDisplay = `45' +${diff-45} (Pause)`;
+            } else {
+              let extra = Math.min(diff - maxNormalTime, maxExtraTime);
+              let min = Math.min(diff, maxNormalTime + extra);
+              minuteDisplay = min <= maxNormalTime ? `${min}'` : `${maxNormalTime}' +${extra}`;
+            }
+
+            // Zufällige Tore
+            if (Math.random() < 0.03) m.homeScore++;
+            if (Math.random() < 0.025) m.awayScore++;
+            await m.save();
+
+            lines.push(`${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam} (${minuteDisplay})`);
+          }
 
           const embed = new EmbedBuilder()
             .setTitle(liveMatches.length > 1 ? '`⚽` Live-Konferenz' : `\`🏟️\` Live: ${liveMatches[0].homeTeam} vs ${liveMatches[0].awayTeam}`)
@@ -182,9 +204,9 @@ module.exports = {
           }
         }
 
-        // Konferenz für Spiele, die in 10 Minuten starten
+        // Spiele, die in 10 Sekunden starten
         const upcomingMatches = await Match.find({
-          date: { $gt: now, $lte: new Date(now.getTime() + 10 * 60000) }
+          date: { $gt: now, $lte: new Date(now.getTime() + 10 * 1000) }
         }).sort({ date: 1 });
 
         const newMatches = upcomingMatches.filter(m => !announcedMatches.has(m.id));
@@ -195,7 +217,7 @@ module.exports = {
           });
 
           const embed = new EmbedBuilder()
-            .setTitle('`⚽` Konferenz startet in 10 Minuten')
+            .setTitle('`⚽` Konferenz startet in 10 Sekunden')
             .setColor('Purple')
             .setDescription(lines.join('\n'));
 
@@ -203,7 +225,7 @@ module.exports = {
           newMatches.forEach(m => announcedMatches.add(m.id));
         }
 
-        setTimeout(updateLive, 1000); // jede Sekunde
+        setTimeout(updateLive, 1000);
       }
 
       updateLive();
