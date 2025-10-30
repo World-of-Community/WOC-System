@@ -1,14 +1,14 @@
 const { SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 const { Team } = require('../../../Datenbank/fussballdb');
 const { Match } = require('../../../Datenbank/matchdb');
-const EmbedDB = require('../../../Datenbank/embeddb');
+const LeagueEmbed = require('../../../Datenbank/leaguembeddb');
 
 const proLeagueTeams = [
-  'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
-  'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
-  'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
-  'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
-  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
+  'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
+  'FC Rot-Weiß','SV Grünwald','TSV Nord','SC Süd','VfB West',
+  'FC Ostwind','SV Nordstern','TSV Berg','SC Tal','VfB See',
+  'FC Sturm','SV Blitz','TSV Vulkan','SC Frost','VfB Flamme',
+  'FC Donner','SV Schatten','TSV Nebel','SC Licht'
 ];
 
 // -------------------- Tabelle erstellen --------------------
@@ -27,14 +27,20 @@ async function createTabelleEmbed() {
         goalsFor: 0,
         goalsAgainst: 0,
         goalDifference: 0,
-        points: 0,
-        yellowCards: 0,
-        redCards: 0
+        points: 0
       });
     }
   }
 
-  // Punkte und Differenz berechnen
+  // Live-Spiele
+  const liveMatches = await Match.find({ status: 'live' }); // laufende Spiele
+  const liveTeams = new Set();
+  for (const m of liveMatches) {
+    liveTeams.add(m.team1);
+    liveTeams.add(m.team2);
+  }
+
+  // Punkte, Differenz berechnen
   const proLeagueData = Array.from(teamMap.values())
     .map(t => {
       t.goalDifference = t.goalsFor - t.goalsAgainst;
@@ -43,9 +49,11 @@ async function createTabelleEmbed() {
     })
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
 
-  const description = proLeagueData.map((t, i) =>
-    `**${i + 1}. ${t.name}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`
-  ).join('\n');
+  // Beschreibung erstellen
+  const description = proLeagueData.map((t, i) => {
+    const liveMark = liveTeams.has(t.name) ? ' 🔴' : ''; // 🔴 bei Live-Spielen
+    return `**${i + 1}. ${t.name}${liveMark}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`;
+  }).join('\n');
 
   return new EmbedBuilder()
     .setTitle('`⚽` Pro League Tabelle')
@@ -57,7 +65,7 @@ async function createTabelleEmbed() {
 
 // -------------------- Tabelle updaten --------------------
 async function updateLeagueTable(client) {
-  const dbEntry = await EmbedDB.findOne({ name: 'proleague_tabelle' });
+  const dbEntry = await LeagueEmbed.findOne({ name: 'proleague_tabelle' });
   if (!dbEntry) return;
 
   const channel = await client.channels.fetch(dbEntry.channelId).catch(() => null);
@@ -75,23 +83,18 @@ async function onMatchEnd(client, matchId) {
   const match = await Match.findById(matchId);
   if (!match) return;
 
-  // Teamstatistiken updaten
   const team1 = await Team.findOne({ name: match.team1 });
   const team2 = await Team.findOne({ name: match.team2 });
-
   if (!team1 || !team2) return;
 
-  // Gespielte Spiele
   team1.played += 1;
   team2.played += 1;
 
-  // Tore
   team1.goalsFor += match.score1;
   team1.goalsAgainst += match.score2;
   team2.goalsFor += match.score2;
   team2.goalsAgainst += match.score1;
 
-  // Punkte und Siege/Niederlagen
   if (match.score1 > match.score2) {
     team1.won += 1;
     team2.lost += 1;
@@ -106,7 +109,6 @@ async function onMatchEnd(client, matchId) {
   await team1.save();
   await team2.save();
 
-  // Tabelle updaten
   await updateLeagueTable(client);
 }
 
@@ -121,13 +123,9 @@ module.exports = {
     const embed = await createTabelleEmbed();
     const message = await interaction.channel.send({ embeds: [embed] });
 
-    await EmbedDB.findOneAndUpdate(
+    await LeagueEmbed.findOneAndUpdate(
       { name: 'proleague_tabelle' },
-      {
-        name: 'proleague_tabelle',
-        channelId: interaction.channel.id,
-        messageId: message.id
-      },
+      { name: 'proleague_tabelle', channelId: interaction.channel.id, messageId: message.id },
       { upsert: true }
     );
 

@@ -21,7 +21,8 @@ const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
 const { ApiClient } = require('@twurple/api');
 const { EventSubWsListener } = require('@twurple/eventsub-ws');
 const AsciiTable = require('ascii-table');
-const fussballCommand = require('../src/commands/admin/fussball-tabelle');  
+//const fussballCommand = require('../src/commands/admin/fussball-tabelle');  
+const fussballTabelle = require('./commands/fussball/fussball-tabelle.js'); // Pfad anpassen
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
@@ -628,6 +629,11 @@ cron.schedule('0 0 * * *', async () => {
     } catch (error) {
         console.error("Fehler beim Verarbeiten der Geburtstage:", error);
     }
+});
+
+// Tabelle jede Minute aktualisieren
+cron.schedule('*/1 * * * *', async () => {
+  await fussballTabelle.updateLeagueTable(client);
 });
 
 // Tägliche Belohnung Erinnerung
