@@ -1,4 +1,5 @@
-const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
+const { Match } = require('../../../Datenbank/fussballdb');
 
 const proLeagueTeams = [
   'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
@@ -14,51 +15,68 @@ const fixedTimes = [
   '20:30','21:45','23:00'
 ];
 
-// Startdatum der Saison
 const startDatum = new Date(2025, 7, 1); // 01.08.2025
 
-async function generiereSaison() {
-  try {
-    const teams = [...proLeagueTeams];
-    const spieltage = 34; // Anzahl der Spieltage
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('saison-generieren')
+    .setDescription('Erstellt automatisch die komplette Saison mit allen Spieltagen und Spielen.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
-      // Teams mischen für diesen Spieltag
-      const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+  async execute(interaction) {
+    await interaction.reply('⚡ Saison wird generiert... bitte warten!');
 
-      // Spiele des Spieltags erstellen
-      const matches = [];
-      for (let i = 0; i < shuffledTeams.length; i += 2) {
-        const heimTeam = shuffledTeams[i];
-        const auswaertsTeam = shuffledTeams[i + 1];
+    try {
+      const teams = [...proLeagueTeams];
+      const spieltage = 34;
+      const embeds = [];
 
-        // Uhrzeit zufällig wählen
-        const uhrzeit = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
-        const [stunde, minute] = uhrzeit.split(':').map(Number);
+      for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
+        const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+        const matches = [];
 
-        // Datum für Spieltag: addiere Spieltag-Tage zum Startdatum
-        const matchDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
-        matchDate.setHours(stunde, minute);
+        for (let i = 0; i < shuffledTeams.length; i += 2) {
+          const heimTeam = shuffledTeams[i];
+          const auswaertsTeam = shuffledTeams[i + 1];
 
-        const endDate = new Date(matchDate.getTime() + 90 * 60000); // +90 Minuten
+          const uhrzeit = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
+          const [stunde, minute] = uhrzeit.split(':').map(Number);
 
-        matches.push(new Match({
-          homeTeam: heimTeam,
-          awayTeam: auswaertsTeam,
-          matchday: spieltag,
-          date: matchDate,
-          endDate
-        }));
+          const matchDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
+          matchDate.setHours(stunde, minute);
+
+          const endDate = new Date(matchDate.getTime() + 90 * 60000);
+
+          matches.push(new Match({
+            homeTeam: heimTeam,
+            awayTeam: auswaertsTeam,
+            matchday: spieltag,
+            date: matchDate,
+            endDate
+          }));
+        }
+
+        await Match.insertMany(matches);
+        console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
+
+        // Embed für diesen Spieltag erstellen
+        const spielListe = matches.map(m => {
+          return `${m.homeTeam} vs ${m.awayTeam} (${m.date.toLocaleString('de-DE', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })})`;
+        }).join('\n');
+
+        embeds.push(new EmbedBuilder()
+          .setTitle(`Spieltag ${spieltag}`)
+          .setDescription(spielListe)
+          .setColor('Blue')
+        );
       }
 
-      await Match.insertMany(matches);
-      console.log(`Spieltag ${spieltag} mit ${matches.length} Spielen erstellt.`);
+      await interaction.followUp({ content: '✅ Saison erfolgreich generiert!', embeds: embeds.slice(0, 10) });
+      // Hinweis: nur die ersten 10 Spieltage auf einmal anzeigen, bei Bedarf kannst du Paginierung einbauen
+
+    } catch (err) {
+      console.error(err);
+      await interaction.followUp('❌ Fehler beim Generieren der Saison.');
     }
-
-    console.log('✅ Saison komplett generiert!');
-  } catch (err) {
-    console.error('❌ Fehler beim Generieren der Saison:', err);
   }
-}
-
-generiereSaison();
+};
