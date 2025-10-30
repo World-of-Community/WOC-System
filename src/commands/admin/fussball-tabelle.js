@@ -50,9 +50,9 @@ async function createTabelleEmbed() {
     .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference);
 
   // Beschreibung erstellen
-  const description = proLeagueData.map((t, i) => {
-    const liveMark = liveTeams.has(t.name) ? ' 🔴' : ''; // 🔴 bei Live-Spielen
-    return `**${i + 1}. ${t.name}${liveMark}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`;
+  const description = ProLeagueEmbedData.map((t, i) => {
+    const liveMark = liveTeams.has(t.name) ? '`🔴`' : ''; // 🔴 bei Live-Spielen
+    return `**${i + 1}. ${t.name} ${liveMark}** | Sp: ${t.played} | S: ${t.won} | U: ${t.draw} | N: ${t.lost} | T: ${t.goalsFor} | GT: ${t.goalsAgainst} | TD: ${t.goalDifference} | Pkt: ${t.points}`;
   }).join('\n');
 
   return new EmbedBuilder()
@@ -65,7 +65,7 @@ async function createTabelleEmbed() {
 
 // -------------------- Tabelle updaten --------------------
 async function updateLeagueTable(client) {
-  const dbEntry = await LeagueEmbed.findOne({ name: 'proleague_tabelle' });
+  const dbEntry = await ProLeagueEmbed.findOne({ name: 'proleague_tabelle' });
   if (!dbEntry) return;
 
   const channel = await client.channels.fetch(dbEntry.channelId).catch(() => null);
@@ -123,7 +123,7 @@ module.exports = {
     const embed = await createTabelleEmbed();
     const message = await interaction.channel.send({ embeds: [embed] });
 
-    await LeagueEmbed.findOneAndUpdate(
+    await ProLeagueEmbed.findOneAndUpdate(
       { name: 'proleague_tabelle' },
       { name: 'proleague_tabelle', channelId: interaction.channel.id, messageId: message.id },
       { upsert: true }
