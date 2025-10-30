@@ -18,7 +18,7 @@ module.exports = {
             const banInfo = await interaction.guild.bans.fetch(user.id);
 
             const bannedEmbed = new EmbedBuilder()
-                .setTitle("🚫 Benutzer ist gebannt")
+                .setTitle("`🚫` Benutzer ist gebannt")
                 .setColor("Red")
                 .setThumbnail(user.displayAvatarURL({ dynamic: true }))
                 .addFields(
@@ -33,14 +33,14 @@ module.exports = {
 
         } catch (error) {
             const notBannedEmbed = new EmbedBuilder()
-                .setTitle("✅ Benutzer ist nicht gebannt")
+                .setTitle("`✅` Benutzer ist nicht gebannt")
                 .setColor("Green")
                 .setThumbnail(user.displayAvatarURL({ dynamic: true }))
                 .addFields(
                     { name: "Benutzer", value: `${user.tag} (\`${user.id}\`)`, inline: false },
                     { name: "Status", value: `Dieser Benutzer ist aktuell **nicht gebannt**.`, inline: false }
                 )
-                .setFooter({ text: `©️ ${interaction.guild.name} | Ban-Check-System`, iconURL: interaction.client.user.displayAvatarURL() })
+                .setFooter({ text: `${interaction.guild.name} | Ban-Check-System`, iconURL: interaction.client.user.displayAvatarURL() })
                 .setTimestamp();
 
             return interaction.reply({ embeds: [notBannedEmbed], ephemeral: true });
