@@ -9,7 +9,13 @@ const proLeagueTeams = [
   'FC Donner','SV Schatten','TSV Nebel','SC Licht'
 ];
 
-const startDatum = new Date(2025, 9, 30, 21, 30); // erstes Spiel um 21:30
+const fixedTimes = [
+  '00:30','01:30','02:00','04:00','06:00','07:30','09:00','09:30','10:30','11:00','11:30',
+  '12:30','13:30','14:00','15:00','15:30','16:45','18:00','18:30','19:00','19:30','20:00',
+  '20:30','21:45','23:00'
+];
+
+const startDatum = new Date(2025, 9, 30); // Spieltag-Startdatum
 const LIVE_CHANNEL_ID = '1375803752375648266';
 
 module.exports = {
@@ -26,14 +32,15 @@ module.exports = {
       const spieltage = 34;
       const embeds = [];
 
-      // Funktion: Generiert Paarungen pro Spieltag (jedes Team nur einmal)
       function generateMatchesForSpieltag(teams) {
-        const shuffled = [...teams].sort(() => Math.random() - 0.5);
+        const available = [...teams];
         const matches = [];
-        for (let i = 0; i < shuffled.length; i += 2) {
-          if (shuffled[i + 1]) {
-            matches.push({ homeTeam: shuffled[i], awayTeam: shuffled[i + 1] });
-          }
+        while (available.length > 1) {
+          const homeIndex = Math.floor(Math.random() * available.length);
+          const homeTeam = available.splice(homeIndex, 1)[0];
+          const awayIndex = Math.floor(Math.random() * available.length);
+          const awayTeam = available.splice(awayIndex, 1)[0];
+          matches.push({ homeTeam, awayTeam });
         }
         return matches;
       }
@@ -42,12 +49,21 @@ module.exports = {
         const matchData = generateMatchesForSpieltag(teams);
         const matches = [];
 
+        const matchStart = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
+
         for (let index = 0; index < matchData.length; index++) {
           const m = matchData[index];
 
-          // erstes Spiel = 21:30, danach 5 Min Abstand pro Spiel
-          const matchDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
-          matchDate.setMinutes(matchDate.getMinutes() + index * 5);
+          let timeStr;
+          if (index === 0) {
+            timeStr = '21:30'; // erstes Spiel immer 21:30
+          } else {
+            timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
+          }
+
+          const [hour, minute] = timeStr.split(':').map(Number);
+          const matchDate = new Date(matchStart.getTime());
+          matchDate.setHours(hour, minute, 0, 0);
 
           const endDate = new Date(matchDate.getTime() + 90 * 60000);
 
@@ -82,7 +98,9 @@ module.exports = {
 
       await interaction.followUp({ content: '`📅` Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0,10) });
 
-      // Kanal für Live-Updates
+      // ------------------------------------------------
+      // Live-Updates
+      // ------------------------------------------------
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('`❌` Kanal nicht gefunden.');
 
@@ -93,16 +111,26 @@ module.exports = {
 
         // Live-Konferenz
         const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
-        if (liveMatches.length > 0) {
-          const lines = liveMatches.map(m => {
+
+        // Doppelungen vermeiden
+        const seenTeams = new Set();
+        const filteredLive = liveMatches.filter(m => {
+          if (seenTeams.has(m.homeTeam) || seenTeams.has(m.awayTeam)) return false;
+          seenTeams.add(m.homeTeam);
+          seenTeams.add(m.awayTeam);
+          return true;
+        });
+
+        if (filteredLive.length > 0) {
+          const lines = filteredLive.map(m => {
             const diff = Math.floor((now - m.date) / 60000);
             const minute = diff <= 45 ? `${diff}'` : diff <= 50 ? `45' +${diff-45} (Pause)` : `${45 + (diff-50)}'`;
             return `${m.homeTeam} ${m.homeScore ?? 0} - ${m.awayScore ?? 0} ${m.awayTeam} (${minute})`;
           });
 
           const embed = new EmbedBuilder()
-            .setTitle(liveMatches.length > 1 ? '`⚽` Live-Konferenz' : `\`🏟️\` Live: ${liveMatches[0].homeTeam} vs ${liveMatches[0].awayTeam}`)
-            .setColor(liveMatches.length > 1 ? 'Orange' : 'Green')
+            .setTitle(filteredLive.length > 1 ? '`⚽` Live-Konferenz' : `\`🏟️\` Live: ${filteredLive[0].homeTeam} vs ${filteredLive[0].awayTeam}`)
+            .setColor(filteredLive.length > 1 ? 'Orange' : 'Green')
             .setDescription(lines.join('\n'));
 
           let messages = await channel.messages.fetch({ limit: 10 });
