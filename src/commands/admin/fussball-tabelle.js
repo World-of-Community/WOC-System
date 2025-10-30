@@ -177,7 +177,7 @@ module.exports = {
       { upsert: true }
     );
 
-    await interaction.reply({ content: '✅ Tabelle wurde gesendet und gespeichert!', ephemeral: true });
+    await interaction.reply({ content: '> `✅` Tabelle wurde gesendet und gespeichert!', ephemeral: true });
   },
 
   updateLeagueTable,

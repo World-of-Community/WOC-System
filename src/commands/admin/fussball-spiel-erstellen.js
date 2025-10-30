@@ -1,132 +1,64 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
 
 const proLeagueTeams = [
-  'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
-  'FC Rot-Weiß', 'SV Grünwald', 'TSV Nord', 'SC Süd', 'VfB West',
-  'FC Ostwind', 'SV Nordstern', 'TSV Berg', 'SC Tal', 'VfB See',
-  'FC Sturm', 'SV Blitz', 'TSV Vulkan', 'SC Frost', 'VfB Flamme',
-  'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
+  'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
+  'FC Rot-Weiß','SV Grünwald','TSV Nord','SC Süd','VfB West',
+  'FC Ostwind','SV Nordstern','TSV Berg','SC Tal','VfB See',
+  'FC Sturm','SV Blitz','TSV Vulkan','SC Frost','VfB Flamme',
+  'FC Donner','SV Schatten','TSV Nebel','SC Licht'
 ];
 
 const fixedTimes = [
-  { name: '00:30', value: '00:30' }, { name: '01:30', value: '01:30' },
-  { name: '02:00', value: '02:00' }, { name: '04:00', value: '04:00' },
-  { name: '06:00', value: '06:00' }, { name: '07:30', value: '07:30' },
-  { name: '09:00', value: '09:00' }, { name: '09:30', value: '09:30' },
-  { name: '10:30', value: '10:30' }, { name: '11:00', value: '11:00' },
-  { name: '11:30', value: '11:30' }, { name: '12:30', value: '12:30' },
-  { name: '13:30', value: '13:30' }, { name: '14:00', value: '14:00' },
-  { name: '15:00', value: '15:00' }, { name: '15:30', value: '15:30' },
-  { name: '16:45', value: '16:45' }, { name: '18:00', value: '18:00' },
-  { name: '18:30', value: '18:30' }, { name: '19:00', value: '19:00' },
-  { name: '19:30', value: '19:30' }, { name: '20:00', value: '20:00' },
-  { name: '20:30', value: '20:30' }, { name: '21:45', value: '21:45' },
-  { name: '23:00', value: '23:00' }
+  '00:30','01:30','02:00','04:00','06:00','07:30','09:00','09:30','10:30','11:00','11:30',
+  '12:30','13:30','14:00','15:00','15:30','16:45','18:00','18:30','19:00','19:30','20:00',
+  '20:30','21:45','23:00'
 ];
 
-module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('spiel-erstellen')
-    .setDescription('Erstellt ein Spiel mit Datum und fester Uhrzeit')
-    .addStringOption(option =>
-      option.setName('heimteam')
-        .setDescription('Heimteam auswählen')
-        .setRequired(true)
-        .addChoices(...proLeagueTeams.map(team => ({ name: team, value: team }))))
-    .addStringOption(option =>
-      option.setName('auswaertsteam')
-        .setDescription('Auswärtsteam auswählen')
-        .setRequired(true)
-        .addChoices(...proLeagueTeams.map(team => ({ name: team, value: team }))))
-    .addIntegerOption(option =>
-      option.setName('spieltag')
-        .setDescription('Spieltag auswählen (1-34)')
-        .setRequired(true))
-    .addStringOption(option =>
-      option.setName('uhrzeit')
-        .setDescription('Uhrzeit auswählen')
-        .setRequired(true)
-        .addChoices(...fixedTimes))
-    .addStringOption(option =>
-      option.setName('datum')
-        .setDescription('Datum im Format TT.MM.JJJJ')
-        .setRequired(true))
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+// Startdatum der Saison
+const startDatum = new Date(2025, 7, 1); // 01.08.2025
 
-  async execute(interaction) {
-    const heim = interaction.options.getString('heimteam');
-    const auswaerts = interaction.options.getString('auswaertsteam');
-    const spieltag = interaction.options.getInteger('spieltag');
-    const uhrzeit = interaction.options.getString('uhrzeit');
-    const datum = interaction.options.getString('datum');
+async function generiereSaison() {
+  try {
+    const teams = [...proLeagueTeams];
+    const spieltage = 34; // Anzahl der Spieltage
 
-    if (spieltag < 1 || spieltag > 34) {
-      return interaction.reply({
-        content: '> `❌` » Bitte gib einen Spieltag zwischen 1 und 34 an.',
-        ephemeral: true
-      });
-    }
+    for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
+      // Teams mischen für diesen Spieltag
+      const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
 
-    try {
-      // Datum & Uhrzeit parsen
-      const [tagStr, monatStr, jahrStr] = datum.split('.');
-      const [stundeStr, minuteStr] = uhrzeit.split(':');
+      // Spiele des Spieltags erstellen
+      const matches = [];
+      for (let i = 0; i < shuffledTeams.length; i += 2) {
+        const heimTeam = shuffledTeams[i];
+        const auswaertsTeam = shuffledTeams[i + 1];
 
-      const tag = Number(tagStr.trim());
-      const monat = Number(monatStr.trim());
-      const jahr = Number(jahrStr.trim());
-      const stunde = Number(stundeStr.trim());
-      const minute = Number(minuteStr.trim());
+        // Uhrzeit zufällig wählen
+        const uhrzeit = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
+        const [stunde, minute] = uhrzeit.split(':').map(Number);
 
-      if (
-        isNaN(tag) || isNaN(monat) || isNaN(jahr) ||
-        isNaN(stunde) || isNaN(minute) ||
-        tag < 1 || tag > 31 || monat < 1 || monat > 12 ||
-        jahr < 1000 || stunde < 0 || stunde > 23 || minute < 0 || minute > 59
-      ) {
-        throw new Error('Ungültiges Datum oder Uhrzeit');
+        // Datum für Spieltag: addiere Spieltag-Tage zum Startdatum
+        const matchDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
+        matchDate.setHours(stunde, minute);
+
+        const endDate = new Date(matchDate.getTime() + 90 * 60000); // +90 Minuten
+
+        matches.push(new Match({
+          homeTeam: heimTeam,
+          awayTeam: auswaertsTeam,
+          matchday: spieltag,
+          date: matchDate,
+          endDate
+        }));
       }
 
-      const date = new Date(jahr, monat - 1, tag, stunde, minute);
-      const endDate = new Date(date.getTime() + 90 * 60000); // +90 Minuten
-
-      const match = new Match({
-        homeTeam: heim,
-        awayTeam: auswaerts,
-        matchday: spieltag,
-        date,
-        endDate
-      });
-
-      await match.save();
-
-      const spieleDesSpieltags = await Match.find({ matchday: spieltag }).sort({ date: 1 });
-
-      const spieleListe = spieleDesSpieltags
-        .map(m => `- ${m.homeTeam} vs ${m.awayTeam} (${new Date(m.date).toLocaleString('de-DE', {
-          day: '2-digit',
-          month: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        })})`)
-        .join('\n');
-
-      await interaction.reply({
-        content:
-          `\`✅\` Spiel eingetragen: **${heim}** vs **${auswaerts}** am **${date.toLocaleString('de-DE')}** (Spieltag ${spieltag})\n\n` +
-          `\`📅\` **Alle Spiele für Spieltag ${spieltag}:**\n${spieleListe}`,
-        ephemeral: true
-      });
-
-    } catch (error) {
-      console.error('❌ Fehler beim Eintragen des Spiels:', error);
-      await interaction.reply({
-        content: `❌ Fehler beim Eintragen des Spiels. Stelle sicher, dass das Datum im Format **TT.MM.JJJJ** ist und die Uhrzeit korrekt ausgewählt wurde.\n` +
-                 `Beispiel: \`25.05.2025\` mit Uhrzeit \`15:30\`\n` +
-                 `Fehler: ${error.message}`,
-        ephemeral: true
-      });
+      await Match.insertMany(matches);
+      console.log(`Spieltag ${spieltag} mit ${matches.length} Spielen erstellt.`);
     }
+
+    console.log('✅ Saison komplett generiert!');
+  } catch (err) {
+    console.error('❌ Fehler beim Generieren der Saison:', err);
   }
-};
+}
+
+generiereSaison();

@@ -21,17 +21,17 @@ module.exports = {
 
     const team = await Team.findOne({ name: teamName });
     if (!team) {
-      return interaction.reply({ content: '❌ Team wurde nicht gefunden.', ephemeral: true });
+      return interaction.reply({ content: '> `❌` Team wurde nicht gefunden.', ephemeral: true });
     }
 
     if (!team.players) team.players = [];
     if (team.players.includes(spielerName)) {
-      return interaction.reply({ content: '⚠️ Dieser Spieler ist bereits im Team.', ephemeral: true });
+      return interaction.reply({ content: '> ⚠️ Dieser Spieler ist bereits im Team.', ephemeral: true });
     }
 
     team.players.push(spielerName);
     await team.save();
 
-    await interaction.reply({ content: `✅ Spieler **${spielerName}** wurde dem Team **${teamName}** hinzugefügt.`, ephemeral: true });
+    await interaction.reply({ content: `> \`✅\` Spieler **${spielerName}** wurde dem Team **${teamName}** hinzugefügt.`, ephemeral: true });
   }
 };
