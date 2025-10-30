@@ -32,7 +32,7 @@ module.exports = {
     try {
       const teams = [...proLeagueTeams];
       const spieltage = 34;
-      const embeds = []; // Für Übersicht der Spieltage
+      const embeds = [];
 
       for (let spieltag = 1; spieltag <= spieltage; spieltag++) {
         const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
@@ -67,7 +67,6 @@ module.exports = {
         }
 
         await Match.insertMany(matches);
-        console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
 
         // Übersicht-Embed für diesen Spieltag
         const sortedMatches = matches.sort((a,b) => a.date - b.date);
@@ -82,44 +81,62 @@ module.exports = {
           .setDescription(spielListe)
           .setColor('Blue')
         );
+
+        console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
       }
 
       // Übersicht der ersten 10 Spieltage posten
       await interaction.followUp({ content: '📅 Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0,10) });
 
-      // Live-Update starten
+      // Kanal für Live-Updates
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('❌ Kanal nicht gefunden.');
 
+      // Funktion für Live-Updates
       async function updateLive() {
         const now = new Date();
         const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
 
-        if (!liveMatches.length) {
-          return setTimeout(updateLive, 1000);
+        // Live-Konferenz aktualisieren
+        if (liveMatches.length > 0) {
+          const lines = liveMatches.map(m => {
+            const diff = Math.floor((now - m.date) / 60000);
+            const minute = diff <= 45 ? `${diff}'` : diff <= 50 ? `45' +${diff-45} (Pause)` : `${45 + (diff-50)}'`;
+            return `${m.homeTeam} ${m.homeScore ?? 0} - ${m.awayScore ?? 0} ${m.awayTeam} (${minute})`;
+          });
+
+          const embed = new EmbedBuilder()
+            .setTitle(liveMatches.length > 1 ? '⚽ Live-Konferenz' : `🏟️ Live: ${liveMatches[0].homeTeam} vs ${liveMatches[0].awayTeam}`)
+            .setColor(liveMatches.length > 1 ? 'Orange' : 'Green')
+            .setDescription(lines.join('\n'));
+
+          let messages = await channel.messages.fetch({ limit: 10 });
+          let liveMsg = messages.find(m => m.author.id === interaction.client.user.id && m.embeds[0]?.title.includes('Live'));
+          if (liveMsg) {
+            await liveMsg.edit({ embeds: [embed] });
+          } else {
+            await channel.send({ embeds: [embed] });
+          }
         }
 
-        const lines = liveMatches.map(m => {
-          const diff = Math.floor((now - m.date) / 60000);
-          const minute = diff <= 45 ? `${diff}'` : diff <= 50 ? `45' +${diff-45} (Pause)` : `${45 + (diff-50)}'`;
-          return `${m.homeTeam} ${m.homeScore ?? 0} - ${m.awayScore ?? 0} ${m.awayTeam} (${minute})`;
-        });
+        // 10 Minuten vorher Konferenz-Embed
+        const upcomingMatches = await Match.find({ date: { $gt: now, $lte: new Date(now.getTime() + 10 * 60000) } }).sort({ date: 1 });
+        if (upcomingMatches.length > 0) {
+          const lines = upcomingMatches.map(m => {
+            const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            return `${m.homeTeam} vs ${m.awayTeam} (${timeStr} Uhr)`;
+          });
 
-        const embed = new EmbedBuilder()
-          .setTitle(liveMatches.length > 1 ? '⚽ Live-Konferenz' : `🏟️ Live: ${liveMatches[0].homeTeam} vs ${liveMatches[0].awayTeam}`)
-          .setColor(liveMatches.length > 1 ? 'Orange' : 'Green')
-          .setDescription(lines.join('\n'));
+          const embed = new EmbedBuilder()
+            .setTitle('⚽ Konferenz startet in 10 Minuten')
+            .setColor('Purple')
+            .setDescription(lines.join('\n'));
 
-        // Nachricht prüfen oder neue senden
-        let messages = await channel.messages.fetch({ limit: 10 });
-        let liveMsg = messages.find(m => m.author.id === interaction.client.user.id && m.embeds[0]?.title.includes('Live'));
-        if (liveMsg) {
-          await liveMsg.edit({ embeds: [embed] });
-        } else {
+          // Nachricht posten
           await channel.send({ embeds: [embed] });
         }
 
-        setTimeout(updateLive, 1000); // 1 Sekunde Pause
+        setTimeout(updateLive, 1000);
       }
 
       updateLive();
