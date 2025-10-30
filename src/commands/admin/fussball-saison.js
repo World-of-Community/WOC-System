@@ -42,12 +42,9 @@ module.exports = {
           const heimTeam = shuffledTeams[i];
           const auswaertsTeam = shuffledTeams[i + 1];
 
-          let uhrzeit;
-          if (spieltag === 1) {
-            uhrzeit = specialTimes[Math.floor(Math.random() * specialTimes.length)];
-          } else {
-            uhrzeit = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
-          }
+          let uhrzeit = spieltag === 1
+            ? specialTimes[Math.floor(Math.random() * specialTimes.length)]
+            : fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
 
           const [stunde, minute] = uhrzeit.split(':').map(Number);
           const matchDate = new Date(startDatum.getTime() + (spieltag - 1) * 24 * 60 * 60 * 1000);
@@ -68,7 +65,6 @@ module.exports = {
 
         await Match.insertMany(matches);
 
-        // Übersicht-Embed für diesen Spieltag
         const sortedMatches = matches.sort((a,b) => a.date - b.date);
         const spielListe = sortedMatches.map(m => {
           const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -85,19 +81,19 @@ module.exports = {
         console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
       }
 
-      // Übersicht der ersten 10 Spieltage posten
       await interaction.followUp({ content: '📅 Übersicht der ersten 10 Spieltage:', embeds: embeds.slice(0,10) });
 
-      // Kanal für Live-Updates
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
       if (!channel) return console.error('❌ Kanal nicht gefunden.');
 
-      // Funktion für Live-Updates
+      // Track, welche Spiele die Konferenz bereits bekommen haben
+      const announcedMatches = new Set();
+
       async function updateLive() {
         const now = new Date();
-        const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
 
-        // Live-Konferenz aktualisieren
+        // Live-Konferenz
+        const liveMatches = await Match.find({ date: { $lte: now }, endDate: { $gte: now } }).sort({ date: 1 });
         if (liveMatches.length > 0) {
           const lines = liveMatches.map(m => {
             const diff = Math.floor((now - m.date) / 60000);
@@ -119,10 +115,14 @@ module.exports = {
           }
         }
 
-        // 10 Minuten vorher Konferenz-Embed
-        const upcomingMatches = await Match.find({ date: { $gt: now, $lte: new Date(now.getTime() + 10 * 60000) } }).sort({ date: 1 });
-        if (upcomingMatches.length > 0) {
-          const lines = upcomingMatches.map(m => {
+        // 10 Minuten vorher Konferenz nur 1x senden
+        const upcomingMatches = await Match.find({
+          date: { $gt: now, $lte: new Date(now.getTime() + 10 * 60000) }
+        }).sort({ date: 1 });
+
+        const newMatches = upcomingMatches.filter(m => !announcedMatches.has(m.id));
+        if (newMatches.length > 0) {
+          const lines = newMatches.map(m => {
             const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
             return `${m.homeTeam} vs ${m.awayTeam} (${timeStr} Uhr)`;
           });
@@ -132,8 +132,10 @@ module.exports = {
             .setColor('Purple')
             .setDescription(lines.join('\n'));
 
-          // Nachricht posten
           await channel.send({ embeds: [embed] });
+
+          // Alle angekündigten Matches speichern
+          newMatches.forEach(m => announcedMatches.add(m.id));
         }
 
         setTimeout(updateLive, 1000);
