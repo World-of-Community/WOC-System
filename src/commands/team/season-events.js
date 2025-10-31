@@ -3,8 +3,44 @@ const cron = require('node-cron');
 const EventItem = require('../../../Datenbank/eventitems'); // Dein Schema
 
 let cronInitialized = false;
-let activeMessage; 
-let aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
+let activeMessage;
+let aktuellesEvent = null; // Start ohne Event
+
+// Event-spezifische Einstellungen
+const eventEmbeds = {
+  halloween_event: {
+    title: '`🎃` Halloween',
+    startDate: '2025-10-27T00:00:00',
+    endDate: '2025-11-02T23:59:59',
+    color: 'Orange',
+    image: 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png',
+    itemName: 'Kürbisse'
+  },
+  easter_event: {
+    title: '`🐇` Ostern',
+    startDate: '2025-04-01T00:00:00',
+    endDate: '2025-04-02T23:59:59',
+    color: 'LightGreen',
+    image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/ostereier.png',
+    itemName: 'Ostereier'
+  },
+  christmas_event: {
+    title: '`🎄` Weihnachten',
+    startDate: '2025-12-20T00:00:00',
+    endDate: '2025-12-26T23:59:59',
+    color: 'Red',
+    image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/weihnachtsbaeume.png',
+    itemName: 'Weihnachtsbäume'
+  },
+  newyear_event: {
+    title: '`🎆` Silvester',
+    startDate: '2025-12-27T00:00:00',
+    endDate: '2026-01-02T23:59:59',
+    color: 'Blue',
+    image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/raketen.png',
+    itemName: 'Raketen'
+  }
+};
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,32 +51,38 @@ module.exports = {
   async execute(interaction) {
 
     // === Top 3 Spieler aus der Datenbank holen ===
-    async function getTop3(eventType) {
+    async function getTop3(eventType, itemName) {
       const stats = await EventItem.find({ eventType })
         .sort({ amount: -1 })
         .limit(3);
 
-      if (!stats.length) return '> Noch keine Sammler vorhanden. 😢';
+      if (!stats.length) return '> Noch keine Sammler aktiv. `😢`';
 
       return stats.map((entry, i) => {
         const medal = ['🥇', '🥈', '🥉'][i];
-        return `${medal} × <@${entry.userId}>\n» **${entry.amount}x gesammelt**`;
+        return `${medal} × <@${entry.userId}>\n» **${entry.amount} ${itemName} gesammelt**`;
       }).join('\n');
     }
 
     // === Embed bauen ===
     async function buildEmbed() {
-      let bestListText = '> Kein aktives Event.';
-      if (aktuellesEvent && aktuellesEvent !== 'Aktuell findet kein "Season-Event" statt!') {
-        bestListText = await getTop3(aktuellesEvent);
+      let settings = null;
+      let description = '> Aktuell findet kein "Season-Event" statt!';
+
+      if (aktuellesEvent) {
+        settings = eventEmbeds[aktuellesEvent];
+        if (settings) {
+          const bestListText = await getTop3(aktuellesEvent, settings.itemName);
+          description = `> **Aktuelles Event:**\n\`\`\`${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
+        }
       }
 
       return new EmbedBuilder()
-        .setTitle('🧡 Season-Events 🧡')
-        .setDescription(`> **Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\`\n\n> 🏆 **Leaderboard - ${aktuellesEvent}**\n${bestListText}`)
-        .setColor('Blurple')
-        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png')
-        .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 🧡`, iconURL: interaction.guild.iconURL() });
+        .setTitle('`🧡` Season-Events `🧡`')
+        .setDescription(description)
+        .setColor(settings ? settings.color : 'Grey')
+        .setImage(settings ? settings.image : null)
+        .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 🧡` });
     }
 
     // === Buttons für Events ===
@@ -67,15 +109,14 @@ module.exports = {
     if (!cronInitialized) {
       cron.schedule('0 0 * * *', async () => {
         const now = new Date();
-        aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
+        aktuellesEvent = null;
 
-        // eventEmbeds muss definiert sein; Beispiel: eventName → { startDate, endDate, embed }
         for (const [key, details] of Object.entries(eventEmbeds)) {
           const startDate = new Date(details.startDate);
           const endDate = new Date(details.endDate);
 
           if (now >= startDate && now <= endDate) {
-            aktuellesEvent = details.embed.data.title;
+            aktuellesEvent = key;
             break;
           }
         }
@@ -94,38 +135,3 @@ module.exports = {
     }
   },
 };
-
-//const eventEmbeds = {
-//  ostern: {
-//    embed: new EmbedBuilder()
-//      .setTitle('🌸 Oster-Event 🌸')
-//      .setDescription('**Dieses Event startet zwischen März und April!**')
-//      .setColor('Green'),
-//    startDate: '2024-03-01T00:00:00Z',
-//    endDate: '2024-04-30T23:59:59Z',
-//  },
-//  halloween: {
-//    embed: new EmbedBuilder()
-//      .setTitle('🎃 Halloween-Event 🎃')
-//      .setDescription('**Dieses Event findet zwischen dem 27. Oktober und dem 2. November statt!**')
-//      .setColor('Orange'),
-//    startDate: '2024-10-27T00:00:00Z',
-//    endDate: '2024-11-02T23:59:59Z',
-//  },
-//  weihnachten: {
-//    embed: new EmbedBuilder()
-//      .setTitle('🎄 Weihnachts-Event 🎄')
-//      .setDescription('**Dieses Event findet zwischen dem 20. und 26. Dezember statt!**')
-//      .setColor('Green'),
-//    startDate: '2024-12-20T00:00:00Z',
-//    endDate: '2024-12-26T23:59:59Z',
-//  },
-//  silvester: {
-//    embed: new EmbedBuilder()
-//      .setTitle('🎆 Silvester-Event 🎆')
-//      .setDescription('**Dieses Event findet zwischen dem 27. Dezember und dem 2. Januar statt!**')
-//      .setColor('Blue'),
-//    startDate: '2024-12-27T00:00:00Z',
-//    endDate: '2024-01-02T23:59:59Z',
-//  },
-//};
