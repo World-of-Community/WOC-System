@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const cron = require('node-cron');
-const { EventStats } = require('../../../Datenbank/eventstats'); // Deine Datenbank-Collection
+const EventItem = require('../../../Datenbank/eventitems'); // Dein Schema
 
 let cronInitialized = false;
 let activeMessage; 
@@ -15,19 +15,17 @@ module.exports = {
   async execute(interaction) {
 
     // === Top 3 Spieler aus der Datenbank holen ===
-    async function getTop3(eventName) {
-      const stats = await EventStats.find({ eventType: eventName })
-        .sort({ count: -1 })
+    async function getTop3(eventType) {
+      const stats = await EventItem.find({ eventType })
+        .sort({ amount: -1 })
         .limit(3);
 
       if (!stats.length) return '> Noch keine Sammler vorhanden. 😢';
 
-      const lines = stats.map((entry, i) => {
+      return stats.map((entry, i) => {
         const medal = ['🥇', '🥈', '🥉'][i];
-        return `${medal} × <@${entry.userId}>\n» **${entry.count}x gesammelt**`;
-      });
-
-      return lines.join('\n');
+        return `${medal} × <@${entry.userId}>\n» **${entry.amount}x gesammelt**`;
+      }).join('\n');
     }
 
     // === Embed bauen ===
