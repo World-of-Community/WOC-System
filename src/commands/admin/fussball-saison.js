@@ -22,7 +22,7 @@ const fixedTimes = [
   '20:30','21:45'
 ];
 
-const startDatum = new Date(2025, 9, 30); // 30.10.2025
+const startDatum = new Date(2025, 10, 31); // 30.10.2025
 const LIVE_CHANNEL_ID = '1375803752375648266';
 
 module.exports = {
@@ -70,7 +70,7 @@ module.exports = {
           // Uhrzeit festlegen
           let timeStr;
           if (spieltag === 1 && index === 0) {
-            timeStr = '09:10'; // erstes Spiel feste Zeit
+            timeStr = '09:12'; // erstes Spiel feste Zeit
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
