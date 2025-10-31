@@ -84,9 +84,7 @@ module.exports = {
           const bestListText = await getTop3(aktuellesEvent, settings.itemName);
           // Discord Codeblock mit Syntax-Highlighting richtig formatieren
           description = `${settings.emoji} **Aktuelles Event:**\n
-          \`\`\`${settings.syntax}
-          ${settings.title}\`\`\`
-          \n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
+          \`\`\`${settings.syntax}${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
         }
       }
 
