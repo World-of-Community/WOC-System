@@ -90,7 +90,7 @@ module.exports = {
      }
 
       return new EmbedBuilder()
-        .setTitle('🧡 Season-Events 🧡')
+        .setTitle('`🧡` Season-Events `🧡`')
         .setDescription(description)
         .setColor(settings ? settings.color : 0x808080) // fallback auf Grau
         .setImage(settings ? settings.image : defaultImage)
@@ -114,7 +114,7 @@ module.exports = {
 
     // === Embed senden ===
     const SeasonEmbed = await buildEmbed();
-    await interaction.reply({ content: '> ✅ » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
+    await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
     activeMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
 
     // === Cronjob für minütliche Aktualisierung ===
