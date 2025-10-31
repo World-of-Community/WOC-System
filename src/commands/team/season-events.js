@@ -15,6 +15,7 @@ const eventEmbeds = {
     emoji: '🎃',
     startDate: '2025-10-27T00:00:00',
     endDate: '2025-11-02T23:59:59',
+    color: 'Orange', // blau
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png',
     itemName: 'Kürbisse'
   },
@@ -23,6 +24,7 @@ const eventEmbeds = {
     emoji: '🐇',
     startDate: '2025-04-01T00:00:00',
     endDate: '2025-04-02T23:59:59',
+    color: 'Green', // grün
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/ostereier.png',
     itemName: 'Ostereier'
   },
@@ -31,6 +33,7 @@ const eventEmbeds = {
     emoji: '🎄',
     startDate: '2025-12-20T00:00:00',
     endDate: '2025-12-26T23:59:59',
+    color: 'Red', // rot
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/weihnachtsbaeume.png',
     itemName: 'Weihnachtsbäume'
   },
@@ -39,6 +42,7 @@ const eventEmbeds = {
     emoji: '🎆',
     startDate: '2025-12-27T00:00:00',
     endDate: '2026-01-02T23:59:59',
+    color: 'Orange', // orange
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/raketen.png',
     itemName: 'Raketen'
   }
@@ -69,7 +73,7 @@ module.exports = {
     // === Embed bauen ===
     async function buildEmbed() {
       let settings = null;
-      let description = '> __Aktuelles Event:__\n\`\`\`# Aktuell findet kein "Season-Event" statt!\`\`\`';
+      let description = '> **Aktuelles Event:**\n\`\`\`Aktuell findet kein "Season-Event" statt!\`\`\`';
       const defaultImage = 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png'; // Banner immer sichtbar
 
       if (aktuellesEvent) {
