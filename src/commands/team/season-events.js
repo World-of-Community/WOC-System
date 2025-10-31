@@ -9,34 +9,34 @@ let aktuellesEvent = null; // Start ohne Event
 // Event-spezifische Einstellungen
 const eventEmbeds = {
   halloween_event: {
-    title: '`🎃` Halloween',
+    title: 'Halloween',
     startDate: '2025-10-27T00:00:00',
     endDate: '2025-11-02T23:59:59',
-    color: 'Orange',
+    color: 0x0000FF, // blau
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png',
     itemName: 'Kürbisse'
   },
   easter_event: {
-    title: '`🐇` Ostern',
+    title: 'Ostern',
     startDate: '2025-04-01T00:00:00',
     endDate: '2025-04-02T23:59:59',
-    color: 'LightGreen',
+    color: 0x00FF00, // grün
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/ostereier.png',
     itemName: 'Ostereier'
   },
   christmas_event: {
-    title: '`🎄` Weihnachten',
+    title: 'Weihnachten',
     startDate: '2025-12-20T00:00:00',
     endDate: '2025-12-26T23:59:59',
-    color: 'Red',
+    color: 0xFF0000, // rot
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/weihnachtsbaeume.png',
     itemName: 'Weihnachtsbäume'
   },
   newyear_event: {
-    title: '`🎆` Silvester',
+    title: 'Silvester',
     startDate: '2025-12-27T00:00:00',
     endDate: '2026-01-02T23:59:59',
-    color: 'Blue',
+    color: 0xFFA500, // orange
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/raketen.png',
     itemName: 'Raketen'
   }
