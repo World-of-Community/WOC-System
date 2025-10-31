@@ -83,7 +83,7 @@ module.exports = {
          if (settings) {
              const bestListText = await getTop3(aktuellesEvent, settings.itemName);
              // Codeblock **ohne >** setzen, damit Discord die Syntax-Highlighting-Farbe anwendet
-             description = `${settings.emoji} **Aktuelles Event:**\n\`\`\` ${settings.syntax}${settings.title} \`\`\`\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
+             description = `${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}${settings.title} \`\`\`\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
          }
      }
 
