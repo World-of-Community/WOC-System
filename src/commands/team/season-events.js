@@ -83,8 +83,7 @@ module.exports = {
         if (settings) {
           const bestListText = await getTop3(aktuellesEvent, settings.itemName);
           // Discord Codeblock mit Syntax-Highlighting richtig formatieren
-          description = `${settings.emoji} **Aktuelles Event:**\n
-          \`\`\`${settings.syntax}${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
+          description = `${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
         }
       }
 
@@ -113,7 +112,7 @@ module.exports = {
 
     // === Embed senden ===
     const SeasonEmbed = await buildEmbed();
-    await interaction.reply({ content: '> ✅ Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
+    await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
     activeMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
 
     // === Cronjob für minütliche Aktualisierung ===
