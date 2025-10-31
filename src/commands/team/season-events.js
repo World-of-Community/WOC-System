@@ -11,7 +11,8 @@ const eventEmbeds = {
   halloween_event: {
     title: 'css Halloween',
     emoji: '`🎃`',
-    color: 0x0000FF, // blau
+    color: 'Orange',
+    syntax: 'css',
     startDate: '2025-10-27T00:00:00',
     endDate: '2025-11-02T23:59:59',
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png',
@@ -20,7 +21,8 @@ const eventEmbeds = {
   easter_event: {
     title: 'diff Ostern',
     emoji: '`🐇`',
-    color: 0x00FF00, // grün
+    color: 'Green', // grün
+    syntax: 'diff',
     startDate: '2025-04-01T00:00:00',
     endDate: '2025-04-02T23:59:59',
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/ostereier.png',
@@ -29,7 +31,8 @@ const eventEmbeds = {
   christmas_event: {
     title: '- Weihnachten',
     emoji: '`🎄`',
-    color: 0xFF0000, // rot
+    color: 'Red', // rot
+    syntax: 'diff',
     startDate: '2025-12-20T00:00:00',
     endDate: '2025-12-26T23:59:59',
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/weihnachtsbaeume.png',
@@ -38,7 +41,8 @@ const eventEmbeds = {
   newyear_event: {
     title: 'fix Silvester',
     emoji: '`🎆`',
-    color: 0xFFA500, // orange
+    color: 'Orange', // orange
+    syntax: 'fix',
     startDate: '2025-12-27T00:00:00',
     endDate: '2026-01-02T23:59:59',
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/raketen.png',
@@ -71,19 +75,19 @@ module.exports = {
     // === Embed bauen ===
     async function buildEmbed() {
       let settings = null;
-      let description = '> __Aktuelles Event:__\n\`\`\`# Aktuell findet kein "Season-Event" statt!\`\`\`';
+      let description = '> __Aktuelles Event:__\n```Aktuell findet kein "Season-Event" statt!```';
       const defaultImage = 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png';
 
       if (aktuellesEvent) {
         settings = eventEmbeds[aktuellesEvent];
         if (settings) {
           const bestListText = await getTop3(aktuellesEvent, settings.itemName);
-          description = `> **Aktuelles Event:** ${settings.emoji}\n\`\`\`${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
+          description = `> ${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}\n${settings.title}\n\`\`\`\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
         }
       }
 
       return new EmbedBuilder()
-        .setTitle('`🧡` Season-Events `🧡`')
+        .setTitle('🧡 Season-Events 🧡')
         .setDescription(description)
         .setColor(settings ? settings.color : 0x808080) // fallback auf Grau
         .setImage(settings ? settings.image : defaultImage)
@@ -107,7 +111,7 @@ module.exports = {
 
     // === Embed senden ===
     const SeasonEmbed = await buildEmbed();
-    await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
+    await interaction.reply({ content: '> ✅ » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
     activeMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
 
     // === Cronjob für minütliche Aktualisierung ===
