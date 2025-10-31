@@ -64,10 +64,10 @@ module.exports = {
         .sort({ amount: -1 })
         .limit(3);
 
-      if (!stats.length) return '> Noch keine Sammler aktiv. 😢';
+      if (!stats.length) return '> Noch keine Sammler aktiv. `😢`';
 
       return stats.map((entry, i) => {
-        const medal = ['🥇', '🥈', '🥉'][i];
+        const medal = ['`🥇`', '`🥈`', '`🥉`'][i];
         return `${medal} × <@${entry.userId}>\n» **${entry.amount} ${itemName} gesammelt**`;
       }).join('\n');
     }
@@ -83,16 +83,17 @@ module.exports = {
         if (settings) {
           const bestListText = await getTop3(aktuellesEvent, settings.itemName);
           // Discord Codeblock mit Syntax-Highlighting richtig formatieren
-          description = `${settings.emoji} **Aktuelles Event:**\n\`\`\`#${settings.syntax}
-${settings.title}
-\`\`\`
-> 🏆 **Leaderboard - ${settings.title}**
-${bestListText}`;
+          description = `${settings.emoji} **Aktuelles Event:**\n
+          \`\`\`
+          ${settings.syntax}
+          ${settings.title}
+          \`\`\`
+          \n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
         }
       }
 
       return new EmbedBuilder()
-        .setTitle('🧡 Season-Events 🧡')
+        .setTitle('`🧡` Season-Events `🧡`')
         .setDescription(description)
         .setColor(settings ? settings.color : 0x808080) // fallback auf Grau
         .setImage(settings ? settings.image : defaultImage)
