@@ -6,43 +6,41 @@ let cronInitialized = false;
 let activeMessage;
 let aktuellesEvent = null; // Start ohne Event
 
-
-
 // Event-spezifische Einstellungen
 const eventEmbeds = {
   halloween_event: {
     title: 'css Halloween',
-    emoji: '🎃',
+    emoji: '`🎃`',
+    color: 0x0000FF, // blau
     startDate: '2025-10-27T00:00:00',
     endDate: '2025-11-02T23:59:59',
-    color: 'Orange', // blau
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png',
     itemName: 'Kürbisse'
   },
   easter_event: {
     title: 'diff Ostern',
-    emoji: '🐇',
+    emoji: '`🐇`',
+    color: 0x00FF00, // grün
     startDate: '2025-04-01T00:00:00',
     endDate: '2025-04-02T23:59:59',
-    color: 'Green', // grün
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/ostereier.png',
     itemName: 'Ostereier'
   },
   christmas_event: {
     title: '- Weihnachten',
-    emoji: '🎄',
+    emoji: '`🎄`',
+    color: 0xFF0000, // rot
     startDate: '2025-12-20T00:00:00',
     endDate: '2025-12-26T23:59:59',
-    color: 'Red', // rot
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/weihnachtsbaeume.png',
     itemName: 'Weihnachtsbäume'
   },
   newyear_event: {
     title: 'fix Silvester',
-    emoji: '🎆',
+    emoji: '`🎆`',
+    color: 0xFFA500, // orange
     startDate: '2025-12-27T00:00:00',
     endDate: '2026-01-02T23:59:59',
-    color: 'Orange', // orange
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/raketen.png',
     itemName: 'Raketen'
   }
@@ -65,7 +63,7 @@ module.exports = {
       if (!stats.length) return '> Noch keine Sammler aktiv. `😢`';
 
       return stats.map((entry, i) => {
-        const medal = ['🥇', '🥈', '🥉'][i];
+        const medal = ['`🥇`', '`🥈`', '`🥉`'][i];
         return `${medal} × <@${entry.userId}>\n» **${entry.amount} ${itemName} gesammelt**`;
       }).join('\n');
     }
@@ -73,21 +71,21 @@ module.exports = {
     // === Embed bauen ===
     async function buildEmbed() {
       let settings = null;
-      let description = '> **Aktuelles Event:**\n\`\`\`Aktuell findet kein "Season-Event" statt!\`\`\`';
-      const defaultImage = 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png'; // Banner immer sichtbar
+      let description = '> __Aktuelles Event:__\n\`\`\`# Aktuell findet kein "Season-Event" statt!\`\`\`';
+      const defaultImage = 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png';
 
       if (aktuellesEvent) {
         settings = eventEmbeds[aktuellesEvent];
         if (settings) {
           const bestListText = await getTop3(aktuellesEvent, settings.itemName);
-          description = `> ${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
+          description = `> **Aktuelles Event:** ${settings.emoji}\n\`\`\`${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
         }
       }
 
       return new EmbedBuilder()
         .setTitle('`🧡` Season-Events `🧡`')
         .setDescription(description)
-        .setColor(settings ? settings.color : 'Grey')
+        .setColor(settings ? settings.color : 0x808080) // fallback auf Grau
         .setImage(settings ? settings.image : defaultImage)
         .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 🧡` });
     }
@@ -114,7 +112,7 @@ module.exports = {
 
     // === Cronjob für minütliche Aktualisierung ===
     if (!cronInitialized) {
-      cron.schedule('* * * * *', async () => { // jede Minute prüfen
+      cron.schedule('* * * * *', async () => {
         const now = new Date();
         let newEvent = null;
 
@@ -128,7 +126,6 @@ module.exports = {
           }
         }
 
-        // Nur bearbeiten, wenn sich das Event geändert hat
         if (newEvent !== aktuellesEvent) {
           aktuellesEvent = newEvent;
           if (activeMessage) {
