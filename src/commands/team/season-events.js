@@ -19,7 +19,7 @@ const eventEmbeds = {
     itemName: 'Kürbisse'
   },
   easter_event: {
-    title: 'diff Ostern',
+    title: 'Ostern',
     emoji: '`🐇`',
     color: 'Green', // grün
     syntax: 'diff',
@@ -75,16 +75,19 @@ module.exports = {
     // === Embed bauen ===
     async function buildEmbed() {
       let settings = null;
-      let description = '> __Aktuelles Event:__\n```Aktuell findet kein "Season-Event" statt!```';
+      let description = '> **Aktuelles Event:**\n```Aktuell findet kein "Season-Event" statt!```';
       const defaultImage = 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png';
 
       if (aktuellesEvent) {
-        settings = eventEmbeds[aktuellesEvent];
-        if (settings) {
-          const bestListText = await getTop3(aktuellesEvent, settings.itemName);
-          description = `> ${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}\n${settings.title}\n\`\`\`\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
-        }
-      }
+         settings = eventEmbeds[aktuellesEvent];
+         if (settings) {
+             const bestListText = await getTop3(aktuellesEvent, settings.itemName);
+             // Codeblock **ohne >** setzen, damit Discord die Syntax-Highlighting-Farbe anwendet
+             description = `${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}
+     ${settings.title}
+     \`\`\`\n> 🏆 **Leaderboard - ${settings.title}**\n${bestListText}`;
+         }
+     }
 
       return new EmbedBuilder()
         .setTitle('🧡 Season-Events 🧡')
