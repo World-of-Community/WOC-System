@@ -9,7 +9,7 @@ let aktuellesEvent = null; // Start ohne Event
 // Event-spezifische Einstellungen
 const eventEmbeds = {
   halloween_event: {
-    title: 'Aktuell findet das "Halloween-Event" statt!', // blau
+    title: '# Aktuell findet das "Halloween-Event" statt!', // blau
     emoji: '`🎃`',
     color: 'Orange',
     syntax: 'md',
