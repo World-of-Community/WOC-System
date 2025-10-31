@@ -70,7 +70,7 @@ module.exports = {
           // Uhrzeit festlegen
           let timeStr;
           if (spieltag === 1 && index === 0) {
-            timeStr = '22:41'; // erstes Spiel feste Zeit
+            timeStr = '09:06'; // erstes Spiel feste Zeit
           } else {
             timeStr = fixedTimes[Math.floor(Math.random() * fixedTimes.length)];
           }
