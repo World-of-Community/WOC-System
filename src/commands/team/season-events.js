@@ -68,6 +68,7 @@ module.exports = {
     async function buildEmbed() {
       let settings = null;
       let description = '> Aktuell findet kein "Season-Event" statt!';
+      const defaultImage = 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png'; // Banner immer sichtbar
 
       if (aktuellesEvent) {
         settings = eventEmbeds[aktuellesEvent];
@@ -81,7 +82,7 @@ module.exports = {
         .setTitle('`🧡` Season-Events `🧡`')
         .setDescription(description)
         .setColor(settings ? settings.color : 'Grey')
-        .setImage(settings ? settings.image : null)
+        .setImage(settings ? settings.image : defaultImage)
         .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 🧡` });
     }
 
@@ -105,28 +106,32 @@ module.exports = {
     await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
     activeMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
 
-    // === Cronjob für tägliche Aktualisierung ===
+    // === Cronjob für minütliche Aktualisierung ===
     if (!cronInitialized) {
-      cron.schedule('0 0 * * *', async () => {
+      cron.schedule('* * * * *', async () => { // jede Minute prüfen
         const now = new Date();
-        aktuellesEvent = null;
+        let newEvent = null;
 
         for (const [key, details] of Object.entries(eventEmbeds)) {
           const startDate = new Date(details.startDate);
           const endDate = new Date(details.endDate);
 
           if (now >= startDate && now <= endDate) {
-            aktuellesEvent = key;
+            newEvent = key;
             break;
           }
         }
 
-        if (activeMessage) {
-          try {
-            const newEmbed = await buildEmbed();
-            await activeMessage.edit({ embeds: [newEmbed] });
-          } catch (error) {
-            console.error('Fehler beim Aktualisieren des Embeds:', error);
+        // Nur bearbeiten, wenn sich das Event geändert hat
+        if (newEvent !== aktuellesEvent) {
+          aktuellesEvent = newEvent;
+          if (activeMessage) {
+            try {
+              const newEmbed = await buildEmbed();
+              await activeMessage.edit({ embeds: [newEmbed] });
+            } catch (error) {
+              console.error('Fehler beim Aktualisieren des Embeds:', error);
+            }
           }
         }
       });
