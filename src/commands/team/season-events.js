@@ -12,7 +12,7 @@ const eventEmbeds = {
     title: 'Aktuell findet das "Halloween-Event" statt!', // blau
     emoji: '`🎃`',
     color: 'Orange',
-    syntax: 'ini',
+    syntax: 'md',
     startDate: '2025-10-27T00:00:00',
     endDate: '2025-11-02T23:59:59',
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png',
