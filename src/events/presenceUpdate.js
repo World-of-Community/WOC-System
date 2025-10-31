@@ -1,3 +1,33 @@
+const { Events } = require('discord.js');
+
+const STREAM_ROLE_ID = '1266095218239995968'; // z. B. 123456789012345678
+
+module.exports = {
+  name: Events.PresenceUpdate,
+  async execute(oldPresence, newPresence) {
+    if (!newPresence || !newPresence.member) return;
+
+    const member = newPresence.member;
+    const liveRole = newPresence.guild.roles.cache.get(STREAM_ROLE_ID);
+    if (!liveRole) return;
+
+    // Prüfen, ob der Nutzer aktuell streamt
+    const isStreaming = newPresence.activities?.some(a => a.type === 1); // 1 = STREAMING
+
+    // Rolle hinzufügen oder entfernen
+    if (isStreaming && !member.roles.cache.has(liveRole.id)) {
+      await member.roles.add(liveRole).catch(() => {});
+      console.log(`${member.user.tag} ist jetzt LIVE!`);
+    } 
+    else if (!isStreaming && member.roles.cache.has(liveRole.id)) {
+      await member.roles.remove(liveRole).catch(() => {});
+      console.log(`${member.user.tag} ist nicht mehr live.`);
+    }
+  },
+};
+
+
+/*
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 const { Coin } = require("../../Datenbank/coindb");
@@ -40,7 +70,7 @@ module.exports = {
   /**
    * @param {import('discord.js').Presence} oldPresence
    * @param {import('discord.js').Presence} newPresence
-   */
+   
   async execute(oldPresence, newPresence) {
     try {
       if (!newPresence?.guild) return;
