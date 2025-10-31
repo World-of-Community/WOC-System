@@ -9,7 +9,7 @@ let aktuellesEvent = null; // Start ohne Event
 // Event-spezifische Einstellungen
 const eventEmbeds = {
   halloween_event: {
-    title: '.Halloween', // blau
+    title: '[Halloween]', // blau
     emoji: '`🎃`',
     color: 'Orange',
     syntax: 'ini',
@@ -29,7 +29,7 @@ const eventEmbeds = {
     itemName: 'Ostereier'
   },
   christmas_event: {
-    title: '- Weihnachten', // rot
+    title: '- [Weihnachten]', // rot
     emoji: '`🎄`',
     color: 'Red',
     syntax: 'diff',
