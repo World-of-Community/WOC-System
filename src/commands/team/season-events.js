@@ -10,8 +10,8 @@ let aktuellesEvent = null; // Start ohne Event
 const eventEmbeds = {
   halloween_event: {
     title: 'Halloween',
-    emoji: '`🎃`',
-    color: 'Orange',
+    emoji: '🎃',
+    color: 'Orange', // blau
     syntax: 'css',
     startDate: '2025-10-27T00:00:00',
     endDate: '2025-11-02T23:59:59',
@@ -20,7 +20,7 @@ const eventEmbeds = {
   },
   easter_event: {
     title: 'Ostern',
-    emoji: '`🐇`',
+    emoji: '🐇',
     color: 'Green', // grün
     syntax: 'diff',
     startDate: '2025-04-01T00:00:00',
@@ -30,7 +30,7 @@ const eventEmbeds = {
   },
   christmas_event: {
     title: 'Weihnachten',
-    emoji: '`🎄`',
+    emoji: '🎄',
     color: 'Red', // rot
     syntax: 'diff',
     startDate: '2025-12-20T00:00:00',
@@ -40,7 +40,7 @@ const eventEmbeds = {
   },
   newyear_event: {
     title: 'Silvester',
-    emoji: '`🎆`',
+    emoji: '🎆',
     color: 'Orange', // orange
     syntax: 'fix',
     startDate: '2025-12-27T00:00:00',
@@ -64,10 +64,10 @@ module.exports = {
         .sort({ amount: -1 })
         .limit(3);
 
-      if (!stats.length) return '> Noch keine Sammler aktiv. `😢`';
+      if (!stats.length) return '> Noch keine Sammler aktiv. 😢';
 
       return stats.map((entry, i) => {
-        const medal = ['`🥇`', '`🥈`', '`🥉`'][i];
+        const medal = ['🥇', '🥈', '🥉'][i];
         return `${medal} × <@${entry.userId}>\n» **${entry.amount} ${itemName} gesammelt**`;
       }).join('\n');
     }
@@ -79,20 +79,20 @@ module.exports = {
       const defaultImage = 'https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png';
 
       if (aktuellesEvent) {
-         settings = eventEmbeds[aktuellesEvent];
-         if (settings) {
-             const bestListText = await getTop3(aktuellesEvent, settings.itemName);
-             // Codeblock **ohne >** setzen, damit Discord die Syntax-Highlighting-Farbe anwendet
-             description = `${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}
-             ${settings.title}
-             \`\`\`\n
-             > \`🏆\` **Leaderboard - ${settings.title}**
-             ${bestListText}`;
-         }
-     }
+        settings = eventEmbeds[aktuellesEvent];
+        if (settings) {
+          const bestListText = await getTop3(aktuellesEvent, settings.itemName);
+          // Discord Codeblock mit Syntax-Highlighting richtig formatieren
+          description = `${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}
+${settings.title}
+\`\`\`
+> 🏆 **Leaderboard - ${settings.title}**
+${bestListText}`;
+        }
+      }
 
       return new EmbedBuilder()
-        .setTitle('`🧡` Season-Events `🧡`')
+        .setTitle('🧡 Season-Events 🧡')
         .setDescription(description)
         .setColor(settings ? settings.color : 0x808080) // fallback auf Grau
         .setImage(settings ? settings.image : defaultImage)
@@ -104,7 +104,7 @@ module.exports = {
       new ButtonBuilder().setCustomId('easter_event').setLabel('🐇 » Ostern').setStyle(ButtonStyle.Primary),
       new ButtonBuilder().setCustomId('halloween_event').setLabel('🎃 » Halloween').setStyle(ButtonStyle.Primary),
       new ButtonBuilder().setCustomId('christmas_event').setLabel('🎄 » Weihnachten').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId('newyear_event').setLabel('🎆 » Silvester').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('newyear_event').setLabel('🎆 » Silvester').setStyle(ButtonStyle.Primary)
     );
 
     const secondRow = new ActionRowBuilder().addComponents(
@@ -116,7 +116,7 @@ module.exports = {
 
     // === Embed senden ===
     const SeasonEmbed = await buildEmbed();
-    await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
+    await interaction.reply({ content: '> ✅ Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
     activeMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
 
     // === Cronjob für minütliche Aktualisierung ===
@@ -150,5 +150,5 @@ module.exports = {
 
       cronInitialized = true;
     }
-  },
+  }
 };
