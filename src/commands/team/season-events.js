@@ -9,9 +9,9 @@ let aktuellesEvent = null; // Start ohne Event
 // Event-spezifische Einstellungen
 const eventEmbeds = {
   halloween_event: {
-    title: 'Halloween',
+    title: 'ini .Halloween', // blau
     emoji: '`🎃`',
-    color: 'Orange', // blau
+    color: 'Orange',
     syntax: 'css',
     startDate: '2025-10-27T00:00:00',
     endDate: '2025-11-02T23:59:59',
@@ -19,9 +19,9 @@ const eventEmbeds = {
     itemName: 'Kürbisse'
   },
   easter_event: {
-    title: 'Ostern',
+    title: '+ Ostern', //Green
     emoji: '`🐇`',
-    color: 'Green', // grün
+    color: 'Green',
     syntax: 'diff',
     startDate: '2025-04-01T00:00:00',
     endDate: '2025-04-02T23:59:59',
@@ -29,9 +29,9 @@ const eventEmbeds = {
     itemName: 'Ostereier'
   },
   christmas_event: {
-    title: 'Weihnachten',
+    title: '- Weihnachten', // rot
     emoji: '`🎄`',
-    color: 'Red', // rot
+    color: 'Red',
     syntax: 'diff',
     startDate: '2025-12-20T00:00:00',
     endDate: '2025-12-26T23:59:59',
@@ -39,10 +39,10 @@ const eventEmbeds = {
     itemName: 'Weihnachtsbäume'
   },
   newyear_event: {
-    title: 'Silvester',
+    title: 'Silvester', // orange
     emoji: '`🎆`',
-    color: 'Orange', // orange
-    syntax: 'fix',
+    color: 'Orange',
+    syntax: 'css',
     startDate: '2025-12-27T00:00:00',
     endDate: '2026-01-02T23:59:59',
     image: 'https://cdn.discordapp.com/attachments/1269339771420016722/123456789012345678/raketen.png',
