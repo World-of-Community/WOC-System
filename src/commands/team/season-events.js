@@ -10,6 +10,7 @@ let aktuellesEvent = null; // Start ohne Event
 const eventEmbeds = {
   halloween_event: {
     title: '# Aktuell findet das "Halloween-Event" statt!', // blau
+    text: 'Halloween',
     emoji: '`🎃`',
     color: 'Orange',
     syntax: 'md',
@@ -19,7 +20,8 @@ const eventEmbeds = {
     itemName: 'Kürbisse'
   },
   easter_event: {
-    title: 'Aktuell findet das "Oster-Event" statt!', //Green
+    title: 'Aktuell findet das "Oster-Event" statt!', // green
+    text: 'Ostern',
     emoji: '`🐇`',
     color: 'Green',
     syntax: 'diff',
@@ -30,6 +32,7 @@ const eventEmbeds = {
   },
   christmas_event: {
     title: 'Aktuell findet das "Weihnachts-Event" statt!', // rot
+    text: 'Weihnachten',
     emoji: '`🎄`',
     color: 'Red',
     syntax: 'diff',
@@ -40,6 +43,7 @@ const eventEmbeds = {
   },
   newyear_event: {
     title: 'Aktuell findet das "Silvester-Event" statt!', // orange
+    text: 'Silvester',
     emoji: '`🎆`',
     color: 'Orange',
     syntax: 'css',
@@ -83,7 +87,7 @@ module.exports = {
         if (settings) {
           const bestListText = await getTop3(aktuellesEvent, settings.itemName);
           // Discord Codeblock mit Syntax-Highlighting richtig formatieren
-          description = `${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}\n${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.title}**\n${bestListText}`;
+          description = `${settings.emoji} **Aktuelles Event:**\n\`\`\`${settings.syntax}\n${settings.title}\`\`\`\n\n> \`🏆\` **Leaderboard - ${settings.text}**\n${bestListText}`;
         }
       }
 
