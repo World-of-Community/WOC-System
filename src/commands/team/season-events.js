@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const cron = require('node-cron');
+const { EventStats } = require('../../../Datenbank/eventstats'); // Deine Datenbank-Collection
 
 let cronInitialized = false;
 let activeMessage; 
@@ -12,13 +13,39 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
-    const SeasonEmbed = new EmbedBuilder()
-      .setTitle('🧡 Season-Events 🧡')
-      .setDescription(`> **Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\``)
-      .setColor('Blurple')
-      .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png')
-      .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 🧡`, iconURL: interaction.guild.iconURL() });
 
+    // === Top 3 Spieler aus der Datenbank holen ===
+    async function getTop3(eventName) {
+      const stats = await EventStats.find({ eventType: eventName })
+        .sort({ count: -1 })
+        .limit(3);
+
+      if (!stats.length) return '> Noch keine Sammler vorhanden. 😢';
+
+      const lines = stats.map((entry, i) => {
+        const medal = ['🥇', '🥈', '🥉'][i];
+        return `${medal} × <@${entry.userId}>\n» **${entry.count}x gesammelt**`;
+      });
+
+      return lines.join('\n');
+    }
+
+    // === Embed bauen ===
+    async function buildEmbed() {
+      let bestListText = '> Kein aktives Event.';
+      if (aktuellesEvent && aktuellesEvent !== 'Aktuell findet kein "Season-Event" statt!') {
+        bestListText = await getTop3(aktuellesEvent);
+      }
+
+      return new EmbedBuilder()
+        .setTitle('🧡 Season-Events 🧡')
+        .setDescription(`> **Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\`\n\n> 🏆 **Leaderboard - ${aktuellesEvent}**\n${bestListText}`)
+        .setColor('Blurple')
+        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png')
+        .setFooter({ text: `» ${interaction.guild.name} | Bleibt Gesund 🧡`, iconURL: interaction.guild.iconURL() });
+    }
+
+    // === Buttons für Events ===
     const firstRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId('easter_event').setLabel('🐇 » Ostern').setStyle(ButtonStyle.Primary),
       new ButtonBuilder().setCustomId('halloween_event').setLabel('🎃 » Halloween').setStyle(ButtonStyle.Primary),
@@ -33,31 +60,34 @@ module.exports = {
         .setStyle(ButtonStyle.Success)
     );
 
+    // === Embed senden ===
+    const SeasonEmbed = await buildEmbed();
     await interaction.reply({ content: '> `✅` » Das Season-Embed wurde erfolgreich gesendet.', ephemeral: true });
-
     activeMessage = await interaction.channel.send({ embeds: [SeasonEmbed], components: [firstRow, secondRow] });
 
+    // === Cronjob für tägliche Aktualisierung ===
     if (!cronInitialized) {
       cron.schedule('0 0 * * *', async () => {
         const now = new Date();
         aktuellesEvent = 'Aktuell findet kein "Season-Event" statt!';
 
+        // eventEmbeds muss definiert sein; Beispiel: eventName → { startDate, endDate, embed }
         for (const [key, details] of Object.entries(eventEmbeds)) {
           const startDate = new Date(details.startDate);
           const endDate = new Date(details.endDate);
 
           if (now >= startDate && now <= endDate) {
             aktuellesEvent = details.embed.data.title;
-            SeasonEmbed.setDescription(`> **Aktuelles Event:**\n\`\`\`${aktuellesEvent}\`\`\``).setColor(details.embed.data.color);
             break;
           }
         }
 
         if (activeMessage) {
           try {
-            await activeMessage.edit({ embeds: [SeasonEmbed] });
+            const newEmbed = await buildEmbed();
+            await activeMessage.edit({ embeds: [newEmbed] });
           } catch (error) {
-            console.error('Fehler beim Bearbeiten der Nachricht:', error);
+            console.error('Fehler beim Aktualisieren des Embeds:', error);
           }
         }
       });
