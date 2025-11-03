@@ -235,7 +235,7 @@ module.exports = {
 
         try {
           if (interaction.isModalSubmit()) {
-            if(await emojiquizCommand.handleModalSubmit(interaction)) return;
+            //if (await emojiquizCommand.handleModalSubmit(interaction)) return;
             
             // Feedback Modal Handler
             if (interaction.customId === 'feedback-modal') {
