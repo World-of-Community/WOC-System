@@ -121,8 +121,46 @@ module.exports = {
 
                 case "add":
                     try {
+                        // Teamrolle + Hauptrang hinzufügen
                         await member.roles.add(role);
-                        await member.roles.add(teamrole)
+                        await member.roles.add(teamrole);
+                
+                        //// Datum für Embed
+                        //const formattedDate = new Date().toLocaleDateString('de-DE', {
+                        //    day: '2-digit',
+                        //    month: '2-digit',
+                        //    year: 'numeric',
+                        //});
+                
+                        // ID der Supporter-Rolle
+                        const supporterRoleId = '815920170371383366'; // ← diese ID anpassen!
+                
+                        // Zusätzliche Rollen für Supporter (4 Rollen)
+                        const supporterExtraRoles = [
+                            '1011207481357238272', // Ticket Support
+                            '1270369938972082177', // Ticket Bereich
+                            '1209101841015504916', // Bann Support
+                            '1155570143393488896', // Bann Bereich
+                            '1285728292367892584' // Report Log
+                        ];
+                
+                        // Zusätzliche Rollen für andere Teamränge (3 Rollen)
+                        const defaultExtraRoles = [
+                            '1270369938972082177', // Ticket Bereich
+                            '1155570143393488896', // Bann Bereich
+                            '1285728292367892584' // Report Log
+                        ];
+                
+                        // Prüfen, ob der gegebene Rang die Supporter-ID hat
+                        if (role.id === supporterRoleId) {
+                            for (const r of supporterExtraRoles) {
+                                await member.roles.add(r).catch(() => {});
+                            }
+                        } else {
+                            for (const r of defaultExtraRoles) {
+                                await member.roles.add(r).catch(() => {});
+                            }
+                        }
 
                         const { EmbedBuilder } = require('discord.js');
                         const TeammitgliedEmbed = new EmbedBuilder()
@@ -140,9 +178,26 @@ module.exports = {
                 break;
 
                 case "kick":
+                    const extraRoles = [
+                        '1011207481357238272', // Ticket Support
+                        '1270369938972082177', // Ticket Bereich
+                        '1209101841015504916', // Bann Support
+                        '1155570143393488896', // Bann Bereich
+                        '1285728292367892584' // Report Log
+                    ];
+
+                    // Hauptrollen entfernen
+                    await member.roles.remove(role).catch(() => {});
+                    await member.roles.remove(teamrole).catch(() => {});
+            
+                    // Zusätzliche Rollen prüfen und entfernen
+                    for (const roleId of extraRoles) {
+                        const extraRole = interaction.guild.roles.cache.get(roleId);
+                        if (extraRole && member.roles.cache.has(roleId)) {
+                            await member.roles.remove(roleId).catch(() => {});
+                        }
+                    }
                     try {
-                        await member.roles.remove(role);
-                        await member.roles.remove(teamrole)
 
                         const kickEmbed = new EmbedBuilder()
                             .setTitle('`❌` | __TEAMMITGLIED ENTFERNT__')
@@ -153,7 +208,7 @@ module.exports = {
                         targetChannel.send({ embeds: [kickEmbed] });
                         await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**', ephemeral: true });
                     } catch (error) {
-                        console.error('Fehler beim Kicken des Benutzers:', error);
+                        console.error('❌  | Fehler beim Kicken des Benutzers:', error);
                         interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
                     }
                     break;

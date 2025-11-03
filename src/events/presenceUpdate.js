@@ -26,7 +26,6 @@ module.exports = {
   },
 };
 
-
 /*
 const { Events, ActivityType, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
