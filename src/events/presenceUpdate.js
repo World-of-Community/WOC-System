@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 
-const STREAM_ROLE_ID = '1266095218239995968'; // z. B. 123456789012345678
+const STREAM_ROLE_ID = '1266095218239995968'; // Streamer-Rolle ID
 
 module.exports = {
   name: Events.PresenceUpdate,
@@ -14,14 +14,28 @@ module.exports = {
     // Prüfen, ob der Nutzer aktuell streamt
     const isStreaming = newPresence.activities?.some(a => a.type === 1); // 1 = STREAMING
 
-    // Rolle hinzufügen oder entfernen
+    // Aktuelles Datum & Zeit formatieren
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('de-DE', {
+      weekday: 'long',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const timestamp = formatter.format(now);
+
+    // Rolle hinzufügen oder entfernen + Log
     if (isStreaming && !member.roles.cache.has(liveRole.id)) {
       await member.roles.add(liveRole).catch(() => {});
-      console.log(`${member.user.tag} ist jetzt LIVE!`);
+      console.log(`${member.user.tag} ist jetzt LIVE`);
+      console.log(`Datum: ${timestamp}`);
     } 
     else if (!isStreaming && member.roles.cache.has(liveRole.id)) {
       await member.roles.remove(liveRole).catch(() => {});
-      console.log(`${member.user.tag} ist nicht mehr live.`);
+      console.log(`${member.user.tag} ist nicht mehr live`);
+      console.log(`Datum: ${timestamp}`);
     }
   },
 };
