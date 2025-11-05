@@ -38,7 +38,7 @@ module.exports = {
         const modChannel = await interaction.guild.channels.fetch(reportchannel);
         
         if (modChannel) {
-            await modChannel.send({ content: `> <@&1285728292367892584> » **Neuer Report eingegangen**`, embeds: [reportEmbed] });
+            await modChannel.send({ content: `> <@&1285728292367892584> » **Neuer Report ist eingegangen**`, embeds: [reportEmbed] });
             await interaction.reply({ content: "> `✅` » Der Report wurde gesendet. Vielen Dank!", ephemeral: true });
         } else {
             await interaction.reply({ content: "> `❌` » Es wurde kein Report-Kanal gefunden.", ephemeral: true });
