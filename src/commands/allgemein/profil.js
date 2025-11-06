@@ -290,13 +290,6 @@ module.exports = {
         const inviteBonus = invites.bonus || 0;
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
-        
-        // Neuen Rang nach Berechnung speichern
-        await userdb.updateOne(
-          { userID: member.id },
-          { $set: { lastRank: position + 1 } },
-          { upsert: true }
-        );
 
         let lastOnlineText = '';
         if (
