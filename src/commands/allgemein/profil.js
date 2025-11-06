@@ -290,31 +290,6 @@ module.exports = {
         const inviteBonus = invites.bonus || 0;
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
-
-        // Alle User nach Onlinezeit sortieren
-        const allUsers = await userdb.find().sort({ onlineTime: -1 });
-        const position = allUsers.findIndex(u => u.userID === member.id);
-        
-        // Platzierungssymbol bestimmen
-        let placeIcon;
-        if (position === 0) placeIcon = "🥇";
-        else if (position === 1) placeIcon = "🥈";
-        else if (position === 2) placeIcon = "🥉";
-        else placeIcon = `#${position + 1}`;
-
-        // Alten Rang aus DB merken
-        let oldRank = userData.lastRank ?? null;
-        
-        let rankDiff = 0;
-        let rankEmoji = "➖"; // neutral
-        
-        // Wenn es einen alten Rang gibt -> Differenz berechnen
-        if (oldRank !== null) {
-            rankDiff = oldRank - (position + 1);
-        
-            if (rankDiff > 0) rankEmoji = "⬆️";      // Aufgestiegen
-            else if (rankDiff < 0) rankEmoji = "⬇️"; // Abgestiegen
-        }
         
         // Neuen Rang nach Berechnung speichern
         await userdb.updateOne(
@@ -322,8 +297,6 @@ module.exports = {
           { $set: { lastRank: position + 1 } },
           { upsert: true }
         );
-
-        const displayHours = Math.floor((userData?.onlineTime || 0) / 3600000);
 
         let lastOnlineText = '';
         if (
@@ -355,7 +328,6 @@ module.exports = {
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
-                `- \`🟢\` » Onlinezeit: \`${displayHours} Stunden\` (Leaderboard: \`${placeIcon} Platz\`)\n` +
                 (lastOnlineText || '') + // wird nur angezeigt, wenn gesetzt
                 `- \`🎁\` » Hat **${userData.giveaway.eventWins || '0'}** Events gewonnen\n` +
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
