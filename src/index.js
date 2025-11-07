@@ -634,7 +634,7 @@ cron.schedule('0 0 * * *', async () => {
 });
 
 // Server Banner jeden ersten Freitag im Monat
-const CHANNEL_ID = '1008696596000677998';
+const ServerEventCHANNEL_ID = '1008696596000677998';
 const BANNER_URL = 'https://cdn.discordapp.com/attachments/1008696596000677998/1337428177487794207/WOC_Banner_Neues_Server_Event.png?ex=690f520d&is=690e008d&hm=62bf01da44ab6d8946820799d984314daee0227eb2ec44c52335b458ba43ac93&';
 
 // Jeden Freitag um 12:00 Uhr prüfen
@@ -645,7 +645,7 @@ const BANNER_URL = 'https://cdn.discordapp.com/attachments/1008696596000677998/1
     // Nur am ersten Freitag (Tag ≤ 7)
     if (day <= 7) {
       try {
-        const channel = await client.channels.fetch(CHANNEL_ID);
+        const channel = await client.channels.fetch(ServerEventCHANNEL_ID);
         if (!channel) return console.log('Kanal nicht gefunden!');
 
         // 1️⃣ Banner senden
