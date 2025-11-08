@@ -146,23 +146,6 @@ module.exports = {
             '1231257532844998666', // Mediathek Ping
         ];
 
-        const ExklusiveRollenIDs = [
-            "1391760378924630109", // OG
-            "1010105569866174574", // Unterstützer (Vanity/TAG)
-            "843013551605284864", // Server Booster
-            "1067899186542018571" // Twitch-Sub
-        ]
-
-        const erfolgRollenIDs = [
-            "972193356333604874", // 1 Jahr Server Mitglied
-            "1147250265641201724", // Informant
-            "1147250982967836823", // Teil des Rats
-            "992008555987222548", // Supporter der ersten Stunde
-            "1312780135530889326", // Adventskalender 2024
-            "1124598019862573096", // Event-Gewinner
-            "882240367632744508" // Server Eröffnung 2021
-        ];
-
         // Initial Werte
         let userBundesland = '`❓`';
         let userNationalität = '`❓`';
@@ -225,6 +208,12 @@ module.exports = {
             }
             return false;
         });
+
+        // Level-Rollen automatisch erkennen (z. B. "Level 5", "Level 10", etc.)
+        const levelRoles = member.roles.cache
+          .filter(role => role.name.toLowerCase().startsWith("level"))
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+          .map(role => `<@&${role.id}>`);
 
         // Über alle Rollen iterieren, um spezifische Infos zu finden
         for (const role of member.roles.cache.values()) {
@@ -318,6 +307,7 @@ module.exports = {
                 `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))} ${leitungRoleMentions.length > 0 ? ` (${leitungRoleMentions.join(', ')})` : ''}\n` +
                 `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
                 `${outputText}\n` +
+                `- \`⭐\` » Nutzer-Level: ${levelRoles.length > 0 ? levelRoles.join(', ') : '**Keine Levelrolle**'}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
