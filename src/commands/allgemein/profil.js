@@ -146,6 +146,17 @@ module.exports = {
             '1231257532844998666', // Mediathek Ping
         ];
 
+        const LevelRoleIds = [
+          "1258827226846199808", // Level 5
+          "1258794944953319534", // Level 10
+          "1258794479570124920", // Level 20
+          "1258827956634128467", // Level 30
+          "1258794405507240038", // Level 40
+          "1258825144697360485", // Level 50
+          "1258794321533075526", // Level 75
+          "1258825307239219371", // Level 100
+        ];
+
         // Initial Werte
         let userBundesland = '`❓`';
         let userNationalität = '`❓`';
@@ -209,10 +220,10 @@ module.exports = {
             return false;
         });
 
-        // Level-Rollen automatisch erkennen (z. B. "Level 5", "Level 10", etc.)
+        // Level-Rollen anhand der ID erkennen
         const levelRoles = member.roles.cache
-          .filter(role => role.name.toLowerCase().startsWith("level"))
-          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+          .filter(role => LevelRoleIds.includes(role.id))
+          .sort((a, b) => LevelRoleIds.indexOf(a.id) - LevelRoleIds.indexOf(b.id))
           .map(role => `<@&${role.id}>`);
 
         // Über alle Rollen iterieren, um spezifische Infos zu finden
