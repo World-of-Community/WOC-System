@@ -1,10 +1,25 @@
-const {  EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+    ChannelType,
+    PermissionFlagsBits,
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle
+} = require('discord.js');
 
 module.exports = {
     async execute(interaction) {
-        if (!interaction.isButton()) return;
 
-        if (interaction.customId === 'ticket_erledigt') {
+        if (!interaction.guild) {
+            return;
+        }
+        
+        //if (!interaction.isButton()) return;
+
+        if (interaction.isButton() && interaction.customId === 'ticket_erledigt') {
             const mention = interaction.message.content;
             const embed = new EmbedBuilder()
                 .setColor("Green")
