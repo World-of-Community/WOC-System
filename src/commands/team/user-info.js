@@ -66,8 +66,8 @@ module.exports = {
                     `**\`👮\` Moderation**\n` +
                     `> \`⛔\` Bannstatus: ${banEmoji} ${banData.banned ? '**Gebannt**' : 'Nicht gebannt'}\n` +
                     (banData.banned ? `> \`📄\` Grund: \`${banData.reason}\`\n` : '') +
-                    `> \`🔇\` Timeouts: \`${timeoutCount}\`\n` +
-                    `> \`❗\` Warnungen: \`${warnCount}\``
+                    `> \`🔇\` Timeouts: \`${timeoutCount}\` (Max. 5) ➜ wenn höher in den Bann-Bereich\n` +
+                    `> \`❗\` Warnungen: \`${warnCount}\` (Max. 10) ➜ wenn höher in den Bann-Bereich`
                 )
                 .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                 .setTimestamp();
