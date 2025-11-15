@@ -19,7 +19,38 @@ module.exports = {
         
         //if (!interaction.isButton()) return;
 
-        if (interaction.isButton() && interaction.customId === 'ticket_erledigt') {
+        if (interaction.isButton() && interaction.customId === 'gebannt-ticket') {
+            const { ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+
+            const gebanntModal = new ModalBuilder()
+                .setTitle('⛔ - ENTBANNUNGSTICKET')
+                .setCustomId('gebannt-modal');
+
+            const BanngrundInput = new ActionRowBuilder().addComponents(
+                new TextInputBuilder()
+                    .setCustomId('banngrund')
+                    .setLabel('Gebe deinen Banngrund an')
+                    .setPlaceholder('Wieso wurdest du gebannt?')
+                    .setStyle(TextInputStyle.Short)
+                    .setRequired(true)
+            );
+
+            const EntbannungsbeschreibungInput = new ActionRowBuilder().addComponents(
+                new TextInputBuilder()
+                    .setCustomId('entbannungsbeschreibung')
+                    .setLabel('Wieso möchtest du wieder entbannt werden?')
+                    .setPlaceholder('Gebe hier deine Entbannungsbeschreibung an.')
+                    .setMinLength(5)
+                    .setMaxLength(4000)
+                    .setStyle(TextInputStyle.Paragraph)
+                    .setRequired(true)
+            );
+
+            gebanntModal.addComponents(BanngrundInput, EntbannungsbeschreibungInput);
+            return interaction.showModal(gebanntModal);
+        }
+
+        if (interaction.customId === 'ticket_erledigt') {
             const mention = interaction.message.content;
             const embed = new EmbedBuilder()
                 .setColor("Green")
@@ -66,37 +97,6 @@ module.exports = {
             );
 
             return interaction.reply({ content: `<@${interaction.user.id}>`, embeds: [embed], components: [buttons] });
-        }
-
-        if (interaction.customId === 'gebannt-ticket') {
-            const { ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-
-            const gebanntModal = new ModalBuilder()
-                .setTitle('⛔ - ENTBANNUNGSTICKET')
-                .setCustomId('gebannt-modal');
-
-            const BanngrundInput = new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
-                    .setCustomId('banngrund')
-                    .setLabel('Gebe deinen Banngrund an')
-                    .setPlaceholder('Wieso wurdest du gebannt?')
-                    .setStyle(TextInputStyle.Short)
-                    .setRequired(true)
-            );
-
-            const EntbannungsbeschreibungInput = new ActionRowBuilder().addComponents(
-                new TextInputBuilder()
-                    .setCustomId('entbannungsbeschreibung')
-                    .setLabel('Wieso möchtest du wieder entbannt werden?')
-                    .setPlaceholder('Gebe hier deine Entbannungsbeschreibung an.')
-                    .setMinLength(5)
-                    .setMaxLength(4000)
-                    .setStyle(TextInputStyle.Paragraph)
-                    .setRequired(true)
-            );
-
-            gebanntModal.addComponents(BanngrundInput, EntbannungsbeschreibungInput);
-            return interaction.showModal(gebanntModal);
         }
     }
 };
