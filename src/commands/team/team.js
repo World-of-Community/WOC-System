@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const teamdb = require("../../../Datenbank/teamdb");
 const serverdb = require("../../../Datenbank/serverdb");
 
