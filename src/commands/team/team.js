@@ -227,15 +227,161 @@ module.exports = {
                 break;
 
                 case 'help': {
-                    const TeamHelpEmbed = new EmbedBuilder()
-                        .setTitle('`🎯` » Team Befehle Information')
-                        .setDescription('> Hier sind die Wichtigsten Befehle von <@1020023299448786955> aufgelistet für das **Server-Team**\n\n- `/clear <anzahl> (Optional) <kanal> <grund>`\n» Löscht eine Anzahl an Nachrichten.\n\n- `/message <user> <nachricht> (Optional) <image>`\n» Sendet einen Nutzer eine Nachricht.\n\n- `/ban <user> <grund> (Optional) <dauer>`\n» Schickt einen Nutzer in den **Bann-Bereich**.\n> `📋` » Text Gründe:\n➥ `An Verdächtiger Spam Aktivität beteiligt`\n➥ `Verdächtiger oder Spam Account`\n➥ `Gefährdeter oder Gehackter Account`\n➥ `Gegen Serverregeln verstoßen`\n\n- `/unban <user> <grund>`\n» Entbannt einen Nutzer aus dem **Bann-Bereich**.\n\n- `/unban-info`\n» Sendet Informationen zur Entbannung.\n\n- `/warn <user> <grund>`\n» Warnt einen Nutzer per Direktnachricht (DM)\n\n- `/event-info <kanal> <nachricht> (Optional) <starten>`\n» Sendet eine Event-Nachricht.\n\n- `/timeout <user> <grund> <dauer>`\n» Gebe einem User eine Auszeit.\n\n- `/user-find`\n» Findet einen Benutzer anhand seiner ID.\n\n- `/user-list`\n» Listet alle Mitglieder des Servers mit ID auf (20 pro Seite).\n\n- `/rewardinfo`\n» Zeigt die Belohnungen mit Wahrscheinlichkeiten 🎁\n\n- `/info <rolle>`\n» Zeigt an welche Nutzer die bestimmte Rolle besitzen.\n\n- `/info-bewerbung`\n» Sendet eine Info zur Bewerbung\n\n- `/userinfo`\n» Rufe Informationen über einen User ab.\n\n- `/vorschlag`\n» Verwalte einen Vorschlag in <#1254340245772701747>\n\n- `/partner add/edit/remove`\n» Verwalte das Partner System')
-                        .setColor('Orange')
-                        .setFooter({ text: `${interaction.guild.name} - Team Befehle`, iconURL: `${interaction.guild.iconURL()}` })
-                        .setTimestamp();
-
-                    await interaction.reply({ embeds: [TeamHelpEmbed], ephemeral: true })
-                }
-        }
-    },
-};
+                    const moderationEmbed = new EmbedBuilder()
+                      .setTitle('`🎯` » Moderation Befehle')
+                      .setDescription(
+                        '> **Wichtige Moderation-Befehle:**\n\n' +
+                
+                        '- `/clear <anzahl> (Optional) <kanal> <grund>`\n' +
+                        '» Löscht eine Anzahl an Nachrichten.\n\n' +
+                
+                        '- `/ban <user> <grund> (Optional) <dauer>`\n' +
+                        '» Sperrt einen Nutzer.\n' +
+                        '> `📋` » Text Gründe:\n' +
+                        '➥ `An Verdächtiger Spam Aktivität beteiligt`\n' +
+                        '➥ `Verdächtiger oder Spam Account`\n' +
+                        '➥ `Gefährdeter oder Gehackter Account`\n' +
+                        '➥ `Gegen Serverregeln verstoßen`\n\n' +
+                
+                        '- `/unban <user> <grund>`\n' +
+                        '» Entbannt einen Nutzer.\n\n' +
+                
+                        '- `/unban-info`\n' +
+                        '» Sendet Informationen zur Entbannung.\n\n' +
+                
+                        '- `/warn <user> <grund>`\n' +
+                        '» Warnt einen Nutzer per DM.\n\n' +
+                
+                        '- `/timeout <user> <grund> <dauer>`\n' +
+                        '» Gibt einem Nutzer eine Auszeit.\n\n' +
+                
+                        '- `/user-find`\n' +
+                        '» Sucht einen User anhand seiner ID.\n\n' +
+                
+                        '- `/user-list`\n' +
+                        '» Listet alle Mitglieder (20 pro Seite).'
+                      )
+                      .setColor('Orange')
+                      .setFooter({
+                        text: `${interaction.guild.name} - Moderation Befehle`,
+                        iconURL: interaction.guild.iconURL()
+                      })
+                      .setTimestamp();
+                
+                
+                    // --- Support ---
+                    const supportEmbed = new EmbedBuilder()
+                      .setTitle('`🛠️` » Support Befehle')
+                      .setDescription(
+                        '> **Support & Kommunikation:**\n\n' +
+                
+                        '- `/message <user> <nachricht> (Optional) <image>`\n' +
+                        '» Sendet einem Nutzer eine Nachricht.\n\n' +
+                
+                        '- `/event-info <kanal> <nachricht> (Optional) <starten>`\n' +
+                        '» Sendet eine Event-Nachricht.\n\n' +
+                
+                        '- `/info <rolle>`\n' +
+                        '» Zeigt Nutzer mit einer bestimmten Rolle.\n\n' +
+                
+                        '- `/info-bewerbung`\n' +
+                        '» Sendet eine Info zur Bewerbung.\n\n' +
+                
+                        '- `/userinfo`\n' +
+                        '» Zeigt Infos über einen Nutzer.\n\n' +
+                
+                        '- `/vorschlag`\n' +
+                        '» Verwalte Vorschläge in <#1254340245772701747>.'
+                      )
+                      .setColor('Orange')
+                      .setFooter({
+                        text: `${interaction.guild.name} - Support Befehle`,
+                        iconURL: interaction.guild.iconURL()
+                      })
+                      .setTimestamp();
+                
+                
+                    // --- Infos / Sonstiges ---
+                    const infoEmbed = new EmbedBuilder()
+                      .setTitle('`📚` » Weitere Infos')
+                      .setDescription(
+                        '> **Weitere wichtige Systeme:**\n\n' +
+                
+                        '- `/rewardinfo`\n' +
+                        '» Zeigt Belohnungen mit Wahrscheinlichkeiten.\n\n' +
+                
+                        '- `/partner add/edit/remove`\n' +
+                        '» Partner-System Verwaltung.'
+                      )
+                      .setColor('Orange')
+                      .setFooter({
+                        text: `${interaction.guild.name} - Info Befehle`,
+                        iconURL: interaction.guild.iconURL()
+                      })
+                      .setTimestamp();
+                
+                
+                    // =============================
+                    //        BUTTONS
+                    // =============================
+                
+                    const row = new ActionRowBuilder().addComponents(
+                      new ButtonBuilder()
+                        .setCustomId('help_mod')
+                        .setLabel('Moderation')
+                        .setStyle(ButtonStyle.Primary),
+                
+                      new ButtonBuilder()
+                        .setCustomId('help_support')
+                        .setLabel('Support')
+                        .setStyle(ButtonStyle.Secondary),
+                
+                      new ButtonBuilder()
+                        .setCustomId('help_infos')
+                        .setLabel('Infos')
+                        .setStyle(ButtonStyle.Success)
+                    );
+                
+                    // =============================
+                    //      SEND INITIAL EMBED
+                    // =============================
+                
+                    await interaction.reply({
+                      embeds: [moderationEmbed],
+                      components: [row],
+                      ephemeral: true
+                    });
+                
+                
+                    // =============================
+                    //       BUTTON HANDLER
+                    // =============================
+                
+                    const collector = interaction.channel.createMessageComponentCollector({
+                        componentType: ComponentType.Button,
+                    });
+                
+                    collector.on('collect', async btn => {
+                      if (btn.user.id !== interaction.user.id)
+                        return btn.reply({ content: 'Du kannst diese Hilfe nicht bedienen.', ephemeral: true });
+                
+                      switch (btn.customId) {
+                        case 'help_mod':
+                          await btn.update({ embeds: [moderationEmbed] });
+                          break;
+                
+                        case 'help_support':
+                          await btn.update({ embeds: [supportEmbed] });
+                          break;
+                
+                        case 'help_infos':
+                          await btn.update({ embeds: [infoEmbed] });
+                          break;
+                      }
+                    });
+                  }
+                };
+                        break;
+                        }    }
+                
+                
