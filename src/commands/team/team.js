@@ -244,7 +244,7 @@ module.exports = {
                         '➥ `Gegen Serverregeln verstoßen`\n\n' +
                 
                         '- `/unban <user> <grund>`\n' +
-                        '» Entbannt einen Nutzer.\n\n' +
+                        '» Entbannt einen Nutzer aus dem Bann-bereich.\n\n' +
                 
                         '- `/unban-info`\n' +
                         '» Sendet Informationen zur Entbannung.\n\n' +
