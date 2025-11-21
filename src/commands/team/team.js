@@ -236,7 +236,7 @@ module.exports = {
                         '» Löscht eine Anzahl an Nachrichten.\n\n' +
                 
                         '- `/ban <user> <grund> (Optional) <dauer>`\n' +
-                        '» Sperrt einen Nutzer.\n' +
+                        '» Sperrt einen Nutzer in den Bann-Bereich.\n' +
                         '> `📋` » Text Gründe:\n' +
                         '➥ `An Verdächtiger Spam Aktivität beteiligt`\n' +
                         '➥ `Verdächtiger oder Spam Account`\n' +
