@@ -69,7 +69,7 @@ module.exports = {
       .setTitle('🎄 Adventskalender')
       .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`)
       .setColor('Green')
-      .setFooter({ text: `» ${interaction.guild.name} wünscht euch Frohe Weihnachten!`, iconURL: `${interaction.guild.iconURL()}` });
+      .setFooter({ text: `» ${interaction.guild.name} wünscht euch Frohe Weihnachten!` });
 
     await interaction.reply({ content: '> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.', ephemeral: true });
     const kalenderMessage = await interaction.channel.send({ embeds: [Adventskalender], components: rows });
