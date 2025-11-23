@@ -80,7 +80,15 @@ module.exports = {
                     .setColor('Blurple')
                     .setTitle(`\`📋\` Mitgliederliste — Seite ${page + 1}/${maxPage}`)
                     .setDescription(
-                        users.map(u => `${u} (${u.user.username}) - (${u.id})`).join("\n")
+                        users.map(u => {
+                            // Höchste Rolle außer @everyone und "Mitglied"
+                            const highestRole = u.roles.cache
+                                .filter(r => r.id !== interaction.guild.id && r.name.toLowerCase() !== "mitglied")
+                                .sort((a, b) => b.position - a.position)
+                                .first();
+                            const roleMention = highestRole ? `<@&${highestRole.id}>` : '';
+                            return `${roleMention} ${u} (${u.user.username})`;
+                        }).join("\n")
                     )
                     .setFooter({ text: `${allUsers.length} Mitglieder insgesamt` })
                     .setTimestamp();
