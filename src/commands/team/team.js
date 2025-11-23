@@ -258,7 +258,7 @@ module.exports = {
                         '- `/user find`\n' +
                         '» Sucht einen User anhand seiner ID.\n\n' +
                 
-                        '- `/user-list`\n' +
+                        '- `/user list`\n' +
                         '» Listet alle Mitglieder (20 pro Seite).'
                       )
                       .setColor('Orange')

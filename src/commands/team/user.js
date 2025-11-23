@@ -115,7 +115,6 @@ module.exports = {
 
             // Collector für Buttons
             const collector = msg.createMessageComponentCollector({
-                time: 1000 * 60 * 2, // 2 Minuten
             });
 
             collector.on("collect", async (btn) => {
