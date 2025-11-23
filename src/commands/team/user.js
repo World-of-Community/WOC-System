@@ -13,13 +13,38 @@ const bandb = require('../../../Datenbank/bandb');
 
 const BANNED_ROLE_ID = "886989738244964362";
 
+const RoleIds = [
+    '959869691529154631', // Admin
+    '929349039433056276', // Developer
+    '816985466230145044', // Sr-Moderator
+    '815920052385480754', // Moderator
+    '815920170371383366', // Support
+    '1263645368441241700', // Builder
+    '1399157711752532132', // Content
+    '815920219247214644', // Creator
+    '862708375698538507', // VIP
+    '815921105407574056', // Supreme
+    '917826787977871441', // Premium
+    '815920452337139733', // Legende
+    '835775627721179167', // Diamond
+    '835775556611997697', // Emerald
+    '835775597446955048', // Episch
+    '1258825307239219371', // Hyper Aktiv
+    '1258794321533075526', // Ultra Aktiv
+    '1258825144697360485', // Mega Aktiv
+    '1258827956634128467', // Stark Aktiv
+    '1258794479570124920', // Sehr Aktiv
+    '1258794944953319534', // Aktiv
+    '1258827226846199808', // Inaktiv
+    '1391760378924630109', // OG
+];
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('user')
         .setDescription('» Rufe Informationen über einen User ab. 👤')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 
-        // /user info <user>
         .addSubcommand(sub =>
             sub
                 .setName("info")
@@ -30,8 +55,6 @@ module.exports = {
                         .setRequired(true)
                 )
         )
-
-        // /user find <id>
         .addSubcommand(sub =>
             sub
                 .setName("find")
@@ -42,8 +65,6 @@ module.exports = {
                         .setRequired(true)
                 )
         )
-
-        // /user list
         .addSubcommand(sub =>
             sub
                 .setName("list")
@@ -53,9 +74,6 @@ module.exports = {
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
 
-        // -------------------------------------------------------------
-        // /user list — LISTE ALLE USER MIT @MENTIONS UND BUTTONS (Emoji + Text)
-        // -------------------------------------------------------------
         if (sub === "list") {
             const members = await interaction.guild.members.fetch();
             const allUsers = [...members.values()];
@@ -81,9 +99,9 @@ module.exports = {
                     .setTitle(`\`📋\` Mitgliederliste — Seite ${page + 1}/${maxPage}`)
                     .setDescription(
                         users.map(u => {
-                            // Höchste Rolle außer @everyone und "Mitglied"
+                            // Höchste Rolle aus RoleIds
                             const highestRole = u.roles.cache
-                                .filter(r => r.id !== interaction.guild.id && r.name.toLowerCase() !== "mitglied")
+                                .filter(r => RoleIds.includes(r.id))
                                 .sort((a, b) => b.position - a.position)
                                 .first();
                             const roleMention = highestRole ? `<@&${highestRole.id}>` : '';
@@ -138,30 +156,21 @@ module.exports = {
             return;
         }
 
-        // -------------------------------------------------------------
-        // /user info
-        // -------------------------------------------------------------
         if (sub === "info") {
             const user = interaction.options.getUser('user');
-
             try {
                 const member = await interaction.guild.members.fetch(user.id).catch(() => null);
-
                 const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
                 const joinedAt = member?.joinedTimestamp
                     ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
                     : '`Nicht auf dem Server`';
-
                 const banData = await getBanStatus(interaction, user.id, member);
-
                 const [timeoutCount, warnCount] = await Promise.all([
                     Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }).catch(() => 0),
                     Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }).catch(() => 0)
                 ]);
-
                 const banColor = banData.banned ? 0xED4245 : 0x57F287;
                 const banEmoji = banData.banned ? '`🔴`' : '`🟢`';
-
                 const embed = new EmbedBuilder()
                     .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
                     .setColor(banColor)
@@ -182,9 +191,7 @@ module.exports = {
                     )
                     .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                     .setTimestamp();
-
                 return interaction.reply({ embeds: [embed], ephemeral: true });
-
             } catch (error) {
                 console.error('Fehler:', error);
                 return interaction.reply({
@@ -194,23 +201,11 @@ module.exports = {
             }
         }
 
-        // -------------------------------------------------------------
-        // /user find
-        // -------------------------------------------------------------
         if (sub === "find") {
             const id = interaction.options.getString("id");
-
             const user = await interaction.client.users.fetch(id).catch(() => null);
-
-            if (!user) {
-                return interaction.reply({
-                    content: "> `❌` Kein User mit dieser ID gefunden.",
-                    ephemeral: true
-                });
-            }
-
+            if (!user) return interaction.reply({ content: "> `❌` Kein User mit dieser ID gefunden.", ephemeral: true });
             const member = await interaction.guild.members.fetch(id).catch(() => null);
-
             const embed = new EmbedBuilder()
                 .setColor('Blurple')
                 .setTitle(`\`🔎\` User gefunden: ${user.username}`)
@@ -227,41 +222,32 @@ module.exports = {
                     },
                     {
                         name: "`📅` Account erstellt",
-                        value: `<t:${Math.floor(user.createdTimestamp / 1000)}>`,
+                        value: `<t:${Math.floor(user.createdTimestamp / 1000)}>` ,
                         inline: false
                     },
                     {
                         name: "`📅` Server beigetreten",
                         value: member?.joinedTimestamp
-                            ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
+                            ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>` 
                             : "`Nicht auf dem Server`",
                         inline: false
                     }
                 )
                 .setTimestamp();
-
             return interaction.reply({ embeds: [embed], ephemeral: true });
         }
     }
 };
 
-/**
- * Bann-Check
- */
 async function getBanStatus(interaction, userId, member) {
     try {
         const userData = await bandb.findOne({ userId });
         if (userData) return { banned: true, reason: userData.reason?.trim() || 'Keine Angabe' };
-
         const banInfo = await interaction.guild.bans.fetch(userId).catch(() => null);
         if (banInfo) return { banned: true, reason: banInfo.reason?.trim() || 'Keine Angabe' };
-
-        if (member?.roles.cache.has(BANNED_ROLE_ID)) {
-            return { banned: true, reason: 'Keine Angabe' };
-        }
+        if (member?.roles.cache.has(BANNED_ROLE_ID)) return { banned: true, reason: 'Keine Angabe' };
     } catch (err) {
         console.error('Fehler beim Banncheck:', err);
     }
-
     return { banned: false, reason: 'Nicht gebannt' };
 }
