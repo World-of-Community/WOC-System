@@ -80,7 +80,7 @@ module.exports = {
                     .setColor('Blurple')
                     .setTitle(`\`📋\` Mitgliederliste — Seite ${page + 1}/${maxPage}`)
                     .setDescription(
-                        users.map(u => `${u} (${u.user.username}) - (${u.user.userId})`).join("\n")
+                        users.map(u => `${u} (${u.user.username}) - (${u.id})`).join("\n")
                     )
                     .setFooter({ text: `${allUsers.length} Mitglieder insgesamt` })
                     .setTimestamp();
