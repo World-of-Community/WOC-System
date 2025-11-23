@@ -81,7 +81,7 @@ module.exports = {
                     .setTitle(`\`📋\` Mitgliederliste — Seite ${page + 1}/${maxPage}`)
                     .setDescription(
                         users
-                            .map((m, i) => `**${start + i + 1}.** ${m} — \`${m.user.id}\``)
+                            .map(m => `${m} (${m.user.username})`)
                             .join("\n")
                     )
                     .setFooter({ text: `${allUsers.length} Mitglieder insgesamt` })
@@ -136,7 +136,7 @@ module.exports = {
         }
 
         // -------------------------------------------------------------
-        // /user info — alter Code
+        // /user info
         // -------------------------------------------------------------
         if (sub === "info") {
             const user = interaction.options.getUser('user');
@@ -192,7 +192,7 @@ module.exports = {
         }
 
         // -------------------------------------------------------------
-        // /user find — alter Code
+        // /user find
         // -------------------------------------------------------------
         if (sub === "find") {
             const id = interaction.options.getString("id");
