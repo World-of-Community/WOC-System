@@ -129,26 +129,26 @@ module.exports = {
             const member = await interaction.guild.members.fetch(id).catch(() => null);
 
             const embed = new EmbedBuilder()
-                .setColor(0x5865F2)
+                .setColor('Blurple')
                 .setTitle(`\`🔎\` User gefunden: ${user.username}`)
                 .setThumbnail(user.displayAvatarURL({ dynamic: true }))
                 .addFields(
-                    { name: "👤 Benutzername", value: `\`${user.username}\``, inline: false },
-                    { name: "🆔 User ID", value: `\`${user.id}\``, inline: false },
+                    { name: "`👤` Benutzername", value: `${user} (${user.username})`, inline: false },
+                    { name: "`🆔` User ID", value: `\`${user.id}\``, inline: false },
                     {
-                        name: "🏷️ Serverstatus",
+                        name: "`🏷️` Serverstatus",
                         value: member
-                            ? `✔ Auf dem Server\nNickname: \`${member.displayName}\``
-                            : "❌ Nicht auf dem Server",
+                            ? `\`✅\` Auf dem Server\nNickname: \`${member.displayName}\``
+                            : "`❌` Nicht auf dem Server",
                         inline: false
                     },
                     {
-                        name: "📅 Account erstellt",
+                        name: "`📅` Account erstellt",
                         value: `<t:${Math.floor(user.createdTimestamp / 1000)}>`,
                         inline: false
                     },
                     {
-                        name: "📅 Server beigetreten",
+                        name: "`📅` Server beigetreten",
                         value: member?.joinedTimestamp
                             ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
                             : "`Nicht auf dem Server`",
