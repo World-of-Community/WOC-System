@@ -38,7 +38,7 @@ module.exports = {
 
   async execute(interaction) {
     const server = await serverdb.findOne({ guildID: '815919809379172354' });
-    if(!server) return interaction.reply({ content: ":x: Fehler: Server nicht gefunden", ephemeral: true });
+    if(!server) return interaction.reply({ content: "> `❌` » Fehler: Server nicht gefunden", ephemeral: true });
     const currentDate = new Date();
     const currentDay = new Date().getDate();
     const maxDay = 24;

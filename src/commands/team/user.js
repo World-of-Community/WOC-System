@@ -15,7 +15,7 @@ const BANNED_ROLE_ID = "886989738244964362";
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('userinfo')
+        .setName('user')
         .setDescription('» Rufe Informationen über einen User ab. 👤')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 
