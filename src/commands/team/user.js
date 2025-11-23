@@ -54,7 +54,7 @@ module.exports = {
         const sub = interaction.options.getSubcommand();
 
         // -------------------------------------------------------------
-        // /user list — LISTE ALLE USER MIT PAGINATION
+        // /user list — LISTE ALLE USER MIT PAGINATION UND @MENTIONS
         // -------------------------------------------------------------
         if (sub === "list") {
             const members = await interaction.guild.members.fetch();
@@ -81,10 +81,7 @@ module.exports = {
                     .setTitle(`\`📋\` Mitgliederliste — Seite ${page + 1}/${maxPage}`)
                     .setDescription(
                         users
-                            .map(
-                                (m, i) =>
-                                    `**${start + i + 1}.** ${m.user.username} — \`${m.user.id}\``
-                            )
+                            .map((m, i) => `**${start + i + 1}.** ${m} — \`${m.user.id}\``)
                             .join("\n")
                     )
                     .setFooter({ text: `${allUsers.length} Mitglieder insgesamt` })
@@ -113,9 +110,7 @@ module.exports = {
                 fetchReply: true,
             });
 
-            // Collector für Buttons
-            const collector = msg.createMessageComponentCollector({
-            });
+            const collector = msg.createMessageComponentCollector({ time: 120000 });
 
             collector.on("collect", async (btn) => {
                 if (btn.user.id !== interaction.user.id) {
@@ -141,7 +136,7 @@ module.exports = {
         }
 
         // -------------------------------------------------------------
-        // /user info — Dein alter Code
+        // /user info — alter Code
         // -------------------------------------------------------------
         if (sub === "info") {
             const user = interaction.options.getUser('user');
@@ -197,7 +192,7 @@ module.exports = {
         }
 
         // -------------------------------------------------------------
-        // /user find — Dein alter Code
+        // /user find — alter Code
         // -------------------------------------------------------------
         if (sub === "find") {
             const id = interaction.options.getString("id");
@@ -223,7 +218,7 @@ module.exports = {
                     {
                         name: "`🏷️` Serverstatus",
                         value: member
-                            ? `\`✅\` Auf dem Server\nNickname: ${user.displayName}`
+                            ? `\`✅\` Auf dem Server\nNickname: ${member.displayName}`
                             : "`❌` Nicht auf dem Server",
                         inline: false
                     },
