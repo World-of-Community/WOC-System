@@ -105,7 +105,7 @@ module.exports = {
                                 .sort((a, b) => b.position - a.position)
                                 .first();
                             const roleMention = highestRole ? `<@&${highestRole.id}>` : '';
-                            return `${roleMention} ${u} (${u.user.username})`;
+                            return `${roleMention} ${u} (${u.user.username}) - \`${u.user.id}\``;
                         }).join("\n")
                     )
                     .setFooter({ text: `${allUsers.length} Mitglieder insgesamt` })
