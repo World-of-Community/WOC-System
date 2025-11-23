@@ -205,9 +205,6 @@ mongoose.connection.on('error', (err) => {
     console.error(`⚠️  | Verbindungsfehler: ${err.message}`);
 });
 
-// Tabelle alle 30 Sekunden automatisch aktualisieren
-  setInterval(() => updateLeagueTable(client), 30_000);
-
 // Täglich um Mitternacht (Adventskalender)
 cron.schedule('00 00 * * *', async () => {
     const server = await serverdb.findOne({ guildID: '815919809379172354' });
