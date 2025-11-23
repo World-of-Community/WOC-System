@@ -255,7 +255,7 @@ module.exports = {
                         '- `/timeout <user> <grund> <dauer>`\n' +
                         '» Gibt einem Nutzer eine Auszeit.\n\n' +
                 
-                        '- `/user-find`\n' +
+                        '- `/user find`\n' +
                         '» Sucht einen User anhand seiner ID.\n\n' +
                 
                         '- `/user-list`\n' +

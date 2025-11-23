@@ -19,7 +19,7 @@ module.exports = {
         .setDescription('» Rufe Informationen über einen User ab. 👤')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 
-        // /userinfo info <user>
+        // /user info <user>
         .addSubcommand(sub =>
             sub
                 .setName("info")
@@ -31,7 +31,7 @@ module.exports = {
                 )
         )
 
-        // /userinfo find <id>
+        // /user find <id>
         .addSubcommand(sub =>
             sub
                 .setName("find")
@@ -41,14 +41,109 @@ module.exports = {
                         .setDescription("» Die ID des Users.")
                         .setRequired(true)
                 )
+        )
+
+        // /user list
+        .addSubcommand(sub =>
+            sub
+                .setName("list")
+                .setDescription("» Zeigt alle Server-Mitglieder an (20 pro Seite).")
         ),
 
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
 
-        // ---------------------------------------------------
-        // /userinfo info <user> — dein alter Code unverändert
-        // ---------------------------------------------------
+        // -------------------------------------------------------------
+        // /user list — LISTE ALLE USER MIT PAGINATION
+        // -------------------------------------------------------------
+        if (sub === "list") {
+            const members = await interaction.guild.members.fetch();
+            const allUsers = [...members.values()];
+
+            if (allUsers.length === 0) {
+                return interaction.reply({
+                    content: "> `❌` Keine User gefunden.",
+                    ephemeral: true,
+                });
+            }
+
+            let page = 0;
+            const perPage = 20;
+            const maxPage = Math.ceil(allUsers.length / perPage);
+
+            const generateEmbed = (page) => {
+                const start = page * perPage;
+                const end = start + perPage;
+                const users = allUsers.slice(start, end);
+
+                return new EmbedBuilder()
+                    .setColor('Blurple')
+                    .setTitle(`\`📋\` Mitgliederliste — Seite ${page + 1}/${maxPage}`)
+                    .setDescription(
+                        users
+                            .map(
+                                (m, i) =>
+                                    `**${start + i + 1}.** ${m.user.username} — \`${m.user.id}\``
+                            )
+                            .join("\n")
+                    )
+                    .setFooter({ text: `${allUsers.length} Mitglieder insgesamt` })
+                    .setTimestamp();
+            };
+
+            const row = (page) =>
+                new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId("prevPage")
+                        .setLabel("⬅️")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setDisabled(page === 0),
+
+                    new ButtonBuilder()
+                        .setCustomId("nextPage")
+                        .setLabel("➡️")
+                        .setStyle(ButtonStyle.Secondary)
+                        .setDisabled(page === maxPage - 1)
+                );
+
+            const msg = await interaction.reply({
+                embeds: [generateEmbed(page)],
+                components: [row(page)],
+                ephemeral: true,
+                fetchReply: true,
+            });
+
+            // Collector für Buttons
+            const collector = msg.createMessageComponentCollector({
+                time: 1000 * 60 * 2, // 2 Minuten
+            });
+
+            collector.on("collect", async (btn) => {
+                if (btn.user.id !== interaction.user.id) {
+                    return btn.reply({ content: "> `❌` Das ist nicht dein Menü.", ephemeral: true });
+                }
+
+                if (btn.customId === "prevPage" && page > 0) page--;
+                else if (btn.customId === "nextPage" && page < maxPage - 1) page++;
+
+                await btn.update({
+                    embeds: [generateEmbed(page)],
+                    components: [row(page)],
+                });
+            });
+
+            collector.on("end", async () => {
+                if (msg.editable) {
+                    msg.edit({ components: [] }).catch(() => {});
+                }
+            });
+
+            return;
+        }
+
+        // -------------------------------------------------------------
+        // /user info — Dein alter Code
+        // -------------------------------------------------------------
         if (sub === "info") {
             const user = interaction.options.getUser('user');
 
@@ -91,29 +186,20 @@ module.exports = {
                     .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                     .setTimestamp();
 
-                const components = banData.banned ? [
-                    new ActionRowBuilder().addComponents(
-                        new ButtonBuilder()
-                            .setCustomId(`editBanReason_${user.id}`)
-                            .setLabel('📝 Ban-Grund ändern')
-                            .setStyle(ButtonStyle.Secondary)
-                    )
-                ] : [];
-
-                return interaction.reply({ embeds: [embed], components, ephemeral: true });
+                return interaction.reply({ embeds: [embed], ephemeral: true });
 
             } catch (error) {
-                console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+                console.error('Fehler:', error);
                 return interaction.reply({
-                    content: '> `❌` » Ein Fehler ist beim Abrufen der Benutzerdaten aufgetreten.',
+                    content: '> `❌` Fehler beim Abrufen der Benutzerdaten.',
                     ephemeral: true
                 });
             }
         }
 
-        // -----------------------------------------------
-        // /userinfo find <id> — dein alter userfind Code
-        // -----------------------------------------------
+        // -------------------------------------------------------------
+        // /user find — Dein alter Code
+        // -------------------------------------------------------------
         if (sub === "find") {
             const id = interaction.options.getString("id");
 
@@ -138,7 +224,7 @@ module.exports = {
                     {
                         name: "`🏷️` Serverstatus",
                         value: member
-                            ? `\`✅\` Auf dem Server\nNickname: \`${member.displayName}\``
+                            ? `\`✅\` Auf dem Server\nNickname: ${user.displayName}`
                             : "`❌` Nicht auf dem Server",
                         inline: false
                     },
@@ -155,7 +241,6 @@ module.exports = {
                         inline: false
                     }
                 )
-                .setFooter({ text: "Userfind" })
                 .setTimestamp();
 
             return interaction.reply({ embeds: [embed], ephemeral: true });
@@ -169,14 +254,10 @@ module.exports = {
 async function getBanStatus(interaction, userId, member) {
     try {
         const userData = await bandb.findOne({ userId });
-        if (userData) {
-            return { banned: true, reason: userData.reason?.trim() || 'Keine Angabe' };
-        }
+        if (userData) return { banned: true, reason: userData.reason?.trim() || 'Keine Angabe' };
 
         const banInfo = await interaction.guild.bans.fetch(userId).catch(() => null);
-        if (banInfo) {
-            return { banned: true, reason: banInfo.reason?.trim() || 'Keine Angabe' };
-        }
+        if (banInfo) return { banned: true, reason: banInfo.reason?.trim() || 'Keine Angabe' };
 
         if (member?.roles.cache.has(BANNED_ROLE_ID)) {
             return { banned: true, reason: 'Keine Angabe' };
