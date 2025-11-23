@@ -54,13 +54,13 @@ module.exports = {
         const sub = interaction.options.getSubcommand();
 
         // -------------------------------------------------------------
-        // /user list — LISTE ALLE USER MIT PAGINATION UND @MENTIONS
+        // /user list — LISTE ALLE USER MIT @MENTIONS UND BUTTONS (Emoji + Text)
         // -------------------------------------------------------------
         if (sub === "list") {
             const members = await interaction.guild.members.fetch();
             const allUsers = [...members.values()];
 
-            if (allUsers.length === 0) {
+            if (!allUsers.length) {
                 return interaction.reply({
                     content: "> `❌` Keine User gefunden.",
                     ephemeral: true,
@@ -80,9 +80,7 @@ module.exports = {
                     .setColor('Blurple')
                     .setTitle(`\`📋\` Mitgliederliste — Seite ${page + 1}/${maxPage}`)
                     .setDescription(
-                        users
-                            .map(m => `${m} (${m.user.username})`)
-                            .join("\n")
+                        users.map(u => `${u} (${u.user.username}) - (${u.user.userId})`).join("\n")
                     )
                     .setFooter({ text: `${allUsers.length} Mitglieder insgesamt` })
                     .setTimestamp();
@@ -92,13 +90,12 @@ module.exports = {
                 new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
                         .setCustomId("prevPage")
-                        .setLabel("⬅️")
+                        .setLabel("⬅️ Vorige Seite")
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === 0),
-
                     new ButtonBuilder()
                         .setCustomId("nextPage")
-                        .setLabel("➡️")
+                        .setLabel("➡️ Nächste Seite")
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === maxPage - 1)
                 );
@@ -110,7 +107,7 @@ module.exports = {
                 fetchReply: true,
             });
 
-            const collector = msg.createMessageComponentCollector({ time: 120000 });
+            const collector = msg.createMessageComponentCollector({ });
 
             collector.on("collect", async (btn) => {
                 if (btn.user.id !== interaction.user.id) {
@@ -127,9 +124,7 @@ module.exports = {
             });
 
             collector.on("end", async () => {
-                if (msg.editable) {
-                    msg.edit({ components: [] }).catch(() => {});
-                }
+                if (msg.editable) msg.edit({ components: [] }).catch(() => {});
             });
 
             return;
