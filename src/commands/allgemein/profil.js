@@ -291,22 +291,30 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
+
         let lastOnlineText = '';
-        if (
-          member.presence?.status === 'offline' &&
-          userData?.lastOnline instanceof Date &&
-          !isNaN(userData.lastOnline)
-        ) {
-          const date = userData.lastOnline.toLocaleDateString('de-DE', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          });
-          const time = userData.lastOnline.toLocaleTimeString('de-DE', {
-            hour: '2-digit',
-            minute: '2-digit',
-          });
-          lastOnlineText = `- \`📅\` » Zuletzt online: \`${date} - ${time}\`\n`;
+
+        const isOffline =
+          !member.presence ||                     // keine Presence = offline / unsichtbar
+          member.presence.status === 'offline';   // explizit offline (auch unsichtbar)
+        
+        if (isOffline && userData?.lastOnline) {
+          const lastOnline = new Date(userData.lastOnline);
+        
+          if (!isNaN(lastOnline.getTime())) {
+            const date = lastOnline.toLocaleDateString('de-DE', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            });
+        
+            const time = lastOnline.toLocaleTimeString('de-DE', {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+        
+            lastOnlineText = `- \`📅\` » Zuletzt online: \`${date} - ${time}\`\n`;
+          }
         }
 
         // Embed
@@ -327,9 +335,17 @@ module.exports = {
                 `- \`📚\` » Du hast bereits \`${userData.giveaway.messages || '0'}\` Nachrichten versendet.\n` +
                 `- \`🔊\` » \`${(userData.giveaway.voiceTime / 3600000).toFixed(0) || '0'} Stunden\` in Sprachkanälen verbracht.\n\n` +
                 `\`📡\` » Du hast **${inviteJoins}** User eingeladen.\n` +
-                `(\`${totalInvites}\` Gesamt, \`${inviteBonus}\` Bonus & \`${inviteLeft}\` Verlassen)\n\n` +
-                `\`👥\` » Server-Mitglied seit: <t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)\n` +
-                `\`⏰\` » Account erstellt am: <t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`
+                `(\`${totalInvites}\` Gesamt, \`${inviteBonus}\` Bonus & \`${inviteLeft}\` Verlassen)\n\n`
+            )
+            .addFields(
+                { name: '\`👥\` » Server-Mitglied seit:'
+                    , value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)`, inline: false  },
+                { name: '\`⏰\` » Account erstellt am:'
+                    , value: `<t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`, inline: false
+                 }
+            )
+            .addFields(
+                { name: '\u200B', value: '> `📌` » Hinweis: Einige Daten können unvollständig sein, wenn der Nutzer kürzlich dem Server beigetreten ist oder Rollen geändert wurden.' }
             )
             .setColor('Blurple')
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 512 }))
