@@ -74,6 +74,7 @@ module.exports = {
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
 
+        // ------------------- LIST -------------------
         if (sub === "list") {
             const members = await interaction.guild.members.fetch();
             const allUsers = [...members.values()];
@@ -99,7 +100,6 @@ module.exports = {
                     .setTitle(`\`📋\` Mitgliederliste — Seite ${page + 1}/${maxPage}`)
                     .setDescription(
                         users.map(u => {
-                            // Höchste Rolle aus RoleIds
                             const highestRole = u.roles.cache
                                 .filter(r => RoleIds.includes(r.id))
                                 .sort((a, b) => b.position - a.position)
@@ -150,27 +150,34 @@ module.exports = {
             });
 
             collector.on("end", async () => {
-                if (msg.editable) msg.edit({ components: [] }).catch(() => {});
+                if (msg.editable) msg.edit({ components: [] }).catch(() => { });
             });
 
             return;
         }
 
+        // ------------------- INFO -------------------
         if (sub === "info") {
             const user = interaction.options.getUser('user');
+
             try {
                 const member = await interaction.guild.members.fetch(user.id).catch(() => null);
+
                 const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
                 const joinedAt = member?.joinedTimestamp
                     ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
                     : '`Nicht auf dem Server`';
+
                 const banData = await getBanStatus(interaction, user.id, member);
+
                 const [timeoutCount, warnCount] = await Promise.all([
                     Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }).catch(() => 0),
                     Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }).catch(() => 0)
                 ]);
+
                 const banColor = banData.banned ? 0xED4245 : 0x57F287;
                 const banEmoji = banData.banned ? '`🔴`' : '`🟢`';
+
                 const embed = new EmbedBuilder()
                     .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
                     .setColor(banColor)
@@ -191,7 +198,60 @@ module.exports = {
                     )
                     .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                     .setTimestamp();
-                return interaction.reply({ embeds: [embed], ephemeral: true });
+
+                // BUTTON FÜR STRAFEN
+                const row = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`showPunishments_${user.id}`)
+                        .setLabel("⚠️ Strafen anzeigen")
+                        .setStyle(ButtonStyle.Danger)
+                );
+
+                const msg = await interaction.reply({
+                    embeds: [embed],
+                    components: [row],
+                    ephemeral: true,
+                    fetchReply: true
+                });
+
+                const collector = msg.createMessageComponentCollector({ time: 60 * 1000 });
+
+                collector.on("collect", async btn => {
+                    if (btn.user.id !== interaction.user.id)
+                        return btn.reply({ content: "> `❌` Das ist nicht dein Menü.", ephemeral: true });
+
+                    if (btn.customId !== `showPunishments_${user.id}`) return;
+
+                    const timeouts = await Timeout.find({ userId: user.id, guildId: interaction.guild.id }).sort({ createdAt: -1 });
+                    const warns = await Warn.find({ userId: user.id, guildId: interaction.guild.id }).sort({ createdAt: -1 });
+
+                    const format = (date) => `<t:${Math.floor(date.getTime() / 1000)}:F>`;
+
+                    const warnText = warns.length > 0
+                        ? warns.map(w => `• **Grund:** \`${w.reason}\`\n  **Zeit:** ${format(w.createdAt)}`).join("\n\n")
+                        : "`Keine Warnungen vorhanden`";
+
+                    const timeoutText = timeouts.length > 0
+                        ? timeouts.map(t => `• **Grund:** \`${t.reason}\`\n  **Zeit:** ${format(t.createdAt)}`).join("\n\n")
+                        : "`Keine Timeouts vorhanden`";
+
+                    const punishEmbed = new EmbedBuilder()
+                        .setTitle(`⚠️ Strafen — ${user.username}`)
+                        .setColor("Red")
+                        .addFields(
+                            { name: "❗ Warnungen", value: warnText },
+                            { name: "🔇 Timeouts", value: timeoutText }
+                        )
+                        .setTimestamp();
+
+                    return btn.reply({
+                        embeds: [punishEmbed],
+                        ephemeral: true
+                    });
+                });
+
+                return;
+
             } catch (error) {
                 console.error('Fehler:', error);
                 return interaction.reply({
@@ -201,6 +261,7 @@ module.exports = {
             }
         }
 
+        // ------------------- FIND -------------------
         if (sub === "find") {
             const id = interaction.options.getString("id");
             const user = await interaction.client.users.fetch(id).catch(() => null);
@@ -222,13 +283,13 @@ module.exports = {
                     },
                     {
                         name: "`📅` Account erstellt",
-                        value: `<t:${Math.floor(user.createdTimestamp / 1000)}>` ,
+                        value: `<t:${Math.floor(user.createdTimestamp / 1000)}>`,
                         inline: false
                     },
                     {
                         name: "`📅` Server beigetreten",
                         value: member?.joinedTimestamp
-                            ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>` 
+                            ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
                             : "`Nicht auf dem Server`",
                         inline: false
                     }
@@ -239,6 +300,7 @@ module.exports = {
     }
 };
 
+// ------------------- BAN STATUS HELPER -------------------
 async function getBanStatus(interaction, userId, member) {
     try {
         const userData = await bandb.findOne({ userId });
