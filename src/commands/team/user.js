@@ -199,7 +199,7 @@ module.exports = {
                     .setFooter({ text: `${interaction.guild.name} | Userinfo`, iconURL: interaction.guild.iconURL() || user.displayAvatarURL() })
                     .setTimestamp();
 
-                // BUTTON FÜR STRAFEN
+                // STRAFEN BUTTON
                 const row = new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
                         .setCustomId(`showPunishments_${user.id}`)
@@ -225,14 +225,18 @@ module.exports = {
                     const timeouts = await Timeout.find({ userId: user.id, guildId: interaction.guild.id }).sort({ createdAt: -1 });
                     const warns = await Warn.find({ userId: user.id, guildId: interaction.guild.id }).sort({ createdAt: -1 });
 
-                    const format = (date) => `<t:${Math.floor(date.getTime() / 1000)}:F>`;
+                    // SICHERES FORMAT
+                    const format = (date) => {
+                        if (!date || !(date instanceof Date) || isNaN(date.getTime())) return "`Datum fehlt`";
+                        return `<t:${Math.floor(date.getTime() / 1000)}:F>`;
+                    };
 
                     const warnText = warns.length > 0
-                        ? warns.map(w => `• **Grund:** \`${w.reason}\`\n  **Zeit:** ${format(w.createdAt)}`).join("\n\n")
+                        ? warns.map(w => `• **Grund:** \`${w.reason || 'Keine Angabe'}\`\n  **Zeit:** ${format(w.createdAt)}`).join("\n\n")
                         : "`Keine Warnungen vorhanden`";
 
                     const timeoutText = timeouts.length > 0
-                        ? timeouts.map(t => `• **Grund:** \`${t.reason}\`\n  **Zeit:** ${format(t.createdAt)}`).join("\n\n")
+                        ? timeouts.map(t => `• **Grund:** \`${t.reason || 'Keine Angabe'}\`\n  **Zeit:** ${format(t.createdAt)}`).join("\n\n")
                         : "`Keine Timeouts vorhanden`";
 
                     const punishEmbed = new EmbedBuilder()
@@ -248,6 +252,10 @@ module.exports = {
                         embeds: [punishEmbed],
                         ephemeral: true
                     });
+                });
+
+                collector.on("end", async () => {
+                    if (msg.editable) msg.edit({ components: [] }).catch(() => { });
                 });
 
                 return;
@@ -283,7 +291,7 @@ module.exports = {
                     },
                     {
                         name: "`📅` Account erstellt",
-                        value: `<t:${Math.floor(user.createdTimestamp / 1000)}>`,
+                        value: `<t:${Math.floor(user.createdTimestamp / 1000)}>` ,
                         inline: false
                     },
                     {
