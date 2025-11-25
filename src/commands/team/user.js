@@ -232,19 +232,19 @@ module.exports = {
                     };
 
                     const warnText = warns.length > 0
-                        ? warns.map(w => `• **Grund:** \`${w.reason || 'Keine Angabe'}\`\n  **Zeit:** ${format(w.createdAt)}`).join("\n\n")
+                        ? warns.map(w => `• **Grund:** \`${w.reason || 'Keine Angabe'}\`\n• **Zeit:** ${format(w.createdAt)}`).join("\n\n")
                         : "`Keine Warnungen vorhanden`";
 
                     const timeoutText = timeouts.length > 0
-                        ? timeouts.map(t => `• **Grund:** \`${t.reason || 'Keine Angabe'}\`\n  **Zeit:** ${format(t.createdAt)}`).join("\n\n")
+                        ? timeouts.map(t => `• **Grund:** \`${t.reason || 'Keine Angabe'}\`\n• **Zeit:** ${format(t.createdAt)}`).join("\n\n")
                         : "`Keine Timeouts vorhanden`";
 
                     const punishEmbed = new EmbedBuilder()
-                        .setTitle(`⚠️ Strafen — ${user.username}`)
+                        .setTitle(`\`🔴\` Strafen - ${user.username}`)
                         .setColor("Red")
                         .addFields(
-                            { name: "❗ Warnungen", value: warnText },
-                            { name: "🔇 Timeouts", value: timeoutText }
+                            { name: "`❗` Warnungen", value: warnText },
+                            { name: "`🔇` Timeouts", value: timeoutText }
                         )
                         .setTimestamp();
 
