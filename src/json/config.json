@@ -2,7 +2,10 @@
     "mongodb": "mongodb+srv://Red3405:iBCS5qNQCIoxX9NV@red3405.uuwimwm.mongodb.net/database",
     "token": "MTAyMDAyMzI5OTQ0ODc4Njk1NQ.GgBKms.B0psWk-8xlDj6GP5CdKRoBZ6neSe9332s9u-_E",
     "application": "1020023299448786955",
-    "server": "815919809379172354",
+    "servers": [
+        "815919809379172354",
+        "899189051410763816"
+    ],
 
     "changelog": "1051393854328279120",
     "autoDelete": "979431125053227068",
