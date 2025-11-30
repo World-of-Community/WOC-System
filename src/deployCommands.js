@@ -31,13 +31,7 @@ const deployCommands = async function deploy() {
     const restClient = new REST({ version: "10" }).setToken(config.token);
 
     try {
-        for (const guildId of config.servers) {
-           await restClient.put(
-               Routes.applicationGuildCommands(config.application, guildId),
-               { body: commands }
-           );
-        }
-        //await restClient.put(Routes.applicationGuildCommands(config.application, config.server), { body: commands });
+        await restClient.put(Routes.applicationGuildCommands(config.application, config.server), { body: commands });
         console.log("✅  | Successfully registered Commands!");
     } catch (error) {
         console.error(error);
