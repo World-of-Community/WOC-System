@@ -291,6 +291,9 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
+        const pronouns = member.user.pronouns || "`➖`";
+        const aboutMe = member.user.bio || "`➖`";
+
 
         let lastOnlineText = '';
 
@@ -325,6 +328,8 @@ module.exports = {
                 `> \`👤\` **» SERVER PROFIL**\n` +
                 `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))} ${leitungRoleMentions.length > 0 ? ` (${leitungRoleMentions.join(', ')})` : ''}\n` +
                 `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
+                `- \`📘\` » Pronomen: ${pronouns}\n` +
+                `- \`📝\` » Über mich: ${aboutMe}\n` +
                 `${outputText}\n` +
                 `- \`⭐\` » Nutzer-Level: ${levelRoles.length > 0 ? levelRoles.join(', ') : '**Keine Levelrolle**'}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
