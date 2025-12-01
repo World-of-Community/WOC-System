@@ -293,8 +293,8 @@ module.exports = {
 
         const fullUser = await member.user.fetch();
 
-        const pronouns = member.user.pronouns || "`➖`";
-        const aboutMe = member.user.bio || "`➖`";
+        const pronouns = fullUser.pronouns || "`➖`";
+        const aboutMe = fullUser.bio || "`➖`";
 
 
         let lastOnlineText = '';
