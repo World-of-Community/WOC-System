@@ -92,8 +92,8 @@ module.exports = {
         const totalGameChannels = guild.channels.cache.filter(c => c.parentId === config.category5).size;
     
         // Channel-Namen setzen
-        await guild.channels.cache.get(config.category1)?.setName(`(🌍) - [INFOS] - (USER: ${memberCount})`);
-        await guild.channels.cache.get(config.category2)?.setName(`(👥) - [UNITY] - (ONLINE: ${onlineMembersCount})`);
+        await guild.channels.cache.get(config.category1)?.setName(`(🎄) - [INFOS] - (USER: ${memberCount})`); // Normal 🌍 - Weihnachten 🎄
+        await guild.channels.cache.get(config.category2)?.setName(`(⛄) - [UNITY] - (ONLINE: ${onlineMembersCount})`); // Normal 👥 - Weihnachten ⛄
         await guild.channels.cache.get(config.category3)?.setName(`(⚡) - [ADS] - (PARTNER: ${count})`);
         await guild.channels.cache.get(config.category4)?.setName(`(📰) - [NEWS] - (ABOS: ${totalChannels})`);
         await guild.channels.cache.get(config.category5)?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
