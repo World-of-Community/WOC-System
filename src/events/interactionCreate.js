@@ -27,7 +27,7 @@ const rewards = {
     3: { type: 'coins', value: 300 },
     4: { type: 'coins', value: 400 },
     5: { type: 'coins', value: 500 },
-    6: { type: 'role', value: '1312780135530889326' }, // Adventskalender 2024
+    6: { type: 'role', value: '1442140220182106184' }, // Adventskalender 2025
     7: { type: 'coins', value: 700 },
     8: { type: 'coins', value: 800 },
     9: { type: 'coins', value: 900 },
@@ -168,6 +168,7 @@ module.exports = {
             }
           }
 
+        // Adventskalender
         // Aktuelles Datum holen
         const currentDay = new Date().getDate(); // Gibt den aktuellen Tag des Monats zurück
 
@@ -200,8 +201,24 @@ module.exports = {
 
         switch (reward?.type) {
             case 'coins':
-                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`🎫\` » Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
-            break;
+                // Coins automatisch gutschreiben
+            
+                // Coin-Daten des Users holen oder erstellen
+                let coinData = await Coin.findOne({ userId: interaction.user.id });
+                if (!coinData) {
+                    coinData = await Coin.create({ userId: interaction.user.id, coins: 0 });
+                }
+            
+                // Coins hinzufügen
+                coinData.coins += reward.value;
+                await coinData.save();
+            
+                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`💰\` » Die Coins wurden **automatisch deinem Konto gutgeschrieben**.`;
+            break;            
+
+            //case 'coins':
+            //    rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`🎫\` » Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
+            //break;
 
             case 'role':
                 const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
