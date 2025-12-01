@@ -293,6 +293,9 @@ module.exports = {
 
         const fullUser = await member.user.fetch();
 
+        console.log("Pronomen:", fullUser.pronouns);
+        console.log("Bio:", fullUser.bio);
+
         const pronouns = fullUser.pronouns || "`➖`";
         const aboutMe = fullUser.bio || "`➖`";
 
