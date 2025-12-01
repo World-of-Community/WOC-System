@@ -87,23 +87,23 @@ module.exports = {
         // Channel-Namen setzen
         // Aktuellen Monat holen (0 = Januar, 11 = Dezember)
         const month = new Date().getMonth();
-        
+
         // Standard-Emojis
         let emoji1 = "🌍";
         let emoji2 = "👥";
-        
+
         // Wenn Dezember → Weihnachts-Emojis setzen
-        if (month === 11) { 
-            emoji1 = "🎄";
-            emoji2 = "⛄";
+        if (month === 11) {
+          emoji1 = "🎄";
+          emoji2 = "⛄";
         }
-        
+
         // Kategorien umbenennen
         await guild.channels.cache.get(config.category1)
-            ?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
-        
+          ?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
+
         await guild.channels.cache.get(config.category2)
-            ?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineMembersCount})`);
+          ?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineMembersCount})`);
 
         //await guild.channels.cache.get(config.category1)?.setName(`(🎄) - [INFOS] - (USER: ${memberCount})`); // Normal 🌍 - Weihnachten 🎄
         //await guild.channels.cache.get(config.category2)?.setName(`(⛄) - [UNITY] - (ONLINE: ${onlineMembersCount})`); // Normal 👥 - Weihnachten ⛄
