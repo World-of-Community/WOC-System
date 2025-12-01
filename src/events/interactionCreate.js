@@ -8,7 +8,7 @@ const Timeout = require('../../Datenbank/timeoutdb');
 const Warn = require('../../Datenbank/warndb');
 const bandb = require('../../Datenbank/bandb');
 const Meeting = require('../../Datenbank/meetingdb');
-const { Coin } = require("../../../Datenbank/coindb");
+const { Coin } = require("../../Datenbank/coindb");
 
 // Beta Features (Buttons & Modals)
 //const editBanReason = require("./interactions/buttons/editBanReason");
