@@ -46,7 +46,10 @@ const rewards = {
     21: { type: 'coins', value: 2100 },
     22: { type: 'coins', value: 2200 },
     23: { type: 'coins', value: 2300 },
-    24: { type: 'coins', value: 2400 },
+    24: [
+        { type: 'coins', value: 2400 },
+        { type: 'role', value: '1445064222894460970' } // Weihnachten 2025
+    ]
 };
 
 module.exports = {
