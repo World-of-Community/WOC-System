@@ -1,5 +1,53 @@
-const { Events } = require("discord.js");
-const { Logger, ErrorHandler } = require("../utils");
+const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType, PermissionFlagsBits } = require("discord.js");
+const userdb = require("../../Datenbank/userdb");
+const config = require("../json/config.json")
+const vorschlagEmitter = require('../custom_events/vorschlag');
+const Advent = require("../../Datenbank/adventdb");
+const NewsStatus = require("../../Datenbank/newsdb");
+const Timeout = require('../../Datenbank/timeoutdb');
+const Warn = require('../../Datenbank/warndb');
+const bandb = require('../../Datenbank/bandb');
+const Meeting = require('../../Datenbank/meetingdb');
+const { Coin } = require("../../Datenbank/coindb");
+
+// Beta Features (Buttons & Modals)
+//const editBanReason = require("./interactions/buttons/editBanReason");
+//const banReasonModal = require("./interactions/modals/banReasonModal");
+const feedbackButton = require("../buttons/feedbackButton");
+//const feedbackModal = require("./interactions/modals/feedbackModal");
+//const ticketButton = require("./interactions/buttons/ticketButton");
+//const unbanModal = require("./interactions/modals/unbanModal");
+//const partnerButton = require("./interactions/partnerButton");
+//const partnerModal = require("./interactions/partnerModal");
+
+
+// Belohnungen definieren
+const rewards = {
+    1: { type: 'coins', value: 100 },
+    2: { type: 'coins', value: 200 },
+    3: { type: 'coins', value: 300 },
+    4: { type: 'coins', value: 400 },
+    5: { type: 'coins', value: 500 },
+    6: { type: 'role', value: '1442140220182106184' }, // Adventskalender 2025
+    7: { type: 'coins', value: 700 },
+    8: { type: 'coins', value: 800 },
+    9: { type: 'coins', value: 900 },
+    10: { type: 'coins', value: 1000 },
+    11: { type: 'coins', value: 1100 },
+    12: { type: 'coins', value: 1200 },
+    13: { type: 'coins', value: 1300 },
+    14: { type: 'coins', value: 1400 },
+    15: { type: 'coins', value: 1500 },
+    16: { type: 'coins', value: 1600 },
+    17: { type: 'coins', value: 1700 },
+    18: { type: 'coins', value: 1800 },
+    19: { type: 'coins', value: 1900 },
+    20: { type: 'coins', value: 2000 },
+    21: { type: 'coins', value: 2100 },
+    22: { type: 'coins', value: 2200 },
+    23: { type: 'coins', value: 2300 },
+    24: { type: 'coins', value: 2400 },
+};
 
 /**
  * Interaction Create Event
@@ -55,9 +103,9 @@ async function handleCommand(interaction) {
     return;
   }
 
-  try {
-    // Optional: Cooldown Check
-    // Optional: Permission Check
+        // Adventskalender
+        // Aktuelles Datum holen
+        const currentDay = new Date().getDate(); // Gibt den aktuellen Tag des Monats zurück
 
     await command.execute(interaction);
 
@@ -93,8 +141,26 @@ async function handleModal(interaction) {
     return;
   }
 
-  await modalHandler.handle(interaction);
-}
+        switch (reward?.type) {
+            case 'coins':
+                // Coins automatisch gutschreiben
+            
+                // Coin-Daten des Users holen oder erstellen
+                let coinData = await Coin.findOne({ userId: interaction.user.id });
+                if (!coinData) {
+                    coinData = await Coin.create({ userId: interaction.user.id, coins: 0 });
+                }
+            
+                // Coins hinzufügen
+                coinData.coins += reward.value;
+                await coinData.save();
+            
+                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`💰\` » Die Coins wurden **automatisch deinem Konto gutgeschrieben**.`;
+            break;            
+
+            //case 'coins':
+            //    rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`🎫\` » Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
+            //break;
 
 /**
  * Behandelt Select Menu Interactions
