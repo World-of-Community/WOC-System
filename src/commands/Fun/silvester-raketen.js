@@ -1,14 +1,14 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const eventItems = require('../../../Datenbank/eventitems');
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const eventItems = require("../../../Datenbank/eventitems");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('raketen')
-    .setDescription('» Sammle täglich Raketen beim Silvester-Event! 🎆'),
+    .setName("raketen")
+    .setDescription("» Sammle täglich Raketen beim Silvester-Event! 🎆"),
 
   async execute(interaction) {
     const userId = interaction.user.id;
-    const eventType = 'newyear';
+    const eventType = "newyear";
 
     let userData = await eventItems.findOne({ userId, eventType });
     if (!userData) {
@@ -24,7 +24,7 @@ module.exports = {
 
     if (sameDay) {
       return interaction.reply({
-        content: '> `🎆` | Du hast heute bereits Alle Raketen gesammelt! Komm morgen wieder.',
+        content: "> `🎆` | Du hast heute bereits Alle Raketen gesammelt! Komm morgen wieder.",
         ephemeral: true,
       });
     }
@@ -35,9 +35,9 @@ module.exports = {
     await userData.save();
 
     const embed = new EmbedBuilder()
-      .setTitle('`🎇` Frohes neues Jahr!')
+      .setTitle("`🎇` Frohes neues Jahr!")
       .setDescription(`Du hast **${collected} Raketen** eingesammelt! \`🎆\`\n\nInsgesamt hast du nun **${userData.amount} Raketen**.`)
-      .setColor('Blue');
+      .setColor("Blue");
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
   },

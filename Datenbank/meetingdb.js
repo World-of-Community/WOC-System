@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const meetingSchema = new mongoose.Schema({
   guildId: { type: String, required: true },
@@ -10,6 +10,6 @@ const meetingSchema = new mongoose.Schema({
   nonParticipants: { type: [String], default: [] },
 });
 
-const Meeting = mongoose.model('Meeting', meetingSchema);
+const Meeting = mongoose.model("Meeting", meetingSchema);
 
 module.exports = Meeting;
