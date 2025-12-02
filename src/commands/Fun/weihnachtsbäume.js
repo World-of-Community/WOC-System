@@ -1,14 +1,14 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const eventItems = require('../../../Datenbank/eventitems');
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const eventItems = require("../../../Datenbank/eventitems");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('weihnachtsbäume')
-    .setDescription('» Sammle täglich Weihnachtsbäume beim Weihnachts-Event! 🎄'),
+    .setName("weihnachtsbäume")
+    .setDescription("» Sammle täglich Weihnachtsbäume beim Weihnachts-Event! 🎄"),
 
   async execute(interaction) {
     const userId = interaction.user.id;
-    const eventType = 'christmas';
+    const eventType = "christmas";
 
     let userData = await eventItems.findOne({ userId, eventType });
     if (!userData) {
@@ -24,7 +24,7 @@ module.exports = {
 
     if (sameDay) {
       return interaction.reply({
-        content: '> `🎄` | Du hast heute bereits einen Weihnachtsbaum geschmückt! Komm morgen wieder.',
+        content: "> `🎄` | Du hast heute bereits einen Weihnachtsbaum geschmückt! Komm morgen wieder.",
         ephemeral: true,
       });
     }
@@ -35,9 +35,9 @@ module.exports = {
     await userData.save();
 
     const embed = new EmbedBuilder()
-      .setTitle('`🎄` Frohe Weihnachten!')
+      .setTitle("`🎄` Frohe Weihnachten!")
       .setDescription(`Du hast **${collected} Weihnachtsbäume** gesammelt! \`🎁\`\n\nInsgesamt hast du nun **${userData.amount} Bäume**.`)
-      .setColor('Green');
+      .setColor("Green");
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
   },

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const flags = [
   {
     country: "Deutschland",
@@ -59,7 +59,7 @@ const flags = [
   {
     country: "Mexiko",
     imageUrl: "https://www.worldometers.info/img/flags/mx-flag.gif",
-  }
+  },
   // Weitere Flaggen können hier hinzugefügt werden
 ];
 
@@ -70,13 +70,13 @@ const flags = [
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('flaggenquiz')
-    .setDescription('» Startet ein Flaggenquiz mit allen Flaggen der Welt')
-    .addChannelOption(option => option.setName('kanal').setDescription('Der Kanal, in den die Nachricht gesendet werden soll').setRequired(true))
+    .setName("flaggenquiz")
+    .setDescription("» Startet ein Flaggenquiz mit allen Flaggen der Welt")
+    .addChannelOption(option => option.setName("kanal").setDescription("Der Kanal, in den die Nachricht gesendet werden soll").setRequired(true))
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
-    const channel = interaction.options.getChannel('kanal');
+    const channel = interaction.options.getChannel("kanal");
     const currentTime = Math.floor(Date.now() / 1000); // Aktuelle Zeit in Unix-Timestamp
     const timestampAfter5Seconds = currentTime + 5; // Zeit in 5 Sekunden
     await interaction.reply({ content: `> \`⏰\` » Lade das Flaggenquiz... **<t:${timestampAfter5Seconds}:R>**`, ephemeral: true });
@@ -91,15 +91,15 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setDescription(`\`🚩\` » Welche Flagge ist das?\n\n\`💡\` » Tipp: Der Name des Landes beginnt mit **${firstLetterHint}**.\n\n\`✍️\` » Schreibe den Namen der Flagge in den Chat!`)
         .setImage(randomFlag.imageUrl)
-        .setColor('Random')
-        .setFooter({ text: '» Benutze den Button, um die Flagge zu überspringen.', iconURL: `${interaction.guild.iconURL()}` });
+        .setColor("Random")
+        .setFooter({ text: "» Benutze den Button, um die Flagge zu überspringen.", iconURL: `${interaction.guild.iconURL()}` });
 
       const row = new ActionRowBuilder()
         .addComponents(
           new ButtonBuilder()
-            .setCustomId('skip_flag')
-            .setLabel('➡️ Überspringen')
-            .setStyle(ButtonStyle.Secondary)
+            .setCustomId("skip_flag")
+            .setLabel("➡️ Überspringen")
+            .setStyle(ButtonStyle.Secondary),
         );
 
       // Wenn es bereits eine Nachricht gibt, bearbeiten wir diese anstelle einer neuen
@@ -118,12 +118,12 @@ module.exports = {
     let currentFlag = await sendNewFlag();
 
     // Button-Interaktions-Handler
-    const filter = (i) => i.customId === 'skip_flag' && i.user.id === interaction.user.id;
+    const filter = (i) => i.customId === "skip_flag" && i.user.id === interaction.user.id;
     const collector = channel.createMessageComponentCollector({ filter });
 
-    collector.on('collect', async (i) => {
+    collector.on("collect", async (i) => {
       await i.deferUpdate(); // Interaktion aufschieben, um Zeitüberschreitungen zu vermeiden
-      
+
       // Nachricht senden, dass das Quiz übersprungen wurde
       const skipMessage = await channel.send(`Das Flaggenquiz wurde von ${i.user} übersprungen.`);
 
@@ -140,8 +140,8 @@ module.exports = {
     const messageFilter = (msg) => msg.content.toLowerCase() === currentFlag.country.toLowerCase();
     const messageCollector = channel.createMessageCollector({ filter: messageFilter });
 
-    messageCollector.on('collect', async (msg) => {
-      await msg.react('✅');
+    messageCollector.on("collect", async (msg) => {
+      await msg.react("✅");
       const correctMessage = await channel.send(`> \`✅\` » Richtig! Das ist die Flagge von **${currentFlag.country}**.`);
 
       // Nachrichten nach 5 Sekunden löschen
@@ -152,7 +152,7 @@ module.exports = {
         const timestampAfter5Seconds = currentTime + 5; // Zeit in 5 Sekunden
 
         const waitingMessage = await channel.send(`> \`❗\` » Bitte warte... **<t:${timestampAfter5Seconds}:R>** geht es weiter.`);
-        
+
         setTimeout(async () => {
           await waitingMessage.delete();
           currentFlag = await sendNewFlag();
@@ -160,8 +160,8 @@ module.exports = {
       }, 5000);
     });
 
-    messageCollector.on('end', async (msg) => {
-      await msg.react('❌');
+    messageCollector.on("end", async (msg) => {
+      await msg.react("❌");
       setTimeout(async () => {
         await msg.delete();
       }, 3000);

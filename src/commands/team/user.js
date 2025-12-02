@@ -1,74 +1,58 @@
 const {
-    SlashCommandBuilder,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
+  SlashCommandBuilder,
+  EmbedBuilder,
+  PermissionFlagsBits,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } = require("discord.js");
 
-const Timeout = require('../../../Datenbank/timeoutdb');
-const Warn = require('../../../Datenbank/warndb');
-const bandb = require('../../../Datenbank/bandb');
+const Timeout = require("../../../Datenbank/timeoutdb");
+const Warn = require("../../../Datenbank/warndb");
+const bandb = require("../../../Datenbank/bandb");
 
 const BANNED_ROLE_ID = "886989738244964362";
 
 const RoleIds = [
-    '959869691529154631', // Admin
-    '929349039433056276', // Developer
-    '816985466230145044', // Sr-Moderator
-    '815920052385480754', // Moderator
-    '815920170371383366', // Support
-    '1263645368441241700', // Builder
-    '1399157711752532132', // Content
-    '815920219247214644', // Creator
-    '862708375698538507', // VIP
-    '815921105407574056', // Supreme
-    '917826787977871441', // Premium
-    '815920452337139733', // Legende
-    '835775627721179167', // Diamond
-    '835775556611997697', // Emerald
-    '835775597446955048', // Episch
-    '1258825307239219371', // Hyper Aktiv
-    '1258794321533075526', // Ultra Aktiv
-    '1258825144697360485', // Mega Aktiv
-    '1258827956634128467', // Stark Aktiv
-    '1258794479570124920', // Sehr Aktiv
-    '1258794944953319534', // Aktiv
-    '1258827226846199808', // Inaktiv
-    '1391760378924630109', // OG
+  "959869691529154631", // Admin
+  "929349039433056276", // Developer
+  "816985466230145044", // Sr-Moderator
+  "815920052385480754", // Moderator
+  "815920170371383366", // Support
+  "1263645368441241700", // Builder
+  "1399157711752532132", // Content
+  "815920219247214644", // Creator
+  "862708375698538507", // VIP
+  "815921105407574056", // Supreme
+  "917826787977871441", // Premium
+  "815920452337139733", // Legende
+  "835775627721179167", // Diamond
+  "835775556611997697", // Emerald
+  "835775597446955048", // Episch
+  "1258825307239219371", // Hyper Aktiv
+  "1258794321533075526", // Ultra Aktiv
+  "1258825144697360485", // Mega Aktiv
+  "1258827956634128467", // Stark Aktiv
+  "1258794479570124920", // Sehr Aktiv
+  "1258794944953319534", // Aktiv
+  "1258827226846199808", // Inaktiv
+  "1391760378924630109", // OG
 ];
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('user')
-        .setDescription('» Rufe Informationen über einen User ab. 👤')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+  data: new SlashCommandBuilder()
+    .setName("user")
+    .setDescription("» Rufe Informationen über einen User ab. 👤")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 
-        .addSubcommand(sub =>
-            sub
-                .setName("info")
-                .setDescription("» Zeigt Informationen über einen User an.")
-                .addUserOption(option =>
-                    option.setName("user")
-                        .setDescription("» Wähle einen User aus.")
-                        .setRequired(true)
-                )
-        )
-        .addSubcommand(sub =>
-            sub
-                .setName("find")
-                .setDescription("» Suche einen User über eine ID.")
-                .addStringOption(option =>
-                    option.setName("id")
-                        .setDescription("» Die ID des Users.")
-                        .setRequired(true)
-                )
-        )
-        .addSubcommand(sub =>
-            sub
-                .setName("list")
-                .setDescription("» Zeigt alle Server-Mitglieder an (20 pro Seite).")
+    .addSubcommand(sub =>
+      sub
+        .setName("info")
+        .setDescription("» Zeigt Informationen über einen User an.")
+        .addUserOption(option =>
+          option.setName("user")
+            .setDescription("» Wähle einen User aus.")
+            .setRequired(true),
         ),
 
     async execute(interaction) {
@@ -186,13 +170,13 @@ module.exports = {
                         `**\`📌\` Benutzerinformationen**\n` +
                         `> \`👤\` Benutzername: \`${user.username}\`\n` +
                         `> \`🆔\` Benutzer-ID: \`${user.id}\`\n` +
-                        `> \`🏷️\` Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n` +
-                        `**\`⏰\` Mitglied Seit**\n` +
+                        `> \`🏷️\` Anzeigename: \`${member?.displayName || "Nicht auf dem Server"}\`\n\n` +
+                        "**`⏰` Mitglied Seit**\n" +
                         `> \`📅\` Erstellt: ${createdAt}\n` +
                         `> \`📅\` Beigetreten: ${joinedAt}\n\n` +
-                        `**\`👮\` Moderation**\n` +
-                        `> \`⛔\` Bannstatus: ${banEmoji} ${banData.banned ? '**Gebannt**' : 'Nicht gebannt'}\n` +
-                        (banData.banned ? `> \`📄\` Grund: \`${banData.reason}\`\n` : '') +
+                        "**`👮` Moderation**\n" +
+                        `> \`⛔\` Bannstatus: ${banEmoji} ${banData.banned ? "**Gebannt**" : "Nicht gebannt"}\n` +
+                        (banData.banned ? `> \`📄\` Grund: \`${banData.reason}\`\n` : "") +
                         `> \`🔇\` Timeouts: \`${timeoutCount}\`\n` +
                         `> \`❗\` Warnungen: \`${warnCount}\``
                     )
@@ -306,18 +290,19 @@ module.exports = {
             return interaction.reply({ embeds: [embed], ephemeral: true });
         }
     }
+  },
 };
 
 // ------------------- BAN STATUS HELPER -------------------
 async function getBanStatus(interaction, userId, member) {
-    try {
-        const userData = await bandb.findOne({ userId });
-        if (userData) return { banned: true, reason: userData.reason?.trim() || 'Keine Angabe' };
-        const banInfo = await interaction.guild.bans.fetch(userId).catch(() => null);
-        if (banInfo) return { banned: true, reason: banInfo.reason?.trim() || 'Keine Angabe' };
-        if (member?.roles.cache.has(BANNED_ROLE_ID)) return { banned: true, reason: 'Keine Angabe' };
-    } catch (err) {
-        console.error('Fehler beim Banncheck:', err);
-    }
-    return { banned: false, reason: 'Nicht gebannt' };
+  try {
+    const userData = await bandb.findOne({ userId });
+    if (userData) {return { banned: true, reason: userData.reason?.trim() || "Keine Angabe" };}
+    const banInfo = await interaction.guild.bans.fetch(userId).catch(() => null);
+    if (banInfo) {return { banned: true, reason: banInfo.reason?.trim() || "Keine Angabe" };}
+    if (member?.roles.cache.has(BANNED_ROLE_ID)) {return { banned: true, reason: "Keine Angabe" };}
+  } catch (err) {
+    console.error("Fehler beim Banncheck:", err);
+  }
+  return { banned: false, reason: "Nicht gebannt" };
 }

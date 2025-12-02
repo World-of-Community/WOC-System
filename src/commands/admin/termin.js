@@ -1,13 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const Termin = require('../../../Datenbank/termindb');
-
-const remindMap = new Map();
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const Termin = require("../../../Datenbank/termindb");
 
 // Hilfsfunktion: Deutsches Datum parsen (z.B. 30.07.2025 18:00)
 function parseGermanDateTime(input) {
   const regex = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/;
   const match = input.match(regex);
-  if (!match) return NaN;
+  if (!match) {return NaN;}
 
   const [ , day, month, year, hour, minute ] = match.map(Number);
   const date = new Date(year, month - 1, day, hour, minute);
@@ -26,50 +24,50 @@ function parseGermanDateTime(input) {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('termin')
-    .setDescription('Terminverwaltung 📅')
+    .setName("termin")
+    .setDescription("Terminverwaltung 📅")
     .addStringOption(opt =>
-      opt.setName('action')
-        .setDescription('Aktion: add, edit, remove, list')
+      opt.setName("action")
+        .setDescription("Aktion: add, edit, remove, list")
         .setRequired(true)
         .addChoices(
-          { name: 'add', value: 'add' },
-          { name: 'edit', value: 'edit' },
-          { name: 'remove', value: 'remove' },
-          { name: 'list', value: 'list' },
+          { name: "add", value: "add" },
+          { name: "edit", value: "edit" },
+          { name: "remove", value: "remove" },
+          { name: "list", value: "list" },
         ))
     .addUserOption(opt =>
-      opt.setName('user')
-        .setDescription('Nutzer (für add, edit, remove)'))
+      opt.setName("user")
+        .setDescription("Nutzer (für add, edit, remove)"))
     .addStringOption(opt =>
-      opt.setName('zeit')
-        .setDescription('Datum & Uhrzeit (z. B. 30.07.2025 18:00) (für add, edit)'))
+      opt.setName("zeit")
+        .setDescription("Datum & Uhrzeit (z. B. 30.07.2025 18:00) (für add, edit)"))
     .addUserOption(opt =>
-      opt.setName('teammitglied')
-        .setDescription('Optionales Teammitglied (nur für add)'))
+      opt.setName("teammitglied")
+        .setDescription("Optionales Teammitglied (nur für add)"))
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    const action = interaction.options.getString('action');
-    const user = interaction.options.getUser('user');
-    const zeitInput = interaction.options.getString('zeit');
-    const teamMember = interaction.options.getUser('teammitglied');
+    const action = interaction.options.getString("action");
+    const user = interaction.options.getUser("user");
+    const zeitInput = interaction.options.getString("zeit");
+    const teamMember = interaction.options.getUser("teammitglied");
 
-    if (['add', 'edit', 'remove'].includes(action) && !user) {
-      return interaction.reply({ content: '> `❌` » Bitte gib einen Nutzer an.', ephemeral: true });
+    if (["add", "edit", "remove"].includes(action) && !user) {
+      return interaction.reply({ content: "> `❌` » Bitte gib einen Nutzer an.", ephemeral: true });
     }
-    if (['add', 'edit'].includes(action) && !zeitInput) {
-      return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum und Uhrzeit an.', ephemeral: true });
+    if (["add", "edit"].includes(action) && !zeitInput) {
+      return interaction.reply({ content: "> `❌` » Bitte gib ein gültiges Datum und Uhrzeit an.", ephemeral: true });
     }
 
-    if (action === 'add') {
+    if (action === "add") {
       const timestamp = parseGermanDateTime(zeitInput);
       if (isNaN(timestamp))
-        return interaction.reply({ content: '> `❌` » Ungültiges Datum! Beispiel: `30.07.2025 18:00`', ephemeral: true });
+      {return interaction.reply({ content: "> `❌` » Ungültiges Datum! Beispiel: `30.07.2025 18:00`", ephemeral: true });}
 
       const existing = await Termin.findOne({ userId: user.id });
       if (existing)
-        return interaction.reply({ content: '> `❗` » Nutzer hat schon einen Termin!', ephemeral: true });
+      {return interaction.reply({ content: "> `❗` » Nutzer hat schon einen Termin!", ephemeral: true });}
 
       await Termin.create({
         userId: user.id,
@@ -81,19 +79,19 @@ module.exports = {
       return interaction.reply({
         content:
           `> \`✅\` » Termin für ${user} am <t:${Math.floor(timestamp / 1000)}:F> wurde erstellt.` +
-          (teamMember ? `\n> \`👥\` » Teammitglied: ${teamMember}` : ''),
+          (teamMember ? `\n> \`👥\` » Teammitglied: ${teamMember}` : ""),
         ephemeral: true,
       });
     }
 
-    if (action === 'edit') {
+    if (action === "edit") {
       const timestamp = parseGermanDateTime(zeitInput);
       if (isNaN(timestamp))
-        return interaction.reply({ content: '> `❌` » Ungültiges Datum! Beispiel: `30.07.2025 18:00`', ephemeral: true });
+      {return interaction.reply({ content: "> `❌` » Ungültiges Datum! Beispiel: `30.07.2025 18:00`", ephemeral: true });}
 
       const termin = await Termin.findOne({ userId: user.id });
       if (!termin)
-        return interaction.reply({ content: '> `❗` » Kein Termin gefunden.', ephemeral: true });
+      {return interaction.reply({ content: "> `❗` » Kein Termin gefunden.", ephemeral: true });}
 
       termin.timestamp = timestamp;
       await termin.save();
@@ -104,29 +102,29 @@ module.exports = {
       });
     }
 
-    if (action === 'remove') {
+    if (action === "remove") {
       const termin = await Termin.findOneAndDelete({ userId: user.id });
       if (!termin)
-        return interaction.reply({ content: '> `❗` » Kein Termin gefunden.', ephemeral: true });
+      {return interaction.reply({ content: "> `❗` » Kein Termin gefunden.", ephemeral: true });}
 
       return interaction.reply({ content: `> \`🗑️\` » Termin für ${user} wurde gelöscht.`, ephemeral: true });
     }
 
-    if (action === 'list') {
+    if (action === "list") {
       const termine = await Termin.find().sort({ timestamp: 1 });
       if (termine.length === 0)
-        return interaction.reply({ content: '> `ℹ️` » Es sind keine Termine gespeichert.', ephemeral: true });
+      {return interaction.reply({ content: "> `ℹ️` » Es sind keine Termine gespeichert.", ephemeral: true });}
 
       const embed = new EmbedBuilder()
-        .setTitle('`📅` Alle Termine')
+        .setTitle("`📅` Alle Termine")
         .setColor(0x2b2d31)
         .setFooter({ text: `Gesamt: ${termine.length}` });
 
       for (const t of termine) {
-        const userTag = await interaction.client.users.fetch(t.userId).then(u => u.tag).catch(() => '❓');
+        const userTag = await interaction.client.users.fetch(t.userId).then(u => u.tag).catch(() => "❓");
         const teamTag = t.teamMemberId
-          ? await interaction.client.users.fetch(t.teamMemberId).then(u => u.tag).catch(() => '❓')
-          : '–';
+          ? await interaction.client.users.fetch(t.teamMemberId).then(u => u.tag).catch(() => "❓")
+          : "–";
 
         embed.addFields({
           name: `> \`👤\` » ${userTag}`,
@@ -138,6 +136,6 @@ module.exports = {
       return interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
-    return interaction.reply({ content: '> `❌` » Ungültige Aktion!', ephemeral: true });
+    return interaction.reply({ content: "> `❌` » Ungültige Aktion!", ephemeral: true });
   },
 };
