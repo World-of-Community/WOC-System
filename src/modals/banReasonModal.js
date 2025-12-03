@@ -1,75 +1,75 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const bandb = require("../../Datenbank/bandb");
-const Timeout = require("../../Datenbank/timeoutdb");
-const Warn = require("../../Datenbank/warndb");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const bandb = require('../Datenbank/bandb');
+const Timeout = require('../Datenbank/timeoutdb');
+const Warn = require('../Datenbank/warndb');
 
 module.exports = {
-  id: "banReasonModal_",
-  run: async (client, interaction) => {
-    const userId = interaction.customId.split("_")[1];
-    const newReason = interaction.fields.getTextInputValue("banReasonInput");
+    id: 'banReasonModal_',
+    run: async (client, interaction) => {
+        const userId = interaction.customId.split('_')[1];
+        const newReason = interaction.fields.getTextInputValue('banReasonInput');
 
-    let userData = await bandb.findOne({ userId });
-    if (!userData) {
-      userData = new bandb({ userId, reason: newReason });
-    } else {
-      userData.reason = newReason;
-    }
-    await userData.save();
+        let userData = await bandb.findOne({ userId });
+        if (!userData) {
+            userData = new bandb({ userId, reason: newReason });
+        } else {
+            userData.reason = newReason;
+        }
+        await userData.save();
 
-    const guild = interaction.guild;
-    const user = await client.users.fetch(userId);
-    const member = await guild.members.fetch(userId).catch(() => null);
+        const guild = interaction.guild;
+        const user = await client.users.fetch(userId);
+        const member = await guild.members.fetch(userId).catch(() => null);
 
-    const [timeoutCount, warnCount] = await Promise.all([
-      Timeout.countDocuments({ userId, guildId: guild.id }).catch(() => 0),
-      Warn.countDocuments({ userId, guildId: guild.id }).catch(() => 0),
-    ]);
+        const [timeoutCount, warnCount] = await Promise.all([
+            Timeout.countDocuments({ userId, guildId: guild.id }).catch(() => 0),
+            Warn.countDocuments({ userId, guildId: guild.id }).catch(() => 0)
+        ]);
 
-    const banColor = 0xED4245;
-    const banEmoji = "`🔴`";
+        const banColor = 0xED4245;
+        const banEmoji = '`🔴`';
 
-    const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
-    const joinedAt = member?.joinedTimestamp ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>` : "`Nicht auf dem Server`";
+        const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
+        const joinedAt = member?.joinedTimestamp ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>` : '`Nicht auf dem Server`';
 
-    const embed = new EmbedBuilder()
-      .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
-      .setColor(banColor)
-      .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
-      .setDescription(
-        "**`📌` Benutzerinformationen**\n" +
+        const embed = new EmbedBuilder()
+            .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
+            .setColor(banColor)
+            .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+            .setDescription(
+                `**\`📌\` Benutzerinformationen**\n` +
                 `> \`👤\` » Benutzername: \`${user.username}\`\n` +
                 `> \`🆔\` » Benutzer-ID: \`${user.id}\`\n` +
-                `> \`🏷️\` » Anzeigename: \`${member?.displayName || "Nicht auf dem Server"}\`\n\n` +
-                "**`⏰` Mitglied Seit**\n" +
+                `> \`🏷️\` » Anzeigename: \`${member?.displayName || 'Nicht auf dem Server'}\`\n\n` +
+                `**\`⏰\` Mitglied Seit**\n` +
                 `> \`📅\` » Erstellt: ${createdAt}\n` +
                 `> \`📅\` » Beigetreten: ${joinedAt}\n\n` +
-                "**`👮` Moderation**\n" +
+                `**\`👮\` Moderation**\n` +
                 `> \`⛔\` » Bannstatus: ${banEmoji} **Gebannt**\n` +
                 `> \`📄\` » Grund: \`${newReason}\`\n` +
                 `> \`🔇\` » Timeouts: \`${timeoutCount}\`\n` +
-                `> \`❗\` » Warnungen: \`${warnCount}\``,
-      )
-      .setFooter({ text: `${guild.name} | Userinfo`, iconURL: guild.iconURL() || user.displayAvatarURL() })
-      .setTimestamp();
+                `> \`❗\` » Warnungen: \`${warnCount}\``
+            )
+            .setFooter({ text: `${guild.name} | Userinfo`, iconURL: guild.iconURL() || user.displayAvatarURL() })
+            .setTimestamp();
 
-    const components = [
-      new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId(`editBanReason_${user.id}`)
-          .setLabel("📝 Ban-Grund ändern")
-          .setStyle(ButtonStyle.Secondary),
-      ),
-    ];
+        const components = [
+            new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`editBanReason_${user.id}`)
+                    .setLabel('📝 Ban-Grund ändern')
+                    .setStyle(ButtonStyle.Secondary)
+            )
+        ];
 
-    try {
-      if (interaction.message) {
-        await interaction.update({ embeds: [embed], components });
-      } else {
-        await interaction.reply({ content: "Ban-Grund wurde aktualisiert.", ephemeral: true });
-      }
-    } catch {
-      await interaction.reply({ content: "Ban-Grund wurde aktualisiert.", ephemeral: true });
+        try {
+            if (interaction.message) {
+                await interaction.update({ embeds: [embed], components });
+            } else {
+                await interaction.reply({ content: 'Ban-Grund wurde aktualisiert.', ephemeral: true });
+            }
+        } catch {
+            await interaction.reply({ content: 'Ban-Grund wurde aktualisiert.', ephemeral: true });
+        }
     }
-  },
 };

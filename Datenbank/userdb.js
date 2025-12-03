@@ -1,122 +1,122 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  userID: {
-    type: String,
-  },
-
-  donation: Number,
-  birthday: {
-    tag: {
-      type: Number,
-      required: false,
-    },
-    monat: {
-      type: Number,
-      required: false,
-    },
-    jahr: {
-      type: Number,
-      required: false,
-    },
-  },
-
-  reactions: {
-    type: Object,
-    required: false,
-  },
-
-  afk: {
-    type: Boolean,
-    required: false,
-  },
-
-  afkReason: {
-    type: String,
-    required: false,
-  },
-
-  afkStamp: {
-    type: String,
-    required: false,
-  },
-
-  vorstellungID: {
-    type: String,
-    required: false,
-  },
-
-  giveaway: {
-    eventWins: {
-      type: Number,
+    userID: {
+        type: String
     },
 
-    toggledm: {
-      type: Boolean,
+    donation: Number,
+    birthday: {
+        tag: {
+            type: Number,
+            required: false,
+        },
+        monat: {
+            type: Number,
+            required: false,
+        },
+        jahr: {
+            type: Number,
+            required: false,
+        },
     },
 
-    messages: {
-      type: Number,
-      default: 0,
+    reactions: {
+        type: Object,
+        required: false,
     },
 
-    voiceTime: {
-      type: Number,
-      default: 0,
+    afk: {
+        type: Boolean,
+        required: false,
     },
 
-    startTime: {
-      type: Number,
-    },
-  },
-
-  stats: {
-    messages: {
-      type: Number,
-      default: 0,
+    afkReason: {
+        type: String,
+        required: false,
     },
 
-    voiceTime: {
-      type: Number,
-      default: 0,
+    afkStamp: {
+        type: String,
+        required: false,
     },
-  },
 
-  erfolge: {
-    informant: {
-      type: Number,
-      default: 0,
+    vorstellungID: {
+        type: String,
+        required: false,
     },
-    umfragen: {
-      type: Number,
-      default: 0,
-    },
-    glueckspilz: {
-      type: Number,
-      default: 0,
-    },
-  },
 
-  firstMessage: {
-    type: Boolean,
-    default: false,
-  },
+    giveaway: {
+        eventWins: {
+            type: Number
+        },
+    
+        toggledm: {
+            type: Boolean
+        },
+    
+        messages: {
+            type: Number,
+            default: 0
+        },
+    
+        voiceTime: {
+            type: Number,
+            default: 0,
+        },
+    
+        startTime: {
+            type: Number
+        },
+    },
 
-  invites: {
+    stats: {
+        messages: {
+            type: Number,
+            default: 0
+        },
+    
+        voiceTime: {
+            type: Number,
+            default: 0
+        },
+    },
+
+    erfolge: {
+        informant: {
+            type: Number,
+            default: 0,
+        },
+        umfragen: {
+            type: Number,
+            default: 0,
+        },
+        glueckspilz: {
+            type: Number,
+            default: 0,
+        }
+    },
+
+    firstMessage: {
+        type: Boolean,
+        default: false
+    },
+    
+    invites: {
     joins: { type: Number, default: 0 },
     bonus: { type: Number, default: 0 },
-    left: { type: Number, default: 0 },
-  },
+    left: { type: Number, default: 0 }
+    },
 
-  invitedBy: {
+    invitedBy: {
     type: String,
     required: false,
-  },
+    },
 
-  shoppass: { type: Boolean, default: false },
+    shoppass: { type: Boolean, default: false },
 
-  onlineTime: { type: Number, default: 0 }, // Nur volle Stunden
-  lastOnline: { type: Date, default: null },
+    onlineTime: { type: Number, default: 0 }, // Nur volle Stunden
+    lastOnline: { type: Date, default: null },
 });
 
-module.exports = mongoose.model("user-data", userSchema);
+module.exports = mongoose.model('user-data', userSchema)

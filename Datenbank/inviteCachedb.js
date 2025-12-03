@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const inviteCacheSchema = new mongoose.Schema({
   guildID: {
@@ -11,4 +11,4 @@ const inviteCacheSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("InviteCache", inviteCacheSchema);
+module.exports = mongoose.model('InviteCache', inviteCacheSchema);

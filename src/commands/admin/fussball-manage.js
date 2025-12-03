@@ -1,55 +1,55 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { Team } = require("../../../Datenbank/fussballdb");
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("fussball-manage")
-    .setDescription("Verwalte Fußballteams")
+    .setName('fussball-manage')
+    .setDescription('Verwalte Fußballteams')
     .addSubcommand(sub =>
-      sub.setName("add")
-        .setDescription("Füge ein Fußballteam hinzu")
+      sub.setName('add')
+        .setDescription('Füge ein Fußballteam hinzu')
         .addStringOption(opt =>
-          opt.setName("teamname")
-            .setDescription("Name des Teams")
+          opt.setName('teamname')
+            .setDescription('Name des Teams')
             .setRequired(true))
         .addStringOption(opt =>
-          opt.setName("emoji")
-            .setDescription("Emoji/Icon für das Team")
+          opt.setName('emoji')
+            .setDescription('Emoji/Icon für das Team')
             .setRequired(true)))
     .addSubcommand(sub =>
-      sub.setName("remove")
-        .setDescription("Entferne ein Fußballteam")
+      sub.setName('remove')
+        .setDescription('Entferne ein Fußballteam')
         .addStringOption(opt =>
-          opt.setName("teamname")
-            .setDescription("Name des Teams")
-            .setRequired(true)))
+          opt.setName('teamname')
+          .setDescription('Name des Teams')
+          .setRequired(true)))
     // Spieler hinzufügen als STRING (kein User)
     .addSubcommand(sub =>
-      sub.setName("add-player")
-        .setDescription("Füge einen Spieler zu einem Team hinzu")
+      sub.setName('add-player')
+        .setDescription('Füge einen Spieler zu einem Team hinzu')
         .addStringOption(opt =>
-          opt.setName("teamname")
-            .setDescription("Name des Teams")
-            .setRequired(true))
+          opt.setName('teamname')
+          .setDescription('Name des Teams')
+          .setRequired(true))
         .addStringOption(opt =>
-          opt.setName("spieler")
-            .setDescription("Name des Spielers")
-            .setRequired(true)),
+          opt.setName('spieler')
+          .setDescription('Name des Spielers')
+          .setRequired(true))
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
 
-    if (sub === "add") {
+    if (sub === 'add') {
+      // ... existierender Code ...
+    } 
+    else if (sub === 'remove') {
       // ... existierender Code ...
     }
-    else if (sub === "remove") {
-      // ... existierender Code ...
-    }
-    else if (sub === "add-player") {
-      const teamName = interaction.options.getString("teamname");
-      const spielerName = interaction.options.getString("spieler");
+    else if (sub === 'add-player') {
+      const teamName = interaction.options.getString('teamname');
+      const spielerName = interaction.options.getString('spieler');
 
       const team = await Team.findOne({ name: teamName });
       if (!team) {
@@ -59,7 +59,7 @@ module.exports = {
         });
       }
 
-      if (!team.players) {team.players = [];}
+      if (!team.players) team.players = [];
 
       if (team.players.includes(spielerName)) {
         return interaction.reply({
@@ -76,5 +76,5 @@ module.exports = {
         ephemeral: true,
       });
     }
-  },
+  }
 };

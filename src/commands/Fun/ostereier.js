@@ -1,14 +1,14 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const eventItems = require("../../../Datenbank/eventitems");
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const eventItems = require('../../../Datenbank/eventitems');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("ostereier")
-    .setDescription("» Sammle täglich Ostereier beim Oster-Event! 🐣"),
+    .setName('ostereier')
+    .setDescription('» Sammle täglich Ostereier beim Oster-Event! 🐣'),
 
   async execute(interaction) {
     const userId = interaction.user.id;
-    const eventType = "easter";
+    const eventType = 'easter';
 
     let userData = await eventItems.findOne({ userId, eventType });
     if (!userData) {
@@ -24,7 +24,7 @@ module.exports = {
 
     if (sameDay) {
       return interaction.reply({
-        content: "> `🐇` | Du hast heute bereits Alle Ostereier gesammelt! Komm morgen wieder.",
+        content: '> `🐇` | Du hast heute bereits Alle Ostereier gesammelt! Komm morgen wieder.',
         ephemeral: true,
       });
     }
@@ -35,9 +35,9 @@ module.exports = {
     await userData.save();
 
     const embed = new EmbedBuilder()
-      .setTitle("`🐣` Ostereiersuche!")
+      .setTitle('`🐣` Ostereiersuche!')
       .setDescription(`Du hast **${collected} Ostereier** gefunden! \`🥚\`\n\nInsgesamt hast du nun **${userData.amount} Ostereier**.`)
-      .setColor("Green");
+      .setColor('Green');
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
   },

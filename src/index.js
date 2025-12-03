@@ -1,252 +1,1295 @@
-const { Client, GatewayIntentBits, Partials } = require("discord.js");
-const mongoose = require("mongoose");
-const config = require("./config");
-const { Logger } = require("./utils");
-const { CommandHandler, EventHandler, ButtonHandler, ModalHandler } = require("./handlers");
-const {
-  AdventService,
-  BirthdayService,
-  GiveawayService,
-  LoggingService,
-  VoiceService,
-  CronService,
-} = require("./services");
-const { deployCommands } = require("./deployCommands");
-
-/**
- * Haupteinstiegspunkt des Bots
- * Initialisiert Client, lädt Handler und startet Services
- */
-
-// Client initialisieren
+const { 
+    Client, 
+    GatewayIntentBits, 
+    Partials, 
+    ChannelType, 
+    EmbedBuilder, 
+    Collection, 
+    AuditLogEvent, 
+    ApplicationCommandType, 
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonStyle, 
+    time, 
+    TimestampStyles, 
+    ComponentType 
+} = require('discord.js')
+const path = require('node:path');
+const fs = require('fs');
+const config = require('../src/json/config.json')
+const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
+const { ApiClient } = require('@twurple/api');
+const { EventSubWsListener } = require('@twurple/eventsub-ws');
+const AsciiTable = require('ascii-table');
+const { updateLeagueTable } = require('./commands/admin/fussball-tabelle');
 const client = new Client({
-  intents: [
-    GatewayIntentBits.GuildIntegrations,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessageTyping,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.DirectMessages,
-    GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.GuildVoiceStates,
-  ],
-  partials: [
-    Partials.Channel,
-    Partials.User,
-    Partials.GuildMember,
-    Partials.Message,
-    Partials.Reaction,
-  ],
+    intents: [
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildVoiceStates, 
+    ],
+    partials: [
+        Partials.Channel,
+        Partials.User,
+        Partials.GuildMember,
+        Partials.Message,
+        Partials.Reaction
+    ],
 });
 
-// Event Listener Limit erhöhen
-client.setMaxListeners(20);
+/*
+const authProvider = new StaticAuthProvider({ clientId: config.twitch.clientId, clientSecret: config.twitch.clientSecret });
+const apiClient = new ApiClient({ authProvider });
+const listener = new EventSubWsListener({ apiClient });
 
-// Handler initialisieren
-const commandHandler = new CommandHandler(client);
-const eventHandler = new EventHandler(client);
-const buttonHandler = new ButtonHandler(client);
-const modalHandler = new ModalHandler(client);
+listener.start();
 
-// Services initialisieren
-let services = {};
+listener.onStreamOnline('727437860', async (handler) => {
+    console.log(handler)
+})
+*/
 
-/**
- * Initialisiert die Datenbank
- */
-async function connectDatabase() {
-  try {
-    await mongoose.connect(config.mongodb.uri);
-    Logger.success("Datenbank verbunden");
-
-    mongoose.connection.on("error", (err) => {
-      Logger.error("MongoDB Verbindungsfehler", err);
-    });
-
-    mongoose.connection.on("disconnected", () => {
-      Logger.warning("MongoDB Verbindung getrennt");
-    });
-  } catch (error) {
-    Logger.error("Fehler beim Verbinden zur Datenbank", error);
-    process.exit(1);
-  }
-}
-
-/**
- * Lädt alle Handler
- */
-function loadHandlers() {
-  Logger.info("Lade Handler...");
-
-  // Deploy Commands
-  deployCommands();
-
-  // Lade Commands
-  commandHandler.load();
-
-  // Lade Events
-  eventHandler.load();
-
-  // Lade Button Handler
-  buttonHandler.load();
-
-  // Lade Modal Handler
-  modalHandler.load();
-
-  // Handler global verfügbar machen
-  client.buttonHandler = buttonHandler;
-  client.modalHandler = modalHandler;
-
-  Logger.success("Alle Handler geladen");
-}
-
-/**
- * Startet alle Services
- */
-function startServices() {
-  Logger.info("Starte Services...");
-
-  services = {
-    advent: new AdventService(client),
-    birthday: new BirthdayService(client),
-    giveaway: new GiveawayService(client),
-    logging: new LoggingService(client),
-    voice: new VoiceService(client),
-    cron: new CronService(client),
+const buttonConfig = {
+    1: { label: '1🎁', style: ButtonStyle.Primary },
+    2: { label: '2🌨️', style: ButtonStyle.Primary },
+    3: { label: '3🎄', style: ButtonStyle.Primary },
+    4: { label: '4⛄', style: ButtonStyle.Primary },
+    5: { label: '5⭐', style: ButtonStyle.Primary },
+    6: { label: '6❄️', style: ButtonStyle.Primary },
+    7: { label: '7✨', style: ButtonStyle.Primary },
+    8: { label: '8🎄', style: ButtonStyle.Primary },
+    9: { label: '9☃️', style: ButtonStyle.Primary },
+    10: { label: '10🎁', style: ButtonStyle.Primary },
+    11: { label: '11⭐', style: ButtonStyle.Primary },
+    12: { label: '12❄️', style: ButtonStyle.Primary },
+    13: { label: '13🌨️', style: ButtonStyle.Primary },
+    14: { label: '14🎄', style: ButtonStyle.Primary },
+    15: { label: '15⭐', style: ButtonStyle.Primary },
+    16: { label: '16✨', style: ButtonStyle.Primary },
+    17: { label: '17❄️', style: ButtonStyle.Primary },
+    18: { label: '18🎄', style: ButtonStyle.Primary },
+    19: { label: '19🧸', style: ButtonStyle.Primary },
+    20: { label: '20🦌', style: ButtonStyle.Primary },
+    21: { label: '21✨', style: ButtonStyle.Primary },
+    22: { label: '22🎉', style: ButtonStyle.Primary },
+    23: { label: '23🎁', style: ButtonStyle.Primary },
+    24: { label: '24🎅', style: ButtonStyle.Primary },
   };
 
-  // Starte Services
-  services.advent.start();
-  services.birthday.start();
-  services.giveaway.start();
-  services.cron.start();
+// Modules and Files
+const mongoose = require('mongoose');
+const threaddb = require('../Datenbank/threaddb');
+mongoose.connect(config.mongodb).then(console.log('🔗  | Datenbank ist verbunden'));
+const cron = require('node-cron');
+const giveawaydb = require('../Datenbank/giveawaydb');
+const serverdb = require('../Datenbank/serverdb');
+const userdb = require('../Datenbank/userdb');
+const { deployCommands } = require('./deployCommands');
+let invites = new Map();
 
-  // Services global verfügbar machen
-  client.services = services;
+client.setMaxListeners(20); // Sets the limit to 20 listeners
 
-  Logger.success("Alle Services gestartet");
+// Lade Commands
+deployCommands();
+client.commands = new Collection();
+
+const readCommands = (dir, table) => {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+        const fullPath = path.join(dir, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+            readCommands(fullPath, table);  
+        } else if (file.endsWith(".js")) {
+            try {
+                const command = require(fullPath);
+                if (command.data && command.data.name) {
+                    client.commands.set(command.data.name, command);
+                    table.addRow(command.data.name, '✅');
+                } else {
+                    table.addRow(file.split('.js')[0], '⛔');
+                }
+            } catch (error) {
+                console.error(`Error loading command ${file}: ${error.message}`);
+                table.addRow(file.split('.js')[0], '⛔');
+            }
+        }
+    }
+};
+
+let table = new AsciiTable()
+    .setHeading('Slash Commands', 'Status')
+    .setBorder('|', '=', '0', '0');
+
+readCommands(path.resolve(__dirname, 'commands'), table);
+
+console.log(table.toString());
+console.log('-----------------------------');
+
+// Load Events
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
+for (const file of eventFiles) {
+    const filePath = path.join(eventsPath, file);
+    const event = require(filePath);
+    if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args));
+    } else {
+        client.on(event.name, (...args) => event.execute(...args));
+    }
 }
 
-/**
- * Lädt bestehende Handler-Funktionen (für Kompatibilität)
- */
-function loadLegacyHandlers() {
-  const fs = require("fs");
-  const functionFolder = fs.readdirSync("./src/functions");
+const functionFolder = fs.readdirSync(`./src/functions`);
+for (const folder of functionFolder) {
+  const functionFiles = fs
+    .readdirSync(`./src/functions/${folder}`)
+    .filter((file) => file.endsWith(".js"));
+  for (const file of functionFiles)
+    require(`./functions/${folder}/${file}`)(client);
+}
 
-  for (const folder of functionFolder) {
-    const functionFiles = fs
-      .readdirSync(`./src/functions/${folder}`)
-      .filter((file) => file.endsWith(".js"));
+// Systems
+client.vorschlag();
 
-    for (const file of functionFiles) {
+// Handlers
+client.handleErfolg(); 
+client.manageTeam();
+
+// Bot Ping / Erwähnung
+const pingMessages = [
+    'Wenn du Hilfe brauchst öffne ein Ticket im Support <:pepeheart:974642478055555082>',
+    'Ein Admin hat mir verboten dir zu antworten <a:warnung:1066110628705615914>',
+    'Ja? <:Moin:915211924164210738>',
+    'Was gibt es? <a:what:1119708325962055720>',
+    'Grüße dich! <a:winken:1086560167442796544>',
+    'Ich sorge für Recht und Ordnung! `📚`',
+    'An mir kommt keiner vorbei. `😎`',
+    'Legt euch lieber nicht mit mir an! `😈`',
+    'Ich bin sehr Aufmerksam! `❗`'
+];
+
+// MongoDB
+mongoose.connection.on('connected', () => {
+    console.log('🔗  | Verbunden mit MongoDB!');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error(`⚠️  | Verbindungsfehler: ${err.message}`);
+});
+
+// Täglich um Mitternacht (Adventskalender)
+cron.schedule('00 00 * * *', async () => {
+    const server = await serverdb.findOne({ guildID: '815919809379172354' });
+    if(!server) return;
+    const currentDate = new Date();
+    const currentDay = new Date().getDate();
+    const currentMonth = currentDate.getMonth();
+    const maxDay = 24;
+    
+    try {
+        // Kanal und Nachricht abrufen
+        const channel = await client.channels.fetch(server.adventskalender.channelId);
+        if (!channel) throw new Error('Kanal nicht gefunden!');
+    
+        const message = await channel.messages.fetch(server.adventskalender.messageId);
+        if (!message) throw new Error('Nachricht nicht gefunden!');
+    
+        // Neue Button-Logik
+        const rows = [];
+        let currentRow = new ActionRowBuilder();
+    
+        for (let i = 1; i <= maxDay; i++) {
+            const buttonData = buttonConfig[i] || {};
+            currentRow.addComponents(
+                new ButtonBuilder()
+                .setCustomId(`advent_${i}`)
+                .setLabel(buttonData.label || i.toString())
+                .setStyle(buttonData.style || ButtonStyle.Primary)
+                .setDisabled(i > currentDay || currentMonth !== 11) // Zukünftige Tage deaktivieren
+        );
+    
+        if (currentRow.components.length === 5) {
+            rows.push(currentRow);
+            currentRow = new ActionRowBuilder();
+        }
+        }
+        if (currentRow.components.length > 0) rows.push(currentRow);
+    
+        // Aktualisiertes Embed
+        const updatedEmbed = EmbedBuilder.from(message.embeds[0])
+        .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`);
+    
+        // Nachricht bearbeiten
+        await message.edit({ embeds: [updatedEmbed], components: rows });
+        console.log(`Adventskalener-Embed erfolgreich aktualisiert: Heute ist der ${currentDay}. Dezember`);
+    } catch (error) {
+        console.error('Fehler beim Bearbeiten des Embeds:', error);
+    }
+    });
+
+    // Nachricht wenn ein neues Türchen geöffnet werden kann
+    cron.schedule('0 0 * * *', async () => {
+        try {
+            const currentDate = new Date();
+    
+            // Nur im Dezember ausführen
+            if (currentDate.getMonth() !== 11) return;
+    
+            const channelId = '1312772215791685743'; // Adventskalender-Kanal-ID
+            const channel = await client.channels.fetch(channelId);
+    
+            if (!channel || !channel.isTextBased()) {
+                console.error('Kanal konnte nicht gefunden oder ist kein Textkanal.');
+                return;
+            }
+    
+            const reminderMessage = await channel.send({
+                content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`,
+            });
+    
+            // Nachricht nach 3 Minuten löschen
+            setTimeout(() => reminderMessage.delete(), 3 * 60 * 1000);
+        } catch (error) {
+            console.error('Fehler beim Senden der Nachricht:', error);
+        }
+    });
+
+// Wenn der Bot gepingt wird
+client.on('messageCreate', message => {
+    if (message.mentions.has(client.user) && !message.author.bot) {
+        const randomPingMessage = pingMessages[Math.floor(Math.random() * pingMessages.length)];
+        message.channel.send(randomPingMessage).then(sentMessage => {
+            setTimeout(() => {
+                sentMessage.delete()
+                    .catch(err => console.error('Fehler beim Löschen der Nachricht:', err));
+            }, 5000); // 5000 Millisekunden = 5 Sekunden
+        }).catch(err => console.error('Fehler beim Senden der Nachricht:', err));
+    }
+});
+
+// Bot schreibt user per DM wenn der bot angeschrieben wird
+client.on('messageCreate', async message => {
+    if (message.channel.type === ChannelType.DM && !message.author.bot) {
+        try {
+            // Antwort auf die DM
+            await message.channel.send(`Hey ${message.author.displayName}!\nLeider bin ich der falsche Ansprechpartner, falls du Hilfe suchst...<:pepecryhands:1258388912196550707>\nÖffne ein Support Ticket in <#819555839362072606> damit sich unser Support-Team um dein Problem so schnell es geht kümmern kann. <:pepeheart:974642478055555082>`);
+        } catch (error) {
+            console.error('Fehler beim Senden der Antwort:', error);
+        }
+    }
+});
+
+//==================LOGS=====================
+
+const ThreadIDs = {
+    CHANNEL: "1269998213952442525",
+    MESSAGE: "1269998217181921320",
+    JOIN: "1269998215512457259",
+    ROLES: "1269998221518831721",
+    SERVER: "1269998220440895510",
+    MODERATION: "1269998219266490538",
+    INVITE: "1269998218264055818",
+    OFFLINE: "1296391117507399763",
+    ONLINE: "1296391117507399763",
+    ERROR: "1296391118723878932",
+};
+
+// Event, wenn der Bot bereit ist
+client.on('ready', async () => {
+const onlineEmbed = new EmbedBuilder()
+    .setTitle('Bot Status - Update')
+    .setDescription(`> \`🟢\` » **\`${client.user.username}\`** ist jetzt online.\n\n> \`🕒\` » <t:${Math.floor(client.readyTimestamp / 1000)}:F>`)
+    .setColor('Green')
+    .setTimestamp();
+
+try {
+    await sendLog(ThreadIDs.ONLINE, onlineEmbed);
+} catch (error) {
+    console.error('Fehler beim Senden des Online-Logs:', error);
+}
+});
+
+// Event, wenn der Shard getrennt wird (offline)
+client.on('shardDisconnect', async (event, shardId) => {
+const offlineEmbed = new EmbedBuilder()
+    .setTitle('Bot Status - Update')
+    .setDescription(`> \`🔴\` » **\`${client.user.username}\`** ist offline.`)
+    .setColor('Red')
+    .setTimestamp();
+
+try {
+    await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
+} catch (error) {
+    console.error('Fehler beim Senden des Offline-Logs:', error);
+}
+});
+
+// Event, wenn ein Fehler auftritt
+client.on('error', async (error) => {
+const errorEmbed = new EmbedBuilder()
+    .setTitle('`❌` | FEHLER BEI BOT')
+    .setDescription(`\`\`\`${error.stack}\`\`\``)
+    .setColor('Orange')
+    .setTimestamp();
+
+try {
+    await sendLog(ThreadIDs.ERROR, errorEmbed);
+} catch (sendError) {
+    console.error('Fehler beim Senden des Error-Logs:', sendError);
+}
+});
+
+// Funktion zum Senden von Logs an Threads
+async function sendLog(ThreadIDs, embed) {
+const thread = await client.channels.fetch(ThreadIDs).catch(() => null);
+if (!thread) throw new Error(`Thread mit ID ${ThreadIDs} nicht gefunden.`);
+if (!thread.isTextBased()) throw new Error(`Thread mit ID ${ThreadIDs} ist kein Textkanal.`);
+await thread.send({ embeds: [embed] });
+}
+
+client.on('guildMemberAdd', async member => {
+    if (member.guild.id !== "815919809379172354") return;
+
+    const newInvites = await member.guild.invites.fetch();
+    const oldInvites = invites.get(member.guild.id);
+
+    // Falls wir noch keine gespeicherten Einladungen haben → jetzt speichern und return
+    if (!oldInvites) {
+        invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
+        return;
+    }
+
+    // Finde die benutzte Einladung
+    const usedInvite = newInvites.find(i => oldInvites.has(i.code) && i.uses > oldInvites.get(i.code));
+
+    if (usedInvite) {
+        const inviter = usedInvite.inviter;
+        const inviteUses = usedInvite.uses;
+
+        const InviteEmbed = new EmbedBuilder()
+            .setDescription(`> × Willkommen ${member} bei **${member.guild.name}**!\n\n> × Eingeladen von **${inviter.displayName || inviter.username}**\n\n> × Einladungscode: [${usedInvite.code}](https://discord.gg/${usedInvite.code})\n\n> × Er/Sie hat nun **${inviteUses}** Einladungen`)
+            .setColor('Blurple')
+            .setTimestamp();
+
+        await sendLog(ThreadIDs.INVITE, InviteEmbed);
+    }
+
+    // Speichere den aktuellen Stand der Einladungen
+    invites.set(member.guild.id, new Map(newInvites.map(invite => [invite.code, invite.uses])));
+});
+
+const typeMap = {
+    0: "TEXT",
+    2: "VOICE",
+    5: "NEWS",
+    13: "STAGE",
+    15: "FORUM"
+};
+
+client.on('channelCreate', async (channel) => {
+    if (channel.type === 4) {
+        return;
+    }
+    channel.guild.fetchAuditLogs({
+        type: AuditLogEvent.CHANNEL_CREATE,
+        limit: 1
+    }).then(async audit => {
+        const { executor } = audit.entries.first();
+
+        const CreateEmbed = new EmbedBuilder()
+            .setTitle('`➕` | KANAL ERSTELLT')
+            .setDescription(`> Name: \`${channel.name}\` (<#${channel.id}>)\n> ID: \`${channel.id}\``)
+            .setColor('Green')
+            .setTimestamp();
+
+            await sendLog(ThreadIDs.CHANNEL, CreateEmbed)
+    })
+})
+
+client.on('channelUpdate', async (oldChannel, newChannel) => {
+    if (newChannel.type === 4) {
+        return;
+    }
+    newChannel.guild.fetchAuditLogs({
+        type: AuditLogEvent.CHANNEL_UPDATE,
+        limit: 1
+    }).then(async audit => {
+        const { executor } = audit.entries.first();
+
+        let type = typeMap[newChannel.type] || newChannel.type;
+
+        let description = `\`📂\` » **Informationen:**\n<:text3:1228332174911213638>**Name:** \`${newChannel.name}\` (<#${newChannel.id}>)\n<:text2:1228330539941888011>**Kanaltyp:** \`${type}\`\n`;
+
+        let changesDetected = false;
+
+        if (oldChannel.name !== newChannel.name) {
+            description += `\n\`✒️\` » **Namensänderung:**\n<:text3:1228332174911213638>**Alt:** \`${oldChannel.name}\`\n<:text2:1228330539941888011>**Neu:** \`${newChannel.name}\``;
+            changesDetected = true;
+        }
+        if (oldChannel.nsfw !== newChannel.nsfw) {
+            description += `\n\`🔞\` » **Altersbegrenzung:**\n<:text2:1228330539941888011>${newChannel.nsfw ? "<:on:1228350947898687508>" : "<:off:1228350962205200475>"}`;
+            changesDetected = true;
+        }
+        if (oldChannel.topic !== newChannel.topic) {
+            description += `\n\`🏝️\` » **Beschreibungsänderung:**\n<:text3:1228332174911213638>**Alt:** \`${oldChannel.topic || "❌"}\`\n<:text2:1228330539941888011>**Neu:** \`${newChannel.topic || "❌"}\``;
+            changesDetected = true;
+        }
+        if (oldChannel.rateLimitPerUser !== newChannel.rateLimitPerUser) {
+            description += `\n\`🦥\` » **Slowmode:**\n<:text3:1228332174911213638>**Alt:** ${oldChannel.rateLimitPerUser || "<:off:1228350962205200475>"}\n<:text2:1228330539941888011>**Neu:** ${newChannel.rateLimitPerUser || "<:off:1228350962205200475>"}`;
+            changesDetected = true;
+        }
+
+        if (!changesDetected) {
+            return;
+        }
+
+        const EditingEmbed = new EmbedBuilder()
+            .setTitle('`🔁` | KANAL BEARBEITET')
+            .setAuthor({ name: `${executor.username} » ${executor.id}`, iconURL: executor.displayAvatarURL({ dynamic: true, format: 'png', size: 2048 }) })
+            .setDescription(description)
+            .setColor('Orange')
+            .setTimestamp();
+            await sendLog(ThreadIDs.CHANNEL, EditingEmbed)
+    })
+});
+
+client.on('channelDelete', async (channel) => {
+    if (channel.type === 4) {
+        return;
+    }
+    const DeleteEmbed = new EmbedBuilder()
+        .setTitle('`🗑️` | KANAL GELÖSCHT')
+        .setDescription(`> Name: ${channel.name}\nID: \`${channel.id}\``)
+        .setColor('Red')
+        .setTimestamp();
+
+        await sendLog(ThreadIDs.CHANNEL, DeleteEmbed)
+});
+
+// Nachrichten Log
+client.on('messageCreate', async (message) => {
+    if (!message.author || message.author.bot) return;
+
+    if(message.channelID === "1205936920866328576") return
+
+    const MessageSendEmbed = new EmbedBuilder()
+        .setTitle('`📨` | NACHRICHT GESENDET')
+        .setDescription(`**${message.author.displayName}** hat eine Nachricht gesendet in ${message.channel}\n\n> Nachricht: ${message.content || '**Kein Inhalt**'}`)
+        .setColor('Green')
+        .setTimestamp();
+
+        await sendLog(ThreadIDs.MESSAGE, MessageSendEmbed)
+});
+
+client.on('messageDelete', async (message) => {
+    if (!message.author || message.author.bot) return;
+
+    if(message.channelID === "1205936920866328576") return
+
+    const MessageDeleteEmbed = new EmbedBuilder()
+        .setTitle('`🗑️` | NACHRICHT GELÖSCHT')
+        .setDescription(`Die Nachricht von **${message.author.displayName}** wurde gelöscht in ${message.channel}\n\n> Inhalt: ${message.content || '**Kein Inhalt**'}`)
+        .setColor('Red')
+        .setTimestamp();
+
+        await sendLog(ThreadIDs.MESSAGE, MessageDeleteEmbed)
+});
+
+client.on('messageUpdate', async (oldMessage, newMessage) => {
+    if (!newMessage.author || newMessage.author.bot) return;
+
+    if (oldMessage.content === newMessage.content) return;
+
+    const MessageEditEmbed = new EmbedBuilder()
+        .setTitle('`🖊️` | NACHRICHT BEARBEITET')
+        .setDescription(`Die Nachricht von **${newMessage.author.displayName}** wurde bearbeitet in ${oldMessage.channel}\n\n> Alte Nachricht: ${oldMessage.content || '**Kein Inhalt**'}\n> Neue Nachricht: ${newMessage.content || '**Kein Inhalt**'}`)
+        .setColor('Orange')
+        .setTimestamp();
+
+        await sendLog(ThreadIDs.MESSAGE, MessageEditEmbed)
+});
+
+// Birthday System
+const ageRoles = {
+    "-18": "1199786765666500710",
+    "18": "1199786814051979344",
+};
+
+cron.schedule('0 0 * * *', async () => {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.getMonth() + 1;
+    const currentYear = today.getFullYear();
+    const guild = client.guilds.cache.get("815919809379172354");
+
+    try {
+        const birthdayUsers = await userdb.find({ "birthday.tag": day, "birthday.monat": month });
+        const birthdayRole2 = await guild.roles.fetch("1244945910262399046");
+        birthdayRole2.members.forEach(async member => {
+            try {
+                await member.roles.remove(birthdayRole2);
+            } catch (removeError) {
+                console.error(`Fehler beim Entfernen der Rollen von Mitglied ${member.id}:`, removeError);
+            }
+        });
+
+        if (birthdayUsers.length > 0) {
+            const birthdayChannel = client.channels.cache.get("1243964646449483788");
+            const birthdayUsersList = [];
+
+            for (const user of birthdayUsers) {
+                try {
+                    const member = await guild.members.fetch(user.userID);
+
+                    if (user.birthday.jahr) {
+                        const age = currentYear - user.birthday.jahr;
+                        let roleId;
+
+                        if (age <= 18) roleId = '1199786765666500710';
+                        else if (age > 18) roleId = '1199786814051979344';
+                        const birthdayRole = await guild.roles.fetch(roleId);
+
+                        if (birthdayRole) {
+                            await member.roles.add(birthdayRole);
+                        }
+                        birthdayUsersList.push(`${member} (**${age}**)`);
+                    } else {
+                        birthdayUsersList.push(`${member}`);
+                    }
+                    await member.roles.add(birthdayRole2);
+                } catch (fetchError) {
+                    console.error(`Fehler beim Verarbeiten des Mitglieds mit ID ${user.userID}:`, fetchError);
+                    continue;
+                }
+            }
+
+            let birthdayMessage = "";
+
+            if (birthdayUsersList.length === 1) {
+                birthdayMessage = `${birthdayUsersList[0]} hat **heute Geburtstag!** - <a:bier:1196502621427601498>`;
+            } else {
+                const lastUser = birthdayUsersList.pop();
+                birthdayMessage = `${birthdayUsersList.join(", ")} und ${lastUser} haben **heute Geburtstag!** - <a:bier:1196502621427601498>`;
+            }
+
+            const birthdayWords = [
+                "Genieße die kleinen Dinge. Sie machen das Leben großartig!",
+                "Durch dich wird die Welt ein besserer Ort, bleib wie du bist!",
+                "Heute sollst Du dich einfach entspannen und alle deine Sorgen verbannen.",
+                "Lass dich drücken, knuddeln und umarmen. Sollen alle deine Ziele, Wünsche und Träume in Erfüllung gehen. Du hast es verdient.",
+            ];
+            const randomIndex = Math.floor(Math.random() * birthdayWords.length);
+            const selectedBirthdayWord = birthdayWords[randomIndex];
+
+            const birthdaymessage = await birthdayChannel.send({
+                content: `🎂 𑁉 ${birthdayMessage}\nWünscht dem **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"}** alles Gute! <a:2herzen:1196502635465932984>\nTrage auch deinen Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
+            });
+
+            await birthdaymessage.react("<a:herzen:1394561549602914386> ");
+            await birthdaymessage.react("<a:Cool:915211628755169301>");
+
+        } //else {
+          //  const birthdayChannel = client.channels.cache.get("1243964646449483788");
+          //  const message = await birthdayChannel.send({
+          //      content: "<a:crying:1243854160160358470> 𑁉 Heute hat **keiner** Geburtstag... Oder vielleicht doch?\nTrage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!)\n*damit du zusammen mit **der Community** deinen Geburtstag feiern kannst!*",
+          //  });
+
+          //  await message.react("<a:herzen:974633994840854608>");
+          //  await message.react("<a:Cool:915211628755169301>");
+        //}
+    } catch (error) {
+        console.error("Fehler beim Verarbeiten der Geburtstage:", error);
+    }
+});
+
+// Server Banner jeden ersten Freitag im Monat
+const ServerEventCHANNEL_ID = '1008696596000677998';
+const BANNER_URL = 'https://cdn.discordapp.com/attachments/1008696596000677998/1337428177487794207/WOC_Banner_Neues_Server_Event.png?ex=690f520d&is=690e008d&hm=62bf01da44ab6d8946820799d984314daee0227eb2ec44c52335b458ba43ac93&';
+
+// Jeden Freitag um 12:00 Uhr prüfen
+  cron.schedule('0 15 * * 5', async () => {
+    const today = new Date();
+    const day = today.getDate();
+
+    // Nur am ersten Freitag (Tag ≤ 7)
+    if (day <= 7) {
       try {
-        require(`./functions/${folder}/${file}`)(client);
+        const channel = await client.channels.fetch(ServerEventCHANNEL_ID);
+        if (!channel) return console.log('Kanal nicht gefunden!');
+
+        // 1️⃣ Banner senden
+        const bannerMsg = await channel.send({
+          files: [BANNER_URL],
+        });
+
+        // 2️⃣ Danach Nachricht senden
+        await channel.send(
+            '<a:pin:1119708768326914100>  » | **2-FACH XP-EVENT** - <a:Chat1:976129450112593990>\n\n' +
+            'Liebe Community, <@&870683971846041650>\n\n' +
+            'Wir starten ein **XP-Event** welches **von Freitag bis Sonntag läuft**. In dieser Zeit habt ihr die Möglichkeit, durch Chat & Voice Aktivität, mehr XP als normalerweise zu bekommen, die XP werden mit **3 multipliziert**. Also lohnt es sich besonders in dieser Zeit aktiv zu sein um schneller Leveln zu können.\n\n' +
+            'Mit freundlichen Grüßen\nEuer **World Of Community**-Team <a:pepeheart:974642478055555082>'
+        );
+
+        console.log('✅ | Banner und Nachricht gesendet!');
       } catch (error) {
-        Logger.error(`Fehler beim Laden von Legacy-Handler: ${folder}/${file}`, error);
+        console.error('❌ Fehler beim Senden:', error);
       }
     }
-  }
-
-  // Vorschlag System (falls vorhanden)
-  if (typeof client.vorschlag === "function") {
-    client.vorschlag();
-  }
-
-  // Team Handler
-  if (typeof client.handleErfolg === "function") {
-    client.handleErfolg();
-  }
-
-  if (typeof client.manageTeam === "function") {
-    client.manageTeam();
-  }
-}
-
-/**
- * Graceful Shutdown Handler
- */
-function setupGracefulShutdown() {
-  const shutdown = async (signal) => {
-    Logger.warning(`${signal} empfangen, fahre Bot herunter...`);
-
-    // Logge Bot Offline
-    if (services.logging) {
-      await services.logging.logBotOffline();
-    }
-
-    // Stoppe Services
-    if (services.giveaway) {
-      services.giveaway.stop();
-    }
-
-    if (services.cron) {
-      services.cron.stop();
-    }
-
-    // Schließe Datenbank
-    await mongoose.connection.close();
-    Logger.info("Datenbankverbindung geschlossen");
-
-    // Logout Bot
-    client.destroy();
-    Logger.info("Bot heruntergefahren");
-
-    process.exit(0);
-  };
-
-  process.on("SIGINT", () => shutdown("SIGINT"));
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
-  process.on("unhandledRejection", (error) => {
-    Logger.error("Unhandled Rejection", error);
   });
-}
 
-/**
- * Hauptfunktion - Startet den Bot
- */
-async function main() {
+// Tägliche Belohnung Erinnerung
+const CHANNEL_ID = '815922756918181898';
+
+let lastMessageId = null; // nur im RAM gespeichert
+
+cron.schedule('0 */6 * * *', async () => {
   try {
-    Logger.info("Starte Bot...");
-    Logger.info(`Node Version: ${process.version}`);
-    Logger.info(`Discord.js Version: ${require("discord.js").version}`);
+    const channel = await client.channels.fetch(CHANNEL_ID);
+    if (!channel || channel.type !== ChannelType.GuildText) return;
 
-    // Verbinde Datenbank
-    await connectDatabase();
-
-    // Lade Handler
-    loadHandlers();
-
-    // Lade Legacy-Handler (für Kompatibilität)
-    loadLegacyHandlers();
-
-    // Setup Graceful Shutdown
-    setupGracefulShutdown();
-
-    // Login
-    await client.login(config.discord.token);
-
-    // Starte Services nachdem Bot ready ist
-    client.once("ready", () => {
-      Logger.success(`Bot eingeloggt als ${client.user.tag}`);
-      startServices();
-
-      // Logge Bot Online
-      if (services.logging) {
-        services.logging.logBotOnline();
+    // Letzte Nachricht löschen
+    if (lastMessageId) {
+      try {
+        const oldMsg = await channel.messages.fetch(lastMessageId);
+        if (oldMsg) await oldMsg.delete();
+      } catch (err) {
+        console.log('Konnte alte Nachricht nicht löschen:', err.message);
       }
-    });
+    }
+
+    // Neue Nachricht senden
+    const newMsg = await channel.send(
+      '**Hast du schon deine tägliche Belohnung abgeholt?**\n➥ `/daily`'
+    );
+
+    // ID merken
+    lastMessageId = newMsg.id;
 
   } catch (error) {
-    Logger.error("Kritischer Fehler beim Starten des Bots", error);
-    process.exit(1);
+    console.error('Fehler beim täglichen Reminder:', error);
   }
+});
+
+// Onlinezeit (Profil.js)
+setInterval(async () => {
+  const guild = client.guilds.cache.get("815919809379172354");
+  const members = await guild.members.fetch();
+
+  for (const member of members.values()) {
+    if (member.user.bot) continue;
+    if (!member.presence || member.presence.status !== "online") continue;
+
+    await userdb.updateOne(
+      { userID: member.id },
+      { $inc: { onlineTime: 1 } },
+      { upsert: true }
+    );
+  }
+}, 1000 * 60 * 60); // alle 60 Minuten
+
+// Werbung
+setInterval( async () => {
+    try {
+    const guild = client.guilds.cache.get("815919809379172354");
+    const channel = guild.channels.cache.get("1177536720229650442");
+
+    const werbeEmbed = new EmbedBuilder()
+        .setTitle('`🌍` WORLD OF COMMUNITY')
+        .setDescription(
+            '__Du suchst ein Minecraft-& Discord Server?__\n\n' +
+            '> __Dann bist du bei uns genau richtig!__\n\n' +
+            '**__Wir bieten dir:__**\n\n' +
+            '> `🎭` » **Server-Rollen** um dein **Server-Profil** anzupassen\n' +
+            '> `🔔` » **Server-Events** auf dem Discord-Server\n' +
+            '> `✨` » **Selbst** Programmierte Bots mit **einzigartigen Features!**\n' +
+            '> `👥` » **Freundliche & Hilfsbereite** Community!\n' +
+            '> `📄` » **Täglich neue Nachrichten** sowie **Gaming- & Film-News**\n' +
+            '> `🎮` » **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n' +
+            '> `📰` » **Freie Werbung** senden. (Keine anderen Minecraft-Server)\n' +
+            '> `🎥` » Eine **exklusive Live-Streamer** Rolle wenn du **Live** bist!\n' +
+            '> `⚽` » Eine **Fußball-Simulation**, bei der du Fan eines Clubs werden kannst\n' +
+            '`🔍` - **Wir suchen Verstärkung für unser Team:**\n\n' +
+            '> `🔧` - Developer\n' +
+            '> `🧩` - Supporter\n' +
+            '> `👷` - Builder\n\n' +
+            '> `📌` **| Wir freuen uns auf dich!**\n\n' +
+            'Kleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schon mal jemanden kennst!\n\n' +
+            '» Link: https://discord.gg/686M8Cxsaa'
+        )
+        .setColor('Blurple')
+        .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png?ex=66b30177&is=66b1aff7&hm=0397fdb8031ef7316a8668df5cad914f61dc6d25fa7ff396bb3107d9463f6bc0&')
+        .setFooter({ text: '» World Of Community - Werbung', iconURL: 'https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66f4ec68&is=66f39ae8&hm=ab3c1d2943afe003b938fa850ae5e5c643ed69225e1980d73573fef78234ad83&' })
+
+    channel.send({ embeds: [werbeEmbed] })
+        // Wenn die Nachricht automatisch veröffentlicht werden soll:
+        .then(async msg => {
+            msg.crosspost()
+        })
+    } catch (error) { 
+    }
+}, 60000 * 360); // 6 Stunden in Millisekunden
+
+// Threads Checker
+cron.schedule('0 0 * * *', async () => {
+    const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000;
+    const threads = await threaddb.find();
+
+    for (const thread of threads) {
+        const threadCreatedAt = new Date(thread.createdAt);
+        const currentTime = new Date();
+
+        if (currentTime - threadCreatedAt >= sevenDaysInMilliseconds) {
+            const threadChannel = await client.channels.cache.get(thread.threadID)
+
+            if (threadChannel) {
+                await threadChannel.delete();
+                await threaddb.findOneAndDelete({ threadID: thread.threadID });
+            }
+        }
+    }
+});
+
+// Changelog Embed
+cron.schedule('0 0 * * 1', async () => {
+    try {
+        const channel = await client.channels.cache.get(config.changelog);
+        if (!channel) return;
+
+        let serverData = await serverdb.findOne({ guildID: config.server });
+        if (!serverData) {
+            serverData = new serverdb({
+                guildID: config.server,
+                support: [],
+                system: [],
+                minecraft: [],
+                dc: [],
+                webseite: []
+            });
+            await serverData.save();
+        } else {
+                        
+            if (!serverData.support) serverData.support = [];
+            if (!serverData.system) serverData.system = [];
+            if (!serverData.minecraft) serverData.minecraft = [];
+            if (!serverData.webseite) serverData.webseite = [];
+            if (!serverData.dc) serverData.dc = [];
+            await serverData.save();
+        }
+
+        if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) {
+            return channel.send({ content: '> `⛔` » Das Changelog System ist momentan deaktiviert.' });
+        }
+
+        // Week Date
+        const today = new Date();
+        const nextWeek = new Date(today);
+        nextWeek.setDate(today.getDate() + 6);
+
+        const todayDate = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+        const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, '0')}.${(nextWeek.getMonth() + 1).toString().padStart(2, '0')}`;
+
+        const changelogEmbed = new EmbedBuilder()
+            .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${todayDate} - ${nextWeekDate}]`)
+            .setDescription('<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n> In dieser Woche gab es keine Änderung.\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀')
+            .setColor('#ff7b00')
+            .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340524490260571/WOC_Banner_Update_Wochenruckblick.png')
+            .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${todayDate}.${today.getFullYear()}`, iconURL: 'https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png' });
+
+        // Arrays initialisieren (falls nicht vorhanden) und Daten anzeigen
+        const support = serverData.support || [];
+        const system = serverData.system || [];
+        const minecraft = serverData.minecraft || [];
+        const webseite = serverData.webseite || [];
+        const discord = serverData.dc || [];
+
+        // Add fields based on serverData
+        if (support.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE',
+                value: `${support.join('\n')}`
+            });
+        }
+
+        if (system.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <a:System:915211580805881876> - **WOC`⚙️`SYSTEM (BOT)** - UPDATE',
+                value: `${system.join('\n')}`
+            });
+        }
+
+        if (minecraft.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <a:MinecraftGrassBlock:872034424181637171> - **MINECRAFT SERVER** - UPDATE',
+                value: `${minecraft.join('\n')}`
+            });
+        }
+
+        if (discord.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <:Discord:912007935616516098> - **DISCORD SERVER** - UPDATE',
+                value: `${discord.join('\n')}`
+            });
+        }
+
+
+        if (webseite.length > 0) {
+            changelogEmbed.addFields({
+                name: '> <a:wocbook:1178664700469317692> - **WEBSEITE** - UPDATE',
+                value: `${webseite.join('\n')}`
+            });
+        }
+
+        await channel.send({ content: 'Eine neue Woche, ein neues Glück <a:discordbloblove:855482395325890570>', embeds: [changelogEmbed] }).then(async (msg) => {
+            serverData.updateMessage = msg.id;
+            serverData.updateWeek = `${todayDate} - ${nextWeekDate}`;
+            await serverData.save();
+        });
+
+    } catch (error) {
+        console.log("Fehler im Cron job:", error);
+    }
+});
+
+
+// 18 Uhr Message
+cron.schedule('0 18 * * 0', async () => {
+    const channel = client.channels.cache.get(config.changelog);
+    const serverData = await serverdb.findOne({ guildID: config.server })
+
+    if (!serverData) return;
+    if (await serverdb.findOne({ guildID: config.server, deactivated: { $in: ['changelog'] } })) return;
+
+    const message = channel.messages.fetch(serverData.updateMessage).then(async (msg) => {
+        if (msg) {
+            await msg.reply({ content: `Hier seht ihr die Änderungen **aus dieser Woche**, <@&${config.changelogRole}>!` })
+        }
+    })
+
+    serverData.updateMessage = ''
+    serverData.support = [];
+    serverData.system = [];
+    serverData.minecraft = [];
+    serverData.dc = [];
+    serverData.webseite = [];
+
+    await serverData.save();
+
+});
+
+//====================[Giveaway]==================== noch in giveaway.js oder gwInteract.js machen
+
+setInterval(async () => {
+    const currentTime = new Date();
+    const activeGiveaways = await giveawaydb.find({ endTime: null });
+    if (!activeGiveaways) return;
+
+    for (const giveaway of activeGiveaways) {
+        const startTime = new Date(giveaway.startTime);
+        if (startTime.getTime() + giveaway.duration <= currentTime.getTime()) {
+            if (giveaway.endTime) continue;
+            giveaway.endTime = new Date();
+            await giveaway.save();
+
+            if (giveaway.teilnehmer.length < giveaway.gewinnerAnzahl) {
+                const channel = await client.channels.fetch(giveaway.channelID);
+                const giveawayMessage = await channel.messages.fetch(giveaway.msgID);
+                await giveawayMessage.reply({ content: `\`⛔\` » **Zu wenig Teilnehmer:** Es fehlen \`${giveaway.gewinnerAnzahl - giveaway.teilnehmer.length}👥\` Teilnehmer um genug Gewinner auszulosen!`, ephemeral: true });
+                continue;
+            }
+
+            const winnerIds = [];
+            while (winnerIds.length < giveaway.gewinnerAnzahl) {
+                const winnerIndex = Math.floor(Math.random() * giveaway.teilnehmer.length);
+                const winnerId = giveaway.teilnehmer[winnerIndex];
+                if (!winnerIds.includes(winnerId)) {
+                    winnerIds.push(winnerId);
+                }
+            }
+
+            console.log(winnerIds);
+
+            const channel = await client.channels.fetch(giveaway.channelID);
+            const giveawayMessage = await channel.messages.fetch(giveaway.msgID);
+            if (!giveawayMessage) continue;
+
+            const priceInput = await giveaway.price;
+            const emoji = determineEmoji(priceInput);
+            const winnersMentions = winnerIds.map(id => `<@${id}>`).join(", ");
+
+            await giveawayMessage.reply({ content: `<a:bier:1196502621427601498> **Herzlichen Glückwunsch**, ${winnersMentions} ${winnerIds.length === 1 ? "hat" : "haben"} ${emoji} **${priceInput}** ${emoji} gewonnen! <a:2herzen:1196502635465932984>` });
+
+            for (const winnerId of winnerIds) {
+                const userData = await userdb.findOne({ userID: winnerId });
+                if (userData) {
+                    userData.giveaway.eventWins += 1;
+                    await userData.save();
+                }
+
+                const winner = await client.users.fetch(winnerId);
+                if (winner) {
+                    const embed = new EmbedBuilder()
+                        .setTitle('<a:Cool:915211628755169301> » GEWINNSPIEL GEWONNEN! <a:Cool:915211628755169301>')
+                        .setDescription(`» Du hast bei dem Gewinnspiel auf **[World Of Community](https://discord.gg/dHzbdsqST8)** gewonnen!\n» Ein Teammitglied wird sich **demnächst** bei dir melden.`)
+                        .setColor('Blurple');
+                    await winner.send({ content: `Du hast bei einem Gewinnspiel **GEWONNEN!!!**`, embeds: [embed] }).catch(error => console.log('Nachricht konnte nicht an den Gewinner gesendet werden.'));
+                }
+            }
+
+            const embed = giveawayMessage.embeds[0];
+            const giveawayEndEmbed = new EmbedBuilder()
+                .setTitle(`${embed.title}`)
+                .setDescription(`<a:Neuigkeiten:1018910061348798564> » **__Gewinnspiel - Gewinner__**\n<:PfeilBlau:1147248395837247613> Teilnehmer: **${giveaway.teilnehmer.length}**\n<:PfeilBlau:1147248395837247613> Gewinner: ${winnerIds.length > 0 ? winnersMentions : "**`Zu wenig Teilnehmer`**"}\n<:PfeilBlau:1147248395837247613> Erstellt von <@${giveaway.creator}>`)
+                .setColor('Red')
+                .setThumbnail('https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=53e18bea4e53fcfa6bef3450c65670ac3d7d1d57e3dd66a18e23d9660dfdfc6d&')
+                .setFooter({ text: `${client.user.displayName} - Bot`, iconURL: `${client.user.displayAvatarURL()}` })
+                .setTimestamp();
+            await giveawayMessage.edit({ content: '⛔ **GEWINNSPIEL VORBEI!** ⛔', embeds: [giveawayEndEmbed], components: [] });
+
+            const creator = client.users.cache.get(giveaway.creator);
+            if (creator) {
+                const creatorEmbed = new EmbedBuilder()
+                    .setTitle('<a:Information:1007267420316106903> » GEWINNSPIEL VORBEI!')
+                    .setDescription(`\`✅\` » Das Gewinnspiel auf **[World Of Community](https://discord.gg/dHzbdsqST8)** ist vorbei!\n\`📌\` » Da du das Event gestartet hast, habe ich **dich informiert.**\n\n\`💸\` » **Zahle das Gewinnspiel** selbst aus, oder kümmere dich\n\`💸\` » darum, dass es die zuständige Person erledigt.`)
+                    .setColor('Orange');
+                await creator.send({ embeds: [creatorEmbed] }).catch(error => console.log('Nachricht konnte nicht an den Giveaway Ersteller gesendet werden.'));
+            }
+        }
+    }
+}, 30000);
+
+function determineEmoji(priceInput) {
+    if (priceInput.toLowerCase().includes("nitro") && !priceInput.toLowerCase().includes("basic")) {
+        return "<a:nitro:1186636151335944283>";
+    } else if (priceInput.toLowerCase().includes("nitro") && priceInput.toLowerCase().includes("basic")) {
+        return "<a:basic:1186636165567229972>";
+    } else if (priceInput.toLowerCase().includes("coins") && priceInput.toLowerCase().includes("coins")) {
+        return "`🪙`";
+    } else if (priceInput.toLowerCase().includes("guthaben")) {
+        return "<a:guthaben:1186636139281530970>";
+    } else {
+        return "<a:Diamond:1018911546430210128>";
+    }
 }
 
-// Export für andere Module
-module.exports = { client };
+client.on('messageCreate', async (message) => {
+    if (message.author.bot) return;
+    if (message.guild.id !== config.server) return; 
 
-// Starte Bot
-main();
+    let serverData = await serverdb.findOne({ guildID: message.guildId });
+    if (!serverData) {
+        serverData = new serverdb({
+            guildID: message.guildId,
+            roleBypass: []
+        });
+        await serverData.save();
+    }
+
+    let userData = await userdb.findOne({ userID: message.author.id });
+    if (!userData) {
+        userData = new userdb({
+            userID: message.author.id,
+            giveaway: {
+                eventWins: 0,
+                toggledm: true,
+                messages: 1,
+                voiceTime: 0,
+                startTime: 0,
+            },
+            stats: {
+                messages: 1,
+                voiceTime: 0
+            }
+        });
+    } else {
+        userData.giveaway.messages += 1;
+        userData.stats.messages += 1;
+    }
+
+    if (!userData.firstMessage && !message.author.bot) {
+        userData.firstMessage = true;
+        
+        if (!message?.content) return;
+        
+        const stringsWithProbabilities = [
+            { string: '1 Level', probability: 0.25 }, // 25%
+            { string: '2 Level', probability: 0.2 }, // 20%
+            { string: '3 Level', probability: 0.15 }, // 15%
+            { string: '4 Level', probability: 0.12 }, // 12%
+            { string: '5 Level', probability: 0.1 }, // 10%
+            { string: '200 EXP', probability: 0.08 }, // 7%
+            { string: '400 EXP', probability: 0.05 }, // 5%
+            { string: '500 EXP', probability: 0.03 }, // 3%
+            { string: '1.000 EXP', probability: 0.01 }, // 1%
+            { string: '10.000 Coins', probability: 0.01 } // 1%
+        ];        
+
+        function getRandomString() {
+            const randomValue = Math.random();
+            let cumulativeProbability = 0;
+
+            for (const option of stringsWithProbabilities) {
+                cumulativeProbability += option.probability;
+                if (randomValue <= cumulativeProbability) {
+                    return option;
+                }
+            }
+        }
+       
+        const buttons = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setLabel('Belohnung abholen')
+                    .setStyle('Success')
+                    .setCustomId('newbieClaim_button')
+            );
+
+        const msg = await message.channel.send({ 
+            content: 
+            `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\n` +
+            `Hey ${message.author},\n` +
+            `Du hast soeben deine **erste Nachricht** geschrieben, Glückwunsch! \n\n` +
+            `Drück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, 
+            components: [buttons], 
+            ephemeral: true 
+        });
+
+        const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button });
+
+        collector.on('collect', async i => {
+            if (i.customId === "newbieClaim_button") {
+                if (i.user.id !== message.author.id) {
+                    return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
+                }
+
+                buttons.components[0].setDisabled(true);
+                buttons.components[0].setLabel("Belohnung abgeholt");
+                buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
+
+                await i.message.edit({ components: [buttons] }).catch(console.error);
+                
+                const gewinn = getRandomString();
+                await i.reply({ content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
+                    `Die Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n\n` +
+                    `*(Bitte mache von dieser Nachricht einen Screenshot als Beweis.)*\n\n` +
+                    `> \`🎫\` » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`, 
+                    ephemeral: true 
+                });
+
+                collector.stop();
+                msg.delete().catch(error => console.log("Nachricht konnte nicht gelöscht werden:", error)); 
+            } 
+        });
+
+        collector.on('end', () => {
+            if (!buttons.components[0].disabled) { 
+                buttons.components[0].setDisabled(true);
+                buttons.components[0].setStyle("Danger");
+                msg.edit({ components: [buttons] }).catch(console.error);
+            }
+        });
+    }
+
+    await userData.save();
+});
+
+client.on('voiceStateUpdate', async (oldState, newState) => {
+    if (oldState.member.user.bot || newState.member.user.bot) return;
+
+    const userId = newState.member.user.id;
+    const currentTime = new Date().getTime();
+
+    if (!oldState.channelId && newState.channelId) {
+
+        let userData = await userdb.findOne({ userID: userId });
+        if (userData) {
+            userData.giveaway.startTime = currentTime;
+            await userData.save();
+        } else {
+            console.error(`Für die Benutzer-ID wurde keine Benutzerdaten gefunden: ${userId}`);
+        }
+    } 
+    else if (oldState.channelId && !newState.channelId) {
+
+        const user = oldState.member?.user || newState.member?.user;
+        if (!user) return;
+
+        const jetzt = new Date();
+
+        // Datum und Uhrzeit auf Deutsch formatieren
+        const formatter = new Intl.DateTimeFormat('de-DE', {
+            weekday: 'long',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+
+        const parts = formatter.formatToParts(jetzt);
+        let tag = parts.find(p => p.type === 'weekday').value;
+        const tagNum = parts.find(p => p.type === 'day').value;
+        const monat = parts.find(p => p.type === 'month').value;
+        const jahr = parts.find(p => p.type === 'year').value;
+        const stunde = parts.find(p => p.type === 'hour').value;
+        const minute = parts.find(p => p.type === 'minute').value;
+
+        tag = tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
+        const datumStr = `🕓  | Datum: ${tag}, ${tagNum}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
+
+        if (!oldState.channel && newState.channel) {
+            // Benutzer betritt einen Kanal
+            console.log(`Benutzer ${user.username} ist einem Sprachkanal beigetreten: ${newState.channel.name}\n${datumStr}`);
+        } else if (oldState.channel && !newState.channel) {
+            // Benutzer verlässt einen Kanal
+            console.log(`Benutzer ${user.username} hat einen Sprachkanal verlassen: ${oldState.channel.name}\n${datumStr}`);
+        } else if (oldState.channel && newState.channel && oldState.channel.id !== newState.channel.id) {
+            // Benutzer wechselt den Kanal
+            console.log(`Benutzer ${user.username} ist von "${oldState.channel.name}" zu "${newState.channel.name}" gewechselt\n${datumStr}`);
+        }
+
+        let userData = await userdb.findOne({ userID: userId });
+        if (userData) {
+            const startTime = userData.giveaway.startTime;
+
+            if (startTime !== 0) {
+                const durationInMilliseconds = currentTime - startTime;
+                if (!isNaN(durationInMilliseconds)) {
+                    userData.giveaway.voiceTime += durationInMilliseconds;
+                    userData.stats.voiceTime += durationInMilliseconds;
+                    userData.giveaway.startTime = 0;
+                    await userData.save();
+                } else {
+                    console.error('Ungültige durationInMilliseconds:', durationInMilliseconds);
+                }
+            } else {
+                console.error('Die Startzeit war Null oder nicht eingestellt.');
+            }
+        } else {
+            console.error('Für die Benutzer-ID wurde keine Benutzerdaten gefunden:', userId);
+        }
+    }
+});
+
+client.on('error', (error) => {
+    const errorMessage = error.stack || error;
+    console.log(errorMessage)
+});
+
+process.on('unhandledRejection', error => {
+    console.log(error)
+});
+
+//async function sendLog(threadID, embed) {
+//    const serverCatch = client.guilds.cache.get("815919809379172354")
+//    const logchannel = await serverCatch.channels.cache.get("1263436406655680513");
+
+//    await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
+//}
+
+async function sendLog(threadID, embed) {
+    try {
+        const serverCatch = client.guilds.cache.get("815919809379172354");
+        if (!serverCatch) throw new Error("Server nicht gefunden");
+
+        const logchannel = serverCatch.channels.cache.get("1263436406655680513"); // Server Logs
+        if (!logchannel) throw new Error("Log Kanal nicht gefunden");
+
+        const logchannel2 = serverCatch.channels.cache.get('1295742887388254278'); // Bot Status
+        if (!logchannel2) throw new Error ("Log Kanal nicht gefunden");
+
+        let thread = logchannel.threads.cache.get(threadID);
+        if (!thread) thread = logchannel2.threads.cache.get(threadID);
+        if (!thread) throw new Error("Thread nicht gefunden");
+
+        await thread.send({ embeds: [embed] });
+    } catch (error) {
+        console.error(`Fehler beim Senden des Logs: ${error.message}`);
+    }
+}
+
+module.exports = { client }
+
+// Bot Start
+client.login(config.token)
+
+/*
+    // Bot-Status
+    const logchannel = client.channels.cache.get("1295742887388254278")
+    logchannel.threads.create({
+        name: '📌 » Online & Offline Logs', message: { content: `» In diesen Log Kanal werden alle \`Online & Offline Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    logchannel.threads.create({
+        name: '❗ » Error Logs', message: { content: `» In diesen Log Kanal werden alle \`Error Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+
+/*
+    // Server Logs
+    const channel = client.channels.cache.get("1263436406655680513")
+    channel.threads.create({
+      name: '📁 » Kanal Logs', message: { content: `» In diesen Log Kanal werden alle \`Kanal Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '👤 » Join & Leave Logs', message: { content: `» In diesen Log Kanal werden alle \`Join & Leave Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '💬 » Nachrichten Logs', message: { content: `» In diesen Log Kanal werden alle \`Nachrichten Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '📩 » Invite Log', message: {  content: `» In diesen Log Kanal werden alle \`Invites Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '📚 » Moderation Logs', message: {  content: `» In diesen Log Kanal werden alle \`Moderation Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '🔨 » Server Logs', message: {  content: `» In diesen Log Kanal werden alle \`Server Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+
+    channel.threads.create({
+      name: '🎭 » Rollen Logs', message: {  content: `» In diesen Log Kanal werden alle \`Rollen Logs\` gepostet` }, reason: 'System' })
+    .then(threadChannel => console.log(threadChannel))
+    .catch(console.error);
+*/
+
+//const duplicateCommands = new Set();
+
+//commandFiles.forEach(file => {
+//    const command = require(`${commandPath}/${file}`);
+
+    // Überprüfen, ob der Command-Name bereits existiert
+//    if (commands.has(command.name)) {
+        // Wenn ein doppelter Command gefunden wird, füge ihn der Set-Liste hinzu
+//        duplicateCommands.add(command.name);
+//    } else {
+//        commands.set(command.name, command);
+//    }
+//});
+
+// Wenn doppelte Commands gefunden wurden, automatisch in der Konsole ausgeben
+//if (duplicateCommands.size > 0) {
+//    console.log(`Doppelte Commands gefunden: ${[...duplicateCommands].join(', ')}`);
+//} else {
+//    console.log('Keine doppelten Commands gefunden.');
+//}

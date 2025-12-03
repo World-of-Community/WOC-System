@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 // Schema für YouTube-Kanäle und deren Video-Daten
 const youtubeChannelSchema = new mongoose.Schema({
@@ -15,4 +15,4 @@ const youtubeChannelSchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model("YouTubeChannel", youtubeChannelSchema);
+module.exports = mongoose.model('YouTubeChannel', youtubeChannelSchema);

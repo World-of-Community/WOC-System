@@ -1,28 +1,28 @@
-const { Events } = require("discord.js");
+const { Events } = require('discord.js');
 
-const STREAM_ROLE_ID = "1266095218239995968"; // Streamer-Rolle ID
+const STREAM_ROLE_ID = '1266095218239995968'; // Streamer-Rolle ID
 
 module.exports = {
   name: Events.PresenceUpdate,
   async execute(oldPresence, newPresence) {
-    if (!newPresence || !newPresence.member) {return;}
+    if (!newPresence || !newPresence.member) return;
 
     const member = newPresence.member;
     const liveRole = newPresence.guild.roles.cache.get(STREAM_ROLE_ID);
-    if (!liveRole) {return;}
+    if (!liveRole) return;
 
     // Prüfen, ob der Nutzer aktuell streamt
     const isStreaming = newPresence.activities?.some(a => a.type === 1); // 1 = STREAMING
 
     // Aktuelles Datum & Zeit formatieren
     const now = new Date();
-    const formatter = new Intl.DateTimeFormat("de-DE", {
-      weekday: "long",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    const formatter = new Intl.DateTimeFormat('de-DE', {
+      weekday: 'long',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
     const timestamp = formatter.format(now);
 
@@ -31,7 +31,7 @@ module.exports = {
       await member.roles.add(liveRole).catch(() => {});
       console.log(`${member.user.tag} ist jetzt LIVE`);
       console.log(`Datum: ${timestamp}`);
-    }
+    } 
     else if (!isStreaming && member.roles.cache.has(liveRole.id)) {
       await member.roles.remove(liveRole).catch(() => {});
       console.log(`${member.user.tag} ist nicht mehr live`);
@@ -83,7 +83,7 @@ module.exports = {
   /**
    * @param {import('discord.js').Presence} oldPresence
    * @param {import('discord.js').Presence} newPresence
-
+   
   async execute(oldPresence, newPresence) {
     try {
       if (!newPresence?.guild) return;
@@ -681,7 +681,7 @@ module.exports = {
         const activities = member.presence?.activities;
 
         if (member.user.bot) return;
-
+        
         // Vanity-Link prüfen
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
         if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
@@ -691,11 +691,11 @@ module.exports = {
                 await member.roles.remove(role).catch(() => {});
             }
         }
-
+        
         if (!member || member.user.bot) return;
-
+        
         const newStatus = newPresence.status ?? 'offline';
-
+        
         if (newStatus === 'offline' || newStatus === 'invisible') {
           await userdb.updateOne(
             { userID: member.id },
@@ -740,17 +740,17 @@ module.exports = {
         ];
         let lastStatus = null;
         let offlineMessage = null; // Speichert die Offline-Nachricht
-
+        
         if (!newPresence || newPresence.user?.id !== BOT_ID) return;
         const status = newPresence.status; // online, idle, dnd, offline
-
+    
         // Wenn der Bot offline geht
         if (status === "offline" && lastStatus !== "offline") {
             for (const channelId of CHANNEL_IDS) {
                 try {
                     const channel = await client.channels.fetch(channelId);
                     if (!channel?.isTextBased()) continue;
-
+    
                     const msg = await channel.send(
                         "⚠️ **Aktuell ist der Ticket Support offline.**\nWir bitten um Entschuldigung. Bitte nutze in der Zwischenzeit den **Schrift-Support**."
                     );

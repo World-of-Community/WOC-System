@@ -1,14 +1,14 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const eventItems = require("../../../Datenbank/eventitems");
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const eventItems = require('../../../Datenbank/eventitems');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("süßes-oder-saures")
-    .setDescription("» Sammle täglich Kürbisse beim Halloween-Event! 🎃"),
+    .setName('süßes-oder-saures')
+    .setDescription('» Sammle täglich Kürbisse beim Halloween-Event! 🎃'),
 
   async execute(interaction) {
     const userId = interaction.user.id;
-    const eventType = "halloween";
+    const eventType = 'halloween';
 
     let userData = await eventItems.findOne({ userId, eventType });
     if (!userData) {
@@ -24,7 +24,7 @@ module.exports = {
 
     if (sameDay) {
       return interaction.reply({
-        content: "> `🎃` | Du hast heute bereits Alle Kürbisse gesammelt! Komm morgen wieder.",
+        content: '> `🎃` | Du hast heute bereits Alle Kürbisse gesammelt! Komm morgen wieder.',
         ephemeral: true,
       });
     }
@@ -36,9 +36,9 @@ module.exports = {
     await userData.save();
 
     const embed = new EmbedBuilder()
-      .setTitle("`🎃` Süßes oder Saures!")
+      .setTitle('`🎃` Süßes oder Saures!')
       .setDescription(`Du hast heute **${collected} Kürbisse** gesammelt! \`🎃\`\n\nInsgesamt hast du nun **${userData.amount} Kürbisse**.`)
-      .setColor("Orange");
+      .setColor('Orange');
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
   },

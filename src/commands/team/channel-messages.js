@@ -10,21 +10,21 @@ module.exports = {
         .setName("set")
         .setDescription("» Setzt die Nachrichtenanzahl auf einen bestimmten Wert.")
         .addStringOption(opt =>
-          opt.setName("anzahl").setDescription("Neue Nachrichtenanzahl (z. B. 3.786.475)").setRequired(true),
-        ),
+          opt.setName("anzahl").setDescription("Neue Nachrichtenanzahl (z. B. 3.786.475)").setRequired(true)
+        )
     )
     .addSubcommand(sub =>
       sub
         .setName("edit")
         .setDescription("» Ändert die Nachrichtenanzahl um + oder -.")
         .addStringOption(opt =>
-          opt.setName("anzahl").setDescription("Anzahl, um die geändert wird (+/-) (z. B. -1.000)").setRequired(true),
-        ),
+          opt.setName("anzahl").setDescription("Anzahl, um die geändert wird (+/-) (z. B. -1.000)").setRequired(true)
+        )
     )
     .addSubcommand(sub =>
       sub
         .setName("remove")
-        .setDescription("» Setzt die Nachrichtenanzahl auf 0 zurück."),
+        .setDescription("» Setzt die Nachrichtenanzahl auf 0 zurück.")
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
@@ -58,7 +58,7 @@ module.exports = {
       }
 
       messageData.messages += diff;
-      if (messageData.messages < 0) {messageData.messages = 0;}
+      if (messageData.messages < 0) messageData.messages = 0;
       await messageData.save();
       return interaction.reply({ content: `> \`✏️\` » Nachrichtenanzahl wurde um **${diff.toLocaleString("de-DE")}** geändert. Aktuell: **${messageData.messages.toLocaleString("de-DE")}**.`, ephemeral: true });
     }
@@ -66,7 +66,7 @@ module.exports = {
     if (sub === "remove") {
       messageData.messages = 0;
       await messageData.save();
-      return interaction.reply({ content: "> `🗑️` » Nachrichtenanzahl wurde zurückgesetzt (0).", ephemeral: true });
+      return interaction.reply({ content: `> \`🗑️\` » Nachrichtenanzahl wurde zurückgesetzt (0).`, ephemeral: true });
     }
   },
 };

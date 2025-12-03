@@ -1,20 +1,20 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("coin")
-    .setDescription("» Starte den Coin-Generator für 1 Minute mit Live-Anzeige. 🪙")
+    .setName('coin')
+    .setDescription('» Starte den Coin-Generator für 1 Minute mit Live-Anzeige. 🪙')
     .addUserOption(option =>
-      option.setName("user")
-        .setDescription("Benutzer, der Coins erhalten soll")
-        .setRequired(true),
+      option.setName('user')
+        .setDescription('Benutzer, der Coins erhalten soll')
+        .setRequired(true)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
     try {
-      const targetUser = interaction.options.getUser("user");
+      const targetUser = interaction.options.getUser('user');
       const targetMember = await interaction.guild.members.fetch(targetUser.id);
 
       const totalMs = 60_000; // 1 Minute
@@ -31,17 +31,17 @@ module.exports = {
 
       if (min > max || min < 0 || max < 1) {
         return interaction.reply({
-          content: "> `⛔` » Ungültige Coin-Konfiguration. Bitte überprüfe die Einstellungen mit `/coin-manage`.",
-          ephemeral: true,
+          content: '> `⛔` » Ungültige Coin-Konfiguration. Bitte überprüfe die Einstellungen mit `/coin-manage`.',
+          ephemeral: true
         });
       }
 
       await interaction.reply({
         content: `> \`⏳\` » Starte Coin-Generator für <@${targetMember.id}> für **1 Minute**...`,
-        ephemeral: true,
+        ephemeral: true
       });
 
-      await interaction.fetchReply();
+      const message = await interaction.fetchReply();
 
       const interval = setInterval(async () => {
         const coins = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -54,37 +54,37 @@ module.exports = {
         await interaction.editReply({
           content:
             `> \`⏳\` » Coin-Generator läuft für <@${targetMember.id}>...\n` +
-            `> \`🪙\` » Coins gesammelt: **${collectedCoins.toLocaleString("de-DE")}**\n` +
-            `> \`⌛\` » Verbleibende Zeit: <t:${currentUnix + remainingUnix}:R>`,
+            `> \`🪙\` » Coins gesammelt: **${collectedCoins.toLocaleString('de-DE')}**\n` +
+            `> \`⌛\` » Verbleibende Zeit: <t:${currentUnix + remainingUnix}:R>`
         });
 
         if (tickCount >= maxTicks) {
           clearInterval(interval);
 
           let user = await Coin.findOne({ userId: targetUser.id });
-          if (!user) {user = new Coin({ userId: targetUser.id, coins: 0 });}
+          if (!user) user = new Coin({ userId: targetUser.id, coins: 0 });
           user.coins += collectedCoins;
           await user.save();
 
           const embed = new EmbedBuilder()
-            .setTitle("`🪙` Coin-Ergebnis")
-            .setColor("Gold")
-            .setDescription(`> <@${targetUser.id}> hat in **1 Minute** insgesamt **${collectedCoins.toLocaleString("de-DE")} Coins** gesammelt.`)
+            .setTitle(`\`🪙\` Coin-Ergebnis`)
+            .setColor('Gold')
+            .setDescription(`> <@${targetUser.id}> hat in **1 Minute** insgesamt **${collectedCoins.toLocaleString('de-DE')} Coins** gesammelt.`)
             .setFooter({ text: `Coin-Bereich: ${min}–${max} Coins pro Tick` })
             .setTimestamp();
 
           await interaction.editReply({
-            content: "> `✅` » Coin-Generator abgeschlossen.",
-            embeds: [embed],
+            content: '> `✅` » Coin-Generator abgeschlossen.',
+            embeds: [embed]
           });
         }
       }, intervalMs);
 
     } catch (error) {
-      console.error("Fehler im Coin-Generator:", error);
+      console.error('Fehler im Coin-Generator:', error);
       if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content: "> `❌` » Ein unerwarteter Fehler ist aufgetreten.", ephemeral: true });
+        await interaction.reply({ content: '> `❌` » Ein unerwarteter Fehler ist aufgetreten.', ephemeral: true });
       }
     }
-  },
+  }
 };

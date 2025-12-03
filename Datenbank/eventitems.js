@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const eventItemSchema = new mongoose.Schema({
   userId: { type: String, required: true },
@@ -7,4 +7,4 @@ const eventItemSchema = new mongoose.Schema({
   lastCollected: { type: Date, default: null },
 });
 
-module.exports = mongoose.model("eventitems", eventItemSchema);
+module.exports = mongoose.model('eventitems', eventItemSchema);
