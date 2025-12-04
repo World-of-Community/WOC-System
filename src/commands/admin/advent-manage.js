@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const Advent = require("../../../Datenbank/adventdb"); // <- Pfad anpassen!
+const Advent = require("../../../Datenbank/adventdb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -19,7 +19,7 @@ module.exports = {
 
         if (!userData) {
             return interaction.reply({
-                content: `> \`ℹ️\` » Für **${target.tag}** existiert kein Adventskalender-Eintrag.`,
+                content: `> \`ℹ️\` » Für **${target.displayname}** existiert kein Adventskalender-Eintrag.`,
                 ephemeral: true
             });
         }
@@ -27,7 +27,7 @@ module.exports = {
         await Advent.deleteOne({ userId: target.id });
 
         return interaction.reply({
-            content: `> \`🔄\` » Adventskalender für **${target.tag}** wurde **zurückgesetzt**!`,
+            content: `> \`🔄\` » Adventskalender für **${target.displayname}** wurde **zurückgesetzt**!`,
             ephemeral: true
         });
     }
