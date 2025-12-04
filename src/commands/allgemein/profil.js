@@ -310,7 +310,7 @@ module.exports = {
         }
 
         // Formatierung der Coins mit Tausendertrennzeichen
-        const formattedCoins = userCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
+        const formattedCoins = memberCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
 
 
         let lastOnlineText = '';
