@@ -1,5 +1,161 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const userdb = require('../../../Datenbank/userdb');
+const { Coin } = require("../../../Datenbank/coindb");
+
+/**
+ * ⬇️ KATEGORIEN SAMMELN ⬇️
+ * → Einfach erweiterbar
+ */
+const ROLE_CATEGORIES = {
+    team: {
+        emoji: "📌",
+        label: "Rang",
+        ids: [
+            "959869691529154631", "893423428558782465",
+            "929349039433056276", "816985466230145044",
+            "815920052385480754", "815920170371383366",
+            "1263645368441241700"
+        ]
+    },
+    leitung: {
+        emoji: "📌",
+        label: "Leitung",
+        ids: [
+            "1399454355349835917", "1154345358030282782",
+            "1155080722466488351", "1258773853249863734",
+            "1269384021402714263", "1269383970349650087",
+            "1175879013688954980", "1290377533984079923",
+            "1399156593802612908", "1246368940318392411",
+            "1269370651500609586", "1400183875774185554",
+        ]
+    },
+    exklusiv: { emoji: "📌", label: "Exklusiv", ids: [
+        "815920219247214644", "862708375698538507",
+        "1249802165501952053", "946040266266144768",
+        "1187144777595101225", "1150753421339676722",
+        "1155235780541821009"
+    ]},
+    mitglied: { emoji: "📌", label: "Mitglied", ids: [
+        "815921105407574056", "917826787977871441",
+        "815920452337139733", "835775627721179167",
+        "835775556611997697", "835775597446955048",
+        "815920703067914290"
+    ]},
+    bundesland: { emoji: "📌", label: "Bundesland", ids: [
+        "1379411398827704362","1379411504394141758","1379411613240528936",
+        "1379411641958924338","1379411675773538404","1379411700931104830",
+        "1379411767452762233","1379411797353955379","1379411848482390128",
+        "1379411880828735568","1379411970020605982","1379412016447492096",
+        "1379412047103660092","1379412115240124517","1379412160194805810",
+    ]},
+    nationalität: { emoji: "📌", label: "Land", ids: [
+        "848163749637914674", "848163753139896330", "1127923622653210654"
+    ]},
+    games: { emoji: "🎮", label: "Meine Spiele", ids: [
+        "1232072165654794281","1232066510554529905",
+        "1232066545492955136","1232066588216135880",
+        "1232066657896108082","1273369483951734866",
+        "1232066632491208704","1232070141127426058",
+        "1300487353990647881"
+    ]},
+    pings: { emoji: "🔔", label: "Server-Pings", ids: [
+        "847805121839890463","848085701449744394","870297686467817492",
+        "870683971846041650","963838152815050763","1147093175186493490",
+        "1246190426646642698","1230568420240527462","1231257421016469596",
+        "1231257532844998666"
+    ]},
+    level: { emoji: "⭐", label: "Level", ids: [
+        "1258827226846199808","1258794944953319534",
+        "1258794479570124920","1258827956634128467",
+        "1258794405507240038","1258825144697360485",
+        "1258794321533075526","1258825307239219371"
+    ]}
+};
+
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName("profil")
+        .setDescription("» Zeigt dir nützliche Stats über einen Account.")
+        .addUserOption(opt => opt.setName("mitglied").setDescription("Welches Profil?")),
+
+    async execute(interaction) {
+        const member = interaction.options.getMember("mitglied") || interaction.member;
+        if (member.user.bot)
+            return interaction.reply({ content: "> ❌ Bots haben keine Profile!", ephemeral: true });
+
+        /** Coins fix */
+        let coins = await Coin.findOne({ userId: member.user.id });
+        if (!coins) {
+            coins = new Coin({ userId: member.user.id, coins: 0 });
+            await coins.save();
+        }
+        const formattedCoins = coins.coins.toLocaleString("de-DE");
+
+        /** UserDB fix (nur offline updaten) */
+        const userData = await userdb.findOne({ userID: member.id }) || {};
+        const isOffline = !member.presence || member.presence.status === "offline";
+        if (isOffline) {
+            await userdb.updateOne({ userID: member.id }, { $set: { lastOnline: new Date() } }, { upsert: true });
+        }
+
+        /** Rollen in Kategorien sortieren */
+        const categoryText = [];
+        for (const key in ROLE_CATEGORIES) {
+            const cat = ROLE_CATEGORIES[key];
+            const matches = member.roles.cache
+                .filter(r => cat.ids.includes(r.id))
+                .map(r => `<@&${r.id}>`);
+
+            categoryText.push(
+                `- \`${cat.emoji}\` » ${cat.label}: ${matches.length > 0 ? matches.join(", ") : "**—**"}`
+            );
+        }
+
+        /** LastOnline Anzeige */
+        let lastOnlineText = "";
+        if (isOffline && userData.lastOnline) {
+            const ts = Math.floor(new Date(userData.lastOnline) / 1000);
+            lastOnlineText = `- 📅 » Zuletzt online: <t:${ts}:f>\n`;
+        }
+
+        /** Embed */
+        const embed = new EmbedBuilder()
+            .setTitle(`👤 ${member.user.displayName} — Profil`)
+            .setDescription(
+                `> **Server-Profil** von \`${member.user.username}\`\n\n` +
+                categoryText.join("\n") +
+                `\n- 🪙 » Konto: **${formattedCoins} Coins**\n\n` +
+                `> **Statistiken** 📊\n` +
+                lastOnlineText +
+                `- 🎁 » Events gewonnen: **${userData.giveaway?.eventWins ?? 0}**\n` +
+                `- 📚 » Nachrichten: **${userData.giveaway?.messages ?? 0}**\n` +
+                `- 🔊 » Sprachzeit: **${((userData.giveaway?.voiceTime ?? 0) / 3600000).toFixed(0)}h**\n`
+            )
+            .addFields(
+                {
+                    name: "👥 Mitglied seit",
+                    value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:f>`,
+                    inline: false
+                },
+                {
+                    name: "⏰ Account erstellt",
+                    value: `<t:${Math.floor(member.user.createdTimestamp / 1000)}:f>`,
+                    inline: false
+                },
+            )
+            .setColor("Blurple")
+            .setThumbnail(member.user.displayAvatarURL({ size: 512 }))
+            .setTimestamp();
+
+        return interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+};
+
+
+/*
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const userdb = require('../../../Datenbank/userdb');
 const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
 
 module.exports = {
@@ -369,3 +525,4 @@ module.exports = {
         await interaction.reply({ embeds: [embed], ephemeral: true });
     },
 };
+*/
