@@ -301,16 +301,16 @@ module.exports = {
         //const aboutMe = fullUser.bio || "`➖`";
 
         // Suche nach den Coins des Benutzers in der Datenbank
-        let userCoins = await Coin.findOne({ userId: user.id });
+        let memberCoins = await Coin.findOne({ memberId: user.id });
     
-        if (!userCoins) {
+        if (!memberCoins) {
           // Wenn der Benutzer keine Coins hat, Eintrag mit 0 erstellen
-          userCoins = new Coin({ userId: user.id, coins: 0 });
-          await userCoins.save();
+          memberCoins = new Coin({ memberId: member.id, coins: 0 });
+          await memberCoins.save();
         }
 
         // Formatierung der Coins mit Tausendertrennzeichen
-        const formattedCoins = userCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
+        const formattedCoins = memberCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
 
 
         let lastOnlineText = '';
