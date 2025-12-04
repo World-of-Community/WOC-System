@@ -44,11 +44,23 @@ module.exports = {
                         .setDescription('Benutzer auswählen (optional).')
                         .setRequired(false)
                 )
+        )
+        // Subcommand: reset
+        .addSubcommand(sub =>
+            sub.setName('reset')
+                .setDescription('Setzt den Adventskalender für einen Benutzer zurück 🔄')
+                .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+                .addUserOption(option =>
+                    option.setName('user')
+                        .setDescription('Benutzer auswählen.')
+                        .setRequired(true)
+                )
         ),
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
 
+        // ---------- CHECK ----------
         if (subcommand === 'check') {
             const target = interaction.options.getUser('user') || interaction.user;
             const member = await interaction.guild.members.fetch(target.id).catch(() => null);
@@ -85,6 +97,27 @@ module.exports = {
                     (nextDay
                         ? `> \`🎁\` » **Nächstes öffnbares Türchen:** ${nextDay}. Dezember\n> Belohnung: **${nextRewardText}**`
                         : `> \`🎁\` » Alle bisherigen Tage geöffnet!`),
+                ephemeral: true
+            });
+        }
+
+        // ---------- RESET ----------
+        if (subcommand === 'reset') {
+            const target = interaction.options.getUser('user');
+            const member = await interaction.guild.members.fetch(target.id).catch(() => null);
+            const displayName = member?.displayName || target.username;
+
+            const userData = await Advent.findOne({ userId: target.id });
+            if (!userData) {
+                return interaction.reply({
+                    content: `> \`ℹ️\` » Für **${displayName}** existiert kein Adventskalender-Eintrag.`,
+                    ephemeral: true
+                });
+            }
+
+            await Advent.deleteOne({ userId: target.id });
+            return interaction.reply({
+                content: `> \`🔄\` » Adventskalender für **${displayName}** wurde **zurückgesetzt**!`,
                 ephemeral: true
             });
         }
