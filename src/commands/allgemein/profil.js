@@ -292,20 +292,12 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        //const fullUser = await member.user.fetch();
-
-        //console.log("Pronomen:", fullUser.pronouns);
-        //console.log("Bio:", fullUser.bio);
-
-        //const pronouns = fullUser.pronouns || "`➖`";
-        //const aboutMe = fullUser.bio || "`➖`";
-
         // Suche nach den Coins des Benutzers in der Datenbank
-        let memberCoins = await Coin.findOne({ userId: member.id });
+        let memberCoins = await Coin.findOne({ userId: user.id });
     
         if (!memberCoins) {
           // Wenn der Benutzer keine Coins hat, Eintrag mit 0 erstellen
-          memberCoins = new Coin({ memberId: member.id, coins: 0 });
+          memberCoins = new Coin({ memberId: user.id, coins: 0 });
           await memberCoins.save();
         }
 
