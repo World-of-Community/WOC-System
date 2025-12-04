@@ -35,6 +35,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('advent')
         .setDescription('» Adventskalender Verwaltung 🎄')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         // Subcommand: check
         .addSubcommand(sub =>
             sub.setName('check')
@@ -49,7 +50,6 @@ module.exports = {
         .addSubcommand(sub =>
             sub.setName('reset')
                 .setDescription('Setzt den Adventskalender für einen Benutzer zurück 🔄')
-                .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
                 .addUserOption(option =>
                     option.setName('user')
                         .setDescription('Benutzer auswählen.')
