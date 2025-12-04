@@ -305,7 +305,7 @@ module.exports = {
     
         if (!memberCoins) {
           // Wenn der Benutzer keine Coins hat, Eintrag mit 0 erstellen
-          memberCoins = new Coin({ memberId: user.id, coins: 0 });
+          memberCoins = new Coin({ memberId: member.id, coins: 0 });
           await memberCoins.save();
         }
 
