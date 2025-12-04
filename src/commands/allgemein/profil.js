@@ -301,7 +301,7 @@ module.exports = {
         //const aboutMe = fullUser.bio || "`➖`";
 
         // Suche nach den Coins des Benutzers in der Datenbank
-        let memberCoins = await Coin.findOne({ memberId: user.id });
+        let memberCoins = await Coin.findOne({ memberId: member.id });
     
         if (!memberCoins) {
           // Wenn der Benutzer keine Coins hat, Eintrag mit 0 erstellen
