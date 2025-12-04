@@ -96,7 +96,7 @@ module.exports = {
 
             // Embeds + Button senden
             await ticketChannel.send({
-                content: `<@&${supportRoleId}> | ${interaction.user}`,
+                content: `User: <@&${supportRoleId}> | Team: ${interaction.user}`,
                 embeds: [infoEmbed, feedbackEmbed],
                 components: [buttonRow]
             });

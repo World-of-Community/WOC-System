@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const userdb = require('../../../Datenbank/userdb');
+const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -299,6 +300,18 @@ module.exports = {
         //const pronouns = fullUser.pronouns || "`➖`";
         //const aboutMe = fullUser.bio || "`➖`";
 
+        // Suche nach den Coins des Benutzers in der Datenbank
+        let userCoins = await Coin.findOne({ userId: user.id });
+    
+        if (!userCoins) {
+          // Wenn der Benutzer keine Coins hat, Eintrag mit 0 erstellen
+          userCoins = new Coin({ userId: user.id, coins: 0 });
+          await userCoins.save();
+        }
+
+        // Formatierung der Coins mit Tausendertrennzeichen
+        const formattedCoins = userCoins.coins.toLocaleString('de-DE'); // Formatierung für deutsch (mit Punkt als Trennzeichen)
+
 
         let lastOnlineText = '';
 
@@ -333,8 +346,7 @@ module.exports = {
                 `> \`👤\` **» SERVER PROFIL**\n` +
                 `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))} ${leitungRoleMentions.length > 0 ? ` (${leitungRoleMentions.join(', ')})` : ''}\n` +
                 `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
-                //`- \`📘\` » Pronomen: ${pronouns}\n` +
-                //`- \`📝\` » Über mich: ${aboutMe}\n` +
+                `- \`🪙\` » Konto: **${formattedCoins} Coins**\n` +
                 `${outputText}\n` +
                 `- \`⭐\` » Nutzer-Level: ${levelRoles.length > 0 ? levelRoles.join(', ') : '**Keine Levelrolle**'}\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +

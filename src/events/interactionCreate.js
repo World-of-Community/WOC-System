@@ -218,11 +218,7 @@ module.exports = {
                 await coinData.save();
             
                 rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`💰\` » Die Coins wurden **automatisch deinem Konto gutgeschrieben**.`;
-            break;            
-
-            //case 'coins':
-            //    rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`🎫\` » Öffne ein Ticket im Support, um deine Belohnung abzuholen.`;
-            //break;
+            break;
 
             case 'role':
                 const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
@@ -326,7 +322,7 @@ module.exports = {
                 );
             
                 await thread.send({
-                    content: `<@${interaction.user.id}> <@&${supportRoleId}>`,
+                    content: `User: <@${interaction.user.id}> | Team: <@&${supportRoleId}>`,
                     embeds: [ticketEmbed, ticketEmbed2],
                     components: [closeButtonRow]
                 });
