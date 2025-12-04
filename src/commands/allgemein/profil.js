@@ -346,9 +346,9 @@ module.exports = {
                 `> \`👤\` **» SERVER PROFIL**\n` +
                 `- \`📌\` » Rang: ${hasTeamRole ? teamRoleMention : (hasExklusivRole ? exklusivRoleMention : (hasMemberRole ? memberRoleMention : 'Keine Rolle'))} ${leitungRoleMentions.length > 0 ? ` (${leitungRoleMentions.join(', ')})` : ''}\n` +
                 `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
-                `- \`🪙\` » Konto: **${formattedCoins} Coins**\n` +
                 `${outputText}\n` +
                 `- \`⭐\` » Nutzer-Level: ${levelRoles.length > 0 ? levelRoles.join(', ') : '**Keine Levelrolle**'}\n` +
+                `- \`🪙\` » Konto: **${formattedCoins} Coins**\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
