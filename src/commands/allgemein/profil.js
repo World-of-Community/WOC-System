@@ -332,17 +332,6 @@ module.exports = {
           }
         }
 
-        // --- Adventskalender Button im Dezember ---
-        const now = new Date();
-        let components = [];
-        if (now.getMonth() === 11) { // Dezember
-            const adventButton = new ButtonBuilder()
-                .setCustomId('advent_progress')
-                .setLabel('🎁 Adventskalender')
-                .setStyle(ButtonStyle.Primary);
-            components.push(new ActionRowBuilder().addComponents(adventButton));
-        }
-
         // Embed
         const embed = new EmbedBuilder()
             .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
@@ -378,6 +367,17 @@ module.exports = {
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 512 }))
             .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
+
+        // --- Adventskalender Button im Dezember ---
+        const now = new Date();
+        let components = [];
+        if (now.getMonth() === 11) { // Dezember
+            const adventButton = new ButtonBuilder()
+                .setCustomId('advent_progress')
+                .setLabel('🎁 Adventskalender')
+                .setStyle(ButtonStyle.Primary);
+            components.push(new ActionRowBuilder().addComponents(adventButton));
+        }
 
         //await interaction.reply({ embeds: [embed], ephemeral: true });
 
