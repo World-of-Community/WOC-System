@@ -355,7 +355,6 @@ module.exports = {
         if (interaction.customId !== 'advent_progress') return;
 
         const userId = interaction.user.id;
-        const now = new Date();
         const today = now.getDate(); // aktueller Tag
 
         // Benutzerfortschritt abrufen oder initialisieren
