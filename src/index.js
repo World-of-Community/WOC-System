@@ -647,7 +647,7 @@ const BANNER_URL = 'https://cdn.discordapp.com/attachments/1008696596000677998/1
     }
   });
 
-const CHANNEL_ID = '870645033232130098';
+const BotCHANNEL_ID = '870645033232130098';
 let commandExecuted = false;
 
 setInterval(async () => {
@@ -664,7 +664,7 @@ setInterval(async () => {
     // Freitag 15:00 Uhr → Command ausführen
     if (isFirstFriday() && hour === 15 && !commandExecuted) {
         commandExecuted = true;
-        const channel = await client.channels.fetch(CHANNEL_ID);
+        const channel = await client.channels.fetch(BotCHANNEL_ID);
         channel.send(':?pmulti set 2');
         console.log('Command am Freitag um 15 Uhr ausgeführt!');
     }
@@ -672,7 +672,7 @@ setInterval(async () => {
     // Sonntag 22:00 Uhr → zurücksetzen
     if (day === 0 && hour === 22 && commandExecuted) {
         commandExecuted = false;
-        const channel = await client.channels.fetch(CHANNEL_ID);
+        const channel = await client.channels.fetch(BotCHANNEL_ID);
         channel.send(':?pmulti set 1'); // optional zurücksetzen
         console.log('Command am Sonntag um 22 Uhr zurückgesetzt!');
     }
