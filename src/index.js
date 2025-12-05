@@ -626,8 +626,11 @@ const BANNER_URL = 'https://cdn.discordapp.com/attachments/1008696596000677998/1
 
         // 1️⃣ Banner senden
         const bannerMsg = await channel.send({
-          files: [BANNER_URL],
-        });
+            embeds: [
+                new EmbedBuilder()
+                .setImage(BANNER_URL),
+            ]
+      });
 
         // 2️⃣ Danach Nachricht senden
         await channel.send(
