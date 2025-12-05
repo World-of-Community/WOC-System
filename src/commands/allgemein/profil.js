@@ -1,62 +1,3 @@
-// profil.js
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const userdb = require('../../../Datenbank/userdb');
-const Advent = require('../../../Datenbank/adventdb'); // Adventskalender DB
-const { Coin } = require("../../../Datenbank/coindb");
-
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('profil')
-        .setDescription('» Zeigt dir nützliche Stats über einen Account. 👤')
-        .addUserOption(option => option.setName('mitglied').setDescription('» Welches Profil möchtest du Abrufen?').setRequired(false)),
-
-    async execute(interaction) {
-        const member = interaction.options.getMember('mitglied') || interaction.member;
-
-        if (member.user.bot) return interaction.reply({ content: "> `❌` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
-
-        // --- Coins abrufen ---
-        let memberCoins = await Coin.findOne({ userId: member.user.id });
-        if (!memberCoins) {
-            memberCoins = new Coin({ userId: member.user.id, coins: 0 });
-            await memberCoins.save();
-        }
-        const formattedCoins = memberCoins.coins.toLocaleString('de-DE');
-
-        // --- Adventskalender Button im Dezember ---
-        const now = new Date();
-        let adventRow;
-        if (now.getMonth() === 11) { // Dezember
-            // Button mit Platzhalter Text
-            const adventButton = new ButtonBuilder()
-                .setCustomId('advent_progress')
-                .setLabel('🎄 Adventskalender')
-                .setStyle(ButtonStyle.Primary);
-
-            adventRow = new ActionRowBuilder().addComponents(adventButton);
-        }
-
-        const embed = new EmbedBuilder()
-            .setTitle(`\`👤\` × ${member.user.username}'s Profil`)
-            .setDescription(
-                `> \`🪙\` » Coins: **${formattedCoins}**\n` +
-                `> \`🎁\` » Adventskalender im Dezember verfügbar!`
-            )
-            .setColor('Blurple')
-            .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 512 }))
-            .setFooter({ text: `» Deine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
-            .setTimestamp();
-
-        if (adventRow) {
-            await interaction.reply({ embeds: [embed], components: [adventRow], ephemeral: true });
-        } else {
-            await interaction.reply({ embeds: [embed], ephemeral: true });
-        }
-    },
-};
-
-
-/*
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const userdb = require('../../../Datenbank/userdb');
 const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
@@ -391,6 +332,17 @@ module.exports = {
           }
         }
 
+        // --- Adventskalender Button im Dezember ---
+        const now = new Date();
+        let components = [];
+        if (now.getMonth() === 11) { // Dezember
+            const adventButton = new ButtonBuilder()
+                .setCustomId('advent_progress')
+                .setLabel('🎁 Adventskalender')
+                .setStyle(ButtonStyle.Primary);
+            components.push(new ActionRowBuilder().addComponents(adventButton));
+        }
+
         // Embed
         const embed = new EmbedBuilder()
             .setTitle(`\`👤\` × ${member.user.displayName}'s Profil`)
@@ -427,7 +379,12 @@ module.exports = {
             .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        //await interaction.reply({ embeds: [embed], ephemeral: true });
+
+        if (components.length>0){
+            await interaction.reply({ embeds:[embed], components, ephemeral:true });
+        } else {
+            await interaction.reply({ embeds:[embed], ephemeral:true });
+        }
     },
 };
-*/
