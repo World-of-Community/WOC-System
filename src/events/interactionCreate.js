@@ -352,6 +352,44 @@ module.exports = {
           console.error(e);
         }
 
+        if (interaction.customId !== 'advent_progress') return;
+
+        const userId = interaction.user.id;
+        const now = new Date();
+        const today = now.getDate(); // aktueller Tag
+
+        // Benutzerfortschritt abrufen oder initialisieren
+        let adventData = await Advent.findOne({ userId });
+        if (!adventData) {
+            adventData = new Advent({ userId, openedDays: [] });
+            await adventData.save();
+        }
+
+        const openedDays = adventData.openedDays; // Array mit geöffneten Tagen
+        const totalDays = 24;
+        let calendarDisplay = '';
+
+        for (let day = 1; day <= totalDays; day++) {
+            if (openedDays.includes(day)) {
+                calendarDisplay += `\`${day}\` ✅  `;
+            } else if (day < today) {
+                calendarDisplay += `\`${day}\` ❌  `;
+            } else {
+                calendarDisplay += `\`${day}\` 🎁  `;
+            }
+
+            if (day % 4 === 0) calendarDisplay += '\n';
+        }
+
+        const embed = new EmbedBuilder()
+            .setTitle(`\`🎄\` Dein Adventskalender-Fortschritt \`🎄\``)
+            .setDescription(calendarDisplay)
+            .setColor('Blurple')
+            .setFooter({ text: 'Viel Spaß beim Öffnen der Türchen!' })
+            .setTimestamp();
+
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+
         // Ränge Menu
         if (interaction.customId === 'ränge-menu') {
             switch (interaction.values[0]) {
