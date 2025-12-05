@@ -224,7 +224,7 @@ module.exports = {
                 const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
             if (role) {
                 await interaction.member.roles.add(role);
-                rewardMessage = `> \`🎉\` » Du hast die Rolle **${role.name}** erhalten!`;
+                rewardMessage = `> \`🎉\` » Du hast die Rolle **${role}** erhalten!`;
             } else {
                 rewardMessage = '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.';
             }
