@@ -368,23 +368,23 @@ module.exports = {
             .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
 
-        // --- Adventskalender Button im Dezember ---
-        const now = new Date();
-        let components = [];
-        if (now.getMonth() === 11) { // Dezember
-            const adventButton = new ButtonBuilder()
-                .setCustomId('advent_progress')
-                .setLabel('🎁 Adventskalender')
-                .setStyle(ButtonStyle.Primary);
-            components.push(new ActionRowBuilder().addComponents(adventButton));
-        }
+        //// --- Adventskalender Button im Dezember ---
+        //const now = new Date();
+        //let components = [];
+        //if (now.getMonth() === 11) { // Dezember
+        //    const adventButton = new ButtonBuilder()
+        //        .setCustomId('advent_progress')
+        //        .setLabel('🎁 Adventskalender')
+        //        .setStyle(ButtonStyle.Primary);
+        //    components.push(new ActionRowBuilder().addComponents(adventButton));
+        //}
 
-        //await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.reply({ embeds: [embed], ephemeral: true });
 
-        if (components.length>0){
-            await interaction.reply({ embeds:[embed], components, ephemeral:true });
-        } else {
-            await interaction.reply({ embeds:[embed], ephemeral:true });
-        }
+        //if (components.length>0){
+        //    await interaction.reply({ embeds:[embed], components, ephemeral:true });
+        //} else {
+        //    await interaction.reply({ embeds:[embed], ephemeral:true });
+        //}
     },
 };
