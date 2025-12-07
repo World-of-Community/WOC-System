@@ -609,11 +609,7 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 
-// Server Banner jeden ersten Freitag im Monat
-const ServerEventCHANNEL_ID = '1008696596000677998';
-const BANNER_URL = 'https://cdn.discordapp.com/attachments/1008696596000677998/1337428177487794207/WOC_Banner_Neues_Server_Event.png?ex=690f520d&is=690e008d&hm=62bf01da44ab6d8946820799d984314daee0227eb2ec44c52335b458ba43ac93&';
-
-// Jeden Freitag um 12:00 Uhr prüfen
+// Jeden Freitag um 12:00 Uhr prüfen jeden ersten Freitag im Monat
   cron.schedule('0 15 * * 5', async () => {
     const today = new Date();
     const day = today.getDate();
@@ -621,14 +617,14 @@ const BANNER_URL = 'https://cdn.discordapp.com/attachments/1008696596000677998/1
     // Nur am ersten Freitag (Tag ≤ 7)
     if (day <= 7) {
       try {
-        const channel = await client.channels.fetch(ServerEventCHANNEL_ID);
+        const channel = await client.channels.fetch('1008696596000677998');
         if (!channel) return console.log('Kanal nicht gefunden!');
 
         // 1️⃣ Banner senden
         const bannerMsg = await channel.send({
             embeds: [
                 new EmbedBuilder()
-                .setImage(BANNER_URL),
+                .setImage('https://cdn.discordapp.com/attachments/1008696596000677998/1337428177487794207/WOC_Banner_Neues_Server_Event.png?ex=690f520d&is=690e008d&hm=62bf01da44ab6d8946820799d984314daee0227eb2ec44c52335b458ba43ac93&'),
             ]
       });
 
@@ -636,8 +632,8 @@ const BANNER_URL = 'https://cdn.discordapp.com/attachments/1008696596000677998/1
         await channel.send(
             '<a:pin:1119708768326914100>  » | **2-FACH XP-EVENT** - <a:Chat1:976129450112593990>\n\n' +
             'Liebe Community, <@&870683971846041650>\n\n' +
-            'Wir starten ein **XP-Event** welches **von Freitag bis Sonntag läuft**. In dieser Zeit habt ihr die Möglichkeit, durch Chat & Voice Aktivität, mehr XP als normalerweise zu bekommen, die XP werden mit **3 multipliziert**. Also lohnt es sich besonders in dieser Zeit aktiv zu sein um schneller Leveln zu können.\n\n' +
-            'Mit freundlichen Grüßen\nEuer **World Of Community**-Team <a:pepeheart:974642478055555082>'
+            'Wir starten ein **XP-Event** welches **von Freitag bis Sonntag läuft**. In dieser Zeit habt ihr die Möglichkeit, durch Chat & Voice Aktivität, mehr XP als normalerweise zu bekommen, die XP werden mit **2 multipliziert**. Also lohnt es sich besonders in dieser Zeit aktiv zu sein um schneller Leveln zu können.\n\n' +
+            'Mit freundlichen Grüßen\nEuer **World Of Community**-Team <:pepeheart:974642478055555082>'
         );
 
         console.log('✅ | Banner und Nachricht gesendet!');
