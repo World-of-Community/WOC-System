@@ -743,11 +743,12 @@ setInterval( async () => {
             '> `👥` » **Freundliche & Hilfsbereite** Community!\n' +
             '> `📄` » **Täglich neue Nachrichten** sowie **Gaming- & Film-News**\n' +
             '> `🎮` » **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n' +
-            '> `📰` » **Freie Werbung** senden. (Keine anderen Minecraft-Server)\n' +
             '> `🎥` » Eine **exklusive Live-Streamer** Rolle wenn du **Live** bist!\n' +
-            '> `⚽` » Eine **Fußball-Simulation**, bei der du Fan eines Clubs werden kannst\n' +
+            '> `🚑` » **Support** bei Problemen rund um Discord & Minecraft\n' +
+            '> `🏆` » **Levelsystem** mit **vielen Belohnungen**\n' +
+            '> `💡` » **Vorschlags-System** um den Server mitzugestalten\n' +
             '`🔍` - **Wir suchen Verstärkung für unser Team:**\n\n' +
-            '> `🔧` - Developer\n' +
+            '> `🔧` - Developer (Java, Spigot/Paper API - Discord/Node.js)\n' +
             '> `🧩` - Supporter\n' +
             '> `👷` - Builder\n\n' +
             '> `📌` **| Wir freuen uns auf dich!**\n\n' +
