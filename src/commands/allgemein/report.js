@@ -69,20 +69,20 @@ module.exports = {
         const beweisVorhanden = beweis ? '✅ Ja' : '❌ Nein';
 
         const reportEmbed = new EmbedBuilder()
-            .setTitle(`📝 Neuer Report von ${interaction.user.displayName}`)
+            .setTitle(`\`📝\` Neuer Report von ${interaction.user.displayName}`)
             .setColor('Red')
             .setDescription(
                 `${reportedUser} wurde von ${interaction.user} gemeldet.\n\n` +
-                `> **👤 BENUTZER INFORMATIONEN**\n` +
-                `✍️ **Grund:** ${grund}\n` +
-                `📌 **Server:** ${serverName}\n` +
-                `📌 **Benutzer:** ${reportedUser.displayName} (\`${reportedUser.id}\`) ${reportedUser}\n\n` +
-                `⏰ **Account erstellt:** ${createdAt}\n` +
-                `⏰ **Beigetreten:** ${joinedAt}`
+                `> **\`👤\` BENUTZER INFORMATIONEN**\n` +
+                `\`✍️\` **Grund:** ${grund}\n` +
+                `\`📌\` **Server:** ${serverName}\n` +
+                `\`📌\` **Benutzer:** ${reportedUser.displayName} (\`${reportedUser.id}\`) ${reportedUser}\n\n` +
+                `\`⏰\` **Account erstellt:** ${createdAt}\n` +
+                `\`⏰\` **Beigetreten:** ${joinedAt}`
             )
             .addFields(
                 {
-                    name: '🧾 Beweis vorhanden',
+                    name: '\`🧾\` Beweis vorhanden',
                     value: beweisVorhanden,
                     inline: true
                 }
