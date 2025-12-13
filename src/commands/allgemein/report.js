@@ -66,7 +66,7 @@ module.exports = {
         const createdAt = `<t:${Math.round(reportedUser.createdTimestamp / 1000)}>`;
         const joinedAt = `<t:${Math.round(reportedMember.joinedTimestamp / 1000)}>`;
         const serverName = server === 'discord' ? 'Discord Server' : 'Minecraft Server';
-        const beweisVorhanden = beweis ? '✅ Ja' : '❌ Nein';
+        const beweisVorhanden = beweis ? '`✅` Ja' : '`❌` Nein';
 
         const reportEmbed = new EmbedBuilder()
             .setTitle(`\`📝\` Neuer Report von ${interaction.user.displayName}`)
@@ -80,19 +80,18 @@ module.exports = {
                 `\`⏰\` **Account erstellt:** ${createdAt}\n` +
                 `\`⏰\` **Beigetreten:** ${joinedAt}`
             )
-            .addFields(
-                {
-                    name: '\`🧾\` Beweis vorhanden',
-                    value: beweisVorhanden,
-                    inline: true
-                }
-            )
+            .addFields({
+                name: '\`🧾\` Beweis vorhanden',
+                value: beweisVorhanden,
+                inline: true
+            })
             .setFooter({
                 text: `© ${interaction.guild.name} - Report System`,
                 iconURL: interaction.guild.iconURL()
             })
             .setTimestamp();
 
+        // Beweis NUR im Embed anzeigen
         if (beweis) {
             reportEmbed.setImage(beweis.url);
         }
@@ -108,8 +107,7 @@ module.exports = {
 
         await modChannel.send({
             content: `> <@&1285728292367892584> » **Neuer Report ist eingegangen**`,
-            embeds: [reportEmbed],
-            files: beweis ? [beweis.url] : []
+            embeds: [reportEmbed]
         });
 
         await interaction.reply({
