@@ -217,7 +217,7 @@ module.exports = {
                 ? notes.map(n =>
                     `> Beschreibung: ${n.note}\n> Notiz-ID: \`${n._id}\`\n> von <@${n.authorId}> (<t:${Math.floor(n.createdAt.getTime() / 1000)}:f>)`
                 ).join("\n")
-                : "`Keine Notizen vorhanden`";
+                : "Keine Notizen vorhanden";
 
             const embed = new EmbedBuilder()
                 .setColor(banned ? 0xED4245 : 0x57F287)
@@ -238,7 +238,7 @@ module.exports = {
                     `> \`🔇\` » Timeouts: \`${timeouts}\`\n` +
                     `> \`❗\` » Warnungen: \`${warns}\`\n\n` +
 
-                    `**\`📝\` Notizen**\n${noteText}`
+                    `**\`📝\` Notizen**\n> ${noteText}`
                 )
                 .setFooter({ text: `${interaction.guild.name} | Userinfo` })
                 .setTimestamp();
