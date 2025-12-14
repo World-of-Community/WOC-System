@@ -215,7 +215,7 @@ module.exports = {
 
             const noteText = notes.length
                 ? notes.map(n =>
-                    `> Beschreibung: \`${n.note}\`\n> ID: \`${n._id}\`\n> <@${n.authorId}> (<t:${Math.floor(n.createdAt.getTime() / 1000)}:f>)`
+                    `> Beschreibung: ${n.note}\n> von <@${n.authorId}> (<t:${Math.floor(n.createdAt.getTime() / 1000)}:f>)`
                 ).join("\n")
                 : "`Keine Notizen vorhanden`";
 
@@ -249,7 +249,7 @@ module.exports = {
                     new ButtonBuilder()
                         .setCustomId(`showPunishments_${user.id}`)
                         .setLabel("⚠️ Strafen anzeigen")
-                        .setStyle(ButtonStyle.Primary)
+                        .setStyle(ButtonStyle.Danger)
                 );
 
             return interaction.reply({ embeds: [embed], components: [buttonRow], ephemeral: true });
