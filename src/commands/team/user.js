@@ -113,13 +113,13 @@ module.exports = {
         // ───────────── NOTE ADD ─────────────
         if (sub === "note-add") {
             if (!hasModPerm)
-                return interaction.reply({ content: "> \`❌\` Keine Berechtigung.", ephemeral: true });
+                return interaction.reply({ content: "> \`❌\` » Keine Berechtigung.", ephemeral: true });
 
             const user = interaction.options.getUser("user");
             const text = interaction.options.getString("text");
 
             if (text.length > 4000)
-                return interaction.reply({ content: "> \`❌\` Max. 4000 Zeichen.", ephemeral: true });
+                return interaction.reply({ content: "> \`❌\` » Max. 4000 Zeichen.", ephemeral: true });
 
             await Note.create({
                 userId: user.id,
@@ -129,7 +129,7 @@ module.exports = {
             });
 
             return interaction.reply({
-                content: `> \`📝\` Notiz für **${user.username}** gespeichert.`,
+                content: `> \`📝\` » Notiz für **${user.username}** gespeichert.`,
                 ephemeral: true
             });
         }
@@ -137,20 +137,20 @@ module.exports = {
         // ───────────── NOTE EDIT ─────────────
         if (sub === "note-edit") {
             if (!hasModPerm)
-                return interaction.reply({ content: "> \`❌\` Keine Berechtigung.", ephemeral: true });
+                return interaction.reply({ content: "> \`❌\` » Keine Berechtigung.", ephemeral: true });
 
             const noteId = interaction.options.getString("noteid");
             const newText = interaction.options.getString("text");
 
             const note = await Note.findOne({ _id: noteId, guildId: interaction.guild.id });
             if (!note)
-                return interaction.reply({ content: "> \`❌\` Notiz nicht gefunden.", ephemeral: true });
+                return interaction.reply({ content: "> \`❌\` » Notiz nicht gefunden.", ephemeral: true });
 
             note.note = newText;
             await note.save();
 
             return interaction.reply({
-                content: `> \`✏️\` Notiz **${noteId}** bearbeitet.`,
+                content: `> \`✏️\` » Notiz **${noteId}** bearbeitet.`,
                 ephemeral: true
             });
         }
@@ -158,16 +158,16 @@ module.exports = {
         // ───────────── NOTE DELETE ─────────────
         if (sub === "note-delete") {
             if (!hasModPerm)
-                return interaction.reply({ content: "> \`❌\` Keine Berechtigung.", ephemeral: true });
+                return interaction.reply({ content: "> \`❌\` » Keine Berechtigung.", ephemeral: true });
 
             const noteId = interaction.options.getString("noteid");
 
             const deleted = await Note.findOneAndDelete({ _id: noteId, guildId: interaction.guild.id });
             if (!deleted)
-                return interaction.reply({ content: "> \`❌\` Notiz nicht gefunden.", ephemeral: true });
+                return interaction.reply({ content: "> \`❌\` » Notiz nicht gefunden.", ephemeral: true });
 
             return interaction.reply({
-                content: `> \`🗑️\` Notiz **${noteId}** gelöscht.`,
+                content: `> \`🗑️\` » Notiz **${noteId}** gelöscht.`,
                 ephemeral: true
             });
         }
@@ -175,7 +175,7 @@ module.exports = {
         // ───────────── NOTE CLEAR ─────────────
         if (sub === "note-clear") {
             if (!hasModPerm)
-                return interaction.reply({ content: "> \`❌\` Keine Berechtigung.", ephemeral: true });
+                return interaction.reply({ content: "> \`❌\` » Keine Berechtigung.", ephemeral: true });
 
             const user = interaction.options.getUser("user");
 
@@ -185,7 +185,7 @@ module.exports = {
             });
 
             return interaction.reply({
-                content: `> \`🗑️\` Alle Notizen für **${user.username}** gelöscht.`,
+                content: `> \`🗑️\` » Alle Notizen für **${user.username}** gelöscht.`,
                 ephemeral: true
             });
         }
