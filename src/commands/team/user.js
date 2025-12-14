@@ -233,7 +233,7 @@ module.exports = {
                     `> \`📅\` » Erstellt: ${createdAt}\n` +
                     `> \`📅\` » Beigetreten: ${joinedAt}\n\n` +
 
-                    `**\`🛡️\` Moderation**\n` +
+                    `**\`👮\` Moderation**\n` +
                     `> \`⛔\` » Bannstatus: ${banned ? '`🔴` Gebannt' : '`🟢` Nicht gebannt'}\n` +
                     `> \`🔇\` » Timeouts: \`${timeouts}\`\n` +
                     `> \`❗\` » Warnungen: \`${warns}\`\n\n` +
