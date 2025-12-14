@@ -112,16 +112,16 @@ module.exports = {
         const sub = interaction.options.getSubcommand();
         const hasModPerm = interaction.member.permissions.has(PermissionFlagsBits.ManageMessages);
 
-        // NOTE ADD
+        // ───────────────── NOTE ADD ─────────────────
         if (sub === "note-add") {
             if (!hasModPerm)
-                return interaction.reply({ content: "> `❌` Keine Berechtigung.", ephemeral: true });
+                return interaction.reply({ content: "> ❌ Keine Berechtigung.", ephemeral: true });
 
             const user = interaction.options.getUser("user");
             const text = interaction.options.getString("text");
 
             if (text.length > 300)
-                return interaction.reply({ content: "> `❌` Max. 300 Zeichen.", ephemeral: true });
+                return interaction.reply({ content: "> ❌ Max. 300 Zeichen.", ephemeral: true });
 
             await Note.create({
                 userId: user.id,
@@ -131,60 +131,53 @@ module.exports = {
             });
 
             return interaction.reply({
-                content: `> \`📝\` Notiz für **${user.username}** gespeichert.`,
+                content: `> 📝 Notiz für **${user.username}** gespeichert.`,
                 ephemeral: true
             });
         }
 
-        // NOTE EDIT
+        // ───────────────── NOTE EDIT ─────────────────
         if (sub === "note-edit") {
             if (!hasModPerm)
-                return interaction.reply({ content: "> `❌` Keine Berechtigung.", ephemeral: true });
+                return interaction.reply({ content: "> ❌ Keine Berechtigung.", ephemeral: true });
 
             const noteId = interaction.options.getString("noteid");
             const newText = interaction.options.getString("text");
 
-            if (newText.length > 300)
-                return interaction.reply({ content: "> `❌` Max. 300 Zeichen.", ephemeral: true });
-
-            const note = await Note.findOne({ _id: noteId, guildId: interaction.guild.id }).catch(() => null);
+            const note = await Note.findOne({ _id: noteId, guildId: interaction.guild.id });
             if (!note)
-                return interaction.reply({ content: "> `❌` Notiz nicht gefunden.", ephemeral: true });
+                return interaction.reply({ content: "> ❌ Notiz nicht gefunden.", ephemeral: true });
 
             note.note = newText;
             await note.save();
 
             return interaction.reply({
-                content: `> \`✏️\` Notiz **${noteId}** bearbeitet.`,
+                content: `> ✏️ Notiz **${noteId}** bearbeitet.`,
                 ephemeral: true
             });
         }
 
-        // NOTE DELETE
+        // ───────────────── NOTE DELETE ─────────────────
         if (sub === "note-delete") {
             if (!hasModPerm)
-                return interaction.reply({ content: "> `❌` Keine Berechtigung.", ephemeral: true });
+                return interaction.reply({ content: "> ❌ Keine Berechtigung.", ephemeral: true });
 
             const noteId = interaction.options.getString("noteid");
 
-            const deleted = await Note.findOneAndDelete({
-                _id: noteId,
-                guildId: interaction.guild.id
-            }).catch(() => null);
-
+            const deleted = await Note.findOneAndDelete({ _id: noteId, guildId: interaction.guild.id });
             if (!deleted)
-                return interaction.reply({ content: "> `❌` Notiz nicht gefunden.", ephemeral: true });
+                return interaction.reply({ content: "> ❌ Notiz nicht gefunden.", ephemeral: true });
 
             return interaction.reply({
-                content: `> \`🗑️\` Notiz **${noteId}** gelöscht.`,
+                content: `> 🗑️ Notiz **${noteId}** gelöscht.`,
                 ephemeral: true
             });
         }
 
-        // NOTE CLEAR
+        // ───────────────── NOTE CLEAR ─────────────────
         if (sub === "note-clear") {
             if (!hasModPerm)
-                return interaction.reply({ content: "> `❌` Keine Berechtigung.", ephemeral: true });
+                return interaction.reply({ content: "> ❌ Keine Berechtigung.", ephemeral: true });
 
             const user = interaction.options.getUser("user");
 
@@ -194,19 +187,33 @@ module.exports = {
             });
 
             return interaction.reply({
-                content: `> \`🗑️\` Alle Notizen für **${user.username}** gelöscht.`,
+                content: `> 🗑️ Alle Notizen für **${user.username}** gelöscht.`,
                 ephemeral: true
             });
         }
 
-        // INFO
+        // ───────────────── INFO ─────────────────
         if (sub === "info") {
             const user = interaction.options.getUser("user");
             const member = await interaction.guild.members.fetch(user.id).catch(() => null);
 
-            const notes = await Note.find({ userId: user.id, guildId: interaction.guild.id })
-                .sort({ createdAt: -1 })
-                .limit(5);
+            const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}:f>`;
+            const joinedAt = member?.joinedTimestamp
+                ? `<t:${Math.floor(member.joinedTimestamp / 1000)}:f>`
+                : '`Nicht auf dem Server`';
+
+            const [timeouts, warns, notes] = await Promise.all([
+                Timeout.countDocuments({ userId: user.id, guildId: interaction.guild.id }),
+                Warn.countDocuments({ userId: user.id, guildId: interaction.guild.id }),
+                Note.find({ userId: user.id, guildId: interaction.guild.id })
+                    .sort({ createdAt: -1 })
+                    .limit(5)
+            ]);
+
+            let banned = false;
+            if (await bandb.findOne({ userId: user.id })) banned = true;
+            else if (await interaction.guild.bans.fetch(user.id).catch(() => null)) banned = true;
+            else if (member?.roles.cache.has(BANNED_ROLE_ID)) banned = true;
 
             const noteText = notes.length
                 ? notes.map(n =>
@@ -215,10 +222,27 @@ module.exports = {
                 : "`Keine Notizen vorhanden`";
 
             const embed = new EmbedBuilder()
-                .setTitle(`👤 Userinfo — ${user.username}`)
-                .setDescription(`**📝 Notizen**\n${noteText}`)
-                .setThumbnail(user.displayAvatarURL({ dynamic: true }))
-                .setColor(0x57F287)
+                .setColor(banned ? 0xED4245 : 0x57F287)
+                .setTitle(`👤 Informationen über ${member?.displayName || user.username}`)
+                .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+                .setDescription(
+                    `**🚩 Benutzerinformationen**\n` +
+                    `> Benutzername: \`${user.username}\`\n` +
+                    `> Benutzer-ID: \`${user.id}\`\n` +
+                    `> Anzeigename: \`${member?.displayName || user.username}\`\n\n` +
+
+                    `**📅 Mitglied seit**\n` +
+                    `> Erstellt: ${createdAt}\n` +
+                    `> Beigetreten: ${joinedAt}\n\n` +
+
+                    `**🛡️ Moderation**\n` +
+                    `> Bannstatus: ${banned ? '`🔴` Gebannt' : '`🟢` Nicht gebannt'}\n` +
+                    `> Timeouts: \`${timeouts}\`\n` +
+                    `> Warnungen: \`${warns}\`\n\n` +
+
+                    `**📝 Notizen**\n${noteText}`
+                )
+                .setFooter({ text: `${interaction.guild.name} | Userinfo` })
                 .setTimestamp();
 
             return interaction.reply({ embeds: [embed], ephemeral: true });
