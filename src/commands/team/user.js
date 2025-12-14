@@ -215,7 +215,7 @@ module.exports = {
 
             const noteText = notes.length
                 ? notes.map(n =>
-                    `> Beschreibung: ${n.note}\n Notiz-ID: ${n.noteId}\n> von <@${n.authorId}> (<t:${Math.floor(n.createdAt.getTime() / 1000)}:f>)`
+                    `> Beschreibung: ${n.note}\n> Notiz-ID: ${noteId}\n> von <@${n.authorId}> (<t:${Math.floor(n.createdAt.getTime() / 1000)}:f>)`
                 ).join("\n")
                 : "`Keine Notizen vorhanden`";
 
