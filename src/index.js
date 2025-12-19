@@ -1049,29 +1049,43 @@ client.on('messageCreate', async (message) => {
         
         if (!message?.content) return;
         
-        const stringsWithProbabilities = [
-            { string: '1 Level', probability: 0.25 }, // 25%
-            { string: '2 Level', probability: 0.2 }, // 20%
-            { string: '3 Level', probability: 0.15 }, // 15%
-            { string: '4 Level', probability: 0.12 }, // 12%
-            { string: '5 Level', probability: 0.1 }, // 10%
-            { string: '200 EXP', probability: 0.08 }, // 7%
-            { string: '400 EXP', probability: 0.05 }, // 5%
-            { string: '500 EXP', probability: 0.03 }, // 3%
-            { string: '1.000 EXP', probability: 0.01 }, // 1%
-            { string: '10.000 Coins', probability: 0.01 } // 1%
-        ];        
+            const lootTable = [
+        // HÄUFIG 60%
+        { string: '1 Level',      rarity: 'Häufig', probability: 0.15 },
+        { string: '200 EXP',      rarity: 'Häufig', probability: 0.15 },
+        { string: '500 Coins',    rarity: 'Häufig', probability: 0.15 },
+        { string: '750 Coins',    rarity: 'Häufig', probability: 0.15 },
+    
+        // UNGEWÖHNLICH 25%
+        { string: '2 Level',      rarity: 'Ungewöhnlich', probability: 0.07 },
+        { string: '3 Level',      rarity: 'Ungewöhnlich', probability: 0.06 },
+        { string: '1.000 Coins',  rarity: 'Ungewöhnlich', probability: 0.06 },
+        { string: '1.000 EXP',    rarity: 'Ungewöhnlich', probability: 0.06 },
+    
+        // SELTEN 10%
+        { string: '4 Level',      rarity: 'Selten', probability: 0.03 },
+        { string: '5 Level',      rarity: 'Selten', probability: 0.03 },
+        { string: '2.500 Coins',  rarity: 'Selten', probability: 0.02 },
+        { string: '5.000 Coins',  rarity: 'Selten', probability: 0.02 },
+    
+        // EPISCH 4%
+        { string: '7.500 Coins',  rarity: 'Episch', probability: 0.02 },
+        { string: '10.000 Coins', rarity: 'Episch', probability: 0.02 },
+    
+        // LEGENDÄR 1% – Jackpot
+        { string: '50.000 Coins', rarity: 'Legendär (Jackpot)', probability: 0.01 }
+        ];           
 
-        function getRandomString() {
-            const randomValue = Math.random();
-            let cumulativeProbability = 0;
-
-            for (const option of stringsWithProbabilities) {
-                cumulativeProbability += option.probability;
-                if (randomValue <= cumulativeProbability) {
-                    return option;
-                }
+        function getRandomLoot() {
+            const random = Math.random();
+            let current = 0;
+        
+            for (const item of lootTable) {
+                current += item.probability;
+                if (random <= current) return item;
             }
+        
+            return lootTable[0];
         }
        
         const buttons = new ActionRowBuilder()
@@ -1106,9 +1120,12 @@ client.on('messageCreate', async (message) => {
 
                 await i.message.edit({ components: [buttons] }).catch(console.error);
                 
-                const gewinn = getRandomString();
-                await i.reply({ content: `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
-                    `Die Wahrscheinlichkeit für diesen Gewinn lag bei \`${Math.floor(gewinn.probability * 100)}%\`.\n\n` +
+                const gewinn = getRandomLoot();
+                await i.reply({ 
+                    content: 
+                    `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
+                    `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
+                    `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
                     `*(Bitte mache von dieser Nachricht einen Screenshot als Beweis.)*\n\n` +
                     `> \`🎫\` » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`, 
                     ephemeral: true 
