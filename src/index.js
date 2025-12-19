@@ -1045,107 +1045,126 @@ client.on('messageCreate', async (message) => {
     }
 
     if (!userData.firstMessage && !message.author.bot) {
-        userData.firstMessage = true;
-        
-        if (!message?.content) return;
-        
-            const lootTable = [
+    userData.firstMessage = true;
+
+    if (!message?.content) return;
+
+    const lootTable = [
         // HÄUFIG 60%
         { string: '1 Level',      rarity: 'Häufig', probability: 0.15 },
         { string: '200 EXP',      rarity: 'Häufig', probability: 0.15 },
         { string: '500 Coins',    rarity: 'Häufig', probability: 0.15 },
         { string: '750 Coins',    rarity: 'Häufig', probability: 0.15 },
-    
+
         // UNGEWÖHNLICH 25%
         { string: '2 Level',      rarity: 'Ungewöhnlich', probability: 0.07 },
         { string: '3 Level',      rarity: 'Ungewöhnlich', probability: 0.06 },
         { string: '1.000 Coins',  rarity: 'Ungewöhnlich', probability: 0.06 },
         { string: '1.000 EXP',    rarity: 'Ungewöhnlich', probability: 0.06 },
-    
+
         // SELTEN 10%
         { string: '4 Level',      rarity: 'Selten', probability: 0.03 },
         { string: '5 Level',      rarity: 'Selten', probability: 0.03 },
         { string: '2.500 Coins',  rarity: 'Selten', probability: 0.02 },
         { string: '5.000 Coins',  rarity: 'Selten', probability: 0.02 },
-    
+
         // EPISCH 4%
         { string: '7.500 Coins',  rarity: 'Episch', probability: 0.02 },
         { string: '10.000 Coins', rarity: 'Episch', probability: 0.02 },
-    
+
         // LEGENDÄR 1% – Jackpot
         { string: '50.000 Coins', rarity: 'Legendär (Jackpot)', probability: 0.01 }
-        ];           
+    ];
 
-        function getRandomLoot() {
-            const random = Math.random();
-            let current = 0;
-        
-            for (const item of lootTable) {
-                current += item.probability;
-                if (random <= current) return item;
-            }
-        
-            return lootTable[0];
+    const rarityColors = {
+        'Häufig': 'Gray',
+        'Ungewöhnlich': 'Green',
+        'Selten': 'Blue',
+        'Episch': 'Purple',
+        'Legendär (Jackpot)': 'Orange'
+    };
+
+    function getRandomLoot() {
+        const random = Math.random();
+        let current = 0;
+
+        for (const item of lootTable) {
+            current += item.probability;
+            if (random <= current) return item;
         }
-       
-        const buttons = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setLabel('Belohnung abholen')
-                    .setStyle('Success')
-                    .setCustomId('newbieClaim_button')
-            );
 
-        const msg = await message.channel.send({ 
-            content: 
-            `<:neuesmitglied:1033452545651253328> | **Herzlich Willkommen**\n\n` +
-            `Hey ${message.author},\n` +
-            `Du hast soeben deine **erste Nachricht** geschrieben, Glückwunsch! \n\n` +
-            `Drück unten auf den Knopf, um dir eine kleine Belohnung abzuholen. <a:Gewinnspiel:968876390982234202>`, 
-            components: [buttons], 
-            ephemeral: true 
-        });
+        return lootTable[0];
+    }
 
-        const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button });
+    const buttons = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setLabel('Belohnung abholen')
+                .setStyle('Success')
+                .setCustomId('newbieClaim_button')
+        );
 
-        collector.on('collect', async i => {
-            if (i.customId === "newbieClaim_button") {
-                if (i.user.id !== message.author.id) {
-                    return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
-                }
+    // Willkommens-Embed
+    const welcomeEmbed = new EmbedBuilder()
+        .setColor('Blurple') // neutrale Farbe
+        .setTitle('<:neuesmitglied:1033452545651253328> Herzlich Willkommen!')
+        .setDescription(
+            `Hey ${message.author},\n\n` +
+            `du hast soeben deine **erste Nachricht** geschrieben – Glückwunsch! 🎉\n\n` +
+            `Drück unten auf den Knopf, um deine Belohnung abzuholen! <a:Gewinnspiel:968876390982234202>`
+        )
+        .setFooter({ text: 'Belohnung für erste Nachricht' });
 
-                buttons.components[0].setDisabled(true);
-                buttons.components[0].setLabel("Belohnung abgeholt");
-                buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
+    const msg = await message.channel.send({
+        embeds: [welcomeEmbed],
+        components: [buttons],
+        ephemeral: true
+    });
 
-                await i.message.edit({ components: [buttons] }).catch(console.error);
-                
-                const gewinn = getRandomLoot();
-                await i.reply({ 
-                    content: 
+    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button });
+
+    collector.on('collect', async i => {
+        if (i.customId === "newbieClaim_button") {
+            if (i.user.id !== message.author.id) {
+                return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
+            }
+
+            buttons.components[0].setDisabled(true);
+            buttons.components[0].setLabel("Belohnung abgeholt");
+            buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
+            await i.message.edit({ components: [buttons] }).catch(console.error);
+
+            const gewinn = getRandomLoot();
+
+            // Loot-Embed
+            const lootEmbed = new EmbedBuilder()
+                .setTitle("🎁 Belohnung erhalten!")
+                .setDescription(
                     `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
                     `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
                     `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
-                    `*(Bitte mache von dieser Nachricht einen Screenshot als Beweis.)*\n\n` +
-                    `> \`🎫\` » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`, 
-                    ephemeral: true 
-                });
+                    `*(Bitte mache einen Screenshot als Beweis.)*\n\n` +
+                    `> Öffne ein Ticket im Support zur Auszahlung.`
+                )
+                .setColor(rarityColors[gewinn.rarity])
+                .setFooter({ text: `Belohnungssystem | Loot-Rarity` });
 
-                collector.stop();
-                msg.delete().catch(error => console.log("Nachricht konnte nicht gelöscht werden:", error)); 
-            } 
-        });
+            await i.reply({ embeds: [lootEmbed], ephemeral: true });
+            collector.stop();
+            msg.delete().catch(console.error);
+        }
+    });
 
-        collector.on('end', () => {
-            if (!buttons.components[0].disabled) { 
-                buttons.components[0].setDisabled(true);
-                buttons.components[0].setStyle("Danger");
-                msg.edit({ components: [buttons] }).catch(console.error);
-            }
-        });
-    }
+    collector.on('end', () => {
+        if (!buttons.components[0].disabled) {
+            buttons.components[0].setDisabled(true);
+            buttons.components[0].setStyle("Danger");
+            msg.edit({ components: [buttons] }).catch(console.error);
+        }
+    });
 
     await userData.save();
+}
 });
 
 client.on('voiceStateUpdate', async (oldState, newState) => {
