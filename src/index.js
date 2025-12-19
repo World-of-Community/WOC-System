@@ -1147,7 +1147,6 @@ client.on('messageCreate', async (message) => {
                     `> \🎫\ » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`
                 )
                 .setColor(rarityColors[gewinn.rarity])
-                .setFooter({ text: `Belohnungssystem | Loot-Rarity` });
 
             await i.reply({ embeds: [lootEmbed], ephemeral: true });
             collector.stop();
