@@ -1138,13 +1138,13 @@ client.on('messageCreate', async (message) => {
 
             // Loot-Embed
             const lootEmbed = new EmbedBuilder()
-                .setTitle("🎁 Belohnung erhalten!")
+                .setTitle("`🎁` Belohnung erhalten!")
                 .setDescription(
                     `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
                     `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
                     `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
                     `*(Bitte mache einen Screenshot als Beweis.)*\n\n` +
-                    `> Öffne ein Ticket im Support zur Auszahlung.`
+                    `> \🎫\ » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`
                 )
                 .setColor(rarityColors[gewinn.rarity])
                 .setFooter({ text: `Belohnungssystem | Loot-Rarity` });
