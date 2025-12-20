@@ -1072,12 +1072,12 @@ client.on('messageCreate', async (message) => {
         { string: '7.500 Coins',  rarity: 'Episch', probability: 0.02 },
         { string: '10.000 Coins', rarity: 'Episch', probability: 0.02 },
 
-        // LEGENDÄR 1% – Jackpot
+        // LEGENDÄR 1%
         { string: '50.000 Coins', rarity: 'Legendär (Jackpot)', probability: 0.01 }
     ];
 
     const rarityColors = {
-        'Häufig': 'Gray',
+        'Häufig': 'Grey',
         'Ungewöhnlich': 'Green',
         'Selten': 'Blue',
         'Episch': 'Purple',
@@ -1092,7 +1092,6 @@ client.on('messageCreate', async (message) => {
             current += item.probability;
             if (random <= current) return item;
         }
-
         return lootTable[0];
     }
 
@@ -1104,9 +1103,8 @@ client.on('messageCreate', async (message) => {
                 .setCustomId('newbieClaim_button')
         );
 
-    // Willkommens-Embed
     const welcomeEmbed = new EmbedBuilder()
-        .setColor('Blurple') // neutrale Farbe
+        .setColor('Blurple')
         .setTitle('<:neuesmitglied:1033452545651253328> Herzlich Willkommen!')
         .setDescription(
             `Hey ${message.author},\n\n` +
@@ -1117,49 +1115,70 @@ client.on('messageCreate', async (message) => {
 
     const msg = await message.channel.send({
         embeds: [welcomeEmbed],
-        components: [buttons],
-        ephemeral: true
+        components: [buttons]
     });
 
-    const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button });
+    const collector = msg.createMessageComponentCollector({
+        componentType: ComponentType.Button,
+        time: 1000 * 60 * 10 // 10 Minuten
+    });
 
     collector.on('collect', async i => {
-        if (i.customId === "newbieClaim_button") {
-            if (i.user.id !== message.author.id) {
-                return i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
-            }
 
-            buttons.components[0].setDisabled(true);
-            buttons.components[0].setLabel("Belohnung abgeholt");
-            buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
-            await i.message.edit({ components: [buttons] }).catch(console.error);
+        if (i.customId !== "newbieClaim_button") return;
 
-            const gewinn = getRandomLoot();
-
-            // Loot-Embed
-            const lootEmbed = new EmbedBuilder()
-                .setTitle("`🎁` Belohnung erhalten!")
-                .setDescription(
-                    `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
-                    `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
-                    `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
-                    `*(Bitte mache einen Screenshot als Beweis.)*\n\n` +
-                    `> \🎫\ » Öffne ein Ticket im Ticket-Support, um deine Belohnung abzuholen.`
-                )
-                .setColor(rarityColors[gewinn.rarity])
-
-            await i.reply({ embeds: [lootEmbed], ephemeral: true });
-            collector.stop();
-            msg.delete().catch(console.error);
+        if (i.user.id !== message.author.id) {
+            return i.reply({
+                content: "> ❌ Das ist nicht für dich!",
+                ephemeral: true
+            });
         }
+
+        // Interaktion bestätigen
+        await i.deferUpdate();
+
+        // Button deaktivieren
+        buttons.components[0].setDisabled(true);
+        buttons.components[0].setLabel("Belohnung abgeholt");
+        buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
+
+        await msg.edit({ components: [buttons] }).catch(() => {});
+
+        const gewinn = getRandomLoot();
+
+        const lootEmbed = new EmbedBuilder()
+            .setTitle("🎁 Belohnung erhalten!")
+            .setDescription(
+                `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
+                `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
+                `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
+                `*(Bitte Screenshot machen als Beweis.)*\n\n` +
+                `> 🎫 Öffne ein Ticket zum Einlösen.`
+            )
+            .setColor(rarityColors[gewinn.rarity]);
+
+        await i.followUp({
+            embeds: [lootEmbed],
+            ephemeral: true
+        });
+
+        collector.stop();
+
+        // Embed sicher löschen
+        setTimeout(() => {
+            msg.delete().catch(() => {});
+        }, 500);
     });
 
-    collector.on('end', () => {
-        if (!buttons.components[0].disabled) {
-            buttons.components[0].setDisabled(true);
-            buttons.components[0].setStyle("Danger");
-            msg.edit({ components: [buttons] }).catch(console.error);
-        }
+    collector.on('end', async () => {
+
+        if (!msg.editable) return;
+
+        buttons.components[0].setDisabled(true);
+        buttons.components[0].setStyle("Danger");
+        buttons.components[0].setLabel("abgelaufen");
+
+        msg.edit({ components: [buttons] }).catch(() => {});
     });
 
     await userData.save();
