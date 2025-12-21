@@ -264,7 +264,7 @@ module.exports = {
                 const title = interaction.fields.getTextInputValue('feedback-title');
                 const description = interaction.fields.getTextInputValue('feedback-description');
             
-                const threadName = `🗳️ ${title} - ${interaction.user.username}`;
+                const threadName = `${title} - ${interaction.user.username}`;
                 // TODO: Update this channel ID for your server
                 // This is the channel where feedback threads will be created
                 // To find channel ID: Right-click channel > Copy ID (Developer Mode must be enabled)
@@ -322,9 +322,16 @@ module.exports = {
                 );
             
                 await thread.send({
-                    content: `User: <@${interaction.user.id}> | Team: <@&${supportRoleId}>`,
+                    content: `> User: <@${interaction.user.id}> | Team: <@&${supportRoleId}>`,
                     embeds: [ticketEmbed, ticketEmbed2],
                     components: [closeButtonRow]
+                });
+
+                // Rolle als Viewer hinzufügen
+                await thread.permissionOverwrites.edit("1270369938972082177", {
+                    ViewChannel: true,
+                    SendMessages: true,
+                    ReadMessageHistory: true
                 });
             
                 await interaction.editReply({ content: `> \`✅\` » Dein **Feedback-Ticket** wurde erstellt: ${thread}` });
