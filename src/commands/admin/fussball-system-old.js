@@ -282,6 +282,7 @@ async function simulateRandomMatch(interaction) {
       { name: 'Spielminute', value: '0\'', inline: true },
       { name: 'Spielstand', value: '0 - 0', inline: true },
       { name: 'xG', value: '0.00 - 0.00', inline: true },
+      { name: 'Torschüsse', value: '\`🎯\` 0-0', inline: true },
       { name: 'Gelbe Karten', value: '\`🟨\` 0-0', inline: true },
       { name: 'Ballbesitz', value: '0% - 0%', inline: true },
       { name: 'Ecken', value: '\`🚩\` 0-0', inline: true },
@@ -484,22 +485,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
     }
 
-    //if (Math.random() < 0.05) {
-    //  const team = Math.random() < 0.5 ? team1 : team2;
-    //  const player = getRandomPlayer(team);
-    //  const teamName = team === team1 ? team1Name : team2Name;
-    //  const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
-    //
-    //  // 🔥 xG Wert generieren (Latte/Pfosten immer hohe xG)
-    //  const xgChance = parseFloat((Math.random() * 0.25 + 0.15).toFixed(2));
-    //
-    //  // 🔥 xG addieren!
-    //  if (team === team1) xG1 += xgChance;
-    //  else xG2 += xgChance;
-    //
-    //  events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
-    //}
-
     if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
@@ -514,8 +499,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     // Ballbesitz & Aktionen jede Minute aktualisieren
     team1Passes += Math.floor(Math.random() * 5);
     team2Passes += Math.floor(Math.random() * 5);
-    team1Shots += Math.floor(Math.random() * 2);
-    team2Shots += Math.floor(Math.random() * 2);
+    //team1Shots += Math.floor(Math.random() * 2);
+    //team2Shots += Math.floor(Math.random() * 2);
     team1Tackles += Math.floor(Math.random() * 2);
     team2Tackles += Math.floor(Math.random() * 2);
     team1Saves += Math.floor(Math.random() * 1);
