@@ -98,7 +98,7 @@ module.exports = {
                 `${reportedUser} wurde von ${interaction.user} gemeldet.\n\n` +
                 `> \`👤\` **BENUTZER INFORMATIONEN**\n` +
                 `\`✍️\` » Grund: ${grund}\n` +
-                (grund === 'sonstiges' ? `\`📑\` Kommentar: ${sonstigesGrund}\n` : '') +
+                (grund === 'sonstiges' ? `\`📑\` » Kommentar: ${sonstigesGrund}\n` : '') +
                 `\`📌\` » Benutzer: ${reportedUser.username} (\`${reportedUser.id}\`)\n` +
                 `\`📌\` » Server: ${serverName}\n\n` +
                 `\`⏰\` » Account erstellt: ${createdAt}\n` +
