@@ -477,27 +477,28 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       else xG2 += xgValue;
     
       const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
-    
-      events.push(
-        `\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`
-      );
-    }
 
-    if (Math.random() < 0.05) {
-      const team = Math.random() < 0.5 ? team1 : team2;
-      const player = getRandomPlayer(team);
-      const teamName = team === team1 ? team1Name : team2Name;
-      const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
-    
-      // 🔥 xG Wert generieren (Latte/Pfosten immer hohe xG)
-      const xgChance = parseFloat((Math.random() * 0.25 + 0.15).toFixed(2));
-    
-      // 🔥 xG addieren!
-      if (team === team1) xG1 += xgChance;
-      else xG2 += xgChance;
+      // Torschüsse zählen
+      if (isTeam1) team1Shots++; else team2Shots++;
     
       events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
     }
+
+    //if (Math.random() < 0.05) {
+    //  const team = Math.random() < 0.5 ? team1 : team2;
+    //  const player = getRandomPlayer(team);
+    //  const teamName = team === team1 ? team1Name : team2Name;
+    //  const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
+    //
+    //  // 🔥 xG Wert generieren (Latte/Pfosten immer hohe xG)
+    //  const xgChance = parseFloat((Math.random() * 0.25 + 0.15).toFixed(2));
+    //
+    //  // 🔥 xG addieren!
+    //  if (team === team1) xG1 += xgChance;
+    //  else xG2 += xgChance;
+    //
+    //  events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
+    //}
 
     if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
@@ -573,6 +574,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
         { name: 'Spielminute', value: getDisplayMinute(minute), inline: true },
         { name: 'Spielstand', value: `${score1} - ${score2}`, inline: true },
         { name: 'xG', value: `${xG1.toFixed(2)} - ${xG2.toFixed(2)}`, inline: true },
+        { name: 'Torschüsse', value: `\`🎯\` ${team1Shots}-${team2Shots}`, inline: true },
         { name: 'Gelbe Karten', value: `\`🟨\` ${yellowCardsTeam1}-${yellowCardsTeam2}`, inline: true },
         { name: 'Ballbesitz', value: `${ballBesitzTeam1}% - ${ballBesitzTeam2}%`, inline: true },
         { name: 'Ecken', value: `\`🚩\` ${cornersTeam1}-${cornersTeam2}`, inline: true },
