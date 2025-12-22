@@ -377,6 +377,13 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
     xG = parseFloat((Math.random() * 0.5 + 0.1).toFixed(2));
     scorer = getRandomPlayer(teamScored === 'team1' ? team1 : team2);
+
+    // 🔥 xG bei Torchance immer erhöhen!
+    if (teamScored === 'team1') {
+      xG1 += xG;
+    } else {
+      xG2 += xG;
+    }
   
     // VAR-Prüfung mit 10% Chance
       if (Math.random() < 0.1) {
@@ -389,13 +396,13 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       }
       
       if (torGezaehlt) {
-        if (teamScored === 'team1') {
-          score1++;
-          xG1 += xG;
-        } else {
-          score2++;
-          xG2 += xG;
-        }
+        //if (teamScored === 'team1') {
+        //  score1++;
+        //  xG1 += xG;
+        //} else {
+        //  score2++;
+        //  xG2 += xG;
+        //}
       
         // 🟢 Nur in goalEvents speichern (Objekte!)
         goalEvents.push({
