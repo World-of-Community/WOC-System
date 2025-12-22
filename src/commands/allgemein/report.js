@@ -25,6 +25,13 @@ module.exports = {
         )
         .addStringOption(option =>
             option
+                .setName('sonstiges_grund')
+                .setDescription('Bitte beschreibe den Grund genauer')
+                .setRequired(false)
+                .setMaxLength(500)
+        )
+        .addStringOption(option =>
+            option
                 .setName('server')
                 .setDescription('Auf welchem Server ist das Problem aufgetreten?')
                 .setRequired(true)
@@ -43,10 +50,19 @@ module.exports = {
     async execute(interaction) {
         const reportedUser = interaction.options.getUser('user');
         const grund = interaction.options.getString('grund');
+        const sonstigesGrund = interaction.options.getString('sonstiges_grund');
         const server = interaction.options.getString('server');
         const beweis = interaction.options.getAttachment('beweis');
 
         const reportchannel = '1010515517460725782';
+
+        // ❗ Sonstiges MUSS Text haben
+        if (grund === 'sonstiges' && !sonstigesGrund) {
+            return interaction.reply({
+                content: "> `❌` » Bitte gib bei **Sonstiges** einen erklärenden Kommentar an.",
+                ephemeral: true
+            });
+        }
 
         if (reportedUser.id === interaction.user.id) {
             return interaction.reply({
@@ -76,11 +92,12 @@ module.exports = {
         const serverName = server === 'discord' ? 'Discord Server' : 'Minecraft Server';
 
         const reportEmbed = new EmbedBuilder()
-            .setTitle(`\📝\ Neuer Report von ${interaction.user.displayName}`)
+            .setTitle(`📝 Neuer Report`)
             .setColor('Red')
             .setDescription(
                 `${reportedUser} wurde von ${interaction.user} gemeldet.\n\n` +
                 `**Grund:** ${grund}\n` +
+                (grund === 'sonstiges' ? `**Kommentar:** ${sonstigesGrund}\n` : '') +
                 `**Server:** ${serverName}\n\n` +
                 `**Account erstellt:** ${createdAt}\n` +
                 `**Beigetreten:** ${joinedAt}`
@@ -101,8 +118,9 @@ module.exports = {
         });
 
         await interaction.reply({
-            content: "> `✅` » Danke für deinen Report. Ein Teammitglied wird sich zeitnah darum kümmern!\n" +
-                     "> `❗` » Beachte: Extremer Missbrauch des `/report` Befehls wird bestraft!",
+            content:
+                "> `✅` » Danke für deinen Report. Ein Teammitglied kümmert sich darum.\n" +
+                "> `❗` » Missbrauch des `/report`-Befehls wird bestraft.",
             ephemeral: true
         });
     }
