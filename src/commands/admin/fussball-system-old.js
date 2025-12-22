@@ -470,13 +470,22 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const player = getRandomPlayer(team);
       const teamName = team === team1 ? team1Name : team2Name;
       const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
+    
+      // 🔥 xG Wert generieren (Latte/Pfosten immer hohe xG)
+      const xgChance = parseFloat((Math.random() * 0.25 + 0.15).toFixed(2));
+    
+      // 🔥 xG addieren!
+      if (team === team1) xG1 += xgChance;
+      else xG2 += xgChance;
+    
       events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
-      events.push(`\`🚀\` Weitschuss von **${player}** ${team === team1 ? team1Name : team2Name} knapp drüber! (${getDisplayMinute(minute)})`);
+    
+      events.push(`\`🚀\` Weitschuss von **${player}** (${team === team1 ? team1Name : team2Name}) knapp drüber! (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.03) {
