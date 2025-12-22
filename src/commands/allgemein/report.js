@@ -12,6 +12,16 @@ module.exports = {
         )
         .addStringOption(option =>
             option
+                .setName('server')
+                .setDescription('Auf welchem Server ist das Problem aufgetreten?')
+                .setRequired(true)
+                .addChoices(
+                    { name: 'Discord Server', value: 'discord' },
+                    { name: 'Minecraft Server', value: 'minecraft' }
+                )
+        )
+        .addStringOption(option =>
+            option
                 .setName('grund')
                 .setDescription('Grund deiner Meldung.')
                 .setRequired(true)
@@ -29,16 +39,6 @@ module.exports = {
                 .setDescription('Bitte beschreibe den Grund genauer')
                 .setRequired(false)
                 .setMaxLength(500)
-        )
-        .addStringOption(option =>
-            option
-                .setName('server')
-                .setDescription('Auf welchem Server ist das Problem aufgetreten?')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Discord Server', value: 'discord' },
-                    { name: 'Minecraft Server', value: 'minecraft' }
-                )
         )
         .addAttachmentOption(option =>
             option
