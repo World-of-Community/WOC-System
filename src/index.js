@@ -746,13 +746,12 @@ setInterval( async () => {
             '> `🎥` » Eine **exklusive Live-Streamer** Rolle wenn du **Live** bist!\n' +
             '> `🚑` » **Support** bei Problemen rund um Discord & Minecraft\n' +
             '> `🏆` » **Levelsystem** mit **vielen Belohnungen**\n' +
-            '> `💡` » **Vorschlags-System** um den Server mitzugestalten\n' +
+            '> `💡` » **Vorschlags-System** um den Server mitzugestalten\n\n' +
             '`🔍` - **Wir suchen Verstärkung für unser Team:**\n\n' +
-            '> `🔧` - Developer (Java, Spigot/Paper API - Discord/Node.js)\n' +
+            '> `🔧` - Developer\n' +
             '> `🧩` - Supporter\n' +
             '> `👷` - Builder\n\n' +
             '> `📌` **| Wir freuen uns auf dich!**\n\n' +
-            'Kleiner Tipp, wenn du deine Freunde mitbringst macht es gleich viel mehr Spaß, da du dann schon mal jemanden kennst!\n\n' +
             '» Link: https://discord.gg/686M8Cxsaa'
         )
         .setColor('Blurple')
