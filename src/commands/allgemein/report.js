@@ -56,7 +56,6 @@ module.exports = {
 
         const reportchannel = '1010515517460725782';
 
-        // ❗ Sonstiges MUSS Text haben
         if (grund === 'sonstiges' && !sonstigesGrund) {
             return interaction.reply({
                 content: "> `❌` » Bitte gib bei **Sonstiges** einen erklärenden Kommentar an.",
@@ -91,17 +90,25 @@ module.exports = {
         const joinedAt = `<t:${Math.floor(reportedMember.joinedTimestamp / 1000)}>`;
         const serverName = server === 'discord' ? 'Discord Server' : 'Minecraft Server';
 
+        const beweisVorhanden = beweis ? '`✅` Ja' : '`❌` Nein';
+
         const reportEmbed = new EmbedBuilder()
-            .setTitle(`📝 Neuer Report`)
             .setColor('Red')
             .setDescription(
                 `${reportedUser} wurde von ${interaction.user} gemeldet.\n\n` +
-                `**Grund:** ${grund}\n` +
-                (grund === 'sonstiges' ? `**Kommentar:** ${sonstigesGrund}\n` : '') +
-                `**Server:** ${serverName}\n\n` +
-                `**Account erstellt:** ${createdAt}\n` +
-                `**Beigetreten:** ${joinedAt}`
+                `> \`👤\` **BENUTZER INFORMATIONEN**\n` +
+                `\`✍️\` » Grund: ${grund}\n` +
+                (grund === 'sonstiges' ? `\`📑\` Kommentar: ${sonstigesGrund}\n` : '') +
+                `\`📌\` » Benutzer: ${reportedUser.username} (\`${reportedUser.id}\`)\n` +
+                `\`📌\` » Server: ${serverName}\n\n` +
+                `\`⏰\` » Account erstellt: ${createdAt}\n` +
+                `\`⏰\` » Beigetreten: ${joinedAt}`
             )
+            .addFields({
+                name: '`🧾` » Beweis vorhanden',
+                value: beweisVorhanden,
+                inline: true
+            })
             .setFooter({
                 text: `${interaction.guild.name} - Report System`,
                 iconURL: interaction.guild.iconURL()
@@ -120,7 +127,7 @@ module.exports = {
         await interaction.reply({
             content:
                 "> `✅` » Danke für deinen Report. Ein Teammitglied kümmert sich darum.\n" +
-                "> `❗` » Missbrauch des `/report`-Befehls wird bestraft.",
+                "> `❗` » Beachte: Extremer Missbrauch des `/report`-Befehls wird bestraft!",
             ephemeral: true
         });
     }
