@@ -13,8 +13,15 @@ module.exports = {
         .addStringOption(option =>
             option
                 .setName('grund')
-                .setDescription('Gib einen Grund an')
+                .setDescription('Grund deiner Meldung.')
                 .setRequired(true)
+                .addChoices(
+                    { name: 'Werbung im falschen Kanal', value: 'werbung' },
+                    { name: 'DM Werbung', value: 'dm_werbung' },
+                    { name: 'Beleidigung / Belästigung', value: 'beleidigung' },
+                    { name: 'Spam', value: 'spam' },
+                    { name: 'Sonstiges (Bitte angeben)', value: 'sonstiges' }
+                )
         )
         .addStringOption(option =>
             option
@@ -40,7 +47,6 @@ module.exports = {
         const beweis = interaction.options.getAttachment('beweis');
 
         const reportchannel = '1010515517460725782';
-        const reportedMember = await interaction.guild.members.fetch(reportedUser.id);
 
         if (reportedUser.id === interaction.user.id) {
             return interaction.reply({
@@ -63,55 +69,40 @@ module.exports = {
             });
         }
 
-        const createdAt = `<t:${Math.round(reportedUser.createdTimestamp / 1000)}>`;
-        const joinedAt = `<t:${Math.round(reportedMember.joinedTimestamp / 1000)}>`;
+        const reportedMember = await interaction.guild.members.fetch(reportedUser.id);
+
+        const createdAt = `<t:${Math.floor(reportedUser.createdTimestamp / 1000)}>`;
+        const joinedAt = `<t:${Math.floor(reportedMember.joinedTimestamp / 1000)}>`;
         const serverName = server === 'discord' ? 'Discord Server' : 'Minecraft Server';
-        const beweisVorhanden = beweis ? '`✅` Ja' : '`❌` Nein';
 
         const reportEmbed = new EmbedBuilder()
-            .setTitle(`\`📝\` Neuer Report von ${interaction.user.displayName}`)
+            .setTitle(`📝 Neuer Report`)
             .setColor('Red')
             .setDescription(
                 `${reportedUser} wurde von ${interaction.user} gemeldet.\n\n` +
-                `> **\`👤\` BENUTZER INFORMATIONEN**\n` +
-                `\`✍️\` **Grund:** ${grund}\n` +
-                `\`📌\` **Server:** ${serverName}\n` +
-                `\`📌\` **Benutzer:** ${reportedUser.displayName} (\`${reportedUser.id}\`) ${reportedUser}\n\n` +
-                `\`⏰\` **Account erstellt:** ${createdAt}\n` +
-                `\`⏰\` **Beigetreten:** ${joinedAt}`
+                `**Grund:** ${grund}\n` +
+                `**Server:** ${serverName}\n\n` +
+                `**Account erstellt:** ${createdAt}\n` +
+                `**Beigetreten:** ${joinedAt}`
             )
-            .addFields({
-                name: '\`🧾\` Beweis vorhanden',
-                value: beweisVorhanden,
-                inline: true
-            })
             .setFooter({
                 text: `© ${interaction.guild.name} - Report System`,
                 iconURL: interaction.guild.iconURL()
             })
             .setTimestamp();
 
-        // Beweis NUR im Embed anzeigen
-        if (beweis) {
-            reportEmbed.setImage(beweis.url);
-        }
+        if (beweis) reportEmbed.setImage(beweis.url);
 
         const modChannel = await interaction.guild.channels.fetch(reportchannel);
 
-        if (!modChannel) {
-            return interaction.reply({
-                content: "> `❌` » Es wurde kein Report-Kanal gefunden.",
-                ephemeral: true
-            });
-        }
-
         await modChannel.send({
-            content: `> <@&1285728292367892584> » **Neuer Report ist eingegangen**`,
+            content: `> <@&1285728292367892584> » **Neuer Report eingegangen**`,
             embeds: [reportEmbed]
         });
 
         await interaction.reply({
-            content: "> `✅` » Der Report wurde erfolgreich gesendet. Vielen Dank!",
+            content: "> `✅` » Danke für deinen Report. Ein Teammitglied wird sich zeitnah darum kümmern!\n" +
+                     "> `❗` » Beachte: Extremer Missbrauch des `/report` Befehls wird bestraft!",
             ephemeral: true
         });
     }
