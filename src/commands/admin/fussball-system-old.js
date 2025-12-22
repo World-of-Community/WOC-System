@@ -398,10 +398,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       if (torGezaehlt) {
         if (teamScored === 'team1') {
           score1++;
-          xG1 += xG;
         } else {
           score2++;
-          xG2 += xG;
         }
       
         // 🟢 Nur in goalEvents speichern (Objekte!)
