@@ -76,7 +76,7 @@ module.exports = {
         const serverName = server === 'discord' ? 'Discord Server' : 'Minecraft Server';
 
         const reportEmbed = new EmbedBuilder()
-            .setTitle(`📝 Neuer Report`)
+            .setTitle(`\📝\ Neuer Report von ${interaction.user.displayName}`)
             .setColor('Red')
             .setDescription(
                 `${reportedUser} wurde von ${interaction.user} gemeldet.\n\n` +
@@ -86,7 +86,7 @@ module.exports = {
                 `**Beigetreten:** ${joinedAt}`
             )
             .setFooter({
-                text: `© ${interaction.guild.name} - Report System`,
+                text: `${interaction.guild.name} - Report System`,
                 iconURL: interaction.guild.iconURL()
             })
             .setTimestamp();
