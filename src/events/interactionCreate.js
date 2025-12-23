@@ -203,6 +203,49 @@ module.exports = {
 
         const reward = rewards[dayNumber];
 
+        for (const reward of rewardList) {
+            switch (reward.type) {
+        
+                case 'coins': {
+                    let coinData = await Coin.findOne({ userId: interaction.user.id });
+                    if (!coinData) {
+                        coinData = await Coin.create({ userId: interaction.user.id, coins: 0 });
+                    }
+        
+                    coinData.coins += reward.value;
+                    await coinData.save();
+        
+                    messages.push(
+                        `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n` +
+                        `> \`💰\` » Die Coins wurden **automatisch deinem Konto gutgeschrieben**.`
+                    );
+                    break;
+                }
+        
+                case 'role': {
+                    const role = interaction.guild.roles.cache.get(reward.value);
+                    if (role) {
+                        await interaction.member.roles.add(role);
+                        messages.push(
+                            `> \`🎉\` » Du hast die Rolle **${role}** erhalten!`
+                        );
+                    } else {
+                        messages.push(
+                            '> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.'
+                        );
+                    }
+                    break;
+                }
+        
+                case 'custom':
+                    messages.push(
+                        reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'
+                    );
+                    break;
+            }
+        }
+
+        /*
         switch (reward?.type) {
             case 'coins':
                 // Coins automatisch gutschreiben
@@ -239,7 +282,8 @@ module.exports = {
         }
 
         return interaction.reply({ content: rewardMessage, ephemeral: true }); // Antwort mit der Belohnung
-    }
+        */
+        }
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
