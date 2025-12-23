@@ -314,8 +314,7 @@ module.exports = {
 
         return interaction.reply({ content: rewardMessage, ephemeral: true }); // Antwort mit der Belohnung
         */
-
-        const userData = await userdb.findOne({ userID: interaction.user.id })
+       
         client = interaction.client
 
         // Adventskalender bearbeiten
