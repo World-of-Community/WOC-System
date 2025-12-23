@@ -171,7 +171,7 @@ module.exports = {
           }
 
         // Adventskalender
-        if (interaction.isButton() && interaction.customId.startsWith('advent_')) return;
+        if (!interaction.isButton() || !interaction.customId.startsWith('advent_')) return;
 
         const currentDay = new Date().getDate();
         const [, day] = interaction.customId.split('_');
