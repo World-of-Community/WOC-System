@@ -5,6 +5,8 @@ const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
 const teamdb = require("../../Datenbank/teamdb");
 const bumpdb = require("../../Datenbank/bumpdb");
+const User = require('../../Datenbank/userdb');
+const coinCooldown = new Map();
 const { time } = require("console");
 
 const TeamRoleIds = [
@@ -186,6 +188,26 @@ module.exports = {
             }
         }
 
+        // Coin System mit Cooldown
+        if (message.author.bot) return;
+
+        const userId = message.author.id;
+        const now = Date.now();
+    
+        const cooldown = 5000; // 5 Sekunden
+        if (coinCooldown.has(userId) && now - coinCooldown.get(userId) < cooldown) {
+            return;
+        }
+    
+        coinCooldown.set(userId, now);
+    
+        let userData = await User.findOne({ userId });
+        if (!userData) {
+            userData = new User({ userId, coins: 0 });
+        }
+    
+        userData.coins += 2; // 💰 2 Coins
+        await userData.save();
 
         // Bump System (überarbeitet)
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
