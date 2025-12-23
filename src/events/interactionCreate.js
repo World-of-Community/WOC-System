@@ -265,7 +265,7 @@ module.exports = {
     
         // Extra für Weihnachten 🎄
         if (dayNumber === 24) {
-            messages.unshift('> 🎄 **Frohe Weihnachten!** 🎁');
+            messages.unshift('> `🎄` **Frohe Weihnachten!** `🎁`');
         }
     
         return interaction.reply({
