@@ -171,8 +171,7 @@ module.exports = {
           }
 
         // Adventskalender
-
-        if (!interaction.customId.startsWith('advent_')) return;
+        if (interaction.isButton() && interaction.customId.startsWith('advent_')) return;
 
         const currentDay = new Date().getDate();
         const [, day] = interaction.customId.split('_');
@@ -314,7 +313,7 @@ module.exports = {
 
         return interaction.reply({ content: rewardMessage, ephemeral: true }); // Antwort mit der Belohnung
         */
-       
+
         client = interaction.client
 
         // Adventskalender bearbeiten
