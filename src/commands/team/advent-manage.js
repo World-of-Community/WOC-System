@@ -1,13 +1,13 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const Advent = require("../../../Datenbank/adventdb");
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
+// Belohnungen definieren
 const rewards = {
     1: { type: 'coins', value: 100 },
     2: { type: 'coins', value: 200 },
     3: { type: 'coins', value: 300 },
     4: { type: 'coins', value: 400 },
     5: { type: 'coins', value: 500 },
-    6: { type: 'role', value: '1442140220182106184' },
+    6: { type: 'role', value: '1442140220182106184' }, // Adventskalender 2025
     7: { type: 'coins', value: 700 },
     8: { type: 'coins', value: 800 },
     9: { type: 'coins', value: 900 },
@@ -27,7 +27,7 @@ const rewards = {
     23: { type: 'coins', value: 2300 },
     24: [
         { type: 'coins', value: 2400 },
-        { type: 'role', value: '1445064222894460970' }
+        { type: 'role', value: '1445064222894460970' } // Weihnachten 2025
     ]
 };
 
@@ -104,6 +104,13 @@ module.exports = {
         // ---------- RESET ----------
         if (subcommand === 'reset') {
             const target = interaction.options.getUser('user');
+            if (!target) {
+                return interaction.reply({
+                    content: '> `❌` » Kein Benutzer angegeben.',
+                    ephemeral: true
+                });
+            }
+
             const member = await interaction.guild.members.fetch(target.id).catch(() => null);
             const displayName = member?.displayName || target.username;
 
