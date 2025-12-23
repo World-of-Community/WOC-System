@@ -20,8 +20,6 @@ const feedbackButton = require("../buttons/feedbackButton");
 //const partnerButton = require("./interactions/partnerButton");
 //const partnerModal = require("./interactions/partnerModal");
 
-
-// Belohnungen definieren
 const rewards = {
     1: { type: 'coins', value: 100 },
     2: { type: 'coins', value: 200 },
@@ -60,34 +58,34 @@ module.exports = {
 
             const userId = interaction.user.id;
   
-  try {
-    const newsStatus = await NewsStatus.findOne({ userId });
-
-    if (interaction.customId === 'disable_news') {
-      if (newsStatus) {
-        newsStatus.isNewsEnabled = false;
-        await newsStatus.save();
-      } else {
-        await NewsStatus.create({ userId, isNewsEnabled: false });
-      }
-
-      await interaction.reply({ content: '> `🔕` » Du wirst keine weiteren Neuigkeiten per DM erhalten.', ephemeral: true });
-    }
-
-    if (interaction.customId === 'enable_news') {
-      if (newsStatus) {
-        newsStatus.isNewsEnabled = true;
-        await newsStatus.save();
-      } else {
-        await NewsStatus.create({ userId, isNewsEnabled: true });
-      }
-
-      await interaction.reply({ content: '> `🔔` » Du wirst wieder Neuigkeiten per DM erhalten.', ephemeral: true });
-    }
-  } catch (error) {
-    console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error);
-    await interaction.reply({ content: '> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.', ephemeral: true });
-  }
+        try {
+          const newsStatus = await NewsStatus.findOne({ userId });
+    
+          if (interaction.customId === 'disable_news') {
+            if (newsStatus) {
+              newsStatus.isNewsEnabled = false;
+              await newsStatus.save();
+            } else {
+              await NewsStatus.create({ userId, isNewsEnabled: false });
+            }
+    
+            await interaction.reply({ content: '> `🔕` » Du wirst keine weiteren Neuigkeiten per DM erhalten.', ephemeral: true });
+          }
+    
+          if (interaction.customId === 'enable_news') {
+            if (newsStatus) {
+              newsStatus.isNewsEnabled = true;
+              await newsStatus.save();
+            } else {
+              await NewsStatus.create({ userId, isNewsEnabled: true });
+            }
+    
+            await interaction.reply({ content: '> `🔔` » Du wirst wieder Neuigkeiten per DM erhalten.', ephemeral: true });
+          }
+        } catch (error) {
+          console.error('Fehler bei der Verarbeitung der Button-Interaktion:', error);
+          await interaction.reply({ content: '> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.', ephemeral: true });
+        }
 
             // Feedback Button Handler
             if (interaction.customId === 'create_feedback_ticket' || 
@@ -173,36 +171,39 @@ module.exports = {
           }
 
         // Adventskalender
-        // Aktuelles Datum holen
-        const currentDay = new Date().getDate(); // Gibt den aktuellen Tag des Monats zurück
 
-        if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
+        if (!interaction.customId.startsWith('advent_')) return;
+
+        const currentDay = new Date().getDate();
         const [, day] = interaction.customId.split('_');
         const dayNumber = parseInt(day);
-
+    
+        // User-Daten laden / erstellen
         let userData = await Advent.findOne({ userId: interaction.user.id });
         if (!userData) {
-            userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
+            userData = await Advent.create({
+                userId: interaction.user.id,
+                openedDays: []
+            });
         }
-
-        // Überprüfen, ob der Tag bereits geöffnet wurde
+    
+        // Bereits geöffnet?
         if (userData.openedDays.includes(dayNumber)) {
-            return interaction.reply({ content: `> \`❗\` » Du hast diesen Tag (${dayNumber}. Dezember) bereits geöffnet!`, ephemeral: true });
+            return interaction.reply({
+                content: `> \`❗\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`,
+                ephemeral: true
+            });
         }
-
-        // Überprüfen, ob der Tag in der Zukunft liegt
+    
+        // Zukunfts-Check
         if (dayNumber > currentDay) {
-            return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
-         }
-
-        // Belohnungssystem verarbeiten
-        userData.openedDays.push(dayNumber);
-        await userData.save();
-
-        let rewardMessage = ''; // Sicherstellen, dass rewardMessage immer einen Wert hat
-
-        //const reward = rewards[dayNumber];
-
+            return interaction.reply({
+                content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!',
+                ephemeral: true
+            });
+        }
+    
+        // Reward prüfen
         const rewardData = rewards[dayNumber];
         if (!rewardData) {
             return interaction.reply({
@@ -210,29 +211,37 @@ module.exports = {
                 ephemeral: true
             });
         }
-        
+    
+        // Ab hier gilt der Tag als geöffnet
+        userData.openedDays.push(dayNumber);
+        await userData.save();
+    
+        // Einheitliche Verarbeitung (auch Tag 24)
         const rewardList = Array.isArray(rewardData) ? rewardData : [rewardData];
         let messages = [];
-
+    
         for (const reward of rewardList) {
             switch (reward.type) {
-        
+    
                 case 'coins': {
                     let coinData = await Coin.findOne({ userId: interaction.user.id });
                     if (!coinData) {
-                        coinData = await Coin.create({ userId: interaction.user.id, coins: 0 });
+                        coinData = await Coin.create({
+                            userId: interaction.user.id,
+                            coins: 0
+                        });
                     }
-        
+    
                     coinData.coins += reward.value;
                     await coinData.save();
-        
+    
                     messages.push(
                         `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n` +
                         `> \`💰\` » Die Coins wurden **automatisch deinem Konto gutgeschrieben**.`
                     );
                     break;
                 }
-        
+    
                 case 'role': {
                     const role = interaction.guild.roles.cache.get(reward.value);
                     if (role) {
@@ -247,14 +256,25 @@ module.exports = {
                     }
                     break;
                 }
-        
-                case 'custom':
+    
+                case 'custom': {
                     messages.push(
                         reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'
                     );
                     break;
+                }
             }
         }
+    
+        // Extra für Weihnachten 🎄
+        if (dayNumber === 24) {
+            messages.unshift('> 🎄 **Frohe Weihnachten!** 🎁');
+        }
+    
+        return interaction.reply({
+            content: messages.join('\n\n'),
+            ephemeral: true
+        });
 
         /*
         switch (reward?.type) {
@@ -294,7 +314,6 @@ module.exports = {
 
         return interaction.reply({ content: rewardMessage, ephemeral: true }); // Antwort mit der Belohnung
         */
-        }
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
         client = interaction.client
