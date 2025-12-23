@@ -5,8 +5,8 @@ const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
 const teamdb = require("../../Datenbank/teamdb");
 const bumpdb = require("../../Datenbank/bumpdb");
-const User = require('../../Datenbank/userdb');
-const coinCooldown = new Map();
+const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
+const messageCooldown = new Map();
 const { time } = require("console");
 
 const TeamRoleIds = [
@@ -194,20 +194,29 @@ module.exports = {
         const userId = message.author.id;
         const now = Date.now();
     
-        const cooldown = 5000; // 5 Sekunden
-        if (coinCooldown.has(userId) && now - coinCooldown.get(userId) < cooldown) {
-            return;
+        // 🔧 Config laden
+        const config = await CoinConfig.findOne() || {
+            coinsPerMessage: 2,
+            messageCooldown: 5000
+        };
+    
+        // 🔒 Cooldown
+        if (
+            messageCooldown.has(userId) &&
+            now - messageCooldown.get(userId) < config.messageCooldown
+        ) return;
+    
+        messageCooldown.set(userId, now);
+    
+        // 👤 User Coins holen oder erstellen
+        let userCoins = await Coin.findOne({ userId });
+        if (!userCoins) {
+            userCoins = new Coin({ userId, coins: 0 });
         }
     
-        coinCooldown.set(userId, now);
-    
-        let userData = await User.findOne({ userId });
-        if (!userData) {
-            userData = new User({ userId, coins: 0 });
-        }
-    
-        userData.coins += 2; // 💰 2 Coins
-        await userData.save();
+        // 💰 2 Coins pro Nachricht
+        userCoins.coins += config.coinsPerMessage;
+        await userCoins.save();
 
         // Bump System (überarbeitet)
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
