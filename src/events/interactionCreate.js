@@ -201,7 +201,18 @@ module.exports = {
 
         let rewardMessage = ''; // Sicherstellen, dass rewardMessage immer einen Wert hat
 
-        const reward = rewards[dayNumber];
+        //const reward = rewards[dayNumber];
+
+        const rewardData = rewards[dayNumber];
+        if (!rewardData) {
+            return interaction.reply({
+                content: '> `❗` » Für diesen Tag gibt es keine Belohnung.',
+                ephemeral: true
+            });
+        }
+        
+        const rewardList = Array.isArray(rewardData) ? rewardData : [rewardData];
+        let messages = [];
 
         for (const reward of rewardList) {
             switch (reward.type) {
