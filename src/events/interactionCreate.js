@@ -406,7 +406,7 @@ module.exports = {
                             `<:Pfeil:1119709908540076124> Exklusiv an **Weihnachten 2021** erhalten\n\n` +
                             `\`📆\` 𑁉 <@&1312780135530889326> (\`${roleCountadvent2024}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> Beim **Adventskalender 2024** erhalten\n\n` +
-                            `\`🎄\` 𑁉 <@&863034801036591114> (\`${roleCountC2025}👥\`)\n` +
+                            `\`🎄\` 𑁉 <@&1445064222894460970> (\`${roleCountC2025}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> Exklusiv an **Weihnachten 2025** erhalten\n\n` +
                             `\`📆\` 𑁉 <@&1442140220182106184> (\`${roleCountadvent2025}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> Beim **Adventskalender 2025** erhalten\n\n` +
