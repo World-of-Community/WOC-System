@@ -239,8 +239,11 @@ cron.schedule('00 00 * * *', async () => {
         try {
             const currentDate = new Date();
     
-            // Nur im Dezember ausführen
-            if (currentDate.getMonth() !== 11) return;
+            const month = currentDate.getMonth(); // 0 = Januar, 11 = Dezember
+            const day = currentDate.getDate();    // 1–31
+    
+            // ❌ Nur vom 01.12. bis 24.12.
+            if (month !== 11 || day < 1 || day > 24) return;
     
             const channelId = '1312772215791685743'; // Adventskalender-Kanal-ID
             const channel = await client.channels.fetch(channelId);
@@ -255,7 +258,8 @@ cron.schedule('00 00 * * *', async () => {
             });
     
             // Nachricht nach 3 Minuten löschen
-            setTimeout(() => reminderMessage.delete(), 3 * 60 * 1000);
+            setTimeout(() => reminderMessage.delete().catch(() => {}), 3 * 60 * 1000);
+    
         } catch (error) {
             console.error('Fehler beim Senden der Nachricht:', error);
         }
