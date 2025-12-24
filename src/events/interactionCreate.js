@@ -167,7 +167,109 @@ module.exports = {
                 break;
             }
           }
+        
+        // Adventskalender Button-Handler
+        if (!interaction.isButton() || !interaction.customId.startsWith('advent_')) return;
+        
+        const currentDay = new Date().getDate();
+        const [, day] = interaction.customId.split('_');
+        const dayNumber = parseInt(day);
+        
+        // --- User-Daten laden oder erstellen ---
+        let userData = await Advent.findOne({ userId: interaction.user.id });
+        if (!userData) {
+            userData = await Advent.create({
+                userId: interaction.user.id,
+                openedDays: []
+            });
+        }
+        
+        // --- Bereits geöffnet? ---
+        if (userData.openedDays.includes(dayNumber)) {
+            return interaction.reply({
+                content: `> \`❗\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`,
+                ephemeral: true
+            });
+        }
+        
+        // --- Zukunfts-Check ---
+        if (dayNumber > currentDay) {
+            return interaction.reply({
+                content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!',
+                ephemeral: true
+            });
+        }
+        
+        // --- Reward prüfen ---
+        const rewardData = rewards[dayNumber];
+        if (!rewardData) {
+            return interaction.reply({
+                content: '> `❗` » Für diesen Tag gibt es keine Belohnung.',
+                ephemeral: true
+            });
+        }
+        
+        // --- Tag als geöffnet markieren ---
+        userData.openedDays.push(dayNumber);
+        await userData.save();
+        
+        // --- Rewards bearbeiten ---
+        const rewardList = Array.isArray(rewardData) ? rewardData : [rewardData];
+        const messages = [];
+        
+        // --- Vorab Coin-Daten einmal laden ---
+        let coinData = await Coin.findOne({ userId: interaction.user.id });
+        if (!coinData) {
+            coinData = await Coin.create({ userId: interaction.user.id, coins: 0 });
+        }
+        
+        for (const reward of rewardList) {
+            switch (reward.type) {
+        
+                case 'coins': {
+                    coinData.coins += reward.value;
+                    messages.push(
+                        `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n` +
+                        `> \`💰\` » Die Coins wurden **automatisch deinem Konto gutgeschrieben**.`
+                    );
+                    break;
+                }
+        
+                case 'role': {
+                    const role = interaction.guild.roles.cache.get(reward.value);
+                    if (role) {
+                        await interaction.member.roles.add(role);
+                        messages.push(`> \`🎉\` » Du hast die Rolle **${role}** erhalten!`);
+                    } else {
+                        messages.push('> `❗` » Rolle wurde nicht gefunden. Bitte melde dich im Support.');
+                    }
+                    break;
+                }
+        
+                case 'custom': {
+                    messages.push(reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.');
+                    break;
+                }
+            }
+        }
+        
+        // --- Coins einmal speichern ---
+        if (rewardList.some(r => r.type === 'coins')) {
+            await coinData.save();
+        }
+        
+        // --- Extra für Weihnachten 🎄 ---
+        if (dayNumber === 24) {
+            messages.unshift('> `🎄` **Frohe Weihnachten!** `🎁`');
+        }
+        
+        // --- Nachricht senden ---
+        return interaction.reply({
+            content: messages.join('\n\n'),
+            ephemeral: true
+        });
 
+        /*
         // Adventskalender
         if (!interaction.isButton() || !interaction.customId.startsWith('advent_')) return;
 
