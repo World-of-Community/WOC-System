@@ -70,7 +70,7 @@ module.exports = {
     }
 
     // Belohnung berechnen
-    const Belohnung = 10;
+    const Belohnung = 20;
     const bonusMultiplikator = berechneBonusMultiplikator(user.streak);
     const gesamtBelohnung = Math.floor(Belohnung * bonusMultiplikator);
 
