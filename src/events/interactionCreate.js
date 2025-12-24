@@ -379,7 +379,7 @@ module.exports = {
                     const roleCountadvent2024 = advent2024.members.size
 
                     const christmas2025 = await interaction.guild.roles.cache.get('1445064222894460970')
-                    const roleCountchristmas2025 = christmas2025.members.size
+                    const roleCountC2025 = christmas2025.members.size
 
                     const advent2025 = await interaction.guild.roles.cache.get('1442140220182106184')
                     const roleCountadvent2025 = advent2025.members.size
