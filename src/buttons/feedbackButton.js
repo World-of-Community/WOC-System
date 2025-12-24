@@ -44,7 +44,7 @@ module.exports = {
                         .setLabel('Detaillierte Beschreibung')
                         .setPlaceholder('Beschreibe hier dein Feedback ausführlich...')
                         .setMinLength(50)
-                        .setMaxLength(4000)
+                        .setMaxLength(1024)
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(true)
                 );
