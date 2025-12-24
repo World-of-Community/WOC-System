@@ -83,12 +83,8 @@ module.exports = {
 
         collector.on('collect', async (btnInteraction) => {
             if (btnInteraction.user.id !== interaction.user.id) {
-                return btnInteraction.reply({
-                    content: 'Nur der Command-Nutzer kann diese Buttons benutzen.',
-                    ephemeral: true
-                });
+                return btnInteraction.deferUpdate();
             }
-
             if (btnInteraction.customId === 'next') currentPage++;
             if (btnInteraction.customId === 'prev') currentPage--;
 
