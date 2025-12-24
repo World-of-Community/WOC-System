@@ -356,43 +356,6 @@ module.exports = {
           console.error(e);
         }
 
-        //if (interaction.customId !== 'advent_progress') return;
-//
-        //const userId = interaction.user.id;
-        //const today = now.getDate(); // aktueller Tag
-//
-        //// Benutzerfortschritt abrufen oder initialisieren
-        //let adventData = await Advent.findOne({ userId });
-        //if (!adventData) {
-        //    adventData = new Advent({ userId, openedDays: [] });
-        //    await adventData.save();
-        //}
-//
-        //const openedDays = adventData.openedDays; // Array mit geöffneten Tagen
-        //const totalDays = 24;
-        //let calendarDisplay = '';
-//
-        //for (let day = 1; day <= totalDays; day++) {
-        //    if (openedDays.includes(day)) {
-        //        calendarDisplay += `\`${day}\` ✅  `;
-        //    } else if (day < today) {
-        //        calendarDisplay += `\`${day}\` ❌  `;
-        //    } else {
-        //        calendarDisplay += `\`${day}\` 🎁  `;
-        //    }
-//
-        //    if (day % 4 === 0) calendarDisplay += '\n';
-        //}
-//
-        //const embed = new EmbedBuilder()
-        //    .setTitle(`\`🎄\` Dein Adventskalender-Fortschritt \`🎄\``)
-        //    .setDescription(calendarDisplay)
-        //    .setColor('Blurple')
-        //    .setFooter({ text: 'Viel Spaß beim Öffnen der Türchen!' })
-        //    .setTimestamp();
-//
-        //await interaction.reply({ embeds: [embed], ephemeral: true });
-
         // Ränge Menu
         if (interaction.customId === 'ränge-menu') {
             switch (interaction.values[0]) {
@@ -409,11 +372,17 @@ module.exports = {
                     const SDES = await interaction.guild.roles.cache.get('992008555987222548')
                     const roleCountSDES = SDES.members.size
 
-                    const christmas = await interaction.guild.roles.cache.get('863034801036591114')
-                    const roleCountC = christmas.members.size
+                    const christmas2021 = await interaction.guild.roles.cache.get('863034801036591114')
+                    const roleCountC2021 = christmas2021.members.size
 
                     const advent2024 = await interaction.guild.roles.cache.get('1312780135530889326')
-                    const roleCountadvent = advent2024.members.size
+                    const roleCountadvent2024 = advent2024.members.size
+
+                    const christmas2025 = await interaction.guild.roles.cache.get('1445064222894460970')
+                    const roleCountchristmas2025 = christmas2025.members.size
+
+                    const advent2025 = await interaction.guild.roles.cache.get('1442140220182106184')
+                    const roleCountadvent2025 = advent2025.members.size
 
                     const lucky = await interaction.guild.roles.cache.get('1124598019862573096')
                     const roleCountlucky = lucky.members.size
@@ -433,10 +402,14 @@ module.exports = {
                             `<:Pfeil:1119709908540076124> Nimm an **20 Server-Umfragen** teil.\n\n` +
                             `\`💚\` 𑁉 <@&992008555987222548> (\`${roleCountSDES}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> **Seit 2021** auf World Of Community\n\n` +
-                            `\`🎄\` 𑁉 <@&863034801036591114> (\`${roleCountC}👥\`)\n` +
+                            `\`🎄\` 𑁉 <@&863034801036591114> (\`${roleCountC2021}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> Exklusiv an **Weihnachten 2021** erhalten\n\n` +
-                            `\`📆\` 𑁉 <@&1312780135530889326> (\`${roleCountadvent}👥\`)\n` +
+                            `\`📆\` 𑁉 <@&1312780135530889326> (\`${roleCountadvent2024}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> Beim **Adventskalender 2024** erhalten\n\n` +
+                            `\`🎄\` 𑁉 <@&863034801036591114> (\`${roleCountC2025}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> Exklusiv an **Weihnachten 2025** erhalten\n\n` +
+                            `\`📆\` 𑁉 <@&1442140220182106184> (\`${roleCountadvent2025}👥\`)\n` +
+                            `<:Pfeil:1119709908540076124> Beim **Adventskalender 2025** erhalten\n\n` +
                             `\`☘️\` 𑁉 <@&1124598019862573096> (\`${roleCountlucky}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> **Gewinne** bei einem Event auf WOC.\n\n` +
                             `\`🔓\` 𑁉 <@&882240367632744508> (\`${roleCountSEST}👥\`)\n` +
