@@ -53,7 +53,7 @@ module.exports = {
     const subcommand = interaction.options.getSubcommand();
     const selectedChannel = interaction.options.getChannel('kanal');
 
-    if (selectedChannel && selectedChannel.type !== 'GUILD_TEXT') {
+    if (selectedChannel && selectedChannel.type !== ChannelType.GuildText) {
       return interaction.reply({ content: '> `❗` » Bitte wähle einen Textkanal aus.', ephemeral: true });
     }
 
