@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
 const EventDropAndUser = require("../../../Datenbank/EventDropAndUserdb");
 
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
           option.setName('kanal')
             .setDescription('Wähle einen Textkanal für die Event-Drops')
             .setRequired(true)
-            .addChannelTypes(0)  // Nur Textkanäle erlauben
+            .addChannelTypes(ChannelType.GuildText)  // Nur Textkanäle erlauben
         )
     )
     .addSubcommand(subcommand =>
@@ -24,7 +24,7 @@ module.exports = {
           option.setName('kanal')
             .setDescription('Wähle einen Textkanal für die Event-Drops')
             .setRequired(true)
-            .addChannelTypes(0)  // Nur Textkanäle erlauben
+            .addChannelTypes(ChannelType.GuildText)  // Nur Textkanäle erlauben
         )
     )
     .addSubcommand(subcommand =>
@@ -46,7 +46,7 @@ module.exports = {
 
   async execute(interaction) {
     // Berechtigungsprüfung: Nur Admins oder bestimmte Rollen dürfen ausführen
-    if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+    if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
       return interaction.reply({ content: '> `❌` » Du hast keine Berechtigung, diesen Befehl auszuführen.', ephemeral: true });
     }
 
