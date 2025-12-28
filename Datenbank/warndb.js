@@ -1,25 +1,25 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const warnSchema = new mongoose.Schema({
-    guildId: {
-        type: String,
-        required: true,
-        index: true
+  guildId: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  userId: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  warnings: [
+    {
+      reason: { type: String, required: true },
+      date: { type: Date, default: Date.now },
     },
-    userId: {
-        type: String,
-        required: true,
-        index: true
-    },
-    warnings: [
-        {
-            reason: { type: String, required: true },
-            date: { type: Date, default: Date.now }
-        }
-    ]
+  ],
 });
 
 // Verhindert doppelte Einträge pro Guild + User
 warnSchema.index({ guildId: 1, userId: 1 }, { unique: true });
 
-module.exports = mongoose.model('Warning', warnSchema);
+module.exports = mongoose.model("Warning", warnSchema);

@@ -1,48 +1,48 @@
-const { 
-  SlashCommandBuilder, 
-  PermissionFlagsBits, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
-  ButtonBuilder, 
-  ButtonStyle, 
-  ComponentType 
-} = require('discord.js');
-const { Match } = require('../../../Datenbank/fussballdb');
+const {
+  SlashCommandBuilder,
+  PermissionFlagsBits,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+} = require("discord.js");
+const { Match } = require("../../../Datenbank/fussballdb");
 
 const proLeagueTeams = [
-  'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
-  'FC Rot-Weiß','SV Grünwald','TSV Nord','SC Süd','VfB West',
-  'FC Ostwind','SV Nordstern','TSV Berg','SC Tal','VfB See',
-  'FC Sturm','SV Blitz','TSV Vulkan','SC Frost','VfB Flamme',
-  'FC Donner','SV Schatten','TSV Nebel','SC Licht'
+  "FC Adler","SV Löwen","TSV Eiche","SC Blau","VfB Stern",
+  "FC Rot-Weiß","SV Grünwald","TSV Nord","SC Süd","VfB West",
+  "FC Ostwind","SV Nordstern","TSV Berg","SC Tal","VfB See",
+  "FC Sturm","SV Blitz","TSV Vulkan","SC Frost","VfB Flamme",
+  "FC Donner","SV Schatten","TSV Nebel","SC Licht",
 ];
 
 // Realistische Spielzeiten nach Tag
 const dayTimeSlots = {
-  Montag: ['20:30'],
-  Dienstag: ['19:00', '20:30', '20:45'],
-  Mittwoch: ['19:00', '20:30', '20:45'],
-  Donnerstag: ['19:00', '20:30', '20:45'],
-  Freitag: ['20:30', '20:45'],
-  Samstag: ['13:00', '13:30', '14:00', '15:30', '18:30', '20:30'],
-  Sonntag: ['13:30', '15:30', '17:30', '19:30', '20:30'],
+  Montag: ["20:30"],
+  Dienstag: ["19:00", "20:30", "20:45"],
+  Mittwoch: ["19:00", "20:30", "20:45"],
+  Donnerstag: ["19:00", "20:30", "20:45"],
+  Freitag: ["20:30", "20:45"],
+  Samstag: ["13:00", "13:30", "14:00", "15:30", "18:30", "20:30"],
+  Sonntag: ["13:30", "15:30", "17:30", "19:30", "20:30"],
 };
 
 const startDatum = new Date(2025, 9, 31); // 31.10.2025 (Start)
-const LIVE_CHANNEL_ID = '1375803752375648266';
+const LIVE_CHANNEL_ID = "1375803752375648266";
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('fussball-saison-generieren')
-    .setDescription('Generiert die komplette Saison mit realistischen Wochenendterminen und startet Live-Updates.')
+    .setName("fussball-saison-generieren")
+    .setDescription("Generiert die komplette Saison mit realistischen Wochenendterminen und startet Live-Updates.")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    await interaction.reply('`⚡` Saison wird generiert... bitte warten!');
+    await interaction.reply("`⚡` Saison wird generiert... bitte warten!");
 
     try {
       await Match.deleteMany({});
-      console.log('✅  | Alle bisherigen Matches wurden gelöscht.');
+      console.log("✅  | Alle bisherigen Matches wurden gelöscht.");
 
       const teams = [...proLeagueTeams];
       const spieltage = 34;
@@ -75,7 +75,7 @@ module.exports = {
         matchDayDate.setDate(startDatum.getDate() + (spieltag - 1) * 3);
 
         // Wähle zufälligen Spieltag-Typ
-        const tage = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag', ];
+        const tage = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag" ];
         const tag = tage[Math.floor(Math.random() * tage.length)];
 
         for (let index = 0; index < matchData.length; index++) {
@@ -84,7 +84,7 @@ module.exports = {
           // Uhrzeit nach Tag wählen
           const availableTimes = dayTimeSlots[tag];
           const timeStr = availableTimes[Math.floor(Math.random() * availableTimes.length)];
-          const [hour, minute] = timeStr.split(':').map(Number);
+          const [hour, minute] = timeStr.split(":").map(Number);
 
           const matchDate = new Date(matchDayDate);
           matchDate.setHours(hour, minute, 0, 0);
@@ -97,22 +97,22 @@ module.exports = {
             date: matchDate,
             endDate,
             homeScore: 0,
-            awayScore: 0
+            awayScore: 0,
           }));
         }
 
         await Match.insertMany(matches);
 
         const spielListe = matches.map(m => {
-          const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-          const dateStr = m.date.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+          const timeStr = m.date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+          const dateStr = m.date.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
           return `${m.homeTeam} vs ${m.awayTeam} (${timeStr} Uhr, ${dateStr})`;
-        }).join('\n');
+        }).join("\n");
 
         embeds.push(new EmbedBuilder()
           .setTitle(`Spieltag ${spieltag}`)
           .setDescription(spielListe)
-          .setColor('Blue')
+          .setColor("Blue"),
         );
       }
 
@@ -123,27 +123,27 @@ module.exports = {
       const row = new ActionRowBuilder()
         .addComponents(
           new ButtonBuilder()
-            .setCustomId('prev')
-            .setLabel('⬅️ Zurück')
+            .setCustomId("prev")
+            .setLabel("⬅️ Zurück")
             .setStyle(ButtonStyle.Primary)
             .setDisabled(true),
           new ButtonBuilder()
-            .setCustomId('next')
-            .setLabel('➡️ Weiter')
+            .setCustomId("next")
+            .setLabel("➡️ Weiter")
             .setStyle(ButtonStyle.Primary)
-            .setDisabled(embeds.length <= 1)
+            .setDisabled(embeds.length <= 1),
         );
 
       const msg = await interaction.followUp({ embeds: [embeds[page]], components: [row] });
 
       const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button, time: 600000 });
 
-      collector.on('collect', async i => {
-        if (i.user.id !== interaction.user.id) 
-          return i.reply({ content: 'Nur der Command-Ersteller kann navigieren.', ephemeral: true });
+      collector.on("collect", async i => {
+        if (i.user.id !== interaction.user.id)
+        {return i.reply({ content: "Nur der Command-Ersteller kann navigieren.", ephemeral: true });}
 
-        if (i.customId === 'next') page++;
-        if (i.customId === 'prev') page--;
+        if (i.customId === "next") {page++;}
+        if (i.customId === "prev") {page--;}
 
         row.components[0].setDisabled(page === 0);
         row.components[1].setDisabled(page === embeds.length - 1);
@@ -155,7 +155,7 @@ module.exports = {
       // Live-Updates
       // --------------------------
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
-      if (!channel) return console.error('`❌` Kanal nicht gefunden.');
+      if (!channel) {return console.error("`❌` Kanal nicht gefunden.");}
 
       let liveMsg;
       const announcedMatches = new Set();
@@ -175,7 +175,7 @@ module.exports = {
             if (diffSeconds < 45 * 60) {
               minuteDisplay = `${Math.floor(diffSeconds / 60)}'`;
             } else if (diffSeconds < 45 * 60 + 1) {
-              minuteDisplay = `45' (Pause)`;
+              minuteDisplay = "45' (Pause)";
             } else if (diffSeconds <= 90 * 60) {
               minuteDisplay = `${Math.floor(diffSeconds / 60)}'`;
             } else {
@@ -183,17 +183,17 @@ module.exports = {
               minuteDisplay = `90' +${extra}`;
             }
 
-            if (Math.random() < 0.03) m.homeScore++;
-            if (Math.random() < 0.025) m.awayScore++;
+            if (Math.random() < 0.03) {m.homeScore++;}
+            if (Math.random() < 0.025) {m.awayScore++;}
             await m.save();
 
             lines.push(`${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam} (${minuteDisplay})`);
           }
 
           const embed = new EmbedBuilder()
-            .setTitle(liveMatches.length > 1 ? '`⚽` Live-Konferenz' : `\`🏟️\` Live: ${liveMatches[0].homeTeam} vs ${liveMatches[0].awayTeam}`)
-            .setColor(liveMatches.length > 1 ? 'Orange' : 'Green')
-            .setDescription(lines.join('\n'));
+            .setTitle(liveMatches.length > 1 ? "`⚽` Live-Konferenz" : `\`🏟️\` Live: ${liveMatches[0].homeTeam} vs ${liveMatches[0].awayTeam}`)
+            .setColor(liveMatches.length > 1 ? "Orange" : "Green")
+            .setDescription(lines.join("\n"));
 
           if (liveMsg) {
             await liveMsg.edit({ embeds: [embed] });
@@ -204,20 +204,20 @@ module.exports = {
 
         // Spiele, die in 10 Sekunden starten
         const upcomingMatches = await Match.find({
-          date: { $gt: now, $lte: new Date(now.getTime() + 10000) }
+          date: { $gt: now, $lte: new Date(now.getTime() + 10000) },
         }).sort({ date: 1 });
 
         const newMatches = upcomingMatches.filter(m => !announcedMatches.has(m.id));
         if (newMatches.length > 0) {
           const lines = newMatches.map(m => {
-            const timeStr = m.date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            const timeStr = m.date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
             return `${m.homeTeam} vs ${m.awayTeam} (${timeStr} Uhr)`;
           });
 
           const embed = new EmbedBuilder()
-            .setTitle('`⚽` Spiele starten in wenigen Sekunden')
-            .setColor('Purple')
-            .setDescription(lines.join('\n'));
+            .setTitle("`⚽` Spiele starten in wenigen Sekunden")
+            .setColor("Purple")
+            .setDescription(lines.join("\n"));
 
           await channel.send({ embeds: [embed] });
           newMatches.forEach(m => announcedMatches.add(m.id));
@@ -230,21 +230,21 @@ module.exports = {
 
     } catch (err) {
       console.error(err);
-      await interaction.followUp('❌ Fehler beim Generieren der Saison.');
+      await interaction.followUp("❌ Fehler beim Generieren der Saison.");
     }
-  }
+  },
 };
 
 /*
 //
-const { 
-  SlashCommandBuilder, 
-  PermissionFlagsBits, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
-  ButtonBuilder, 
-  ButtonStyle, 
-  ComponentType 
+const {
+  SlashCommandBuilder,
+  PermissionFlagsBits,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType
 } = require('discord.js');
 const { Match } = require('../../../Datenbank/fussballdb');
 
@@ -368,7 +368,7 @@ module.exports = {
       const collector = msg.createMessageComponentCollector({ componentType: ComponentType.Button, time: 600000 });
 
       collector.on('collect', async i => {
-        if (i.user.id !== interaction.user.id) 
+        if (i.user.id !== interaction.user.id)
           return i.reply({ content: 'Nur der Command-Ersteller kann navigieren.', ephemeral: true });
 
         if (i.customId === 'next') page++;

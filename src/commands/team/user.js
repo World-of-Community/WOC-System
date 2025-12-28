@@ -7,35 +7,35 @@ const {
     ActionRowBuilder,
 } = require("discord.js");
 
-const Timeout = require('../../../Datenbank/timeoutdb');
-const Warn = require('../../../Datenbank/warndb');
-const bandb = require('../../../Datenbank/bandb');
+const Timeout = require("../../../Datenbank/timeoutdb");
+const Warn = require("../../../Datenbank/warndb");
+const bandb = require("../../../Datenbank/bandb");
 const Note = require('../../../Datenbank/notedb');
 
 const RoleIds = [
-    '959869691529154631', // Admin
-    '929349039433056276', // Developer
-    '816985466230145044', // Sr-Moderator
-    '815920052385480754', // Moderator
-    '815920170371383366', // Support
-    '1263645368441241700', // Builder
-    '1399157711752532132', // Content
-    '815920219247214644', // Creator
-    '862708375698538507', // VIP
-    '815921105407574056', // Supreme
-    '917826787977871441', // Premium
-    '815920452337139733', // Legende
-    '835775627721179167', // Diamond
-    '835775556611997697', // Emerald
-    '835775597446955048', // Episch
-    '1258825307239219371', // Hyper Aktiv
-    '1258794321533075526', // Ultra Aktiv
-    '1258825144697360485', // Mega Aktiv
-    '1258827956634128467', // Stark Aktiv
-    '1258794479570124920', // Sehr Aktiv
-    '1258794944953319534', // Aktiv
-    '1258827226846199808', // Inaktiv
-    '1391760378924630109', // OG
+  "959869691529154631", // Admin
+  "929349039433056276", // Developer
+  "816985466230145044", // Sr-Moderator
+  "815920052385480754", // Moderator
+  "815920170371383366", // Support
+  "1263645368441241700", // Builder
+  "1399157711752532132", // Content
+  "815920219247214644", // Creator
+  "862708375698538507", // VIP
+  "815921105407574056", // Supreme
+  "917826787977871441", // Premium
+  "815920452337139733", // Legende
+  "835775627721179167", // Diamond
+  "835775556611997697", // Emerald
+  "835775597446955048", // Episch
+  "1258825307239219371", // Hyper Aktiv
+  "1258794321533075526", // Ultra Aktiv
+  "1258825144697360485", // Mega Aktiv
+  "1258827956634128467", // Stark Aktiv
+  "1258794479570124920", // Sehr Aktiv
+  "1258794944953319534", // Aktiv
+  "1258827226846199808", // Inaktiv
+  "1391760378924630109", // OG
 ];
 
 const BANNED_ROLE_ID = "886989738244964362";
@@ -252,7 +252,102 @@ module.exports = {
                         .setStyle(ButtonStyle.Danger)
                 );
 
-            return interaction.reply({ embeds: [embed], components: [buttonRow], ephemeral: true });
+                const msg = await interaction.reply({
+                    embeds: [embed],
+                    components: [row],
+                    ephemeral: true,
+                    fetchReply: true
+                });
+
+                const collector = msg.createMessageComponentCollector({ time: 60 * 1000 });
+
+                collector.on("collect", async btn => {
+                    if (btn.user.id !== interaction.user.id)
+                        return btn.reply({ content: "> `❌` Das ist nicht dein Menü.", ephemeral: true });
+
+                    if (btn.customId !== `showPunishments_${user.id}`) return;
+
+                    const timeouts = await Timeout.find({ userId: user.id, guildId: interaction.guild.id }).sort({ createdAt: -1 });
+                    const warns = await Warn.find({ userId: user.id, guildId: interaction.guild.id }).sort({ createdAt: -1 });
+
+                    // SICHERES FORMAT
+                    const format = (date) => {
+                        if (!date || !(date instanceof Date) || isNaN(date.getTime())) return "`Datum fehlt`";
+                        return `<t:${Math.floor(date.getTime() / 1000)}:F>`;
+                    };
+
+                    const warnText = warns.length > 0
+                        ? warns.map(w => `• **Grund:** \`${w.reason || 'Keine Angabe'}\`\n• **Zeit:** ${format(w.createdAt)}`).join("\n\n")
+                        : "`Keine Warnungen vorhanden`";
+
+                    const timeoutText = timeouts.length > 0
+                        ? timeouts.map(t => `• **Grund:** \`${t.reason || 'Keine Angabe'}\`\n• **Zeit:** ${format(t.createdAt)}`).join("\n\n")
+                        : "`Keine Timeouts vorhanden`";
+
+                    const punishEmbed = new EmbedBuilder()
+                        .setTitle(`\`🔴\` Strafen - ${user.username}`)
+                        .setColor("Red")
+                        .addFields(
+                            { name: "`❗` Warnungen", value: warnText },
+                            { name: "`🔇` Timeouts", value: timeoutText }
+                        )
+                        .setTimestamp();
+
+                    return btn.reply({
+                        embeds: [punishEmbed],
+                        ephemeral: true
+                    });
+                });
+
+                collector.on("end", async () => {
+                    if (msg.editable) msg.edit({ components: [] }).catch(() => { });
+                });
+
+                return;
+
+            } catch (error) {
+                console.error('Fehler:', error);
+                return interaction.reply({
+                    content: '> `❌` Fehler beim Abrufen der Benutzerdaten.',
+                    ephemeral: true
+                });
+            }
         }
-    }
+
+        // ------------------- FIND -------------------
+        if (sub === "find") {
+            const id = interaction.options.getString("id");
+            const user = await interaction.client.users.fetch(id).catch(() => null);
+            if (!user) return interaction.reply({ content: "> `❌` Kein User mit dieser ID gefunden.", ephemeral: true });
+            const member = await interaction.guild.members.fetch(id).catch(() => null);
+            const embed = new EmbedBuilder()
+                .setColor('Blurple')
+                .setTitle(`\`🔎\` User gefunden: ${user.username}`)
+                .setThumbnail(user.displayAvatarURL({ dynamic: true }))
+                .addFields(
+                    { name: "`👤` Benutzername", value: `${user} (${user.username})`, inline: false },
+                    { name: "`🆔` User ID", value: `\`${user.id}\``, inline: false },
+                    {
+                        name: "`🏷️` Serverstatus",
+                        value: member
+                            ? `\`✅\` Auf dem Server\nNickname: ${member.displayName}`
+                            : "`❌` Nicht auf dem Server",
+                        inline: false
+                    },
+                    {
+                        name: "`📅` Account erstellt",
+                        value: `<t:${Math.floor(user.createdTimestamp / 1000)}>` ,
+                        inline: false
+                    },
+                    {
+                        name: "`📅` Server beigetreten",
+                        value: member?.joinedTimestamp
+                            ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
+                            : "`Nicht auf dem Server`",
+                        inline: false
+                    }
+                )
+                .setTimestamp();
+            return interaction.reply({ embeds: [embed], ephemeral: true });
+        }
 };

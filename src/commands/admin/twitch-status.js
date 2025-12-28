@@ -5,32 +5,32 @@ const {
   ButtonStyle,
   ActionRowBuilder,
   PermissionFlagsBits,
-} = require('discord.js');
-const fetch = require('node-fetch');
-const fs = require('fs');
-const path = require('path');
+} = require("discord.js");
+const fetch = require("node-fetch");
+const fs = require("fs");
+const path = require("path");
 
-const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
+const twitchStatusPath = path.join(__dirname, "../../../src/json/twitchStatus.json");
 
 let twitchconfig = {};
-let accessToken = '';
+let accessToken = "";
 let updateIntervalHandle = null;
 let tokenRefreshIntervalHandle = null;
 
 function loadTwitchConfig() {
   if (fs.existsSync(twitchStatusPath)) {
     try {
-      const data = fs.readFileSync(twitchStatusPath, 'utf-8');
+      const data = fs.readFileSync(twitchStatusPath, "utf-8");
       twitchconfig = JSON.parse(data);
     } catch (err) {
-      console.error('Fehler beim Laden der twitchStatus.json:', err);
+      console.error("Fehler beim Laden der twitchStatus.json:", err);
       twitchconfig = {};
     }
   }
 }
 
 function saveTwitchConfig() {
-  fs.writeFileSync(twitchStatusPath, JSON.stringify(twitchconfig, null, 2), 'utf-8');
+  fs.writeFileSync(twitchStatusPath, JSON.stringify(twitchconfig, null, 2), "utf-8");
 }
 
 // Direkt laden beim Start
@@ -38,26 +38,26 @@ loadTwitchConfig();
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('twitch-status')
-    .setDescription('Aktiviere oder deaktiviere den automatischen Twitch-Status')
+    .setName("twitch-status")
+    .setDescription("Aktiviere oder deaktiviere den automatischen Twitch-Status")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addStringOption(option =>
       option
-        .setName('aktion')
-        .setDescription('Wähle, ob du den Auto-Status aktivieren oder deaktivieren willst')
+        .setName("aktion")
+        .setDescription("Wähle, ob du den Auto-Status aktivieren oder deaktivieren willst")
         .setRequired(true)
         .addChoices(
-          { name: 'Aktivieren', value: 'start' },
-          { name: 'Deaktivieren', value: 'stop' }
-        )
+          { name: "Aktivieren", value: "start" },
+          { name: "Deaktivieren", value: "stop" },
+        ),
     ),
 
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
-    const aktion = interaction.options.getString('aktion');
+    const aktion = interaction.options.getString("aktion");
 
-    if (aktion === 'start') {
+    if (aktion === "start") {
       try {
         await getAccessToken();
         await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
@@ -67,7 +67,7 @@ module.exports = {
             try {
               await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
             } catch (err) {
-              console.error('Fehler bei automatischer Twitch-Status-Aktualisierung:', err);
+              console.error("Fehler bei automatischer Twitch-Status-Aktualisierung:", err);
             }
           }, 60 * 1000);
         }
@@ -77,27 +77,27 @@ module.exports = {
             try {
               await getAccessToken();
             } catch (err) {
-              console.error('Fehler beim Erneuern des Twitch Access Tokens:', err);
+              console.error("Fehler beim Erneuern des Twitch Access Tokens:", err);
             }
           }, 10 * 60 * 1000);
         }
 
-        await interaction.editReply({ content: '> `✅` » Automatische Twitch-Status-Aktualisierung wurde **aktiviert**.' });
+        await interaction.editReply({ content: "> `✅` » Automatische Twitch-Status-Aktualisierung wurde **aktiviert**." });
 
       } catch (err) {
-        console.error('Fehler beim Starten:', err);
-        await interaction.editReply({ content: '> `❌` » Fehler beim Starten des automatischen Status-Updates.' });
+        console.error("Fehler beim Starten:", err);
+        await interaction.editReply({ content: "> `❌` » Fehler beim Starten des automatischen Status-Updates." });
       }
 
-    } else if (aktion === 'stop') {
+    } else if (aktion === "stop") {
       clearInterval(updateIntervalHandle);
       clearInterval(tokenRefreshIntervalHandle);
       updateIntervalHandle = null;
       tokenRefreshIntervalHandle = null;
 
-      await interaction.editReply({ content: '> `🛑` » Automatische Twitch-Status-Aktualisierung wurde **deaktiviert**.' });
+      await interaction.editReply({ content: "> `🛑` » Automatische Twitch-Status-Aktualisierung wurde **deaktiviert**." });
     }
-  }
+  },
 };
 
 function startExactMinuteInterval(callback, interval) {
@@ -112,61 +112,61 @@ function startExactMinuteInterval(callback, interval) {
 
 async function getAccessToken() {
   if (!twitchconfig.twitchClientId || !twitchconfig.twitchClientSecret) {
-    throw new Error('Twitch Client ID oder Secret nicht konfiguriert!');
+    throw new Error("Twitch Client ID oder Secret nicht konfiguriert!");
   }
 
   const res = await fetch(
     `https://id.twitch.tv/oauth2/token?client_id=${twitchconfig.twitchClientId}&client_secret=${twitchconfig.twitchClientSecret}&grant_type=client_credentials`,
-    { method: 'POST' }
+    { method: "POST" },
   );
   const data = await res.json();
-  if (!data.access_token) throw new Error('Konnte Access Token nicht abrufen');
+  if (!data.access_token) {throw new Error("Konnte Access Token nicht abrufen");}
   accessToken = data.access_token;
 }
 
 function createOfflineEmbed(user) {
   return new EmbedBuilder()
     .setAuthor({
-      name: 'Red3405 Ankündigung',
+      name: "Red3405 Ankündigung",
       iconURL: user.displayAvatarURL({ dynamic: true }),
-      url: `https://twitch.tv/${twitchconfig.twitchUser}`
+      url: `https://twitch.tv/${twitchconfig.twitchUser}`,
     })
-    .setTitle('Offline!')
+    .setTitle("Offline!")
     .setDescription(
-      `- Titel: **?**\n` +
-      `- Kategorie: **?**\n` +
-      `- Zuschauer: **0**`
+      "- Titel: **?**\n" +
+      "- Kategorie: **?**\n" +
+      "- Zuschauer: **0**",
     )
-    .setColor('Red')
-    .setFooter({ text: 'Zuletzt aktualisiert' })
+    .setColor("Red")
+    .setFooter({ text: "Zuletzt aktualisiert" })
     .setTimestamp();
 }
 
 function createLiveEmbed(stream, user) {
   return new EmbedBuilder()
     .setAuthor({
-      name: 'Red3405 Ankündigung',
+      name: "Red3405 Ankündigung",
       iconURL: user.displayAvatarURL({ dynamic: true }),
-      url: `https://twitch.tv/${twitchconfig.twitchUser}`
+      url: `https://twitch.tv/${twitchconfig.twitchUser}`,
     })
     .setTitle(`${stream.user_name} streamt!`)
     .setDescription(
-      `- Titel: **${stream.title || 'Kein Titel'}**\n` +
-      `- Kategorie: **${stream.game_name || 'Keine Angabe'}**\n` +
-      `- Zuschauer: **${stream.viewer_count.toLocaleString('de-DE')}**`
+      `- Titel: **${stream.title || "Kein Titel"}**\n` +
+      `- Kategorie: **${stream.game_name || "Keine Angabe"}**\n` +
+      `- Zuschauer: **${stream.viewer_count.toLocaleString("de-DE")}**`,
     )
     .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${twitchconfig.twitchUser}-640x360.jpg?${Date.now()}`)
-    .setColor('Purple')
-    .setFooter({ text: 'Live seit' })
+    .setColor("Purple")
+    .setFooter({ text: "Live seit" })
     .setTimestamp(new Date(stream.started_at));
 }
 
 function createButton() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setLabel(`🔗 Twitch: Red3405`)
+      .setLabel("🔗 Twitch: Red3405")
       .setStyle(ButtonStyle.Link)
-      .setURL(`https://twitch.tv/${twitchconfig.twitchUser}`)
+      .setURL(`https://twitch.tv/${twitchconfig.twitchUser}`),
   );
 }
 
@@ -175,18 +175,18 @@ async function updateTwitchStatus(client, guild, user) {
 
   const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${twitchconfig.twitchUser}`, {
     headers: {
-      'Client-ID': twitchconfig.twitchClientId,
-      Authorization: `Bearer ${accessToken}`
-    }
+      "Client-ID": twitchconfig.twitchClientId,
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
 
-  if (!res.ok) throw new Error(`Twitch API Fehler: ${res.status} ${res.statusText}`);
+  if (!res.ok) {throw new Error(`Twitch API Fehler: ${res.status} ${res.statusText}`);}
 
   const data = await res.json();
   const stream = data.data && data.data.length > 0 ? data.data[0] : null;
 
   const channel = await client.channels.fetch(twitchconfig.channelId);
-  if (!channel || !channel.isTextBased()) throw new Error('Konnte Kanal nicht finden oder ist kein Textkanal.');
+  if (!channel || !channel.isTextBased()) {throw new Error("Konnte Kanal nicht finden oder ist kein Textkanal.");}
 
   const embed = stream ? createLiveEmbed(stream, user) : createOfflineEmbed(user);
 
@@ -198,14 +198,14 @@ async function updateTwitchStatus(client, guild, user) {
       await message.edit({
         content: `https://www.twitch.tv/${twitchconfig.twitchUser}`,
         embeds: [embed],
-        components: [createButton()]
+        components: [createButton()],
       });
-    } catch (err) {
-      console.warn('Gespeicherte Twitch-Status-Nachricht nicht gefunden, sende neue Nachricht.');
+    } catch {
+      console.warn("Gespeicherte Twitch-Status-Nachricht nicht gefunden, sende neue Nachricht.");
       message = await channel.send({
         content: `https://www.twitch.tv/${twitchconfig.twitchUser}`,
         embeds: [embed],
-        components: [createButton()]
+        components: [createButton()],
       });
       twitchconfig.statusMessageId = message.id;
       saveTwitchConfig();
@@ -214,7 +214,7 @@ async function updateTwitchStatus(client, guild, user) {
     message = await channel.send({
       content: `https://www.twitch.tv/${twitchconfig.twitchUser}`,
       embeds: [embed],
-      components: [createButton()]
+      components: [createButton()],
     });
     twitchconfig.statusMessageId = message.id;
     saveTwitchConfig();

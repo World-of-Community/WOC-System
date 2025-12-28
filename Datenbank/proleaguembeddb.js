@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const embedSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true }, // z. B. "proleague_tabelle"
+  name: { type: String, required: true, unique: true }, // z. B. "proleague_tabelle"
   channelId: { type: String, required: true },
-  messageId: { type: String, required: true }
+  messageId: { type: String, required: true },
 });
 
-module.exports = mongoose.model('ProLeagueEmbed', embedSchema);
+module.exports = mongoose.model("ProLeagueEmbed", embedSchema);
