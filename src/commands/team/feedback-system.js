@@ -56,7 +56,7 @@ module.exports = {
         content: "> `✅` » Das **Feedback-System** wurde erfolgreich gesendet.",
       });
 
-    } catch (err) {
+    } catch {
       try {
         if (interaction.deferred) {
           await interaction.editReply({

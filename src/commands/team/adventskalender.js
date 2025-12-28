@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles, PermissionFlagsBits } = require("discord.js");
-const { setTimeout } = require("timers/promises");
 const serverdb = require("../../../Datenbank/serverdb");
 
 // Anpassbare Buttons
@@ -71,7 +70,7 @@ module.exports = {
       .setColor("Green")
       .setFooter({ text: `${interaction.guild.name} wünscht euch Frohe Weihnachten!` });
 
-    await interaction.reply({ content: "> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.", ephemeral: true });
+    await interaction.reply({ content: "> `✅` » Der Adventskalender wurde erfolgreich gesendet.", ephemeral: true });
     const kalenderMessage = await interaction.channel.send({ embeds: [Adventskalender], components: rows });
     console.log(kalenderMessage.id);
     server.adventskalender = {

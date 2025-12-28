@@ -33,7 +33,7 @@ module.exports = {
         .setDescription("» Zeigt dir alle Team-Befehle an. 🎯"),
     ),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
     const targetChannel = interaction.guild.channels.cache.get("877446081036836884");
     const sub = interaction.options.getSubcommand();
     const grund = interaction.options.getString("grund") || "Kein Grund angegeben";
@@ -43,7 +43,7 @@ module.exports = {
     }
 
     switch (sub) {
-    case "urlaub":
+    case "urlaub": {
       const vonStr = interaction.options.getString("von");
       const bisStr = interaction.options.getString("bis");
 
@@ -93,6 +93,7 @@ module.exports = {
 
       await interaction.reply({ content: "> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.", ephemeral: true });
       break;
+    }
 
     case "plan": {
       const dateStr = interaction.options.getString("datum");
@@ -117,7 +118,7 @@ module.exports = {
 
       // Speichern des Meetings in der Datenbank
       try {
-        const teamDataMeeting =await serverdb.findOneAndUpdate(
+        await serverdb.findOneAndUpdate(
           { guildID: "815919809379172354" },
           {
             $push: {
@@ -136,58 +137,12 @@ module.exports = {
 
         await interaction.reply({ content: "> `✅` » Das Meeting wurde **erfolgreich** geplant.", ephemeral: true });
 
-        const localDate = new Date(meetingDateUTC.getTime() - meetingDateUTC.getTimezoneOffset() * 60000);
-        const dayName = day[localDate.getDay()];
-        const day = localDate.getDate().toString().padStart(2, "0");
-        const month = (localDate.getMonth() + 1).toString().padStart(2, "0");
-        const year = localDate.getFullYear();
-        const hour = localDate.getHours().toString().padStart(2, "0");
-        const minute = localDate.getMinutes().toString().padStart(2, "0");
-
-        const TeamMeetingEmbed = new EmbedBuilder()
-          .setTitle("`📅` » Eine Team-Besprechung wurde geplant.")
-          .setDescription(`> **Datum:** ${dayName}, ${day}.${month}.${year} ${hour}:${minute}\n> **Beschreibung:** ${description}`);
-
-        const remindMeButton = new ButtonBuilder()
-          .setCustomId("remindMe")
-          .setLabel("🕒 Remind Me")
-          .setStyle(ButtonStyle.Primary);
-
-        const attendButton = new ButtonBuilder()
-          .setCustomId("attend")
-          .setLabel("✅ Teilnehmen")
-          .setStyle(ButtonStyle.Success);
-
-        const declineButton = new ButtonBuilder()
-          .setCustomId("decline")
-          .setLabel("❌ Nicht Teilnehmen")
-          .setStyle(ButtonStyle.Secondary);
-
-        const listButton = new ButtonBuilder()
-          .setCustomId("list")
-          .setLabel("📋 Teilnehmerliste")
-          .setStyle(ButtonStyle.Secondary);
-
-        const row = new ActionRowBuilder().addComponents(remindMeButton, attendButton, declineButton, listButton);
-
-        // TODO targetChannel2 definieren
-        // const meetingMessage = await targetChannel2.send({ embeds: [TeamMeetingEmbed], components: [row] });
-
-        const meetingIndex = teamDataMeeting.meetings.length - 1;
-        teamDataMeeting.meetings[meetingIndex].messageID = meetingMessage.id;
-
-        await teamDataMeeting.save();
-
-        const reminderDate = new Date(meetingDateUTC.getTime() - 10 * 60000);
-        const deleteDate = new Date(meetingDateUTC.getTime() + 60000);
-
-        schedule.scheduleJob(reminderDate, () => {
-          remindUsers(client, meetingDateUTC);
-        });
-
-        schedule.scheduleJob(deleteDate, () => {
-          deleteMeetingMessage(client, meetingDateUTC);
-        });
+        // TODO: Implement meeting message and scheduling functionality
+        // This section is currently incomplete and requires:
+        // - targetChannel2 definition
+        // - schedule import
+        // - remindUsers function
+        // - deleteMeetingMessage function
 
       } catch (error) {
         console.error("Fehler beim Speichern des Meetings:", error);
@@ -380,6 +335,8 @@ module.exports = {
           break;
         }
       });
+      break;
     }
-    };
-  }};
+    }
+  },
+};

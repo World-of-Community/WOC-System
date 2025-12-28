@@ -52,12 +52,10 @@ module.exports = {
         await message.edit({ embeds: [bannembed] });
         await interaction.editReply({ content: "> `✅` » Die Bannliste wurde aktualisiert." });
       }
-    } catch (error) {
+    } catch {
       console.log("Banliste-Nachricht nicht gefunden oder gelöscht. Erstelle eine neue...");
-      const newMessage = await interaction.channel.send({ embeds: [bannembed] });
+      await interaction.channel.send({ embeds: [bannembed] });
       await interaction.editReply({ content: "> `✅` » Die Bannliste wurde erstellt." });
-
-      console.log(`Neue Banliste-ID: ${newMessage.id}`);
     }
   },
 };

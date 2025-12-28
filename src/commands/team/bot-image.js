@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ChannelType, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require("discord.js");
+const { SlashCommandBuilder, ChannelType, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,7 +9,7 @@ module.exports = {
     .addStringOption(option => option.setName("starten_in").setDescription("Wann soll es gesendet werden? (z.B. 10s, 5m, 2h, 1d)").setRequired(false))
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
     const kanal = interaction.options.getChannel("kanal");
     const imageUrl = interaction.options.getString("image");
     const zeit = interaction.options.getString("starten_in");

@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("» Verwalte ein Vorschlag. 💡")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
     if (interaction.channel.type !== ChannelType.PublicThread) {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", ephemeral: true});}
     if (interaction.channel.parentId !== "1254340245772701747") {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", ephemeral: true});}
     const message = await interaction.channel.fetchStarterMessage();

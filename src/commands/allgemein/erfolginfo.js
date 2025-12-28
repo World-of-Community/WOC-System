@@ -16,13 +16,11 @@ module.exports = {
 
   async execute(interaction) {
     const targetUser = interaction.options.getUser("user");
-    const member = await interaction.guild.members.fetch(targetUser.id);
 
     const cooldownTime = 60 * 1000; // 1 Minute in ms
     const now = Date.now();
 
     // Prüfen, ob der Track-Cooldown für den Nutzer aktiv ist
-    let rollenErfolge;
     if (trackCooldowns.has(targetUser.id)) {
       const lastTracked = trackCooldowns.get(targetUser.id);
       if (now - lastTracked < cooldownTime) {
@@ -38,21 +36,6 @@ module.exports = {
           };
         }
 
-        rollenErfolge = [
-          {
-            name: "💡〢 Informant (10 Server-Ideen)",
-            count: member.roles.cache.has("1147250265641201724") ? 1 : 0,
-          },
-          {
-            name: "📢〢 Teil des Rats (20 Umfragen)",
-            count: member.roles.cache.has("1147250982967836823") ? 1 : 0,
-          },
-          {
-            name: "☘️〢 Glückspilz (Event-Gewinner)",
-            count: member.roles.cache.has("1124598019862573096") ? 1 : 0,
-          },
-        ];
-
         // Embed-Text vorbereiten mit den gespeicherten Werten aus DB
         var listerfolge =
           `\`💡〢 Informant\`: **${userData.erfolge?.informant ?? 0}** akzeptierte Ideen\n` +
@@ -62,20 +45,6 @@ module.exports = {
       } else {
         // Cooldown abgelaufen, also tracken wir neu
         trackCooldowns.set(targetUser.id, now);
-        rollenErfolge = [
-          {
-            name: "💡〢 Informant (10 Server-Ideen)",
-            count: member.roles.cache.has("1147250265641201724") ? 1 : 0,
-          },
-          {
-            name: "📢〢 Teil des Rats (20 Umfragen)",
-            count: member.roles.cache.has("1147250982967836823") ? 1 : 0,
-          },
-          {
-            name: "☘️〢 Glückspilz (Event-Gewinner)",
-            count: member.roles.cache.has("1124598019862573096") ? 1 : 0,
-          },
-        ];
 
         let userData = await userdb.findOne({ userID: targetUser.id });
         if (!userData) {

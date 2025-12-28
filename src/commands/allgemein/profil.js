@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const userdb = require("../../../Datenbank/userdb");
-const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
+const { Coin } = require("../../../Datenbank/coindb");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -181,7 +181,7 @@ module.exports = {
       return false;
     });
 
-    const hasLeitungRole = LeitungRoleIds.some(roleId => {
+    LeitungRoleIds.some(roleId => {
       if (member.roles.cache.has(roleId)) {
         leitungRoleMentions.push(`<@&${roleId}>`);
         return true;
@@ -189,7 +189,7 @@ module.exports = {
       return false;
     });
 
-    const hasBundeslandRole = BundeslandRoleIds.some(roleId => {
+    BundeslandRoleIds.some(roleId => {
       if (member.roles.cache.has(roleId)) {
         bundeslandRoleMention = `<@&${roleId}>`;
         return true;
@@ -197,7 +197,7 @@ module.exports = {
       return false;
     });
 
-    const hasNationalitätRole = NationalitätRoleIds.some(roleId => {
+    NationalitätRoleIds.some(roleId => {
       if (member.roles.cache.has(roleId)) {
         nationalitätRoleMention = `<@&${roleId}>`;
         return true;
@@ -354,9 +354,9 @@ module.exports = {
                 `(\`${totalInvites}\` Gesamt, \`${inviteBonus}\` Bonus & \`${inviteLeft}\` Verlassen)\n\n`,
       )
       .addFields(
-        { name: "\`👥\` » Server-Mitglied seit:"
+        { name: "`👥` » Server-Mitglied seit:"
           , value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)`, inline: false  },
-        { name: "\`⏰\` » Account erstellt am:"
+        { name: "`⏰` » Account erstellt am:"
           , value: `<t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`, inline: false,
         },
       )

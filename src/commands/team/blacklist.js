@@ -107,7 +107,9 @@ module.exports = {
           try {
             const user = await interaction.client.users.fetch(entry.userId);
             if (user) {userTag = user.tag;}
-          } catch {}
+          } catch {
+            // User not found
+          }
 
           return `**${index}.** \`💙\` **Discord:** <@${entry.userId}> – ${userTag} (\`${entry.userId}\`)\n> Grund: ${reason}\n> Hinzugefügt: ${timestamp}`;
         } else if (entry.type === "minecraft") {

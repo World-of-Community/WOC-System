@@ -2,10 +2,8 @@ const { Events, EmbedBuilder } = require("discord.js");
 const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
 const teamdb = require("../../Datenbank/teamdb");
-const bumpdb = require("../../Datenbank/bumpdb");
 const { Coin, CoinConfig } = require("../../Datenbank/coindb");
 const messageCooldown = new Map();
-const { time } = require("console");
 
 const TeamRoleIds = [
   "959869691529154631", // Admin

@@ -27,12 +27,12 @@ module.exports = {
         .addIntegerOption(option => option.setName("reminder").setDescription("Der Index der zu entfernenden Erinnerung (siehe /remindme-list)").setRequired(true)),
     ),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
     const userId = interaction.user.id;
     const sub = interaction.options.getSubcommand();
 
     switch (sub) {
-    case "create":
+    case "create": {
       const duration = interaction.options.getString("zeit");
 
       var list = duration.split(" ");
@@ -90,8 +90,9 @@ module.exports = {
 
       reminders.get(userId).push({ reminder: reminder, timestamp, job: reminderJob });
       break;
+    }
 
-    case "list":
+    case "list": {
       if (!reminders.has(userId) || reminders.get(userId).length === 0) {
         return await interaction.reply({ content: "> `❌` » Du hast keine Erinnerungen gesetzt.", ephemeral: true });
       }
@@ -109,8 +110,9 @@ module.exports = {
 
       await interaction.reply({ embeds: [listEmbed], ephemeral: true });
       break;
+    }
 
-    case "remove":
+    case "remove": {
       const index = interaction.options.getInteger("reminder") - 1;
 
       if (!reminders.has(userId) || reminders.get(userId).length === 0) {
@@ -142,6 +144,7 @@ module.exports = {
 
       await interaction.reply({ embeds: [removeEmbed], ephemeral: true });
       break;
+    }
     }
   },
 };

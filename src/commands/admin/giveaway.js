@@ -74,7 +74,7 @@ module.exports = {
     const sub = interaction.options.getSubcommand();
 
     switch (sub) {
-    case "start":
+    case "start": {
       const sponsor = interaction.options.getMember("sponsor") || null;
       const channel = interaction.options.getChannel("kanal") || interaction.channel;
       const bedingung = interaction.options.getString("bedingung");
@@ -139,7 +139,6 @@ module.exports = {
 
           let bedingungInput = "none";
           let bedingungsvalue = "none";
-          let serverEmpfehlung;
 
           if (bedingung !== "none" && bedingung && bedingungsInputs[bedingung]) {
             bedingungsvalue = inter.fields.getTextInputValue("bedingungsinput") || "";
@@ -148,9 +147,6 @@ module.exports = {
               bedingungInput = bedingungsvalue || null;
             } else {
               bedingungInput = bedingungsvalue;
-            }
-            if (bedingung === "server") {
-              serverEmpfehlung = bedingungsvalue;
             }
           }
 
@@ -213,7 +209,7 @@ module.exports = {
           });
           await newGiveaway.save();
 
-          const result = await userDB.updateMany({}, { $set: { "stats.messages": 0, "stats.voiceTime": 0 } });
+          await userDB.updateMany({}, { $set: { "stats.messages": 0, "stats.voiceTime": 0 } });
 
           await inter.reply({ content: `> \`✅\` - **Gewinnspiel erstellt:** Das Gewinnspiel wurde so eben in dem Kanal ${channel} erstellt.`, ephemeral: true });
           isProcessingComplete = true;
@@ -221,8 +217,9 @@ module.exports = {
       });
 
       break;
+    }
 
-    case "end":
+    case "end": {
       const messageId = interaction.options.getString("nachrichtenid");
       const giveaway = await giveawaydb.findOne({ _id: messageId });
 
@@ -230,7 +227,7 @@ module.exports = {
         return interaction.reply({ content: "> `❌` » Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
       }
       const endechannel = await interaction.client.channels.fetch(giveaway.channelID);
-      const giveawayMessage = await endechannel.messages.fetch(activeGiveaways.msgID);
+      const giveawayMessage = await endechannel.messages.fetch(giveaway.msgID);
       if (!giveawayMessage) {
         return interaction.reply({ content: "> `❌` » Nachricht nicht gefunden.", ephemeral: true });
       }
@@ -247,12 +244,12 @@ module.exports = {
       }
 
       const winnersDisplay = winnerList.map((winner, index) => `**${index + 1}.** <@${winner.id}>`).join("\n");
-      const giveawayend = new EmbedBuilder()
-        .setTitle(`${embed.title}`)
+      const endEmbed = new EmbedBuilder()
+        .setTitle(giveaway.price)
         .setDescription(`<a:Neuigkeiten:1018910061348798564> » **__Gewinnspiel - Gewinner__**
-      <:PfeilBlau:1147248395837247613> Teilnehmer: **${activeGiveaways.teilnehmer.length}**
-      <:PfeilBlau:1147248395837247613> Gewinner: ${winnerId ? `<@${winnerId}>` : "**`Zu wenig Teilnehmer`**"}
-      <:PfeilBlau:1147248395837247613> Erstellt von <@${activeGiveaways.creator}>`)
+      <:PfeilBlau:1147248395837247613> Teilnehmer: **${giveaway.teilnehmer.length}**
+      <:PfeilBlau:1147248395837247613> Gewinner: ${winnersDisplay || "**`Zu wenig Teilnehmer`**"}
+      <:PfeilBlau:1147248395837247613> Erstellt von <@${giveaway.creator}>`)
         .setColor("Red")
         .setThumbnail("https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=53e18bea4e53fcfa6bef3450c65670ac3d7d1d57e3dd66a18e23d9660dfdfc6d&")
         .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
@@ -264,8 +261,9 @@ module.exports = {
 
       await interaction.reply({ content: "> `✅` » Gewinnspiel erfolgreich beendet!", ephemeral: true });
       break;
+    }
 
-    case "reroll":
+    case "reroll": {
       const rerollId = interaction.options.getString("nachrichtenid");
       const rerollGiveaway = await giveawaydb.findOne({ _id: rerollId });
 
@@ -307,6 +305,7 @@ module.exports = {
 
       await interaction.reply({ content: "> `✅` » Gewinner erfolgreich neu gezogen und die Nachricht aktualisiert!", ephemeral: true });
       break;
+    }
     }
   },
 };

@@ -81,7 +81,7 @@ module.exports = {
       await member.roles.add(banRole);
       await member.roles.remove(memberRole).catch(() => { });
       await member.roles.remove(newmemberRole).catch(() => { });
-    } catch (err) {
+    } catch {
       return interaction.reply({ content: "> `❌` » Fehler beim Zuweisen oder Entfernen von Rollen.", ephemeral: true });
     }
 
