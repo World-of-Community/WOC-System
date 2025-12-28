@@ -292,19 +292,19 @@ module.exports = {
     const inviteLeft = invites.left || 0;
     const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        // Suche nach den Coins des Benutzers in der Datenbank
-        let memberCoins = await Coin.findOne({ userId: member.user.id });
+    // Suche nach den Coins des Benutzers in der Datenbank
+    let memberCoins = await Coin.findOne({ userId: member.user.id });
 
-        if (!memberCoins) {
-          memberCoins = new Coin({
-            userId: member.user.id,
-            coins: 0
-          });
-          await memberCoins.save();
-        }
-        
-        // Formatierung der Coins mit Tausendertrennzeichen
-        const formattedCoins = memberCoins.coins.toLocaleString('de-DE');
+    if (!memberCoins) {
+      memberCoins = new Coin({
+        userId: member.user.id,
+        coins: 0,
+      });
+      await memberCoins.save();
+    }
+
+    // Formatierung der Coins mit Tausendertrennzeichen
+    const formattedCoins = memberCoins.coins.toLocaleString("de-DE");
 
 
     let lastOnlineText = "";
@@ -368,23 +368,23 @@ module.exports = {
       .setFooter({ text: `» Meine Stats auf ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
       .setTimestamp();
 
-        //// --- Adventskalender Button im Dezember ---
-        //const now = new Date();
-        //let components = [];
-        //if (now.getMonth() === 11) { // Dezember
-        //    const adventButton = new ButtonBuilder()
-        //        .setCustomId('advent_progress')
-        //        .setLabel('🎁 Adventskalender')
-        //        .setStyle(ButtonStyle.Primary);
-        //    components.push(new ActionRowBuilder().addComponents(adventButton));
-        //}
+    //// --- Adventskalender Button im Dezember ---
+    //const now = new Date();
+    //let components = [];
+    //if (now.getMonth() === 11) { // Dezember
+    //    const adventButton = new ButtonBuilder()
+    //        .setCustomId('advent_progress')
+    //        .setLabel('🎁 Adventskalender')
+    //        .setStyle(ButtonStyle.Primary);
+    //    components.push(new ActionRowBuilder().addComponents(adventButton));
+    //}
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
 
-        //if (components.length>0){
-        //    await interaction.reply({ embeds:[embed], components, ephemeral:true });
-        //} else {
-        //    await interaction.reply({ embeds:[embed], ephemeral:true });
-        //}
+    //if (components.length>0){
+    //    await interaction.reply({ embeds:[embed], components, ephemeral:true });
+    //} else {
+    //    await interaction.reply({ embeds:[embed], ephemeral:true });
+    //}
   },
 };

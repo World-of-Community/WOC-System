@@ -182,42 +182,42 @@ module.exports = {
       }
     }
 
-        // Coin System mit Cooldown
-        if (message.author.bot) return;
-        
-        const userId = message.author.id;
-        const now = Date.now();
-        
-        // 🔧 Config laden (oder Default)
-        let coinsconfig = await CoinConfig.findOne();
-        if (!coinsconfig) {
-            coinsconfig = new CoinConfig({
-                coinsPerMessage: 2,
-                messageCooldown: 5000 // 5 Sekunden
-            });
-            await coinsconfig.save();
-        }
-        
-        // 🔒 Cooldown prüfen
-        if (
-            messageCooldown.has(userId) &&
+    // Coin System mit Cooldown
+    if (message.author.bot) {return;}
+
+    const userId = message.author.id;
+    const now = Date.now();
+
+    // 🔧 Config laden (oder Default)
+    let coinsconfig = await CoinConfig.findOne();
+    if (!coinsconfig) {
+      coinsconfig = new CoinConfig({
+        coinsPerMessage: 2,
+        messageCooldown: 5000, // 5 Sekunden
+      });
+      await coinsconfig.save();
+    }
+
+    // 🔒 Cooldown prüfen
+    if (
+      messageCooldown.has(userId) &&
             now - messageCooldown.get(userId) < coinsconfig.messageCooldown
-        ) return;
-        
-        messageCooldown.set(userId, now);
-        
-        // 👤 User Coins holen oder erstellen
-        let userCoins = await Coin.findOne({ userId });
-        if (!userCoins) {
-            userCoins = new Coin({
-                userId,
-                coins: 0
-            });
-        }
-        
-        // 💰 Coins gutschreiben
-        userCoins.coins += coinsconfig.coinsPerMessage;
-        await userCoins.save();
+    ) {return;}
+
+    messageCooldown.set(userId, now);
+
+    // 👤 User Coins holen oder erstellen
+    let userCoins = await Coin.findOne({ userId });
+    if (!userCoins) {
+      userCoins = new Coin({
+        userId,
+        coins: 0,
+      });
+    }
+
+    // 💰 Coins gutschreiben
+    userCoins.coins += coinsconfig.coinsPerMessage;
+    await userCoins.save();
 
     // Bump System (überarbeitet)
     const roleId = "1286573447807500319"; // ID der Rolle Bump Reward

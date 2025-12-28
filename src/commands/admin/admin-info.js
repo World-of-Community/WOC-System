@@ -1,11 +1,11 @@
 const {
-    SlashCommandBuilder,
-    PermissionFlagsBits,
-    EmbedBuilder,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    ComponentType
+  SlashCommandBuilder,
+  PermissionFlagsBits,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
 } = require("discord.js");
 
 module.exports = {
@@ -13,31 +13,31 @@ module.exports = {
     .setName("admin-info")
     .setDescription("» Zeigt eine Liste von Benutzern mit einer bestimmten Rolle an. 🎭")
     .addRoleOption(option =>
-            option
-                .setName("rolle")
-                .setDescription("Die Rolle, die abgefragt werden soll")
-                .setRequired(true)
-        )
+      option
+        .setName("rolle")
+        .setDescription("Die Rolle, die abgefragt werden soll")
+        .setRequired(true),
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
   async execute(interaction) {
     const role = interaction.options.getRole("rolle");
 
     const membersWithRole = interaction.guild.members.cache.filter(member =>
-            member.roles.cache.has(role.id)
-        );
+      member.roles.cache.has(role.id),
+    );
 
     if (membersWithRole.size === 0) {
       return interaction.reply({
-                content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role.toString()}`,
-                ephemeral: true
-            });
+        content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role.toString()}`,
+        ephemeral: true,
+      });
     }
 
     // ⬇️ Nach Username sortieren (ABC)
-        const membersArray = membersWithRole
-            .sort((a, b) => a.user.username.localeCompare(b.user.username))
-            .map(member => `${member.toString()} (${member.user.username})`);
+    const membersArray = membersWithRole
+      .sort((a, b) => a.user.username.localeCompare(b.user.username))
+      .map(member => `${member.toString()} (${member.user.username})`);
 
     const itemsPerPage = 10;
     const totalPages = Math.ceil(membersArray.length / itemsPerPage);
@@ -70,10 +70,10 @@ module.exports = {
       );
 
     const message = await interaction.reply({
-            embeds: [generateEmbed(currentPage)],
-            components: [row],
-            ephemeral: true
-        });
+      embeds: [generateEmbed(currentPage)],
+      components: [row],
+      ephemeral: true,
+    });
 
     const collector = message.createMessageComponentCollector({
       componentType: ComponentType.Button,
@@ -103,9 +103,9 @@ module.exports = {
         );
 
       await btnInteraction.update({
-                embeds: [generateEmbed(currentPage)],
-                components: [newRow]
-            });
+        embeds: [generateEmbed(currentPage)],
+        components: [newRow],
+      });
     });
-  }
+  },
 };
