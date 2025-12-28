@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const Advent = require("../../../Datenbank/advent"); // Pfad zu deinem Advent Model
+const Advent = require("../../../Datenbank/adventdb"); // Pfad zu deinem Advent Model
 
 // Belohnungen definieren
 const rewards = {

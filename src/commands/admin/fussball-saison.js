@@ -42,7 +42,6 @@ module.exports = {
 
     try {
       await Match.deleteMany({});
-      console.log("✅  | Alle bisherigen Matches wurden gelöscht.");
 
       const teams = [...proLeagueTeams];
       const spieltage = 34;
@@ -275,7 +274,6 @@ module.exports = {
 
     try {
       await Match.deleteMany({});
-      console.log('✅  | Alle bisherigen Matches wurden gelöscht.');
 
       const teams = [...proLeagueTeams];
       const spieltage = 34;

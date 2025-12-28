@@ -14,6 +14,6 @@ const coinConfigSchema = new mongoose.Schema({
 });
 
 module.exports = {
-  Coin: mongoose.model("Coin", coinSchema),
-  CoinConfig: mongoose.model("CoinConfig", coinConfigSchema),
+  Coin: mongoose.models.Coin || mongoose.model("Coin", coinSchema),
+  CoinConfig: mongoose.models.CoinConfig || mongoose.model("CoinConfig", coinConfigSchema),
 };
