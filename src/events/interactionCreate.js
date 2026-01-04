@@ -97,7 +97,7 @@ module.exports = {
             if (interaction.customId === 'partner' || 
                 interaction.customId.startsWith('partner_accept_') || 
                 interaction.customId.startsWith('partner_deny_')) {
-                return await partnerButton.execute(interaction);
+                await partnerButton.execute(interaction); // return
             }
 
             const now = new Date();
