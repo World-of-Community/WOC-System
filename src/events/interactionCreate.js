@@ -17,7 +17,7 @@ const feedbackButton = require("../buttons/feedbackButton");
 //const feedbackModal = require("./interactions/modals/feedbackModal");
 //const ticketButton = require("./interactions/buttons/ticketButton");
 //const unbanModal = require("./interactions/modals/unbanModal");
-//const partnerButton = require("./interactions/partnerButton");
+const partnerButton = require("./interactions/partnerButton");
 //const partnerModal = require("./interactions/partnerModal");
 
 const rewards = {
@@ -97,7 +97,7 @@ module.exports = {
             if (interaction.customId === 'partner' || 
                 interaction.customId.startsWith('partner_accept_') || 
                 interaction.customId.startsWith('partner_deny_')) {
-                await partnerButton.execute(interaction); // return
+                return await partnerButton.execute(interaction);
             }
 
             const now = new Date();
