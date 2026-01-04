@@ -1,7 +1,6 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 module.exports = {
-    // Modal zeigen
     showPartnerModal: async (interaction) => {
         const partnerModal = new ModalBuilder()
             .setTitle('🤝 - BEWERBEN ALS PARTNER')
