@@ -18,7 +18,7 @@ const feedbackButton = require("../buttons/feedbackButton");
 //const ticketButton = require("./interactions/buttons/ticketButton");
 //const unbanModal = require("./interactions/modals/unbanModal");
 const partnerButton = require("../buttons/partnerButton");
-const partnerModal = require("./interactions/partnerModal");
+const partnerModal = require("../interactions/partnerModal");
 
 const rewards = {
     1: { type: 'coins', value: 100 },
