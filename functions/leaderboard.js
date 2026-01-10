@@ -4,7 +4,7 @@ const leaderboarddb = require('../Datenbank/leaderboarddb');
 const { EmbedBuilder, codeBlock } = require('discord.js');
 const RoleID = '1150753421339676722';
 
-const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
+const positionEmojis = ['`🥇`', '`🥈`', '`🥉`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
 
 function getCurrentMonth() {
     const monthNames = [
