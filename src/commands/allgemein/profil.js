@@ -306,17 +306,14 @@ module.exports = {
         // Formatierung der Coins mit Tausendertrennzeichen
         const formattedCoins = memberCoins.coins.toLocaleString('de-DE');
 
-
         let lastOnlineText = '';
 
-        const isOffline =
-          !member.presence ||                     // keine Presence = offline / unsichtbar
-          member.presence.status === 'offline';   // explizit offline (auch unsichtbar)
+        const isOffline = !member.presence; // offline ODER unsichtbar
         
         if (isOffline && userData?.lastOnline) {
           const lastOnline = new Date(userData.lastOnline);
         
-          if (!isNaN(lastOnline.getTime())) {
+          if (!isNaN(lastOnline)) {
             const date = lastOnline.toLocaleDateString('de-DE', {
               day: '2-digit',
               month: '2-digit',
