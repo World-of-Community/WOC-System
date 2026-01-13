@@ -325,7 +325,8 @@ module.exports = {
               minute: '2-digit',
             });
         
-            lastOnlineText = `- \`📅\` » Zuletzt online: \`${date} - ${time}\`\n`;
+            lastOnlineText =
+              `- \`📅\` » Zuletzt online: \`${date} - ${time}\`\n`;
           }
         }
 
