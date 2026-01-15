@@ -723,8 +723,16 @@ module.exports = {
 
         // ShopPass System (Buttons)
         if (interaction.customId === 'shoppass_buy') {
+          const embed = new EmbedBuilder()
+            .setTitle('`💎` **Vorteile kaufen** – Bald verfügbar')
+            .setDescription(
+                '> **50.000** Coins ➜ **30 Tage** Premium' +
+                '> **120.000** Coins ➜ **90 Tage** Premium'
+            )
+            .setColor('Green'); // Grün, kannst du ändern
+        
           await interaction.reply({
-            content: '> `💎` Vorteile kaufen – Bald Verfügbar',
+            embeds: [embed],
             ephemeral: true
           });
           return;
