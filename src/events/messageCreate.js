@@ -188,41 +188,50 @@ module.exports = {
             }
         }
 
-        // Coin System mit Cooldown
         if (message.author.bot) return;
-        
+
         const userId = message.author.id;
+        const guildId = message.guild.id;
         const now = Date.now();
-        
-        // 🔧 Config laden (oder Default)
-        let coinsconfig = await CoinConfig.findOne();
+    
+        // ⚙️ Config laden oder erstellen
+        let coinsconfig = await CoinConfig.findOne({ guildId });
         if (!coinsconfig) {
-            coinsconfig = new CoinConfig({
-                coinsPerMessage: 2,
-                messageCooldown: 5000 // 5 Sekunden
-            });
-            await coinsconfig.save();
+          coinsconfig = new CoinConfig({
+            guildId,
+            minCoins: 1,
+            maxCoins: 5
+          });
+          await coinsconfig.save();
         }
-        
-        // 🔒 Cooldown prüfen
-        if (
-            messageCooldown.has(userId) &&
-            now - messageCooldown.get(userId) < coinsconfig.messageCooldown
-        ) return;
-        
+    
+        // ⏱️ Cooldown (5 Sekunden)
+        const last = messageCooldown.get(userId);
+        if (last && now - last < 5000) return;
         messageCooldown.set(userId, now);
-        
-        // 👤 User Coins holen oder erstellen
+    
+        // 👤 User Coins
         let userCoins = await Coin.findOne({ userId });
         if (!userCoins) {
-            userCoins = new Coin({
-                userId,
-                coins: 0
-            });
+          userCoins = new Coin({
+            userId,
+            coins: 0,
+            streak: 0
+          });
         }
-        
-        // 💰 Coins gutschreiben
-        userCoins.coins += coinsconfig.coinsPerMessage;
+    
+        // 🎲 Zufällige Coins (NaN-sicher)
+        const min = Number(coinsconfig.minCoins);
+        const max = Number(coinsconfig.maxCoins);
+    
+        if (!Number.isFinite(min) || !Number.isFinite(max)) {
+          console.error('[COINS] Ungültige CoinConfig:', coinsconfig);
+          return;
+        }
+    
+        const coinsToAdd = Math.floor(Math.random() * (max - min + 1)) + min;
+    
+        userCoins.coins += coinsToAdd;
         await userCoins.save();
 
         // Bump System (überarbeitet)
