@@ -720,8 +720,8 @@ module.exports = {
             });
         }
 
-        if (!interaction.isButton()) return;
 
+        // ShopPass System (Buttons)
         if (interaction.customId === 'shoppass_buy') {
           await interaction.reply({
             content: '> `💎` Vorteile kaufen – Bald Verfügbar',
