@@ -720,7 +720,6 @@ module.exports = {
             });
         }
 
-
         // ShopPass System (Buttons)
         if (interaction.customId === 'shoppass_buy') {
           const embed = new EmbedBuilder()
