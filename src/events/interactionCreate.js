@@ -722,19 +722,27 @@ module.exports = {
 
         if (!interaction.isButton()) return;
 
-        // Mapping aller Button-Antworten
-        const buttonMap = {
-          shoppass_buy: '> `💎` Vorteile kaufen – Bald Verfügbar',
-          shoppass_account: '> `🪙` Dein Konto – Bald Verfügbar',
-          shoppass_show: '> `🎟️` ShopPass anzeigen - Bald Verfügbar'
-        };
-      
-        // Passende Antwort anhand der customId finden
-        const response = buttonMap[interaction.customId];
-      
-        // Wenn es eine passende Antwort gibt → senden
-        if (response) {
-          await interaction.reply({ content: response, ephemeral: true });
+        if (interaction.customId === 'shoppass_buy') {
+          await interaction.reply({
+            content: '> `💎` Vorteile kaufen – Bald Verfügbar',
+            ephemeral: true
+          });
+          return;
+        }
+        
+        if (interaction.customId === 'shoppass_account') {
+          await interaction.reply({
+            content: '> `🪙` Dein Konto – Bald Verfügbar',
+            ephemeral: true
+          });
+          return;
+        }
+        
+        if (interaction.customId === 'shoppass_show') {
+          await interaction.reply({
+            content: '> `🎟️` ShopPass anzeigen – Bald Verfügbar',
+            ephemeral: true
+          });
           return;
         }
 
