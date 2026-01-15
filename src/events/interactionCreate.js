@@ -720,7 +720,7 @@ module.exports = {
             });
         }
 
-        if (!interaction.isButton())
+        if (!interaction.isButton()) return;
 
         // Mapping aller Button-Antworten
         const buttonMap = {
