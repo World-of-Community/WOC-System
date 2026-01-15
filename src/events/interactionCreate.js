@@ -726,7 +726,10 @@ module.exports = {
             .setTitle('`💎` **Vorteile kaufen** – Bald verfügbar')
             .setDescription(
                 '> **50.000** Coins ➜ **30 Tage** Premium\n' +
-                '> **120.000** Coins ➜ **90 Tage** Premium'
+                '> **100.000** Coins ➜ **60 Tage** Premium\n' +
+                '> **150.000** Coins ➜ **90 Tage** Premium\n' +
+                '> **200.000** Coins ➜ **120 Tage** Premium\n\n' +
+                '> **Hinweis:** Der ShopPass ist aktuell noch in der Entwicklung und wird bald veröffentlicht. Schaue später erneut vorbei!'
             )
             .setColor('Green'); // Grün, kannst du ändern
         
