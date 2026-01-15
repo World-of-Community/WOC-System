@@ -726,7 +726,7 @@ module.exports = {
           const embed = new EmbedBuilder()
             .setTitle('`💎` **Vorteile kaufen** – Bald verfügbar')
             .setDescription(
-                '> **50.000** Coins ➜ **30 Tage** Premium' +
+                '> **50.000** Coins ➜ **30 Tage** Premium\n' +
                 '> **120.000** Coins ➜ **90 Tage** Premium'
             )
             .setColor('Green'); // Grün, kannst du ändern
