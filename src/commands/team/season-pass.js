@@ -38,7 +38,7 @@ module.exports = {
         .setCustomId('shoppass_buy')
         .setLabel('Alle Rewards freischalten')
         .setEmoji('💎')
-        .setStyle(ButtonStyle.Primary)
+        .setStyle(ButtonStyle.Secondary)
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] })
