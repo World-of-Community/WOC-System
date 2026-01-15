@@ -35,9 +35,10 @@ module.exports = {
         .setStyle(ButtonStyle.Primary),
 
       new ButtonBuilder()
+        .setCustomId('shoppass_buy')
         .setLabel('Alle Rewards freischalten')
-        .setStyle(ButtonStyle.Link)
-        .setURL('https://www.patreon.com/profile/creators?u=84745341')
+        .setEmoji('💎')
+        .setStyle(ButtonStyle.Primary)
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] })

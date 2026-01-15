@@ -720,16 +720,13 @@ module.exports = {
             });
         }
 
-        /*
-        if (!interaction.isButton()) return;
+        if (!interaction.isButton())
 
         // Mapping aller Button-Antworten
         const buttonMap = {
-          shoppass_buy: '> 🛍️ Vorteile kaufen – Coming soon!',
-          shoppass_account: '> 🪙 Dein Konto – bald verfügbar!',
-          shoppass_help: '> ❓ Hilfe zum Shop-System – bald verfügbar!',
-          shoppass_show: '> 🎟️ ShopPass anzeigen - Coming Soon!'
-          // weitere Buttons hier hinzufügen
+          shoppass_buy: '> `💎` Vorteile kaufen – Bald Verfügbar',
+          shoppass_account: '> `🪙` Dein Konto – Bald Verfügbar',
+          shoppass_show: '> `🎟️` ShopPass anzeigen - Bald Verfügbar'
         };
       
         // Passende Antwort anhand der customId finden
@@ -740,7 +737,6 @@ module.exports = {
           await interaction.reply({ content: response, ephemeral: true });
           return;
         }
-        */
 
         if (interaction.isButton()) {
           if (!interaction.customId.startsWith('meeting_')) return;
