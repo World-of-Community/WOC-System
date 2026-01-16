@@ -263,7 +263,7 @@ module.exports = {
                         '» Setzt einen Benutzer auf eine niedrigere Rolle.\n\n' +
 
                         '- `/admin-info <rolle>`\n' +
-                        '» » Zeigt eine Liste von Benutzern mit einer bestimmten Rolle an.\n\n' +
+                        '» Zeigt eine Liste von Benutzern mit einer bestimmten Rolle an.\n\n' +
 
                         '- `/aktivieren <system>`\n' +
                         '» Aktiviere eine Funktion.\n\n' +
