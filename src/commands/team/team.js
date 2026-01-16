@@ -238,8 +238,12 @@ module.exports = {
                         '» **Support:** Unterstützung und Kommunikation.\n' +
                         '» **Infos:** Weitere wichtige Systeme.'
                       )
-                      .setColor('Orange')
-                      .setFooter({ })
+                      .setColor('Blurple')
+                      .setFooter({
+                        text: `${interaction.guild.name} - Home Info`,
+                        iconURL: interaction.guild.iconURL()
+                      })
+                      .setTimestamp();
                     
                     // --- Administration ---
                     const adminEmbed = new EmbedBuilder()
@@ -309,7 +313,7 @@ module.exports = {
                         '- `/user list`\n' +
                         '» Listet alle Mitglieder (20 pro Seite).'
                       )
-                      .setColor('Orange')
+                      .setColor('Dark_Green')
                       .setFooter({
                         text: `${interaction.guild.name} - Moderation Befehle`,
                         iconURL: interaction.guild.iconURL()
@@ -340,7 +344,7 @@ module.exports = {
                         '- `/vorschlag`\n' +
                         '» Verwalte Vorschläge in <#1254340245772701747>.'
                       )
-                      .setColor('Orange')
+                      .setColor('Green')
                       .setFooter({
                         text: `${interaction.guild.name} - Support Befehle`,
                         iconURL: interaction.guild.iconURL()
