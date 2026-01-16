@@ -406,7 +406,7 @@ module.exports = {
                     // =============================
                 
                     await interaction.reply({
-                      embeds: [moderationEmbed],
+                      embeds: [homeEmbed],
                       components: [row],
                       ephemeral: true
                     });
