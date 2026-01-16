@@ -268,7 +268,53 @@ module.exports = {
                       })
                       .setTimestamp();
                 
-                
+                    // --- Home ---
+                    const homeEmbed = new EmbedBuilder()
+                      .setTitle('`🏠` » Team Hilfe Übersicht')
+                      .setDescription(
+                        '> **Willkommen zur Team Hilfe Übersicht!**\n\n' +
+                        'Nutze die Buttons unten, um durch die verschiedenen Kategorien der Team Befehle zu navigieren.\n\n' +
+                        '» **Administration:** Verwaltung und Einstellungen.\n' +
+                        '» **Moderation:** Wichtige Moderationswerkzeuge.\n' +
+                        '» **Support:** Unterstützung und Kommunikation.\n' +
+                        '» **Infos:** Weitere wichtige Systeme.'
+                      )
+                      .setColor('Orange')
+                      .setFooter({ })
+                    
+                    // --- Administration ---
+                    const adminEmbed = new EmbedBuilder()
+                      .setTitle('`🎯` » Admin-Befehle')
+                      .setDescription(
+                        '> **Wichtige Admin-Befehle:**\n\n' +
+                        '- `/admin add <user> <rolle>`\n' +
+                        '» Fügt ein neues Teammitglied hinzu.\n\n' +
+                        
+                        '- `/admin kick <user> <rolle>`\n' +
+                        '» Entfernt einen Benutzer aus dem Server-Team.\n\n' +
+
+                        '- `/admin uprank <user> <rolle>`\n' +
+                        '» Aktualisiere die Rolle eines Teammitgliedes.\n\n' +
+
+                        '- `/admin downrank <user> <rolle>`\n' +
+                        '» Setzt einen Benutzer auf eine niedrigere Rolle.\n\n' +
+
+                        '- `/admin-info <rolle>`\n' +
+                        '» Legt den Willkommenskanal und die Nachricht fest.\n\n' +
+
+                        '- `/aktivieren <system>`\n' +
+                        '» » Aktiviere eine Funktion.\n\n' +
+
+                        '- `/deaktivieren <system>`\n' +
+                        '» Deaktiviere eine Funktion.'
+                      )
+                      .setColor('Red')
+                      .setFooter({ 
+                        text: `${interaction.guild.name} - Admin Befehle`, 
+                        iconURL: interaction.guild.iconURL() 
+                      })
+                      .setTimestamp();
+
                     // --- Support ---
                     const supportEmbed = new EmbedBuilder()
                       .setTitle('`🛠️` » Support Befehle')
@@ -314,9 +360,9 @@ module.exports = {
                         '» Partner-System Verwaltung.'
                       )
                       .setColor('Orange')
-                      .setFooter({
-                        text: `${interaction.guild.name} - Info Befehle`,
-                        iconURL: interaction.guild.iconURL()
+                      .setFooter({ 
+                        text: `${interaction.guild.name} - Info Befehle`, 
+                        iconURL: interaction.guild.iconURL() 
                       })
                       .setTimestamp();
                 
@@ -326,6 +372,16 @@ module.exports = {
                     // =============================
                 
                     const row = new ActionRowBuilder().addComponents(
+                      new ButtonBuilder()
+                        .setCustomId('help_home')
+                        .setLabel('Home')
+                        .setStyle(ButtonStyle.Secondary)
+                        .setDisabled(true),
+                      new ButtonBuilder()
+                        .setCustomId('help_admin')
+                        .setLabel('Administration')
+                        .setStyle(ButtonStyle.Secondary)
+                        .setDisabled(true),
                       new ButtonBuilder()
                         .setCustomId('help_mod')
                         .setLabel('Moderation')
@@ -366,6 +422,14 @@ module.exports = {
                         return btn.reply({ content: 'Du kannst diese Hilfe nicht bedienen.', ephemeral: true });
                 
                       switch (btn.customId) {
+                        case 'help_home':
+                          await btn.update({ embeds: [homeEmbed] });
+                          break;
+
+                        case 'help_admin':
+                          await btn.update({ embeds: [adminEmbed] });
+                          break;
+
                         case 'help_mod':
                           await btn.update({ embeds: [moderationEmbed] });
                           break;
