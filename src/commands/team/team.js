@@ -266,7 +266,7 @@ module.exports = {
                         '» Legt den Willkommenskanal und die Nachricht fest.\n\n' +
 
                         '- `/aktivieren <system>`\n' +
-                        '» » Aktiviere eine Funktion.\n\n' +
+                        '» Aktiviere eine Funktion.\n\n' +
 
                         '- `/deaktivieren <system>`\n' +
                         '» Deaktiviere eine Funktion.'
