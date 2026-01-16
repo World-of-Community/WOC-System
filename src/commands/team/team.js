@@ -380,13 +380,11 @@ module.exports = {
                       new ButtonBuilder()
                         .setCustomId('help_home')
                         .setLabel('Home')
-                        .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(true),
+                        .setStyle(ButtonStyle.Secondary),
                       new ButtonBuilder()
                         .setCustomId('help_admin')
-                        .setLabel('Administration')
-                        .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(true),
+                        .setLabel('Admin')
+                        .setStyle(ButtonStyle.Secondary),
                       new ButtonBuilder()
                         .setCustomId('help_mod')
                         .setLabel('Moderation')
