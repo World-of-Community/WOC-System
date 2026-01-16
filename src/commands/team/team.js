@@ -384,7 +384,7 @@ module.exports = {
                       new ButtonBuilder()
                         .setCustomId('help_admin')
                         .setLabel('Admin')
-                        .setStyle(ButtonStyle.Secondary),
+                        .setStyle(ButtonStyle.Danger),
                       new ButtonBuilder()
                         .setCustomId('help_mod')
                         .setLabel('Moderation')
@@ -393,12 +393,12 @@ module.exports = {
                       new ButtonBuilder()
                         .setCustomId('help_support')
                         .setLabel('Support')
-                        .setStyle(ButtonStyle.Secondary),
+                        .setStyle(ButtonStyle.Success),
                 
                       new ButtonBuilder()
                         .setCustomId('help_infos')
                         .setLabel('Infos')
-                        .setStyle(ButtonStyle.Success)
+                        .setStyle(ButtonStyle.Secondary)
                     );
                 
                     // =============================
