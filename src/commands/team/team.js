@@ -313,7 +313,7 @@ module.exports = {
                         '- `/user list`\n' +
                         '» Listet alle Mitglieder (20 pro Seite).'
                       )
-                      .setColor('Dark_Green')
+                      .setColor('Green')
                       .setFooter({
                         text: `${interaction.guild.name} - Moderation Befehle`,
                         iconURL: interaction.guild.iconURL()
