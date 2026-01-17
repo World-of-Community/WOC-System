@@ -22,9 +22,9 @@ module.exports = {
        '**So Geht\'s**:\n' +
        '» Schreibe jeden Tag mindestens 1x\n' +
        '» Du erhältst XP, mit denen du Rewards freischaltest\n' +
-       '» 450 XP wenn du am vorherigen Tag auch geworben hast\n' +
-       '» Ansonsten nur 300 XP - aktives Schreiben wird belohnt!\n\n' +
-       '`📌` Premium Pass: Alle Rewards inkl. **5000 Coins**!\n'
+       '» 100 XP wenn du am vorherigen Tag auch geschrieben hast\n' +
+       '» Ansonsten nur 150 XP - aktives Schreiben wird belohnt!\n\n' +
+       '`📌` » **Premium Pass**: Alle Rewards inkl. **5000 Coins**!\n'
       )
 
     const row = new ActionRowBuilder().addComponents(
@@ -42,6 +42,6 @@ module.exports = {
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] })
-    await interaction.reply({ content: 'SeasonPass Embed gesendet.', ephemeral: true });
+    await interaction.reply({ content: '> `🎟️` » SeasonPass Embed gesendet.', ephemeral: true });
   },
 };
