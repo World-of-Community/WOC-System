@@ -16,7 +16,7 @@ module.exports = {
       .setDescription( 
        'Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 20 Rewards!\n\n' +
        '**Auf einen Blick**:\n' +
-       '» Alle 30 Tage ein neuer Pass mit 20 Rewards\n' +
+       '» Alle 30 Tage ein Pass mit 20 Rewards\n' +
        '» Davon 7 free, 13 Premium\n' +
        '» Schreibe aktiv, um deine Rewards freizuschalten\n\n' +
        '**So Geht\'s**:\n' +
