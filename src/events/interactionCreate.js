@@ -528,8 +528,8 @@ module.exports = {
                     const creator = await interaction.guild.roles.cache.get('815920219247214644')
                     const roleCountcreator = creator.members.size
 
-                    const twitchsub = await interaction.guild.roles.cache.get('1067899186542018571')
-                    const roleCounttwitchsub = twitchsub.members.size
+                    //const twitchsub = await interaction.guild.roles.cache.get('1067899186542018571')
+                    //const roleCounttwitchsub = twitchsub.members.size
 
                     const neuesmitglied = await interaction.guild.roles.cache.get('1222122625594294272')
                     const roleCountneuesmitglied = neuesmitglied.members.size
@@ -560,11 +560,11 @@ module.exports = {
                             `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n` +
                             `<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n` +
                             `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
-                            `> \`💜\` 𑁉 <@&1067899186542018571> (\`${roleCounttwitchsub}👥\`)\n` +
-                            `<:Pfeil:1119709908540076124> **Rang Freischalten:** Kaufe dir einen Sub bei [Red3405](https://www.twitch.tv/red340505tv) auf Twitch und erhalte diesen Rang auf unserem Discord Server.\n\n` +
-                            `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n` +
-                            `<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n` +
-                            `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
+                            //`> \`💜\` 𑁉 <@&1067899186542018571> (\`${roleCounttwitchsub}👥\`)\n` +
+                            //`<:Pfeil:1119709908540076124> **Rang Freischalten:** Kaufe dir einen Sub bei [Red3405](https://www.twitch.tv/red340505tv) auf Twitch und erhalte diesen Rang auf unserem Discord Server.\n\n` +
+                            //`<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n` +
+                            //`<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n` +
+                            //`<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
                             `> \`👋\` 𑁉 <@&1222122625594294272> (\`${roleCountneuesmitglied}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> **Rang freischalten:** Erhält jeder für 24 Stunden nach Beitritt!\n\n` +
                             `<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n\n` +
