@@ -754,7 +754,8 @@ setInterval( async () => {
             '`🔍` - **Wir suchen Verstärkung für unser Team:**\n\n' +
             '> `🔧` - Developer\n' +
             '> `🧩` - Supporter\n' +
-            '> `👷` - Builder\n\n' +
+            '> `👷` - Builder\n' +
+            '> `🎥` - Creator\n\n' +
             '> `📌` **| Wir freuen uns auf dich!**\n\n' +
             '» Link: https://discord.gg/686M8Cxsaa'
         )
