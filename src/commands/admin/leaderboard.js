@@ -20,7 +20,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('leaderboard')
         .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
         if(!interaction.guild) return;
