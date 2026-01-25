@@ -1057,6 +1057,11 @@ module.exports = {
             await interaction.reply({ content: `> \`✅\` » Dein **Feedback-Ticket** wurde erstellt: ${ticketChannel}`, ephemeral: true });
         }
         
+        // Partner Modal Handler
+        if (interaction.isModalSubmit() && interaction.customId === 'partner-modal') {
+            return await partnerModal.handlePartnerModalSubmit(interaction);
+        }
+        
         // Ticket schließen Button
         if (interaction.isButton() && interaction.customId === 'close_feedback_ticket') {
             const decisionEmbed = new EmbedBuilder()

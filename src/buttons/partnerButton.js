@@ -6,7 +6,7 @@ module.exports = {
 
         // Modal öffnen
         if (interaction.customId === 'partner') {
-            const modalHandler = require("./partnerModals");
+            const modalHandler = require("../modals/partnerModal");
             return modalHandler.showPartnerModal(interaction);
         }
 
