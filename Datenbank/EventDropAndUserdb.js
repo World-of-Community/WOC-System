@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Schema für das EventDropAndUser-Modell
 const eventDropAndUserSchema = new mongoose.Schema({
   event: { 
     type: String, 
@@ -14,7 +13,7 @@ const eventDropAndUserSchema = new mongoose.Schema({
     {
       userId: { 
         type: String, 
-        required: true // Die ID des Benutzers, der die Gewinne hat
+        required: true
       },
       eventDrops: { 
         type: [String], 
