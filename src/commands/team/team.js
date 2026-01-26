@@ -358,7 +358,7 @@ module.exports = {
                       .setDescription(
                         '> **Weitere wichtige Systeme:**\n\n' +
                 
-                        '- `/rewardinfo`\n' +
+                        '- `/info reward`\n' +
                         '» Zeigt Belohnungen mit Wahrscheinlichkeiten.\n\n' +
                 
                         '- `/partner add/edit/remove`\n' +

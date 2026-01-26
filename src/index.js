@@ -1054,11 +1054,11 @@ client.on('messageCreate', async (message) => {
     if (!message?.content) return;
 
     const lootTable = [
-        // HÄUFIG 60%
-        { string: '1 Level',      rarity: 'Häufig', probability: 0.15 },
-        { string: '200 EXP',      rarity: 'Häufig', probability: 0.15 },
-        { string: '500 Coins',    rarity: 'Häufig', probability: 0.15 },
-        { string: '750 Coins',    rarity: 'Häufig', probability: 0.15 },
+        // GEWÖHNLICH 60%
+        { string: '1 Level',      rarity: 'Gewöhnlich', probability: 0.15 },
+        { string: '200 EXP',      rarity: 'Gewöhnlich', probability: 0.15 },
+        { string: '500 Coins',    rarity: 'Gewöhnlich', probability: 0.15 },
+        { string: '750 Coins',    rarity: 'Gewöhnlich', probability: 0.15 },
 
         // UNGEWÖHNLICH 25%
         { string: '2 Level',      rarity: 'Ungewöhnlich', probability: 0.07 },
@@ -1081,7 +1081,7 @@ client.on('messageCreate', async (message) => {
     ];
 
     const rarityColors = {
-        'Häufig': 'Grey',
+        'Gewöhnlich': 'Grey',
         'Ungewöhnlich': 'Green',
         'Selten': 'Blue',
         'Episch': 'Purple',
