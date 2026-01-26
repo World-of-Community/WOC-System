@@ -362,7 +362,20 @@ module.exports = {
                         '» Zeigt Belohnungen mit Wahrscheinlichkeiten.\n\n' +
                 
                         '- `/partner add/edit/remove`\n' +
-                        '» Partner-System Verwaltung.'
+                        '» Partner-System Verwaltung.' +
+
+                        '- Level System Befehle:\n\n' +
+                        '- `:?modifyexp <add/remove> <1 - 100000> <@user>`\n' +
+                        '» Modifiziere das XP eines Nutzers.\n\n' +
+
+                        '- `:?setlevel <@user> <level>`\n' +
+                        '» Setzt das Level eines Nutzers auf einen bestimmten Wert.\n\n' +
+                        
+                        '- `:?level reset <@user>`\n' +
+                        '» Setzt das Level eines Nutzers zurück.\n\n' +
+
+                        '- `:?pmulti set <2>`\n' +
+                        '» Setzt den globalen XP-Multiplikator.'
                       )
                       .setColor('Orange')
                       .setFooter({ 
