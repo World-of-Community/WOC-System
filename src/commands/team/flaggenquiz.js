@@ -7,7 +7,7 @@ const {
   ButtonStyle
 } = require('discord.js');
 
-const Flaggenquiz = require("../../../Datenbank/flaggenquizdb.js");
+const Flaggenquiz = require("../../../Datenbank/flaggenquizdb");
 
 /* =========================
    FLAGGEN
