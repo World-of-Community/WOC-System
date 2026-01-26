@@ -374,7 +374,7 @@ module.exports = {
                         '- `:?level reset <@user>`\n' +
                         '» Setzt das Level eines Nutzers zurück.\n\n' +
 
-                        '- `:?pmulti set <2>`\n' +
+                        '- `:?pmulti set <1/2>`\n' +
                         '» Setzt den globalen XP-Multiplikator.'
                       )
                       .setColor('Orange')
