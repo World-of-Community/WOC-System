@@ -89,7 +89,11 @@ module.exports = {
       const firstLetterHint = randomFlag.country.charAt(0); // Erster Buchstabe als Tipp
 
       const embed = new EmbedBuilder()
-        .setDescription(`\`🚩\` » Welche Flagge ist das?\n\n\`💡\` » Tipp: Der Name des Landes beginnt mit **${firstLetterHint}**.\n\n\`✍️\` » Schreibe den Namen der Flagge in den Chat!`)
+        .setDescription(
+          `\`🚩\` » Welche Flagge ist das?\n\n` +
+          `\`💡\` » Tipp: Der Name des Landes beginnt mit **${firstLetterHint}**.\n\n` +
+          `\`✍️\` » Schreibe den Namen der Flagge in den Chat!`
+        )
         .setImage(randomFlag.imageUrl)
         .setColor('Random')
         .setFooter({ text: '» Benutze den Button, um die Flagge zu überspringen.', iconURL: `${interaction.guild.iconURL()}` });
