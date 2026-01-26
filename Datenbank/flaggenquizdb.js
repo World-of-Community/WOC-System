@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const flaggenQuizSchema = new mongoose.Schema({
+const flaggenquizSchema = new mongoose.Schema({
   guildId: String,
   channelId: { type: String, unique: true },
   messageId: String,
@@ -8,6 +8,6 @@ const flaggenQuizSchema = new mongoose.Schema({
   imageUrl: String
 });
 
-const FlaggenQuiz =
+const Flaggenquiz =
   mongoose.models.FlaggenQuiz ||
-  mongoose.model('FlaggenQuiz', flaggenQuizSchema);
+  mongoose.model('Flaggenquiz', flaggenquizSchema);
