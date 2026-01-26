@@ -366,7 +366,7 @@ module.exports = {
 
                         '> **Level System Befehle:**\n\n' +
                         '- `:?modifyexp <add/remove> <1 - 100000> <@user>`\n' +
-                        '» Modifiziere das XP eines Nutzers.\n\n' +
+                        '» Modifiziere XP eines Nutzers.\n\n' +
 
                         '- `:?setlevel <@user> <level>`\n' +
                         '» Setzt das Level eines Nutzers auf einen bestimmten Wert.\n\n' +
