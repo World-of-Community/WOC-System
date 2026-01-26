@@ -70,15 +70,12 @@ module.exports = {
       });
 
       // ───────────── COLLECTOR ─────────────
-      const collector = message.createMessageComponentCollector({
-        componentType: ComponentType.Button,
-        time: 5 * 60 * 1000 // 5 Minuten
-      });
+      const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button });
 
       collector.on('collect', async btn => {
         if (btn.user.id !== interaction.user.id) {
           return btn.reply({
-            content: '> `❌`  Du darfst diese Buttons nicht benutzen.',
+            content: '> `❌` » Du darfst diese Buttons nicht benutzen.',
             ephemeral: true
           });
         }
@@ -90,10 +87,10 @@ module.exports = {
             embed = new EmbedBuilder()
               .setTitle('Erste Nachricht - Gewöhnlich')
               .setDescription(
-                '> **1 Level** – 15%\n' +
-                '> **200 XP** – 15%\n' +
-                '> **500 Coins** – 15%\n' +
-                '> **750 Coins** – 15%'
+                '> **1 Level** – Chance: `15%`\n' +
+                '> **200 XP** – Chance: `15%`\n' +
+                '> **500 Coins** – Chance: `15%`\n' +
+                '> **750 Coins** – Chance: `15%`'
               )
               .setColor('Grey');
             break;
@@ -102,10 +99,10 @@ module.exports = {
             embed = new EmbedBuilder()
               .setTitle('Erste Nachricht - Ungewöhnlich')
               .setDescription(
-                '> **2 Level** – 7%\n' +
-                '> **3 Level** - 6%\n' +
-                '> **1.000 Coins** – 6%\n' +
-                '> **1.000 XP** – 6%'
+                '> **2 Level** – Chance: `7%`\n' +
+                '> **3 Level** - Chance: `6%`\n' +
+                '> **1.000 Coins** – Chance: `6%`\n' +
+                '> **1.000 XP** – Chance: `6%`'
               )
               .setColor('Green');
             break;
@@ -114,10 +111,10 @@ module.exports = {
             embed = new EmbedBuilder()
               .setTitle('Erste Nachricht - Selten')
               .setDescription(
-                '> **4 Level** – 3%\n' +
-                '> **5 Level** – 3%\n' +
-                '> **2.500 Coins** – 2%\n' +
-                '> **5.000 Coins** – 2%'
+                '> **4 Level** – Chance: `3%`\n' +
+                '> **5 Level** – Chance: `3%`\n' +
+                '> **2.500 Coins** – Chance: `2%`\n' +
+                '> **5.000 Coins** – Chance: `2%`'
               )
               .setColor('Blue');
             break;
@@ -126,8 +123,8 @@ module.exports = {
             embed = new EmbedBuilder()
               .setTitle('Erste Nachricht - Episch')
               .setDescription(
-                '> **7.500 Coins** – 2%\n' +
-                '> **10.000 Coins** – 2%'
+                '> **7.500 Coins** – Chance: `2%`\n' +
+                '> **10.000 Coins** – Chance: `2%`'
               )
               .setColor('Purple');
             break;
@@ -136,7 +133,7 @@ module.exports = {
             embed = new EmbedBuilder()
               .setTitle('Erste Nachricht - Legendär (Jackpot)')
               .setDescription(
-                '> **50.000 Coins** – 1%'
+                '> **50.000 Coins** – Chance: `1%`'
               )
               .setColor('Gold');
             break;
