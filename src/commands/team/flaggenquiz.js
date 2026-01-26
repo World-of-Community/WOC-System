@@ -59,7 +59,7 @@ async function sendNewFlag(channel, guild) {
 
   const msg = await channel.send({ embeds: [embed], components: [row] });
 
-  await FlaggenQuiz.findOneAndUpdate(
+  await Flaggenquiz.findOneAndUpdate(
     { channelId: channel.id },
     {
       guildId: guild.id,
@@ -94,7 +94,7 @@ module.exports = {
       ephemeral: true
     });
 
-    await FlaggenQuiz.deleteOne({ channelId: channel.id });
+    await Flaggenquiz.deleteOne({ channelId: channel.id });
     await sendNewFlag(channel, interaction.guild);
   }
 };
@@ -106,7 +106,7 @@ module.exports.handleButton = async (interaction) => {
   if (!interaction.isButton()) return;
   if (interaction.customId !== 'skip_flag') return;
 
-  const quiz = await FlaggenQuiz.findOne({ channelId: interaction.channel.id });
+  const quiz = await Flaggenquiz.findOne({ channelId: interaction.channel.id });
   if (!quiz) {
     return interaction.reply({
       content: '> `❌` » Kein aktives Flaggenquiz.',
@@ -129,7 +129,7 @@ module.exports.handleButton = async (interaction) => {
 module.exports.handleMessage = async (message) => {
   if (message.author.bot) return;
 
-  const quiz = await FlaggenQuiz.findOne({ channelId: message.channel.id });
+  const quiz = await Flaggenquiz.findOne({ channelId: message.channel.id });
   if (!quiz) return;
 
   if (message.content.toLowerCase() === quiz.country.toLowerCase()) {
@@ -139,7 +139,7 @@ module.exports.handleMessage = async (message) => {
       `> \`✅\` » Richtig! Das ist **${quiz.country}**.`
     );
 
-    await FlaggenQuiz.deleteOne({ channelId: message.channel.id });
+    await Flaggenquiz.deleteOne({ channelId: message.channel.id });
 
     setTimeout(async () => {
       await sendNewFlag(message.channel, message.guild);
