@@ -58,7 +58,7 @@ module.exports = {
     // ───────────── /info reward ─────────────
     if (subcommand === 'reward') {
       const startEmbed = new EmbedBuilder()
-        .setTitle('🎁 Belohnungen')
+        .setTitle('`🎁` Belohnungen')
         .setDescription('Wähle eine **Seltenheit**, um die möglichen Rewards zu sehen.')
         .setColor('Blurple');
 
