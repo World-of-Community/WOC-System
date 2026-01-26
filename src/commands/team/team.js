@@ -364,7 +364,7 @@ module.exports = {
                         '- `/partner add/edit/remove`\n' +
                         '» Partner-System Verwaltung.\n\n' +
 
-                        '- Level System Befehle:\n\n' +
+                        '> **Level System Befehle:**\n\n' +
                         '- `:?modifyexp <add/remove> <1 - 100000> <@user>`\n' +
                         '» Modifiziere das XP eines Nutzers.\n\n' +
 
