@@ -88,7 +88,7 @@ module.exports = {
         switch (btn.customId) {
           case 'rarity_gewoehnlich':
             embed = new EmbedBuilder()
-              .setTitle('Gewöhnlich')
+              .setTitle('Erste Nachricht - Gewöhnlich')
               .setDescription(
                 '> **1 Level** – 15%\n' +
                 '> **200 XP** – 15%\n' +
@@ -100,7 +100,7 @@ module.exports = {
 
           case 'rarity_ungewoehnlich':
             embed = new EmbedBuilder()
-              .setTitle('Ungewöhnlich')
+              .setTitle('Erste Nachricht - Ungewöhnlich')
               .setDescription(
                 '> **2 Level** – 7%\n' +
                 '> **3 Level** - 6%\n' +
@@ -112,7 +112,7 @@ module.exports = {
 
           case 'rarity_selten':
             embed = new EmbedBuilder()
-              .setTitle('Selten')
+              .setTitle('Erste Nachricht - Selten')
               .setDescription(
                 '> **4 Level** – 3%\n' +
                 '> **5 Level** – 3%\n' +
@@ -124,7 +124,7 @@ module.exports = {
 
           case 'rarity_episch':
             embed = new EmbedBuilder()
-              .setTitle('Episch')
+              .setTitle('Erste Nachricht - Episch')
               .setDescription(
                 '> **7.500 Coins** – 2%\n' +
                 '> **10.000 Coins** – 2%'
@@ -134,7 +134,7 @@ module.exports = {
 
           case 'rarity_legendaer':
             embed = new EmbedBuilder()
-              .setTitle('Legendär (Jackpot)')
+              .setTitle('Erste Nachricht - Legendär (Jackpot)')
               .setDescription(
                 '> **50.000 Coins** – 1%'
               )
