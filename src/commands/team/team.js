@@ -362,7 +362,7 @@ module.exports = {
                         '» Zeigt Belohnungen mit Wahrscheinlichkeiten.\n\n' +
                 
                         '- `/partner add/edit/remove`\n' +
-                        '» Partner-System Verwaltung.' +
+                        '» Partner-System Verwaltung.\n\n' +
 
                         '- Level System Befehle:\n\n' +
                         '- `:?modifyexp <add/remove> <1 - 100000> <@user>`\n' +
