@@ -28,8 +28,8 @@ module.exports = {
                         .setDescription('Welches Teammitglied?')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('beschreibung')
-                        .setDescription('Beschreibung des Teammitglieds')
+                    option.setName('aufgabe')
+                        .setDescription('Aufgabe des Teammitglieds')
                         .setRequired(true))
                 .addStringOption(option =>
                     option.setName('alter')
