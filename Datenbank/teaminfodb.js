@@ -5,15 +5,15 @@ const teamInfoSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    name: {
-        type: String,
-        required: true,
-    },
+    //name: {
+    //    type: String,
+    //    required: true,
+    //},
     bereich: {
         type: String,
         required: true,
     },
-    beschreibung: {
+    aufgabe: {
         type: String,
         required: true,
     },

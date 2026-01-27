@@ -32,10 +32,6 @@ module.exports = {
                         .setDescription('Beschreibung des Teammitglieds')
                         .setRequired(true))
                 .addStringOption(option =>
-                    option.setName('name')
-                        .setDescription('Name des Teammitglieds')
-                        .setRequired(true))
-                .addStringOption(option =>
                     option.setName('alter')
                         .setDescription('Alter des Teammitglieds (Optional, wird sonst automatisch berechnet)')
                         .setRequired(false)))
@@ -60,8 +56,8 @@ module.exports = {
                             { name: 'Builder', value: 'Builder' },
                         ))
                 .addStringOption(option =>
-                    option.setName('beschreibung')
-                        .setDescription('Neue Beschreibung')
+                    option.setName('aufgabe')
+                        .setDescription('Neue Aufgabe')
                         .setRequired(false))
                 .addStringOption(option =>
                     option.setName('name')
@@ -99,8 +95,7 @@ module.exports = {
         if (subcommand === 'add') {
             const bereich = interaction.options.getString('bereich');
             const user = interaction.options.getUser('user');
-            const name = interaction.options.getString('name');
-            const beschreibung = interaction.options.getString('beschreibung');
+            const aufgabe = interaction.options.getString('aufgabe');
             let alter = interaction.options.getString('alter');
 
             const existing = await TeamInfo.findOne({ userID: user.id });
@@ -129,7 +124,7 @@ module.exports = {
                     userID: user.id,
                     name,
                     alter,
-                    beschreibung,
+                    aufgabe,
                     bereich,
                 });
 
@@ -151,8 +146,7 @@ module.exports = {
             }
 
             const bereich = interaction.options.getString('bereich');
-            const beschreibung = interaction.options.getString('beschreibung');
-            const name = interaction.options.getString('name');
+            const aufgabe = interaction.options.getString('aufgabe');
             let alter = interaction.options.getString('alter');
 
             if (alter && (alter.toLowerCase() === 'remove' || alter.toLowerCase() === 'none')) {
@@ -241,7 +235,7 @@ async function updateTeamEmbed(interaction) {
                 membersInArea.map(member => {
                     const mention = `<@${member.userID}>`;
                     const displayedAge = member.alter || '`➖`';
-                    return `- ${mention} (${member.beschreibung}) - (Alter: ${displayedAge})`;
+                    return `- ${mention} (${member.aufgabe}) - (Alter: ${displayedAge})`;
                 }).join('\n') + '\n\n';
         } else {
             embedDescription += `${role} ${countDisplay}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
@@ -296,7 +290,7 @@ async function sendTeamEmbed(interaction) {
                 membersInArea.map(member => {
                     const mention = `<@${member.userID}>`;
                     const displayedAge = member.alter || '`➖`';
-                    return `- ${mention} (${member.beschreibung}) - (Alter: ${displayedAge})`;
+                    return `- ${mention} (${member.aufgabe}) - (Alter: ${displayedAge})`;
                 }).join('\n') + '\n\n';
         } else {
             embedDescription += `${role} ${countDisplay}:\n> \`❌\` » Aktuell kein Teammitglied in diesem Bereich.\n\n`;
