@@ -122,7 +122,6 @@ module.exports = {
             try {
                 const newMember = new TeamInfo({
                     userID: user.id,
-                    name,
                     alter,
                     aufgabe,
                     bereich,
