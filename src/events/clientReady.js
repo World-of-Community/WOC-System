@@ -106,14 +106,9 @@ module.exports = {
         }
         
         // Kategorien umbenennen
-        await guild.channels.cache.get(config.category1)
-            ?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
-        
-        await guild.channels.cache.get(config.category2)
-            ?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineMembersCount})`);
+        await guild.channels.cache.get(config.category1) ?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
+        await guild.channels.cache.get(config.category2) ?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineMembersCount})`);
 
-        //await guild.channels.cache.get(config.category1)?.setName(`(🎄) - [INFOS] - (USER: ${memberCount})`); // Normal 🌍 - Weihnachten 🎄
-        //await guild.channels.cache.get(config.category2)?.setName(`(⛄) - [UNITY] - (ONLINE: ${onlineMembersCount})`); // Normal 👥 - Weihnachten ⛄
         await guild.channels.cache.get(config.category3)?.setName(`(⚡) - [ADS] - (PARTNER: ${count})`);
         await guild.channels.cache.get(config.category4)?.setName(`(📰) - [NEWS] - (ABOS: ${totalChannels})`);
         await guild.channels.cache.get(config.category5)?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
@@ -138,8 +133,6 @@ module.exports = {
           console.log("Kanal nicht gefunden!");
           return;
         }
-    
-        //console.log("Gefundener Kanaltyp:", channel.type);
     
         if (channel.type !== ChannelType.GuildText) {
           console.log("Kein Textkanal!");
@@ -176,7 +169,6 @@ module.exports = {
           `📌 » Solltest du **Fragen** haben, dann öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`
         );
     
-        //console.log("Kanalbeschreibung erfolgreich gesetzt!");
       } catch (err) {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }

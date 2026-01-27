@@ -161,27 +161,26 @@ module.exports = {
         if (!message.author.bot) { 
             const uD = await userdb.findOne({ userID: message.author.id });
             if (uD && uD.afk && uD.afkStamp) {
-                const afkSeit = uD.afkStamp; // Bereits gespeicherter Unix-Timestamp
+                const afkSeit = uD.afkStamp;
         
                 // Nachricht senden
                 const m = await message.reply(
-                    `<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n> *Dein AFK-Status wurde entfernt. (Dauer: <t:${afkSeit}:R>)*`
+                    `<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n` +
+                    `> *Dein AFK-Status wurde entfernt. (Dauer: <t:${afkSeit}:R>)*`
                 );
         
                 // AFK-Status entfernen
                 uD.afk = false;
                 uD.afkReason = "";
-                uD.afkStamp = ""; // Optional: besser `null` statt leeren String
+                uD.afkStamp = "";
                 await uD.save();
         
-                // Nachricht nach 5 Sekunden löschen
                 setTimeout(async () => {
                     try {
                         await m.delete();
                     } catch (error) {}
                 }, 5000);
         
-                // Nickname anpassen
                 await message.member.setNickname(
                     message.member.displayName.replace("AFK | ", "")
                 ).catch(() => {});
@@ -234,7 +233,7 @@ module.exports = {
         userCoins.coins += coinsToAdd;
         await userCoins.save();
 
-        // Bump System (überarbeitet)
+        // Bump System
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
 
@@ -243,7 +242,6 @@ module.exports = {
         const embed = message.embeds[0];
 
         if (embed.description && embed.description.includes('Bump done')) {
-            // Der Benutzer wird nicht direkt durch die Disboard-Bot-Nachricht identifiziert
             const bumpUserId = embed.description.match(/<@!?(\d+)>/)?.[1]; // Extrahiere User-ID aus der Nachricht
             if (!bumpUserId) {
                 return message.channel.send('> `❗` » Konnte den Benutzer, der den Bump ausgeführt hat, nicht ermitteln.');
@@ -260,7 +258,6 @@ module.exports = {
             }
 
             try {
-                // Rolle hinzufügen
                 await member.roles.add(role);
                 await message.channel.send(`${member} vielen Dank für deinen Bump!\nDu hast nun die ${role} Rolle.`);
 
@@ -270,9 +267,9 @@ module.exports = {
                         await member.roles.remove(role);
                         member.send({ content: `> \`❗\` » Deine Rolle ${role} ist gerade abgelaufen (Du hattest die Rolle für: \`2 Stunden\`)`, ephemeral: true });
                     } catch (error) {
-                        console.error(`Fehler beim Entfernen der Rolle: ${error}`);
+                        console.error(`❗  | Fehler beim Entfernen der Rolle: ${error}`);
                     }
-                }, 7200000); // 2 Stunden in Millisekunden
+                }, 7200000); // 2 Stunden
             } catch (error) {
                 console.error(`Fehler beim Zuweisen der Rolle: ${error}`);
                 message.channel.send('> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.');
@@ -292,7 +289,6 @@ module.exports = {
         '1172920281526960238', // Werbung für alle
     ]; // Liste der erlaubten Kanäle
 
-        // Ignoriere Bots und überprüfe ob der Kanal nicht erlaubt ist
     if (!CHANNEL_IDS.includes(message.channel.id) || message.author.bot) return;
 
     // Muster zur Erkennung von Discord-Links
@@ -301,38 +297,35 @@ module.exports = {
     // Überprüfe, ob die Nachricht einen Discord-Link enthält
     if (discordLinkPattern.test(message.content)) {
         try {
-            // Lösche die Nachricht
             await message.delete();
 
-            // Erstelle eine Erwähnungsliste der erlaubten Kanäle
             const allowedChannelsMention = ALLOWED_CHANNEL_IDS.map(id => `<#${id}>`).join(', ');
 
-            // Erstelle das Warn-Embed
             const WarnEmbed = new EmbedBuilder()
                 .setTitle('⚠️ | WARNUNG')
                 .setDescription(
-                    `> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n> (<#${message.channel.id}>) nicht erlaubt.\n\n> Bitte nutze die erlaubten Kanäle wie z.B.\n> ${allowedChannelsMention}`
+                    `> Das Teilen von (Discord)-Server-Links ist in diesem Kanal\n` +
+                    `> (<#${message.channel.id}>) nicht erlaubt.\n\n` +
+                    `> Bitte nutze die erlaubten Kanäle wie z.B.\n` +
+                    `> ${allowedChannelsMention}`
                 )
                 .setColor('Red')
                 .setTimestamp();
 
-            // Versuche, dem Nutzer die Warnung als DM zu senden
             try {
                 await message.author.send({ embeds: [WarnEmbed] });
             } catch (error) {
-                console.error(`Konnte DM nicht senden: ${error}`);
+                console.error(`❗  | Konnte DM nicht senden: ${error}`);
 
-                // Sende das Embed im Kanal und erwähne den Benutzer (nur sichtbar für ihn)
                 const channelWarning = await message.channel.send({
                     content: `${message.author}, du kannst keine Server-Links in diesem Kanal teilen.`,
                     embeds: [WarnEmbed],
                 });
 
-                // Lösche die Nachricht nach 10 Sekunden
-                setTimeout(() => channelWarning.delete().catch(console.error), 10000);
+                setTimeout(() => channelWarning.delete().catch(console.error), 10000); // 10 Sekunden
             }
         } catch (error) {
-            console.error(`Konnte Nachricht nicht löschen: ${error}`);
+            console.error(`❗  | Konnte Nachricht nicht löschen: ${error}`);
         }
     }
     }

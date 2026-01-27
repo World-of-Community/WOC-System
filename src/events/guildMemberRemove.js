@@ -66,16 +66,13 @@ module.exports = {
         const newInvites = await member.guild.invites.fetch();
         const Invites = await guild.invites.fetch();
         
-        // Lade alten Cache aus DB
         let inviteCacheData = await InviteCache.findOne({ guildID: member.guild.id });
         
         if (!inviteCacheData) return;
     
-        // Suche den User, der ihn eingeladen hat
         const userDoc = await userdb.findOne({ userID: member.id });
         if (!userDoc) return;
     
-        // Optional: Wer hat den User eingeladen?
         const inviterID = userDoc.invitedBy;
         if (!inviterID) return;
     
@@ -87,7 +84,6 @@ module.exports = {
         // Nutzer-Daten abrufen und ggf. Einladungsdaten verarbeiten
         const userData = await userdb.findOne({ userID: member.user.id });
         if (userData) {
-            // Wenn es einen Einlader gibt, erhöhe dessen "left" Invite-Zähler
             if (userData.invitedBy) {
                 await userdb.findOneAndUpdate(
                     { userID: userData.invitedBy },
@@ -95,7 +91,6 @@ module.exports = {
                 );
             }
 
-            // Nutzerdaten löschen
             await userData.deleteOne();
         }
 

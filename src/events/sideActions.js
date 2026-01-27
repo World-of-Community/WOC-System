@@ -32,12 +32,15 @@ module.exports = {
                     }
 
                     if (mentionData && mentionData.afk && mentionedUser.id !== message.author.id) {
-                        const m = await message.reply(`<:AFK:1021086267557023775> | ${mentionedUser} **ist aktuell abwesend!**\n${mentionData.afkReason.replace("*", "")}`);
+                        const m = await message.reply(
+                            `<:AFK:1021086267557023775> | ${mentionedUser} **ist aktuell abwesend!**\n` +
+                            `${mentionData.afkReason.replace("*", "")}`
+                        );
                         setTimeout(async () => {
                             try {
                                 await m.delete();
                             } catch (error) {
-                                console.error('Fehler beim Löschen der AFK-Nachricht:', error);
+                                console.error('❗  | Fehler beim Löschen der AFK-Nachricht:', error);
                             }
                         }, 5000);
                     }
@@ -53,7 +56,6 @@ module.exports = {
 
                 case '1172920281526960238':
                     await message.react('<a:link:1369954893380718672>'); // Werbung für alle
-                    
 
                     break;
 
@@ -64,18 +66,16 @@ module.exports = {
                     break;
 
                 case '1250047970116636756':
-
                     if (message.author.id !== "1020023299448786955") {
                         await message.react('<:wocheartbeat:1376452184748855338>'); // Vorstellung
                     }
-
                     break;
 
                 default:
                     break;
             }
         } catch (error) {
-            console.error('Fehler bei der Ausführung des Eventhandlers:', error);
+            console.error('❗  | Fehler bei der Ausführung des Eventhandlers:', error);
         }
     }
 };

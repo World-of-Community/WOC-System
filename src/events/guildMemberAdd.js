@@ -90,9 +90,9 @@ module.exports = {
     const noAvatar = member.user.displayAvatarURL().includes('default');
 
     // Kriterien für verdächtige Fake-Bots
-    const isSuspicious = !member.user.bot && // Keine echten Bots
-        (username.includes('bot') || username.includes('assistant')) && // Verdächtige Namen
-        (joinedRecently || noAvatar); // Kürzlich erstellt oder Standard-Avatar
+    const isSuspicious = !member.user.bot &&
+        (username.includes('bot') || username.includes('assistant')) &&
+        (joinedRecently || noAvatar);
 
     if (isSuspicious) {
         try {
@@ -116,7 +116,6 @@ module.exports = {
             // Thread abrufen
             const thread = await member.guild.channels.fetch(threadID);
             if (thread && thread.isThread()) {
-                // Embed in den Thread senden
                 await thread.send({ embeds: [embed] });
                 console.log(`Embed in Thread gesendet: ${thread.name}`);
             } else {
@@ -130,17 +129,14 @@ module.exports = {
         const guild = member.guild;
         const newInvites = await guild.invites.fetch();
         
-        // Lade alten Cache aus DB
         let inviteCache = await InviteCacheModel.findOne({ guildID: guild.id });
         
         if (!inviteCache) {
-          // Wenn noch kein Cache existiert → neu anlegen
           inviteCache = await InviteCacheModel.create({
             guildID: guild.id,
             invites: newInvites.map(i => ({ code: i.code, uses: i.uses }))
           });
         } else {
-          // Cache aktualisieren
           inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));
           await inviteCache.save();
         }

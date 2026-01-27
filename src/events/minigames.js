@@ -44,7 +44,12 @@ async function counting(message, counting) {
 
             const countingEmbed = await message.channel.messages.fetch(counting.messageId);
             const embed = new EmbedBuilder(countingEmbed.embeds[0])
-            embed.setDescription(`Hier sind alle Informationen für das Zählspiel:\n\n\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n\`🏆\` » **Bisheriger Zähl Rekord:** **\`${counting.highestCount}\`**`)
+            embed.setDescription(
+                `Hier sind alle Informationen für das Zählspiel:\n\n` +
+                `\`1️⃣\` » Beginne das Zählen mit der Zahl **1**.\n` +
+                `\`🛑\` » Wenn du **falsch** zählst oder **zweimal hintereinander** zählst, wird das Spiel **zurückgesetzt**.\n\n` +
+                `\`🏆\` » **Bisheriger Zähl Rekord:** **\`${counting.highestCount}\`**`
+            )
 
             countingEmbed.edit({ embeds: [embed] })
         }

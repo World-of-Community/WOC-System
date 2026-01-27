@@ -169,8 +169,7 @@ module.exports = {
           }
         
         // Adventskalender
-        // Aktuelles Datum holen
-        const currentDay = new Date().getDate(); // Gibt den aktuellen Tag des Monats zurück
+        const currentDay = new Date().getDate();
 
         if (interaction.isButton() && interaction.customId.startsWith('advent_')) {
         const [, day] = interaction.customId.split('_');
@@ -181,35 +180,28 @@ module.exports = {
             userData = await Advent.create({ userId: interaction.user.id, openedDays: [] });
         }
 
-        // Überprüfen, ob der Tag bereits geöffnet wurde
         if (userData.openedDays.includes(dayNumber)) {
             return interaction.reply({ content: `> \`❗\` » Du hast diesen Tag (${dayNumber}. Dezember) bereits geöffnet!`, ephemeral: true });
         }
 
-        // Überprüfen, ob der Tag in der Zukunft liegt
         if (dayNumber > currentDay) {
             return interaction.reply({ content: '> `❌` » Du kannst zukünftige Tage nicht öffnen!', ephemeral: true });
-         }
+            }
 
-        // Belohnungssystem verarbeiten
         userData.openedDays.push(dayNumber);
         await userData.save();
 
-        let rewardMessage = ''; // Sicherstellen, dass rewardMessage immer einen Wert hat
+        let rewardMessage = '';
 
         const reward = rewards[dayNumber];
 
         switch (reward?.type) {
             case 'coins':
-                // Coins automatisch gutschreiben
-            
-                // Coin-Daten des Users holen oder erstellen
                 let coinData = await Coin.findOne({ userId: interaction.user.id });
                 if (!coinData) {
                     coinData = await Coin.create({ userId: interaction.user.id, coins: 0 });
                 }
             
-                // Coins hinzufügen
                 coinData.coins += reward.value;
                 await coinData.save();
             
@@ -228,14 +220,14 @@ module.exports = {
             break;
 
             case 'custom':
-                rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.'; // Sicherstellen, dass keine leere Nachricht gesendet wird
+                rewardMessage = reward.value || '> `🎁` » Keine spezifische Belohnung verfügbar.';
             break;
 
             default:
-                rewardMessage = `> \`❗\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`; // Standardnachricht
+                rewardMessage = `> \`❗\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`;
         }
 
-        return interaction.reply({ content: rewardMessage, ephemeral: true }); // Antwort mit der Belohnung
+        return interaction.reply({ content: rewardMessage, ephemeral: true });
     }
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
@@ -249,26 +241,20 @@ module.exports = {
 
         try {
           if (interaction.isModalSubmit()) {
-            //if (await emojiquizCommand.handleModalSubmit(interaction)) return;
             
             // Feedback Modal Handler
             if (interaction.customId === 'feedback-modal') {
                 
                 try {
-                // Defer immediately to prevent timeout
                 await interaction.deferReply({ ephemeral: true });
                 
                 const title = interaction.fields.getTextInputValue('feedback-title');
                 const description = interaction.fields.getTextInputValue('feedback-description');
             
                 const threadName = `${title} - ${interaction.user.username}`;
-                // TODO: Update this channel ID for your server
-                // This is the channel where feedback threads will be created
-                // To find channel ID: Right-click channel > Copy ID (Developer Mode must be enabled)
                 const feedbackChannelId = '1336720916591149137'; // Feedback channel
                 const supportRoleId = '1011207481357238272'; // Team-Rolle
             
-                // Get the feedback channel
                 const feedbackChannel = interaction.guild.channels.cache.get(feedbackChannelId);
                 if (!feedbackChannel) {
                     return interaction.editReply({ 
@@ -277,7 +263,6 @@ module.exports = {
                     });
                 }
             
-                // Check if user already has an active feedback thread
                 const activeThreads = await feedbackChannel.threads.fetchActive();
                 const existingThread = activeThreads.threads.find(thread => 
                     thread.name.includes(interaction.user.username) && !thread.archived
@@ -731,7 +716,7 @@ module.exports = {
                 '> **200.000** Coins ➜ **120 Tage** Premium\n\n' +
                 '> **Hinweis:** Der ShopPass ist aktuell noch in der Entwicklung und wird bald veröffentlicht. Schaue später erneut vorbei!'
             )
-            .setColor('Green'); // Grün, kannst du ändern
+            .setColor('Green');
         
           await interaction.reply({
             embeds: [embed],
@@ -764,13 +749,12 @@ module.exports = {
       
           const userId = interaction.user.id;
 
-          // Funktion für Reminder-Planung (Embed-Version)
           const scheduleReminder = (meeting, client) => {
               const meetingTime = new Date(meeting.time).getTime();
-              const reminderTime = meetingTime - 10 * 60 * 1000; // 10 Minuten vorher
+              const reminderTime = meetingTime - 10 * 60 * 1000;
               const delay = reminderTime - Date.now();
       
-              if (delay <= 0) return; // zu spät für Reminder
+              if (delay <= 0) return;
       
               setTimeout(async () => {
                   const updatedMeeting = await Meeting.findById(meeting._id);

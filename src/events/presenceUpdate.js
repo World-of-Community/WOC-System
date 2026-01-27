@@ -11,10 +11,8 @@ module.exports = {
     const liveRole = newPresence.guild.roles.cache.get(STREAM_ROLE_ID);
     if (!liveRole) return;
 
-    // Prüfen, ob der Nutzer aktuell streamt
     const isStreaming = newPresence.activities?.some(a => a.type === 1); // 1 = STREAMING
 
-    // Aktuelles Datum & Zeit formatieren
     const now = new Date();
     const formatter = new Intl.DateTimeFormat('de-DE', {
       weekday: 'long',
@@ -26,7 +24,6 @@ module.exports = {
     });
     const timestamp = formatter.format(now);
 
-    // Rolle hinzufügen oder entfernen + Log
     if (isStreaming && !member.roles.cache.has(liveRole.id)) {
       await member.roles.add(liveRole).catch(() => {});
       console.log(`${member.user.tag} ist jetzt LIVE`);
