@@ -86,6 +86,11 @@ module.exports = {
                         .setDescription("Neuer Text")
                         .setRequired(true)
                 )
+                .addAttachmentOption(o =>
+                    o.setName("beweis")
+                        .setDescription("Bild als Beweis")
+                        .setRequired(false)
+                )
         )
         .addSubcommand(sub =>
             sub.setName("note-delete")
