@@ -9,6 +9,7 @@ const Warn = require('../../Datenbank/warndb');
 const bandb = require('../../Datenbank/bandb');
 const Meeting = require('../../Datenbank/meetingdb');
 const { Coin } = require("../../Datenbank/coindb");
+const Note = require("../../Datenbank/notedb");
 
 // Beta Features (Buttons & Modals)
 //const editBanReason = require("./interactions/buttons/editBanReason");
@@ -19,7 +20,6 @@ const feedbackButton = require("../buttons/feedbackButton");
 //const unbanModal = require("./interactions/modals/unbanModal");
 const partnerButton = require("../buttons/partnerButton");
 const partnerModal = require("../modals/partnerModal");
-const Note = require('./Datenbank/notedb');
 
 const rewards = {
     1: { type: 'coins', value: 100 },
