@@ -171,13 +171,13 @@ module.exports = {
         // Strafen anzeigen
         if (!interaction.isButton()) return;
         if (!interaction.customId.startsWith("showPunishments_")) return;
-
+        
         const userId = interaction.customId.split("_")[1];
         const guildId = interaction.guild.id;
-    
+        
         const timeouts = await Timeout.find({ userId, guildId });
         const warns = await Warn.find({ userId, guildId });
-    
+        
         const punishments = [
             ...timeouts.map(t => ({
                 type: "Timeout",
@@ -192,85 +192,74 @@ module.exports = {
                 image: w.proof || null
             }))
         ];
-    
+        
         if (!punishments.length) {
             return interaction.reply({
                 content: "> `🟢` » Keine Strafen vorhanden.",
                 ephemeral: true
             });
         }
-    
+        
         let page = 0;
-    
+        
         const buildEmbed = () => {
             const p = punishments[page];
-    
+        
             const embed = new EmbedBuilder()
                 .setTitle(`⚠️ Strafe (${page + 1}/${punishments.length})`)
                 .setDescription(
-                    `Strafe: ${p.type}\n` +
-                    `Grund: ${p.text}\n` +
-                    `Datum: <t:${Math.floor(p.date.getTime() / 1000)}:f>`
+                    `**Strafe:** ${p.type}\n` +
+                    `**Grund:** ${p.text}\n` +
+                    `**Datum:** <t:${Math.floor(p.date.getTime() / 1000)}:f>`
                 )
-                .setColor('Red')
+                .setColor(0xED4245)
                 .setFooter({ text: `User-ID: ${userId}` })
                 .setTimestamp(p.date);
-    
+        
             if (p.image) embed.setImage(p.image);
-    
+        
             return embed;
         };
-    
-        const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setCustomId("punish_prev")
-                .setEmoji("⬅️")
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(page === 0),
-            new ButtonBuilder()
-                .setCustomId("punish_next")
-                .setEmoji("➡️")
-                .setStyle(ButtonStyle.Secondary)
-                .setDisabled(page === punishments.length - 1)
-        );
-    
-        await interaction.reply({
+        
+        const row = () =>
+            new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`punish_prev_${interaction.user.id}`)
+                    .setEmoji("⬅️")
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(page === 0),
+                new ButtonBuilder()
+                    .setCustomId(`punish_next_${interaction.user.id}`)
+                    .setEmoji("➡️")
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(page === punishments.length - 1)
+            );
+        
+        await interaction.deferReply({ ephemeral: true });
+        await interaction.editReply({
             embeds: [buildEmbed()],
-            components: [row],
-            ephemeral: true
+            components: [row()]
         });
-    
-        const msg = await interaction.fetchReply();
-    
-        const collector = msg.createMessageComponentCollector({
-            time: 5 * 60 * 1000
-        });
-    
-        collector.on("collect", async i => {
-            if (i.user.id !== interaction.user.id)
-                return i.reply({ content: "❌ Nicht dein Menü.", ephemeral: true });
-    
-            if (i.customId === "punish_prev") page--;
-            if (i.customId === "punish_next") page++;
-    
-            await i.update({
-                embeds: [buildEmbed()],
-                components: [
-                    new ActionRowBuilder().addComponents(
-                        new ButtonBuilder()
-                            .setCustomId("punish_prev")
-                            .setEmoji("⬅️")
-                            .setStyle(ButtonStyle.Secondary)
-                            .setDisabled(page === 0),
-                        new ButtonBuilder()
-                            .setCustomId("punish_next")
-                            .setEmoji("➡️")
-                            .setStyle(ButtonStyle.Secondary)
-                            .setDisabled(page === punishments.length - 1)
-                    )
-                ]
-            });
-        });
+
+const msg = await interaction.fetchReply();
+
+const collector = msg.createMessageComponentCollector({
+    componentType: ComponentType.Button,
+    time: 5 * 60 * 1000
+});
+
+collector.on("collect", async i => {
+    if (i.user.id !== interaction.user.id)
+        return i.reply({ content: "❌ Nicht dein Menü.", ephemeral: true });
+
+    if (i.customId.startsWith("punish_prev")) page--;
+    if (i.customId.startsWith("punish_next")) page++;
+
+    await i.update({
+        embeds: [buildEmbed()],
+        components: [row()]
+    });
+});
         
         // Adventskalender
         const currentDay = new Date().getDate();
