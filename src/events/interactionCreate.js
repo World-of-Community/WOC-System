@@ -169,7 +169,7 @@ module.exports = {
           }
 
         // Strafen anzeigen
-        if (!interaction.isButton()) return;
+        if (interaction.isButton()) return;
         if (interaction.customId.startsWith("showPunishments_")) return;
         
         const userId = interaction.customId.split("_")[1];
