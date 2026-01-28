@@ -224,7 +224,7 @@ module.exports = {
                     .setFooter({ text: `User-ID: ${userId}` })
                     .setTimestamp(date);
         
-                if (n.image) embed.setImage(n.image);
+                if (w.image) embed.setImage(w.image);
                 return embed;
             };
         
