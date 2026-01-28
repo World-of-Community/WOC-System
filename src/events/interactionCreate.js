@@ -198,6 +198,7 @@ module.exports = {
        
            const buildEmbed = () => {
                const p = punishments[page];
+                const date = p.date ? p.date : new Date(); // fallback auf jetzt
                const embed = new EmbedBuilder()
                    .setTitle(`⚠️ Strafe (${page + 1}/${punishments.length})`)
                    .setDescription(`**Strafe:** ${p.type}\n**Grund:** ${p.text}\n**Datum:** <t:${Math.floor(p.date.getTime()/1000)}:f>`)
@@ -227,7 +228,7 @@ module.exports = {
            await interaction.editReply({ embeds: [buildEmbed()], components: [row()] });
        
            const msg = await interaction.fetchReply();
-           const collector = msg.createMessageComponentCollector({ componentType: 2, time: 120_000 });
+           const collector = msg.createMessageComponentCollector({ componentType: 2 });
        
            collector.on("collect", async i => {
                if (i.user.id !== interaction.user.id)
