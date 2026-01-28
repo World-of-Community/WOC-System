@@ -244,8 +244,7 @@ module.exports = {
 const msg = await interaction.fetchReply();
 
 const collector = msg.createMessageComponentCollector({
-    componentType: ComponentType.Button,
-    time: 5 * 60 * 1000
+    componentType: ComponentType.Button
 });
 
 collector.on("collect", async i => {
