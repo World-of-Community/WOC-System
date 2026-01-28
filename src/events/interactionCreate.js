@@ -167,6 +167,108 @@ module.exports = {
                 break;
             }
           }
+
+        if (!interaction.customId.startsWith("showPunishments_")) return;
+
+        const userId = interaction.customId.split("_")[1];
+        const guildId = interaction.guild.id;
+    
+        const timeouts = await Timeout.find({ userId, guildId });
+        const warns = await Warn.find({ userId, guildId });
+    
+        const punishments = [
+            ...timeouts.map(t => ({
+                type: "Timeout",
+                text: t.reason || "Kein Grund angegeben",
+                date: t.createdAt,
+                image: t.proof || null
+            })),
+            ...warns.map(w => ({
+                type: "Warnung",
+                text: w.reason || "Kein Grund angegeben",
+                date: w.createdAt,
+                image: w.proof || null
+            }))
+        ];
+    
+        if (!punishments.length) {
+            return interaction.reply({
+                content: "> `🟢` » Keine Strafen vorhanden.",
+                ephemeral: true
+            });
+        }
+    
+        let page = 0;
+    
+        const buildEmbed = () => {
+            const p = punishments[page];
+    
+            const embed = new EmbedBuilder()
+                .setTitle(`⚠️ Strafe (${page + 1}/${punishments.length})`)
+                .setDescription(
+                    `Strafe: ${p.type}\n` +
+                    `Grund: ${p.text}\n` +
+                    `Datum: <t:${Math.floor(p.date.getTime() / 1000)}:f>`
+                )
+                .setColor('Red')
+                .setFooter({ text: `User-ID: ${userId}` })
+                .setTimestamp(p.date);
+    
+            if (p.image) embed.setImage(p.image);
+    
+            return embed;
+        };
+    
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setCustomId("punish_prev")
+                .setEmoji("⬅️")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(page === 0),
+            new ButtonBuilder()
+                .setCustomId("punish_next")
+                .setEmoji("➡️")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(page === punishments.length - 1)
+        );
+    
+        await interaction.reply({
+            embeds: [buildEmbed()],
+            components: [row],
+            ephemeral: true
+        });
+    
+        const msg = await interaction.fetchReply();
+    
+        const collector = msg.createMessageComponentCollector({
+            time: 5 * 60 * 1000
+        });
+    
+        collector.on("collect", async i => {
+            if (i.user.id !== interaction.user.id)
+                return i.reply({ content: "❌ Nicht dein Menü.", ephemeral: true });
+    
+            if (i.customId === "punish_prev") page--;
+            if (i.customId === "punish_next") page++;
+    
+            await i.update({
+                embeds: [buildEmbed()],
+                components: [
+                    new ActionRowBuilder().addComponents(
+                        new ButtonBuilder()
+                            .setCustomId("punish_prev")
+                            .setEmoji("⬅️")
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(page === 0),
+                        new ButtonBuilder()
+                            .setCustomId("punish_next")
+                            .setEmoji("➡️")
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(page === punishments.length - 1)
+                    )
+                ]
+            });
+        });
         
         // Adventskalender
         const currentDay = new Date().getDate();

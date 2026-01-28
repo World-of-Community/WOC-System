@@ -67,6 +67,11 @@ module.exports = {
                         .setDescription("Notiz Text")
                         .setRequired(true)
                 )
+                .addAttachmentOption(o =>
+                    o.setName("beweis")
+                        .setDescription("Bild als Beweis")
+                        .setRequired(false)
+                )
         )
         .addSubcommand(sub =>
             sub.setName("note-edit")
@@ -112,6 +117,7 @@ module.exports = {
 
             const user = interaction.options.getUser("user");
             const text = interaction.options.getString("text");
+            const proof = interaction.options.getAttachment("beweis");
 
             if (text.length > 4000)
                 return interaction.reply({ content: "> \`❌\` » Max. 4000 Zeichen.", ephemeral: true });
@@ -120,11 +126,12 @@ module.exports = {
                 userId: user.id,
                 guildId: interaction.guild.id,
                 authorId: interaction.user.id,
-                note: text
+                note: text,
+                proof: proof?.url || null
             });
 
             return interaction.reply({
-                content: `> \`📝\` » Notiz für **${user.username}** (${n.note}) erfolgreich gespeichert.`,
+                content: `> \`📝\` » Notiz für **${user.username}** erfolgreich gespeichert.`,
                 ephemeral: true
             });
         }

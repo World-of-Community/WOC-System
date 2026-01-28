@@ -18,7 +18,6 @@ module.exports = {
         }
 
         try {
-            // --- Feedback-Ticket erstellen ---
             if (interaction.isButton() && interaction.customId === 'create_feedback_ticket') {
                 
                 if (interaction.replied || interaction.deferred) {
@@ -87,7 +86,6 @@ module.exports = {
             // --- Akzeptieren & schließen ---
             if (interaction.isButton() && interaction.customId === 'feedback_accept_close') {
                 
-                // Defer immediately to prevent timeout
                 await interaction.deferUpdate();
                 
                 const acceptEmbed = new EmbedBuilder()
@@ -105,7 +103,6 @@ module.exports = {
                         await interaction.channel.setArchived(true, 'Feedback-Ticket geschlossen').catch((err) => {
                         });
                     } else if (interaction.channel?.deletable) {
-                        // Fallback no longer used
                         await interaction.channel.delete().catch((err) => {
                         });
                     } else {
@@ -118,11 +115,10 @@ module.exports = {
             // --- Ablehnen & offen lassen ---
             if (interaction.isButton() && interaction.customId === 'feedback_reject_open') {
                 
-                // Defer immediately to prevent timeout
                 await interaction.deferUpdate();
                 
                 const rejectEmbed = new EmbedBuilder()
-                    .setTitle('`🔓` » Ticket bleibt weiterhin offen')
+                    .setTitle('🔓 » Ticket bleibt weiterhin offen')
                     .setDescription('Das Ticket bleibt weiterhin geöffnet.')
                     .setColor('Red');
 
