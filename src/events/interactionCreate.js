@@ -203,7 +203,7 @@ module.exports = {
                    .setTitle(`⚠️ Strafe (${page + 1}/${punishments.length})`)
                    .setDescription(
                     `Strafe: ${p.type}\n` +
-                    `Grund: ${p.text}\n` +
+                    `Grund: ${n.note}\n` +
                     `Datum: <t:${Math.floor(p.date.getTime()/1000)}:f>`
                 )
                    .setColor(0xED4245)
