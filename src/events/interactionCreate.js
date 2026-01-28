@@ -198,6 +198,7 @@ module.exports = {
        
            const buildEmbed = () => {
                const p = punishments[page];
+               const n = notizen[page];
                const date = p.date ? p.date : new Date(); // fallback auf jetzt
                const embed = new EmbedBuilder()
                    .setTitle(`⚠️ Strafe (${page + 1}/${punishments.length})`)
