@@ -19,6 +19,7 @@ const feedbackButton = require("../buttons/feedbackButton");
 //const unbanModal = require("./interactions/modals/unbanModal");
 const partnerButton = require("../buttons/partnerButton");
 const partnerModal = require("../modals/partnerModal");
+const Note = require('../../../Datenbank/notedb');
 
 const rewards = {
     1: { type: 'coins', value: 100 },
