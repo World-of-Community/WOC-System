@@ -169,9 +169,10 @@ module.exports = {
           }
 
         // Strafen anzeigen
-        if (interaction.isButton() && interaction.customId.startsWith("showPunishments_")) return;
+        if (!interaction.isButton()) return;
+        if (interaction.customId.startsWith("showPunishments_")) return;
         
-        const userId = interaction.customId.split("_")[0];
+        const userId = interaction.customId.split("_")[1];
         const guildId = interaction.guild.id;
         
         const timeouts = await Timeout.find({ userId, guildId });
