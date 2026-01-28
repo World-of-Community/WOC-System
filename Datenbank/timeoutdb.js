@@ -33,7 +33,7 @@ const timeoutSchema = new mongoose.Schema(
         },
     },
     {
-        timestamps: true // <--- KORREKT PLATZIERT
+        timestamps: true
     }
 );
 

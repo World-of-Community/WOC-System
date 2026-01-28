@@ -180,13 +180,13 @@ module.exports = {
                ...timeouts.map(t => ({
                    type: "Timeout",
                    text: t.reason || "Kein Grund angegeben",
-                   date: t.createdAt,
+                   date: t.createdAt || new Date(),  // <-- fallback
                    image: t.proof || null
                })),
                ...warns.map(w => ({
                    type: "Warnung",
                    text: w.reason || "Kein Grund angegeben",
-                   date: w.createdAt,
+                   date: w.createdAt || new Date(),  // <-- fallback
                    image: w.proof || null
                }))
            ];
@@ -198,10 +198,14 @@ module.exports = {
        
            const buildEmbed = () => {
                const p = punishments[page];
-                const date = p.date ? p.date : new Date(); // fallback auf jetzt
+               const date = p.date ? p.date : new Date(); // fallback auf jetzt
                const embed = new EmbedBuilder()
                    .setTitle(`⚠️ Strafe (${page + 1}/${punishments.length})`)
-                   .setDescription(`**Strafe:** ${p.type}\n**Grund:** ${p.text}\n**Datum:** <t:${Math.floor(p.date.getTime()/1000)}:f>`)
+                   .setDescription(
+                    `Strafe: ${p.type}\n` +
+                    `Grund: ${p.text}\n` +
+                    `Datum: <t:${Math.floor(p.date.getTime()/1000)}:f>`
+                )
                    .setColor(0xED4245)
                    .setFooter({ text: `User-ID: ${userId}` })
                    .setTimestamp(p.date);
