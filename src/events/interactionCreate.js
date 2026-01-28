@@ -170,7 +170,7 @@ module.exports = {
 
         // Strafen anzeigen
         if (interaction.isButton())
-        if (interaction.customId.startsWith("showPunishments_")) return;
+        if (interaction.customId.startsWith("showPunishments_"))
         
         const userId = interaction.customId.split("_")[1];
         const guildId = interaction.guild.id;
