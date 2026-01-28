@@ -155,7 +155,7 @@ module.exports = {
             }
 
             if (bereich !== null && bereich !== undefined) member.bereich = bereich;
-            if (beschreibung !== null && beschreibung !== undefined) member.beschreibung = beschreibung;
+            if (aufgabe !== null && aufgabe !== undefined) member.aufgabe = aufgabe;
             if (name !== null && name !== undefined) member.name = name;
             if (alter !== null && alter !== undefined) member.alter = alter;
 
