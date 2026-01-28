@@ -45,7 +45,6 @@ module.exports = {
         .setName('user')
         .setDescription('» User Verwaltung & Infos 👤')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
-        // INFO
         .addSubcommand(sub =>
             sub.setName("info")
                 .setDescription("» Zeigt Infos über einen User")
@@ -55,7 +54,6 @@ module.exports = {
                         .setRequired(true)
                 )
         )
-        // NOTE ADD
         .addSubcommand(sub =>
             sub.setName("note-add")
                 .setDescription("» Fügt eine Notiz hinzu")
@@ -70,7 +68,6 @@ module.exports = {
                         .setRequired(true)
                 )
         )
-        // NOTE EDIT
         .addSubcommand(sub =>
             sub.setName("note-edit")
                 .setDescription("» Bearbeitet eine Notiz")
@@ -85,7 +82,6 @@ module.exports = {
                         .setRequired(true)
                 )
         )
-        // NOTE DELETE
         .addSubcommand(sub =>
             sub.setName("note-delete")
                 .setDescription("» Löscht eine einzelne Notiz")
@@ -95,7 +91,6 @@ module.exports = {
                         .setRequired(true)
                 )
         )
-        // NOTE CLEAR
         .addSubcommand(sub =>
             sub.setName("note-clear")
                 .setDescription("» Löscht alle Notizen eines Users")
@@ -129,7 +124,7 @@ module.exports = {
             });
 
             return interaction.reply({
-                content: `> \`📝\` » Notiz für **${user.username}** gespeichert.`,
+                content: `> \`📝\` » Notiz für **${user.username}** (${n.note}) erfolgreich gespeichert.`,
                 ephemeral: true
             });
         }
@@ -150,7 +145,7 @@ module.exports = {
             await note.save();
 
             return interaction.reply({
-                content: `> \`✏️\` » Notiz **${noteId}** bearbeitet.`,
+                content: `> \`✏️\` » Notiz **\`${noteId}\`** erfolgreich bearbeitet.`,
                 ephemeral: true
             });
         }
@@ -167,7 +162,7 @@ module.exports = {
                 return interaction.reply({ content: "> \`❌\` » Notiz nicht gefunden.", ephemeral: true });
 
             return interaction.reply({
-                content: `> \`🗑️\` » Notiz **${noteId}** gelöscht.`,
+                content: `> \`🗑️\` » Notiz **\`${noteId}\`** gelöscht.`,
                 ephemeral: true
             });
         }
@@ -215,7 +210,9 @@ module.exports = {
 
             const noteText = notes.length
                 ? notes.map(n =>
-                    `> Beschreibung: ${n.note}\n> Notiz-ID: \`${n._id}\`\n> von <@${n.authorId}> (<t:${Math.floor(n.createdAt.getTime() / 1000)}:f>)`
+                    `\`✍️\` » Beschreibung: ${n.note}\n` +
+                    `\`🆔\` » Notiz-ID: \`${n._id}\`\n` +
+                    `\`👤\` » von <@${n.authorId}> (<t:${Math.floor(n.createdAt.getTime() / 1000)}:f>)`
                 ).join("\n")
                 : "Keine Notizen vorhanden";
 
@@ -243,7 +240,6 @@ module.exports = {
                 .setFooter({ text: `${interaction.guild.name} | Userinfo` })
                 .setTimestamp();
 
-            // Optional: Button für Strafen anzeigen
             const buttonRow = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
