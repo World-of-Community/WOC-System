@@ -26,6 +26,10 @@ const timeoutSchema = new mongoose.Schema(
         endTime: {
             type: Number,
             required: false,
+        }, 
+        proof: {
+            type: String,
+            default: null
         },
     },
     {

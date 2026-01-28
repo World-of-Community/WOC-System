@@ -35,9 +35,9 @@ module.exports = {
         const grund = interaction.options.getString('grund');
         const member = await interaction.guild.members.fetch({ user, force: true }).catch(() => null);
 
-        if(!member) return await interaction.reply({ content: utils.other.text.userFound(), ephemeral: true });    
+        if (!member) return await interaction.reply({ content: utils.other.text.userFound(), ephemeral: true });    
         if (interaction.user.id === user.id) return interaction.reply({ content: '> `❌` » Du kannst dir selbst keinen Timeout geben.', ephemeral: true });
-        if(!member.kickable) return interaction.reply({ content: '> `❌` » Dieser Benutzer kann nicht getimeoutet werden.', ephemeral: true });
+        if (!member.kickable) return interaction.reply({ content: '> `❌` » Dieser Benutzer kann nicht getimeoutet werden.', ephemeral: true });
         if (member.isCommunicationDisabled()) return interaction.reply({ content: '> `❌` » Dieser Benutzer hat bereits ein Timeout.', ephemeral: true });
         if (member.permissions.has(PermissionFlagsBits.Administrator)) return interaction.reply({ content: '> `❌` » Dieser Benutzer hat `Administrator` Berechtigungen und kann nicht timeoutet werden.', ephemeral: true });
         if (member.permissions.has(PermissionFlagsBits.KickMembers)) return interaction.reply({ content: '> `❌` » Du darfst Nutzer, die dieselben Berechtigungen haben, nicht timeouten.', ephemeral: true });

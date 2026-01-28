@@ -16,7 +16,9 @@ const warnSchema = new mongoose.Schema({
             reason: { type: String, required: true },
             date: { type: Date, default: Date.now }
         }
-    ]
+    ],
+    proof: { type: String, default: null }
+
 });
 
 // Verhindert doppelte Einträge pro Guild + User
