@@ -210,7 +210,7 @@ function createPartnerListEmbed(serverData, interaction) {
         Info +
         `**Kooperation Partner:**\n${cooperationList}\n\n` +
         `**Normale Partner:**\n${normalList}`
-    ).setFooter({ text: `» Maximal 15 Server-Partner | Aktualisiert am: ${formattedTime}` });
+    ).setFooter({ text: `Maximal 15 Server-Partner | Aktualisiert am: ${formattedTime}` });
 
     return embed;
 }
