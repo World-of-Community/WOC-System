@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
-const reminders = new Map(); // aktive Reminder / Intervalle
+const reminders = new Map();
 
 function parseDate(input) {
     const parts = input.split(".");
@@ -16,7 +16,7 @@ function parseDate(input) {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('tageszähler')
-        .setDescription('Erweiterter Tageszähler mit Live-Countdown')
+        .setDescription('Tageszähler mit Live-Countdown')
         .addStringOption(option =>
             option.setName('anfangsdatum')
                 .setDescription('Format: DD.MM.YYYY')
@@ -53,9 +53,9 @@ module.exports = {
         const endUnix = Math.floor(endDate.getTime() / 1000);
 
         try {
-            // DM senden
+            // DM einmalig senden
             const dmMessage = await interaction.user.send({
-                content: '> `⏳` Lade Tageszähler…'
+                embeds: [new EmbedBuilder().setTitle('`⏳` Lade Tageszähler…').setColor(0x00AEFF)]
             });
 
             await interaction.reply({
@@ -66,7 +66,9 @@ module.exports = {
             // Intervall alle Minute
             const intervalId = setInterval(async () => {
                 const now = new Date();
-                const diffTime = endDate - startDate;
+                const diffTime = endDate - now; // aktuelle Differenz
+
+                const isFuture = diffTime >= 0;
                 const totalMinutes = Math.floor(Math.abs(diffTime) / (1000 * 60));
                 const totalHours = Math.floor(totalMinutes / 60);
                 const totalDays = Math.floor(totalHours / 24);
@@ -77,16 +79,9 @@ module.exports = {
                 const hours = totalHours % 24;
                 const minutes = totalMinutes % 60;
 
-                let relationText;
-                if (endDate > now) {
-                    const futureDiff = endDate - now;
-                    const futureDays = Math.floor(futureDiff / (1000 * 60 * 60 * 24));
-                    relationText = `> \`🔥\` Noch \`${futureDays}\` Tage bis zum Enddatum`;
-                } else {
-                    const pastDiff = now - endDate;
-                    const pastDays = Math.floor(pastDiff / (1000 * 60 * 60 * 24));
-                    relationText = `> \`⏳\` » Seit \`${pastDays}\` Tagen vorbei`;
-                }
+                const relationText = isFuture
+                    ? `> \`🔥\` Noch \`${totalDays}\` Tage bis zum Enddatum`
+                    : `> \`⏳\` Seit \`${totalDays}\` Tagen vorbei`;
 
                 const embed = new EmbedBuilder()
                     .setTitle('`📅` Tageszähler – Live-Countdown')
@@ -113,22 +108,21 @@ module.exports = {
                     .setFooter({ text: `Angefragt von ${interaction.user.tag}` })
                     .setTimestamp();
 
-                await dmMessage.edit({ content: null, embeds: [embed] });
+                await dmMessage.edit({ embeds: [embed] });
 
-                // Wenn Enddatum erreicht → Erinnerung senden & Intervall stoppen
-                if (now >= endDate) {
+                // Enddatum erreicht → Erinnerung und Intervall stoppen
+                if (!isFuture) {
                     await interaction.user.send({
                         embeds: [new EmbedBuilder()
                             .setTitle('`🔔` Erinnerung!')
                             .setColor(0x00FF00)
-                            .setDescription(`Dein Tageszähler ist jetzt erreicht!\n\n\`📆\` <t:${endUnix}:F>`)
+                            .setDescription(`Dein Tageszähler ist jetzt erreicht!\n\n📆 <t:${endUnix}:F>`)
                             .setTimestamp()]
                     });
 
                     clearInterval(intervalId);
                     reminders.delete(interaction.user.id);
                 }
-
             }, 60 * 1000); // jede Minute
 
             reminders.set(interaction.user.id, intervalId);
