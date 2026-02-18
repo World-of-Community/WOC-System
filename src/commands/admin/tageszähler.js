@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 
 function parseDate(input) {
     const parts = input.split(".");
@@ -23,22 +23,23 @@ function parseDate(input) {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('tageszähler')
-        .setDescription('Wandelt zwei Daten (dd.mm.yyyy) in Unix-Timestamps um')
+        .setDescription('Wandelt zwei Daten (DD.MM.YYYY) in Unix-Timestamps um')
         .addStringOption(option =>
             option.setName('anfangsdatum')
-                .setDescription('Format: dd.mm.yyyy (z.B. 18.02.2026)')
+                .setDescription('Format: DD.MM.YYYY (z.B. 18.02.2026)')
                 .setRequired(true)
         )
         .addStringOption(option =>
             option.setName('enddatum')
-                .setDescription('Format: dd.mm.yyyy (z.B. 25.02.2026)')
+                .setDescription('Format: DD.MM.YYYY (z.B. 25.02.2026)')
                 .setRequired(true)
         )
         .addStringOption(option =>
             option.setName('beschreibung')
                 .setDescription('Optionale Beschreibung')
                 .setRequired(false)
-        ),
+        )
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     async execute(interaction) {
 
