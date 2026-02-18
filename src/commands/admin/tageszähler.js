@@ -121,7 +121,7 @@ module.exports = {
                         embeds: [new EmbedBuilder()
                             .setTitle('`🔔` Erinnerung!')
                             .setColor(0x00FF00)
-                            .setDescription(`Dein Tageszähler ist jetzt erreicht!\n\n📆 <t:${endUnix}:F>`)
+                            .setDescription(`Dein Tageszähler ist jetzt erreicht!\n\n\`📆\` <t:${endUnix}:F>`)
                             .setTimestamp()]
                     });
 
