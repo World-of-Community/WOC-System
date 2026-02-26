@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, Client, GatewayIntentBits } = require('discord.js');
 
-// Globale Variablen für die Speicherung der Kanal- und Nachrichten-ID
 let lastChannelId = null;
 let lastMessageId = null;
 
@@ -9,10 +8,8 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.once('ready', async () => {
     console.log(`${client.user.tag} ist online!`);
 
-    // Aktuellen Unix-Timestamp generieren
     const timestamp = Math.floor(Date.now() / 1000);
 
-    // Bearbeite die Nachricht, dass der Bot wieder online ist
     if (lastChannelId && lastMessageId) {
         try {
             const channel = await client.channels.fetch(lastChannelId);
@@ -25,7 +22,6 @@ client.once('ready', async () => {
             console.error('Fehler beim Bearbeiten der Wieder-Online-Nachricht:', error);
         }
 
-        // Variablen zurücksetzen
         lastChannelId = null;
         lastMessageId = null;
     }
@@ -48,17 +44,14 @@ module.exports = {
             return interaction.reply({ content: '> `❗` » Du musst mit "ja" bestätigen, um den Bot neu zu starten.', ephemeral: true });
         }
 
-        // Aktuellen Unix-Timestamp generieren
         const timestamp = Math.floor(Date.now() / 1000);
 
-        // Sende die Nachricht und speichere Kanal- und Nachrichten-ID
         const message = await interaction.reply({ content: `> \`🕒\` » Der Bot wird neu gestartet... (<t:${timestamp}:R>) (Max. 30 Sekunden)`, fetchReply: true, ephemeral: true });
         lastChannelId = interaction.channel.id;
         lastMessageId = message.id;
 
-        // Beende den Prozess nach einer kurzen Verzögerung
         setTimeout(() => {
-            process.exit(); // Beendet den Prozess
+            process.exit();
         }, 2000);
     },
 };
