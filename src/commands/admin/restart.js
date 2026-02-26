@@ -52,7 +52,7 @@ module.exports = {
         const timestamp = Math.floor(Date.now() / 1000);
 
         // Sende die Nachricht und speichere Kanal- und Nachrichten-ID
-        const message = await interaction.reply({ content: `> \`🕒\` » Der Bot wird neu gestartet... (<t:${timestamp}:R>)`, fetchReply: true, ephemeral: true });
+        const message = await interaction.reply({ content: `> \`🕒\` » Der Bot wird neu gestartet... (<t:${timestamp}:R>) (Max. 30 Sekunden)`, fetchReply: true, ephemeral: true });
         lastChannelId = interaction.channel.id;
         lastMessageId = message.id;
 
