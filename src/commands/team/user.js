@@ -53,6 +53,11 @@ module.exports = {
                         .setDescription("Der User")
                         .setRequired(true)
                 )
+                .addStringOption(o =>
+                    o.setName("userid")
+                        .setDescription("User ID")
+                        .setRequired(false)
+                )
         )
         .addSubcommand(sub =>
             sub.setName("note-add")
@@ -199,7 +204,26 @@ module.exports = {
 
         // ───────────── INFO ─────────────
         if (sub === "info") {
-            const user = interaction.options.getUser("user");
+            let user = interaction.options.getUser("user");
+            const userIdInput = interaction.options.getString("userid");
+            
+            if (!user && !userIdInput) {
+                return interaction.reply({
+                    content: "> `❌` » Bitte User oder User-ID angeben.",
+                    ephemeral: true
+                });
+            }
+            
+            if (!user && userIdInput) {
+                try {
+                    user = await interaction.client.users.fetch(userIdInput);
+                } catch {
+                    return interaction.reply({
+                        content: "> `❌` » User mit dieser ID nicht gefunden.",
+                        ephemeral: true
+                    });
+                }
+            }
             const member = await interaction.guild.members.fetch(user.id).catch(() => null);
 
             const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}:f>`;
