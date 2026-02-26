@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, } = require("discord.js");
 const bandb = require("../../../Datenbank/bandb");
 
 module.exports = {
@@ -70,13 +70,34 @@ module.exports = {
         return interaction.reply({ content: "> `❌` » Thread konnte nicht geladen werden.", ephemeral: true });
       }
 
-      if (!thread || thread.archived || thread.locked) {
-        return interaction.reply({ content: "> `❌` » Der Thread ist nicht verfügbar (archiviert oder gesperrt).", ephemeral: true });
+      if (!thread) {
+        return interaction.reply({
+          content: "> `❌` » Der Thread wurde nicht gefunden.",
+          ephemeral: true
+        });
+      }
+      
+      try {
+        // Falls archiviert → automatisch öffnen
+        if (thread.archived) {
+          await thread.setArchived(false, "Automatisch vom Bot geöffnet");
+        }
+      
+        // Falls gesperrt → entsperren
+        if (thread.locked) {
+          await thread.setLocked(false, "Automatisch vom Bot entsperrt");
+        }
+      
+      } catch (err) {
+        return interaction.reply({
+          content: "> `❌` » Der Thread ist archiviert oder gesperrt und konnte nicht automatisch geöffnet werden.",
+          ephemeral: true
+        });
       }
 
       const botMember = interaction.guild.members.me;
       const perms = thread.permissionsFor(botMember);
-      if (!perms || !perms.has("SendMessages")) {
+      if (!perms || !perms.has(PermissionFlagsBits.SendMessages)) {
         return interaction.reply({ content: "> `❌` » Ich habe keine Rechte, um im Thread zu schreiben.", ephemeral: true });
       }
 
