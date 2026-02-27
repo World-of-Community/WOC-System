@@ -206,6 +206,44 @@ module.exports = {
             });
         }
 
+        // ───────────── FIND ─────────────
+        if (sub === "find") {
+        
+            const userId = interaction.options.getString("userid");
+        
+            if (!/^\d+$/.test(userId)) {
+                return interaction.reply({
+                    content: "> `❌` » Ungültige User-ID.",
+                    ephemeral: true
+                });
+            }
+        
+            let user;
+            try {
+                user = await interaction.client.users.fetch(userId);
+            } catch {
+                return interaction.reply({
+                    content: "> `❌` » Kein User mit dieser ID gefunden.",
+                    ephemeral: true
+                });
+            }
+        
+            const member = await interaction.guild.members.fetch(user.id).catch(() => null);
+        
+            const embed = new EmbedBuilder()
+                .setColor(member ? 0x57F287 : 0xED4245)
+                .setTitle("`🔎` User gefunden")
+                .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+                .setDescription(
+                    `> \`👤\` » Username: \`${user.username}\`\n` +
+                    `> \`🆔\` » ID: \`${user.id}\`\n` +
+                    `> \`📌\` » Auf Server: ${member ? "`🟢 Ja`" : "`🔴 Nein`"}`
+                )
+                .setTimestamp();
+        
+            return interaction.reply({ embeds: [embed], ephemeral: true });
+        }
+
         // ───────────── INFO ─────────────
         if (sub === "info") {
             let user = interaction.options.getUser("user");
