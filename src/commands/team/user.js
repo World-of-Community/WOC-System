@@ -53,10 +53,14 @@ module.exports = {
                         .setDescription("Der User")
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(sub =>
+            sub.setName("find")
+                .setDescription("» Sucht nach einem User anhand der ID")
                 .addStringOption(o =>
                     o.setName("userid")
                         .setDescription("User ID")
-                        .setRequired(false)
+                        .setRequired(true)
                 )
         )
         .addSubcommand(sub =>

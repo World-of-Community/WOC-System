@@ -1133,7 +1133,7 @@ client.on('messageCreate', async (message) => {
 
         if (i.user.id !== message.author.id) {
             return i.reply({
-                content: "> ❌ Das ist nicht für dich!",
+                content: "> `❌` » Das ist nicht für dich!",
                 ephemeral: true
             });
         }
@@ -1157,7 +1157,7 @@ client.on('messageCreate', async (message) => {
                 `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
                 `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
                 `*(Bitte Screenshot machen als Beweis.)*\n\n` +
-                `> \`🎫\` Öffne ein Ticket zum Einlösen.`
+                `> \`🎫\` » Öffne ein Ticket zum Einlösen.`
             )
             .setColor(rarityColors[gewinn.rarity]);
 
