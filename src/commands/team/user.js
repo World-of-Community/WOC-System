@@ -58,7 +58,7 @@ module.exports = {
             sub.setName("find")
                 .setDescription("» Sucht nach einem User anhand der ID")
                 .addStringOption(o =>
-                    o.setName("userid")
+                    o.setName("id")
                         .setDescription("User ID")
                         .setRequired(true)
                 )
@@ -236,8 +236,9 @@ module.exports = {
                 .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
                 .setDescription(
                     `> \`👤\` » Username: \`${user.username}\`\n` +
+                    `> \`👤\` » Name: \`${user}\`\n` +
                     `> \`🆔\` » ID: \`${user.id}\`\n` +
-                    `> \`📌\` » Auf Server: ${member ? "`🟢 Ja`" : "`🔴 Nein`"}`
+                    `> \`📌\` » Auf dem Server: ${member ? "`🟢 Ja`" : "`🔴 Nein`"}`
                 )
                 .setTimestamp();
         
