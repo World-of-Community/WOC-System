@@ -46,7 +46,7 @@ module.exports = {
     //    `<a:leave:1433256832851251411> Und da war es nur noch einer weniger... **${member.user.tag}** ist gegangen. <a:winken:1086560167442796544>`
     //];
     
-    const rndContent = Math.floor(Math.random() * contents.length);
+    //const rndContent = Math.floor(Math.random() * contents.length);
     await leaveChannel.send({ content: contents[rndContent] });
 
         const logchannel = member.guild.channels.cache.get("1263436406655680513");
