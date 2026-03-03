@@ -140,7 +140,8 @@ module.exports = {
             '870297686467817492', // Gewinnspiel Ping
             '870683971846041650', // Server-Events Ping
             '963838152815050763', // Änderungen Ping
-            '1147093175186493490', // Changelog Ping
+            '1147093175186493490', // Bot-Changelog Ping
+            '1478434516451463341', // Changelog Ping
             '1246190426646642698', // Dead Chat Ping
             '1230568420240527462', // Gratis Spiele Ping 
             '1231257421016469596', // Gaming News Ping
