@@ -47,7 +47,7 @@ module.exports = {
     //];
     
     //const rndContent = Math.floor(Math.random() * contents.length);
-    await leaveChannel.send({ content: contents[rndContent] });
+    //await leaveChannel.send({ content: contents[rndContent] });
 
         const logchannel = member.guild.channels.cache.get("1263436406655680513");
         if (!logchannel) return;
