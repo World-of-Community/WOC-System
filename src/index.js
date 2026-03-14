@@ -746,7 +746,7 @@ setInterval( async () => {
             '> `✨` » **Selbst** Programmierte Bots mit **einzigartigen Features!**\n' +
             '> `👥` » **Freundliche & Hilfsbereite** Community!\n' +
             '> `📄` » **Täglich neue Nachrichten** sowie **Gaming- & Film-News**\n' +
-            '> `🎮` » **Spielersuche System** wo ihr euren **Spielpartner finden** könnt\n' +
+            '> `🎮` » **Spielersuche** wo ihr euren **Spielpartner finden** könnt\n' +
             '> `🎥` » Eine **exklusive Live-Streamer** Rolle wenn du **Live** bist!\n' +
             '> `🚑` » **Support** bei Problemen rund um Discord & Minecraft\n' +
             '> `🏆` » **Levelsystem** mit **vielen Belohnungen**\n' +
