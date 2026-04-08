@@ -11,7 +11,7 @@ module.exports = {
         .addSubcommand((command) =>
             command
                 .setName('uprank')
-                .setDescription('» Aktualisiere die Rolle eines Teammitgliedes. 🔁')
+                .setDescription('» Setzt einen Benutzer auf eine höhere Rolle. 🔼')
                 .addUserOption(option => option.setName('user').setDescription('» Welcher Benutzer sollte aktualisiert werden?').setRequired(true))
                 .addRoleOption(option => option.setName('role').setDescription('» Auf welche Rolle soll der Benutzer befördert werden?').setRequired(true))
         )
@@ -21,6 +21,13 @@ module.exports = {
                 .setDescription('» Setzt einen Benutzer auf eine niedrigere Rolle. 🔽')
                 .addUserOption(option => option.setName('user').setDescription('» Der Benutzer, der herabgestuft werden soll.').setRequired(true))
                 .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, auf die der Benutzer herabgestuft werden soll.').setRequired(true))
+        )
+        .addSubcommand((command) =>
+            command                
+                .setName('area-change')
+                .setDescription('» Aktualisiere den Bereich eines Teammitgliedes. 🔄')
+                .addUserOption(option => option.setName('user').setDescription('» Welcher Benutzer sollte aktualisiert werden?').setRequired(true))
+                .addRoleOption(option => option.setName('role').setDescription('» Auf welche Rolle soll der Benutzer wechseln?').setRequired(true))
         )
         .addSubcommand((command) =>
             command
@@ -116,6 +123,45 @@ module.exports = {
                     console.error('Fehler beim Herabstufen des Benutzers:', error);
                     // Fehlerantwort an den interagierenden Nutzer senden
                     await interaction.reply({ content: '> ❌ » Es ist ein Fehler aufgetreten.', ephemeral: true });
+                }
+                break;
+
+            case "area-change":
+                try {
+                    const oldRole = member.roles.cache.find(r => areaRoles.includes(r.id));
+
+                    // Alte Bereichsrollen entfernen
+                    await member.roles.remove(areaRoles);
+            
+                    // Neue Rolle hinzufügen
+                    await member.roles.add(role);
+
+                    const AreaChangeEmbed = new EmbedBuilder()
+                        .setTitle('`🔄` | __TEAMMITGLIED BEREICHSWECHSEL__')
+                        .setDescription(
+                            `${member} hat den Bereich gewechselt.\n\n` +
+                            `**__Alter Bereich__**:\n${oldRole ? oldRole : "Kein Bereich"}\n\n` +
+                            `**__Neuer Bereich__**:\n${role}`
+                        )
+                        .setColor('Blurple')
+                        .setTimestamp();
+            
+                    await targetChannel.send({ embeds: [AreaChangeEmbed] });
+            
+                    await interaction.reply({ 
+                        content: '> `✅` » Der Bereich wurde erfolgreich geändert.', 
+                        ephemeral: true 
+                    });
+            
+                } catch (error) {
+            
+                    console.error('Fehler beim Bereichswechsel:', error);
+            
+                    await interaction.reply({ 
+                        content: '> ❌ » Es ist ein Fehler aufgetreten.', 
+                        ephemeral: true 
+                    });
+            
                 }
                 break;
 
