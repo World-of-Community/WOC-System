@@ -24,7 +24,7 @@ module.exports = {
         )
         .addSubcommand((command) =>
             command                
-                .setName('area-change')
+                .setName('bereichswechsel')
                 .setDescription('» Aktualisiere den Bereich eines Teammitgliedes. 🔄')
                 .addUserOption(option => option.setName('user').setDescription('» Welcher Benutzer sollte aktualisiert werden?').setRequired(true))
                 .addRoleOption(option => option.setName('role').setDescription('» Auf welche Rolle soll der Benutzer wechseln?').setRequired(true))
@@ -126,8 +126,21 @@ module.exports = {
                 }
                 break;
 
-            case "area-change":
+            case "bereichswechsel":
                 try {
+
+                    const areaRoles = [
+                        "929349039433056276", // Developer
+                        "816985466230145044", // Sr-Moderator
+                        "815920052385480754", // Moderator
+                        "815920170371383366", // Supporter
+                        "1263645368441241700", // Builder
+
+                        "1154345358030282782", // Developer leitung
+                        "1155080722466488351", // Support leitung
+                        "1258773853249863734", // Builder leitung
+                        "1175879013688954980", // Partner leitung
+                    ];
                     const oldRole = member.roles.cache.find(r => areaRoles.includes(r.id));
 
                     // Alte Bereichsrollen entfernen
@@ -158,7 +171,7 @@ module.exports = {
                     console.error('Fehler beim Bereichswechsel:', error);
             
                     await interaction.reply({ 
-                        content: '> ❌ » Es ist ein Fehler aufgetreten.', 
+                        content: '> `❌` » Es ist ein Fehler aufgetreten.', 
                         ephemeral: true 
                     });
             
