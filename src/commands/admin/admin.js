@@ -150,7 +150,7 @@ module.exports = {
                     await member.roles.add(role);
 
                     const AreaChangeEmbed = new EmbedBuilder()
-                        .setTitle('`🔄` | __TEAMMITGLIED BEREICHSWECHSEL__')
+                        .setTitle('`🔁` | __TEAMMITGLIED BEREICHSWECHSEL__')
                         .setDescription(
                             `${member} hat den Bereich gewechselt.\n\n` +
                             `**__Alter Bereich__**:\n${oldRole ? oldRole : "Kein Bereich"}\n\n` +
@@ -180,7 +180,7 @@ module.exports = {
 
                 case "add":
                     try {
-                        // Teamrolle + Hauptrang hinzufügen
+                        // Teamrolle + Hauptrang
                         await member.roles.add(role);
                         await member.roles.add(teamrole);
                 
@@ -192,9 +192,8 @@ module.exports = {
                         //});
                 
                         // ID der Supporter-Rolle
-                        const supporterRoleId = '815920170371383366'; // ← diese ID anpassen!
+                        const supporterRoleId = '815920170371383366';
                 
-                        // Zusätzliche Rollen für Supporter (4 Rollen)
                         const supporterExtraRoles = [
                             '1011207481357238272', // Ticket Support
                             '1270369938972082177', // Ticket Bereich
@@ -203,14 +202,13 @@ module.exports = {
                             '1285728292367892584' // Report Log
                         ];
                 
-                        // Zusätzliche Rollen für andere Teamränge (3 Rollen)
+                        // Zusätzliche Rollen für andere Teamränge
                         const defaultExtraRoles = [
                             '1270369938972082177', // Ticket Bereich
                             '1155570143393488896', // Bann Bereich
                             '1285728292367892584' // Report Log
                         ];
                 
-                        // Prüfen, ob der gegebene Rang die Supporter-ID hat
                         if (role.id === supporterRoleId) {
                             for (const r of supporterExtraRoles) {
                                 await member.roles.add(r).catch(() => {});
