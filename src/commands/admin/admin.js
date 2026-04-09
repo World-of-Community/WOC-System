@@ -80,48 +80,39 @@ module.exports = {
         switch (sub) {
             case "uprank":
                 try {
-                    // Füge die Rolle zum Nutzer hinzu
                     await member.roles.add(role);
                 
-                    // Embed für das Rollenupdate erstellen
                     const Uprankembed = new EmbedBuilder()
                         .setTitle('`🔼` | __TEAMMITGLIED RANGUPDATE__')
                         .setDescription(`Herzlichen Glückwunsch, ${member}!\nDu wurdest **befördert!**\n\n**__Rang__**:\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
                 
-                    // Nachricht im Zielkanal senden
                     await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
                 
-                    // Antwort an den interagierenden Nutzer senden
                     await interaction.reply({ content: '> `✅` » Das Teammitglied wurde **befördert.**', ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Hinzufügen der Rolle:', error);
-                    // Fehlerantwort an den interagierenden Nutzer senden
+
                     await interaction.reply({ content: '> ❌ » Es ist ein Fehler aufgetreten.', ephemeral: true });
                 }
                 break;
 
             case "downrank":
                 try {
-                    // Entferne die Rolle des Nutzers
                     await member.roles.remove(role);
                 
-                    // Embed für das Rollenupdate erstellen
                     const RangUpdateembed = new EmbedBuilder()
                         .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
                         .setDescription(`${member} wurde **herabgestuft.**\n\n**__Rang__**:\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
                 
-                    // Nachricht im Zielkanal senden
                     await targetChannel.send({ embeds: [RangUpdateembed] });
-                
-                    // Antwort an den interagierenden Nutzer senden
                     await interaction.reply({ content: '> `✅` » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
+
                 } catch (error) {
                     console.error('Fehler beim Herabstufen des Benutzers:', error);
-                    // Fehlerantwort an den interagierenden Nutzer senden
                     await interaction.reply({ content: '> ❌ » Es ist ein Fehler aufgetreten.', ephemeral: true });
                 }
                 break;
@@ -143,10 +134,7 @@ module.exports = {
                     ];
                     const oldRole = member.roles.cache.find(r => areaRoles.includes(r.id));
 
-                    // Alte Bereichsrollen entfernen
                     await member.roles.remove(areaRoles);
-            
-                    // Neue Rolle hinzufügen
                     await member.roles.add(role);
 
                     const AreaChangeEmbed = new EmbedBuilder()
