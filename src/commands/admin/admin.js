@@ -76,6 +76,13 @@ module.exports = {
         const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
         const sub = interaction.options.getSubcommand();
         const teamrole = interaction.guild.roles.cache.get('820658664536145940');
+
+        if (member.user.bot) {
+            return interaction.reply({
+                content: '> `❌` » Bots sind nicht erlaubt!',
+                ephemeral: true
+            });
+        }
     
         switch (sub) {
             case "uprank":
@@ -94,7 +101,7 @@ module.exports = {
                 } catch (error) {
                     console.error('Fehler beim Hinzufügen der Rolle:', error);
 
-                    await interaction.reply({ content: '> ❌ » Es ist ein Fehler aufgetreten.', ephemeral: true });
+                    await interaction.reply({ content: '> `❌` » Es ist ein Fehler aufgetreten.', ephemeral: true });
                 }
                 break;
 
@@ -113,7 +120,7 @@ module.exports = {
 
                 } catch (error) {
                     console.error('Fehler beim Herabstufen des Benutzers:', error);
-                    await interaction.reply({ content: '> ❌ » Es ist ein Fehler aufgetreten.', ephemeral: true });
+                    await interaction.reply({ content: '> `❌` » Es ist ein Fehler aufgetreten.', ephemeral: true });
                 }
                 break;
 
@@ -218,7 +225,7 @@ module.exports = {
                         await interaction.reply({ content: `> \`✅\` » Ein neues Teammitglied ist nun da.`, ephemeral: true});
                     } catch (error) {
                         console.error('Fehler beim Hinzufügen der Rolle:', error);
-                        interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
+                        interaction.reply({ content: '> `❌` » Es ist ein Fehler aufgetreten.', ephemeral: true });
                     }
                 break;
 
@@ -254,7 +261,7 @@ module.exports = {
                         await interaction.reply({ content: '> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**', ephemeral: true });
                     } catch (error) {
                         console.error('❌  | Fehler beim Kicken des Benutzers:', error);
-                        interaction.reply({ content: `> \`❌\` » Es ist ein Fehler aufgetreten.`, ephemeral: true });
+                        interaction.reply({ content: '> `❌` » Es ist ein Fehler aufgetreten.', ephemeral: true });
                     }
                     break;
 
