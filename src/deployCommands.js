@@ -4,6 +4,14 @@ const path = require("path");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v10");
 
+const isBlockedCommand = (name = "") => {
+    const normalized = name.toLowerCase();
+    return normalized.includes("coin")
+        || normalized.includes("leaderboard")
+        || normalized === "season-pass"
+        || normalized === "daily";
+};
+
 const deployCommands = async function deploy() {
 
     const file = fs.readFileSync(path.resolve(__dirname, 'json/config.json'), 'utf-8');
@@ -20,6 +28,9 @@ const deployCommands = async function deploy() {
             } else if (file.endsWith(".js")) {
                 const command = require(fullPath);
                 if (command.data) {
+                    if (isBlockedCommand(command.data.name)) {
+                        continue;
+                    }
                     commands.push(command.data.toJSON());
                 }
             }
