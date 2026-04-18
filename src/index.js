@@ -96,6 +96,19 @@ let invites = new Map();
 
 client.setMaxListeners(20); // Sets the limit to 20 listeners
 
+const isBlockedCommand = (name = "") => {
+    const normalized = name.toLowerCase();
+    return normalized.includes("coin")
+        || normalized.includes("leaderboard")
+        || normalized === "season-pass"
+        || normalized === "daily";
+};
+
+const blockedEventFiles = new Set([
+    "levelsystemevent.js",
+    "presenceUpdate.js"
+]);
+
 // Lade Commands
 deployCommands();
 client.commands = new Collection();
@@ -110,6 +123,10 @@ const readCommands = (dir, table) => {
             try {
                 const command = require(fullPath);
                 if (command.data && command.data.name) {
+                    if (isBlockedCommand(command.data.name)) {
+                        table.addRow(command.data.name, '⏭️');
+                        continue;
+                    }
                     client.commands.set(command.data.name, command);
                     table.addRow(command.data.name, '✅');
                 } else {
@@ -137,6 +154,10 @@ const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
+    if (blockedEventFiles.has(file)) {
+        continue;
+    }
+
     const filePath = path.join(eventsPath, file);
     const event = require(filePath);
     if (event.once) {
@@ -634,9 +655,9 @@ cron.schedule('0 0 * * *', async () => {
 
         // 2️⃣ Danach Nachricht senden
         await channel.send(
-            '<a:pin:1119708768326914100>  » | **2-FACH XP-EVENT** - <a:Chat1:976129450112593990>\n\n' +
+            '<a:pin:1119708768326914100>  » | **WOCHENEND-EVENT** - <a:Chat1:976129450112593990>\n\n' +
             'Liebe Community, <@&870683971846041650>\n\n' +
-            'Wir starten ein **XP-Event** welches **von Freitag bis Sonntag läuft**. In dieser Zeit habt ihr die Möglichkeit, durch Chat & Voice Aktivität, mehr XP als normalerweise zu bekommen, die XP werden mit **2 multipliziert**. Also lohnt es sich besonders in dieser Zeit aktiv zu sein um schneller Leveln zu können.\n\n' +
+            'Von Freitag bis Sonntag läuft ein **Community-Event**. Schaut vorbei und verbringt gemeinsam eine gute Zeit auf dem Server.\n\n' +
             'Mit freundlichen Grüßen\nEuer **World Of Community**-Team <:pepeheart:974642478055555082>'
         );
 
@@ -1005,8 +1026,6 @@ function determineEmoji(priceInput) {
         return "<a:nitro:1186636151335944283>";
     } else if (priceInput.toLowerCase().includes("nitro") && priceInput.toLowerCase().includes("basic")) {
         return "<a:basic:1186636165567229972>";
-    } else if (priceInput.toLowerCase().includes("coins") && priceInput.toLowerCase().includes("coins")) {
-        return "`🪙`";
     } else if (priceInput.toLowerCase().includes("guthaben")) {
         return "<a:guthaben:1186636139281530970>";
     } else {
