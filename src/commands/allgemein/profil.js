@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const userdb = require('../../../Datenbank/userdb');
-const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -293,20 +292,6 @@ module.exports = {
         const inviteLeft = invites.left || 0;
         const totalInvites = inviteJoins + inviteBonus - inviteLeft;
 
-        // Suche nach den Coins des Benutzers in der Datenbank
-        let memberCoins = await Coin.findOne({ userId: member.user.id });
-
-        if (!memberCoins) {
-          memberCoins = new Coin({
-            userId: member.user.id,
-            coins: 0
-          });
-          await memberCoins.save();
-        }
-        
-        // Formatierung der Coins mit Tausendertrennzeichen
-        const formattedCoins = memberCoins.coins.toLocaleString('de-DE');
-
         let lastOnlineText = '';
 
         const isOffline = !member.presence; // offline ODER unsichtbar
@@ -341,7 +326,6 @@ module.exports = {
                 `- \`📌\` » Geschlecht: ${userGeschlecht}\n` +
                 `${outputText}\n` +
                 `- \`⭐\` » Nutzer-Level: ${levelRoles.length > 0 ? levelRoles.join(', ') : '**Keine Levelrolle**'}\n` +
-                `- \`🪙\` » Konto: **${formattedCoins} Coins**\n` +
                 `- \`🎮\` » Meine Spiele: ${roleGamesList.length > 0 ? roleGamesList.join(', ') : '**Keine Spiele**'}\n` +
                 `- \`🔔\` » Server-Pings: ${rolePingsList.length > 0 ? rolePingsList.join(', ') : '**Keine Server-Pings**'}\n\n` +
                 `> \`📊\` **» ALLE STATISTIKEN**\n` +
