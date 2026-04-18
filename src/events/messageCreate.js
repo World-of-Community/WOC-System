@@ -5,8 +5,6 @@ const userdb = require("../../Datenbank/userdb");
 const messagedb = require("../../Datenbank/messagedb");
 const teamdb = require("../../Datenbank/teamdb");
 const bumpdb = require("../../Datenbank/bumpdb");
-const { Coin, CoinConfig } = require("../../Datenbank/coindb");
-const messageCooldown = new Map();
 const { time } = require("console");
 
 const TeamRoleIds = [
@@ -226,30 +224,11 @@ module.exports = {
     if (!message?.content) return;
 
     const lootTable = [
-        // GEWÖHNLICH 60%
-        { string: '1 Level',      rarity: 'Gewöhnlich', probability: 0.15 },
-        { string: '200 EXP',      rarity: 'Gewöhnlich', probability: 0.15 },
-        { string: '500 Coins',    rarity: 'Gewöhnlich', probability: 0.15 },
-        { string: '750 Coins',    rarity: 'Gewöhnlich', probability: 0.15 },
-
-        // UNGEWÖHNLICH 25%
-        { string: '2 Level',      rarity: 'Ungewöhnlich', probability: 0.07 },
-        { string: '3 Level',      rarity: 'Ungewöhnlich', probability: 0.06 },
-        { string: '1.000 Coins',  rarity: 'Ungewöhnlich', probability: 0.06 },
-        { string: '1.000 EXP',    rarity: 'Ungewöhnlich', probability: 0.06 },
-
-        // SELTEN 10%
-        { string: '4 Level',      rarity: 'Selten', probability: 0.03 },
-        { string: '5 Level',      rarity: 'Selten', probability: 0.03 },
-        { string: '2.500 Coins',  rarity: 'Selten', probability: 0.02 },
-        { string: '5.000 Coins',  rarity: 'Selten', probability: 0.02 },
-
-        // EPISCH 4%
-        { string: '7.500 Coins',  rarity: 'Episch', probability: 0.02 },
-        { string: '10.000 Coins', rarity: 'Episch', probability: 0.02 },
-
-        // LEGENDÄR 1%
-        { string: '50.000 Coins', rarity: 'Legendär (Jackpot)', probability: 0.01 }
+        { string: '1 Level', rarity: 'Gew�hnlich', probability: 0.35 },
+        { string: '2 Level', rarity: 'Gew�hnlich', probability: 0.30 },
+        { string: '3 Level', rarity: 'Ungew�hnlich', probability: 0.25 },
+        { string: '4 Level', rarity: 'Selten', probability: 0.07 },
+        { string: '5 Level', rarity: 'Episch', probability: 0.03 }
     ];
 
     const rarityColors = {
@@ -362,50 +341,6 @@ module.exports = {
 
         if (message.author.bot) return;
 
-        const userId = message.author.id;
-        const guildId = message.guild.id;
-        const now = Date.now();
-    
-        // ⚙️ Config laden oder erstellen
-        let coinsconfig = await CoinConfig.findOne({ guildId });
-        if (!coinsconfig) {
-          coinsconfig = new CoinConfig({
-            guildId,
-            minCoins: 1,
-            maxCoins: 5
-          });
-          await coinsconfig.save();
-        }
-    
-        // ⏱️ Cooldown (5 Sekunden)
-        const last = messageCooldown.get(userId);
-        if (last && now - last < 5000) return;
-        messageCooldown.set(userId, now);
-    
-        // 👤 User Coins
-        let userCoins = await Coin.findOne({ userId });
-        if (!userCoins) {
-          userCoins = new Coin({
-            userId,
-            coins: 0,
-            streak: 0
-          });
-        }
-    
-        // 🎲 Zufällige Coins (NaN-sicher)
-        const min = Number(coinsconfig.minCoins);
-        const max = Number(coinsconfig.maxCoins);
-    
-        if (!Number.isFinite(min) || !Number.isFinite(max)) {
-          console.error('[COINS] Ungültige CoinConfig:', coinsconfig);
-          return;
-        }
-    
-        const coinsToAdd = Math.floor(Math.random() * (max - min + 1)) + min;
-    
-        userCoins.coins += coinsToAdd;
-        await userCoins.save();
-
         // Bump System
         const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
         const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
@@ -503,3 +438,5 @@ module.exports = {
     }
     }
 }
+
+
