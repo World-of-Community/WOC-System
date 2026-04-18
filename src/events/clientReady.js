@@ -12,7 +12,6 @@ const cron = require("node-cron");
 const Parser = require("rss-parser");
 const parser = new Parser();
 const FeedManager = require("../FeedManager");
-const { leaderboardSchedules } = require("../../functions/leaderboard");
 const { processRSSFeed } = FeedManager;
 
 module.exports = {
@@ -36,8 +35,6 @@ module.exports = {
       return;
     }
     console.log("💙  | Verbunden mit Discord");
-
-    leaderboardSchedules(client)
 
     // RSS Feed
     setInterval(async () => {
