@@ -8,7 +8,6 @@ const Timeout = require('../../Datenbank/timeoutdb');
 const Warn = require('../../Datenbank/warndb');
 const bandb = require('../../Datenbank/bandb');
 const Meeting = require('../../Datenbank/meetingdb');
-const { Coin } = require("../../Datenbank/coindb");
 const Note = require("../../Datenbank/notedb");
 
 // Beta Features (Buttons & Modals)
@@ -22,31 +21,8 @@ const partnerButton = require("../buttons/partnerButton");
 const partnerModal = require("../modals/partnerModal");
 
 const rewards = {
-    1: { type: 'coins', value: 100 },
-    2: { type: 'coins', value: 200 },
-    3: { type: 'coins', value: 300 },
-    4: { type: 'coins', value: 400 },
-    5: { type: 'coins', value: 500 },
     6: { type: 'role', value: '1442140220182106184' }, // Adventskalender 2025
-    7: { type: 'coins', value: 700 },
-    8: { type: 'coins', value: 800 },
-    9: { type: 'coins', value: 900 },
-    10: { type: 'coins', value: 1000 },
-    11: { type: 'coins', value: 1100 },
-    12: { type: 'coins', value: 1200 },
-    13: { type: 'coins', value: 1300 },
-    14: { type: 'coins', value: 1400 },
-    15: { type: 'coins', value: 1500 },
-    16: { type: 'coins', value: 1600 },
-    17: { type: 'coins', value: 1700 },
-    18: { type: 'coins', value: 1800 },
-    19: { type: 'coins', value: 1900 },
-    20: { type: 'coins', value: 2000 },
-    21: { type: 'coins', value: 2100 },
-    22: { type: 'coins', value: 2200 },
-    23: { type: 'coins', value: 2300 },
     24: { type: 'role', value: '1445064222894460970' } // Weihnachten 2025
-    
 };
 
 module.exports = {
@@ -289,18 +265,6 @@ module.exports = {
         const reward = rewards[dayNumber];
 
         switch (reward?.type) {
-            case 'coins':
-                let coinData = await Coin.findOne({ userId: interaction.user.id });
-                if (!coinData) {
-                    coinData = await Coin.create({ userId: interaction.user.id, coins: 0 });
-                }
-            
-                coinData.coins += reward.value;
-                await coinData.save();
-            
-                rewardMessage = `> \`🎉\` » Du hast **${reward.value} Coins** erhalten!\n> \`💰\` » Die Coins wurden **automatisch deinem Konto gutgeschrieben**.`;
-            break;
-
             case 'role':
                 const role = interaction.guild.roles.cache.find(r => r.id === reward.value);
             if (role) {
@@ -624,7 +588,7 @@ module.exports = {
                             `» Alle **Rollen in dieser Liste** kannst du nur auf ganz **bestimmer Art und Weise** erhalten, dennoch haben sie **mächtige Vorteile.**\n\n` +
                             `> \`🔮\` 𑁉 <@&843013551605284864> (\`${roleCountbooster}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> **Rang freischalten:** Booste diesen Server!\n\n` +
-                            `<:PfeilBlau:1119711275014955080> **2X XP-Boost** in allen Chats!\n` +
+                            `<:PfeilBlau:1119711275014955080> **Exklusive Community-Vorteile** für Booster.\n` +
                             `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n` +
                             `<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n` +
                             `<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n` +
@@ -798,37 +762,9 @@ module.exports = {
             });
         }
 
-        // ShopPass System (Buttons)
-        if (interaction.customId === 'shoppass_buy') {
-          const embed = new EmbedBuilder()
-            .setTitle('`💎` **Vorteile kaufen** – Bald verfügbar')
-            .setDescription(
-                '> **50.000** Coins ➜ **30 Tage** Premium\n' +
-                '> **100.000** Coins ➜ **60 Tage** Premium\n' +
-                '> **150.000** Coins ➜ **90 Tage** Premium\n' +
-                '> **200.000** Coins ➜ **120 Tage** Premium\n\n' +
-                '> **Hinweis:** Der ShopPass ist aktuell noch in der Entwicklung und wird bald veröffentlicht. Schaue später erneut vorbei!'
-            )
-            .setColor('Green');
-        
+        if (interaction.customId?.startsWith('shoppass_')) {
           await interaction.reply({
-            embeds: [embed],
-            ephemeral: true
-          });
-          return;
-        }
-        
-        if (interaction.customId === 'shoppass_account') {
-          await interaction.reply({
-            content: '> `🪙` Dein Konto – Bald Verfügbar',
-            ephemeral: true
-          });
-          return;
-        }
-        
-        if (interaction.customId === 'shoppass_show') {
-          await interaction.reply({
-            content: '> `🎟️` ShopPass anzeigen – Bald Verfügbar',
+            content: '> `ℹ️` » SeasonPass/ShopPass wurde entfernt.',
             ephemeral: true
           });
           return;
