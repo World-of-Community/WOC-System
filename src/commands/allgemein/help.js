@@ -87,18 +87,12 @@ module.exports = {
                         '» Finde deinen Spielpartner mit einer bestimmten Rolle.\n\n' +
                         '> `⚽` - `/club-profil`\n' +
                         '» Zeigt Informationen zu einem Fußballclub.\n\n' +
-                        '> `🪙` - `/daily`\n' +
-                        '» Hole dir deine tägliche Belohnung.\n\n' +
-                        '> `🪙` - `/daily-leaderboard`\n' +
-                        '» Zeigt das Coins-Top 10 Leaderboard an.\n\n' +
                         '> `❗` - `/report <@User>`\n' +
                         '» Melde einen User der sich nicht an die Server-Regeln hält.\n\n' +
                         '> `👤` - `/profil <@User>`\n' +
                         '» Zeigt dir nützliche Stats über einen Account.\n\n' +
                         '> `💰` - `/donated <@User>`\n' +
                         '» Zeigt dir an, wie viel jemand gespendet hat.\n\n' +
-                        '> `🪙` - `/coins <@User>`\n' +
-                        '» Zeigt die aktuellen Coins eines Benutzers an.\n\n' +
                         '> `🎂` - `/birthday-set`\n' +
                         '» Setze deinen Geburtstag fest und feiere ihn mit uns!\n\n' +
                         '> `👑` - `/erfolginfo`\n' +
