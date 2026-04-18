@@ -9,8 +9,7 @@ module.exports = {
             { name: 'Ränge Info (Rollen Info)', value: 'ränge-info' }, 
             { name: 'Regelwerk (Server-regeln)', value: 'regelwerk' }, 
             { name: 'Partner (Partner werden)', value: 'partner' }, 
-            { name: 'Bann-Bereich Embed (Gebannt)', value: 'gebannt' },
-            { name: 'SeasonPass (SeasonPass)', value: 'seasonpass' }
+            { name: 'Bann-Bereich Embed (Gebannt)', value: 'gebannt' }
         ))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
@@ -158,43 +157,6 @@ module.exports = {
                         .setStyle(ButtonStyle.Primary)
                 )
             await msg.edit({ embeds: [gebanntEmbed], components: [gebanntButton] })
-
-        } else if (embedType === 'seasonpass') {
-            const channel = interaction.guild.channels.cache.get("1403497460332232745"); // Channel ID
-            const msg = await channel.messages.fetch("1462195899584217315"); // Nachricht ID
-
-            const seasonpassEmbed = new EmbedBuilder()
-                .setTitle('🎟️ SeasonPass')
-                .setDescription( 
-                 'Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 20 Rewards!\n\n' +
-                 '**Auf einen Blick**:\n' +
-                 '» Alle 30 Tage ein Pass mit 20 Rewards\n' +
-                 '» Davon 7 Free, 13 Premium\n' +
-                 '» Schreibe aktiv, um deine Rewards freizuschalten\n\n' +
-                 '**So Geht\'s**:\n' +
-                 '» Schreibe jeden Tag mindestens 1x\n' +
-                 '» Du erhältst XP, mit denen du Rewards freischaltest\n' +
-                 '» 150 XP wenn du am vorherigen Tag auch geschrieben hast\n' +
-                 '» Ansonsten nur 100 XP - aktives Schreiben wird belohnt!\n\n' +
-                 '`📌` » **Premium Pass**: Alle Rewards inkl. **5000 Coins**!\n'
-                )
-                .setColor('Blurple')
-
-            const row = new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setCustomId('shoppass_show')
-                .setLabel('SeasonPass anzeigen')
-                .setEmoji('🎟️')
-                .setStyle(ButtonStyle.Primary),
-        
-              new ButtonBuilder()
-                .setCustomId('shoppass_buy')
-                .setLabel('Alle Rewards freischalten')
-                .setEmoji('💎')
-                .setStyle(ButtonStyle.Secondary)
-            );
-            await msg.edit({ embeds: [seasonpassEmbed], components: [row] })
-
         } else {
             await interaction.reply({ content: `> \`❌\` » Embed wurde nicht gefunden.`, ephemeral: true });
         } 
@@ -202,3 +164,4 @@ module.exports = {
         await interaction.reply({ content: `> \`✅\` » das \`${embedType}\`-Embed wurde gesendet oder bearbeitet.`, ephemeral: true })
     }
 }
+
