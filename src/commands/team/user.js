@@ -303,7 +303,8 @@ module.exports = {
                     `**\`📌\` Benutzerinformationen**\n` +
                     `> \`👤\` » Benutzername: \`${user.username}\`\n` +
                     `> \`🆔\` » Benutzer-ID: \`${user.id}\`\n` +
-                    `> \`🏷️\` » Anzeigename: \`${member?.displayName || user.username}\`\n\n` +
+                    `> \`🏷️\` » Anzeigename: \`${member?.displayName || user.username}\`\n` +
+                    `> \`📍\` » Erwähnung: ${user}\n\n` +
 
                     `**\`⏰\` Mitglied seit**\n` +
                     `> \`📅\` » Erstellt: ${createdAt}\n` +
