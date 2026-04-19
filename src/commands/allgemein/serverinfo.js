@@ -1,4 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { 
+    SlashCommandBuilder, 
+    EmbedBuilder, 
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonStyle 
+} = require("discord.js");
+
 const { DateTime } = require("luxon");
 const Server = require("../../../Datenbank/usercounterdb");
 
@@ -6,7 +13,6 @@ function formatBoostDuration(boostTimestamp) {
     const boostStart = DateTime.fromJSDate(boostTimestamp);
     const now = DateTime.now();
 
-    // Gesamte Tage seit Boost, aufgerundet
     const totalDays = Math.ceil(now.diff(boostStart, "days").days);
     const years = Math.floor(totalDays / 365);
     const days = totalDays % 365;
@@ -33,14 +39,13 @@ module.exports = {
     async execute(interaction) {
         const guild = interaction.guild;
         const members = await guild.members.fetch();
-        const botCount = members.filter(member => member.user.bot).size;
-        const userCount = members.filter(member => !member.user.bot).size;
+
+        const botCount = members.filter(m => m.user.bot).size;
+        const userCount = members.filter(m => !m.user.bot).size;
 
         const onlineMembers = members.filter(m =>
-            m.presence?.status === 'online' ||
-            m.presence?.status === 'idle' ||
-            m.presence?.status === 'dnd'
-        ).filter(member => !member.user.bot).size.toLocaleString("de-DE") || 0;
+            ['online', 'idle', 'dnd'].includes(m.presence?.status)
+        ).filter(m => !m.user.bot).size.toLocaleString("de-DE") || 0;
 
         let serverData = await Server.findOne({ guildId: guild.id });
         if (!serverData) {
@@ -56,47 +61,137 @@ module.exports = {
         }
 
         const createdAt = `<t:${Math.round(guild.createdTimestamp / 1000)}:D>`;
-        const joinedAt = `<t:${Math.round(interaction.member.joinedTimestamp / 1000)}:R>`;
-
         const emojiCount = guild.emojis.cache.size;
 
+        // 🔥 Booster vorbereiten
         const boosterRole = guild.roles.cache.find(role => role.tags?.premiumSubscriberRole);
 
-        let boosterMentions = 'Kein Booster';
+        let boosters = [];
+        let boosterPages = [];
+
         if (boosterRole) {
-            const boosters = boosterRole.members;
-            if (boosters.size > 0) {
-                boosterMentions = boosters.map(member => {
-                    const boostSince = member.premiumSince;
-                    let durationText = "";
-                    if (boostSince) {
-                        const formatted = formatBoostDuration(boostSince);
-                        if (formatted) {
-                            durationText = ` – **seit ${formatted}**`;
-                        }
+            boosters = boosterRole.members.map(member => {
+                const boostSince = member.premiumSince;
+                let durationText = "";
+
+                if (boostSince) {
+                    const formatted = formatBoostDuration(boostSince);
+                    if (formatted) {
+                        durationText = ` – **seit ${formatted}**`;
                     }
-                    return `${member.toString()}${durationText}`;
-                }).join('\n> ');
-            }
+                }
+
+                return `${member.toString()}${durationText}`;
+            });
         }
 
-        const serverEmbed = new EmbedBuilder()
-            .setTitle(`${guild.name} - Server Information`)
-            .setDescription(
-                `> \`⏰\` » **Server Erstellt:** ${createdAt} (${joinedAt})\n` +
-                `> \`👥\` » **Mitglieder:** \`${guild.memberCount.toLocaleString("de-DE")}\`\n` +
-                `> \`👤\` » **User:** \`${userCount.toLocaleString("de-DE")}\`\n` +
-                `> \`⚙️\` » **Bots:** \`${botCount}\`\n` +
-                `> \`🟢\` » **Online:** \`${onlineMembers.toLocaleString("de-DE")}\`\n` +
-                `> \`📈\` » **Erreichte Useranzahl:** \`${serverData.highestUserCount.toLocaleString("de-DE")}\`\n\n` +
-                `> <a:nitro:1186636151335944283> » Boost Level: **${guild.premiumTier}** (**${guild.premiumSubscriptionCount}** Boosts)\n` +
-                `> \`💖\` » **Server Booster:**\n> ${boosterMentions}\n\n` +
-                `> \`🎭\` » Wir haben aktuell **${emojiCount}** Emotes.`
-            )
-            .setColor('Blurple')
-            .setThumbnail(guild.iconURL({ dynamic: true }))
-            .setFooter({ text: `${guild.name} | Server Information`, iconURL: `${guild.iconURL()}` });
+        for (let i = 0; i < boosters.length; i += 20) {
+            boosterPages.push(boosters.slice(i, i + 20));
+        }
 
-        interaction.reply({ embeds: [serverEmbed], ephemeral: true });
+        let currentPage = 0;
+        let view = "main"; // main | boosters
+
+        // 📄 MAIN EMBED
+        function mainEmbed() {
+            return new EmbedBuilder()
+                .setTitle(`${guild.name} - Server Information`)
+                .setDescription(
+                    `> \`⏰\` » **Server Erstellt:** ${createdAt}\n` +
+                    `> \`👥\` » **Mitglieder:** \`${guild.memberCount.toLocaleString("de-DE")}\`\n` +
+                    `> \`👤\` » **User:** \`${userCount.toLocaleString("de-DE")}\`\n` +
+                    `> \`⚙️\` » **Bots:** \`${botCount}\`\n` +
+                    `> \`🟢\` » **Online:** \`${onlineMembers}\`\n` +
+                    `> \`📈\` » **Erreichte Useranzahl:** \`${serverData.highestUserCount.toLocaleString("de-DE")}\`\n\n` +
+
+                    `> <a:nitro:1186636151335944283> » Boost Level: **${guild.premiumTier}** (**${guild.premiumSubscriptionCount}** Boosts)\n` +
+                    `> \`💖\` » Booster: **${boosters.length}**`
+                )
+                .setColor("Blurple")
+                .setThumbnail(guild.iconURL({ dynamic: true }));
+        }
+
+        // 📄 BOOSTER EMBED
+        function boosterEmbed(page) {
+            return new EmbedBuilder()
+                .setTitle(`💖 Server Booster`)
+                .setDescription(
+                    `> Seite ${boosterPages.length ? page + 1 : 1}/${boosterPages.length || 1}\n\n` +
+                    `> ${boosterPages[page]?.join('\n> ') || 'Keine Booster'}`
+                )
+                .setColor("Pink");
+        }
+
+        function getButtons() {
+            if (view === "main") {
+                return [
+                    new ActionRowBuilder().addComponents(
+                        new ButtonBuilder()
+                            .setCustomId("show_boosters")
+                            .setLabel("💖 Booster anzeigen")
+                            .setStyle(ButtonStyle.Primary)
+                    )
+                ];
+            }
+
+            return [
+                new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId("prev")
+                        .setLabel("⬅️")
+                        .setStyle(ButtonStyle.Secondary),
+
+                    new ButtonBuilder()
+                        .setCustomId("next")
+                        .setLabel("➡️")
+                        .setStyle(ButtonStyle.Secondary),
+
+                    new ButtonBuilder()
+                        .setCustomId("back")
+                        .setLabel("🔙 Zurück")
+                        .setStyle(ButtonStyle.Danger)
+                )
+            ];
+        }
+
+        const msg = await interaction.reply({
+            embeds: [mainEmbed()],
+            components: getButtons(),
+            ephemeral: true
+        });
+
+        const collector = msg.createMessageComponentCollector({ time: 60000 });
+
+        collector.on("collect", async i => {
+            if (i.user.id !== interaction.user.id) {
+                return i.reply({ content: "Nicht dein Menü!", ephemeral: true });
+            }
+
+            if (i.customId === "show_boosters") {
+                view = "boosters";
+                currentPage = 0;
+            }
+
+            if (i.customId === "back") {
+                view = "main";
+            }
+
+            if (i.customId === "next") {
+                currentPage = (currentPage + 1) % boosterPages.length;
+            }
+
+            if (i.customId === "prev") {
+                currentPage = (currentPage - 1 + boosterPages.length) % boosterPages.length;
+            }
+
+            await i.update({
+                embeds: [view === "main" ? mainEmbed() : boosterEmbed(currentPage)],
+                components: getButtons()
+            });
+        });
+
+        collector.on("end", async () => {
+            await interaction.editReply({ components: [] });
+        });
     }
 };
