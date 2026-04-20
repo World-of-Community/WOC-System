@@ -62,7 +62,7 @@ module.exports = {
                         },
                         {
                             name: '> `😑` - `/cringe`',
-                            value: 'Zeig jemanden, dass er sich peinlich verhält.',
+                            value: 'Zeig jemanden, das er sich peinlich verhält.',
                             inline: true
                         },
                         {
