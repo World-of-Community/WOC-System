@@ -52,19 +52,45 @@ module.exports = {
                     .setDescription(
                         '» Hier findest du alle unterhaltsamen **Fun-Befehle**, welche jederzeit verwendet werden können zum Spaß.\n\n' +
                         '`🚑` » Öffne bei Fragen oder Problemen ein Ticket im Support.\n' +
-                        '`📌` » Du musst bei jedem Befehl einen User **erwähnen!**\n\n' +
-                        '> `🤔` - `/ask FRAGE`\n' +
-                        '» Frage den magischen Bot etwas.\n\n' +
-                        '> `👋` - `/pat`\n' +
-                        '» Streichelt ein braves Mitglied des Servers.\n\n' +
-                        '> `😑` - `/cringe`\n' +
-                        '» Zeig jemanden, das er sich peinlich verhält.\n\n' +
-                        '> `🤗` - `/hug`\n'+
-                        '» Umarme einen Freund von dir.\n\n' +
-                        '> `👊` - `/brofist`\n' +
-                        '» Verbünde dich mit deinem Bro.\n\n' +
-                        '> `😂` - `/laugh`\n' +
-                        '» Lache einen Freund aus. Autsch.'
+                        '`📌` » Du musst bei jedem Befehl einen User **erwähnen!**\n\n'
+                    )
+                    .addFields(
+                        {
+                            name: '> `👋` - `/pat`',
+                            value: 'Streichelt ein braves Mitglied des Servers.',
+                            inline: true
+                        },
+                        {
+                            name: '> `😑` - `/cringe`',
+                            value: 'Zeig jemanden, dass er sich peinlich verhält.',
+                            inline: true
+                        },
+                        {
+                            name: '> `🤗` - `/hug`',
+                            value: 'Umarme einen Freund von dir.',
+                            inline: true
+                        },
+                        {
+                            name: '> `👊` - `/brofist`',
+                            value: 'Verbünde dich mit deinem Bro.',
+                            inline: true
+                        },
+                        {
+                            name: '> `😂` - `/laugh`',
+                            value: 'Lache einen Freund aus. Autsch.',
+                            inline: true
+                        },
+                        {
+                            name: '> `💸` - `/rob`',
+                            value: 'Für den Fall das du Kleingeld benötigst.',
+                            inline: true
+                        },
+                        {
+                            name: '> `🤔` - `/ask`',
+                            value: 'Frage den magischen Bot etwas.',
+                            inline: false
+                        },
+
                     )
                     .setColor("Orange")
                     .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340406043381937/WOC_Banner_Bot_Hilfe_Community_Bot.png?ex=66b4fae0&is=66b3a960&hm=087cd6850d21387d5b583343abefc277ba95bcd6b058f0fe34bde5c7491432e5&')
@@ -93,7 +119,7 @@ module.exports = {
                         '» Zeigt dir nützliche Stats über einen Account.\n\n' +
                         '> `💰` - `/donated <@User>`\n' +
                         '» Zeigt dir an, wie viel jemand gespendet hat.\n\n' +
-                        '> `🎂` - `/birthday-set`\n' +
+                        '> `🎂` - `/birthday SET/NEXT`\n' +
                         '» Setze deinen Geburtstag fest und feiere ihn mit uns!\n\n' +
                         '> `👑` - `/erfolginfo`\n' +
                         '» Zeigt dir deinen Fortschritt bei den Server-Erfolgen an.\n\n' +
@@ -104,7 +130,9 @@ module.exports = {
                         '> `💬` - `/deadchat`\n' +
                         '» Nennt ein zufälliges Thema worüber ihr im Chat schreiben könnt.\n\n' +
                         '> `🧮` - `/uptime`\n' +
-                        '» Zeigt dir an, wie lang dieser Bot schon online ist. inkl. der Latenz'
+                        '» Zeigt dir an, wie lang dieser Bot schon online ist. inkl. der Latenz\n\n' +
+                        '> `📊` - `/leaderboard <kategorie>`\n' +
+                        '» Zeigt dir die Top 10 User der jeweiligen Kategorie an.\n\n'
                     )
                     .setColor('Blurple')
                     .setImage('https://cdn.discordapp.com/attachments/1269339771420016722/1269340406043381937/WOC_Banner_Bot_Hilfe_Community_Bot.png?ex=66b4fae0&is=66b3a960&hm=087cd6850d21387d5b583343abefc277ba95bcd6b058f0fe34bde5c7491432e5&')
