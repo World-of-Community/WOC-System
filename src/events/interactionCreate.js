@@ -226,7 +226,7 @@ module.exports = {
         
             collector.on("collect", async i => {
                 if (i.user.id !== interaction.user.id)
-                    return i.reply({ content: "❌ Nicht dein Menü.", ephemeral: true });
+                    return i.reply({ content: "> `❌` » Nicht dein Menü.", ephemeral: true });
         
                 if (i.customId === "punish_prev") page--;
                 if (i.customId === "punish_next") page++;

@@ -121,17 +121,17 @@ const readCommands = (dir, table) => {
             readCommands(fullPath, table);  
         } else if (file.endsWith(".js")) {
             try {
-                const command = require(fullPath);
-                if (command.data && command.data.name) {
-                    if (isBlockedCommand(command.data.name)) {
-                        table.addRow(command.data.name, '⏭️');
-                        continue;
-                    }
-                    client.commands.set(command.data.name, command);
-                    table.addRow(command.data.name, '✅');
-                } else {
-                    table.addRow(file.split('.js')[0], '⛔');
-                }
+                //const command = require(fullPath);
+                //if (command.data && command.data.name) {
+                //    if (isBlockedCommand(command.data.name)) {
+                //        table.addRow(command.data.name, '⏭️');
+                //        continue;
+                //    }
+                //    client.commands.set(command.data.name, command);
+                //    table.addRow(command.data.name, '✅');
+                //} else {
+                //    table.addRow(file.split('.js')[0], '⛔');
+                //}
             } catch (error) {
                 console.error(`Error loading command ${file}: ${error.message}`);
                 table.addRow(file.split('.js')[0], '⛔');
