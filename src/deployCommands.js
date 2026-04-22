@@ -4,13 +4,13 @@ const path = require("path");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v10");
 
-const isBlockedCommand = (name = "") => {
-    const normalized = name.toLowerCase();
-    return normalized.includes("coin")
-        || normalized.includes("leaderboard")
-        || normalized === "season-pass"
-        || normalized === "daily";
-};
+//const isBlockedCommand = (name = "") => {
+//    const normalized = name.toLowerCase();
+//    return normalized.includes("coin")
+//        || normalized.includes("leaderboard")
+//        || normalized === "season-pass"
+//        || normalized === "daily";
+//};
 
 const deployCommands = async function deploy() {
 
