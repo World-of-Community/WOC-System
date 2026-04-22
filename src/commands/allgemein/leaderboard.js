@@ -5,7 +5,7 @@ const userDB = require("../../../Datenbank/userdb");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('leaderboard')
-    .setDescription('🏆 Zeigt ein Leaderboard an.')
+    .setDescription('Zeigt dir die besten User in verschiedenen Kategorien an.')
     .addStringOption(option =>
       option.setName('kategorie')
         .setDescription('Wähle eine Kategorie')

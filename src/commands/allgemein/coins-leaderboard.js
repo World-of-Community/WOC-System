@@ -1,3 +1,4 @@
+/*
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Coin } = require('../../../Datenbank/coindb');
 
@@ -78,3 +79,4 @@ module.exports = {
     await interaction.editReply({ embeds: [leaderboardEmbed] });
   },
 };
+*/

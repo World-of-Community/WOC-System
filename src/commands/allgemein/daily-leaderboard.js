@@ -1,3 +1,4 @@
+/*
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Coin } = require('../../../Datenbank/coindb');
 
@@ -86,3 +87,4 @@ module.exports = {
     }
   }
 };
+*/
