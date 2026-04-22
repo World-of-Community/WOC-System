@@ -27,12 +27,12 @@ const deployCommands = async function deploy() {
                 readCommands(fullPath);  // Rekursiv in das Unterverzeichnis gehen
             } else if (file.endsWith(".js")) {
                 const command = require(fullPath);
-                //if (command.data) {
-                //    if (isBlockedCommand(command.data.name)) {
-                //        continue;
-                //    }
-                //    commands.push(command.data.toJSON());
-                //}
+                if (command.data) {
+                    //if (isBlockedCommand(command.data.name)) {
+                    //    continue;
+                    //}
+                    commands.push(command.data.toJSON());
+                }
             }
         }
     };
