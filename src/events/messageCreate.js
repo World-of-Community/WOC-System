@@ -218,172 +218,131 @@ module.exports = {
         userData.stats.messages += 1;
     }
 
-    if (!userData.firstMessage && !message.author.bot) {
-    userData.firstMessage = true;
+    // noch beheben fixen
 
-    if (!message?.content) return;
-
-    const lootTable = [
-        { string: '1 Level', rarity: 'Gew�hnlich', probability: 0.35 },
-        { string: '2 Level', rarity: 'Gew�hnlich', probability: 0.30 },
-        { string: '3 Level', rarity: 'Ungew�hnlich', probability: 0.25 },
-        { string: '4 Level', rarity: 'Selten', probability: 0.07 },
-        { string: '5 Level', rarity: 'Episch', probability: 0.03 }
-    ];
-
-    const rarityColors = {
-        'Gewöhnlich': 'Grey',
-        'Ungewöhnlich': 'Green',
-        'Selten': 'Blue',
-        'Episch': 'Purple',
-        'Legendär (Jackpot)': 'Orange'
-    };
-
-    function getRandomLoot() {
-        const random = Math.random();
-        let current = 0;
-
-        for (const item of lootTable) {
-            current += item.probability;
-            if (random <= current) return item;
-        }
-        return lootTable[0];
-    }
-
-    const buttons = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setLabel('Belohnung abholen')
-                .setStyle('Success')
-                .setCustomId('newbieClaim_button')
-        );
-
-    const welcomeEmbed = new EmbedBuilder()
-        .setColor('Blurple')
-        .setTitle('<:neuesmitglied:1033452545651253328> Herzlich Willkommen!')
-        .setDescription(
-            `Hey ${message.author},\n\n` +
-            `du hast soeben deine **erste Nachricht** geschrieben – Glückwunsch! 🎉\n\n` +
-            `Drück unten auf den Knopf, um deine Belohnung abzuholen! <a:Gewinnspiel:968876390982234202>`
-        )
-        .setFooter({ text: 'Belohnung für erste Nachricht' });
-
-    const msg = await message.channel.send({
-        embeds: [welcomeEmbed],
-        components: [buttons]
-    });
-
-    const collector = msg.createMessageComponentCollector({
-        componentType: ComponentType.Button,
-        time: 1000 * 60 * 10 // 10 Minuten
-    });
-
-    collector.on('collect', async i => {
-
-        if (i.customId !== "newbieClaim_button") return;
-
-        if (i.user.id !== message.author.id) {
-            return i.reply({
-                content: "> `❌` » Das ist nicht für dich!",
-                ephemeral: true
-            });
-        }
-
-        // Interaktion bestätigen
-        await i.deferUpdate();
-
-        // Button deaktivieren
-        buttons.components[0].setDisabled(true);
-        buttons.components[0].setLabel("Belohnung abgeholt");
-        buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
-
-        await msg.edit({ components: [buttons] }).catch(() => {});
-
-        const gewinn = getRandomLoot();
-
-        const lootEmbed = new EmbedBuilder()
-            .setTitle("`🎁` Belohnung erhalten!")
-            .setDescription(
-                `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
-                `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
-                `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
-                `*(Bitte Screenshot machen als Beweis.)*\n\n` +
-                `> \`🎫\` » Öffne ein Ticket zum Einlösen.`
-            )
-            .setColor(rarityColors[gewinn.rarity]);
-
-        await i.followUp({
-            embeds: [lootEmbed],
-            ephemeral: true
-        });
-
-        collector.stop();
-
-        // Embed sicher löschen
-        setTimeout(() => {
-            msg.delete().catch(() => {});
-        }, 500);
-        
-        collector.on('end', async () => {
-
-        if (!msg.editable) return;
-
-        buttons.components[0].setDisabled(true);
-        buttons.components[0].setStyle("Danger");
-        buttons.components[0].setLabel("abgelaufen");
-
-        msg.edit({ components: [buttons] }).catch(() => {});
-        });
-
-        await userData.save();
-        });
-        };
-
-        if (message.author.bot) return;
-
-        // Bump System
-        const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
-        const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
-
-        // Überprüfen, ob die Nachricht vom Disboard-Bot stammt und den erfolgreichen Bump bestätigt
-    if (message.author.id === disboardBotId && message.embeds.length > 0) {
-        const embed = message.embeds[0];
-
-        if (embed.description && embed.description.includes('Bump done')) {
-            const bumpUserId = embed.description.match(/<@!?(\d+)>/)?.[1]; // Extrahiere User-ID aus der Nachricht
-            if (!bumpUserId) {
-                return message.channel.send('> `❗` » Konnte den Benutzer, der den Bump ausgeführt hat, nicht ermitteln.');
-            }
-
-            const member = message.guild.members.cache.get(bumpUserId);
-            if (!member) {
-                return message.channel.send('> `❗` » Benutzer konnte nicht gefunden werden.');
-            }
-
-            const role = message.guild.roles.cache.get(roleId);
-            if (!role) {
-                return message.channel.send('> `❗` » Die Rolle existiert nicht.');
-            }
-
-            try {
-                await member.roles.add(role);
-                await message.channel.send(`${member} vielen Dank für deinen Bump!\nDu hast nun die ${role} Rolle.`);
-
-                // Rolle nach 2 Stunden entfernen
-                setTimeout(async () => {
-                    try {
-                        await member.roles.remove(role);
-                        member.send({ content: `> \`❗\` » Deine Rolle ${role} ist gerade abgelaufen (Du hattest die Rolle für: \`2 Stunden\`)`, ephemeral: true });
-                    } catch (error) {
-                        console.error(`❗  | Fehler beim Entfernen der Rolle: ${error}`);
-                    }
-                }, 7200000); // 2 Stunden
-            } catch (error) {
-                console.error(`Fehler beim Zuweisen der Rolle: ${error}`);
-                message.channel.send('> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.');
-            }
-        }
-    }
+    //// Erste Nachricht Belohnung
+    //if (!userData.firstMessage && !message.author.bot) {
+    //userData.firstMessage = true;
+//
+    //if (!message?.content) return;
+//
+    //const lootTable = [
+    //    { string: '1 Level', rarity: 'Gewöhnlich', probability: 0.35 },
+    //    { string: '2 Level', rarity: 'Gewöhnlich', probability: 0.30 },
+    //    { string: '3 Level', rarity: 'Ungewöhnlich', probability: 0.25 },
+    //    { string: '4 Level', rarity: 'Selten', probability: 0.07 },
+    //    { string: '5 Level', rarity: 'Episch', probability: 0.03 }
+    //];
+//
+    //const rarityColors = {
+    //    'Gewöhnlich': 'Grey',
+    //    'Ungewöhnlich': 'Green',
+    //    'Selten': 'Blue',
+    //    'Episch': 'Purple',
+    //    'Legendär (Jackpot)': 'Orange'
+    //};
+//
+    //function getRandomLoot() {
+    //    const random = Math.random();
+    //    let current = 0;
+//
+    //    for (const item of lootTable) {
+    //        current += item.probability;
+    //        if (random <= current) return item;
+    //    }
+    //    return lootTable[0];
+    //}
+//
+    //const buttons = new ActionRowBuilder()
+    //    .addComponents(
+    //        new ButtonBuilder()
+    //            .setLabel('Belohnung abholen')
+    //            .setStyle('Success')
+    //            .setCustomId('newbieClaim_button')
+    //    );
+//
+    //const welcomeEmbed = new EmbedBuilder()
+    //    .setColor('Blurple')
+    //    .setTitle('<:neuesmitglied:1033452545651253328> Herzlich Willkommen!')
+    //    .setDescription(
+    //        `Hey ${message.author},\n\n` +
+    //        `du hast soeben deine **erste Nachricht** geschrieben – Glückwunsch! 🎉\n\n` +
+    //        `Drück unten auf den Knopf, um deine Belohnung abzuholen! <a:Gewinnspiel:968876390982234202>`
+    //    )
+    //    .setFooter({ text: 'Belohnung für erste Nachricht' });
+//
+    //const msg = await message.channel.send({
+    //    embeds: [welcomeEmbed],
+    //    components: [buttons]
+    //});
+//
+    //const collector = msg.createMessageComponentCollector({
+    //    componentType: ComponentType.Button,
+    //    time: 1000 * 60 * 10 // 10 Minuten
+    //});
+//
+    //collector.on('collect', async i => {
+//
+    //    if (i.customId !== "newbieClaim_button") return;
+//
+    //    if (i.user.id !== message.author.id) {
+    //        return i.reply({
+    //            content: "> `❌` » Das ist nicht für dich!",
+    //            ephemeral: true
+    //        });
+    //    }
+//
+    //    // Interaktion bestätigen
+    //    await i.deferUpdate();
+//
+    //    // Button deaktivieren
+    //    buttons.components[0].setDisabled(true);
+    //    buttons.components[0].setLabel("Belohnung abgeholt");
+    //    buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
+//
+    //    await msg.edit({ components: [buttons] }).catch(() => {});
+//
+    //    const gewinn = getRandomLoot();
+//
+    //    const lootEmbed = new EmbedBuilder()
+    //        .setTitle("`🎁` Belohnung erhalten!")
+    //        .setDescription(
+    //            `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
+    //            `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
+    //            `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
+    //            `*(Bitte Screenshot machen als Beweis.)*\n\n` +
+    //            `> \`🎫\` » Öffne ein Ticket zum Einlösen.`
+    //        )
+    //        .setColor(rarityColors[gewinn.rarity]);
+//
+    //    await i.followUp({
+    //        embeds: [lootEmbed],
+    //        ephemeral: true
+    //    });
+//
+    //    collector.stop();
+//
+    //    // Embed sicher löschen
+    //    setTimeout(() => {
+    //        msg.delete().catch(() => {});
+    //    }, 500);
+    //    
+    //    collector.on('end', async () => {
+//
+    //    if (!msg.editable) return;
+//
+    //    buttons.components[0].setDisabled(true);
+    //    buttons.components[0].setStyle("Danger");
+    //    buttons.components[0].setLabel("abgelaufen");
+//
+    //    msg.edit({ components: [buttons] }).catch(() => {});
+    //    });
+//
+    //    await userData.save();
+    //    });
+    //    };
+//
+    //    if (message.author.bot) return;
 
     // Konfiguration der Kanäle
     const CHANNEL_IDS = [
@@ -439,4 +398,49 @@ module.exports = {
     }
 }
 
+/*
 
+// Bump System
+        const roleId = '1286573447807500319'; // ID der Rolle Bump Reward
+        const disboardBotId = '302050872383242240'; // ID des Disboard-Bots
+
+        // Überprüfen, ob die Nachricht vom Disboard-Bot stammt und den erfolgreichen Bump bestätigt
+    if (message.author.id === disboardBotId && message.embeds.length > 0) {
+        const embed = message.embeds[0];
+
+        if (embed.description && embed.description.includes('Bump done')) {
+            const bumpUserId = embed.description.match(/<@!?(\d+)>/)?.[1]; // Extrahiere User-ID aus der Nachricht
+            if (!bumpUserId) {
+                return message.channel.send('> `❗` » Konnte den Benutzer, der den Bump ausgeführt hat, nicht ermitteln.');
+            }
+
+            const member = message.guild.members.cache.get(bumpUserId);
+            if (!member) {
+                return message.channel.send('> `❗` » Benutzer konnte nicht gefunden werden.');
+            }
+
+            const role = message.guild.roles.cache.get(roleId);
+            if (!role) {
+                return message.channel.send('> `❗` » Die Rolle existiert nicht.');
+            }
+
+            try {
+                await member.roles.add(role);
+                await message.channel.send(`${member} vielen Dank für deinen Bump!\nDu hast nun die ${role} Rolle.`);
+
+                // Rolle nach 2 Stunden entfernen
+                setTimeout(async () => {
+                    try {
+                        await member.roles.remove(role);
+                        member.send({ content: `> \`❗\` » Deine Rolle ${role} ist gerade abgelaufen (Du hattest die Rolle für: \`2 Stunden\`)`, ephemeral: true });
+                    } catch (error) {
+                        console.error(`❗  | Fehler beim Entfernen der Rolle: ${error}`);
+                    }
+                }, 7200000); // 2 Stunden
+            } catch (error) {
+                console.error(`Fehler beim Zuweisen der Rolle: ${error}`);
+                message.channel.send('> `❗` » Es gab einen Fehler beim Zuweisen der Rolle.');
+            }
+        }
+    }
+*/
