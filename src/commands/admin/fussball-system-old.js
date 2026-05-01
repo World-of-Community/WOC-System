@@ -436,6 +436,24 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       events.push(`\`🚩\` Ecke für ${teamName} (${getDisplayMinute(minute)})`);
     }
 
+    // Eigentor alle 7 Minuten mit 2% Wahrscheinlichkeit
+    if (minute % 7 === 0 && Math.random() < 0.02) {
+      const scoringTeam = Math.random() < 0.5 ? 'team1' : 'team2'; // Team, das das Tor bekommt
+      const ownGoalBy = scoringTeam === 'team1' ? 'team2' : 'team1'; // Team, das das Eigentor macht
+    
+      const scoringTeamName = scoringTeam === 'team1' ? team1Name : team2Name;
+      const ownGoalTeamName = ownGoalBy === 'team1' ? team1Name : team2Name;
+    
+      // Tor zählen
+      if (scoringTeam === 'team1') {
+        scoreTeam1++;
+      } else {
+        scoreTeam2++;
+      }
+    
+      events.push(`\`😵\` EIGENTOR von ${ownGoalTeamName}! TOR! für ${scoringTeamName} (${getDisplayMinute(minute)})`);
+    }
+
     if (Math.random() < 0.08) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
