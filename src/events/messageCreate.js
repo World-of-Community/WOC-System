@@ -314,7 +314,8 @@ module.exports = {
             .setColor(rarityColors[gewinn.rarity]);
 
         await i.followUp({
-            embeds: [lootEmbed]
+            embeds: [lootEmbed],
+            ephemeral: true
         });
 
         collector.stop();
