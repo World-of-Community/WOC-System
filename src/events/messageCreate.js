@@ -31,7 +31,7 @@ module.exports = {
           "1284823233761251328" // Schrift Support
         ];
         const frage = message.content.toLowerCase();
-    
+
         const suchbegriffe = [
             'wie ist die ip',
             'was ist die ip',
@@ -73,13 +73,13 @@ module.exports = {
             'wie war nochmal die ip?',
             'ip vom minecraft server'
         ];
-    
+
         // nur reagieren, wenn der Channel erlaubt ist
         if (!allowedChannels.includes(message.channel.id)) return;
-      
+
         if (suchbegriffe.some(begriff => frage.includes(begriff.toLowerCase()))) {
           const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
-      
+
           const embed = new EmbedBuilder()
             .setTitle("`🌐` Minecraft-Server IP")
             .setDescription(
@@ -89,7 +89,7 @@ module.exports = {
               `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`
             )
             .setColor("Green");
-      
+
           const reply = await message.reply({ embeds: [embed] });
           setTimeout(() => {
             reply.delete().catch(console.error);
@@ -100,7 +100,7 @@ module.exports = {
         const erlaubterKanal = "815922756918181898"; // Haupt chat
 
         if (message.channel.id !== erlaubterKanal) return; // Bricht ab, wenn es nicht der Kanal ist
-        
+
         try {
             await messagedb.findOneAndUpdate(
                 { guildID: message.guild.id },
@@ -110,7 +110,7 @@ module.exports = {
         } catch (err) {
             console.error("Fehler beim Hochzählen der Nachrichten:", err);
         }
-            
+
         if (!message.guild) return
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
@@ -156,29 +156,29 @@ module.exports = {
     }
 
         // AFK System
-        if (!message.author.bot) { 
+        if (!message.author.bot) {
             const uD = await userdb.findOne({ userID: message.author.id });
             if (uD && uD.afk && uD.afkStamp) {
                 const afkSeit = uD.afkStamp;
-        
+
                 // Nachricht senden
                 const m = await message.reply(
                     `<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n` +
                     `> *Dein AFK-Status wurde entfernt. (Dauer: <t:${afkSeit}:R>)*`
                 );
-        
+
                 // AFK-Status entfernen
                 uD.afk = false;
                 uD.afkReason = "";
                 uD.afkStamp = "";
                 await uD.save();
-        
+
                 setTimeout(async () => {
                     try {
                         await m.delete();
                     } catch (error) {}
                 }, 5000);
-        
+
                 await message.member.setNickname(
                     message.member.displayName.replace("AFK | ", "")
                 ).catch(() => {});
@@ -186,7 +186,7 @@ module.exports = {
         }
 
         if (message.author.bot) return;
-    if (message.guild.id !== config.server) return; 
+    if (message.guild.id !== config.server) return;
 
     let serverData = await serverdb.findOne({ guildID: message.guildId });
     if (!serverData) {
@@ -218,131 +218,128 @@ module.exports = {
         userData.stats.messages += 1;
     }
 
-    // noch beheben fixen
+    // Erste Nachricht Belohnung
+    if (!userData.firstMessage && !message.author.bot) {
+      userData.firstMessage = true;
 
-    //// Erste Nachricht Belohnung
-    //if (!userData.firstMessage && !message.author.bot) {
-    //userData.firstMessage = true;
-//
-    //if (!message?.content) return;
-//
-    //const lootTable = [
-    //    { string: '1 Level', rarity: 'Gewöhnlich', probability: 0.35 },
-    //    { string: '2 Level', rarity: 'Gewöhnlich', probability: 0.30 },
-    //    { string: '3 Level', rarity: 'Ungewöhnlich', probability: 0.25 },
-    //    { string: '4 Level', rarity: 'Selten', probability: 0.07 },
-    //    { string: '5 Level', rarity: 'Episch', probability: 0.03 }
-    //];
-//
-    //const rarityColors = {
-    //    'Gewöhnlich': 'Grey',
-    //    'Ungewöhnlich': 'Green',
-    //    'Selten': 'Blue',
-    //    'Episch': 'Purple',
-    //    'Legendär (Jackpot)': 'Orange'
-    //};
-//
-    //function getRandomLoot() {
-    //    const random = Math.random();
-    //    let current = 0;
-//
-    //    for (const item of lootTable) {
-    //        current += item.probability;
-    //        if (random <= current) return item;
-    //    }
-    //    return lootTable[0];
-    //}
-//
-    //const buttons = new ActionRowBuilder()
-    //    .addComponents(
-    //        new ButtonBuilder()
-    //            .setLabel('Belohnung abholen')
-    //            .setStyle('Success')
-    //            .setCustomId('newbieClaim_button')
-    //    );
-//
-    //const welcomeEmbed = new EmbedBuilder()
-    //    .setColor('Blurple')
-    //    .setTitle('<:neuesmitglied:1033452545651253328> Herzlich Willkommen!')
-    //    .setDescription(
-    //        `Hey ${message.author},\n\n` +
-    //        `du hast soeben deine **erste Nachricht** geschrieben – Glückwunsch! 🎉\n\n` +
-    //        `Drück unten auf den Knopf, um deine Belohnung abzuholen! <a:Gewinnspiel:968876390982234202>`
-    //    )
-    //    .setFooter({ text: 'Belohnung für erste Nachricht' });
-//
-    //const msg = await message.channel.send({
-    //    embeds: [welcomeEmbed],
-    //    components: [buttons]
-    //});
-//
-    //const collector = msg.createMessageComponentCollector({
-    //    componentType: ComponentType.Button,
-    //    time: 1000 * 60 * 10 // 10 Minuten
-    //});
-//
-    //collector.on('collect', async i => {
-//
-    //    if (i.customId !== "newbieClaim_button") return;
-//
-    //    if (i.user.id !== message.author.id) {
-    //        return i.reply({
-    //            content: "> `❌` » Das ist nicht für dich!",
-    //            ephemeral: true
-    //        });
-    //    }
-//
-    //    // Interaktion bestätigen
-    //    await i.deferUpdate();
-//
-    //    // Button deaktivieren
-    //    buttons.components[0].setDisabled(true);
-    //    buttons.components[0].setLabel("Belohnung abgeholt");
-    //    buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
-//
-    //    await msg.edit({ components: [buttons] }).catch(() => {});
-//
-    //    const gewinn = getRandomLoot();
-//
-    //    const lootEmbed = new EmbedBuilder()
-    //        .setTitle("`🎁` Belohnung erhalten!")
-    //        .setDescription(
-    //            `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
-    //            `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
-    //            `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
-    //            `*(Bitte Screenshot machen als Beweis.)*\n\n` +
-    //            `> \`🎫\` » Öffne ein Ticket zum Einlösen.`
-    //        )
-    //        .setColor(rarityColors[gewinn.rarity]);
-//
-    //    await i.followUp({
-    //        embeds: [lootEmbed],
-    //        ephemeral: true
-    //    });
-//
-    //    collector.stop();
-//
-    //    // Embed sicher löschen
-    //    setTimeout(() => {
-    //        msg.delete().catch(() => {});
-    //    }, 500);
-    //    
-    //    collector.on('end', async () => {
-//
-    //    if (!msg.editable) return;
-//
-    //    buttons.components[0].setDisabled(true);
-    //    buttons.components[0].setStyle("Danger");
-    //    buttons.components[0].setLabel("abgelaufen");
-//
-    //    msg.edit({ components: [buttons] }).catch(() => {});
-    //    });
-//
-    //    await userData.save();
-    //    });
-    //    };
-//
-    //    if (message.author.bot) return;
+    if (!message?.content) return;
+
+    const lootTable = [
+        { string: '1 Level', rarity: 'Gewöhnlich', probability: 0.35 },
+        { string: '2 Level', rarity: 'Gewöhnlich', probability: 0.30 },
+        { string: '3 Level', rarity: 'Ungewöhnlich', probability: 0.25 },
+        { string: '4 Level', rarity: 'Selten', probability: 0.07 },
+        { string: '5 Level', rarity: 'Episch', probability: 0.03 }
+    ];
+
+    const rarityColors = {
+        'Gewöhnlich': 'Grey',
+        'Ungewöhnlich': 'Green',
+        'Selten': 'Blue',
+        'Episch': 'Purple',
+        'Legendär (Jackpot)': 'Orange'
+    };
+
+    function getRandomLoot() {
+        const random = Math.random();
+        let current = 0;
+
+        for (const item of lootTable) {
+            current += item.probability;
+            if (random <= current) return item;
+        }
+        return lootTable[0];
+    }
+
+    const buttons = new ActionRowBuilder()
+        .addComponents(
+            new ButtonBuilder()
+                .setLabel('Belohnung abholen')
+                .setStyle('Success')
+                .setCustomId('newbieClaim_button')
+        );
+
+    const welcomeEmbed = new EmbedBuilder()
+        .setColor('Blurple')
+        .setTitle('<:neuesmitglied:1033452545651253328> Herzlich Willkommen!')
+        .setDescription(
+            `Hey ${message.author},\n\n` +
+            `du hast soeben deine **erste Nachricht** geschrieben – Glückwunsch! 🎉\n\n` +
+            `Drück unten auf den Knopf, um deine Belohnung abzuholen! <a:Gewinnspiel:968876390982234202>`
+        )
+        .setFooter({ text: 'Belohnung für erste Nachricht' });
+
+    const msg = await message.channel.send({
+        embeds: [welcomeEmbed],
+        components: [buttons]
+    });
+
+    const collector = msg.createMessageComponentCollector({
+        componentType: ComponentType.Button,
+        time: 1000 * 60 * 10 // 10 Minuten
+    });
+
+    collector.on('collect', async i => {
+
+        if (i.customId !== "newbieClaim_button") return;
+
+        if (i.user.id !== message.author.id) {
+            return i.reply({
+                content: "> `❌` » Das ist nicht für dich!",
+                ephemeral: true
+            });
+        }
+
+        // Interaktion bestätigen
+        await i.deferUpdate();
+
+        // Button deaktivieren
+        buttons.components[0].setDisabled(true);
+        buttons.components[0].setLabel("Belohnung abgeholt");
+        buttons.components[0].setEmoji("<:wumpusgifted:1335338403176386560>");
+
+        await msg.edit({ components: [buttons] }).catch(() => {});
+
+        const gewinn = getRandomLoot();
+
+        const lootEmbed = new EmbedBuilder()
+            .setTitle("`🎁` Belohnung erhalten!")
+            .setDescription(
+                `<a:Gift:1263043283555319941> | <@${i.user.id}> du bekommst **${gewinn.string}**!\n\n` +
+                `\`⭐\` » Seltenheit: **${gewinn.rarity}**\n` +
+                `\`📊\` » Dropchance: \`${Math.floor(gewinn.probability * 100)}%\`\n\n` +
+                `*(Bitte Screenshot machen als Beweis.)*\n\n` +
+                `> \`🎫\` » Öffne ein Ticket zum Einlösen.`
+            )
+            .setColor(rarityColors[gewinn.rarity]);
+
+        await i.followUp({
+            embeds: [lootEmbed]
+        });
+
+        collector.stop();
+
+        // Embed sicher löschen
+        setTimeout(() => {
+            msg.delete().catch(() => {});
+        }, 500);
+
+        collector.on('end', async () => {
+
+        if (!msg.editable) return;
+
+        buttons.components[0].setDisabled(true);
+        buttons.components[0].setStyle("Danger");
+        buttons.components[0].setLabel("abgelaufen");
+
+        msg.edit({ components: [buttons] }).catch(() => {});
+        });
+
+        await userData.save();
+        });
+        };
+
+        if (message.author.bot) return;
 
     // Konfiguration der Kanäle
     const CHANNEL_IDS = [
