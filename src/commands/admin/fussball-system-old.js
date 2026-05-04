@@ -610,6 +610,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     
       // Tipp auswerten und User benachrichtigen
       if (userTip && tippText) {
+        const odds = generateOdds();
+        
         if (userTip === result) {
           await interaction.followUp(`> \`🎉\` Dein Tipp auf **${tippText}** war korrekt! Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
         } else {
