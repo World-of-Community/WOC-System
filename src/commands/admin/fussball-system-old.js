@@ -445,10 +445,10 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const ownGoalTeamName = ownGoalBy === 'team1' ? team1Name : team2Name;
     
       // Tor zählen
-      if (scoringTeam === 'team1') {
-        scoreTeam1++;
+      if (teamName === 'team1') {
+        team1Name++;
       } else {
-        scoreTeam2++;
+        team2Name++;
       }
     
       events.push(`\`😵\` EIGENTOR von ${ownGoalTeamName}! TOR! für ${scoringTeamName} (${getDisplayMinute(minute)})`);
