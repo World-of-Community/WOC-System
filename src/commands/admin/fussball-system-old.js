@@ -610,12 +610,11 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     
       // Tipp auswerten und User benachrichtigen
       if (userTip && tippText) {
-        const odds = generateOdds();
         
         if (userTip === result) {
           await interaction.followUp(`> \`🎉\` Dein Tipp auf **${tippText}** war korrekt! Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
         } else {
-          await interaction.followUp(`> \`❌\` Dein Tipp auf **${tippText}** war leider falsch. Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}** Quote (${team1Name} gewinnt (${odds.team1.toFixed(2)}) - Unentschieden (${odds.draw.toFixed(2)}) - ${team2Name} gewinnt (${odds.team2.toFixed(2)}))`);
+          await interaction.followUp(`> \`❌\` Dein Tipp auf **${tippText}** war leider falsch. Das Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
         }
       } else {
         await interaction.followUp(`Das Spiel ist beendet. Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
