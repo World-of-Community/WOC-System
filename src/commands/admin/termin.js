@@ -140,10 +140,8 @@ module.exports = {
           (note ? `\n> \`📝\` » Notiz: ${note}` : '')
         );
 
-      return interaction.reply({
-        embeds: [embed],
-        ephemeral: false,
-      });
+      return interaction.reply({ embeds: [embed], ephemeral: false })
+      interaction.followUp({ content: 'embed und Termin gesendet', ephemeral: true });
     }
 
     // EDIT
@@ -191,10 +189,7 @@ module.exports = {
           (termin.note ? `\n> \`📝\` » Notiz: ${termin.note}` : '')
         );
 
-      return interaction.reply({
-        embeds: [embed],
-        ephemeral: false,
-      });
+      return interaction.reply({ embeds: [embed], ephemeral: false, });
     }
 
     // REMOVE
