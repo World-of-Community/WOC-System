@@ -3,7 +3,6 @@ const Termin = require('../../../Datenbank/termindb');
 
 const remindMap = new Map();
 
-// Hilfsfunktion: Deutsches Datum parsen
 // Unterstützt:
 // 30.07.2025
 // 30.07.2025 18:00
@@ -61,7 +60,11 @@ module.exports = {
 
     .addStringOption(opt =>
       opt.setName('zeit')
-        .setDescription('Datum optional mit Uhrzeit (z.B. 30.07.2025 oder 30.07.2025 18:00)'))
+        .setDescription('Datum optional mit Uhrzeit'))
+
+    .addStringOption(opt =>
+      opt.setName('notiz')
+        .setDescription('Optionale Notiz'))
 
     .addUserOption(opt =>
       opt.setName('teammitglied')
@@ -70,9 +73,11 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
+
     const action = interaction.options.getString('action');
     const user = interaction.options.getUser('user');
     const zeitInput = interaction.options.getString('zeit');
+    const note = interaction.options.getString('notiz');
     const teamMember = interaction.options.getUser('teammitglied');
 
     if (['add', 'edit', 'remove'].includes(action) && !user) {
@@ -89,7 +94,7 @@ module.exports = {
       });
     }
 
-    // TERMIN ERSTELLEN
+    // ADD
     if (action === 'add') {
 
       const parsed = parseGermanDateTime(zeitInput);
@@ -116,24 +121,32 @@ module.exports = {
         userId: user.id,
         timestamp,
         hasTime,
+        note: note || null,
         createdBy: interaction.user.id,
         ...(teamMember ? { teamMemberId: teamMember.id } : {}),
       });
 
-      return interaction.reply({
-        content:
-          `> \`✅\` » Termin für ${user} wurde erstellt.\n` +
+      const embed = new EmbedBuilder()
+        .setColor(0x2b2d31)
+        .setTitle('`✅` Termin erstellt')
+        .setDescription(
+          `> \`👤\` » Nutzer: ${user}\n` +
           `> \`🗓️\` » ${
             hasTime
               ? `<t:${Math.floor(timestamp / 1000)}:F>`
               : `<t:${Math.floor(timestamp / 1000)}:D>\n> \`🕒\` » Keine Uhrzeit angegeben`
           }` +
-          (teamMember ? `\n> \`👥\` » Teammitglied: ${teamMember}` : ''),
+          (teamMember ? `\n> \`👥\` » Teammitglied: ${teamMember}` : '') +
+          (note ? `\n> \`📝\` » Notiz: ${note}` : '')
+        );
+
+      return interaction.reply({
+        embeds: [embed],
         ephemeral: true,
       });
     }
 
-    // TERMIN BEARBEITEN
+    // EDIT
     if (action === 'edit') {
 
       const parsed = parseGermanDateTime(zeitInput);
@@ -159,21 +172,32 @@ module.exports = {
       termin.timestamp = timestamp;
       termin.hasTime = hasTime;
 
+      if (note) {
+        termin.note = note;
+      }
+
       await termin.save();
 
-      return interaction.reply({
-        content:
-          `> \`✅\` » Termin von ${user} wurde geändert.\n` +
+      const embed = new EmbedBuilder()
+        .setColor(0x2b2d31)
+        .setTitle('`✏️` Termin bearbeitet')
+        .setDescription(
+          `> \`👤\` » Nutzer: ${user}\n` +
           `> \`🗓️\` » ${
             hasTime
               ? `<t:${Math.floor(timestamp / 1000)}:F>`
               : `<t:${Math.floor(timestamp / 1000)}:D>\n> \`🕒\` » Keine Uhrzeit angegeben`
-          }`,
+          }` +
+          (termin.note ? `\n> \`📝\` » Notiz: ${termin.note}` : '')
+        );
+
+      return interaction.reply({
+        embeds: [embed],
         ephemeral: true,
       });
     }
 
-    // TERMIN LÖSCHEN
+    // REMOVE
     if (action === 'remove') {
 
       const termin = await Termin.findOneAndDelete({ userId: user.id });
@@ -185,13 +209,18 @@ module.exports = {
         });
       }
 
+      const embed = new EmbedBuilder()
+        .setColor(0x2b2d31)
+        .setTitle('`🗑️` Termin gelöscht')
+        .setDescription(`> \`👤\` » Termin für ${user} wurde gelöscht.`);
+
       return interaction.reply({
-        content: `> \`🗑️\` » Termin für ${user} wurde gelöscht.`,
-        ephemeral: true
+        embeds: [embed],
+        ephemeral: true,
       });
     }
 
-    // ALLE TERMINE
+    // LIST
     if (action === 'list') {
 
       const termine = await Termin.find().sort({ timestamp: 1 });
@@ -230,14 +259,15 @@ module.exports = {
                 ? `<t:${Math.floor(t.timestamp / 1000)}:F>`
                 : `<t:${Math.floor(t.timestamp / 1000)}:D>\n> \`🕒\` » Keine Uhrzeit angegeben`
             }\n` +
-            `> \`👥\` » Teammitglied: ${teamTag}`,
+            `> \`👥\` » Teammitglied: ${teamTag}` +
+            (t.note ? `\n> \`📝\` » Notiz: ${t.note}` : ''),
           inline: false,
         });
       }
 
       return interaction.reply({
         embeds: [embed],
-        ephemeral: true
+        ephemeral: true,
       });
     }
 
