@@ -166,9 +166,7 @@ module.exports = {
       termin.timestamp = timestamp;
       termin.hasTime = hasTime;
 
-      if (note) {
-        termin.note = note;
-      }
+      if (note) termin.note = note;
 
       await termin.save();
 
@@ -248,7 +246,7 @@ module.exports = {
         if (t.note) {
           embed.addFields({
             name: '> `📝` » Notiz',
-            value: `${t.note}`,
+            value: t.note,
             inline: false,
           });
         }
