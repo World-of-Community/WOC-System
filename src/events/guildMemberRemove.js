@@ -1,12 +1,12 @@
-const { Events, ActivityType, EmbedBuilder } = require("discord.js");
-const client = require('../index');
-const fs = require('fs');
+import { Events, ActivityType, EmbedBuilder } from "discord.js";
+import client from "../index.js";
+import fs from "fs";
 const config = JSON.parse(fs.readFileSync('src/json/config.json', 'utf-8'));
-const userdb = require("../../Datenbank/userdb");
-const InviteCache = require("../../Datenbank/inviteCachedb");
-const serverdb = require("../../Datenbank/serverdb");
+import userdb from "../../Datenbank/userdb.js";
+import InviteCache from "../../Datenbank/inviteCachedb.js";
+import serverdb from "../../Datenbank/serverdb.js";
 
-module.exports = {
+export default {
     name: Events.GuildMemberRemove,
     async execute(member) {
 
@@ -45,7 +45,7 @@ module.exports = {
         `<a:leave:1433256832851251411> **${member.user.tag}** konnte dem Ruf der Freiheit nicht widerstehen. <a:winken:1086560167442796544>`,
         `<a:leave:1433256832851251411> Und da war es nur noch einer weniger... **${member.user.tag}** ist gegangen. <a:winken:1086560167442796544>`
     ];
-    
+
     const rndContent = Math.floor(Math.random() * contents.length);
     await leaveChannel.send({ content: contents[rndContent] });
 
@@ -65,17 +65,17 @@ module.exports = {
         const guild = member.guild;
         const newInvites = await member.guild.invites.fetch();
         const Invites = await guild.invites.fetch();
-        
+
         let inviteCacheData = await InviteCache.findOne({ guildID: member.guild.id });
-        
+
         if (!inviteCacheData) return;
-    
+
         const userDoc = await userdb.findOne({ userID: member.id });
         if (!userDoc) return;
-    
+
         const inviterID = userDoc.invitedBy;
         if (!inviterID) return;
-    
+
         await userdb.findOneAndUpdate(
           { userID: inviterID },
           { $inc: { 'invites.left': 1 } }
@@ -114,16 +114,16 @@ module.exports = {
         try {
           const userId = member.id;
           const userData = await Coin.findOne({ userId });
-    
+
           if (!userData) {
             console.log(`[DAILY-STREAK] Kein Eintrag für ${member.user.tag} gefunden.`);
             return;
           }
-    
+
           // Nur Streak zurücksetzen
           userData.streak = 0;
           await userData.save();
-    
+
           console.log(`[DAILY-STREAK] ${member.user.tag} (${userId}) hat den Server verlassen – Streak auf 0 gesetzt.`);
         } catch (error) {
           console.error('Fehler beim Zurücksetzen der Streak beim Verlassen des Servers:', error);

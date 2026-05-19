@@ -1,27 +1,35 @@
-const { 
-    Client, 
-    GatewayIntentBits, 
-    Partials, 
-    ChannelType, 
-    EmbedBuilder, 
-    Collection, 
-    AuditLogEvent, 
-    ApplicationCommandType, 
-    ActionRowBuilder, 
-    ButtonBuilder, 
-    ButtonStyle, 
-    time, 
-    TimestampStyles, 
-    ComponentType 
-} = require('discord.js')
-const path = require('node:path');
-const fs = require('fs');
-const config = require('../src/json/config.json')
-const { AppTokenAuthProvider, StaticAuthProvider } = require('@twurple/auth');
-const { ApiClient } = require('@twurple/api');
-const { EventSubWsListener } = require('@twurple/eventsub-ws');
-const AsciiTable = require('ascii-table');
-const { updateLeagueTable } = require('./commands/admin/fussball-tabelle');
+import {
+    Client,
+    GatewayIntentBits,
+    Partials,
+    ChannelType,
+    EmbedBuilder,
+    Collection,
+    AuditLogEvent,
+    ApplicationCommandType,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    time,
+    TimestampStyles,
+    ComponentType
+} from 'discord.js';
+import path from 'node:path';
+import fs from 'fs';
+import { fileURLToPath, pathToFileURL } from 'url';
+import config from './json/config.json' with { type: 'json' };
+import AsciiTable from 'ascii-table';
+import mongoose from 'mongoose';
+import threaddb from '../Datenbank/threaddb.js';
+import cron from 'node-cron';
+import giveawaydb from '../Datenbank/giveawaydb.js';
+import serverdb from '../Datenbank/serverdb.js';
+import userdb from '../Datenbank/userdb.js';
+import { deployCommands } from './deployCommands.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const client = new Client({
     intents: [
         GatewayIntentBits.GuildIntegrations,
@@ -33,7 +41,7 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.GuildVoiceStates, 
+        GatewayIntentBits.GuildVoiceStates,
     ],
     partials: [
         Partials.Channel,
@@ -84,14 +92,7 @@ const buttonConfig = {
   };
 
 // Modules and Files
-const mongoose = require('mongoose');
-const threaddb = require('../Datenbank/threaddb');
 mongoose.connect(config.mongodb).then(console.log('🔗  | Datenbank ist verbunden'));
-const cron = require('node-cron');
-const giveawaydb = require('../Datenbank/giveawaydb');
-const serverdb = require('../Datenbank/serverdb');
-const userdb = require('../Datenbank/userdb');
-const { deployCommands } = require('./deployCommands');
 let invites = new Map();
 
 client.setMaxListeners(20); // Sets the limit to 20 listeners
@@ -110,18 +111,19 @@ const blockedEventFiles = new Set([
 ]);
 
 // Lade Commands
-deployCommands();
+await deployCommands();
 client.commands = new Collection();
 
-const readCommands = (dir, table) => {
+const readCommands = async (dir, table) => {
     const files = fs.readdirSync(dir);
     for (const file of files) {
         const fullPath = path.join(dir, file);
         if (fs.statSync(fullPath).isDirectory()) {
-            readCommands(fullPath, table);  
+            await readCommands(fullPath, table);
         } else if (file.endsWith(".js")) {
             try {
-                const command = require(fullPath);
+                const commandModule = await import(pathToFileURL(fullPath).href);
+                const command = commandModule.default || commandModule;
                 if (command.data && command.data.name) {
                     //if (isBlockedCommand(command.data.name)) {
                     //    table.addRow(command.data.name, '⏭️');
@@ -144,7 +146,7 @@ let table = new AsciiTable()
     .setHeading('Slash Commands', 'Status')
     .setBorder('|', '=', '0', '0');
 
-readCommands(path.resolve(__dirname, 'commands'), table);
+await readCommands(path.resolve(__dirname, 'commands'), table);
 
 console.log(table.toString());
 console.log('-----------------------------');
@@ -159,7 +161,8 @@ for (const file of eventFiles) {
     }
 
     const filePath = path.join(eventsPath, file);
-    const event = require(filePath);
+    const eventModule = await import(pathToFileURL(filePath).href);
+    const event = eventModule.default || eventModule;
     if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
     } else {
@@ -167,20 +170,25 @@ for (const file of eventFiles) {
     }
 }
 
-const functionFolder = fs.readdirSync(`./src/functions`);
+const functionFolder = fs.readdirSync(path.join(__dirname, 'functions'));
 for (const folder of functionFolder) {
   const functionFiles = fs
-    .readdirSync(`./src/functions/${folder}`)
+    .readdirSync(path.join(__dirname, `functions/${folder}`))
     .filter((file) => file.endsWith(".js"));
-  for (const file of functionFiles)
-    require(`./functions/${folder}/${file}`)(client);
+  for (const file of functionFiles) {
+    const funcModule = await import(pathToFileURL(path.join(__dirname, `functions/${folder}/${file}`)).href);
+    const func = funcModule.default || funcModule;
+    if (typeof func === 'function') {
+        func(client);
+    }
+  }
 }
 
 // Systems
 client.vorschlag();
 
 // Handlers
-client.handleErfolg(); 
+client.handleErfolg();
 client.manageTeam();
 
 // Bot Ping / Erwähnung
@@ -213,19 +221,19 @@ cron.schedule('00 00 * * *', async () => {
     const currentDay = new Date().getDate();
     const currentMonth = currentDate.getMonth();
     const maxDay = 24;
-    
+
     try {
         // Kanal und Nachricht abrufen
         const channel = await client.channels.fetch(server.adventskalender.channelId);
         if (!channel) throw new Error('Kanal nicht gefunden!');
-    
+
         const message = await channel.messages.fetch(server.adventskalender.messageId);
         if (!message) throw new Error('Nachricht nicht gefunden!');
-    
+
         // Neue Button-Logik
         const rows = [];
         let currentRow = new ActionRowBuilder();
-    
+
         for (let i = 1; i <= maxDay; i++) {
             const buttonData = buttonConfig[i] || {};
             currentRow.addComponents(
@@ -235,18 +243,18 @@ cron.schedule('00 00 * * *', async () => {
                 .setStyle(buttonData.style || ButtonStyle.Primary)
                 .setDisabled(i > currentDay || currentMonth !== 11) // Zukünftige Tage deaktivieren
         );
-    
+
         if (currentRow.components.length === 5) {
             rows.push(currentRow);
             currentRow = new ActionRowBuilder();
         }
         }
         if (currentRow.components.length > 0) rows.push(currentRow);
-    
+
         // Aktualisiertes Embed
         const updatedEmbed = EmbedBuilder.from(message.embeds[0])
         .setDescription(`» Klicke auf einen Tag, um deine Belohnung zu erhalten!\n\nHeute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`);
-    
+
         // Nachricht bearbeiten
         await message.edit({ embeds: [updatedEmbed], components: rows });
         console.log(`Adventskalener-Embed erfolgreich aktualisiert: Heute ist der ${currentDay}. Dezember`);
@@ -259,28 +267,28 @@ cron.schedule('00 00 * * *', async () => {
     cron.schedule('0 0 * * *', async () => {
         try {
             const currentDate = new Date();
-    
+
             const month = currentDate.getMonth(); // 0 = Januar, 11 = Dezember
             const day = currentDate.getDate();    // 1–31
-    
+
             // ❌ Nur vom 01.12. bis 24.12.
             if (month !== 11 || day < 1 || day > 24) return;
-    
+
             const channelId = '1312772215791685743'; // Adventskalender-Kanal-ID
             const channel = await client.channels.fetch(channelId);
-    
+
             if (!channel || !channel.isTextBased()) {
                 console.error('Kanal konnte nicht gefunden oder ist kein Textkanal.');
                 return;
             }
-    
+
             const reminderMessage = await channel.send({
                 content: `🎉 **Ein neues Türchen kann geöffnet werden!** Heute ist der **${time(currentDate, TimestampStyles.LongDate)}**.`,
             });
-    
+
             // Nachricht nach 3 Minuten löschen
             setTimeout(() => reminderMessage.delete().catch(() => {}), 3 * 60 * 1000);
-    
+
         } catch (error) {
             console.error('Fehler beim Senden der Nachricht:', error);
         }
@@ -372,12 +380,14 @@ try {
 });
 
 // Funktion zum Senden von Logs an Threads
+/*
 async function sendLog(ThreadIDs, embed) {
 const thread = await client.channels.fetch(ThreadIDs).catch(() => null);
 if (!thread) throw new Error(`Thread mit ID ${ThreadIDs} nicht gefunden.`);
 if (!thread.isTextBased()) throw new Error(`Thread mit ID ${ThreadIDs} ist kein Textkanal.`);
 await thread.send({ embeds: [embed] });
 }
+*/
 
 client.on('guildMemberAdd', async member => {
     if (member.guild.id !== "815919809379172354") return;
@@ -789,7 +799,7 @@ setInterval( async () => {
         .then(async msg => {
             msg.crosspost()
         })
-    } catch (error) { 
+    } catch (error) {
     }
 }, 60000 * 360); // 6 Stunden in Millisekunden
 
@@ -831,7 +841,7 @@ cron.schedule('0 0 * * 1', async () => {
             });
             await serverData.save();
         } else {
-                        
+
             if (!serverData.support) serverData.support = [];
             if (!serverData.system) serverData.system = [];
             if (!serverData.minecraft) serverData.minecraft = [];
@@ -1035,7 +1045,7 @@ function determineEmoji(priceInput) {
 
 //client.on('messageCreate', async (message) => {
 //    if (message.author.bot) return;
-//    if (message.guild.id !== config.server) return; 
+//    if (message.guild.id !== config.server) return;
 //
 //    let serverData = await serverdb.findOne({ guildID: message.guildId });
 //    if (!serverData) {
@@ -1223,7 +1233,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         } else {
             console.error(`Für die Benutzer-ID wurde keine Benutzerdaten gefunden: ${userId}`);
         }
-    } 
+    }
     else if (oldState.channelId && !newState.channelId) {
 
         const user = oldState.member?.user || newState.member?.user;
@@ -1324,7 +1334,7 @@ async function sendLog(threadID, embed) {
     }
 }
 
-module.exports = { client }
+export { client }
 
 // Bot Start
 client.login(config.token)

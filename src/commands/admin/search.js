@@ -1,13 +1,13 @@
-const {
+import {
   SlashCommandBuilder,
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   PermissionFlagsBits
-} = require('discord.js');
+} from 'discord.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('search')
     .setDescription('Zeigt Mitglieder, die in einem bestimmten Jahr dem Server beigetreten sind.')

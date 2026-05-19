@@ -1,9 +1,10 @@
-const { EmbedBuilder, Permissions } = require('discord.js');
-const teamDB = require('../../../Datenbank/teamdb');
-const serverDB = require('../../../Datenbank/serverdb');
-const cron = require('node-cron');
-const schedule = require('node-schedule');
-module.exports = (client) => {
+import { EmbedBuilder } from 'discord.js';
+import teamDB from '../../../Datenbank/teamdb.js';
+import serverDB from '../../../Datenbank/serverdb.js';
+import cron from 'node-cron';
+import schedule from 'node-schedule';
+
+export default (client) => {
     client.manageTeam = async () => {
 
         client.on('ready', async () => {
@@ -31,7 +32,7 @@ module.exports = (client) => {
                         }).then(sentMessage => {
                             setTimeout(() => {
                                 sentMessage.delete().catch(console.error);
-                            }, 5000); 
+                            }, 5000);
                         });
                     } catch (error) {
                         console.error('Fehler beim Senden der Antwort:', error);
@@ -96,7 +97,7 @@ module.exports = (client) => {
 
             const userId = interaction.user.id;
             const customId = interaction.customId;
-        
+
 
             const dateMatch = interaction.message.embeds[0].description.match(/Datum:\s*(.*)\n/);
             if (!dateMatch) {
@@ -115,7 +116,7 @@ module.exports = (client) => {
             const isAttending = meeting.meetings.some(m => m.attendees.includes(userId));
             const isNonAttending = meeting.meetings.some(m => m.nonAttendees.includes(userId));
             const isReminderSet = meeting.meetings.some(m => m.reminders.includes(userId));
-            
+
             switch (customId) {
                 case 'remindMe':
                     try {
@@ -159,7 +160,7 @@ module.exports = (client) => {
                         await interaction.reply({ content: '> `⚠️` » Du hast bereits deine Teilnahme abgelehnt.', ephemeral: true });
                         break;
                     } else {
- 
+
                     await serverDB.updateOne(
                         { "meetings.date": meetingDate },
                         {
@@ -182,13 +183,13 @@ module.exports = (client) => {
 
         async function rescheduleTasks(client) {
             const meetings = await serverDB.find({ 'meetings.date': { $gte: new Date() } });
-        
+
             for (const meeting of meetings) {
                 for (const m of meeting.meetings) {
                     const meetingDateUTC = new Date(m.date);
                     const reminderDate = new Date(meetingDateUTC.getTime() - 10 * 60000);
                     const deleteDate = new Date(meetingDateUTC.getTime() + 60000);
-        
+
 
                     // Erinnerung Schedule
                     schedule.scheduleJob(reminderDate, async () => {
@@ -210,7 +211,7 @@ module.exports = (client) => {
                             console.error(`Fehler beim Abrufen des Meetings für Erinnerung: ${error}`);
                         }
                     });
-        
+
                     // Message Delete Schedule
                     schedule.scheduleJob(deleteDate, async () => {
                         try {

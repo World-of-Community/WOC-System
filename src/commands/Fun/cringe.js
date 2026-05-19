@@ -1,11 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('cringe')
         .setDescription('» Zeig jemanden, das er sich peinlich verhält. 😑')
         .addUserOption(option => option.setName('user').setDescription('Hat sich blamiert? Verdammt ich habs verpasst!').setRequired(true)),
-        
+
     async execute(interaction) {
         const mitglied = await interaction.options.getUser('user')
 
@@ -13,7 +13,7 @@ module.exports = {
         if (mitglied.id === interaction.user.id) {
             return interaction.reply({ content: "> `❌` - **Selbstscham**: Du schämst dich für dich selbst. Das tut mir leid. <:Cowboy:1273154946308636702>" });
         }
-        
+
         const cringegifs = [
             'https://tenor.com/de/view/homer-simpson-goodbye-bye-disappears-hide-in-the-bushes-gif-3394899.gif',
             'https://tenor.com/de/view/pedro-monkey-puppet-meme-awkward-gif-15268759.gif',
@@ -22,7 +22,7 @@ module.exports = {
         ]
 
         const gif = cringegifs[Math.floor(Math.random() * cringegifs.length)]
-        
+
         await interaction.reply({
             content: `${mitglied}`,
             embeds: [

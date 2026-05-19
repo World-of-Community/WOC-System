@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, } = require("discord.js");
-const bandb = require("../../../Datenbank/bandb");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, } from "discord.js";
+import bandb from "../../../Datenbank/bandb.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("unban")
     .setDescription("» Entbanne einen User oder sende eine Entbannungs-Info. 🔓")
@@ -76,18 +76,18 @@ module.exports = {
           ephemeral: true
         });
       }
-      
+
       try {
         // Falls archiviert → automatisch öffnen
         if (thread.archived) {
           await thread.setArchived(false, "Automatisch vom Bot geöffnet");
         }
-      
+
         // Falls gesperrt → entsperren
         if (thread.locked) {
           await thread.setLocked(false, "Automatisch vom Bot entsperrt");
         }
-      
+
       } catch (err) {
         return interaction.reply({
           content: "> `❌` » Der Thread ist archiviert oder gesperrt und konnte nicht automatisch geöffnet werden.",

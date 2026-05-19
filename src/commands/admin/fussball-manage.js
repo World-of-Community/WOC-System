@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { Team, Match, ProLeagueEmbed } from '../../../Datenbank/fussballdb.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('fussball-manage')
     .setDescription('Verwalte Fußballteams')
@@ -43,7 +43,7 @@ module.exports = {
 
     if (sub === 'add') {
       // ... existierender Code ...
-    } 
+    }
     else if (sub === 'remove') {
       // ... existierender Code ...
     }

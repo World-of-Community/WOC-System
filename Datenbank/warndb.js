@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const warnSchema = new mongoose.Schema({
     guildId: {
@@ -24,4 +24,4 @@ const warnSchema = new mongoose.Schema({
 // Verhindert doppelte Einträge pro Guild + User
 warnSchema.index({ guildId: 1, userId: 1 }, { unique: true });
 
-module.exports = mongoose.model('Warning', warnSchema);
+export default mongoose.model('Warning', warnSchema);

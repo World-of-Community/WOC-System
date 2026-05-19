@@ -1,11 +1,11 @@
-const { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder, Permissions, interaction } = require("discord.js");
-const erfolgDB = require("../../../Datenbank/erfolgdb");
-const vorschlagEmitter = require("../../custom_events/vorschlag");
-const EventEmitter = require('events');
+import { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import erfolgDB from "../../../Datenbank/erfolgdb.js";
+import vorschlagEmitter from "../../custom_events/vorschlag.js";
+import { EventEmitter } from 'node:events';
 const gewinnspielEmitter = new EventEmitter();
-const cron = require("node-cron");
+import cron from "node-cron";
 
-module.exports = (client) => {
+export default (client) => {
   client.handleErfolg = async () => {
 
   // Intervall for Presence
@@ -38,12 +38,12 @@ module.exports = (client) => {
         console.error("Fehler bei der Verarbeitung der ersten Nachricht:", err);
       }
     });
-  
+
     // 1 Jahr Server mitglied
     cron.schedule("0 0 * * *", async () => {
       const guild = await client.guilds.fetch("815919809379172354");
       if (!guild) return console.error('Guild wurde nicht gefunden.');
-  
+
         const members = await guild.members.fetch();
 
         const oneYearAgo = new Date();
@@ -52,7 +52,7 @@ module.exports = (client) => {
             await members.forEach(member => {
               if (!member.bot && !member.roles.cache.has('972193356333604874') && member.joinedAt <= oneYearAgo) {
                     member.roles.add(roletoAdd).then(() => {
-                        
+
                         const oneYearEmbed = new EmbedBuilder()
                         .setTitle("<a:checkgreen:1154702583202578472> 𑁉 ERFOLG ERHALTEN")
                         .setDescription('`💕`**-lichen Glückwunsch zu diesem Erfolg!** Das war bestimmt ein steiniger Weg, aber endlich hast du dir diesen Erfolg mehr als verdient!\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💖〢 1 Jahr Server-Mitglied`\n<:PfeilBlau:1119711275014955080> Stell dir vor, heute vor exakt einem Jahr bist du unserer Community beigetreten! Dafür wollten wir uns bei dir bedanken. ❤️')
@@ -62,19 +62,19 @@ module.exports = (client) => {
                         .setTimestamp();
 
                         member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [oneYearEmbed] });
-                        
+
                         const now = new Date();
 
                         const tage = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
                         const tagName = tage[now.getDay()];
-                        
+
                         const tag = now.getDate().toString().padStart(2, '0');
                         const monat = (now.getMonth() + 1).toString().padStart(2, '0');
                         const jahr = now.getFullYear();
-                        
+
                         const stunde = now.getHours().toString().padStart(2, '0');
                         const minute = now.getMinutes().toString().padStart(2, '0');
-                        
+
                         const datumUhrzeit = `${tagName}, ${tag}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
                         console.log(`Rolle hinzugefügt zu ${member.user.displayName} - ${member.user.username}`);
                         console.log(`Datum: ${datumUhrzeit}`);

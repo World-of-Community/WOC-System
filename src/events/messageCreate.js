@@ -1,11 +1,11 @@
-const { Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, PermissionsBitField, ComponentType } = require("discord.js");
-const fs = require('fs');
-const serverdb = require("../../Datenbank/serverdb");
-const userdb = require("../../Datenbank/userdb");
-const messagedb = require("../../Datenbank/messagedb");
-const teamdb = require("../../Datenbank/teamdb");
-const bumpdb = require("../../Datenbank/bumpdb");
-const { time } = require("console");
+import { Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, PermissionsBitField, ComponentType } from "discord.js";
+import fs from "fs";
+import serverdb from "../../Datenbank/serverdb.js";
+import userdb from "../../Datenbank/userdb.js";
+import messagedb from "../../Datenbank/messagedb.js";
+import teamdb from "../../Datenbank/teamdb.js";
+import bumpdb from "../../Datenbank/bumpdb.js";
+import { time } from "console";
 
 const TeamRoleIds = [
     '959869691529154631', // Admin
@@ -17,7 +17,7 @@ const TeamRoleIds = [
     '1263645368441241700', // Builder
 ];
 
-module.exports = {
+export default {
     name: Events.MessageCreate,
     async execute(message) {
 

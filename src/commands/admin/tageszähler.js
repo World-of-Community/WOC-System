@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 
 const reminders = new Map(); // aktive Reminder / Intervalle
 
@@ -62,7 +62,7 @@ function createCountdownEmbed(startDate, endDate, description) {
         .setTimestamp();
 }
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('tageszähler')
         .setDescription('Tageszähler mit Live-Countdown')

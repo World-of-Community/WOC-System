@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const flaggenquizSchema = new mongoose.Schema({
   guildId: String,
@@ -11,3 +11,5 @@ const flaggenquizSchema = new mongoose.Schema({
 const Flaggenquiz =
   mongoose.models.FlaggenQuiz ||
   mongoose.model('Flaggenquiz', flaggenquizSchema);
+
+export default Flaggenquiz;

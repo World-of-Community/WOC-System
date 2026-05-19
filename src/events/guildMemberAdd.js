@@ -1,12 +1,12 @@
-const { Events, ActivityType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const client = require('../index');
-const fs = require('fs');
-const serverdb = require("../../Datenbank/serverdb");
-const userdb = require("../../Datenbank/userdb");
-const InviteCacheModel = require("../../Datenbank/inviteCachedb");
-const { once } = require("events");
+import { Events, ActivityType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import client from "../index.js";
+import fs from "fs";
+import serverdb from "../../Datenbank/serverdb.js";
+import userdb from "../../Datenbank/userdb.js";
+import InviteCacheModel from "../../Datenbank/inviteCachedb.js";
+import { once } from "events";
 
-module.exports = {
+export default {
     name: Events.GuildMemberAdd,
     once: false,
     async execute(member) {
@@ -28,9 +28,9 @@ module.exports = {
         //}
 
         const serverData = await serverdb.findOne({ guildID: member.guild.id })
-        if (member.user.bot) return; 
+        if (member.user.bot) return;
         if (serverData.deactivated.includes("willkommensnachrichten")) return;
-        
+
         const welcomeChannel = await member.guild.channels.cache.get('1433189396475023380') // Willkommenskanal
 
         // Falls man Mitgliederzahl sehen möchte bei Willkommensnachrichten -> (\`#${member.guild.memberCount}\`)
@@ -71,8 +71,8 @@ module.exports = {
 
         await logchannel.threads.cache.get("1269998215512457259").send({embeds: [join]});
 
-        const neuesMitglied = await member.guild.roles.cache.get('1222122625594294272'); 
-        const mitglied = await member.guild.roles.cache.get('815920703067914290'); 
+        const neuesMitglied = await member.guild.roles.cache.get('1222122625594294272');
+        const mitglied = await member.guild.roles.cache.get('815920703067914290');
 
         try {
             await member.roles.add(neuesMitglied);
@@ -128,9 +128,9 @@ module.exports = {
         // Invite System
         const guild = member.guild;
         const newInvites = await guild.invites.fetch();
-        
+
         let inviteCache = await InviteCacheModel.findOne({ guildID: guild.id });
-        
+
         if (!inviteCache) {
           inviteCache = await InviteCacheModel.create({
             guildID: guild.id,
@@ -140,15 +140,15 @@ module.exports = {
           inviteCache.invites = newInvites.map(i => ({ code: i.code, uses: i.uses }));
           await inviteCache.save();
         }
-      
+
         // Finde die Einladung mit geänderter Nutzungszahl
         const usedInvite = newInvites.find(i => {
           const cachedInvite = inviteCache.invites.find(c => c.code === i.code);
           return cachedInvite && i.uses > cachedInvite.uses;
         });
-      
+
         if (!usedInvite) return;
-      
+
         // Update Einladungs-Statistik im User-Dokument
         await userdb.findOneAndUpdate(
           { userID: usedInvite.inviter.id },
@@ -169,9 +169,9 @@ module.exports = {
                 userID: member.id,
                 donation: 0,
                 reactions: [],
-                'birthday.tag': 0, 
+                'birthday.tag': 0,
                 'birthday.monat': 0,
-                
+
             });
             await newUser.save()
         }
@@ -179,12 +179,12 @@ module.exports = {
         try {
           const userId = member.id;
           let userData = await Coin.findOne({ userId });
-    
+
           if (!userData) {
             console.log(`[DAILY-STREAK] ${member.user.tag} tritt neu bei – kein Datensatz vorhanden, kein Reset nötig.`);
             return;
           }
-    
+
           // Streak bleibt 0, falls sie schon zurückgesetzt wurde
           if (userData.streak !== 0) {
             userData.streak = 0;

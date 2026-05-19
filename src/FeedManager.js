@@ -1,13 +1,12 @@
-const fs = require('fs');
-const cron = require('node-cron');
-const Parser = require('rss-parser');
+import fs from 'fs';
+import cron from 'node-cron';
+import Parser from 'rss-parser';
 const parser = new Parser();
-const { EmbedBuilder } = require("discord.js");
+import { EmbedBuilder } from "discord.js";
+import rssConfig from './json/rssConfig.json' with { type: 'json' };
+import { parseString } from 'xml2js';
 
-const rssConfig = require('./json/rssConfig.json');
-const { parseString } = require('xml2js');
-
-module.exports = {
+const FeedManager = {
     processRSSFeed: async (client, lastEntries) => {
         try {
             for (const feedConfig of rssConfig.feeds) {
@@ -17,7 +16,7 @@ module.exports = {
                     const newestEntry = feed.items[0];
                     const description = newestEntry.description || newestEntry.contentSnippet || `**Beschreibung wurde nicht gefunden.**`;
 
-                    if (!await module.exports.isEntrySent(feedConfig.url, newestEntry.guid, lastEntries)) {
+                    if (!await FeedManager.isEntrySent(feedConfig.url, newestEntry.guid, lastEntries)) {
                         const embed = new EmbedBuilder();
                         if (newestEntry.title) embed.setTitle(newestEntry.title);
                         if (newestEntry.link) embed.setURL(newestEntry.link);
@@ -26,12 +25,12 @@ module.exports = {
                         }
                       
                           // Bildextraktion
-                            let imageUrl = await module.exports.extractImageFromEnclosure(newestEntry);
+                            let imageUrl = await FeedManager.extractImageFromEnclosure(newestEntry);
                             if (!imageUrl) {
-                                imageUrl = await module.exports.extractImageFromMediaThumbnail(newestEntry);
+                                imageUrl = await FeedManager.extractImageFromMediaThumbnail(newestEntry);
                             }
                             if (!imageUrl && newestEntry['content:encoded']) {
-                                imageUrl = await module.exports.extractImageFromContentEncoded(newestEntry['content:encoded']);
+                                imageUrl = await FeedManager.extractImageFromContentEncoded(newestEntry['content:encoded']);
                             }
 
                             if (imageUrl) {
@@ -48,7 +47,7 @@ module.exports = {
                                 .catch(error => console.error('Error sending embed message:', error));
                         }
 
-                        module.exports.markEntryAsSent(feedConfig.url, newestEntry.guid, lastEntries);
+                        FeedManager.markEntryAsSent(feedConfig.url, newestEntry.guid, lastEntries);
                     }
                 }
             }
@@ -63,7 +62,7 @@ module.exports = {
 
     markEntryAsSent: async (feedUrl, entryGuid, lastEntries) => {
         lastEntries[feedUrl] = entryGuid;
-        module.exports.saveLastEntries(lastEntries);
+        FeedManager.saveLastEntries(lastEntries);
     },
 
     saveLastEntries: async (lastEntries) => {
@@ -77,10 +76,10 @@ module.exports = {
     getImageFromContent: async (content) => {
         let imageUrl = null;
 
-        imageUrl = await module.exports.extractImageFromContentEncoded(content);
+        imageUrl = await FeedManager.extractImageFromContentEncoded(content);
 
         if (!imageUrl) {
-            imageUrl = await module.exports.extractImageFromMediaThumbnail(content);
+            imageUrl = await FeedManager.extractImageFromMediaThumbnail(content);
         }
         return imageUrl;
     },
@@ -115,3 +114,6 @@ module.exports = {
         }
     },
 };
+
+export default FeedManager;
+

@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, ChannelType, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+import { SlashCommandBuilder, ChannelType, EmbedBuilder, PermissionFlagsBits, PermissionBitField } from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('bot-image')
         .setDescription('» Sende ein Bild mit dem Bot in einen Kanal. 📌')

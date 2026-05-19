@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const serverdb = require('../../../Datenbank/serverdb')
-module.exports = {
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import serverdb from '../../../Datenbank/serverdb.js';
+export default {
     data: new SlashCommandBuilder()
         .setName('role-bypass')
         .setDescription('» Einstellen der Rollen für das Gewinnspiel-System. 🎁')
@@ -13,7 +13,7 @@ module.exports = {
         .addSubcommand(subcommand => subcommand.setName('list').setDescription('» Zeigt alle Rollen an, welche keine GW-Anforderungen erfüllen muss. 🎀')),
 
     async execute(interaction) {
-        
+
     if (!interaction.member.permissions.has('Administrator')) return interaction.reply({ content: '> `❌` » Du hast dazu keine Rechte diesen Befehl zu benutzen.', ephemeral: true })
          if (interaction.options.getSubcommand() === 'add') {
              const role = interaction.options.getRole('role')

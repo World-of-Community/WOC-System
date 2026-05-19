@@ -1,4 +1,4 @@
-const {
+import {
     ChannelType,
     PermissionFlagsBits,
     EmbedBuilder,
@@ -8,22 +8,22 @@ const {
     ModalBuilder,
     TextInputBuilder,
     TextInputStyle
-} = require('discord.js');
+} from 'discord.js';
 
-module.exports = {
+export default {
     async execute(interaction) {
-        
+
         if (!interaction.guild) {
             return;
         }
 
         try {
             if (interaction.isButton() && interaction.customId === 'create_feedback_ticket') {
-                
+
                 if (interaction.replied || interaction.deferred) {
                     return;
                 }
-                
+
                 const feedbackModal = new ModalBuilder()
                     .setTitle('Feedback einreichen')
                     .setCustomId('feedback-modal');
@@ -55,7 +55,7 @@ module.exports = {
 
             // --- Ticket schließen ---
             if (interaction.isButton() && interaction.customId === 'close_feedback_ticket') {
-                
+
                 const decisionEmbed = new EmbedBuilder()
                     .setTitle('`❓` » Schließ-Anfrage')
                     .setDescription(`${interaction.user} hat das Schließen dieses Tickets angefordert.\n\nBitte akzeptiere oder verweigere mit den untenstehenden Schaltflächen.`)
@@ -85,9 +85,9 @@ module.exports = {
 
             // --- Akzeptieren & schließen ---
             if (interaction.isButton() && interaction.customId === 'feedback_accept_close') {
-                
+
                 await interaction.deferUpdate();
-                
+
                 const acceptEmbed = new EmbedBuilder()
                     .setTitle('`🗑️` » Ticket wird geschlossen')
                     .setDescription('Dieses Ticket wird in **5 Sekunden** geschlossen.')
@@ -114,9 +114,9 @@ module.exports = {
 
             // --- Ablehnen & offen lassen ---
             if (interaction.isButton() && interaction.customId === 'feedback_reject_open') {
-                
+
                 await interaction.deferUpdate();
-                
+
                 const rejectEmbed = new EmbedBuilder()
                     .setTitle('🔓 » Ticket bleibt weiterhin offen')
                     .setDescription('Das Ticket bleibt weiterhin geöffnet.')

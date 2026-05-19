@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
-const fs = require('fs');
-const serverdb = require("../../../Datenbank/serverdb");
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from "discord.js";
+import fs from 'fs';
+import serverdb from "../../../Datenbank/serverdb.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('bot-news-refresh')
         .setDescription('» Aktualisiere das Changelog. 🔁')
@@ -20,7 +20,7 @@ module.exports = {
         await channel.messages.fetch(serverData.updateMessage).then(async msg => {
             await interaction.reply({ content: '> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.', ephemeral: true })
             setTimeout(async () => {
-                
+
                 // Week Date
                 const today = new Date();
                 const nextWeek = new Date(today);

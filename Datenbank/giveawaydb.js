@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const giveawaySchema = new mongoose.Schema({
     channelID: {
@@ -62,4 +62,4 @@ const giveawaySchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('giveaway-data', giveawaySchema)
+export default mongoose.model('giveaway-data', giveawaySchema);

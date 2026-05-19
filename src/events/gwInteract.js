@@ -1,18 +1,18 @@
-const { Events, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder  } = require("discord.js");
-const fs = require('fs');
-const giveawaydb = require("../../Datenbank/giveawaydb");
-const userdb = require("../../Datenbank/userdb");
-const serverdb = require("../../Datenbank/serverdb");
+import { Events, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder  } from "discord.js";
+import fs from "fs";
+import giveawaydb from "../../Datenbank/giveawaydb.js";
+import userdb from "../../Datenbank/userdb.js";
+import serverdb from "../../Datenbank/serverdb.js";
 
-module.exports = {
+export default {
     name: Events.InteractionCreate,
     async execute(interaction) {
-        
+
         if (!interaction.isButton()) return;
         const client = interaction.client;
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
         const config = JSON.parse(file);
-        
+
         if (interaction.customId === 'giveaway-enter') {
             const giveawayData = await giveawaydb.findOne({ msgID: interaction.message.id });
             if (!giveawayData) return await interaction.reply({ content: '> \`❌\` » Das Gewinnspiel existiert nicht.', ephemeral: true });
@@ -36,7 +36,7 @@ module.exports = {
                 if (serverData.roleBypass.some(roleId => interaction.member.roles.cache.has(roleId))) {
                     if (giveawayData.teilnehmer.includes(interaction.user.id)) {
 
-                        
+
                         const row = new ActionRowBuilder().addComponents(
                             new ButtonBuilder()
                             .setCustomId(`giveaway-leave-${giveawayData.msgID}`)
@@ -121,7 +121,7 @@ module.exports = {
 
             await interaction.message.edit({ content: '<a:Giveaway:968876442618306560><a:Giveaway:968876442618306560> **NEUES EVENT!** <a:Giveaway:968876442618306560><a:Giveaway:968876442618306560>', embeds: [updatedEmbed] });
             await interaction.reply({ content: '> `✅` » **Teilnahme erfolgreich**: Ich habe dich erfolgreich als Teilnehmer des Gewinnspiels eingetragen! <a:Gewinnspiel:1148705932231057598>', ephemeral: true });
-        } 
+        }
 
         if (interaction.customId.startsWith('giveaway-leave-')) {
 
@@ -129,7 +129,7 @@ module.exports = {
 
             const giveawayData = await giveawaydb.findOne({ msgID: messageId });
             if (!giveawayData) return await interaction.update({ content: '> `❌` » Das Gewinnspiel existiert nicht.', ephemeral: true });
-            
+
             if (!giveawayData.teilnehmer.includes(interaction.user.id)) {
                 return await interaction.update({ content: '> `❌` » Du nimmst nicht an diesem Gewinnspiel teil!', ephemeral: true });
             }
@@ -149,7 +149,7 @@ module.exports = {
                 .setThumbnail('https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66ca0e3d&is=66c8bcbd&hm=e34c924d9ee5947c75b485bed384536467c3b974d1bebdcbb602ded06df21b13&');
 
             await giveawayMessage.edit({ embeds: [updatedEmbed] });
-            
+
             await interaction.update({content: '> `✅` » Du hast erfolgreich das Gewinnspiel verlassen!', components: []})
 
         }

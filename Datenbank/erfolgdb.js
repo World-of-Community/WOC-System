@@ -1,5 +1,5 @@
-const { model, Schema } = require('mongoose');
- 
+import { model, Schema } from 'mongoose';
+
 let erfolge = new Schema({
    userID: String,
    firstMessage: Boolean,
@@ -9,5 +9,5 @@ let erfolge = new Schema({
       max: 10
   }
 })
- 
-module.exports = model('erfolge', erfolge);
+
+export default model('erfolge', erfolge);

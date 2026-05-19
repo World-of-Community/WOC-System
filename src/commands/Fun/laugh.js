@@ -1,11 +1,11 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('laugh')
         .setDescription('» Lache einen Freund aus. 😂')
         .addUserOption(option => option.setName('user').setDescription('Welchen User möchtest du auslachen?').setRequired(true)),
-        
+
     async execute(interaction) {
         const mitglied = await interaction.options.getUser('user')
 
@@ -23,7 +23,7 @@ module.exports = {
         ]
 
         const laughgif = laughgifs[Math.floor(Math.random() * laughgifs.length)]
-        
+
         await interaction.reply({
             content: `${mitglied}`,
             embeds: [

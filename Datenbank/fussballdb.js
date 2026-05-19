@@ -1,5 +1,5 @@
-// 📁 ./Datenbank/fussballdb.js
-const mongoose = require('mongoose');
+// ⚽ ./Datenbank/fussballdb.js
+import mongoose from 'mongoose';
 
 // ------------------------------------------------------
 // ⚽ TEAM-SCHEMA
@@ -35,10 +35,10 @@ teamSchema.virtual('calculatedPoints').get(function () {
   return this.won * 3 + this.draw;
 });
 
-const Team = mongoose.models.Team || mongoose.model('Team', teamSchema);
+export const Team = mongoose.models.Team || mongoose.model('Team', teamSchema);
 
 // ------------------------------------------------------
-// 🏆 MATCH-SCHEMA
+// 🏁 MATCH-SCHEMA
 // ------------------------------------------------------
 const matchSchema = new mongoose.Schema({
   homeTeam: { type: String, required: true },
@@ -68,7 +68,7 @@ const matchSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-const Match = mongoose.models.Match || mongoose.model('Match', matchSchema);
+export const Match = mongoose.models.Match || mongoose.model('Match', matchSchema);
 
 // ------------------------------------------------------
 // 📊 PROLEAGUE-EMBED-SCHEMA
@@ -79,9 +79,4 @@ const embedSchema = new mongoose.Schema({
   messageId: { type: String, required: true },
 });
 
-const ProLeagueEmbed = mongoose.models.ProLeagueEmbed || mongoose.model('ProLeagueEmbed', embedSchema);
-
-// ------------------------------------------------------
-// 📤 EXPORTS
-// ------------------------------------------------------
-module.exports = { Team, Match, ProLeagueEmbed };
+export const ProLeagueEmbed = mongoose.models.ProLeagueEmbed || mongoose.model('ProLeagueEmbed', embedSchema);

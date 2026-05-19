@@ -1,28 +1,28 @@
-const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('reaction-remove')
         .setDescription('» Entfernt Reaktionen von einer bestimmten Nachricht. 📌')
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('nachrichtid')
                 .setDescription('Die ID der Nachricht, von der die Reaktionen entfernt werden sollen.')
                 .setRequired(true))
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('emoji1')
                 .setDescription('Das erste Emoji, das entfernt werden soll.')
                 .setRequired(true))
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('emoji2')
                 .setDescription('Das optionale zweite Emoji, das entfernt werden soll.')
                 .setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-    
+
     async execute(interaction) {
         const messageId = interaction.options.getString('nachrichtid');
         const emoji1 = interaction.options.getString('emoji1');
         const emoji2 = interaction.options.getString('emoji2');
-        
+
         const channel = interaction.channel;
 
         try {

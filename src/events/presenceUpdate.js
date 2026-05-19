@@ -1,8 +1,8 @@
-const { Events } = require('discord.js');
+import { Events } from 'discord.js';
 
 const STREAM_ROLE_ID = '1266095218239995968'; // Streamer-Rolle ID
 
-module.exports = {
+export default {
   name: Events.PresenceUpdate,
   async execute(oldPresence, newPresence) {
     if (!newPresence || !newPresence.member) return;
@@ -28,7 +28,7 @@ module.exports = {
       await member.roles.add(liveRole).catch(() => {});
       console.log(`${member.user.tag} ist jetzt LIVE`);
       console.log(`Datum: ${timestamp}`);
-    } 
+    }
     else if (!isStreaming && member.roles.cache.has(liveRole.id)) {
       await member.roles.remove(liveRole).catch(() => {});
       console.log(`${member.user.tag} ist nicht mehr live`);
@@ -38,10 +38,10 @@ module.exports = {
 };
 
 /*
-const { Events, ActivityType, EmbedBuilder } = require("discord.js");
-const fs = require("fs");
-const { Coin } = require("../../Datenbank/coindb");
-const StreamSession = require("../../Datenbank/streamSessiondb");
+import { Events, ActivityType, EmbedBuilder } from "discord.js";
+import fs from "fs";
+import { Coin } from "../../Datenbank/coindb";
+import StreamSession from "../../Datenbank/streamSessiondb";
 
 // --- In-Memory State ---
 const timers = new Map();
@@ -75,12 +75,12 @@ function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-module.exports = {
+export default {
   name: Events.PresenceUpdate,
   /**
    * @param {import('discord.js').Presence} oldPresence
    * @param {import('discord.js').Presence} newPresence
-   
+
   async execute(oldPresence, newPresence) {
     try {
       if (!newPresence?.guild) return;
@@ -321,11 +321,11 @@ process.on("SIGINT", () => {
 
 // Alte Version des Handlers (nur zur Referenz)*
 /*
-const { Events, ActivityType, EmbedBuilder } = require("discord.js");
-const fs = require('fs');
-const userdb = require("../../Datenbank/userdb");
-const { Coin } = require('../../Datenbank/coindb');
-const StreamSession = require('../../Datenbank/streamSessiondb');
+import { Events, ActivityType, EmbedBuilder } from "discord.js";
+import fs from 'fs';
+import userdb from "../../Datenbank/userdb";
+import { Coin } from '../../Datenbank/coindb.js';
+import StreamSession from '../../Datenbank/streamSessiondb.js';
 
 const onlineMap = new Map();
 const offlineMessages = new Map();
@@ -342,7 +342,7 @@ const COOLDOWN_AFTER_STREAM_MINUTES = 0;
 
 function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
-module.exports = {
+export default {
   name: Events.PresenceUpdate,
   async execute(oldPresence, newPresence, client) {
     try {
@@ -486,10 +486,10 @@ async function clearSession(userId, reason = "ended", memberInstance = null) {
 }
 
 /*
-const { Events, ActivityType, EmbedBuilder } = require("discord.js");
-const fs = require('fs');
-const userdb = require("../../Datenbank/userdb");
-const { Coin } = require('../../../Datenbank/coindb');
+import { Events, ActivityType, EmbedBuilder } from "discord.js";
+import fs from 'fs';
+import userdb from "../../Datenbank/userdb";
+import { Coin } from '../../../Datenbank/coindb.js';
 
 // Globale Map
 const onlineMap = new Map();
@@ -512,7 +512,7 @@ function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-module.exports = {
+export default {
     name: Events.PresenceUpdate,
     async execute(oldPresence, newPresence) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -654,14 +654,14 @@ module.exports = {
 };
 
 /*
-const { Events, ActivityType, EmbedBuilder } = require("discord.js");
-const fs = require('fs');
-const userdb = require("../../Datenbank/userdb");
+import { Events, ActivityType, EmbedBuilder } from "discord.js";
+import fs from 'fs';
+import userdb from "../../Datenbank/userdb";
 
 // Globale Map
 const onlineMap = new Map();
 
-module.exports = {
+export default {
     name: Events.PresenceUpdate,
     async execute(oldPresence, newPresence) {
         const file = fs.readFileSync('src/json/config.json', 'utf-8');
@@ -678,7 +678,7 @@ module.exports = {
         const activities = member.presence?.activities;
 
         if (member.user.bot) return;
-        
+
         // Vanity-Link prüfen
         const customActivity = activities?.find(a => a.type === ActivityType.Custom);
         if (customActivity?.state?.includes(`.gg/${config.vanity}`) || customActivity?.state?.includes(`discord.gg/${config.vanity}`)) {
@@ -688,11 +688,11 @@ module.exports = {
                 await member.roles.remove(role).catch(() => {});
             }
         }
-        
+
         if (!member || member.user.bot) return;
-        
+
         const newStatus = newPresence.status ?? 'offline';
-        
+
         if (newStatus === 'offline' || newStatus === 'invisible') {
           await userdb.updateOne(
             { userID: member.id },
@@ -737,17 +737,17 @@ module.exports = {
         ];
         let lastStatus = null;
         let offlineMessage = null; // Speichert die Offline-Nachricht
-        
+
         if (!newPresence || newPresence.user?.id !== BOT_ID) return;
         const status = newPresence.status; // online, idle, dnd, offline
-    
+
         // Wenn der Bot offline geht
         if (status === "offline" && lastStatus !== "offline") {
             for (const channelId of CHANNEL_IDS) {
                 try {
                     const channel = await client.channels.fetch(channelId);
                     if (!channel?.isTextBased()) continue;
-    
+
                     const msg = await channel.send(
                         "⚠️ **Aktuell ist der Ticket Support offline.**\nWir bitten um Entschuldigung. Bitte nutze in der Zwischenzeit den **Schrift-Support**."
                     );

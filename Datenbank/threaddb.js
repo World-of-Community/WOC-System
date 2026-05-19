@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const mongoose = require('mongoose');
+import Discord from 'discord.js';
+import mongoose from 'mongoose';
 
 const threadSchema = new mongoose.Schema({
     threadID: {
@@ -18,4 +18,4 @@ const threadSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('thread-data', threadSchema)
+export default mongoose.model('thread-data', threadSchema);

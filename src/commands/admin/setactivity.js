@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ActivityType } = require('discord.js');
+import { SlashCommandBuilder, PermissionFlagsBits, ActivityType } from 'discord.js';
 
 let statusInterval; // globale Variable zum Speichern des Intervalls
 
@@ -7,7 +7,7 @@ let statusInterval; // globale Variable zum Speichern des Intervalls
  * @param {Client} client Der Discord Client
  * @param {Guild} guild Die Discord-Gilde (Server)
  */
-function startStatusCycle(client, guild) {
+export function startStatusCycle(client, guild) {
     if (statusInterval) clearInterval(statusInterval);
 
     statusInterval = setInterval(async () => {
@@ -34,7 +34,7 @@ function startStatusCycle(client, guild) {
     }, 60000); // alle 1 Minute
 }
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('setcustomstatus')
         .setDescription('Setzt eine benutzerdefinierte Statusnachricht für den Bot oder setzt sie zurück')

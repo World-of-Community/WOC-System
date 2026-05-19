@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, Client, GatewayIntentBits } = require('discord.js');
+import { SlashCommandBuilder, PermissionFlagsBits, Client, GatewayIntentBits } from 'discord.js';
 
 let lastChannelId = null;
 let lastMessageId = null;
@@ -27,7 +27,7 @@ client.once('ready', async () => {
     }
 });
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('restart')
         .setDescription('» Startet den Bot neu. (Admin/Dev Only)')

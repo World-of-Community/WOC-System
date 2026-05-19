@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ButtonBuilder, ButtonStyle, InteractionCollector, ActionRowBuilder } = require('discord.js');
-const userDB = require("../../../Datenbank/userdb")
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ButtonBuilder, ButtonStyle, InteractionCollector, ActionRowBuilder } from 'discord.js';
+import userDB from "../../../Datenbank/userdb.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('birthday')
         .setDescription('Geburstag System')
@@ -30,8 +30,8 @@ module.exports = {
                 tag = interaction.options.getInteger('tag');
                 monat = interaction.options.getInteger('monat');
                 jahr = interaction.options.getInteger('jahr');
-                
-                
+
+
                 if (!isValidDate(tag, monat, jahr)) {
                     return interaction.reply({ content: '> `❌` » Bitte gib ein gültiges Datum ein.', ephemeral: true });
                 }
@@ -40,19 +40,19 @@ module.exports = {
                     if (jahr) {
                         await userDB.findOneAndUpdate(
                             { userID: interaction.user.id },
-                            { 
-                                'birthday.tag': tag, 
-                                'birthday.monat': monat, 
-                                'birthday.jahr': jahr 
+                            {
+                                'birthday.tag': tag,
+                                'birthday.monat': monat,
+                                'birthday.jahr': jahr
                             },
                             { upsert: true, new: true }
                         );
                     } else {
                         await userDB.findOneAndUpdate(
                             { userID: interaction.user.id },
-                            { 
-                                'birthday.tag': tag, 
-                                'birthday.monat': monat, 
+                            {
+                                'birthday.tag': tag,
+                                'birthday.monat': monat,
                             },
                             { upsert: true, new: true }
                         );
@@ -108,19 +108,19 @@ module.exports = {
                     if (jahr) {
                         await userDB.findOneAndUpdate(
                             { userID: interaction.user.id },
-                            { 
-                                'birthday.tag': tag, 
-                                'birthday.monat': monat, 
-                                'birthday.jahr': jahr 
+                            {
+                                'birthday.tag': tag,
+                                'birthday.monat': monat,
+                                'birthday.jahr': jahr
                             },
                             { upsert: true, new: true }
                         );
                     } else {
                         await userDB.findOneAndUpdate(
                             { userID: interaction.user.id },
-                            { 
-                                'birthday.tag': tag, 
-                                'birthday.monat': monat, 
+                            {
+                                'birthday.tag': tag,
+                                'birthday.monat': monat,
                             },
                             { upsert: true, new: true }
                         );
@@ -136,43 +136,43 @@ module.exports = {
 
             case 'next': {
                 const pageSize = 10;
-            
+
                 let upcomingBirthdays = await userDB.find({
                     'birthday.tag': { $exists: true, $ne: null },
                     'birthday.monat': { $exists: true, $ne: null },
                 });
-            
+
                 upcomingBirthdays = upcomingBirthdays.filter(b => b.birthday.tag !== 0);
-            
+
                 if (upcomingBirthdays.length === 0) {
                     return interaction.reply({ content: '> `❌` » Keine Geburtstage gefunden.', ephemeral: true });
                 }
-            
+
                 // Heute-Datum holen
                 const today = new Date();
                 const currentYear = today.getFullYear();
-            
+
                 // Sortieren nach dem nächsten echten Geburtstag
                 upcomingBirthdays.sort((a, b) => {
                     const dateA = new Date(currentYear, a.birthday.monat - 1, a.birthday.tag);
                     const dateB = new Date(currentYear, b.birthday.monat - 1, b.birthday.tag);
-            
+
                     // Wenn der Geburtstag dieses Jahr schon vorbei ist → aufs nächste Jahr schieben
                     if (dateA < today) dateA.setFullYear(currentYear + 1);
                     if (dateB < today) dateB.setFullYear(currentYear + 1);
-            
+
                     return dateA - dateB;
                 });
-            
+
                 let currentPage = 1;
                 const totalPages = Math.ceil(upcomingBirthdays.length / pageSize);
-            
+
                 function createBirthdayEmbed(birthdays, page) {
                     const startIndex = (page - 1) * pageSize;
                     const endIndex = Math.min(page * pageSize, birthdays.length);
-            
+
                     let description = 'Hier sind die nächsten Geburtstage:\n\n';
-            
+
                     // Nur auf Seite 1 den nächsten Geburtstag oben anzeigen
                     if (page === 1 && birthdays.length > 0) {
                         const next = birthdays[0];
@@ -181,32 +181,32 @@ module.exports = {
                         const formattedDate = next.birthday.jahr
                             ? `${formattedTag}.${formattedMonat}.${next.birthday.jahr}`
                             : `${formattedTag}.${formattedMonat}.`;
-            
+
                         description += `**Nächster Geburtstag:** <@${next.userID}> - ${formattedDate}\n\n`;
                     }
-            
+
                     const pageBirthdays = birthdays.slice(startIndex, endIndex);
-            
+
                     let previousMonth = null; // Für die Trennung der Jahre/Monate
-            
+
                     for (const birthday of pageBirthdays) {
                         const { userID, birthday: { tag, monat, jahr } } = birthday;
                         const member = interaction.guild.members.cache.get(userID);
                         if (!member) continue;
-            
+
                         // Trennlinie, wenn Monatswechsel von hoch zu niedrig (z.B. 12 → 1)
                         if (previousMonth !== null && monat < previousMonth) {
                             description += '──────────────────────────────────────────────\n';
                         }
                         previousMonth = monat;
-            
+
                         const formattedTag = tag.toString().padStart(2, '0');
                         const formattedMonat = monat.toString().padStart(2, '0');
                         const formattedDate = jahr ? `${formattedTag}.${formattedMonat}.${jahr}` : `${formattedTag}.${formattedMonat}.`;
-            
+
                         description += `${member} - ${formattedDate}\n`;
                     }
-            
+
                     return new EmbedBuilder()
                         .setTitle('`🎂` × Geburtstage der Community')
                         .setDescription(description)
@@ -214,7 +214,7 @@ module.exports = {
                         .setFooter({ text: `» ${interaction.guild.name} - Seite ${page} von ${totalPages}`, iconURL: interaction.guild.iconURL() })
                         .setTimestamp();
                 }
-            
+
                 function createPaginationButtons(page, totalPages) {
                     return new ActionRowBuilder().addComponents(
                         new ButtonBuilder()
@@ -229,36 +229,36 @@ module.exports = {
                             .setDisabled(page === totalPages)
                     );
                 }
-            
+
                 const embed = createBirthdayEmbed(upcomingBirthdays, currentPage);
                 const buttons = createPaginationButtons(currentPage, totalPages);
-            
+
                 const message = await interaction.reply({ embeds: [embed], components: [buttons], ephemeral: true });
-            
+
                 const filter = i => ['prev', 'next'].includes(i.customId) && i.user.id === interaction.user.id;
                 const collector = message.createMessageComponentCollector({ filter });
-            
+
                 collector.on('collect', async i => {
                     if (i.customId === 'prev') {
                         currentPage = Math.max(currentPage - 1, 1);
                     } else if (i.customId === 'next') {
                         currentPage = Math.min(currentPage + 1, totalPages);
                     }
-            
+
                     const updatedEmbed = createBirthdayEmbed(upcomingBirthdays, currentPage);
                     const updatedButtons = createPaginationButtons(currentPage, totalPages);
-            
+
                     await i.update({ embeds: [updatedEmbed], components: [updatedButtons] });
                 });
-            
+
                 collector.on('end', () => {
                     message.edit({ components: [] });
                 });
             }
                 break;
         }
-    }, 
-}; 
+    },
+};
 
 function isValidDate(day, month, year) {
     if (!year) {

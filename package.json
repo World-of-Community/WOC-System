@@ -9,6 +9,7 @@
   },
   "author": "",
   "license": "ISC",
+  "type": "module",
   "dependencies": {
     "@twurple/api": "^7.2.1",
     "@twurple/auth": "^7.2.1",

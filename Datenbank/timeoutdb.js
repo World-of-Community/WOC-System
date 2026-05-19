@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const mongoose = require('mongoose');
+import Discord from 'discord.js';
+import mongoose from 'mongoose';
 
 const timeoutSchema = new mongoose.Schema(
     {
@@ -37,4 +37,4 @@ const timeoutSchema = new mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model('timeout-schema', timeoutSchema);
+export default mongoose.model('timeout-schema', timeoutSchema);

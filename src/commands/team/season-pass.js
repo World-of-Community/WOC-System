@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
-const User = require('../../../Datenbank/userdb');
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } from 'discord.js';
+import User from '../../../Datenbank/userdb.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('season-pass')
     .setDescription('» Zeigt den Seasonpass mit allen Vorteilen und der Kaufoption. 🎫')
@@ -13,7 +13,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle('🎟️ SeasonPass')
       .setColor('Blurple')
-      .setDescription( 
+      .setDescription(
        'Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 20 Rewards!\n\n' +
        '**Auf einen Blick**:\n' +
        '» Alle 30 Tage ein Pass mit 20 Rewards\n' +

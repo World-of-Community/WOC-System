@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, PermissionBitField } = require('discord.js');
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, PermissionBitField } from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('clear')
         .setDescription('» Lösche eine bestimmte Anzahl von Nachrichten. 🗑️')
@@ -10,7 +10,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
     async execute(interaction) {
-        
+
         const messagedelete = interaction.options.getInteger('anzahl');
         const kanal = interaction.options.getChannel('kanal') || interaction.channel;
         const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';

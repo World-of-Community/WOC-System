@@ -1,12 +1,12 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import modalHandler from "../modals/partnerModal.js";
 
-module.exports = {
+export default {
     async execute(interaction) {
         if (!interaction.isButton()) return;
 
         // Modal öffnen
         if (interaction.customId === 'partner') {
-            const modalHandler = require("../modals/partnerModal");
             return modalHandler.showPartnerModal(interaction);
         }
 

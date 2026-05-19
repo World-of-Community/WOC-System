@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
-const { Match } = require('../../../Datenbank/fussballdb');
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import { Match } from '../../../Datenbank/fussballdb.js';
 
 const proLeagueTeams = [
   'FC Adler','SV Löwen','TSV Eiche','SC Blau','VfB Stern',
@@ -18,7 +18,7 @@ const fixedTimes = [
 // Startdatum: 30.10.2025 um 21:00 Uhr
 const startDatum = new Date(2025, 9, 30, 21, 0);
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('fussball-spiel-erstellen')
     .setDescription('Erstellt automatisch die komplette Saison mit allen Spieltagen und Spielen.')

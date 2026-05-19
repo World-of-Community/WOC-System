@@ -1,12 +1,12 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, PermissionFlagsBits, ComponentType } = require('discord.js');
-const mongoose = require('mongoose');
-const axios = require('axios');
+import { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, PermissionFlagsBits, ComponentType } from 'discord.js';
+import mongoose from 'mongoose';
+import axios from 'axios';
 const PLACEHOLDER_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/d/d6/KeinBildVorhanden.jpg';
 
 const YT_API_KEY = 'AIzaSyCvg3Nd7BkHQzLqbHDObsyNlX_fOzoU2-4';
 const YOUTUBE_ROLE_ID = '1337362885101359146';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('youtube')
         .setDescription('» Schickt das YouTube-Embed. 🔴')

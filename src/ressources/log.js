@@ -7,8 +7,10 @@ const ThreadIDs = {
     MODERATION: "1269295450721222740",
     INVITE: "1269295619483373588"
 };
-//sendLog("CHANNEL", embed)
-async function sendLog(threadName, embed) {
+
+// NOTE: This function assumes 'client' is available in the scope where it's called, 
+// or it should be passed as an argument. To be safe in ESM, we should probably pass it.
+async function sendLog(client, threadName, embed) {
     const serverCatch = client.guilds.cache.get("815919809379172354");
     const logchannel = await serverCatch.channels.cache.get("1263436406655680513");
 
@@ -19,7 +21,8 @@ async function sendLog(threadName, embed) {
 
     await logchannel.threads.cache.get(threadID).send({embeds: [embed]});
 }
-module.exports = {
+
+export {
     ThreadIDs,
     sendLog
 };

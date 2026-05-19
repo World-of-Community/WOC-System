@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Team } = require('../../../Datenbank/fussballdb');
-const { Match } = require('../../../Datenbank/matchdb');
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { Team } from '../../../Datenbank/fussballdb.js';
+import Match from '../../../Datenbank/matchdb.js';
 
 const proLeagueTeams = [
   'FC Adler', 'SV Löwen', 'TSV Eiche', 'SC Blau', 'VfB Stern',
@@ -10,7 +10,7 @@ const proLeagueTeams = [
   'FC Donner', 'SV Schatten', 'TSV Nebel', 'SC Licht'
 ];
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('club-profil')
     .setDescription('» Zeigt Informationen zu einem Fußballclub. ⚽')

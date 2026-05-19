@@ -1,12 +1,12 @@
-const { Client, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require("discord.js");
-const userdb = require("../../../Datenbank/userdb");
+import { Client, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } from "discord.js";
+import userdb from "../../../Datenbank/userdb.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('messages')
         .setDescription('» Zeigt an, wieviel jemand gechattet hat. ✍️')
         .addUserOption(option => option.setName('mitglied').setDescription('» Welches Profil möchtest du Abrufen?').setRequired(false)),
-        
+
     async execute(interaction) {
         const member = await interaction.options.getMember('mitglied') || interaction.member
 

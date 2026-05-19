@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
-const ms = require("ms");
-const bandb = require("../../../Datenbank/bandb");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import ms from "ms";
+import bandb from "../../../Datenbank/bandb.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('ban')
         .setDescription('» Banne einen User. 🔒')

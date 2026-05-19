@@ -1,10 +1,10 @@
-const { Client, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require("discord.js");
+import { Client, EmbedBuilder, SlashCommandBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } from "discord.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('» Listet dir alle Befehle vom System-Bot auf. 🧡'),
-        
+
     async execute(interaction) {
 
         const helpEmbed = new EmbedBuilder()
