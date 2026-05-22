@@ -1,10 +1,7 @@
 import { Events, ActivityType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
-import client from "../index.js";
-import fs from "fs";
 import serverdb from "../../Datenbank/serverdb.js";
 import userdb from "../../Datenbank/userdb.js";
 import InviteCacheModel from "../../Datenbank/inviteCachedb.js";
-import { once } from "events";
 
 export default {
     name: Events.GuildMemberAdd,

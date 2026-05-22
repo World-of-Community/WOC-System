@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
-import Advent from '../../../Datenbank/advent.js'; // Pfad zu deinem Advent Model
+import Advent from '../../../Datenbank/adventdb.js';
 
 // Belohnungen definieren
 const rewards = {

@@ -38,7 +38,7 @@ function parseGermanDateTime(input) {
   };
 }
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('termin')
     .setDescription('Terminverwaltung 📅')

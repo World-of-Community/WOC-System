@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import teammessagedb from "../../../Datenbank/teammessagedb.js";
 import teamdb from "../../../Datenbank/teamdb.js";
 

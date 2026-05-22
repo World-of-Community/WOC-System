@@ -1,7 +1,5 @@
 import { Events, ActivityType, EmbedBuilder } from "discord.js";
-import client from "../index.js";
 import fs from "fs";
-const config = JSON.parse(fs.readFileSync('src/json/config.json', 'utf-8'));
 import userdb from "../../Datenbank/userdb.js";
 import InviteCache from "../../Datenbank/inviteCachedb.js";
 import serverdb from "../../Datenbank/serverdb.js";

@@ -1,6 +1,6 @@
 import { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType, PermissionFlagsBits } from "discord.js";
 import userdb from "../../Datenbank/userdb.js";
-import config from "../json/config.json" assert { type: "json" };
+import config from "../json/config.json" with { type: "json" };
 import vorschlagEmitter from "../custom_events/vorschlag.js";
 import Advent from "../../Datenbank/adventdb.js";
 import NewsStatus from "../../Datenbank/newsdb.js";
