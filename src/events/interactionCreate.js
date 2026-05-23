@@ -1,24 +1,25 @@
-import { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType, PermissionFlagsBits } from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ChannelType,
+    EmbedBuilder,
+    Events,
+    ModalBuilder,
+    PermissionFlagsBits,
+    TextInputBuilder,
+    TextInputStyle
+} from "discord.js";
 import userdb from "../../Datenbank/userdb.js";
-import config from "../json/config.json" with { type: "json" };
-import vorschlagEmitter from "../custom_events/vorschlag.js";
+import config from "../json/config.json" with {type: "json"};
 import Advent from "../../Datenbank/adventdb.js";
 import NewsStatus from "../../Datenbank/newsdb.js";
 import Timeout from "../../Datenbank/timeoutdb.js";
 import Warn from "../../Datenbank/warndb.js";
-import bandb from "../../Datenbank/bandb.js";
 import Meeting from "../../Datenbank/meetingdb.js";
 import Note from "../../Datenbank/notedb.js";
-
-// Beta Features (Buttons & Modals)
-//import editBanReason from "./interactions/buttons/editBanReason.js";
-//import banReasonModal from "./interactions/modals/banReasonModal.js";
 import feedbackButton from "../buttons/feedbackButton.js";
-//import feedbackModal from "./interactions/modals/feedbackModal.js";
-//import ticketButton from "./interactions/buttons/ticketButton.js";
-//import unbanModal from "./interactions/modals/unbanModal.js";
 import partnerButton from "../buttons/partnerButton.js";
-import partnerModal from "../modals/partnerModal.js";
 
 const rewards = {
     6: { type: 'role', value: '1442140220182106184' }, // Adventskalender 2025
@@ -288,7 +289,6 @@ export default {
     }
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
-        client = interaction.client
 
         // Adventskalender bearbeiten
         const now = new Date();
@@ -809,11 +809,11 @@ export default {
           };
 
           // Beim Bot-Start Reminder für alle kommenden Meetings setzen
-          client.once('ready', async () => {
+          interaction.client.once('ready', async () => {
               console.log('✅  | Meeting Reminder-System aktiviert');
               const upcomingMeetings = await Meeting.find({ time: { $gte: new Date() } });
               for (const m of upcomingMeetings) {
-                  scheduleReminder(m, client);
+                  scheduleReminder(m, interaction.client);
               }
           });
 
@@ -1364,7 +1364,7 @@ export default {
 
         if (interaction.isChatInputCommand() || interaction.type === 2 || interaction.type === 3) {
 
-        const command = client.commands.get(interaction.commandName)
+        const command = interaction.client.commands.get(interaction.commandName)
 
         if (command) {
             try {
