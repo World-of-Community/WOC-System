@@ -3,4 +3,4 @@ const func = {
         return zahl.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     },
 }
-module.exports = func
+export default func;

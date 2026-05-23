@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const eventItems = require('../../../Datenbank/eventitems');
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import eventItems from '../../../Datenbank/eventItems.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('weihnachtsbäume')
     .setDescription('» Sammle täglich Weihnachtsbäume beim Weihnachts-Event! 🎄'),

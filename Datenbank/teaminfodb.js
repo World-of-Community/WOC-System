@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const teamInfoSchema = new mongoose.Schema({
     userID: {
@@ -27,4 +27,4 @@ const teamInfoSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('TeamInfo', teamInfoSchema);
+export default mongoose.model('TeamInfo', teamInfoSchema);

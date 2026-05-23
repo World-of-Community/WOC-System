@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
+import { SlashCommandBuilder, EmbedBuilder, ChannelType, PermissionFlagsBits } from 'discord.js';
 
 const colorMap = {
     red: '#FF0000',
@@ -43,7 +43,7 @@ const colorMap = {
     seashell: '#FFF5EE'
 };
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('embed')
     .setDescription('Erstellt oder bearbeitet ein Embed')
@@ -130,4 +130,3 @@ module.exports = {
     }
   }
 };
-

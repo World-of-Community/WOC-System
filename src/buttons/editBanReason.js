@@ -1,6 +1,6 @@
-const { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle } = require('discord.js');
+import { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle } from 'discord.js';
 
-module.exports = {
+export default {
     id: 'editBanReason_',
     run: async (client, interaction) => {
         const userId = interaction.customId.split('_')[1];

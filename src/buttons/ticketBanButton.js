@@ -1,4 +1,4 @@
-const {
+import {
     ChannelType,
     PermissionFlagsBits,
     EmbedBuilder,
@@ -8,19 +8,18 @@ const {
     ModalBuilder,
     TextInputBuilder,
     TextInputStyle
-} = require('discord.js');
+} from 'discord.js';
 
-module.exports = {
+export default {
     async execute(interaction) {
 
         if (!interaction.guild) {
             return;
         }
-        
+
         //if (!interaction.isButton()) return;
 
         if (interaction.isButton() && interaction.customId === 'gebannt-ticket') {
-            const { ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 
             const gebanntModal = new ModalBuilder()
                 .setTitle('⛔ - ENTBANNUNGSTICKET')

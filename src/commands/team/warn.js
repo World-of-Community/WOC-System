@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const warndb = require("../../../Datenbank/warndb");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import warndb from "../../../Datenbank/warndb.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('warn')
         .setDescription('» Verwaltet Warnungen für Benutzer.')

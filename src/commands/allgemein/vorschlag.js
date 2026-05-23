@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType } = require('discord.js');
+import { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType } from 'discord.js';
 
-module.exports = {
+export default {
    data: new SlashCommandBuilder()
       .setName('vorschlag')
       .setDescription('» Verwalte ein Vorschlag. 💡')
@@ -15,7 +15,7 @@ async execute(interaction, client) {
         if (vorschlagsembed.color === "Green") return await interaction.reply({ content: `> \`❌\` » Der Vorschlag wurde bereits akzeptiert.`, ephemeral: true });
         if (vorschlagsembed.color === "Grey") return await interaction.reply({ content: `> \`❌\` » Der Vorschlag wurde bereits in Planung gesetzt.`, ephemeral: true });
         if (vorschlagsembed.color === "Red") return await interaction.reply({ content: `> \`❌\` » Der Vorschlag wurde bereits abgelehnt.`, ephemeral: true });
-        
+
 
         const accept = new ButtonBuilder()
         .setCustomId("vorschlag_accept")
@@ -37,7 +37,7 @@ async execute(interaction, client) {
         .setEmoji("❌")
         .setLabel("Ablehnen")
         .setStyle(ButtonStyle.Danger)
-  
+
         const row = new ActionRowBuilder().addComponents(accept, edit, duplicate, delice)
 
         await interaction.reply({ content: `> \`💡\` » Wähle eine Aktion aus.`, components: [row], ephemeral: true })

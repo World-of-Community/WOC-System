@@ -1,4 +1,4 @@
-const {
+import {
   SlashCommandBuilder,
   EmbedBuilder,
   PermissionFlagsBits,
@@ -6,9 +6,9 @@ const {
   ButtonBuilder,
   ButtonStyle,
   ComponentType
-} = require('discord.js');
+} from 'discord.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('info')
     .setDescription('» Verschiedene Info-Nachrichten 📑')

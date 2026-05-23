@@ -1,7 +1,7 @@
-const { Events, EmbedBuilder } = require("discord.js");
-const countingSchema = require('../../Datenbank/countingdb');
+import { Events, EmbedBuilder } from "discord.js";
+import countingSchema from "../../Datenbank/countingdb.js";
 
-module.exports = {
+export default {
     name: Events.MessageCreate,
     async execute(message) {
 
@@ -15,11 +15,11 @@ module.exports = {
                 counting(message, countingdb)
                 break;
             case '1269568224295391233': // Flaggen
-                
+
                 break;
 
             case '1269568327127269466': // Emoji
-                
+
                 break;
         }
     }
@@ -55,6 +55,6 @@ async function counting(message, counting) {
         }
         message.react('✅')
     }
-    
+
     await counting.save()
 }

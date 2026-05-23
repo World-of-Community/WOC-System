@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const userdb = require('../../../Datenbank/userdb');
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import userdb from '../../../Datenbank/userdb.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('profil')
         .setDescription('» Zeigt dir nützliche Stats über einen Account. 👤')
@@ -118,7 +118,7 @@ module.exports = {
         const GeschlechtRoleIds = [
             '848173921630945320', // Männlich
             '848173917767991377', // Weiblich
-            '870646828348080159', // Divers 
+            '870646828348080159', // Divers
         ];
 
         const GameRoleIds = [
@@ -142,7 +142,7 @@ module.exports = {
             '1147093175186493490', // Bot-Changelog Ping
             '1478434516451463341', // Changelog Ping
             '1246190426646642698', // Dead Chat Ping
-            '1230568420240527462', // Gratis Spiele Ping 
+            '1230568420240527462', // Gratis Spiele Ping
             '1231257421016469596', // Gaming News Ping
             '1231257532844998666', // Mediathek Ping
         ];
@@ -295,22 +295,22 @@ module.exports = {
         let lastOnlineText = '';
 
         const isOffline = !member.presence; // offline ODER unsichtbar
-        
+
         if (isOffline && userData?.lastOnline) {
           const lastOnline = new Date(userData.lastOnline);
-        
+
           if (!isNaN(lastOnline)) {
             const date = lastOnline.toLocaleDateString('de-DE', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric',
             });
-        
+
             const time = lastOnline.toLocaleTimeString('de-DE', {
               hour: '2-digit',
               minute: '2-digit',
             });
-        
+
             lastOnlineText =
               `- \`📅\` » Zuletzt online: \`${date} - ${time}\`\n`;
           }

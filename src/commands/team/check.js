@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('check')
         .setDescription('» Überprüft einen Benutzer auf mögliche Fake-Anzeichen')
@@ -30,7 +30,7 @@ module.exports = {
             joinDate = `<t:${Math.floor(member.joinedTimestamp / 1000)}:R>`;
             nickname = member.nickname || "Kein Nickname";
             roleCount = member.roles.cache.size - 1; // ohne @everyone
-            roles = roleCount > 0 
+            roles = roleCount > 0
                 ? member.roles.cache
                     .filter(r => r.id !== interaction.guild.id)
                     .sort((a, b) => b.position - a.position) // 👉 nach Position sortieren (oben nach unten)
@@ -46,8 +46,8 @@ module.exports = {
         }
 
         // Verknüpfungen (Connections sind nur via OAuth2-Scopes sichtbar, hier simuliert)
-        const connections = user.flags?.toArray().length > 0 
-            ? user.flags.toArray().join(", ") 
+        const connections = user.flags?.toArray().length > 0
+            ? user.flags.toArray().join(", ")
             : "Keine sichtbar";
 
         // Fake-Wahrscheinlichkeit

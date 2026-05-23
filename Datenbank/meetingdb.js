@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const meetingSchema = new mongoose.Schema({
   guildId: { type: String, required: true },
@@ -12,4 +12,4 @@ const meetingSchema = new mongoose.Schema({
 
 const Meeting = mongoose.model('Meeting', meetingSchema);
 
-module.exports = Meeting;
+export default Meeting;

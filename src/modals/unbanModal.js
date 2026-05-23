@@ -1,6 +1,6 @@
-const { ChannelType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+import { ChannelType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
-module.exports = {
+export default {
     async execute(interaction) {
         if (!interaction.isModalSubmit()) return;
         if (interaction.customId !== "gebannt-modal") return;
@@ -39,10 +39,10 @@ module.exports = {
                 .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
                 .setFooter({ text: `» Antrag von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
 
-            channel.send({ 
-                content: `<@&${bannsupport.id}>`, 
-                embeds: [bannEmbed], 
-                components: [buttons] 
+            channel.send({
+                content: `<@&${bannsupport.id}>`,
+                embeds: [bannEmbed],
+                components: [buttons]
             });
 
             const InfoBannEmbed = new EmbedBuilder()

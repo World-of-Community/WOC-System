@@ -1,11 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
-const { ModalBuilder, TextInputBuilder, ChannelType, ActionRowBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } = require("discord.js");
-const ms = require("ms");
-const giveawaydb = require("../../../Datenbank/giveawaydb");
-const userDB = require("../../../Datenbank/userdb");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ModalBuilder, TextInputBuilder, ChannelType, ActionRowBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from "discord.js";
+import ms from "ms";
+import giveawaydb from "../../../Datenbank/giveawaydb.js";
+import userDB from "../../../Datenbank/userdb.js";
 
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
   .setName("gw")
   .setDescription("Gewinnspiel")
@@ -101,7 +100,7 @@ module.exports = {
               .setStyle(TextInputStyle.Short)
               .setRequired(required);
           };
-          
+
           const addModalComponents = (modal, components) => {
             components.forEach(component => {
               modal.addComponents(new ActionRowBuilder().addComponents(component));
@@ -125,9 +124,9 @@ module.exports = {
         } else {
           addModalComponents(modal, [durationInput, winnerInput, priceInput]);
         }
-        
+
         await interaction.showModal(modal)
-        let isProcessingComplete = false; 
+        let isProcessingComplete = false;
             await client.on("interactionCreate", async (inter) => {
               if (isProcessingComplete) {
                 return;
@@ -138,12 +137,12 @@ module.exports = {
               const priceInput = inter.fields.getTextInputValue('priceInput').toUpperCase();
 
               let bedingungInput = "none";
-              let bedingungsvalue = "none"; 
+              let bedingungsvalue = "none";
               let serverEmpfehlung;
 
               if (bedingung != "none" && bedingung && bedingungsInputs[bedingung]) {
-                bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput') || ''; 
-                
+                bedingungsvalue = inter.fields.getTextInputValue('bedingungsinput') || '';
+
               if (bedingung === 'voiceTime' || bedingung === 'membersince') {
                 bedingungInput = bedingungsvalue || null;
                } else {
@@ -153,14 +152,14 @@ module.exports = {
                   serverEmpfehlung = bedingungsvalue;
                 }
               }
-              
+
               if (bedingung === 'winnerInput' || bedingung === 'messages' || bedingung === 'role') {
                 if (isNaN(bedingungInput)) {
                   return inter.reply({ content: '> `❌` » Es dürfen nur Zahlen angegeben werden.', ephemeral: true });
                 }
               }
 
-              const durationDauer = ms(durationInput); 
+              const durationDauer = ms(durationInput);
               if (isNaN(durationDauer)) {
                 return inter.reply({ content: '> \`❌\` » Ungültige Dauer angegeben.', ephemeral: true });
               }
@@ -216,7 +215,7 @@ module.exports = {
                 const result = await userDB.updateMany({}, { $set: { 'stats.messages': 0, 'stats.voiceTime': 0 } });
 
               await inter.reply({ content: `> \`✅\` - **Gewinnspiel erstellt:** Das Gewinnspiel wurde so eben in dem Kanal ${channel} erstellt.`, ephemeral: true });
-              isProcessingComplete = true; 
+              isProcessingComplete = true;
             }
         });
 
@@ -302,9 +301,9 @@ module.exports = {
         .setThumbnail('https://cdn.discordapp.com/attachments/1145779055644393592/1148698733056381030/Gewinnspiel.gif?ex=654a8d8f&is=6538188f&hm=d624d3b0def1f058aa42c6c74fd222a12c7673690e7a3146d2bad87deb74118c&')
         .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
         .setTimestamp();
-    
+
       await rerollMessage.edit({ embeds: [rerollEmbed] });
-    
+
       await interaction.reply({ content: "> \`✅\` » Gewinner erfolgreich neu gezogen und die Nachricht aktualisiert!", ephemeral: true });
       break;
     }

@@ -1,13 +1,13 @@
-const {
+import {
     SlashCommandBuilder,
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
     EmbedBuilder,
     PermissionFlagsBits
-} = require('discord.js');
+} from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('feedback')
         .setDescription('» Sendet das Feedback-System in den aktuellen Kanal.')
@@ -15,7 +15,7 @@ module.exports = {
 
     async execute(interaction) {
         console.log(`[FEEDBACK-SYSTEM] Command executed by ${interaction.user.tag} in ${interaction.guild?.name}`);
-        
+
         try {
             // Defer the reply immediately to prevent timeout
             await interaction.deferReply({ ephemeral: true });
@@ -56,7 +56,7 @@ module.exports = {
                 content: '> `✅` » Das **Feedback-System** wurde erfolgreich gesendet.'
             });
 
-        } catch (err) {            
+        } catch (err) {
             try {
                 if (interaction.deferred) {
                     await interaction.editReply({

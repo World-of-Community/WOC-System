@@ -1,7 +1,7 @@
-const cron = require('node-cron');
-const userdb = require('../Datenbank/userdb');
-const leaderboarddb = require('../Datenbank/leaderboarddb');
-const { EmbedBuilder, codeBlock } = require('discord.js');
+import cron from 'node-cron';
+import userdb from '../Datenbank/userdb.js';
+import leaderboarddb from '../Datenbank/leaderboarddb.js';
+import { EmbedBuilder, codeBlock } from 'discord.js';
 const RoleID = '1150753421339676722';
 
 const positionEmojis = ['`🥇`', '`🥈`', '`🥉`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
@@ -43,7 +43,7 @@ async function createLeaderboardMessage(guild) {
             return { member, timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten` };
         }));
 
-        const messageLeaderboardText = topMessagesMembers
+        let messageLeaderboardText = topMessagesMembers
             .filter(user => user.member)
             .map((user, index) => {
                 const memberMention = user.member ? user.member.toString() : 'Unbekannt';
@@ -56,7 +56,7 @@ async function createLeaderboardMessage(guild) {
             messageLeaderboardText = messageLeaderboardText.substring(0, 1020) + '...';
         }
 
-        const voiceLeaderboardText = topVoiceMembers
+        let voiceLeaderboardText = topVoiceMembers
             .filter(user => user.member)
             .map((user, index) => {
                 const memberMention = user.member ? user.member.toString() : 'Unbekannt';
@@ -145,7 +145,7 @@ async function resetLeaderboardStats(client) {
             const member = await guild.members.fetch(userID).catch(() => null);
             if (member && !member.roles.cache.has(role.id)) {
                 await member.roles.add(role).then(msg => {
-                    leaderboardChannel.send({ 
+                    leaderboardChannel.send({
                         content: `${member} hat für die hohe Aktivität die ${role} Rolle erhalten`
                     }).then(m => {
                         setTimeout(() => {
@@ -162,7 +162,7 @@ async function resetLeaderboardStats(client) {
     await createLeaderboardMessage();
 }
 
-module.exports = {
+export {
     leaderboardSchedules,
     createLeaderboardMessage
 }

@@ -1,12 +1,12 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('uptime')
         .setDescription('» Zeigt dir ein paar nützliche Stats an. 🧮'),
-        
+
     async execute(interaction) {
-        
+
         function formatUptime(uptime) {
             const minutes = Math.floor((uptime / 60) % 60);
             const hours = Math.floor((uptime / 3600) % 24);
@@ -25,9 +25,9 @@ module.exports = {
                 `\`🔋\` » **Online** seit \`${uptime}\`\n` +
                 `\`📡\` » Meine **Reaktionszeit** liegt bei: \`${ping}ms\``
             )
-            .setThumbnail('https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b4fba8&is=66b3aa28&hm=0c61d77ee96136f6dfe2a1b717736edc59d09666f4cea2948d3ddb13c1378ec1&')
+            .setThumbnail('https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b4fba8&is=66b3aa28&hm=0c61d77ee96136f6cea2948d3ddb13c1378ec1&')
             .setColor('Orange')
-            .setFooter({ text: `${client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
+            .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp();
         await interaction.reply({ embeds: [uptimeEmbed], ephemeral: true });
     }

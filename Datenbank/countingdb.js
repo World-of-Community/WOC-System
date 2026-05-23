@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const countingSchema = new mongoose.Schema({
     guildId: String,
@@ -12,4 +12,4 @@ const countingSchema = new mongoose.Schema({
     lastUserId: String
 });
 
-module.exports = mongoose.model('Counting', countingSchema);
+export default mongoose.model('Counting', countingSchema);

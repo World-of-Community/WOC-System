@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const { Coin } = require('../../../Datenbank/coindb');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import { Coin } from '../../../Datenbank/coindb.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('coins-manage')
     .setDescription('» Verwalte Coins eines Benutzers.')

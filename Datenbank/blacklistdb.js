@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const discordBlacklistSchema = new mongoose.Schema({
   userId: { type: String, unique: true, sparse: true },
@@ -13,7 +13,5 @@ const minecraftBlacklistSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now }
 }, { collection: 'minecraftBlacklist' });
 
-const DiscordBlacklist = mongoose.model('DiscordBlacklist', discordBlacklistSchema);
-const MinecraftBlacklist = mongoose.model('MinecraftBlacklist', minecraftBlacklistSchema);
-
-module.exports = { DiscordBlacklist, MinecraftBlacklist };
+export const DiscordBlacklist = mongoose.model('DiscordBlacklist', discordBlacklistSchema);
+export const MinecraftBlacklist = mongoose.model('MinecraftBlacklist', minecraftBlacklistSchema);

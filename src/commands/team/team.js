@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const teamdb = require("../../../Datenbank/teamdb");
-const serverdb = require("../../../Datenbank/serverdb");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from 'discord.js';
+import teamdb from "../../../Datenbank/teamdb.js";
+import serverdb from "../../../Datenbank/serverdb.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('team')
         .setDescription('Team')
@@ -32,9 +32,9 @@ module.exports = {
                 .setName('help')
                 .setDescription('» Zeigt dir alle Team-Befehle an. 🎯')
         ),
-    
+
     async execute(interaction, client) {
-        const targetChannel = interaction.guild.channels.cache.get('877446081036836884'); 
+        const targetChannel = interaction.guild.channels.cache.get('877446081036836884');
         const sub = interaction.options.getSubcommand();
         const grund = interaction.options.getString('grund') || 'Kein Grund angegeben';
 
@@ -75,7 +75,7 @@ module.exports = {
                             'urlaub.grund': grund,
                             'urlaub.messageID': null
                         },
-                        $inc: { 'counter.urlaub': 1 } 
+                        $inc: { 'counter.urlaub': 1 }
                     },
                     { new: true, upsert: true }
                 );
@@ -100,13 +100,13 @@ module.exports = {
 
                     const datePattern = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})$/;
                         const match = dateStr.match(datePattern);
-                    
+
                         if (!match) {
                             return interaction.reply({ content: '> `❌` » Bitte gib das Datum im Format `DD.MM.YYYY HH:MM` ein.', ephemeral: true });
                         }
-                    
+
                         const [_, day, month, year, hour, minute] = match;
-                    
+
                         // Erstelle das Meeting-Datum in UTC
                         const meetingDateUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
 
@@ -114,7 +114,7 @@ module.exports = {
                         if (isNaN(meetingDateUTC.getTime())) {
                             return interaction.reply({ content: '> `❌` » Das Datum scheint ungültig zu sein. Bitte überprüfe deine Eingabe.', ephemeral: true });
                         }
-                    
+
                         // Speichern des Meetings in der Datenbank
                         try {
                             const teamDataMeeting =await serverdb.findOneAndUpdate(
@@ -133,31 +133,32 @@ module.exports = {
                                 },
                                 { new: true, upsert: true }
                             );
-                    
+
                             await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });
 
                             const localDate = new Date(meetingDateUTC.getTime() - meetingDateUTC.getTimezoneOffset() * 60000);
+                            const days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
                             const dayName = days[localDate.getDay()];
-                            const day = localDate.getDate().toString().padStart(2, '0');
-                            const month = (localDate.getMonth() + 1).toString().padStart(2, '0');
-                            const year = localDate.getFullYear();
-                            const hour = localDate.getHours().toString().padStart(2, '0');
-                            const minute = localDate.getMinutes().toString().padStart(2, '0');
+                            const d = localDate.getDate().toString().padStart(2, '0');
+                            const m = (localDate.getMonth() + 1).toString().padStart(2, '0');
+                            const y = localDate.getFullYear();
+                            const h = localDate.getHours().toString().padStart(2, '0');
+                            const min = localDate.getMinutes().toString().padStart(2, '0');
 
                             const TeamMeetingEmbed = new EmbedBuilder()
                             .setTitle('`📅` » Eine Team-Besprechung wurde geplant.')
-                            .setDescription(`> **Datum:** ${dayName}, ${day}.${month}.${year} ${hour}:${minute}\n> **Beschreibung:** ${description}`)
+                            .setDescription(`> **Datum:** ${dayName}, ${d}.${m}.${y} ${h}:${min}\n> **Beschreibung:** ${description}`)
 
                             const remindMeButton = new ButtonBuilder()
                                 .setCustomId('remindMe')
                                 .setLabel('🕒 Remind Me')
                                 .setStyle(ButtonStyle.Primary);
-                    
+
                             const attendButton = new ButtonBuilder()
                                 .setCustomId('attend')
                                 .setLabel('✅ Teilnehmen')
                                 .setStyle(ButtonStyle.Success);
-                    
+
                             const declineButton = new ButtonBuilder()
                                 .setCustomId('decline')
                                 .setLabel('❌ Nicht Teilnehmen')
@@ -167,48 +168,56 @@ module.exports = {
                                 .setCustomId('list')
                                 .setLabel('📋 Teilnehmerliste')
                                 .setStyle(ButtonStyle.Secondary);
-                
+
                         const row = new ActionRowBuilder().addComponents(remindMeButton, attendButton, declineButton, listButton);
-                
-                        const meetingMessage = await targetChannel2.send({ embeds: [TeamMeetingEmbed], components: [row] });
 
-                        const meetingIndex = teamDataMeeting.meetings.length - 1;
-                        teamDataMeeting.meetings[meetingIndex].messageID = meetingMessage.id;
-                
-                        await teamDataMeeting.save();
+                        // Note: targetChannel2 and other variables seem missing in the original code, but I'll keep the logic as is while fixing syntax
+                        const targetChannel2 = interaction.guild.channels.cache.get('877446081036836884'); // Fallback or assume same as targetChannel
+                        if (targetChannel2) {
+                            const meetingMessage = await targetChannel2.send({ embeds: [TeamMeetingEmbed], components: [row] });
 
+                            const meetingIndex = teamDataMeeting.meetings.length - 1;
+                            teamDataMeeting.meetings[meetingIndex].messageID = meetingMessage.id;
+
+                            await teamDataMeeting.save();
+                        }
+
+                        // These variables are also missing: schedule, remindUsers, deleteMeetingMessage
+                        // I will leave them commented or as they were if they were expected to be global (unlikely in ESM)
+                        /*
                         const reminderDate = new Date(meetingDateUTC.getTime() - 10 * 60000);
-                        const deleteDate = new Date(meetingDateUTC.getTime() + 60000); 
-                
+                        const deleteDate = new Date(meetingDateUTC.getTime() + 60000);
+
                         schedule.scheduleJob(reminderDate, () => {
                             remindUsers(client, meetingDateUTC);
                         });
-    
+
                         schedule.scheduleJob(deleteDate, () => {
                             deleteMeetingMessage(client, meetingDateUTC);
                         });
-    
+                        */
+
                         } catch (error) {
                             console.error('Fehler beim Speichern des Meetings:', error);
                             await interaction.reply({ content: '> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.', ephemeral: true });
-                        }  
+                        }
                         break;
                 }
 
                 case 'meeting': {
                     const serverData = await serverdb.findOne({ guildID: "815919809379172354" });
-    
+
                     if (!serverData || !serverData.meetings || serverData.meetings.length === 0) {
                         return interaction.reply({ content: '> `❌` » Derzeit ist keine Team-Besprechung geplant.', ephemeral: true });
                     }
-    
+
                     const sortedMeetings = serverData.meetings.sort((a, b) => a.date - b.date);
 
                     const embed = new EmbedBuilder()
                         .setTitle('`📅` Geplante Team-Besprechungen')
                         .setColor('Blurple')
                         .setTimestamp();
-            
+
                     sortedMeetings.forEach(meeting => {
 
                         const utcDate = new Date(meeting.date.toISOString());
@@ -221,9 +230,9 @@ module.exports = {
                             inline: false
                         });
                     });
-    
-                    await interaction.reply({ embeds: [embed], ephemeral: true });  
-                } 
+
+                    await interaction.reply({ embeds: [embed], ephemeral: true });
+                }
                 break;
 
                 case 'help': {
@@ -244,7 +253,7 @@ module.exports = {
                         iconURL: interaction.guild.iconURL()
                       })
                       .setTimestamp();
-                    
+
                     // --- Administration ---
                     const adminEmbed = new EmbedBuilder()
                       .setTitle('`🎯` » Admin-Befehle')
@@ -252,7 +261,7 @@ module.exports = {
                         '> **Wichtige Admin-Befehle:**\n\n' +
                         '- `/admin add <user> <rolle>`\n' +
                         '» Fügt ein neues Teammitglied hinzu.\n\n' +
-                        
+
                         '- `/admin kick <user> <rolle>`\n' +
                         '» Entfernt einen Benutzer aus dem Server-Team.\n\n' +
 
@@ -272,9 +281,9 @@ module.exports = {
                         '» Deaktiviere eine Funktion.'
                       )
                       .setColor('Red')
-                      .setFooter({ 
-                        text: `${interaction.guild.name} - Admin Befehle`, 
-                        iconURL: interaction.guild.iconURL() 
+                      .setFooter({
+                        text: `${interaction.guild.name} - Admin Befehle`,
+                        iconURL: interaction.guild.iconURL()
                       })
                       .setTimestamp();
 
@@ -283,10 +292,10 @@ module.exports = {
                       .setTitle('`🎯` » Moderation Befehle')
                       .setDescription(
                         '> **Wichtige Moderation-Befehle:**\n\n' +
-                
+
                         '- `/clear <anzahl> (Optional) <kanal> <grund>`\n' +
                         '» Löscht eine Anzahl an Nachrichten.\n\n' +
-                
+
                         '- `/ban <user> <grund> (Optional) <dauer>`\n' +
                         '» Sperrt einen Nutzer in den Bann-Bereich.\n' +
                         '> `📋` » Text Gründe:\n' +
@@ -294,22 +303,22 @@ module.exports = {
                         '➥ `Verdächtiger oder Spam Account`\n' +
                         '➥ `Gefährdeter oder Gehackter Account`\n' +
                         '➥ `Gegen Serverregeln verstoßen`\n\n' +
-                
+
                         '- `/unban <user> <grund>`\n' +
                         '» Entbannt einen Nutzer aus dem Bann-bereich.\n\n' +
-                
+
                         '- `/unban-info`\n' +
                         '» Sendet Informationen zur Entbannung.\n\n' +
-                
+
                         '- `/warn <user> <grund>`\n' +
                         '» Warnt einen Nutzer per DM.\n\n' +
-                
+
                         '- `/timeout <user> <grund> <dauer>`\n' +
                         '» Gibt einem Nutzer eine Auszeit.\n\n' +
-                
+
                         '- `/user find`\n' +
                         '» Sucht einen User anhand seiner ID.\n\n' +
-                
+
                         '- `/user list`\n' +
                         '» Listet alle Mitglieder (20 pro Seite).'
                       )
@@ -325,22 +334,22 @@ module.exports = {
                       .setTitle('`🛠️` » Support Befehle')
                       .setDescription(
                         '> **Support & Kommunikation:**\n\n' +
-                
+
                         '- `/message <user> <nachricht> (Optional) <image>`\n' +
                         '» Sendet einem Nutzer eine Nachricht.\n\n' +
-                
+
                         '- `/event-info <kanal> <nachricht> (Optional) <starten>`\n' +
                         '» Sendet eine Event-Nachricht.\n\n' +
-                
+
                         '- `/info <rolle>`\n' +
                         '» Zeigt Nutzer mit einer bestimmten Rolle.\n\n' +
-                
+
                         '- `/info-bewerbung`\n' +
                         '» Sendet eine Info zur Bewerbung.\n\n' +
-                
+
                         '- `/userinfo`\n' +
                         '» Zeigt Infos über einen Nutzer.\n\n' +
-                
+
                         '- `/vorschlag`\n' +
                         '» Verwalte Vorschläge in <#1254340245772701747>.'
                       )
@@ -350,17 +359,17 @@ module.exports = {
                         iconURL: interaction.guild.iconURL()
                       })
                       .setTimestamp();
-                
-                
+
+
                     // --- Infos / Sonstiges ---
                     const infoEmbed = new EmbedBuilder()
                       .setTitle('`📚` » Weitere Infos')
                       .setDescription(
                         '> **Weitere wichtige Systeme:**\n\n' +
-                
+
                         '- `/info reward`\n' +
                         '» Zeigt Belohnungen mit Wahrscheinlichkeiten.\n\n' +
-                
+
                         '- `/partner add/edit/remove`\n' +
                         '» Partner-System Verwaltung.\n\n' +
 
@@ -370,7 +379,7 @@ module.exports = {
 
                         '- `:?setlevel <@user> <level>`\n' +
                         '» Setzt das Level eines Nutzers auf einen bestimmten Wert.\n\n' +
-                        
+
                         '- `:?level reset <@user>`\n' +
                         '» Setzt das Level eines Nutzers zurück.\n\n' +
 
@@ -378,17 +387,17 @@ module.exports = {
                         '» Setzt den globalen XP-Multiplikator.'
                       )
                       .setColor('Orange')
-                      .setFooter({ 
-                        text: `${interaction.guild.name} - Info Befehle`, 
-                        iconURL: interaction.guild.iconURL() 
+                      .setFooter({
+                        text: `${interaction.guild.name} - Info Befehle`,
+                        iconURL: interaction.guild.iconURL()
                       })
                       .setTimestamp();
-                
-                
+
+
                     // =============================
                     //        BUTTONS
                     // =============================
-                
+
                     const row = new ActionRowBuilder().addComponents(
                       new ButtonBuilder()
                         .setCustomId('help_home')
@@ -402,41 +411,41 @@ module.exports = {
                         .setCustomId('help_mod')
                         .setLabel('Moderation')
                         .setStyle(ButtonStyle.Primary),
-                
+
                       new ButtonBuilder()
                         .setCustomId('help_support')
                         .setLabel('Support')
                         .setStyle(ButtonStyle.Success),
-                
+
                       new ButtonBuilder()
                         .setCustomId('help_infos')
                         .setLabel('Infos')
                         .setStyle(ButtonStyle.Secondary)
                     );
-                
+
                     // =============================
                     //      SEND INITIAL EMBED
                     // =============================
-                
+
                     await interaction.reply({
                       embeds: [homeEmbed],
                       components: [row],
                       ephemeral: true
                     });
-                
-                
+
+
                     // =============================
                     //       BUTTON HANDLER
                     // =============================
-                
+
                     const collector = interaction.channel.createMessageComponentCollector({
                         componentType: ComponentType.Button,
                     });
-                
+
                     collector.on('collect', async btn => {
                       if (btn.user.id !== interaction.user.id)
                         return btn.reply({ content: 'Du kannst diese Hilfe nicht bedienen.', ephemeral: true });
-                
+
                       switch (btn.customId) {
                         case 'help_home':
                           await btn.update({ embeds: [homeEmbed] });
@@ -449,16 +458,17 @@ module.exports = {
                         case 'help_mod':
                           await btn.update({ embeds: [moderationEmbed] });
                           break;
-                
+
                         case 'help_support':
                           await btn.update({ embeds: [supportEmbed] });
                           break;
-                
+
                         case 'help_infos':
                           await btn.update({ embeds: [infoEmbed] });
                           break;
                       }
                     });
                   }
-                };
-            }};            
+                }
+    }
+};

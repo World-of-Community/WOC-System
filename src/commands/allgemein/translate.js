@@ -1,11 +1,11 @@
-const { ContextMenuCommandBuilder, ApplicationCommandType } = require("discord.js");
-const translator = require("open-google-translator");
+import { ContextMenuCommandBuilder, ApplicationCommandType } from "discord.js";
+import translator from "open-google-translator";
 
-module.exports = {
+export default {
     data: new ContextMenuCommandBuilder()
         .setName('Nachricht übersetzen')
         .setType(ApplicationCommandType.Message),
-    
+
     async execute(interaction) {
         translator.supportedLanguages();
         const translated = await translator.TranslateLanguageData({

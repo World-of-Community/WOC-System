@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
     guildID: {
@@ -12,4 +12,4 @@ const messageSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('message-data', messageSchema);
+export default mongoose.model('message-data', messageSchema);

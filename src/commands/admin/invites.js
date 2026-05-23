@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
-const userdb = require("../../../Datenbank/userdb");
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import userdb from "../../../Datenbank/userdb.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('invites-manage')
     .setDescription('Fügt einem Benutzer manuell Einladungen hinzu oder entfernt sie')

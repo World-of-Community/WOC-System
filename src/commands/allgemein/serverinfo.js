@@ -1,13 +1,13 @@
-const { 
-    SlashCommandBuilder, 
-    EmbedBuilder, 
-    ActionRowBuilder, 
-    ButtonBuilder, 
-    ButtonStyle 
-} = require("discord.js");
+import {
+    SlashCommandBuilder,
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle
+} from "discord.js";
 
-const { DateTime } = require("luxon");
-const Server = require("../../../Datenbank/usercounterdb");
+import { DateTime } from "luxon";
+import Server from "../../../Datenbank/usercounterdb.js";
 
 function formatBoostDuration(boostTimestamp) {
     const boostStart = DateTime.fromJSDate(boostTimestamp);
@@ -31,7 +31,7 @@ function formatBoostDuration(boostTimestamp) {
     return parts[0];
 }
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('serverinfo')
         .setDescription('» Erhalte paar Informationen über den Server. ❓'),

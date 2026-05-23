@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const teamdb = require("../../../Datenbank/teamdb");
-const serverdb = require("../../../Datenbank/serverdb");
-const userdb = require("../../../Datenbank/userdb");
-const schedule = require('node-schedule');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
+import teamdb from "../../../Datenbank/teamdb.js";
+import serverdb from "../../../Datenbank/serverdb.js";
+import userdb from "../../../Datenbank/userdb.js";
+import schedule from 'node-schedule';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('admin')
         .setDescription('Team')
@@ -23,7 +23,7 @@ module.exports = {
                 .addRoleOption(option => option.setName('role').setDescription('» Die Rolle, auf die der Benutzer herabgestuft werden soll.').setRequired(true))
         )
         .addSubcommand((command) =>
-            command                
+            command
                 .setName('bereichswechsel')
                 .setDescription('» Aktualisiere den Bereich eines Teammitgliedes. 🔄')
                 .addUserOption(option => option.setName('user').setDescription('» Welcher Benutzer sollte aktualisiert werden?').setRequired(true))
@@ -66,13 +66,13 @@ module.exports = {
                 .addIntegerOption(option => option.setName('amount').setDescription('» Gib den Betrag der Spende ein.').setMinValue(1).setRequired(true))
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-        
+
     async execute(interaction, client) {
         const member = interaction.options.getMember('user');
         const role = interaction.options.getRole('role');
         const reason = interaction.options.getString('reason') || 'Kein Grund angegeben';
-        const targetChannel = interaction.guild.channels.cache.get('1173986308641804338'); 
-        const targetChannel2 = interaction.guild.channels.cache.get('877446081036836884'); 
+        const targetChannel = interaction.guild.channels.cache.get('1173986308641804338');
+        const targetChannel2 = interaction.guild.channels.cache.get('877446081036836884');
         const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
         const sub = interaction.options.getSubcommand();
         const teamrole = interaction.guild.roles.cache.get('820658664536145940');
@@ -83,20 +83,20 @@ module.exports = {
                 ephemeral: true
             });
         }
-    
+
         switch (sub) {
             case "uprank":
                 try {
                     await member.roles.add(role);
-                
+
                     const Uprankembed = new EmbedBuilder()
                         .setTitle('`🔼` | __TEAMMITGLIED RANGUPDATE__')
                         .setDescription(`Herzlichen Glückwunsch, ${member}!\nDu wurdest **befördert!**\n\n**__Rang__**:\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
-                
+
                     await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
-                
+
                     await interaction.reply({ content: '> `✅` » Das Teammitglied wurde **befördert.**', ephemeral: true });
                 } catch (error) {
                     console.error('Fehler beim Hinzufügen der Rolle:', error);
@@ -108,13 +108,13 @@ module.exports = {
             case "downrank":
                 try {
                     await member.roles.remove(role);
-                
+
                     const RangUpdateembed = new EmbedBuilder()
                         .setTitle('`🔽` | __TEAMMITGLIED RANGUPDATE__')
                         .setDescription(`${member} wurde **herabgestuft.**\n\n**__Rang__**:\n${role}`)
                         .setColor('Blurple')
                         .setTimestamp();
-                
+
                     await targetChannel.send({ embeds: [RangUpdateembed] });
                     await interaction.reply({ content: '> `✅` » Das Teammitglied wurde **herabgestuft.**', ephemeral: true });
 
@@ -153,23 +153,23 @@ module.exports = {
                         )
                         .setColor('Blurple')
                         .setTimestamp();
-            
+
                     await targetChannel.send({ embeds: [AreaChangeEmbed] });
-            
-                    await interaction.reply({ 
-                        content: '> `✅` » Der Bereich wurde erfolgreich geändert.', 
-                        ephemeral: true 
+
+                    await interaction.reply({
+                        content: '> `✅` » Der Bereich wurde erfolgreich geändert.',
+                        ephemeral: true
                     });
-            
+
                 } catch (error) {
-            
+
                     console.error('Fehler beim Bereichswechsel:', error);
-            
-                    await interaction.reply({ 
-                        content: '> `❌` » Es ist ein Fehler aufgetreten.', 
-                        ephemeral: true 
+
+                    await interaction.reply({
+                        content: '> `❌` » Es ist ein Fehler aufgetreten.',
+                        ephemeral: true
                     });
-            
+
                 }
                 break;
 
@@ -178,17 +178,17 @@ module.exports = {
                         // Teamrolle + Hauptrang
                         await member.roles.add(role);
                         await member.roles.add(teamrole);
-                
+
                         //// Datum für Embed
                         //const formattedDate = new Date().toLocaleDateString('de-DE', {
                         //    day: '2-digit',
                         //    month: '2-digit',
                         //    year: 'numeric',
                         //});
-                
+
                         // ID der Supporter-Rolle
                         const supporterRoleId = '815920170371383366';
-                
+
                         const supporterExtraRoles = [
                             '1011207481357238272', // Ticket Support
                             '1270369938972082177', // Ticket Bereich
@@ -196,14 +196,14 @@ module.exports = {
                             '1155570143393488896', // Bann Bereich
                             '1285728292367892584' // Report Log
                         ];
-                
+
                         // Zusätzliche Rollen für andere Teamränge
                         const defaultExtraRoles = [
                             '1270369938972082177', // Ticket Bereich
                             '1155570143393488896', // Bann Bereich
                             '1285728292367892584' // Report Log
                         ];
-                
+
                         if (role.id === supporterRoleId) {
                             for (const r of supporterExtraRoles) {
                                 await member.roles.add(r).catch(() => {});
@@ -214,7 +214,6 @@ module.exports = {
                             }
                         }
 
-                        const { EmbedBuilder } = require('discord.js');
                         const TeammitgliedEmbed = new EmbedBuilder()
                             .setTitle('`➕` | __NEUES TEAMMITGLIED__')
                             .setColor('Blurple')
@@ -241,7 +240,7 @@ module.exports = {
                     // Hauptrollen entfernen
                     await member.roles.remove(role).catch(() => {});
                     await member.roles.remove(teamrole).catch(() => {});
-            
+
                     // Zusätzliche Rollen prüfen und entfernen
                     for (const roleId of extraRoles) {
                         const extraRole = interaction.guild.roles.cache.get(roleId);
@@ -270,7 +269,7 @@ module.exports = {
                         const system = await interaction.options.getString('system')
                         const serverData = await serverdb.findOne({ guildID: interaction.guildId })
                         if (!serverData) return;
-                        
+
                         if(sub === "aktivieren") {
                             await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $pull: { deactivated: `${system}` } })
                             await interaction.reply({ content: `> \`🟢\` » Das \`${system}\` System wurde **erfolgreich** __aktiviert.__`, ephemeral: true })
@@ -282,50 +281,50 @@ module.exports = {
 
                     case "donate":
                         const amount = interaction.options.getInteger('amount');
-                        
+
                         const confirmButton = new ButtonBuilder()
                             .setCustomId('confirm')
                             .setLabel('✅ » Bestätigen')
                             .setStyle(ButtonStyle.Primary);
-                        
+
                         const cancelButton = new ButtonBuilder()
                             .setCustomId('cancel')
                             .setLabel('❌ » Abbrechen')
                             .setStyle(ButtonStyle.Secondary);
-                        
+
                         const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
-                        
+
                         const response1 = await interaction.reply({
                             content: `> \`❗\` » Möchtest du wirklich den Betrag in Höhe von \`${amount}€\` hinzufügen?`,
                             components: [row],
                             ephemeral: true,
                         });
-                        
+
                         const collectorFilter1 = (i) => i.user.id === interaction.user.id;
 
                         try {
                             const confirmation = await response1.awaitMessageComponent({ filter: collectorFilter1, time: 60_000 });
-                            
+
                             if (confirmation.customId === "confirm") {
 
                                 let userData = await userdb.findOneAndUpdate(
-                                    { userID: member.id }, 
-                                    { 
+                                    { userID: member.id },
+                                    {
                                         $inc: { donation: amount },
-                                        $setOnInsert: { reactions: {} } 
+                                        $setOnInsert: { reactions: {} }
                                     },
                                     { new: true, upsert: true }
                                 );
-                    
+
                                 await userData.save();
-                                
+
                                 const donateEmbed = new EmbedBuilder()
                                     .setTitle('`💖` × SPENDE HINZUGEFÜGT!')
                                     .setDescription(`> \`✅\` » ${member} hat nun \`${userData.donation}€\` (\`+ ${amount}€\`) gespendet!`)
                                     .setColor('Green')
                                     .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                                     .setTimestamp();
-                                
+
                                 await confirmation.update({ content: null, embeds: [donateEmbed], ephemeral: true, components: [] });
                             } else if (confirmation.customId === 'cancel') {
                                 // Handle cancellation
@@ -339,7 +338,7 @@ module.exports = {
                             console.error(err)
                             await interaction.followUp({ content: `> \`⚠️\` » Die Aktion wurde nicht rechtzeitig bestätigt.`, ephemeral: true });
                 }
-                        break;            
+                        break;
             }
         },
  };

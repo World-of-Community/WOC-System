@@ -1,9 +1,9 @@
-const { Events } = require("discord.js");
+import { Events } from "discord.js";
 
-module.exports = {
+export default {
     name: Events.MessageCreate,
     async execute(message) {
-        
+
         if (!message.guild) return
         const channel = message.guild.channels.cache.get("815922756918181898");
         if (message.author.id === "339254240012664832" && message.channelId === "1221819093100007465") {
@@ -28,7 +28,7 @@ module.exports = {
                         { level: 75 },
                         { level: 100 }
                     ];
-                    
+
                     for (const levelL of levelList) {
                         if (level == levelL.level) {
                             const member = mention.member;

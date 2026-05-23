@@ -1,10 +1,10 @@
-const { Events } = require("discord.js");
-const serverdb = require("../../Datenbank/serverdb");
-const userdb = require("../../Datenbank/userdb");
-const messagedb = require("../../Datenbank/messagedb");
-const fs = require('fs');
+import { Events } from "discord.js";
+import serverdb from "../../Datenbank/serverdb.js";
+import userdb from "../../Datenbank/userdb.js";
+import messagedb from "../../Datenbank/messagedb.js";
+import fs from "fs";
 
-module.exports = {
+export default {
     name: Events.MessageCreate,
     async execute(message) {
         try {
@@ -62,7 +62,7 @@ module.exports = {
                 case '1243964646449483788':
                     await message.react('<a:herzen:1394561549602914386>'); // Geburtstage
                     await message.react('<a:Cool:915211628755169301>'); // Geburtstage
-                    
+
                     break;
 
                 case '1250047970116636756':

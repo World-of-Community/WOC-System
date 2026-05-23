@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const mongoose = require('mongoose');
+import Discord from 'discord.js';
+import mongoose from 'mongoose';
 
 const streamSessionSchema = new mongoose.Schema({
   userId: { type: String, required: true, unique: true }, // Discord User-ID
@@ -7,4 +7,4 @@ const streamSessionSchema = new mongoose.Schema({
   earned: { type: Number, default: 0 },                  // Bereits verdiente Coins in dieser Session
 });
 
-module.exports = mongoose.model('StreamSession', streamSessionSchema);
+export default mongoose.model('StreamSession', streamSessionSchema);

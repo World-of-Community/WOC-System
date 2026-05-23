@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const mongoose = require('mongoose');
+import Discord from 'discord.js';
+import mongoose from 'mongoose';
 
 const serverSchema = new mongoose.Schema({
     guildID: {
@@ -113,4 +113,4 @@ const serverSchema = new mongoose.Schema({
     }]
 });
 
-module.exports = mongoose.model('server-data', serverSchema)
+export default mongoose.model('server-data', serverSchema);

@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Coin } = require('../../../Datenbank/coindb'); // Coin Modell importieren
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { Coin } from '../../../Datenbank/coindb.js'; // Coin Modell importieren
 
 const bonusLevels = [
   { days: 10,  percent: 50 },
@@ -27,7 +27,7 @@ function generiereBonusStatus(streak) {
   }).join('\n');
 }
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('daily')
     .setDescription('» Hole dir deine tägliche Belohnung. 🪙'),

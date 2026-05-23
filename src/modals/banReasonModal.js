@@ -1,9 +1,9 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const bandb = require('../Datenbank/bandb');
-const Timeout = require('../Datenbank/timeoutdb');
-const Warn = require('../Datenbank/warndb');
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import bandb from '../Datenbank/bandb.js';
+import Timeout from '../Datenbank/timeoutdb.js';
+import Warn from '../Datenbank/warndb.js';
 
-module.exports = {
+export default {
     id: 'banReasonModal_',
     run: async (client, interaction) => {
         const userId = interaction.customId.split('_')[1];

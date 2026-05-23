@@ -1,7 +1,7 @@
-const EventEmitter = require('events');
+import { EventEmitter } from 'node:events';
 
 class VorschlagEmitter extends EventEmitter {}
 
 const vorschlagEmitter = new VorschlagEmitter();
 
-module.exports = vorschlagEmitter;
+export default vorschlagEmitter;
