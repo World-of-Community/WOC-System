@@ -1,11 +1,9 @@
-import { Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, PermissionsBitField, ComponentType } from "discord.js";
+import { Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType } from "discord.js";
 import fs from "fs";
 import serverdb from "../../Datenbank/serverdb.js";
 import userdb from "../../Datenbank/userdb.js";
 import messagedb from "../../Datenbank/messagedb.js";
 import teamdb from "../../Datenbank/teamdb.js";
-import bumpdb from "../../Datenbank/bumpdb.js";
-import { time } from "console";
 
 const TeamRoleIds = [
     '959869691529154631', // Admin
