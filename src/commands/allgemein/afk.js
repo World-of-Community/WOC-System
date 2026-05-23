@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require("discord.js");
-const userdb = require("../../../Datenbank/userdb");
+import { SlashCommandBuilder } from "discord.js";
+import userdb from "../../../Datenbank/userdb.js";
 
 const afktexte = [
     'Die Tür vom Nachbarn mit Brettern zunageln. <a:Ping_Hammer:1077295673289998417>',
@@ -8,7 +8,7 @@ const afktexte = [
     'Ich bin eingeschlafen! Glaube ich... <:pepesleeping:1280964663391031397>'
 ];
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("afk")
         .setDescription("» Zeige allen das du gerade abwesend (AFK) bist. ⌛")
@@ -18,7 +18,7 @@ module.exports = {
         try {
             const timestamp = Math.floor(Date.now() / 1000); // Aktueller Zeitstempel in Sekunden
             const grund = interaction.options.getString("grund") || afktexte[Math.floor(Math.random() * afktexte.length)];
-            
+
             // Datenbankabfrage oder Erstellung eines neuen Eintrags
             let userData = await userdb.findOne({ userID: interaction.user.id });
             if (!userData) {
@@ -35,7 +35,7 @@ module.exports = {
                 userData.afkReason = grund;
                 userData.afkStamp = timestamp;
             }
-            
+
             await userData.save();
 
             await interaction.reply({ content: `<:AFK:1021086267557023775> | ${interaction.user} **ist nun abwesend**: <a:Neuigkeiten:1018910061348798564>\n> ${grund.replace("*", "")}` });

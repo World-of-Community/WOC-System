@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     userID: {
@@ -119,4 +119,4 @@ const userSchema = new mongoose.Schema({
     lastOnline: { type: Date, default: null },
 });
 
-module.exports = mongoose.model('user-data', userSchema)
+export default mongoose.model('user-data', userSchema);

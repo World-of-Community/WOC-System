@@ -1,8 +1,12 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
     data: new SlashCommandBuilder()
         .setName('command-status')
         .setDescription('» Listet dir alle Befehle auf.')
@@ -43,7 +47,7 @@ module.exports = {
             try {
                 // Erstelle den Pfad zur Befehlsdatei
                 const commandFilePath = path.join(commandsPath, `${command.data.name}.js`);
-                
+
                 // Überprüfen, ob der Pfad in der Liste der gefundenen Befehlsdateien enthalten ist
                 if (!commandFiles.some(file => file.includes(command.data.name))) {
                     console.error(`Datei nicht gefunden: ${commandFilePath}`); // Fehlerprotokollierung

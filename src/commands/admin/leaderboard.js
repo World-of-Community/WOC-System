@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const cron = require('node-cron');
-const userdb = require('../../../Datenbank/userdb');
-const leaderboarddb = require('../../../Datenbank/leaderboarddb');
-const { createLeaderboardMessage } = require('../../../functions/leaderboard');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import cron from 'node-cron';
+import userdb from '../../../Datenbank/userdb.js';
+import leaderboarddb from '../../../Datenbank/leaderboarddb.js';
+import { createLeaderboardMessage } from '../../../functions/leaderboard.js';
 const RoleID = '1150753421339676722'; // Minenarbeiter (Event) Rolle
 
 function getCurrentMonth() {
@@ -16,7 +16,7 @@ function getCurrentMonth() {
 
 const positionEmojis = ['`1️⃣`', '`2️⃣`', '`3️⃣`', '`4️⃣`', '`5️⃣`', '`6️⃣`', '`7️⃣`', '`8️⃣`', '`9️⃣`', '`🔟`'];
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('leaderboard')
         .setDescription('» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌')

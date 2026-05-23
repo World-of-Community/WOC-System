@@ -1,8 +1,8 @@
 /*
-const { EmbedBuilder } = require('discord.js');
-const { isEventActive, eventPeriods } = require('../../functions/events');
+import { EmbedBuilder } from 'discord.js';
+import { isEventActive, eventPeriods } from '../../functions/events.js';
 
-module.exports = {
+export default {
 	id: 'christmas_event',
 	run: async (client, interaction) => {
       const WeihnachtsEmbed = new EmbedBuilder()

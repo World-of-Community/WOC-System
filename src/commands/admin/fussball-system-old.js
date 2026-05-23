@@ -1,14 +1,14 @@
-const { 
-  SlashCommandBuilder, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
-  StringSelectMenuBuilder, 
-  ButtonBuilder, 
-  ButtonStyle, 
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  StringSelectMenuBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   ComponentType,
   PermissionFlagsBits,
-} = require('discord.js');
-const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
+} from 'discord.js';
+import { Team, Match, ProLeagueEmbed } from '../../../Datenbank/fussballdb.js';
 
 const teamsData = [
   { name: "FC Adler", players: ["Müller", "Schmidt", "Fischer", "Weber"], stadium: "Adler Arena" },
@@ -37,7 +37,7 @@ const teamsData = [
   { name: "SC Licht", players: ["Günther", "Kaiser", "Sachs", "Mayer"], stadium: "Lichtstadion" }
 ];
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('fussball-system-old')
     .setDescription('Zeigt die Fußball-Übersicht an und simuliert Spiele')
@@ -171,16 +171,16 @@ module.exports = {
     const msg = await interaction.channel.send({ embeds: [overviewEmbed], components: [auswahlMenü] });
 
     const collector = msg.createMessageComponentCollector({ componentType: ComponentType.StringSelect });
-    
+
     // Übersicht Embed + Select-Menü
     collector.on('collect', async i => {
     if (i.user.id !== interaction.user.id)
       return i.reply({ content: '> ❌ Nur du darfst das benutzen.', ephemeral: true });
-  
+
     await i.deferUpdate();
-  
+
     let embed;
-  
+
     switch (i.values[0]) {
       case 'tabelle':
         embed = tabelleEmbed;
@@ -195,7 +195,7 @@ module.exports = {
         await simulateRandomMatch(i);
         return; // Kein Embed + Menü nach Spiel
     }
-  
+
     await i.channel.send({ embeds: [embed] });
     });
   }}
@@ -372,7 +372,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     let torGezaehlt = true;
     let scorer = '';
     let xG = 0;
-  
+
     // Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
     if (minute % 4 === 0 && Math.random() < 0.15) {
     const teamScored = Math.random() < 0.5 ? 'team1' : 'team2';
@@ -385,7 +385,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     } else {
       xG2 += xG;
     }
-  
+
     // VAR-Prüfung mit 10% Chance
       if (Math.random() < 0.1) {
         if (Math.random() < 0.5) {
@@ -395,14 +395,14 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           events.push(`\`🖥️\` VAR: Tor von **${scorer}** bestätigt \`✅\` | ${score1} - ${score2} (${getDisplayMinute(minute)})`);
         }
       }
-      
+
       if (torGezaehlt) {
         if (teamScored === 'team1') {
           score1++;
         } else {
           score2++;
         }
-      
+
         // 🟢 Nur in goalEvents speichern (Objekte!)
         goalEvents.push({
           type: 'goal',
@@ -410,7 +410,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
           player: scorer,
           team: teamScored === 'team1' ? team1Name : team2Name
         });
-      
+
         // 🟢 Nur in events speichern (Text!)
         events.push(`\`⚽\` TOOOR! für ${teamScored === 'team1' ? team1Name : team2Name} durch **${scorer}**! ${score1} - ${score2} (${getDisplayMinute(minute)})`);
       }
@@ -421,7 +421,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const player = getRandomPlayer(team);
       const teamName = team === team1 ? team1Name : team2Name;
       events.push(`\`🤕\` Foul von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
-    
+
       if (Math.random() < 0.5) {
         if (team === team1) yellowCardsTeam1++; else yellowCardsTeam2++;
         events.push(`\`🟨\` Gelbe Karte für **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
@@ -489,24 +489,24 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const team = isTeam1 ? team1 : team2;
       const teamName = isTeam1 ? team1Name : team2Name;
       const player = getRandomPlayer(team);
-    
+
       // xG hinzufügen (bleibt intern)
       const xgValue = parseFloat((Math.random() * 0.3 + 0.2).toFixed(2));
       if (isTeam1) xG1 += xgValue;
       else xG2 += xgValue;
-    
+
       const treffer = Math.random() < 0.5 ? 'Latten' : 'Pfosten';
 
       // Torschüsse zählen
       if (isTeam1) team1Shots++; else team2Shots++;
-    
+
       events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
     }
 
     if (Math.random() < 0.04) {
       const team = Math.random() < 0.5 ? team1 : team2;
       const player = getRandomPlayer(team);
-    
+
       events.push(`\`🚀\` Weitschuss von **${player}** (${team === team1 ? team1Name : team2Name}) knapp drüber! (${getDisplayMinute(minute)})`);
     }
 
@@ -540,32 +540,32 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     // Tore gruppieren und als Text formatieren
     function gruppiereTore(tore) {
       const spielerTore = new Map();
-    
+
       for (const tor of tore) {
         if (!tor || typeof tor !== 'object' || !tor.player || typeof tor.time !== 'number') continue;
-    
+
         if (!spielerTore.has(tor.player)) {
           spielerTore.set(tor.player, []);
         }
         spielerTore.get(tor.player).push(getDisplayMinute(tor.time));
       }
-    
+
       const eintraege = Array.from(spielerTore.entries()).map(([spieler, minuten], index) => {
         const minutenString = minuten.join(' ');
         const emoji = index === 0 ? '`⚽` ' : '';
         return `${emoji}${minutenString} ${spieler}`;
       });
-    
+
       return eintraege.join(' ') || '';
     }
 
     // ⚠️ Hier war vorher `events` — das ist falsch!
     const toreTeam1Goals = goalEvents.filter(e => e.type === 'goal' && e.team === team1Name);
     const toreTeam2Goals = goalEvents.filter(e => e.type === 'goal' && e.team === team2Name);
-    
+
     const toreTeam1 = gruppiereTore(toreTeam1Goals);
     const toreTeam2 = gruppiereTore(toreTeam2Goals);
-    
+
     const torString = toreTeam1 !== '' && toreTeam2 !== '' ? `${toreTeam1} - ${toreTeam2}` : `${toreTeam1 !== '' ? toreTeam1 : ''}${toreTeam2 !== '' ? toreTeam2 : ''}`;
 
     // Status-Embed aktualisieren
@@ -588,26 +588,26 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     await statusMessage.edit({ embeds: [statusEmbed] });
 
     await delay(1000); // 1,0 Sekunden Pause pro Minute (kann angepasst werden)
-    
+
     if (getDisplayMinute(minute) === "90'") {
       events.push(`\`⏳\` Nachspielzeit: +${extraTime}'`);
     }
 
     if (minute === 90 + extraTime) {
       events.push(`\`🔔\` Schlusspfiff! Endstand: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
-    
+
       // Ergebnis auswerten
       let result;
       if (score1 > score2) result = 'team1';
       else if (score2 > score1) result = 'team2';
       else result = 'draw';
-    
+
       // Tipp-Text ermitteln
       let tippText = '';
       if (userTip === 'team1') tippText = team1Name;
       else if (userTip === 'team2') tippText = team2Name;
       else if (userTip === 'draw') tippText = 'Unentschieden';
-    
+
       // Tipp auswerten und User benachrichtigen
       if (userTip && tippText) {
         
@@ -619,7 +619,7 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       } else {
         await interaction.followUp(`Das Spiel ist beendet. Ergebnis: **${team1Name} ${score1} - ${score2} ${team2Name}**`);
       }
-    
+
       break;
     }
   }

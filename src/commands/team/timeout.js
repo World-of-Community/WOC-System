@@ -1,8 +1,8 @@
 // Code von @vxnsin
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } = require("discord.js")
-const ms = require('ms');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionsBitField } from "discord.js";
+import ms from 'ms';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
     .setName("timeout")
     .setDescription("» Gebe einem User eine Pause für eine bestimme Dauer. 🕛")
@@ -35,14 +35,14 @@ module.exports = {
         const grund = interaction.options.getString('grund');
         const member = await interaction.guild.members.fetch({ user, force: true }).catch(() => null);
 
-        if (!member) return await interaction.reply({ content: utils.other.text.userFound(), ephemeral: true });    
+        if (!member) return await interaction.reply({ content: '> `❌` » Benutzer nicht gefunden.', ephemeral: true });
         if (interaction.user.id === user.id) return interaction.reply({ content: '> `❌` » Du kannst dir selbst keinen Timeout geben.', ephemeral: true });
         if (!member.kickable) return interaction.reply({ content: '> `❌` » Dieser Benutzer kann nicht getimeoutet werden.', ephemeral: true });
         if (member.isCommunicationDisabled()) return interaction.reply({ content: '> `❌` » Dieser Benutzer hat bereits ein Timeout.', ephemeral: true });
         if (member.permissions.has(PermissionFlagsBits.Administrator)) return interaction.reply({ content: '> `❌` » Dieser Benutzer hat `Administrator` Berechtigungen und kann nicht timeoutet werden.', ephemeral: true });
         if (member.permissions.has(PermissionFlagsBits.KickMembers)) return interaction.reply({ content: '> `❌` » Du darfst Nutzer, die dieselben Berechtigungen haben, nicht timeouten.', ephemeral: true });
-        
-        
+
+
         let zeitInMilliseconds = 0;
         if (zeitString !== null) {
             zeitInMilliseconds = ms(zeitString);
@@ -59,8 +59,8 @@ module.exports = {
             .setFooter({ text: `» ${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
             .setTimestamp()
 
-        await user.send({embeds: [userdm]})
-       
+        await user.send({embeds: [userdm]}).catch(() => {});
+
             const embed = new EmbedBuilder()
             .setTitle(`\`⛔\` | \`${user.displayName}\` wurde getimeoutet!`)
             .setDescription(`\`📂\` » **INFORMATIONEN**\n» Name: \`${user.tag}\` (\`${user.id}\`)\n» Account Erstellt: <t:${parseInt(user.createdAt / 1000)}:D>\n» Server beigetreten: <t:${parseInt(member.joinedAt / 1000)}:D>\n\n» Getimeoutet von: \`${interaction.user.username}\` (\`${interaction.user.id}\`)\n» Dauer: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)\n» Grund: \`${grund || "Nicht angegeben."}\``)
@@ -73,7 +73,12 @@ module.exports = {
 
             const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
 
-            await logchannel.threads.cache.get("1269998219266490538").send({embeds: [embed]});
+            if (logchannel) {
+                const thread = logchannel.threads.cache.get("1269998219266490538");
+                if (thread) {
+                    await thread.send({embeds: [embed]});
+                }
+            }
 
         await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\n**Information:**\n» Grund: \`${grund}\`\n» Endet: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true })
     }

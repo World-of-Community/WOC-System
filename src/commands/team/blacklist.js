@@ -1,18 +1,18 @@
-const {
+import {
   SlashCommandBuilder,
   EmbedBuilder,
   PermissionFlagsBits,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle
-} = require('discord.js');
+} from 'discord.js';
 
-const { DiscordBlacklist, MinecraftBlacklist } = require('../../../Datenbank/blacklistdb');
+import { DiscordBlacklist, MinecraftBlacklist } from '../../../Datenbank/blacklistdb.js';
 
 const CHANNEL_ID = "877446081036836884"; // Channel für das Blacklist-Embed (optional)
 const MESSAGE_ID = "1389649798000545926"; // Message-ID vom Blacklist-Embed (optional)
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('blacklist')
     .setDescription('Blacklist-Verwaltung')
@@ -122,7 +122,7 @@ module.exports = {
         .setColor('Red')
         .setDescription(
           'Information zu den Nutzern:\n' +
-          '> Verbot bzw. gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' + 
+          '> Verbot bzw. gebannt oder dürfen nicht auf den Discord und den Minecraft Server drauf.\n\n' +
           lines.join('\n\n'))
         .setFooter({ text: `Seite ${page + 1} / ${Math.ceil(combinedList.length / pageSize)} · Einträge insgesamt: ${combinedList.length}` })
         .setTimestamp();

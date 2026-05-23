@@ -1,14 +1,14 @@
-const { 
-  SlashCommandBuilder, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
   StringSelectMenuBuilder,
   ComponentType,
   PermissionFlagsBits
-} = require('discord.js');
-const { Team, Match } = require('../../../Datenbank/fussballdb');
+} from 'discord.js';
+import { Team, Match } from '../../../Datenbank/fussballdb.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('fussball-live')
     .setDescription('Zeigt alle laufenden Spiele in Einzel- oder Konferenzmodus an.')

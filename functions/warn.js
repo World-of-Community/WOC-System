@@ -1,6 +1,6 @@
-const { EmbedBuilder } = require("discord.js");
-const warndb = require("../Datenbank/warndb");
-const { client } = require("../src");
+import { EmbedBuilder } from "discord.js";
+import warndb from "../Datenbank/warndb.js";
+import { client } from "../src/index.js";
 
 async function getWarnlistEmbed(interaction) {
     // Fetch all warning data for the guild
@@ -17,24 +17,24 @@ async function getWarnlistEmbed(interaction) {
 
     // Warnliste formatieren
     let list = '';
-    await warnings.forEach(async ({ userId, warnings }) => {
-        const warnCount = warnings.length;
+    for (const { userId, warnings: userWarns } of warnings) {
+        const warnCount = userWarns.length;
         const warnText = warnCount === 1 ? 'Warnung' : 'Warnungen';  // Singular or plural
-        const user = await interaction.guild.members.cache.get(userId)
+        const user = await interaction.guild.members.cache.get(userId);
 
-        warnings.forEach((warn, index) => {
+        userWarns.forEach((warn, index) => {
             // Display based on the count of warnings
             const date = formatDate(warn.date);
             list += `<@${userId}> (${user?.user.username}) (${user?.user.displayName}) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;
         });
-    });
+    }
 
     const WarnEmbed = new EmbedBuilder()
         .setTitle('Information zu den Warnungen der Nutzer')
-        .setDescription(warnings.length !== '' ? list : "> `❌` » Keine Warnungen vorhanden!")
-        .setColor('Red'); 
-    
-    return WarnEmbed
+        .setDescription(list !== '' ? list : "> `❌` » Keine Warnungen vorhanden!")
+        .setColor('Red');
+
+    return WarnEmbed;
 }
 
 async function updateWarnlist(interaction) {
@@ -43,7 +43,7 @@ async function updateWarnlist(interaction) {
     const channel = await interaction.guild.channels.cache.get('877446081036836884');
     const message = await channel.messages.fetch('1283824671506301051');
 
-    message.edit({ embeds: [embed] })
+    await message.edit({ embeds: [embed] });
 }
 
-module.exports = { getWarnlistEmbed, updateWarnlist }
+export { getWarnlistEmbed, updateWarnlist };

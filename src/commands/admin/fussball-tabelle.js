@@ -1,10 +1,10 @@
-const {
+import {
   SlashCommandBuilder,
   EmbedBuilder,
   ChannelType,
   PermissionFlagsBits
-} = require('discord.js');
-const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
+} from 'discord.js';
+import { Team, Match, ProLeagueEmbed } from '../../../Datenbank/fussballdb.js';
 
 // ------------------------------------------------------
 // ⚙️ KONFIGURATION
@@ -161,7 +161,7 @@ async function onMatchEnd(client, matchId) {
 // ------------------------------------------------------
 // 💬 SLASH COMMAND: /fussball-tabelle
 // ------------------------------------------------------
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('fussball-tabelle')
     .setDescription('Sendet die aktuelle Pro League Tabelle und speichert sie für automatische Updates.')

@@ -1,16 +1,16 @@
-const {
+import {
     SlashCommandBuilder,
     EmbedBuilder,
     PermissionFlagsBits,
     ButtonBuilder,
     ButtonStyle,
     ActionRowBuilder,
-} = require("discord.js");
+} from "discord.js";
 
-const Timeout = require('../../../Datenbank/timeoutdb');
-const Warn = require('../../../Datenbank/warndb');
-const bandb = require('../../../Datenbank/bandb');
-const Note = require('../../../Datenbank/notedb');
+import Timeout from '../../../Datenbank/timeoutdb.js';
+import Warn from '../../../Datenbank/warndb.js';
+import bandb from '../../../Datenbank/bandb.js';
+import Note from '../../../Datenbank/notedb.js';
 
 const RoleIds = [
     '959869691529154631', // Admin
@@ -40,7 +40,7 @@ const RoleIds = [
 
 const BANNED_ROLE_ID = "886989738244964362";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('user')
         .setDescription('» User Verwaltung & Infos 👤')
@@ -58,7 +58,7 @@ module.exports = {
             sub.setName("find")
                 .setDescription("» Sucht nach einem User anhand der ID")
                 .addStringOption(o =>
-                    o.setName("id")
+                    o.setName("userid")
                         .setDescription("User ID")
                         .setRequired(true)
                 )
@@ -208,16 +208,16 @@ module.exports = {
 
         // ───────────── FIND ─────────────
         if (sub === "find") {
-        
+
             const userId = interaction.options.getString("userid");
-        
+
             if (!/^\d+$/.test(userId)) {
                 return interaction.reply({
                     content: "> `❌` » Ungültige User-ID.",
                     ephemeral: true
                 });
             }
-        
+
             let user;
             try {
                 user = await interaction.client.users.fetch(userId);
@@ -227,9 +227,9 @@ module.exports = {
                     ephemeral: true
                 });
             }
-        
+
             const member = await interaction.guild.members.fetch(user.id).catch(() => null);
-        
+
             const embed = new EmbedBuilder()
                 .setColor(member ? 0x57F287 : 0xED4245)
                 .setTitle("`🔎` User gefunden")
@@ -241,7 +241,7 @@ module.exports = {
                     `> \`📌\` » Auf dem Server: ${member ? "`🟢 Ja`" : "`🔴 Nein`"}`
                 )
                 .setTimestamp();
-        
+
             return interaction.reply({ embeds: [embed], ephemeral: true });
         }
 
@@ -249,14 +249,14 @@ module.exports = {
         if (sub === "info") {
             let user = interaction.options.getUser("user");
             const userIdInput = interaction.options.getString("userid");
-            
+
             if (!user && !userIdInput) {
                 return interaction.reply({
                     content: "> `❌` » Bitte User oder User-ID angeben.",
                     ephemeral: true
                 });
             }
-            
+
             if (!user && userIdInput) {
                 try {
                     user = await interaction.client.users.fetch(userIdInput);

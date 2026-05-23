@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const embedSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true }, // z. B. "proleague_tabelle"
@@ -6,4 +6,4 @@ const embedSchema = new mongoose.Schema({
   messageId: { type: String, required: true }
 });
 
-module.exports = mongoose.model('ProLeagueEmbed', embedSchema);
+export default mongoose.model('ProLeagueEmbed', embedSchema);

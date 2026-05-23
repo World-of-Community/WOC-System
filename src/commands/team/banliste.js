@@ -1,9 +1,9 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
-const bandb = require("../../../Datenbank/bandb");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import bandb from "../../../Datenbank/bandb.js";
 
 const BANLISTE_MESSAGE_ID = "1298680434347081730"; // Falls du es automatisch speichern willst, sag Bescheid!
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('banliste')
         .setDescription('» Zeigt dir die Bannliste an. 📋')

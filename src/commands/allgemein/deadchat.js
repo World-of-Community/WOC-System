@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('deadchat')
         .setDescription('» Nennt ein zufälliges Thema worüber ihr im Chat schreiben könnt. 💬'),
-        
+
     async execute(interaction) {
         const fragen = [
             "Was ist dein lieblings fast food Restaurant?",

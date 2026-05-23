@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const serverDB = require('../../../Datenbank/serverdb');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import serverDB from '../../../Datenbank/serverdb.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('partner')
         .setDescription('Partner System')
@@ -171,7 +171,7 @@ function createPartnerListEmbed(serverData, interaction) {
         //.setFooter({ text: 'Maximal 15 Server-Partner - Zuletzt aktualisiert:', iconURL: interaction.guild.iconURL() })
         //.setTimestamp();
 
-    
+
     const Info = "> Hier sind alle unsere Server-Partner - Wenn du selbst\n> ein Server-Partner werden möchtest, schau bei\n> <#1172819623935221810> vorbei.\n\n";
 
     // Partner nach Kategorien sortieren

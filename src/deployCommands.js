@@ -1,8 +1,12 @@
-require("dotenv").config();
-const fs = require("fs");
-const path = require("path");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v10");
+import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v10";
+import { fileURLToPath, pathToFileURL } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const isBlockedCommand = (name = "") => {
     const normalized = name.toLowerCase();
@@ -14,19 +18,20 @@ const isBlockedCommand = (name = "") => {
 
 const deployCommands = async function deploy() {
 
-    const file = fs.readFileSync(path.resolve(__dirname, 'json/config.json'), 'utf-8');
-    const config = JSON.parse(file);
+    const configFile = fs.readFileSync(path.resolve(__dirname, 'json/config.json'), 'utf-8');
+    const config = JSON.parse(configFile);
     const commands = [];
 
     // Funktion zum rekursiven Durchsuchen von Verzeichnissen
-    const readCommands = (dir) => {
+    const readCommands = async (dir) => {
         const files = fs.readdirSync(dir);
         for (const file of files) {
             const fullPath = path.join(dir, file);
             if (fs.statSync(fullPath).isDirectory()) {
-                readCommands(fullPath);  // Rekursiv in das Unterverzeichnis gehen
+                await readCommands(fullPath);  // Rekursiv in das Unterverzeichnis gehen
             } else if (file.endsWith(".js")) {
-                const command = require(fullPath);
+                const commandModule = await import(pathToFileURL(fullPath).href);
+                const command = commandModule.default || commandModule;
                 if (command.data) {
                     if (isBlockedCommand(command.data.name)) {
                         continue;
@@ -37,7 +42,7 @@ const deployCommands = async function deploy() {
         }
     };
 
-    readCommands(path.resolve(__dirname, "commands"));
+    await readCommands(path.resolve(__dirname, "commands"));
 
     const restClient = new REST({ version: "10" }).setToken(config.token);
 
@@ -49,4 +54,4 @@ const deployCommands = async function deploy() {
     }
 };
 
-module.exports = { deployCommands };
+export { deployCommands };

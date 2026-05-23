@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const ms = require('ms');
-const schedule = require('node-schedule');
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import ms from 'ms';
+import schedule from 'node-schedule';
 
-const reminders = new Map(); 
+const reminders = new Map();
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('remindme')
         .setDescription('Remindme')
@@ -49,9 +49,9 @@ module.exports = {
                     return await interaction.reply({content: `> \`❌\` » Die Dauer konnte nicht verarbeitet werden!`, ephemeral: true});
                 }
 
-                var endDate = new Date(new Date().getTime() + durationDauer); 
+                var endDate = new Date(new Date().getTime() + durationDauer);
 
-                const timestamp = Math.floor(endDate / 1000); 
+                const timestamp = Math.floor(endDate / 1000);
 
                 const reminder = interaction.options.getString('erinnerung');
 
@@ -69,7 +69,7 @@ module.exports = {
                 }
 
                 const reminderJob = schedule.scheduleJob(endDate, async () => {
-                    const user = interaction.user; 
+                    const user = interaction.user;
 
                     const dmEmbed = new EmbedBuilder()
                         .setTitle('Hey! Ich sollte dich an etwas erinnern!')
@@ -96,7 +96,7 @@ module.exports = {
                     return await interaction.reply({ content: '> `❌` » Du hast keine Erinnerungen gesetzt.', ephemeral: true });
                 }
 
-                const reminderList = reminders.get(userId).map((reminder, index) => 
+                const reminderList = reminders.get(userId).map((reminder, index) =>
                     `\`${index + 1}.\` **${reminder.reminder}** - <t:${reminder.timestamp}:R>`
                 ).join('\n');
 
@@ -112,17 +112,17 @@ module.exports = {
 
                 case "remove":
                     const index = interaction.options.getInteger('reminder') - 1;
-                
+
                     if (!reminders.has(userId) || reminders.get(userId).length === 0) {
                         return await interaction.reply({ content: '> `❌` » Du hast keine Erinnerungen gesetzt.', ephemeral: true });
                     }
-                
+
                     const userReminders = reminders.get(userId);
-                
+
                     if (index < 0 || index >= userReminders.length) {
                         return await interaction.reply({ content: '> `❌` » Ungültiger Index. Bitte überprüfe die Liste deiner Erinnerungen.', ephemeral: true });
                     }
-                
+
                     const removedReminder = userReminders.splice(index, 1)[0];
 
 
@@ -132,16 +132,16 @@ module.exports = {
 
 
                     reminders.set(userId, userReminders);
-                
+
                     const removeEmbed = new EmbedBuilder()
                         .setTitle('Erinnerung entfernt')
                         .setDescription(`\`🗑️\` » Die Erinnerung **${removedReminder.reminder}** wurde **entfernt**.`)
                         .setColor('Red')
                         .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
                         .setTimestamp();
-                
+
                     await interaction.reply({ embeds: [removeEmbed], ephemeral: true });
-                    break;                
+                    break;
         }
     },
 };

@@ -1,10 +1,10 @@
-const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder, time } = require("discord.js");
+import { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder, time } from "discord.js";
 
-module.exports = {
+export default {
     data: new ContextMenuCommandBuilder()
         .setName('Nachricht melden')
         .setType(ApplicationCommandType.Message),
-    
+
     async execute(interaction) {
         const reportLog = interaction.guild.channels.cache.get('1010515517460725782');
 

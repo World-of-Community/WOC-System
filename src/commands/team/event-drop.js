@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
-const EventDropAndUser = require("../../../Datenbank/EventDropAndUserdb");
+import { SlashCommandBuilder, PermissionFlagsBits, ChannelType } from 'discord.js';
+import EventDropAndUser from "../../../Datenbank/EventDropAndUserdb.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('eventdrop')
     .setDescription('Verwalte Event-Drops')
@@ -96,16 +96,16 @@ module.exports = {
     if (subcommand === 'event') {
       const levels = ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5'];
       const gibLevel = Math.random() < 0.5; // 50 % Chance auf Level, 50 % auf Coins
-    
+
       const nutzer = await EventDropAndUser.findOne({ userId: interaction.user.id });
-    
+
       if (!nutzer) {
         const neuerNutzer = new EventDropAndUser({
           userId: interaction.user.id,
           eventDrops: [],
           coins: 0
         });
-    
+
         if (gibLevel) {
           const zufälligesLevel = levels[Math.floor(Math.random() * levels.length)];
           neuerNutzer.eventDrops.push(zufälligesLevel);

@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
-const userDB = require("../../../Datenbank/userdb")
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import userDB from "../../../Datenbank/userdb.js";
 
-module.exports = {
-     
+export default {
+
     // /donated command
     data: new SlashCommandBuilder()
         .setName('donated')
@@ -11,7 +11,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
 
     async execute(interaction) {
-        
+
         const member = interaction.options.getUser('user');
         const userData = await userDB.findOne({userID: member.id})
 

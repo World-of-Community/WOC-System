@@ -1,4 +1,4 @@
-const {
+import {
     SlashCommandBuilder,
     PermissionFlagsBits,
     EmbedBuilder,
@@ -6,9 +6,9 @@ const {
     ButtonBuilder,
     ButtonStyle,
     ComponentType
-} = require('discord.js');
+} from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('admin-info')
         .setDescription('» Zeigt eine Liste von Benutzern mit einer bestimmten Rolle an. 🎭')

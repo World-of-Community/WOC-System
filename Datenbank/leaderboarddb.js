@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // Erstelle ein Schema für die Leaderboard-Nachrichten-ID
 const leaderboardSchema = new mongoose.Schema({
@@ -8,4 +8,4 @@ const leaderboardSchema = new mongoose.Schema({
 });
 
 // Exportiere das Modell
-module.exports = mongoose.model('Leaderboard', leaderboardSchema);
+export default mongoose.model('Leaderboard', leaderboardSchema);

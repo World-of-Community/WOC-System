@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('delete-dm')
         .setDescription('Löscht eine DM-Nachricht vom Bot per ID')
@@ -12,7 +12,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     /**
-     * @param {import('discord.js').ChatInputCommandInteraction} interaction 
+     * @param {import('discord.js').ChatInputCommandInteraction} interaction
      */
     async execute(interaction) {
         const messageId = interaction.options.getString('messageid');

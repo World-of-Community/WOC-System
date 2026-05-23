@@ -1,13 +1,13 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('brofist')
         .setDescription('» Verbünde dich mit deinem Bro. 👊')
         .addUserOption(option => option.setName('user').setDescription('Verbünde dich offiziell mit deinem besten Freund.').setRequired(true)),
-        
+
     async execute(interaction) {
-        
+
         const brofistgifs = [
             'https://tenor.com/de/view/ken-ryu-brofist-street-fighter-gif-9219109.gif',
             'https://tenor.com/de/view/bro-gif-26275846.gif',
@@ -18,7 +18,7 @@ module.exports = {
 
         const mitglied = await interaction.options.getUser('user')
         const gif = brofistgifs[Math.floor(Math.random() * brofistgifs.length)]
-        
+
         await interaction.reply({
             content: `${mitglied}`,
             embeds: [

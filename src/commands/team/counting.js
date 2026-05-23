@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
-const CountingModel = require("../../../Datenbank/countingdb");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import CountingModel from "../../../Datenbank/countingdb.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('counting')
         .setDescription('» Setzt den Zählkanal. 🔢')

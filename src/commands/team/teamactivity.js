@@ -1,23 +1,23 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
-const teammessagedb = require("../../../Datenbank/teammessagedb.js");
-const teamdb = require("../../../Datenbank/teamdb.js");
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import teammessagedb from "../../../Datenbank/teammessagedb.js";
+import teamdb from "../../../Datenbank/teamdb.js";
 
 // Hier kannst du die Nachrichtenziele dynamisch speichern (z.B. in einer Datenbank)
 let messageGoals = {};
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('teamactivity')
-        .setDescription('» Setzt das Nachrichtenziel für eine Rolle oder zeigt die Aktivität eines Benutzers an.')
+        .setDescription('» Setzt das Nachrichtenziel for eine Rolle oder zeigt die Aktivität eines Benutzers an.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
-        .addSubcommand(subcommand => 
+        .addSubcommand(subcommand =>
             subcommand
                 .setName('setgoal')
                 .setDescription('» Setzt das Nachrichtenziel für eine Rolle.')
                 .addRoleOption(option =>  option.setName('role').setDescription('Die Rolle, für die das Ziel festgelegt wird').setRequired(true))
                 .addIntegerOption(option =>  option.setName('messagegoal').setDescription('Das Nachrichtenziel für diese Rolle').setRequired(true)))
                 .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
-        .addSubcommand(subcommand => 
+        .addSubcommand(subcommand =>
             subcommand
                 .setName('check')
                 .setDescription('» Überprüft die Nachrichtenaktivität eines Benutzers.')
@@ -30,12 +30,12 @@ module.exports = {
 
             const role = interaction.options.getRole('role');
             const messagegoal = interaction.options.getInteger('messagegoal');
-            
+
             // Setze das Nachrichtenziel für die Rolle
-            messageGoals[role.id] = messageGoal;
+            messageGoals[role.id] = messagegoal;
 
             // Rückmeldung an den Benutzer
-            await interaction.reply({ content: `> \`✅\` » Das Nachrichtenziel für die Rolle ${role} wurde auf \`${messageGoal}\` Nachrichten gesetzt.`, ephemeral: true });
+            await interaction.reply({ content: `> \`✅\` » Das Nachrichtenziel für die Rolle ${role} wurde auf \`${messagegoal}\` Nachrichten gesetzt.`, ephemeral: true });
         }
 
         if (interaction.options.getSubcommand() === 'check') {
@@ -45,7 +45,7 @@ module.exports = {
             //if (messageGoal === 0) {
             //    return interaction.reply({ content: `> \`📌\` » ${member} hat **keine** Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
             //}
-            
+
             const TeamRoleIds = [
                 '959869691529154631', // Admin
                 '893423428558782465', // Team-leitung

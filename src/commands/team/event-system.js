@@ -1,13 +1,13 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('event-system')
         .setDescription('Schickt das Event System')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
-    
+
     async execute(interaction) {
-        
+
         const eventEmbed = new EmbedBuilder()
             .setTitle('🧡 Season-Events 🧡')
             .setDescription('> **__Aktuelles Event__**\n# ```Aktuell findet kein "Season-Event" statt!```')
@@ -42,9 +42,8 @@ module.exports = {
             .setLabel('Eventitem einsammeln')
             .setStyle(ButtonStyle.Success)
         )
- 
+
         await interaction.channel.send({ embeds: [eventEmbed], components: [buttons, buttons2] })
         await interaction.reply({ content: '> `✅` » Das `Event-Embed` wurde erfolgreich gesendet', ephemeral: true });
     },
 };
-

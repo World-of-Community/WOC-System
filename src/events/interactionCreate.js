@@ -1,41 +1,42 @@
-const { Events, EmbedBuilder, WebhookClient, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType, PermissionFlagsBits } = require("discord.js");
-const userdb = require("../../Datenbank/userdb");
-const config = require("../json/config.json")
-const vorschlagEmitter = require('../custom_events/vorschlag');
-const Advent = require("../../Datenbank/adventdb");
-const NewsStatus = require("../../Datenbank/newsdb");
-const Timeout = require('../../Datenbank/timeoutdb');
-const Warn = require('../../Datenbank/warndb');
-const bandb = require('../../Datenbank/bandb');
-const Meeting = require('../../Datenbank/meetingdb');
-const Note = require("../../Datenbank/notedb");
-
-// Beta Features (Buttons & Modals)
-//const editBanReason = require("./interactions/buttons/editBanReason");
-//const banReasonModal = require("./interactions/modals/banReasonModal");
-const feedbackButton = require("../buttons/feedbackButton");
-//const feedbackModal = require("./interactions/modals/feedbackModal");
-//const ticketButton = require("./interactions/buttons/ticketButton");
-//const unbanModal = require("./interactions/modals/unbanModal");
-const partnerButton = require("../buttons/partnerButton");
-const partnerModal = require("../modals/partnerModal");
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ChannelType,
+    EmbedBuilder,
+    Events,
+    ModalBuilder,
+    PermissionFlagsBits,
+    TextInputBuilder,
+    TextInputStyle
+} from "discord.js";
+import userdb from "../../Datenbank/userdb.js";
+import config from "../json/config.json" with {type: "json"};
+import Advent from "../../Datenbank/adventdb.js";
+import NewsStatus from "../../Datenbank/newsdb.js";
+import Timeout from "../../Datenbank/timeoutdb.js";
+import Warn from "../../Datenbank/warndb.js";
+import Meeting from "../../Datenbank/meetingdb.js";
+import Note from "../../Datenbank/notedb.js";
+import feedbackButton from "../buttons/feedbackButton.js";
+import partnerButton from "../buttons/partnerButton.js";
 
 const rewards = {
     6: { type: 'role', value: '1442140220182106184' }, // Adventskalender 2025
     24: { type: 'role', value: '1445064222894460970' } // Weihnachten 2025
 };
 
-module.exports = {
+export default {
     name: Events.InteractionCreate,
     async execute(interaction) {
 
         if (interaction.isButton()) {
 
             const userId = interaction.user.id;
-  
+
         try {
           const newsStatus = await NewsStatus.findOne({ userId });
-    
+
           if (interaction.customId === 'disable_news') {
             if (newsStatus) {
               newsStatus.isNewsEnabled = false;
@@ -43,10 +44,10 @@ module.exports = {
             } else {
               await NewsStatus.create({ userId, isNewsEnabled: false });
             }
-    
+
             await interaction.reply({ content: '> `🔕` » Du wirst keine weiteren Neuigkeiten per DM erhalten.', ephemeral: true });
           }
-    
+
           if (interaction.customId === 'enable_news') {
             if (newsStatus) {
               newsStatus.isNewsEnabled = true;
@@ -54,7 +55,7 @@ module.exports = {
             } else {
               await NewsStatus.create({ userId, isNewsEnabled: true });
             }
-    
+
             await interaction.reply({ content: '> `🔔` » Du wirst wieder Neuigkeiten per DM erhalten.', ephemeral: true });
           }
         } catch (error) {
@@ -63,22 +64,22 @@ module.exports = {
         }
 
             // Feedback Button Handler
-            if (interaction.customId === 'create_feedback_ticket' || 
-                interaction.customId === 'close_feedback_ticket' || 
-                interaction.customId === 'feedback_accept_close' || 
+            if (interaction.customId === 'create_feedback_ticket' ||
+                interaction.customId === 'close_feedback_ticket' ||
+                interaction.customId === 'feedback_accept_close' ||
                 interaction.customId === 'feedback_reject_open') {
                 return await feedbackButton.execute(interaction);
             }
 
             // Partner Button Handler
-            if (interaction.customId === 'partner' || 
-                interaction.customId.startsWith('partner_accept_') || 
+            if (interaction.customId === 'partner' ||
+                interaction.customId.startsWith('partner_accept_') ||
                 interaction.customId.startsWith('partner_deny_')) {
                 return await partnerButton.execute(interaction);
             }
 
             const now = new Date();
-          
+
             // Event-Zeitspannen
             const eventPeriods = {
               easter: { start: new Date('2024-03-01T00:00:00Z'), end: new Date('2024-04-30T23:59:59Z') },
@@ -86,58 +87,58 @@ module.exports = {
               christmas: { start: new Date('2024-12-20T00:00:00Z'), end: new Date('2024-12-26T23:59:59Z') },
               newyear: { start: new Date('2024-12-27T00:00:00Z'), end: new Date('2025-01-02T23:59:59Z') },
             };
-          
+
             // Aktuelle Event-Prüfung
             const isEventActive = (event) => now >= event.start && now <= event.end;
-          
+
             switch (interaction.customId) {
                case 'easter_event':
                 const OsterEmbed = new EmbedBuilder()
                   .setTitle('`🐇` Oster Event `🐇`')
                   .setDescription(isEventActive(eventPeriods.easter) ? '**Das Oster-Event ist aktuell aktiv! Viel Spaß beim Sammeln der Oster-Eier!**' : '**Dieses Event startet erst zwischen den Monaten `März` und `April`!**')
                   .setColor(isEventActive(eventPeriods.easter) ? 'Green' : 'Green');
-          
+
                 await interaction.reply({ embeds: [OsterEmbed], ephemeral: true });
                 break;
-          
+
               case 'halloween_event':
                 const HalloweenEmbed = new EmbedBuilder()
                   .setTitle('`🎃` Halloween Event `🎃`')
                   .setDescription(isEventActive(eventPeriods.halloween) ? '**Das Halloween-Event ist aktiv! Viel Spaß beim Gruseln!**' : '**Dieses Event findet erst zwischen dem `27. Oktober` und dem `02. November` statt!**')
                   .setColor(isEventActive(eventPeriods.halloween) ? 'Orange' : 'Orange');
-          
+
                 await interaction.reply({ embeds: [HalloweenEmbed], ephemeral: true });
                 break;
-          
+
               case 'christmas_event':
                 const WeihnachtsEmbed = new EmbedBuilder()
                   .setTitle('`🎄` Weihnachts-Event `🎄`')
                   .setDescription(isEventActive(eventPeriods.christmas) ? '**Das Weihnachts-Event ist aktiv! Genieße die festliche Stimmung!**' : '**Dieses Event findet erst zwischen dem `20. Dezember` und dem `26. Dezember` statt!**')
                   .setColor(isEventActive(eventPeriods.christmas) ? 'DarkBlue' : 'DarkBlue');
-          
+
                 await interaction.reply({ embeds: [WeihnachtsEmbed], ephemeral: true });
                 break;
-          
+
               case 'newyear_event':
                 const SilvesterEmbed = new EmbedBuilder()
                   .setTitle('`🎆` Silvester Event `🎆`')
                   .setDescription(isEventActive(eventPeriods.newyear) ? '**Das Silvester-Event ist aktiv! Feiere das neue Jahr mit uns!**' : '**Dieses Event findet erst zwischen dem `27. Dezember` und dem `02. Januar` statt!**')
                   .setColor(isEventActive(eventPeriods.newyear) ? 'Grey' : 'Grey');
-          
+
                 await interaction.reply({ embeds: [SilvesterEmbed], ephemeral: true });
                 break;
-          
+
               case 'collect_event':
                 const activeEvent = Object.keys(eventPeriods).find((key) =>
                   isEventActive(eventPeriods[key])
                 );
-          
+
                 const eventItemEmbed = new EmbedBuilder()
                   .setDescription(activeEvent ? `**Du hast ein Item aus dem aktuellen Event (${activeEvent.toUpperCase()}-Event) eingesammelt!**` : '**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**')
                   .setColor(activeEvent ? 'Green' : 'Red');
-          
+
                 await interaction.reply({ embeds: [eventItemEmbed], ephemeral: true });
-          
+
                 if (activeEvent) {
                   await interaction.followUp({ content: '> `✅` » Du hast erfolgreich ein Event-Item eingesammelt!', ephemeral: true });
                 }
@@ -149,11 +150,11 @@ module.exports = {
         if (interaction.isButton() && interaction.customId.startsWith("showPunishments_")) {
             const userId = interaction.customId.split("_")[1];
             const guildId = interaction.guild.id;
-        
+
             // ───────────── Lade Strafen ─────────────
             const timeouts = await Timeout.find({ userId, guildId }).sort({ createdAt: 1 });
             const warns = await Warn.find({ userId, guildId }).sort({ createdAt: 1 });
-        
+
             const punishments = [
                 ...timeouts.map(t => ({
                     type: "Timeout",
@@ -170,25 +171,25 @@ module.exports = {
                     id: w._id.toString()
                 }))
             ];
-        
+
             if (!punishments.length)
                 return interaction.reply({ content: "> `🟢` » Keine Strafen vorhanden.", ephemeral: true });
-        
+
             // ───────────── Lade Notizen ─────────────
             const notes = await Note.find({ userId, guildId }).sort({ createdAt: 1 });
-        
+
             let page = 0;
-        
+
             const buildEmbed = () => {
                 const p = punishments[page];
-        
+
                 // Suche passende Notiz zur Strafe (optional, per Id matching, hier nach Datum)
                 const n = notes.find(n =>
                     Math.abs(new Date(n.createdAt) - new Date(p.date)) < 60 * 1000 // +-1min
                 );
-        
+
                 const date = p.date ? new Date(p.date) : new Date();
-        
+
                 const embed = new EmbedBuilder()
                     .setTitle(`⚠️ Strafe (${page + 1}/${punishments.length})`)
                     .setDescription(
@@ -199,11 +200,11 @@ module.exports = {
                     .setColor(0xED4245)
                     .setFooter({ text: `User-ID: ${userId}` })
                     .setTimestamp(date);
-        
+
                 if (p.image) embed.setImage(p.image);
                 return embed;
             };
-        
+
             const row = () =>
                 new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
@@ -217,26 +218,26 @@ module.exports = {
                         .setStyle(ButtonStyle.Secondary)
                         .setDisabled(page === punishments.length - 1)
                 );
-        
+
             await interaction.deferReply({ ephemeral: true });
             await interaction.editReply({ embeds: [buildEmbed()], components: [row()] });
-        
+
             const msg = await interaction.fetchReply();
             const collector = msg.createMessageComponentCollector({ componentType: 2 });
-        
+
             collector.on("collect", async i => {
                 if (i.user.id !== interaction.user.id)
                     return i.reply({ content: "> `❌` » Nicht dein Menü.", ephemeral: true });
-        
+
                 if (i.customId === "punish_prev") page--;
                 if (i.customId === "punish_next") page++;
-        
+
                 await i.update({ embeds: [buildEmbed()], components: [row()] });
             });
-        
+
             return;
         }
-        
+
         // Adventskalender
         const currentDay = new Date().getDate();
 
@@ -288,7 +289,6 @@ module.exports = {
     }
 
         const userData = await userdb.findOne({ userID: interaction.user.id })
-        client = interaction.client
 
         // Adventskalender bearbeiten
         const now = new Date();
@@ -298,51 +298,51 @@ module.exports = {
 
         try {
           if (interaction.isModalSubmit()) {
-            
+
             // Feedback Modal Handler
             if (interaction.customId === 'feedback-modal') {
-                
+
                 try {
                 await interaction.deferReply({ ephemeral: true });
-                
+
                 const title = interaction.fields.getTextInputValue('feedback-title');
                 const description = interaction.fields.getTextInputValue('feedback-description');
-            
+
                 const threadName = `${title} - ${interaction.user.username}`;
                 const feedbackChannelId = '1336720916591149137'; // Feedback channel
                 const supportRoleId = '1011207481357238272'; // Team-Rolle
-            
+
                 const feedbackChannel = interaction.guild.channels.cache.get(feedbackChannelId);
                 if (!feedbackChannel) {
-                    return interaction.editReply({ 
-                        content: '> `❌` » Feedback-Kanal nicht gefunden. Bitte kontaktiere einen Administrator.', 
-                        ephemeral: true 
+                    return interaction.editReply({
+                        content: '> `❌` » Feedback-Kanal nicht gefunden. Bitte kontaktiere einen Administrator.',
+                        ephemeral: true
                     });
                 }
-            
+
                 const activeThreads = await feedbackChannel.threads.fetchActive();
-                const existingThread = activeThreads.threads.find(thread => 
+                const existingThread = activeThreads.threads.find(thread =>
                     thread.name.includes(interaction.user.username) && !thread.archived
                 );
-                
+
                 if (existingThread) {
-                    return interaction.editReply({ 
-                        content: `> ⚠️ Du hast bereits ein offenes Feedback-Ticket: ${existingThread}`, 
-                        ephemeral: true 
+                    return interaction.editReply({
+                        content: `> ⚠️ Du hast bereits ein offenes Feedback-Ticket: ${existingThread}`,
+                        ephemeral: true
                     });
                 }
-            
+
                 const thread = await feedbackChannel.threads.create({
                     name: threadName,
                     type: ChannelType.PrivateThread,
                     autoArchiveDuration: 10080, // 24 Stunden
                     reason: `Feedback von ${interaction.user.tag}`
                 });
-                
-                
+
+
                 // Add user to thread
                 await thread.members.add(interaction.user.id);
-            
+
                 const ticketEmbed = new EmbedBuilder()
                     .setDescription(`**Hey ${interaction.user}!**\n\nDanke für dein Feedback!\nDein Ticket wird zeitnah von unserem Server-Team bearbeitet.`)
                     .setColor('Aqua')
@@ -352,14 +352,14 @@ module.exports = {
                     .setDescription(`**Kurztitel des Themas**\n${title}\n\n**Detaillierte Beschreibung**\n${description}`)
                     .setColor('Aqua')
                     .setImage('https://imgur.com/kekDug7.png')
-            
+
                 const closeButtonRow = new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
                         .setCustomId('close_feedback_ticket')
                         .setLabel('❌ Ticket schließen')
                         .setStyle(ButtonStyle.Secondary)
                 );
-            
+
                 await thread.send({
                     content: `> User: <@${interaction.user.id}> | Team: <@&${supportRoleId}>`,
                     embeds: [ticketEmbed, ticketEmbed2],
@@ -372,7 +372,7 @@ module.exports = {
                     SendMessages: true,
                     ReadMessageHistory: true
                 });
-            
+
                 await interaction.editReply({ content: `> \`✅\` » Dein **Feedback-Ticket** wurde erstellt: ${thread}` });
                 } catch (err) {
                     try {
@@ -383,7 +383,7 @@ module.exports = {
                         } else if (!interaction.replied && !interaction.deferred) {
                             await interaction.reply({
                                 content: "> `❌` » Beim Erstellen des Feedback-Tickets ist ein Fehler aufgetreten. Bitte kontaktiere einen Administrator.",
-                                
+
                             });
                         }
                     } catch (replyErr) {
@@ -549,7 +549,7 @@ module.exports = {
                             `> \`👀\` 𑁉 <@&1258794479570124920> (\`${roleCountsehraktiv}👥\`)\n` +
                             `<:PfeilBlau:1119711275014955080> **Umfragen** in **öffentliche** Chats posten\n\n` +
                             `> \`🏃\` 𑁉 <@&1258794944953319534> (\`${roleCountaktiv}👥\`)\n` +
-                            `<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n` + 
+                            `<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n` +
                             `> \`💤\` 𑁉 <@&1258827226846199808> (\`${roleCountinaktiv}👥\`)\n` +
                             `<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden`
                         )
@@ -666,7 +666,7 @@ module.exports = {
                             `<:Pfeil:1119709908540076124> **Aufgabe:** Die Developer/Entwickler kümmern sich um die Entwicklung unserer Bots sowie Plugins und helfen der Administrator bei der technischen Umsetzung.\n` +
                             `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(developer.id)}\n\n` +
                             `> \`🕵\` 𑁉 <@&816985466230145044> (\`${roleCountsrmoderator}👥\`)\n` +
-                            `<:Pfeil:1119709908540076124> **Aufgabe:** Die Senior-Mod's sind erfahrene Moderatoren und kümmern sich um die Pflege des Support-Teams. Sie agieren als eine Art von "Mentor" und führen neue Teammitglieder ein.\n` + 
+                            `<:Pfeil:1119709908540076124> **Aufgabe:** Die Senior-Mod's sind erfahrene Moderatoren und kümmern sich um die Pflege des Support-Teams. Sie agieren als eine Art von "Mentor" und führen neue Teammitglieder ein.\n` +
                             `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(srmoderator.id)}\n\n` +
                             `> \`👮\` 𑁉 <@&815920052385480754> (\`${roleCountmoderator}👥\`)\n` +
                             `<:Pfeil:1119709908540076124> **Aufgabe:** Die Mod's sind wichtige Bestandteile des Teams. Sie kümmern sich um Tickets, Moderation und administrieren kleinere Elemente (wie das Bann-System & Geburtstag ändern).\n` +
@@ -772,23 +772,23 @@ module.exports = {
 
         if (interaction.isButton()) {
           if (!interaction.customId.startsWith('meeting_')) return;
-  
+
           const meeting = await Meeting.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
           if (!meeting) return interaction.reply({ content: '> `❌` Team-Meeting nicht gefunden.', ephemeral: true });
-      
+
           const userId = interaction.user.id;
 
           const scheduleReminder = (meeting, client) => {
               const meetingTime = new Date(meeting.time).getTime();
               const reminderTime = meetingTime - 10 * 60 * 1000;
               const delay = reminderTime - Date.now();
-      
+
               if (delay <= 0) return;
-      
+
               setTimeout(async () => {
                   const updatedMeeting = await Meeting.findById(meeting._id);
                   if (!updatedMeeting) return;
-      
+
                   const reminderEmbed = new EmbedBuilder()
                       .setTitle('`📅` Team-Meeting Erinnerung')
                       .setDescription(`Dein Team-Meeting startet in **10 Minuten**!\n\n**Thema:** ${updatedMeeting.description}`)
@@ -796,7 +796,7 @@ module.exports = {
                       .setColor('Orange')
                       .setFooter({ text: 'Bitte sei pünktlich!' })
                       .setTimestamp();
-      
+
                   for (const id of updatedMeeting.participants) {
                       try {
                           const user = await interaction.client.users.fetch(id);
@@ -809,30 +809,30 @@ module.exports = {
           };
 
           // Beim Bot-Start Reminder für alle kommenden Meetings setzen
-          client.once('ready', async () => {
+          interaction.client.once('ready', async () => {
               console.log('✅  | Meeting Reminder-System aktiviert');
               const upcomingMeetings = await Meeting.find({ time: { $gte: new Date() } });
               for (const m of upcomingMeetings) {
-                  scheduleReminder(m, client);
+                  scheduleReminder(m, interaction.client);
               }
           });
 
           const now = new Date();
           const formattedDate = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
           const formattedTime = now.toLocaleTimeString('de-DE', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      
+
           if (interaction.customId === 'meeting_join') {
             if (!meeting.participants.includes(userId)) meeting.participants.push(userId);
             meeting.nonParticipants = meeting.nonParticipants.filter(id => id !== userId);
             await meeting.save();
-            return interaction.editReply({ 
-                content: '> `✅` » Du nimmst nun am Team-Meeting teil.\n> `❗` » **Hinweis:** Bitte überprüfe, ob ich dir **Direktnachrichten** senden kann,\ndamit du die Erinnerung **10 Minuten** vorher erhältst.', 
-                ephemeral: true 
+            return interaction.editReply({
+                content: '> `✅` » Du nimmst nun am Team-Meeting teil.\n> `❗` » **Hinweis:** Bitte überprüfe, ob ich dir **Direktnachrichten** senden kann,\ndamit du die Erinnerung **10 Minuten** vorher erhältst.',
+                ephemeral: true
             });
           }
           else if (interaction.customId === 'meeting_leave') {
               const userId = interaction.user.id;
-            
+
               if (!meeting) {
                 return interaction.reply({ content: '> `❌` » Kein Meeting gefunden.', ephemeral: true });
               }
@@ -840,27 +840,27 @@ module.exports = {
               if (isNaN(dateObj.getTime())) {
                 return interaction.reply({ content: '> `❌` » Ungültiges Meeting-Datum.', ephemeral: true });
               }
-            
+
               if (!meeting.nonParticipants.includes(userId)) meeting.nonParticipants.push(userId);
               meeting.participants = meeting.participants.filter(id => id !== userId);
-            
+
               await meeting.save();
-            
+
               const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
-              return interaction.editReply({ 
-                content: `> \`❌\` » Du nimmst nun nicht mehr am Team-Meeting teil,\n> welches am <t:${unixTimestamp}:F> stattfindet.`, 
-                ephemeral: true 
+              return interaction.editReply({
+                content: `> \`❌\` » Du nimmst nun nicht mehr am Team-Meeting teil,\n> welches am <t:${unixTimestamp}:F> stattfindet.`,
+                ephemeral: true
               });
           }
           else if (interaction.customId === 'meeting_show') {
-              const participants = meeting.participants.length 
-                  ? meeting.participants.map(id => `\`✅\` <@${id}>`).join('\n') 
+              const participants = meeting.participants.length
+                  ? meeting.participants.map(id => `\`✅\` <@${id}>`).join('\n')
                   : '`❌` Keine Teilnehmer';
-              
-              const nonParticipants = meeting.nonParticipants.length 
-                  ? meeting.nonParticipants.map(id => `\`🚫\` <@${id}>`).join('\n') 
+
+              const nonParticipants = meeting.nonParticipants.length
+                  ? meeting.nonParticipants.map(id => `\`🚫\` <@${id}>`).join('\n')
                   : '`✅` Keine Abmeldungen';
-          
+
               const embed = new EmbedBuilder()
                   .setTitle(`\`📋\` Teilnehmerliste (${meeting.participants.length} Zusagen, ${meeting.nonParticipants.length} Absagen)`)
                   .setDescription('Hier siehst du den aktuellen Stand der Zusagen und Absagen für das Meeting.')
@@ -871,7 +871,7 @@ module.exports = {
                   .setColor('Orange')
                   .setFooter({ text: `Stand: ${formattedDate} ${formattedTime}` })
                   .setTimestamp();
-          
+
               return interaction.reply({ embeds: [embed], ephemeral: true });
           }
         }
@@ -880,29 +880,29 @@ module.exports = {
         if (interaction.isButton()) {
           if (interaction.customId.startsWith('editBanReason_')) {
               const userId = interaction.customId.split('_')[1];
-      
+
               const modal = new ModalBuilder()
                   .setCustomId(`banReasonModal_${userId}`)
                   .setTitle('Ban-Grund bearbeiten');
-      
+
               const banReasonInput = new TextInputBuilder()
                   .setCustomId('banReasonInput')
                   .setLabel("Neuer Ban-Grund")
                   .setStyle(TextInputStyle.Paragraph)
                   .setPlaceholder("Gib hier den neuen Ban-Grund ein")
                   .setRequired(true);
-      
+
               const firstActionRow = new ActionRowBuilder().addComponents(banReasonInput);
-      
+
               modal.addComponents(firstActionRow);
-      
+
               await interaction.showModal(modal);
           }
         } else if (interaction.isModalSubmit()) {
             if (interaction.customId.startsWith('banReasonModal_')) {
               const userId = interaction.customId.split('_')[1];
               const newReason = interaction.fields.getTextInputValue('banReasonInput');
-      
+
               let userData = await bandb.findOne({ userId: userId });
               if (!userData) {
                   userData = new bandb({
@@ -913,24 +913,24 @@ module.exports = {
                   userData.reason = newReason;
               }
               await userData.save();
-      
+
               const guild = interaction.guild;
               const user = await client.users.fetch(userId);
               const member = await guild.members.fetch(userId).catch(() => null);
-      
+
               const [timeoutCount, warnCount] = await Promise.all([
                   Timeout.countDocuments({ userId, guildId: guild.id }).catch(() => 0),
                   Warn.countDocuments({ userId, guildId: guild.id }).catch(() => 0)
               ]);
-      
+
               const banColor = 0xED4245;
               const banEmoji = '`🔴`';
-      
+
               const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}>`;
               const joinedAt = member?.joinedTimestamp
                   ? `<t:${Math.floor(member.joinedTimestamp / 1000)}>`
                   : '`Nicht auf dem Server`';
-      
+
               // Neuen Embed bauen
               const embed = new EmbedBuilder()
                   .setTitle(`\`👤\` Informationen über ${member?.displayName || user.username}`)
@@ -952,7 +952,7 @@ module.exports = {
                   )
                   .setFooter({ text: `${guild.name} | Userinfo`, iconURL: guild.iconURL() || user.displayAvatarURL() })
                   .setTimestamp();
-      
+
               // Button zum erneuten Bearbeiten anbieten
               const components = [
                   new ActionRowBuilder().addComponents(
@@ -962,7 +962,7 @@ module.exports = {
                           .setStyle(ButtonStyle.Secondary)
                   )
               ];
-      
+
               // Antwort mit neuem Embed aktualisieren (falls Modal von ephemeral Nachricht kommt, musst du interaction.message holen)
               try {
                   if (interaction.message) {
@@ -980,13 +980,13 @@ module.exports = {
         }
 
         */
-        
+
         /*
         if (interaction.isButton() && interaction.customId === 'create_feedback_ticket') {
             const feedbackModal = new ModalBuilder()
                 .setTitle('Feedback einreichen')
                 .setCustomId('feedback-modal');
-        
+
             const titleInput = new ActionRowBuilder().addComponents(
                 new TextInputBuilder()
                     .setCustomId('feedback-title')
@@ -995,7 +995,7 @@ module.exports = {
                     .setStyle(TextInputStyle.Short)
                     .setRequired(true)
             );
-        
+
             const descriptionInput = new ActionRowBuilder().addComponents(
                 new TextInputBuilder()
                     .setCustomId('feedback-description')
@@ -1006,7 +1006,7 @@ module.exports = {
                     .setStyle(TextInputStyle.Paragraph)
                     .setRequired(true)
             );
-        
+
             feedbackModal.addComponents(titleInput, descriptionInput);
             await interaction.showModal(feedbackModal);
         }
@@ -1015,16 +1015,16 @@ module.exports = {
         if (interaction.isModalSubmit() && interaction.customId === 'feedback-modal') {
             const title = interaction.fields.getTextInputValue('feedback-title');
             const description = interaction.fields.getTextInputValue('feedback-description');
-        
+
             const ticketName = `feedback-${interaction.user.username.toLowerCase()}`;
             const categoryId = '886985648714682439'; // Feedback-Kategorie
             const supportRoleId = '1011207481357238272'; // Team-Rolle
-        
+
             const existingChannel = interaction.guild.channels.cache.find(c => c.name === ticketName);
             if (existingChannel) {
                 return interaction.reply({ content: '> ⚠️ Du hast bereits ein offenes Feedback-Ticket.', ephemeral: true });
             }
-        
+
             const ticketChannel = await interaction.guild.channels.create({
                 name: ticketName,
                 type: ChannelType.GuildText,
@@ -1044,7 +1044,7 @@ module.exports = {
                     },
                 ],
             });
-        
+
             const ticketEmbed = new EmbedBuilder()
                 .setDescription(`**Hey ${interaction.user}!**\n\nDanke für dein Feedback!\nDein Ticket wird zeitnah von unserem Server-Team bearbeitet.`)
                 .setColor('Aqua')
@@ -1054,34 +1054,34 @@ module.exports = {
                 .setDescription(`**Kurztitel des Themas**\n${title}\n\n**Detaillierte Beschreibung**\n${description}`)
                 .setColor('Aqua')
                 .setImage('https://imgur.com/kekDug7.png')
-        
+
             const closeButtonRow = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
                     .setCustomId('close_feedback_ticket')
                     .setLabel('❌ Ticket schließen')
                     .setStyle(ButtonStyle.Secondary)
             );
-        
+
             await thread.send({
                 embeds: [ticketEmbed, ticketEmbed2],
                 components: [closeButtonRow]
             });
-        
+
             await interaction.reply({ content: `> \`✅\` » Dein **Feedback-Ticket** wurde erstellt: ${ticketChannel}`, ephemeral: true });
         }
-        
+
         // Partner Modal Handler
         if (interaction.isModalSubmit() && interaction.customId === 'partner-modal') {
             return await partnerModal.handlePartnerModalSubmit(interaction);
         }
-        
+
         // Ticket schließen Button
         if (interaction.isButton() && interaction.customId === 'close_feedback_ticket') {
             const decisionEmbed = new EmbedBuilder()
                 .setTitle('`❓` » Schließ-Anfrage')
                 .setDescription(`${interaction.user} hat das Schließen dieses Tickets angefordert.\n\nBitte akzeptiere oder verweigere mit den untenstehenden Schaltflächen.`)
                 .setColor('Blurple');
-        
+
             const decisionButtons = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
                     .setCustomId('feedback_accept_close')
@@ -1094,7 +1094,7 @@ module.exports = {
                     .setEmoji("❌")
                     .setStyle(ButtonStyle.Secondary)
             );
-        
+
             await interaction.reply({
                 content: `<@${interaction.user.id}>`,
                 embeds: [decisionEmbed],
@@ -1102,38 +1102,38 @@ module.exports = {
                 ephemeral: false
             });
         }
-        
+
         // Akzeptieren & Ticket schließen
         if (interaction.isButton() && interaction.customId === 'feedback_accept_close') {
             const acceptEmbed = new EmbedBuilder()
                 .setTitle('`🗑️` » Ticket wird geschlossen')
                 .setDescription('Dieses Ticket wird in **5 Sekunden** geschlossen.')
                 .setColor('Green');
-        
+
             await interaction.update({
                 embeds: [acceptEmbed],
                 components: []
             });
-        
+
             setTimeout(() => {
                 interaction.channel.delete().catch(console.error);
             }, 5000);
         }
-        
+
         // Ablehnen & Ticket bleibt offen
         if (interaction.isButton() && interaction.customId === 'feedback_reject_open') {
             const rejectEmbed = new EmbedBuilder()
                 .setTitle('`🔓` » Ticket bleibt weiterhin offen')
                 .setDescription('Das Ticket bleibt weiterhin geöffnet.')
                 .setColor('Red');
-        
+
             await interaction.update({
                 embeds: [rejectEmbed],
                 components: []
             });
         }
         */
-        
+
         /*
         // Bann System
          if (interaction.isButton()) {
@@ -1142,21 +1142,21 @@ module.exports = {
                 const embed = new EmbedBuilder()
                 .setColor("Green")
                 .setDescription("Danke für deine Meldung, wir haben es erledigt oder in Bearbeitung genommen.")
-                
+
                 interaction.reply({ content: mention, embeds: [embed] })
             }
             else if (interaction.customId === 'ticket_close_deny') {
                 const embed = new EmbedBuilder()
                 .setColor("Red")
                 .setDescription(`${interaction.user} hat sich dazu entschieden nicht das Ticket zu schließen`)
-                
+
                 interaction.update({ embeds: [embed], components: [] })
             }
             else if (interaction.customId === 'ticket_close_accept') {
                 const embed = new EmbedBuilder()
                 .setColor("Red")
                 .setDescription(`Das Ticket wird in \`5 Sekunden\` geschlossen.`)
-                
+
                 interaction.update({ embeds: [embed], components: [] })
                 setTimeout(async () => {
                     await interaction.channel.delete();
@@ -1167,7 +1167,7 @@ module.exports = {
                 .setColor("Blurple")
                 .setTitle("`❓` » Schließ Anfrage")
                 .setDescription(`${interaction.user} hat das Schließen dieses Tickets angefordert.\n\nBitte akzeptiere oder verweigere mit den untenstehenden Schaltflächen.`)
-                
+
                 const buttons = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
@@ -1179,7 +1179,7 @@ module.exports = {
                         .setLabel('❌ » Ablehnen & Offen lassen')
                         .setStyle(ButtonStyle.Secondary)
                     )
-                
+
                 interaction.reply({ content: `<@${interaction.user.id}>`, embeds: [embed], components: [buttons] })
             }
 
@@ -1189,7 +1189,7 @@ module.exports = {
                 .setCustomId('bann-modal');
 
                 const BanngrundInput = new ActionRowBuilder().addComponents(
-                   new TextInputBuilder() 
+                   new TextInputBuilder()
                     .setCustomId('banngrund')
                     .setLabel('Gebe deinen Banngrund an')
                     .setPlaceholder('Wieso wurdest du gebannt?')
@@ -1213,17 +1213,17 @@ module.exports = {
                 await interaction.showModal(gebanntModal)
             }
         }
-        
+
         if (interaction.isModalSubmit()) {
             if (interaction.customId === "gebannt-modal") {
                 const bannInfo = await interaction.fields.getTextInputValue('banngrund');
                 const bannDescription = await interaction.fields.getTextInputValue('entbannungsbeschreibung');
-                
+
                 interaction.guild.channels.create({
                     name: `unban-${interaction.user.username}`,
                     type: ChannelType.GuildText,
                     parent: "886985648714682439",
-                    
+
                 }).then(async channel => {
                     const buttons = new ActionRowBuilder()
                     .addComponents(
@@ -1236,9 +1236,9 @@ module.exports = {
                         .setLabel('❌ » Schließen')
                         .setStyle(ButtonStyle.Secondary)
                     )
-                    
+
                     const bannsupport = await interaction.guild.roles.cache.get('1209101841015504916')
-                        
+
                     const bannEmbed = new EmbedBuilder()
                     .setTitle("`⛔` 𑁉 Entbannungsantrag")
                     .setDescription(
@@ -1296,13 +1296,13 @@ module.exports = {
                 await interaction.reply({ content: "> `✅` » Deine Anfrage wurde abgesendet, Bitte habe etwas Geduld!", ephemeral: true })
             }
         }
-        
+
         if (interaction.isButton()) {
             if (interaction.customId === 'partner') {
                 const partnerModal = new ModalBuilder()
                     .setTitle('🤝 - BEWERBEN ALS PARTNER')
                     .setCustomId('partner-modal');
-    
+
                 const partnernameInput = new ActionRowBuilder().addComponents(
                     new TextInputBuilder()
                         .setCustomId('partner-name')
@@ -1311,7 +1311,7 @@ module.exports = {
                         .setStyle(TextInputStyle.Short)
                         .setRequired(true)
                 )
-    
+
                 const partnerbeschreibungInput = new ActionRowBuilder().addComponents(
                     new TextInputBuilder()
                         .setCustomId('partner-beschreibung')
@@ -1322,9 +1322,9 @@ module.exports = {
                         .setStyle(TextInputStyle.Paragraph)
                         .setRequired(true)
                 )
-    
+
                 partnerModal.addComponents(partnernameInput, partnerbeschreibungInput);
-    
+
                 await interaction.showModal(partnerModal);
             }
             if (interaction.customId.startsWith("partner_accept_")) {
@@ -1364,12 +1364,12 @@ module.exports = {
 
         if (interaction.isChatInputCommand() || interaction.type === 2 || interaction.type === 3) {
 
-        const command = client.commands.get(interaction.commandName)
+        const command = interaction.client.commands.get(interaction.commandName)
 
         if (command) {
             try {
                 await command.execute(interaction)
-                
+
             } catch (error) {
                 console.error(error)
 
@@ -1383,9 +1383,9 @@ module.exports = {
         }
         } else if (interaction.isAutocomplete()) {
                 const command = interaction.client.commands.get(interaction.commandName);
-              
+
                 if (!command) return;
-              
+
                 try {
                   await command.autocomplete(interaction);
                 } catch (error) {

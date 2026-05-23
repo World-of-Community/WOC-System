@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { Team, Match, ProLeagueEmbed } = require('../../../Datenbank/fussballdb');
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { Team, Match, ProLeagueEmbed } from '../../../Datenbank/fussballdb.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('spieler-hinzufügen')
     .setDescription('Füge einem Team einen Spieler hinzu.')

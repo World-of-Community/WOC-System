@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const TeamInfo = require('../../../Datenbank/teaminfodb');
-const UserDB = require('../../../Datenbank/userdb');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import TeamInfo from '../../../Datenbank/teaminfodb.js';
+import UserDB from '../../../Datenbank/userdb.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('team-info')
         .setDescription('» Verwaltung der Team Mitglieder')
@@ -172,16 +172,16 @@ module.exports = {
             const user = interaction.options.getUser('user');
             const userId = interaction.options.getString('userid');
             const idToRemove = user?.id || userId;
-        
+
             if (!idToRemove) {
                 return interaction.reply({
                     content: '> `❗` » Bitte gib einen Nutzer an oder eine ID ein.',
                     ephemeral: true
                 });
             }
-        
+
             const member = await TeamInfo.findOneAndDelete({ userID: idToRemove });
-        
+
             if (member) {
                 const displayName = user ? `${user}` : `\`${idToRemove}\``;
                 await interaction.reply({

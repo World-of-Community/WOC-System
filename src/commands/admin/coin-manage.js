@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { CoinConfig } = require("../../../Datenbank/coindb");
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { CoinConfig } from "../../../Datenbank/coindb.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('coin-manage')
     .setDescription('» Verwalte die Generierung von Coins für den Coin-Generator. 🪙')

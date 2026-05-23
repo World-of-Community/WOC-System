@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const userdb = require("../../../Datenbank/userdb");
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import userdb from "../../../Datenbank/userdb.js";
 
 // Map für Track-Cooldowns: userId => timestamp
 const trackCooldowns = new Map();
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('erfolginfo')
     .setDescription('» Zeigt die Erfolge eines Nutzers an. 🏆')

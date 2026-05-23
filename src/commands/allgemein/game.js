@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+import { SlashCommandBuilder } from 'discord.js';
 
 const allowedRoles = [
   { name: 'KnockbackFFA', value: '1259972154963918858' },
@@ -14,11 +14,11 @@ const allowedRoles = [
   { name: 'Fortnite', value: '1232070141127426058' },
 ];
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('game')
     .setDescription('» Finde deinen Spielpartner mit einer bestimmten Rolle. 🎮')
-    .addStringOption(option => 
+    .addStringOption(option =>
       option
         .setName('rolle')
         .setDescription('Wähle die Rolle aus, die du suchst')

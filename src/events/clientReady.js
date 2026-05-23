@@ -1,20 +1,20 @@
-const { Events, ActivityType, EmbedBuilder, ChannelType, PermissionsBitField } = require("discord.js");
-const mongoose = require("mongoose");
-const fs = require("fs");
-const func = require("../ressources/funktionen");
-const messagedb = require("../../Datenbank/messagedb");
-const userDB = require("../../Datenbank/userdb");
-const serverDB = require("../../Datenbank/serverdb")
-const bandb = require("../../Datenbank/bandb");
-const teamdb = require("../../Datenbank/teamdb");
-const internal = require("stream");
-const cron = require("node-cron");
-const Parser = require("rss-parser");
+import { Events, ActivityType, EmbedBuilder, ChannelType, PermissionsBitField } from "discord.js";
+import mongoose from "mongoose";
+import fs from "fs";
+import func from "../ressources/funktionen.js";
+import messagedb from "../../Datenbank/messagedb.js";
+import userDB from "../../Datenbank/userdb.js";
+import serverDB from "../../Datenbank/serverdb.js";
+import bandb from "../../Datenbank/bandb.js";
+import teamdb from "../../Datenbank/teamdb.js";
+import internal from "stream";
+import cron from "node-cron";
+import Parser from "rss-parser";
 const parser = new Parser();
-const FeedManager = require("../FeedManager");
+import FeedManager from "../FeedManager.js";
 const { processRSSFeed } = FeedManager;
 
-module.exports = {
+export default {
   name: Events.ClientReady,
   async execute(client) {
 
@@ -29,7 +29,7 @@ module.exports = {
     const config = JSON.parse(file);
 
     const guild = await client.guilds.fetch("815919809379172354");
-    
+
     if (!guild) {
       console.log("Server wurde nicht gefunden");
       return;
@@ -54,20 +54,20 @@ module.exports = {
       try {
         const onlineMembers = guild.members.cache.filter(m => !m.user.bot);
         if (onlineMembers.size === 0) return;
-    
+
         const randomMember = onlineMembers.random();
         const username = randomMember.displayName;
-    
+
         const customStatus = `Spielt 💖 | mit ${username}`;
         await client.user.setActivity(customStatus, { type: ActivityType.Playing });
       } catch (err) {
         console.error('❗  | Status-Update Fehler:', err);
       }
-    
+
       // nächstes Update
       setTimeout(updateStatus, getInterval());
     }
-    
+
     // =================== CHANNEL UPDATES ===================
     async function updateChannels() {
       try {
@@ -75,33 +75,33 @@ module.exports = {
         const onlineMembersCount = guild.members.cache.filter(m =>
           ['online', 'idle', 'dnd'].includes(m.presence?.status) && !m.user.bot
         ).size.toLocaleString('de-DE');
-    
+
         // Gesamt-Mitglieder
         const memberCount = guild.memberCount.toLocaleString('de-DE');
-    
+
         // Partner-Daten
         const serverData = await serverDB.findOne({ guildID: "815919809379172354" });
         const count = serverData?.partner?.partners?.length || 0;
-    
+
         // Kategorie-Channel zählen
         const category = guild.channels.cache.get('1230540006439915610');
         const totalChannels = category ? category.children.cache.size : 0;
         const totalGameChannels = guild.channels.cache.filter(c => c.parentId === config.category5).size;
-    
+
         // Channel-Namen setzen
         // Aktuellen Monat holen (0 = Januar, 11 = Dezember)
         const month = new Date().getMonth();
-        
+
         // Standard-Emojis
         let emoji1 = "🌍";
         let emoji2 = "👥";
-        
+
         // Wenn Dezember → Weihnachts-Emojis setzen
-        if (month === 11) { 
+        if (month === 11) {
             emoji1 = "🎄";
             emoji2 = "⛄";
         }
-        
+
         // Kategorien umbenennen
         await guild.channels.cache.get(config.category1) ?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
         await guild.channels.cache.get(config.category2) ?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineMembersCount})`);
@@ -109,19 +109,19 @@ module.exports = {
         await guild.channels.cache.get(config.category3)?.setName(`(⚡) - [ADS] - (PARTNER: ${count})`);
         await guild.channels.cache.get(config.category4)?.setName(`(📰) - [NEWS] - (ABOS: ${totalChannels})`);
         await guild.channels.cache.get(config.category5)?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
-    
+
       } catch (err) {
         console.error('❗  | Channel-Update Fehler:', err);
       }
-    
+
       // nächstes Update
       setTimeout(updateChannels, getInterval());
     }
-    
+
     // =================== START ===================
     setTimeout(updateStatus, getInterval());
     setTimeout(updateChannels, getInterval());
-    
+
     // Hauptchat Beschreibung
     setInterval(async () => {
       try {
@@ -130,33 +130,33 @@ module.exports = {
           console.log("Kanal nicht gefunden!");
           return;
         }
-    
+
         if (channel.type !== ChannelType.GuildText) {
           console.log("Kein Textkanal!");
           return;
         }
-    
+
         const perms = channel.permissionsFor(client.user);
         if (!perms?.has(PermissionsBitField.Flags.ManageChannels)) {
           console.log("Bot hat keine Berechtigung zum Ändern des Themas!");
           return;
         }
-    
+
         let messageData = await messagedb.findOne({ guildID: config.server });
-    
+
         if (!messageData) {
           console.log("Kein Eintrag gefunden, erstelle neuen...");
           messageData = await messagedb.create({ guildID: config.server, messages: 0 });
         }
-    
+
         if (typeof messageData.messages !== 'number') {
           console.log("Falscher Datentyp für messages, konvertiere...");
           messageData.messages = Number(messageData.messages) || 0;
           await messageData.save();
         }
-    
+
         const messages = messageData.messages.toLocaleString('de-DE');
-    
+
         await channel.setTopic(
           `<a:cursorclick:1007272113830383716> **| KLICK MICH FÜR MEHR INFOS**\n\n` +
           `𑁉 **${messages}** Nachrichten wurden bereits versendet! <a:Chat1:976129450112593990> **Unterhalte dich** ein wenig mit uns! - das macht **garantiert Spaß**!\n\n` +
@@ -165,7 +165,7 @@ module.exports = {
           `<#815922286502346773>\n\n` +
           `📌 » Solltest du **Fragen** haben, dann öffne ein Ticket in <#819555839362072606> und schreibe eine Nachricht mit deinem Anliegen.`
         );
-    
+
       } catch (err) {
         console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
       }
@@ -175,10 +175,10 @@ module.exports = {
     function scheduleBanUpdate() {
       const now = new Date();
       const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-    
+
       setTimeout(() => {
         runBanUpdate(); // Update einmal direkt zur vollen Minute starten
-    
+
         // Ab jetzt jede Minute synchron laufen lassen
         setInterval(runBanUpdate, 60 * 1000);
       }, msUntilNextMinute);
@@ -187,12 +187,12 @@ module.exports = {
     async function runBanUpdate() {
       try {
         const server = await client.guilds.fetch("815919809379172354");
-    
+
         async function getMemberList(server, roleID) {
           const list = [];
           const role = server.roles.cache.get(roleID);
           if (!role) return list;
-    
+
           for (const member of role.members.values()) {
             try {
               const banData = await bandb.findOne({ userId: member.id });
@@ -207,26 +207,26 @@ module.exports = {
           }
           return list;
         }
-    
+
         const gebannt = server.roles.cache.get("886989738244964362");
         if (!gebannt) return console.log("Rolle für Gebannte nicht gefunden.");
-    
+
         const bans = await getMemberList(server, gebannt.id);
-    
+
         const channel = await server.channels.fetch("1217020305671983205");
         if (!channel) return console.log("Kanal nicht gefunden.");
-    
+
         const messages = await channel.messages.fetch({ limit: 1 });
         const message = messages.first();
         if (!message) return console.log("Keine Nachricht gefunden zum Bearbeiten.");
-    
+
         const currentTime = new Date().toLocaleDateString('de-DE', {
           weekday: 'long',
           day: '2-digit',
           month: 'long',
           year: 'numeric',
         });
-    
+
         const bannembed = new EmbedBuilder()
           .setTitle("Information zu den Gebannten Nutzern")
           .setDescription(
@@ -236,7 +236,7 @@ module.exports = {
           .setColor("Red")
           .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: server.iconURL() })
           .setTimestamp();
-    
+
         await message.edit({ embeds: [bannembed] });
       } catch (error) {
         console.error("Fehler im Bann-Update:", error);
@@ -245,26 +245,26 @@ module.exports = {
 
     // Timer starten
     scheduleBanUpdate();
-    
+
         // Globale Variablen zum Speichern von Kanal- und Nachrichten-IDs
         let lastChannelId = null;
         let lastMessageId = null;
-    
+
         client.once('ready', async () => {
             console.log(`${client.user.tag} ist online!`);
-    
+
         // Sende die Nachricht, dass der Bot wieder online ist
         if (lastChannelId) {
             try {
                 const channel = await client.channels.fetch(lastChannelId);
-    
+
                 if (channel) {
                     await channel.send({ text: '> `✅` » Der Bot ist wieder online und einsatzbereit.', ephemeral: true });
                 }
             } catch (error) {
                 console.error('Fehler beim Senden der Wieder-Online-Nachricht:', error);
             }
-    
+
             // Variablen zurücksetzen
             lastChannelId = null;
             lastMessageId = null;
@@ -289,10 +289,10 @@ module.exports = {
     cron.schedule("0 0 * * *", async () => {
       const guild = await client.guilds.fetch("815919809379172354");
       if (!guild) return console.error('Guild wurde nicht gefunden.');
-  
+
       const roleRemove = guild.roles.cache.find(role => role.id === "1222122625594294272");
       if (!roleRemove) return console.error('Rolle "1222122625594294272" wurde nicht gefunden.');
-  
+
       await guild.members.cache.forEach(async (member) => {
           if (member.roles.cache.has(roleRemove.id)) {
               try {

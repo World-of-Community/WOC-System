@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const userdb = require('../../../Datenbank/userdb');
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import userdb from '../../../Datenbank/userdb.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('onlinezeit-manage')
     .setDescription('» Verwalte die Onlinezeit eines Nutzers.')

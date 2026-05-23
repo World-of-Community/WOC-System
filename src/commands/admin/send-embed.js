@@ -1,14 +1,14 @@
-const { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, EmbedBuilder } = require("discord.js");
+import { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, EmbedBuilder } from "discord.js";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("send-embed")
         .setDescription('» Hier können die verschienden Embeds gesendet werden. 📋')
         .addStringOption(option => option.setName('embed').setDescription('Welches Embed?').setRequired(true)
         .addChoices(
-            { name: 'Ränge Info (Rollen Info)', value: 'ränge-info' }, 
-            { name: 'Regelwerk (Server-regeln)', value: 'regelwerk' }, 
-            { name: 'Partner (Partner werden)', value: 'partner' }, 
+            { name: 'Ränge Info (Rollen Info)', value: 'ränge-info' },
+            { name: 'Regelwerk (Server-regeln)', value: 'regelwerk' },
+            { name: 'Partner (Partner werden)', value: 'partner' },
             { name: 'Bann-Bereich Embed (Gebannt)', value: 'gebannt' }
         ))
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
@@ -159,7 +159,7 @@ module.exports = {
             await msg.edit({ embeds: [gebanntEmbed], components: [gebanntButton] })
         } else {
             await interaction.reply({ content: `> \`❌\` » Embed wurde nicht gefunden.`, ephemeral: true });
-        } 
+        }
 
         await interaction.reply({ content: `> \`✅\` » das \`${embedType}\`-Embed wurde gesendet oder bearbeitet.`, ephemeral: true })
     }

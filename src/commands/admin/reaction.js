@@ -1,18 +1,18 @@
-const { SlashCommandBuilder, PermissionFlagsBits, PermissionBitField } = require('discord.js');
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('reaction')
         .setDescription('» Fügt Reaktionen zu einer Nachricht hinzu. 📌')
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('messageid')
                 .setDescription('Die ID der Nachricht, zu der Reaktionen hinzugefügt werden sollen.')
                 .setRequired(true))
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('emoji1')
                 .setDescription('Das erste Emoji')
                 .setRequired(true))
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('emoji2')
                 .setDescription('Das zweite Emoji (optional)')
                 .setRequired(false))
@@ -26,7 +26,7 @@ module.exports = {
         try {
             // Nachricht mit der angegebenen ID abrufen
             const message = await interaction.channel.messages.fetch(messageId);
-            
+
             if (!message) {
                 return interaction.reply({ content: '> `❗` » Die Nachricht mit dieser ID konnte nicht gefunden werden.', ephemeral: true });
             }

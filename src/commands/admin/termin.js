@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const Termin = require('../../../Datenbank/termindb');
+import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import Termin from '../../../Datenbank/termindb.js';
 
 const remindMap = new Map();
 
@@ -38,7 +38,7 @@ function parseGermanDateTime(input) {
   };
 }
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('termin')
     .setDescription('Terminverwaltung 📅')
@@ -568,7 +568,7 @@ function parseGermanDateTime(input) {
   return date.getTime();
 }
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('termin')
     .setDescription('Terminverwaltung 📅')

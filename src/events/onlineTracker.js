@@ -1,4 +1,4 @@
-const userDB = require("../../Datenbank/userdb");
+import userDB from "../../Datenbank/userdb.js";
 
 const TRACK_INTERVAL = 1000 * 60 * 60; // 1 Stunde
 
@@ -25,4 +25,4 @@ async function trackOnlineTime(client) {
   }, TRACK_INTERVAL);
 }
 
-module.exports = trackOnlineTime; 
+export default trackOnlineTime;

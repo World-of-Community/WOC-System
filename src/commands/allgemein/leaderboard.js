@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Coin } = require('../../../Datenbank/coindb');
-const userDB = require("../../../Datenbank/userdb");
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { Coin } from '../../../Datenbank/coindb.js';
+import userDB from "../../../Datenbank/userdb.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('leaderboard')
     .setDescription('Zeigt dir die besten User in verschiedenen Kategorien an.')

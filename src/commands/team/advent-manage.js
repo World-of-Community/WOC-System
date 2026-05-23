@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const Advent = require('../../../Datenbank/advent'); // Pfad zu deinem Advent Model
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import Advent from '../../../Datenbank/adventdb.js';
 
 // Belohnungen definieren
 const rewards = {
@@ -29,7 +29,7 @@ const rewards = {
     24: { type: 'role', value: '1445064222894460970' }
 };
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName('advent')
         .setDescription('» Adventskalender Verwaltung 🎄')

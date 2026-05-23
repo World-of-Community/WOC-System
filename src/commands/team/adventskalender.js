@@ -1,6 +1,6 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles, PermissionFlagsBits } = require('discord.js');
-const { setTimeout } = require('timers/promises');
-const serverdb = require('../../../Datenbank/serverdb');
+import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles, PermissionFlagsBits } from 'discord.js';
+import { setTimeout } from 'timers/promises';
+import serverdb from '../../../Datenbank/serverdb.js';
 
 // Anpassbare Buttons
 const buttonConfig = {
@@ -30,7 +30,7 @@ const buttonConfig = {
   24: { label: '24🎅', style: ButtonStyle.Primary },
 };
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('adventskalender')
     .setDescription('» Schickt den Adventskalender. 🎁')
@@ -46,7 +46,7 @@ module.exports = {
     // Buttons erstellen
     const rows = [];
     let currentRow = new ActionRowBuilder();
-    
+
     for (let i = 1; i <= maxDay; i++) {
       const buttonData = buttonConfig[i] || {};
       currentRow.addComponents(

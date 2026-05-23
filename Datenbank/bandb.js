@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const mongoose = require('mongoose');
+import Discord from 'discord.js';
+import mongoose from 'mongoose';
 
 const banSchema = new mongoose.Schema({
     creator: {
@@ -28,4 +28,4 @@ const banSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('ban-schema', banSchema)
+export default mongoose.model('ban-schema', banSchema);

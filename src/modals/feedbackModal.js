@@ -1,6 +1,6 @@
-const { ChannelType, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+import { ChannelType, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 
-module.exports = {
+export default {
     async execute(interaction) {
         if (!interaction.isModalSubmit() || interaction.customId !== 'feedback-modal') return;
 

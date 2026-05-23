@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Coin, CoinConfig } = require("../../../Datenbank/coindb");
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { Coin, CoinConfig } from "../../../Datenbank/coindb.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('coins')
     .setDescription('» Zeigt die aktuellen Coins eines Benutzers an. 🪙')
@@ -14,7 +14,7 @@ module.exports = {
     if (user.bot) {
       return interaction.reply({ content: '> `❌` » Bots können keine Coins haben.', ephemeral: true });
     }
-    
+
     // Suche nach den Coins des Benutzers in der Datenbank
     let userCoins = await Coin.findOne({ userId: user.id });
 

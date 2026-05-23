@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const terminSchema = new Schema({
   userId: { type: String, required: true, unique: true },
@@ -7,4 +7,4 @@ const terminSchema = new Schema({
   teamMemberId: { type: String, required: false },
 });
 
-module.exports = model('Termin', terminSchema);
+export default model('Termin', terminSchema);

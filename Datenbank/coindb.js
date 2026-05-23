@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const coinSchema = new mongoose.Schema({
     userId: { type: String, required: true },
@@ -13,7 +13,5 @@ const coinConfigSchema = new mongoose.Schema({
     maxCoins: { type: Number, default: 5 }
 });
 
-module.exports = {
-    Coin: mongoose.model('Coin', coinSchema),
-    CoinConfig: mongoose.model('CoinConfig', coinConfigSchema)
-};
+export const Coin = mongoose.model('Coin', coinSchema);
+export const CoinConfig = mongoose.model('CoinConfig', coinConfigSchema);

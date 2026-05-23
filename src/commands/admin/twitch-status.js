@@ -1,14 +1,18 @@
-const {
+import {
   SlashCommandBuilder,
   EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder,
   PermissionFlagsBits,
-} = require('discord.js');
-const fetch = require('node-fetch');
-const fs = require('fs');
-const path = require('path');
+} from 'discord.js';
+import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const twitchStatusPath = path.join(__dirname, '../../../src/json/twitchStatus.json');
 
@@ -36,7 +40,7 @@ function saveTwitchConfig() {
 // Direkt laden beim Start
 loadTwitchConfig();
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('twitch-status')
     .setDescription('Aktiviere oder deaktiviere den automatischen Twitch-Status')

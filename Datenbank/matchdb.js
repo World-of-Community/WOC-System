@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const matchSchema = new mongoose.Schema({
   homeTeam: { type: String, required: true },
@@ -30,4 +30,4 @@ const matchSchema = new mongoose.Schema({
 
 const Match = mongoose.models.Match || mongoose.model('Match', matchSchema);
 
-module.exports = { Match };
+export default Match;

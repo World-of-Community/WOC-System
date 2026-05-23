@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const messagedb = require("../../../Datenbank/messagedb");
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import messagedb from "../../../Datenbank/messagedb.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("channel-messages")
     .setDescription("» Nachrichtenanzahl verwalten 📊")

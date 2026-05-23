@@ -1,8 +1,8 @@
 /*
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { Coin } = require('../../../Datenbank/coindb');
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { Coin } from '../../../Datenbank/coindb.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('daily-leaderboard')
     .setDescription('» Zeigt das Streak-Top 10 Leaderboard an. 🔥'),

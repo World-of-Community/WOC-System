@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require('discord.js');
-const Meeting = require('../../../Datenbank/meetingdb');
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } from 'discord.js';
+import Meeting from '../../../Datenbank/meetingdb.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('team-meeting')
     .setDescription('Verwaltet Team-Meetings')
