@@ -5,10 +5,6 @@ import {
 
 import ms from 'ms';
 
-// Temporärer Speicher
-// Nach Bot-Restart leer
-const sentMessages = new Map();
-
 export default {
 
     data: new SlashCommandBuilder()
@@ -16,9 +12,9 @@ export default {
         .setName('event-info')
         .setDescription('» Event Nachrichten senden und bearbeiten. 💬')
 
-        // =========================
+        // ==================================================
         // SEND
-        // =========================
+        // ==================================================
         .addSubcommand(sub =>
             sub
                 .setName('send')
@@ -46,13 +42,20 @@ export default {
                 )
         )
 
-        // =========================
+        // ==================================================
         // EDIT
-        // =========================
+        // ==================================================
         .addSubcommand(sub =>
             sub
                 .setName('edit')
                 .setDescription('Bearbeite eine Nachricht.')
+
+                .addChannelOption(option =>
+                    option
+                        .setName('kanal')
+                        .setDescription('Der Kanal der Nachricht')
+                        .setRequired(true)
+                )
 
                 .addStringOption(option =>
                     option
@@ -92,7 +95,6 @@ export default {
             const time =
                 interaction.options.getString('starten');
 
-            // \n Support
             const message =
                 rawMessage.replace(/\\n/g, '\n');
 
@@ -103,7 +105,6 @@ export default {
 
                 const timeMs = ms(time);
 
-                // Ungültige Zeit
                 if (!timeMs) {
 
                     return await interaction.reply({
@@ -135,14 +136,6 @@ export default {
                                 content: message
                             });
 
-                        // Speichern
-                        sentMessages.set(
-                            sentMessage.id,
-                            {
-                                channelId: channel.id
-                            }
-                        );
-
                         await interaction.editReply({
                             content:
                                 `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
@@ -161,8 +154,11 @@ export default {
                                 '> `❌` » Fehler beim Senden der Nachricht.',
                             ephemeral: true
                         });
+
                     }
+
                 }, timeMs);
+
             }
 
             // =============================================
@@ -176,14 +172,6 @@ export default {
                         await channel.send({
                             content: message
                         });
-
-                    // Speichern
-                    sentMessages.set(
-                        sentMessage.id,
-                        {
-                            channelId: channel.id
-                        }
-                    );
 
                     await interaction.reply({
                         content:
@@ -205,12 +193,18 @@ export default {
                     });
 
                 }
+
             }
+
         }
+
         // ==================================================
         // EDIT
         // ==================================================
         else if (subcommand === 'edit') {
+
+            const channel =
+                interaction.options.getChannel('kanal');
 
             const messageId =
                 interaction.options.getString('messageid');
@@ -218,29 +212,10 @@ export default {
             const rawMessage =
                 interaction.options.getString('nachricht');
 
-            // \n Support
             const newMessage =
                 rawMessage.replace(/\\n/g, '\n');
 
-            // Gespeicherte Daten holen
-            const data =
-                sentMessages.get(messageId);
-
-            if (!data) {
-
-                return await interaction.reply({
-                    content:
-                        '> `❌` » Nachricht wurde nicht gefunden oder Bot wurde neugestartet.',
-                    ephemeral: true
-                });
-            }
             try {
-
-                // Kanal holen
-                const channel =
-                    await interaction.client.channels.fetch(
-                        data.channelId
-                    );
 
                 // Nachricht holen
                 const message =
@@ -248,7 +223,7 @@ export default {
                         messageId
                     );
 
-                // Nachricht bearbeiten
+                // Bearbeiten
                 await message.edit({
                     content: newMessage
                 });
@@ -268,10 +243,14 @@ export default {
 
                 await interaction.reply({
                     content:
-                        '> `❌` » Fehler beim Bearbeiten der Nachricht.',
+                        '> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten.',
                     ephemeral: true
                 });
+
             }
+
         }
+
     },
+
 };
