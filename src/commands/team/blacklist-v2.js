@@ -1,6 +1,9 @@
 import {
     SlashCommandBuilder,
     EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
     PermissionFlagsBits
 } from 'discord.js';
 
@@ -10,160 +13,186 @@ function getTimestamp() {
     return new Date().toISOString();
 }
 
+function buildEmbed(type, data) {
+    const embed = new EmbedBuilder()
+        .setColor('Red')
+        .setTitle(`📋 Blacklist (${type.toUpperCase()})`);
+
+    const text = data.length
+        ? data.map(e =>
+            type === 'discord'
+                ? `👤 **${e.name}**\n📝 ${e.grund}\n📅 ${e.addedAt}`
+                : `🎮 **${e.name}**\n📝 ${e.grund}\n📅 ${e.addedAt}`
+        ).join('\n\n')
+        : 'Keine Einträge';
+
+    embed.setDescription(text.slice(0, 4000));
+
+    return embed;
+}
+
+function buildButtons(active) {
+    return new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+            .setCustomId('blacklist_discord')
+            .setLabel('Discord')
+            .setStyle(active === 'discord' ? ButtonStyle.Danger : ButtonStyle.Secondary),
+
+        new ButtonBuilder()
+            .setCustomId('blacklist_minecraft')
+            .setLabel('Minecraft')
+            .setStyle(active === 'minecraft' ? ButtonStyle.Success : ButtonStyle.Secondary)
+    );
+}
+
 export default {
     data: new SlashCommandBuilder()
-        .setName('blacklist-v2')
+        .setName('blacklist')
         .setDescription('Blacklist System')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
-        // ===================== ADD =====================
+        // ADD
         .addSubcommand(sub =>
-            sub
-                .setName('add')
+            sub.setName('add')
                 .setDescription('User zur Blacklist hinzufügen')
                 .addStringOption(o =>
                     o.setName('type')
-                        .setDescription('discord oder minecraft')
                         .setRequired(true)
                         .addChoices(
                             { name: 'Discord', value: 'discord' },
                             { name: 'Minecraft', value: 'minecraft' }
                         )
                 )
-                .addStringOption(o =>
-                    o.setName('name')
-                        .setDescription('Name')
-                        .setRequired(true)
-                )
-                .addStringOption(o =>
-                    o.setName('grund')
-                        .setDescription('Grund')
-                        .setRequired(true)
-                )
+                .addStringOption(o => o.setName('name').setRequired(true))
+                .addStringOption(o => o.setName('grund').setRequired(true))
         )
 
-        // ===================== SHOW =====================
+        // SHOW
         .addSubcommand(sub =>
-            sub
-                .setName('show')
+            sub.setName('show')
                 .setDescription('Blacklist anzeigen')
         )
 
-        // ===================== EDIT =====================
+        // EDIT
         .addSubcommand(sub =>
-            sub
-                .setName('edit')
-                .setDescription('Blacklist Eintrag bearbeiten')
+            sub.setName('edit')
+                .setDescription('Eintrag bearbeiten')
                 .addStringOption(o =>
                     o.setName('type')
-                        .setDescription('discord oder minecraft')
                         .setRequired(true)
                         .addChoices(
                             { name: 'Discord', value: 'discord' },
                             { name: 'Minecraft', value: 'minecraft' }
                         )
                 )
-                .addStringOption(o =>
-                    o.setName('name')
-                        .setDescription('Name')
-                        .setRequired(true)
-                )
-                .addStringOption(o =>
-                    o.setName('grund')
-                        .setDescription('Neuer Grund')
-                        .setRequired(true)
-                )
+                .addStringOption(o => o.setName('name').setRequired(true))
+                .addStringOption(o => o.setName('grund').setRequired(true))
         )
 
-        // ===================== REMOVE =====================
+        // REMOVE
         .addSubcommand(sub =>
-            sub
-                .setName('remove')
-                .setDescription('Blacklist Eintrag entfernen')
+            sub.setName('remove')
+                .setDescription('Eintrag entfernen')
                 .addStringOption(o =>
                     o.setName('type')
-                        .setDescription('discord oder minecraft')
                         .setRequired(true)
                         .addChoices(
                             { name: 'Discord', value: 'discord' },
                             { name: 'Minecraft', value: 'minecraft' }
                         )
                 )
-                .addStringOption(o =>
-                    o.setName('name')
-                        .setDescription('Name')
-                        .setRequired(true)
-                )
+                .addStringOption(o => o.setName('name').setRequired(true))
         ),
 
     async execute(interaction) {
         const sub = interaction.options.getSubcommand();
 
-        // ===================== ADD =====================
+        // ================= ADD =================
         if (sub === 'add') {
             const type = interaction.options.getString('type');
             const name = interaction.options.getString('name');
             const grund = interaction.options.getString('grund');
 
-            const data = {
+            const Model = type === 'discord'
+                ? DiscordBlacklist
+                : MinecraftBlacklist;
+
+            await Model.create({
                 name,
                 grund,
                 addedAt: getTimestamp()
-            };
-
-            if (type === 'discord') {
-                await DiscordBlacklist.create(data);
-            } else {
-                await MinecraftBlacklist.create(data);
-            }
+            });
 
             return interaction.reply({
-                content: `✅ ${type} **${name}** wurde zur Blacklist hinzugefügt.`,
+                content: `✅ ${type} **${name}** wurde geblacklisted.`,
                 ephemeral: true
             });
         }
 
-        // ===================== SHOW =====================
+        // ================= SHOW =================
         if (sub === 'show') {
-            const discordList = await DiscordBlacklist.find();
-            const mcList = await MinecraftBlacklist.find();
+            const discordData = await DiscordBlacklist.find();
+            const mcData = await MinecraftBlacklist.find();
 
-            const embed = new EmbedBuilder()
-                .setTitle('📋 Blacklist Übersicht')
-                .setColor('Red');
+            let active = 'discord';
 
-            const discordText = discordList.length
-                ? discordList.map(e =>
-                    `👤 **${e.name}**\n📝 ${e.grund}\n📅 ${e.addedAt}`
-                ).join('\n\n')
-                : 'Keine Einträge';
+            const msg = await interaction.reply({
+                embeds: [buildEmbed(active, discordData)],
+                components: [buildButtons(active)],
+                ephemeral: true,
+                fetchReply: true
+            });
 
-            const mcText = mcList.length
-                ? mcList.map(e =>
-                    `🎮 **${e.name}**\n📝 ${e.grund}\n📅 ${e.addedAt}`
-                ).join('\n\n')
-                : 'Keine Einträge';
+            const collector = msg.createMessageComponentCollector({
+                time: 5 * 60 * 1000
+            });
 
-            embed.addFields(
-                { name: 'Discord Blacklist', value: discordText.substring(0, 1024) },
-                { name: 'Minecraft Blacklist', value: mcText.substring(0, 1024) }
-            );
+            collector.on('collect', async (i) => {
+                if (i.user.id !== interaction.user.id) {
+                    return i.reply({ content: '❌ Nicht dein Menü.', ephemeral: true });
+                }
 
-            return interaction.reply({ embeds: [embed], ephemeral: true });
+                if (i.customId === 'blacklist_discord') {
+                    active = 'discord';
+
+                    return i.update({
+                        embeds: [buildEmbed('discord', discordData)],
+                        components: [buildButtons('discord')]
+                    });
+                }
+
+                if (i.customId === 'blacklist_minecraft') {
+                    active = 'minecraft';
+
+                    return i.update({
+                        embeds: [buildEmbed('minecraft', mcData)],
+                        components: [buildButtons('minecraft')]
+                    });
+                }
+            });
+
+            collector.on('end', async () => {
+                interaction.editReply({
+                    components: []
+                }).catch(() => {});
+            });
         }
 
-        // ===================== EDIT =====================
+        // ================= EDIT =================
         if (sub === 'edit') {
             const type = interaction.options.getString('type');
             const name = interaction.options.getString('name');
             const grund = interaction.options.getString('grund');
 
-            const Model = type === 'discord' ? DiscordBlacklist : MinecraftBlacklist;
+            const Model = type === 'discord'
+                ? DiscordBlacklist
+                : MinecraftBlacklist;
 
             const entry = await Model.findOne({ name });
+
             if (!entry) {
                 return interaction.reply({
-                    content: `❌ Eintrag **${name}** nicht gefunden.`,
+                    content: `❌ Nicht gefunden.`,
                     ephemeral: true
                 });
             }
@@ -172,29 +201,31 @@ export default {
             await entry.save();
 
             return interaction.reply({
-                content: `✏️ Eintrag **${name}** wurde aktualisiert.`,
+                content: `✏️ Aktualisiert.`,
                 ephemeral: true
             });
         }
 
-        // ===================== REMOVE =====================
+        // ================= REMOVE =================
         if (sub === 'remove') {
             const type = interaction.options.getString('type');
             const name = interaction.options.getString('name');
 
-            const Model = type === 'discord' ? DiscordBlacklist : MinecraftBlacklist;
+            const Model = type === 'discord'
+                ? DiscordBlacklist
+                : MinecraftBlacklist;
 
             const deleted = await Model.findOneAndDelete({ name });
 
             if (!deleted) {
                 return interaction.reply({
-                    content: `❌ Eintrag **${name}** nicht gefunden.`,
+                    content: `❌ Nicht gefunden.`,
                     ephemeral: true
                 });
             }
 
             return interaction.reply({
-                content: `🗑️ Eintrag **${name}** wurde entfernt.`,
+                content: `🗑️ Entfernt.`,
                 ephemeral: true
             });
         }
