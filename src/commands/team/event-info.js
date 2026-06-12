@@ -11,6 +11,7 @@ export default {
 
         .setName('event-info')
         .setDescription('» Event Nachrichten senden und bearbeiten. 💬')
+
         .addSubcommand(sub =>
             sub
                 .setName('send')
@@ -44,6 +45,7 @@ export default {
                         .setRequired(false)
                 )
         )
+
         .addSubcommand(sub =>
             sub
                 .setName('edit')
@@ -73,7 +75,7 @@ export default {
                 .addAttachmentOption(option =>
                     option
                         .setName('bild')
-                        .setDescription('Optionales Bild')
+                        .setDescription('Neues Bild (optional)')
                         .setRequired(false)
                 )
         )
@@ -94,6 +96,9 @@ export default {
 
             const rawMessage =
                 interaction.options.getString('nachricht');
+
+            const bild =
+                interaction.options.getAttachment('bild');
 
             const time =
                 interaction.options.getString('starten');
@@ -133,7 +138,10 @@ export default {
 
                         const sentMessage =
                             await channel.send({
-                                content: message
+                                content: message,
+                                files: bild
+                                    ? [bild.url]
+                                    : []
                             });
 
                         await interaction.editReply({
@@ -159,15 +167,16 @@ export default {
 
                 }, timeMs);
 
-            }
-
-            else {
+            } else {
 
                 try {
 
                     const sentMessage =
                         await channel.send({
-                            content: message
+                            content: message,
+                            files: bild
+                                ? [bild.url]
+                                : []
                         });
 
                     await interaction.reply({
@@ -206,21 +215,28 @@ export default {
             const rawMessage =
                 interaction.options.getString('nachricht');
 
+            const bild =
+                interaction.options.getAttachment('bild');
+
             const newMessage =
                 rawMessage.replace(/\\n/g, '\n');
 
             try {
 
-                // Nachricht holen
                 const message =
                     await channel.messages.fetch(
                         messageId
                     );
 
-                // Bearbeiten
-                await message.edit({
+                const editData = {
                     content: newMessage
-                });
+                };
+
+                if (bild) {
+                    editData.files = [bild.url];
+                }
+
+                await message.edit(editData);
 
                 await interaction.reply({
                     content:
@@ -240,7 +256,11 @@ export default {
                         '> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten.',
                     ephemeral: true
                 });
+
             }
+
         }
+
     },
+
 };
