@@ -11,10 +11,6 @@ export default {
 
         .setName('event-info')
         .setDescription('» Event Nachrichten senden und bearbeiten. 💬')
-
-        // ==================================================
-        // SEND
-        // ==================================================
         .addSubcommand(sub =>
             sub
                 .setName('send')
@@ -34,6 +30,13 @@ export default {
                         .setRequired(true)
                 )
 
+                .addAttachmentOption(option =>
+                    option
+                        .setName('bild')
+                        .setDescription('Optionales Bild')
+                        .setRequired(false)
+                )
+
                 .addStringOption(option =>
                     option
                         .setName('starten')
@@ -41,10 +44,6 @@ export default {
                         .setRequired(false)
                 )
         )
-
-        // ==================================================
-        // EDIT
-        // ==================================================
         .addSubcommand(sub =>
             sub
                 .setName('edit')
@@ -70,6 +69,13 @@ export default {
                         .setDescription('Neue Nachricht')
                         .setRequired(true)
                 )
+
+                .addAttachmentOption(option =>
+                    option
+                        .setName('bild')
+                        .setDescription('Optionales Bild')
+                        .setRequired(false)
+                )
         )
 
         .setDefaultMemberPermissions(
@@ -81,9 +87,6 @@ export default {
         const subcommand =
             interaction.options.getSubcommand();
 
-        // ==================================================
-        // SEND
-        // ==================================================
         if (subcommand === 'send') {
 
             const channel =
@@ -98,9 +101,6 @@ export default {
             const message =
                 rawMessage.replace(/\\n/g, '\n');
 
-            // =============================================
-            // MIT TIMER
-            // =============================================
             if (time) {
 
                 const timeMs = ms(time);
@@ -161,9 +161,6 @@ export default {
 
             }
 
-            // =============================================
-            // OHNE TIMER
-            // =============================================
             else {
 
                 try {
@@ -198,9 +195,6 @@ export default {
 
         }
 
-        // ==================================================
-        // EDIT
-        // ==================================================
         else if (subcommand === 'edit') {
 
             const channel =
@@ -246,11 +240,7 @@ export default {
                         '> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten.',
                     ephemeral: true
                 });
-
             }
-
         }
-
     },
-
 };
