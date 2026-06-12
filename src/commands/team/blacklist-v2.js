@@ -1,3 +1,4 @@
+/*
 import {
     SlashCommandBuilder,
     EmbedBuilder,
@@ -255,3 +256,4 @@ export default {
         }
     }
 };
+*/
