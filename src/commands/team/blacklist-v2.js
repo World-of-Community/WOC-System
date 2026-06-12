@@ -7,12 +7,16 @@ import {
     PermissionFlagsBits
 } from 'discord.js';
 
-import { DiscordBlacklist, MinecraftBlacklist } from '../../../Datenbank/blacklistdb.js';
+import {
+    DiscordBlacklist,
+    MinecraftBlacklist
+} from '../../../Datenbank/blacklistdb.js';
 
 function getTimestamp() {
     return new Date().toISOString();
 }
 
+// ================= EMBED BUILDER =================
 function buildEmbed(type, data) {
     const embed = new EmbedBuilder()
         .setColor('Red')
@@ -27,10 +31,10 @@ function buildEmbed(type, data) {
         : 'Keine Einträge';
 
     embed.setDescription(text.slice(0, 4000));
-
     return embed;
 }
 
+// ================= BUTTONS =================
 function buildButtons(active) {
     return new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -51,29 +55,38 @@ export default {
         .setDescription('Blacklist System')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
-        // ADD
+        // ================= ADD =================
         .addSubcommand(sub =>
             sub.setName('add')
-                .setDescription('User zur Blacklist hinzufügen')
+                .setDescription('Zur Blacklist hinzufügen')
                 .addStringOption(o =>
                     o.setName('type')
+                        .setDescription('discord oder minecraft')
                         .setRequired(true)
                         .addChoices(
                             { name: 'Discord', value: 'discord' },
                             { name: 'Minecraft', value: 'minecraft' }
                         )
                 )
-                .addStringOption(o => o.setName('name').setRequired(true))
-                .addStringOption(o => o.setName('grund').setRequired(true))
+                .addStringOption(o =>
+                    o.setName('name')
+                        .setDescription('Name')
+                        .setRequired(true)
+                )
+                .addStringOption(o =>
+                    o.setName('grund')
+                        .setDescription('Grund')
+                        .setRequired(true)
+                )
         )
 
-        // SHOW
+        // ================= SHOW =================
         .addSubcommand(sub =>
             sub.setName('show')
                 .setDescription('Blacklist anzeigen')
         )
 
-        // EDIT
+        // ================= EDIT =================
         .addSubcommand(sub =>
             sub.setName('edit')
                 .setDescription('Eintrag bearbeiten')
@@ -85,11 +98,17 @@ export default {
                             { name: 'Minecraft', value: 'minecraft' }
                         )
                 )
-                .addStringOption(o => o.setName('name').setRequired(true))
-                .addStringOption(o => o.setName('grund').setRequired(true))
+                .addStringOption(o =>
+                    o.setName('name')
+                        .setRequired(true)
+                )
+                .addStringOption(o =>
+                    o.setName('grund')
+                        .setRequired(true)
+                )
         )
 
-        // REMOVE
+        // ================= REMOVE =================
         .addSubcommand(sub =>
             sub.setName('remove')
                 .setDescription('Eintrag entfernen')
@@ -101,14 +120,19 @@ export default {
                             { name: 'Minecraft', value: 'minecraft' }
                         )
                 )
-                .addStringOption(o => o.setName('name').setRequired(true))
+                .addStringOption(o =>
+                    o.setName('name')
+                        .setRequired(true)
+                )
         ),
 
     async execute(interaction) {
+
         const sub = interaction.options.getSubcommand();
 
         // ================= ADD =================
         if (sub === 'add') {
+
             const type = interaction.options.getString('type');
             const name = interaction.options.getString('name');
             const grund = interaction.options.getString('grund');
@@ -124,32 +148,36 @@ export default {
             });
 
             return interaction.reply({
-                content: `✅ ${type} **${name}** wurde geblacklisted.`,
+                content: `✅ **${name}** wurde zur ${type} Blacklist hinzugefügt.`,
                 ephemeral: true
             });
         }
 
         // ================= SHOW =================
         if (sub === 'show') {
+
             const discordData = await DiscordBlacklist.find();
             const mcData = await MinecraftBlacklist.find();
 
             let active = 'discord';
 
-            const msg = await interaction.reply({
+            await interaction.reply({
                 embeds: [buildEmbed(active, discordData)],
                 components: [buildButtons(active)],
-                ephemeral: true,
-                fetchReply: true
+                ephemeral: true
             });
 
-            const collector = msg.createMessageComponentCollector({
-                time: 5 * 60 * 1000
-            });
+            const msg = await interaction.fetchReply();
+
+            const collector = msg.createMessageComponentCollector();
 
             collector.on('collect', async (i) => {
+
                 if (i.user.id !== interaction.user.id) {
-                    return i.reply({ content: '❌ Nicht dein Menü.', ephemeral: true });
+                    return i.reply({
+                        content: '❌ Nicht dein Menü.',
+                        ephemeral: true
+                    });
                 }
 
                 if (i.customId === 'blacklist_discord') {
@@ -170,16 +198,11 @@ export default {
                     });
                 }
             });
-
-            collector.on('end', async () => {
-                interaction.editReply({
-                    components: []
-                }).catch(() => {});
-            });
         }
 
         // ================= EDIT =================
         if (sub === 'edit') {
+
             const type = interaction.options.getString('type');
             const name = interaction.options.getString('name');
             const grund = interaction.options.getString('grund');
@@ -192,7 +215,7 @@ export default {
 
             if (!entry) {
                 return interaction.reply({
-                    content: `❌ Nicht gefunden.`,
+                    content: `❌ Eintrag nicht gefunden.`,
                     ephemeral: true
                 });
             }
@@ -201,13 +224,14 @@ export default {
             await entry.save();
 
             return interaction.reply({
-                content: `✏️ Aktualisiert.`,
+                content: `✏️ Eintrag **${name}** wurde aktualisiert.`,
                 ephemeral: true
             });
         }
 
         // ================= REMOVE =================
         if (sub === 'remove') {
+
             const type = interaction.options.getString('type');
             const name = interaction.options.getString('name');
 
@@ -219,13 +243,13 @@ export default {
 
             if (!deleted) {
                 return interaction.reply({
-                    content: `❌ Nicht gefunden.`,
+                    content: `❌ Eintrag nicht gefunden.`,
                     ephemeral: true
                 });
             }
 
             return interaction.reply({
-                content: `🗑️ Entfernt.`,
+                content: `🗑️ **${name}** wurde entfernt.`,
                 ephemeral: true
             });
         }
