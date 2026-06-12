@@ -27,7 +27,7 @@ export default {
                 .addStringOption(option =>
                     option
                         .setName('nachricht')
-                        .setDescription('Die Nachricht')
+                        .setDescription('Die Nachricht (\n für neue Zeile)')
                         .setRequired(true)
                 )
 
@@ -68,7 +68,7 @@ export default {
                 .addStringOption(option =>
                     option
                         .setName('nachricht')
-                        .setDescription('Neue Nachricht')
+                        .setDescription('Neue Nachricht (\n für neue Zeile)')
                         .setRequired(true)
                 )
 
@@ -86,49 +86,42 @@ export default {
 
     async execute(interaction) {
 
-        const subcommand =
-            interaction.options.getSubcommand();
+        const subcommand = interaction.options.getSubcommand();
+
+        // 🔥 bessere newline Verarbeitung
+        const parseText = (text) => {
+            if (!text) return text;
+
+            return text
+                .replace(/\\n/g, '\n')   // echtes "\n"
+                .replace(/\r\n/g, '\n'); // Windows linebreak fix
+        };
 
         if (subcommand === 'send') {
 
-            const channel =
-                interaction.options.getChannel('kanal');
+            const channel = interaction.options.getChannel('kanal');
+            const rawMessage = interaction.options.getString('nachricht');
+            const bild = interaction.options.getAttachment('bild');
+            const time = interaction.options.getString('starten');
 
-            const rawMessage =
-                interaction.options.getString('nachricht');
-
-            const bild =
-                interaction.options.getAttachment('bild');
-
-            const time =
-                interaction.options.getString('starten');
-
-            const message =
-                rawMessage.replace(/\\n/g, '\n');
+            const message = parseText(rawMessage);
 
             if (time) {
 
                 const timeMs = ms(time);
 
                 if (!timeMs) {
-
                     return await interaction.reply({
-                        content:
-                            '> `❌` » Bitte gib eine gültige Zeit an. Beispiel: `10s`, `5m`, `1h`',
+                        content: '> `❌` » Bitte gib eine gültige Zeit an. Beispiel: `10s`, `5m`, `1h`',
                         ephemeral: true
                     });
-
                 }
 
-                const endDate =
-                    new Date(Date.now() + timeMs);
-
-                const timestamp =
-                    Math.floor(endDate.getTime() / 1000);
+                const endDate = new Date(Date.now() + timeMs);
+                const timestamp = Math.floor(endDate.getTime() / 1000);
 
                 await interaction.reply({
-                    content:
-                        `> \`⏳\` » Die Nachricht wird <t:${timestamp}:R> gesendet.`,
+                    content: `> \`⏳\` » Die Nachricht wird <t:${timestamp}:R> gesendet.`,
                     ephemeral: true
                 });
 
@@ -136,33 +129,23 @@ export default {
 
                     try {
 
-                        const sentMessage =
-                            await channel.send({
-                                content: message,
-                                files: bild
-                                    ? [bild.url]
-                                    : []
-                            });
+                        const sentMessage = await channel.send({
+                            content: message,
+                            files: bild ? [bild.url] : []
+                        });
 
                         await interaction.editReply({
-                            content:
-                                `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
+                            content: `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
                             ephemeral: true
                         });
 
                     } catch (error) {
-
-                        console.error(
-                            'Fehler beim Senden:',
-                            error
-                        );
+                        console.error('Fehler beim Senden:', error);
 
                         await interaction.editReply({
-                            content:
-                                '> `❌` » Fehler beim Senden der Nachricht.',
+                            content: '> `❌` » Fehler beim Senden der Nachricht.',
                             ephemeral: true
                         });
-
                     }
 
                 }, timeMs);
@@ -171,62 +154,40 @@ export default {
 
                 try {
 
-                    const sentMessage =
-                        await channel.send({
-                            content: message,
-                            files: bild
-                                ? [bild.url]
-                                : []
-                        });
+                    const sentMessage = await channel.send({
+                        content: message,
+                        files: bild ? [bild.url] : []
+                    });
 
                     await interaction.reply({
-                        content:
-                            `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
+                        content: `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
                         ephemeral: true
                     });
 
                 } catch (error) {
 
-                    console.error(
-                        'Fehler beim Senden:',
-                        error
-                    );
+                    console.error('Fehler beim Senden:', error);
 
                     await interaction.reply({
-                        content:
-                            '> `❌` » Fehler beim Senden der Nachricht.',
+                        content: '> `❌` » Fehler beim Senden der Nachricht.',
                         ephemeral: true
                     });
-
                 }
-
             }
-
         }
 
         else if (subcommand === 'edit') {
 
-            const channel =
-                interaction.options.getChannel('kanal');
+            const channel = interaction.options.getChannel('kanal');
+            const messageId = interaction.options.getString('messageid');
+            const rawMessage = interaction.options.getString('nachricht');
+            const bild = interaction.options.getAttachment('bild');
 
-            const messageId =
-                interaction.options.getString('messageid');
-
-            const rawMessage =
-                interaction.options.getString('nachricht');
-
-            const bild =
-                interaction.options.getAttachment('bild');
-
-            const newMessage =
-                rawMessage.replace(/\\n/g, '\n');
+            const newMessage = parseText(rawMessage);
 
             try {
 
-                const message =
-                    await channel.messages.fetch(
-                        messageId
-                    );
+                const message = await channel.messages.fetch(messageId);
 
                 const editData = {
                     content: newMessage
@@ -239,28 +200,19 @@ export default {
                 await message.edit(editData);
 
                 await interaction.reply({
-                    content:
-                        '> `✅` » Nachricht erfolgreich bearbeitet.',
+                    content: '> `✅` » Nachricht erfolgreich bearbeitet.',
                     ephemeral: true
                 });
 
             } catch (error) {
 
-                console.error(
-                    'Fehler beim Bearbeiten:',
-                    error
-                );
+                console.error('Fehler beim Bearbeiten:', error);
 
                 await interaction.reply({
-                    content:
-                        '> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten.',
+                    content: '> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten.',
                     ephemeral: true
                 });
-
             }
-
         }
-
     },
-
 };
