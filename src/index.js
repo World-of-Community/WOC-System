@@ -106,7 +106,6 @@ const isBlockedCommand = (name = "") => {
 };
 
 const blockedEventFiles = new Set([
-    "levelsystemevent.js",
     "presenceUpdate.js"
 ]);
 
