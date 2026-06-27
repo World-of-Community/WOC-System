@@ -3,9 +3,10 @@ export default {
     name: Events.MessageCreate,
     async execute(message) {
         if (!message.guild) return
-        const channel = message.guild.channels.cache.get("815922756918181898");
+        const debugUser = await message.client.users.fetch("531896089096486922");
+            await debugUser.send("**[0] Event gefired**");
+        
         if (message.author.id === "339254240012664832" && message.channelId === "1221819093100007465") {
-            const debugUser = await message.client.users.fetch("531896089096486922");
 
             await debugUser.send("**[1] Bot hat eine Nachricht von AmariBot erkannt.**");
 
