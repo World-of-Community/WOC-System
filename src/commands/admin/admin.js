@@ -313,7 +313,7 @@ export default {
                                         $inc: { donation: amount },
                                         $setOnInsert: { reactions: {} }
                                     },
-                                    { new: true, upsert: true }
+                                    { returnDocument: 'after', upsert: true }
                                 );
 
                                 await userData.save();

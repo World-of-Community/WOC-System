@@ -45,7 +45,7 @@ export default {
                                 'birthday.monat': monat,
                                 'birthday.jahr': jahr
                             },
-                            { upsert: true, new: true }
+                            { upsert: true, returnDocument: 'after' }
                         );
                     } else {
                         await userDB.findOneAndUpdate(
@@ -54,7 +54,7 @@ export default {
                                 'birthday.tag': tag,
                                 'birthday.monat': monat,
                             },
-                            { upsert: true, new: true }
+                            { upsert: true, returnDocument: 'after' }
                         );
                     }
                     await interaction.reply({ content: '> `✅` » Danke dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>', ephemeral: true });
@@ -113,7 +113,7 @@ export default {
                                 'birthday.monat': monat,
                                 'birthday.jahr': jahr
                             },
-                            { upsert: true, new: true }
+                            { upsert: true, returnDocument: 'after' }
                         );
                     } else {
                         await userDB.findOneAndUpdate(
@@ -122,7 +122,7 @@ export default {
                                 'birthday.tag': tag,
                                 'birthday.monat': monat,
                             },
-                            { upsert: true, new: true }
+                            { upsert: true, returnDocument: 'after' }
                         );
                     }
                     await interaction.reply({ content: '> `✅` » Der Geburtstag wurde geändert.', ephemeral: true });

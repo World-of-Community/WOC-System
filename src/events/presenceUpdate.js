@@ -293,7 +293,7 @@ async function addCoinsToUser(userId, amount) {
     const res = await Coin.findOneAndUpdate(
       { userId },
       { $inc: { coins: amount } },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
     return res.coins;
   } catch (err) {

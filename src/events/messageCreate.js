@@ -103,7 +103,7 @@ export default {
             await messagedb.findOneAndUpdate(
                 { guildID: message.guild.id },
                 { $inc: { messages: 1 } }, // Zählt nur hoch, wenn im richtigen Kanal
-                { new: true, upsert: true }
+                { returnDocument: 'after', upsert: true }
             );
         } catch (err) {
             console.error("Fehler beim Hochzählen der Nachrichten:", err);

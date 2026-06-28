@@ -77,7 +77,7 @@ export default {
                         },
                         $inc: { 'counter.urlaub': 1 }
                     },
-                    { new: true, upsert: true }
+                    { returnDocument: 'after', upsert: true }
                 );
 
                 const urlaubEmbed = new EmbedBuilder()
@@ -131,7 +131,7 @@ export default {
                                         }
                                     }
                                 },
-                                { new: true, upsert: true }
+                                { returnDocument: 'after', upsert: true }
                             );
 
                             await interaction.reply({ content: '> `✅` » Das Meeting wurde **erfolgreich** geplant.', ephemeral: true });

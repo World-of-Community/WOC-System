@@ -263,14 +263,14 @@ export default {
       let entry = await DiscordBlacklist.findOneAndUpdate(
         { $or: [{ userId: input }, { username: new RegExp(`^${input}$`, 'i') }] },
         { reason: newReason },
-        { new: true }
+        { returnDocument: 'after' }
       );
 
       if (!entry) {
         entry = await MinecraftBlacklist.findOneAndUpdate(
           { minecraftName: new RegExp(`^${input}$`, 'i') },
           { reason: newReason },
-          { new: true }
+          { returnDocument: 'after' }
         );
       }
 
@@ -558,14 +558,14 @@ export default {
       let entry = await DiscordBlacklist.findOneAndUpdate(
         { $or: [{ userId: input }, { username: new RegExp(`^${input}$`, 'i') }] },
         { reason: newReason },
-        { new: true }
+        { returnDocument: 'after' }
       );
 
       if (!entry) {
         entry = await MinecraftBlacklist.findOneAndUpdate(
           { minecraftName: new RegExp(`^${input}$`, 'i') },
           { reason: newReason },
-          { new: true }
+          { returnDocument: 'after' }
         );
       }
 
