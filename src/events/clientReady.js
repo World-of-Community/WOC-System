@@ -250,7 +250,7 @@ export default {
         let lastChannelId = null;
         let lastMessageId = null;
 
-        client.once('ready', async () => {
+        client.once('clientReady', async () => {
             console.log(`${client.user.tag} ist online!`);
 
         // Sende die Nachricht, dass der Bot wieder online ist

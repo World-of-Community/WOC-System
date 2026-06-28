@@ -5,7 +5,7 @@ let lastMessageId = null;
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-client.once('ready', async () => {
+client.once('clientReady', async () => {
     console.log(`${client.user.tag} ist online!`);
 
     const timestamp = Math.floor(Date.now() / 1000);

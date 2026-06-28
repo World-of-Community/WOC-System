@@ -809,7 +809,7 @@ export default {
           };
 
           // Beim Bot-Start Reminder für alle kommenden Meetings setzen
-          interaction.client.once('ready', async () => {
+          interaction.client.once('clientReady', async () => {
               console.log('✅  | Meeting Reminder-System aktiviert');
               const upcomingMeetings = await Meeting.find({ time: { $gte: new Date() } });
               for (const m of upcomingMeetings) {

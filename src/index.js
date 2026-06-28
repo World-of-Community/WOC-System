@@ -334,7 +334,7 @@ const ThreadIDs = {
 };
 
 // Event, wenn der Bot bereit ist
-client.on('ready', async () => {
+client.on('clientReady', async () => {
 const onlineEmbed = new EmbedBuilder()
     .setTitle('Bot Status - Update')
     .setDescription(`> \`🟢\` » **\`${client.user.username}\`** ist jetzt online.\n\n> \`🕒\` » <t:${Math.floor(client.readyTimestamp / 1000)}:F>`)

@@ -7,7 +7,7 @@ import schedule from 'node-schedule';
 export default (client) => {
     client.manageTeam = async () => {
 
-        client.on('ready', async () => {
+        client.on('clientReady', async () => {
             await rescheduleTasks(client);
         });
 
