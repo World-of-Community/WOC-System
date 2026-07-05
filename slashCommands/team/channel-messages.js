@@ -2,43 +2,43 @@ import messagedb from "../../models/messagedb.js";
 
 export default {
   name: "channel-messages",
-    description: "» Nachrichtenanzahl verwalten 📊",
-    type: 1,
-    default_member_permissions: "268435456",
-    options: [
+  description: "» Nachrichtenanzahl verwalten 📊",
+  type: 1,
+  default_member_permissions: "268435456",
+  options: [
+    {
+      "type": 1,
+      "name": "set",
+      "description": "» Setzt die Nachrichtenanzahl auf einen bestimmten Wert.",
+      "options": [
         {
-            "type": 1,
-            "name": "set",
-            "description": "» Setzt die Nachrichtenanzahl auf einen bestimmten Wert.",
-            "options": [
-                {
-                    "type": 3,
-                    "name": "anzahl",
-                    "description": "Neue Nachrichtenanzahl (z. B. 3.786.475)",
-                    "required": true
-                }
-            ]
+          "type": 3,
+          "name": "anzahl",
+          "description": "Neue Nachrichtenanzahl (z. B. 3.786.475)",
+          "required": true,
         },
+      ],
+    },
+    {
+      "type": 1,
+      "name": "edit",
+      "description": "» Ändert die Nachrichtenanzahl um + oder -.",
+      "options": [
         {
-            "type": 1,
-            "name": "edit",
-            "description": "» Ändert die Nachrichtenanzahl um + oder -.",
-            "options": [
-                {
-                    "type": 3,
-                    "name": "anzahl",
-                    "description": "Anzahl, um die geändert wird (+/-) (z. B. -1.000)",
-                    "required": true
-                }
-            ]
+          "type": 3,
+          "name": "anzahl",
+          "description": "Anzahl, um die geändert wird (+/-) (z. B. -1.000)",
+          "required": true,
         },
-        {
-            "type": 1,
-            "name": "remove",
-            "description": "» Setzt die Nachrichtenanzahl auf 0 zurück.",
-            "options": []
-        }
-    ],
+      ],
+    },
+    {
+      "type": 1,
+      "name": "remove",
+      "description": "» Setzt die Nachrichtenanzahl auf 0 zurück.",
+      "options": [],
+    },
+  ],
 
   async run(client, interaction) {
     const sub = interaction.options.getSubcommand();
@@ -70,7 +70,7 @@ export default {
       }
 
       messageData.messages += diff;
-      if (messageData.messages < 0) messageData.messages = 0;
+      if (messageData.messages < 0) {messageData.messages = 0;}
       await messageData.save();
       return interaction.reply({ content: `> \`✏️\` » Nachrichtenanzahl wurde um **${diff.toLocaleString("de-DE")}** geändert. Aktuell: **${messageData.messages.toLocaleString("de-DE")}**.`, ephemeral: true });
     }
@@ -78,7 +78,7 @@ export default {
     if (sub === "remove") {
       messageData.messages = 0;
       await messageData.save();
-      return interaction.reply({ content: `> \`🗑️\` » Nachrichtenanzahl wurde zurückgesetzt (0).`, ephemeral: true });
+      return interaction.reply({ content: "> `🗑️` » Nachrichtenanzahl wurde zurückgesetzt (0).", ephemeral: true });
     }
   },
 };

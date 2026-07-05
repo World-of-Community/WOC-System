@@ -3,59 +3,59 @@ import bandb from "../../models/bandb.js";
 
 export default {
   name: "unban",
-    description: "» Entbanne einen User oder sende eine Entbannungs-Info. 🔓",
-    type: 1,
-    default_member_permissions: "4",
-    options: [
+  description: "» Entbanne einen User oder sende eine Entbannungs-Info. 🔓",
+  type: 1,
+  default_member_permissions: "4",
+  options: [
+    {
+      "type": 1,
+      "name": "user",
+      "description": "» Entbannt einen User.",
+      "options": [
         {
-            "type": 1,
-            "name": "user",
-            "description": "» Entbannt einen User.",
-            "options": [
-                {
-                    "name": "user",
-                    "description": "» Welcher User soll entbannt werden?",
-                    "required": true,
-                    "type": 6
-                }
-            ]
+          "name": "user",
+          "description": "» Welcher User soll entbannt werden?",
+          "required": true,
+          "type": 6,
+        },
+      ],
+    },
+    {
+      "type": 1,
+      "name": "info",
+      "description": "» Sendet Informationen zur Entbannung.",
+      "options": [
+        {
+          "type": 3,
+          "choices": [
+            {
+              "name": "Statusupdate",
+              "value": "statusupdate",
+            },
+            {
+              "name": "Wichtiger Hinweis",
+              "value": "hinweis",
+            },
+            {
+              "name": "vorerst abgelehnt",
+              "value": "vorerst_abgelehnt",
+            },
+          ],
+          "name": "typ",
+          "description": "Welche Nachricht soll gesendet werden?",
+          "required": true,
         },
         {
-            "type": 1,
-            "name": "info",
-            "description": "» Sendet Informationen zur Entbannung.",
-            "options": [
-                {
-                    "type": 3,
-                    "choices": [
-                        {
-                            "name": "Statusupdate",
-                            "value": "statusupdate"
-                        },
-                        {
-                            "name": "Wichtiger Hinweis",
-                            "value": "hinweis"
-                        },
-                        {
-                            "name": "vorerst abgelehnt",
-                            "value": "vorerst_abgelehnt"
-                        }
-                    ],
-                    "name": "typ",
-                    "description": "Welche Nachricht soll gesendet werden?",
-                    "required": true
-                },
-                {
-                    "max_value": 30,
-                    "min_value": 1,
-                    "type": 4,
-                    "name": "dauer",
-                    "description": "Wie viele Tage soll der Antrag gültig sein? (Standard 2 Tage)",
-                    "required": false
-                }
-            ]
-        }
-    ],
+          "max_value": 30,
+          "min_value": 1,
+          "type": 4,
+          "name": "dauer",
+          "description": "Wie viele Tage soll der Antrag gültig sein? (Standard 2 Tage)",
+          "required": false,
+        },
+      ],
+    },
+  ],
 
   async run(client, interaction) {
     const sub = interaction.options.getSubcommand();
@@ -89,7 +89,7 @@ export default {
       if (!thread) {
         return interaction.reply({
           content: "> `❌` » Der Thread wurde nicht gefunden.",
-          ephemeral: true
+          ephemeral: true,
         });
       }
 
@@ -107,7 +107,7 @@ export default {
       } catch (err) {
         return interaction.reply({
           content: "> `❌` » Der Thread ist archiviert oder gesperrt und konnte nicht automatisch geöffnet werden.",
-          ephemeral: true
+          ephemeral: true,
         });
       }
 
@@ -176,10 +176,10 @@ export default {
         embed = new EmbedBuilder()
           .setTitle("`🟠` Statusupdate – Entbannung")
           .setDescription(
-            `Lieber Nutzer,\n\n` +
-            `du hast jetzt die Möglichkeit, einen Antrag auf Entbannung zu stellen.\n` +
-            `Bitte beachte dabei unbedingt unsere inhaltlichen Kriterien, welche du vor der Ticketerstellung in <#819555839362072606> bestätigt hast.\n\n` +
-            `Bitte sende uns bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) einen Antrag auf Entbannung zu. Ansonsten wird dieser automatisch abgelehnt.`
+            "Lieber Nutzer,\n\n" +
+            "du hast jetzt die Möglichkeit, einen Antrag auf Entbannung zu stellen.\n" +
+            "Bitte beachte dabei unbedingt unsere inhaltlichen Kriterien, welche du vor der Ticketerstellung in <#819555839362072606> bestätigt hast.\n\n" +
+            `Bitte sende uns bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) einen Antrag auf Entbannung zu. Ansonsten wird dieser automatisch abgelehnt.`,
           )
           .setColor("Orange")
           .setFooter({ text: interaction.guild.name, iconURL: interaction.client.user.displayAvatarURL() });
@@ -189,11 +189,11 @@ export default {
         embed = new EmbedBuilder()
           .setTitle("`❗` Wichtiger Hinweis")
           .setDescription(
-            `Lieber Nutzer,\n\n` +
-            `wir haben deinen Antrag geprüft und festgestellt, dass dieser **nicht** unseren inhaltlichen Kriterien entspricht.\n` +
-            `Du findest im Kanal <#819555839362072606> entsprechende Informationen und Vorgaben.\n\n` +
+            "Lieber Nutzer,\n\n" +
+            "wir haben deinen Antrag geprüft und festgestellt, dass dieser **nicht** unseren inhaltlichen Kriterien entspricht.\n" +
+            "Du findest im Kanal <#819555839362072606> entsprechende Informationen und Vorgaben.\n\n" +
             `Wir geben dir nun noch einmal die Gelegenheit, deinen Antrag bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) ` +
-            `entsprechend überarbeitet erneut zu senden.`
+            "entsprechend überarbeitet erneut zu senden.",
           )
           .setColor("Red")
           .setFooter({ text: interaction.guild.name, iconURL: interaction.client.user.displayAvatarURL() });
@@ -203,12 +203,12 @@ export default {
         embed = new EmbedBuilder()
           .setTitle("`🔴` Statusupdate - Entbannung")
           .setDescription(
-            `Lieber Nutzer,\n\n` +
-            `**vielen Dank für deinen Antrag.**\n` +
-            `Wir haben diesen geprüft und müssen dir mitteilen, dass er vorerst **abgelehnt** wurde.\n\n` +
+            "Lieber Nutzer,\n\n" +
+            "**vielen Dank für deinen Antrag.**\n" +
+            "Wir haben diesen geprüft und müssen dir mitteilen, dass er vorerst **abgelehnt** wurde.\n\n" +
             `Du hast die Möglichkeit, am <t:${dreiMonateTimestamp}:F> (<t:${dreiMonateTimestamp}:R>) erneut einen Antrag einzureichen.\n` +
             `Bis zum <t:${zweiTageTimestamp}:F> (<t:${zweiTageTimestamp}:R>) kannst du uns außerdem Fragen zu dem weiteren Verfahren stellen. ` +
-            `Bitte beachte, dass dies jedoch nichts an unserer Entscheidung ändert.`
+            "Bitte beachte, dass dies jedoch nichts an unserer Entscheidung ändert.",
           )
           .setColor("Red")
           .setFooter({ text: interaction.guild.name, iconURL: interaction.client.user.displayAvatarURL() });
@@ -217,7 +217,7 @@ export default {
       await interaction.channel.send({ content: `<@${interaction.user.id}>`, embeds: [embed] });
 
       await interaction.reply({
-        content: `> Die Nachricht wurde erfolgreich im Kanal gesendet.` +
+        content: "> Die Nachricht wurde erfolgreich im Kanal gesendet." +
           (typ !== "vorerst_abgelehnt" ? ` (**Gültigkeit: ${dauer} Tage**)` : ""),
         ephemeral: true,
       });

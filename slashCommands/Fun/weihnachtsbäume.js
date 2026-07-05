@@ -1,15 +1,15 @@
 import { EmbedBuilder } from "discord.js";
-import eventItems from '../../models/eventItems.js';
+import eventItems from "../../models/eventItems.js";
 
 export default {
   name: "weihnachtsbäume",
-    description: "» Sammle täglich Weihnachtsbäume beim Weihnachts-Event! 🎄",
-    type: 1,
-    options: [],
+  description: "» Sammle täglich Weihnachtsbäume beim Weihnachts-Event! 🎄",
+  type: 1,
+  options: [],
 
   async run(client, interaction) {
     const userId = interaction.user.id;
-    const eventType = 'christmas';
+    const eventType = "christmas";
 
     let userData = await eventItems.findOne({ userId, eventType });
     if (!userData) {
@@ -25,7 +25,7 @@ export default {
 
     if (sameDay) {
       return interaction.reply({
-        content: '> `🎄` | Du hast heute bereits einen Weihnachtsbaum geschmückt! Komm morgen wieder.',
+        content: "> `🎄` | Du hast heute bereits einen Weihnachtsbaum geschmückt! Komm morgen wieder.",
         ephemeral: true,
       });
     }
@@ -36,9 +36,9 @@ export default {
     await userData.save();
 
     const embed = new EmbedBuilder()
-      .setTitle('`🎄` Frohe Weihnachten!')
+      .setTitle("`🎄` Frohe Weihnachten!")
       .setDescription(`Du hast **${collected} Weihnachtsbäume** gesammelt! \`🎁\`\n\nInsgesamt hast du nun **${userData.amount} Bäume**.`)
-      .setColor('Green');
+      .setColor("Green");
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
   },

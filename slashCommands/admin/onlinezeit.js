@@ -1,105 +1,105 @@
-import userdb from '../../models/userdb.js';
+import userdb from "../../models/userdb.js";
 
 export default {
   name: "onlinezeit-manage",
-    description: "» Verwalte die Onlinezeit eines Nutzers.",
-    type: 1,
-    default_member_permissions: "8",
-    options: [
+  description: "» Verwalte die Onlinezeit eines Nutzers.",
+  type: 1,
+  default_member_permissions: "8",
+  options: [
+    {
+      "type": 1,
+      "name": "add",
+      "description": "» Onlinezeit hinzufügen.",
+      "options": [
         {
-            "type": 1,
-            "name": "add",
-            "description": "» Onlinezeit hinzufügen.",
-            "options": [
-                {
-                    "name": "nutzer",
-                    "description": "» Nutzer",
-                    "required": true,
-                    "type": 6
-                },
-                {
-                    "type": 4,
-                    "name": "stunden",
-                    "description": "» Stunden hinzufügen",
-                    "required": true
-                }
-            ]
+          "name": "nutzer",
+          "description": "» Nutzer",
+          "required": true,
+          "type": 6,
         },
         {
-            "type": 1,
-            "name": "remove",
-            "description": "» Onlinezeit entfernen.",
-            "options": [
-                {
-                    "name": "nutzer",
-                    "description": "» Nutzer",
-                    "required": true,
-                    "type": 6
-                },
-                {
-                    "type": 4,
-                    "name": "stunden",
-                    "description": "» Stunden entfernen",
-                    "required": true
-                }
-            ]
+          "type": 4,
+          "name": "stunden",
+          "description": "» Stunden hinzufügen",
+          "required": true,
+        },
+      ],
+    },
+    {
+      "type": 1,
+      "name": "remove",
+      "description": "» Onlinezeit entfernen.",
+      "options": [
+        {
+          "name": "nutzer",
+          "description": "» Nutzer",
+          "required": true,
+          "type": 6,
         },
         {
-            "type": 1,
-            "name": "set",
-            "description": "» Onlinezeit festlegen.",
-            "options": [
-                {
-                    "name": "nutzer",
-                    "description": "» Nutzer",
-                    "required": true,
-                    "type": 6
-                },
-                {
-                    "type": 4,
-                    "name": "stunden",
-                    "description": "» Neue Onlinezeit (in Stunden)",
-                    "required": true
-                }
-            ]
+          "type": 4,
+          "name": "stunden",
+          "description": "» Stunden entfernen",
+          "required": true,
+        },
+      ],
+    },
+    {
+      "type": 1,
+      "name": "set",
+      "description": "» Onlinezeit festlegen.",
+      "options": [
+        {
+          "name": "nutzer",
+          "description": "» Nutzer",
+          "required": true,
+          "type": 6,
         },
         {
-            "type": 1,
-            "name": "edit",
-            "description": "» Onlinezeit manuell verändern.",
-            "options": [
-                {
-                    "name": "nutzer",
-                    "description": "» Nutzer",
-                    "required": true,
-                    "type": 6
-                },
-                {
-                    "type": 4,
-                    "name": "stunden",
-                    "description": "» Wert (positiv oder negativ) in Stunden",
-                    "required": true
-                }
-            ]
-        }
-    ],
+          "type": 4,
+          "name": "stunden",
+          "description": "» Neue Onlinezeit (in Stunden)",
+          "required": true,
+        },
+      ],
+    },
+    {
+      "type": 1,
+      "name": "edit",
+      "description": "» Onlinezeit manuell verändern.",
+      "options": [
+        {
+          "name": "nutzer",
+          "description": "» Nutzer",
+          "required": true,
+          "type": 6,
+        },
+        {
+          "type": 4,
+          "name": "stunden",
+          "description": "» Wert (positiv oder negativ) in Stunden",
+          "required": true,
+        },
+      ],
+    },
+  ],
 
   async run(client, interaction) {
     try {
       const subcommand = interaction.options.getSubcommand();
-      const user = interaction.options.getUser('nutzer');
+      const user = interaction.options.getUser("nutzer");
 
       let userData = await userdb.findOne({ userID: user.id });
       if (!userData) {
         userData = new userdb({ userID: user.id, onlineTime: 0 });
       }
 
-      let message = '';
+      let message = "";
 
       switch (subcommand) {
-        case 'add': {
-          const hours = interaction.options.getInteger('stunden');
-          if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+        case "add": {
+          const hours = interaction.options.getInteger("stunden");
+          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", ephemeral: true });}
 
           const ms = hours * 3600000;
           userData.onlineTime = (userData.onlineTime || 0) + ms;
@@ -107,9 +107,9 @@ export default {
           break;
         }
 
-        case 'remove': {
-          const hours = interaction.options.getInteger('stunden');
-          if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+        case "remove": {
+          const hours = interaction.options.getInteger("stunden");
+          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", ephemeral: true });}
 
           const ms = hours * 3600000;
           userData.onlineTime = Math.max(0, (userData.onlineTime || 0) - ms);
@@ -117,24 +117,24 @@ export default {
           break;
         }
 
-        case 'set': {
-          const hours = interaction.options.getInteger('stunden');
-          if (hours < 0) return interaction.reply({ content: '> `❌` » Stunden dürfen nicht negativ sein.', ephemeral: true });
+        case "set": {
+          const hours = interaction.options.getInteger("stunden");
+          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", ephemeral: true });}
 
           userData.onlineTime = hours * 3600000;
           message = `> \`✅\` » Die Onlinezeit von <@${user.id}> wurde auf \`${hours}h\` gesetzt.`;
           break;
         }
 
-        case 'edit': {
-          const hours = interaction.options.getInteger('stunden'); // jetzt Stunden
+        case "edit": {
+          const hours = interaction.options.getInteger("stunden"); // jetzt Stunden
           const ms = hours * 3600000;
 
           userData.onlineTime = (userData.onlineTime || 0) + ms;
-          if (userData.onlineTime < 0) userData.onlineTime = 0;
+          if (userData.onlineTime < 0) {userData.onlineTime = 0;}
 
           const totalHours = Math.floor(userData.onlineTime / 3600000);
-          const sign = hours >= 0 ? 'hinzugefügt' : 'abgezogen';
+          const sign = hours >= 0 ? "hinzugefügt" : "abgezogen";
 
           message = `> \`✅\` » Onlinezeit von <@${user.id}> wurde um \`${hours}h\` ${sign}. Neue Onlinezeit: \`${totalHours}h\`.`;
           break;
@@ -148,8 +148,8 @@ export default {
       await interaction.reply({ content: message, ephemeral: true });
 
     } catch (err) {
-      console.error('Fehler bei /onlinezeit-manage:', err);
-      await interaction.reply({ content: '> `❌` » Es ist ein Fehler aufgetreten.', ephemeral: true });
+      console.error("Fehler bei /onlinezeit-manage:", err);
+      await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
     }
-  }
+  },
 };

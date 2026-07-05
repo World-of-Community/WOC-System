@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { Coin } from '../../models/coindb.js'; // Coin Modell importieren
+import { Coin } from "../../models/coindb.js"; // Coin Modell importieren
 
 const bonusLevels = [
   { days: 10,  percent: 50 },
@@ -11,27 +11,27 @@ const bonusLevels = [
 ];
 
 function berechneBonusMultiplikator(streak) {
-  if (streak >= 500) return 4.0;
-  if (streak >= 200) return 3.5;
-  if (streak >= 100) return 3.0;
-  if (streak >= 50)  return 2.5;
-  if (streak >= 20)  return 2.0;
-  if (streak >= 10)  return 1.5;
+  if (streak >= 500) {return 4.0;}
+  if (streak >= 200) {return 3.5;}
+  if (streak >= 100) {return 3.0;}
+  if (streak >= 50)  {return 2.5;}
+  if (streak >= 20)  {return 2.0;}
+  if (streak >= 10)  {return 1.5;}
   return 1.0;
 }
 
 function generiereBonusStatus(streak) {
   return bonusLevels.map(level => {
-    const erreicht = streak >= level.days ? '`✅`' : '`❌`';
+    const erreicht = streak >= level.days ? "`✅`" : "`❌`";
     return `Ab ${level.days} Tage: ${level.percent}% mehr Coins ${erreicht}`;
-  }).join('\n');
+  }).join("\n");
 }
 
 export default {
   name: "daily",
-    description: "» Hole dir deine tägliche Belohnung. 🪙",
-    type: 1,
-    options: [],
+  description: "» Hole dir deine tägliche Belohnung. 🪙",
+  type: 1,
+  options: [],
 
   async run(client, interaction) {
     const userId = interaction.user.id;
@@ -53,10 +53,10 @@ export default {
         ephemeral: true,
         embeds: [
           new EmbedBuilder()
-            .setColor('Red')
-            .setTitle('`⏳` Bereits abgeholt!')
-            .setDescription(`Du kannst deine täglichen Coins wieder <t:${unixTimestamp}:R> abholen.\n(<t:${unixTimestamp}:F>)`)
-        ]
+            .setColor("Red")
+            .setTitle("`⏳` Bereits abgeholt!")
+            .setDescription(`Du kannst deine täglichen Coins wieder <t:${unixTimestamp}:R> abholen.\n(<t:${unixTimestamp}:F>)`),
+        ],
       });
     }
 
@@ -81,23 +81,23 @@ export default {
     await user.save();
 
     const bonusStatusText = generiereBonusStatus(user.streak);
-    const streakText = user.streak === 1 ? 'Tag' : 'Tage';
+    const streakText = user.streak === 1 ? "Tag" : "Tage";
 
     await interaction.reply({
       ephemeral: true,
       embeds: [
         new EmbedBuilder()
-          .setColor('Green')
-          .setTitle('`🎁` Tägliche Belohnung')
+          .setColor("Green")
+          .setTitle("`🎁` Tägliche Belohnung")
           .setDescription(
-            `Belohnung: **${Belohnung.toLocaleString('de-DE')} Coins**\n` +
+            `Belohnung: **${Belohnung.toLocaleString("de-DE")} Coins**\n` +
             `Streak: **${user.streak} ${streakText}**\n` +
             `Bonus-Multiplikator: **${((bonusMultiplikator - 1) * 100).toFixed(0)}%**\n\n` +
-            `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString('de-DE')} Coins**\n\n` +
+            `Insgesamt erhältst du: **${gesamtBelohnung.toLocaleString("de-DE")} Coins**\n\n` +
             `**Streak-Übersicht:**\n${bonusStatusText}\n\n` +
-            `Komm morgen wieder, um deine Belohnung zu erhöhen!`
-          )
-      ]
+            "Komm morgen wieder, um deine Belohnung zu erhöhen!",
+          ),
+      ],
     });
-  }
+  },
 };

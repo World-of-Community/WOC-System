@@ -6,7 +6,7 @@ const ERROR_MESSAGE = "> `❌` » Es ist ein Fehler beim ausführen aufgetreten!
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
     const slashCommand = client.slashCommands.get(interaction.commandName);
-    if (!slashCommand) return;
+    if (!slashCommand) {return;}
 
     try {
       await slashCommand.run(client, interaction);
@@ -25,7 +25,7 @@ client.on("interactionCreate", async (interaction) => {
     }
   } else if (interaction.isAutocomplete()) {
     const slashCommand = client.slashCommands.get(interaction.commandName);
-    if (!slashCommand?.autocomplete) return;
+    if (!slashCommand?.autocomplete) {return;}
 
     try {
       await slashCommand.autocomplete(interaction);

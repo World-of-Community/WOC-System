@@ -1,19 +1,19 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const teammessageSchema = new mongoose.Schema({
-    userID: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    messageCount: {
-        type: Number,
-        default: 0,
-    },
-    lastMessageAt: {
-        type: Date,
-        default: null,
-    },
+  userID: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  messageCount: {
+    type: Number,
+    default: 0,
+  },
+  lastMessageAt: {
+    type: Date,
+    default: null,
+  },
 }, { timestamps: true });
 
 /**
@@ -22,8 +22,8 @@ const teammessageSchema = new mongoose.Schema({
  * @returns {Promise<number>}
  */
 teammessageSchema.statics.getMessageCount = async function (userId) {
-    const doc = await this.findOne({ userID: userId });
-    return doc ? doc.messageCount : 0;
+  const doc = await this.findOne({ userID: userId });
+  return doc ? doc.messageCount : 0;
 };
 
-export default mongoose.model('team-message-data', teammessageSchema);
+export default mongoose.model("team-message-data", teammessageSchema);

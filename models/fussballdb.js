@@ -1,12 +1,12 @@
 // ⚽ ./Datenbank/fussballdb.js
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 // ------------------------------------------------------
 // ⚽ TEAM-SCHEMA
 // ------------------------------------------------------
 const teamSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
-  league: { type: String, enum: ['Pro League'], required: true },
+  league: { type: String, enum: ["Pro League"], required: true },
 
   played: { type: Number, default: 0 },
   won: { type: Number, default: 0 },
@@ -27,15 +27,15 @@ const teamSchema = new mongoose.Schema({
   toObject: { virtuals: true },
 });
 
-teamSchema.virtual('goalDifference').get(function () {
+teamSchema.virtual("goalDifference").get(function () {
   return this.goalsFor - this.goalsAgainst;
 });
 
-teamSchema.virtual('calculatedPoints').get(function () {
+teamSchema.virtual("calculatedPoints").get(function () {
   return this.won * 3 + this.draw;
 });
 
-export const Team = mongoose.models.Team || mongoose.model('Team', teamSchema);
+export const Team = mongoose.models.Team || mongoose.model("Team", teamSchema);
 
 // ------------------------------------------------------
 // 🏁 MATCH-SCHEMA
@@ -50,7 +50,7 @@ const matchSchema = new mongoose.Schema({
   awayScore: { type: Number, default: null },
   events: [{
     time: Number,
-    type: { type: String, enum: ['goal', 'yellow', 'red', 'substitution'] },
+    type: { type: String, enum: ["goal", "yellow", "red", "substitution"] },
     player: String,
     team: String,
   }],
@@ -68,7 +68,7 @@ const matchSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export const Match = mongoose.models.Match || mongoose.model('Match', matchSchema);
+export const Match = mongoose.models.Match || mongoose.model("Match", matchSchema);
 
 // ------------------------------------------------------
 // 📊 PROLEAGUE-EMBED-SCHEMA
@@ -79,4 +79,4 @@ const embedSchema = new mongoose.Schema({
   messageId: { type: String, required: true },
 });
 
-export const ProLeagueEmbed = mongoose.models.ProLeagueEmbed || mongoose.model('ProLeagueEmbed', embedSchema);
+export const ProLeagueEmbed = mongoose.models.ProLeagueEmbed || mongoose.model("ProLeagueEmbed", embedSchema);

@@ -2,23 +2,23 @@ import { EmbedBuilder } from "discord.js";
 
 export default {
   name: "spielersuche",
-    description: "Startet das automatische Spielersuche-System (täglich um 00:00 Uhr)",
-    type: 1,
-    default_member_permissions: "268435456",
-    options: [],
+  description: "Startet das automatische Spielersuche-System (täglich um 00:00 Uhr)",
+  type: 1,
+  default_member_permissions: "268435456",
+  options: [],
 
   async run(client, interaction) {
-    const allowedChannelId = '896743941813207081'; // Spielersuche-Channel
+    const allowedChannelId = "896743941813207081"; // Spielersuche-Channel
 
     if (interaction.channel.id !== allowedChannelId) {
       return interaction.reply({
-        content: '> `❌` » Dieser Befehl kann nur in einem bestimmten Channel verwendet werden.',
+        content: "> `❌` » Dieser Befehl kann nur in einem bestimmten Channel verwendet werden.",
         ephemeral: true,
       });
     }
 
     await interaction.reply({
-      content: '> `✅` » Das Spielersuche-System wurde gestartet und sendet jeden Tag um 00:00 Uhr automatisch eine neue Nachricht.',
+      content: "> `✅` » Das Spielersuche-System wurde gestartet und sendet jeden Tag um 00:00 Uhr automatisch eine neue Nachricht.",
       ephemeral: true,
     });
 
@@ -27,24 +27,24 @@ export default {
 
     function sendeSpielersuche() {
       const SpielersucheEmbed = new EmbedBuilder()
-        .setTitle('🎮 Spielersuche System')
+        .setTitle("🎮 Spielersuche System")
         .setDescription(
-          `Hier kannst du deinen Spielpartner finden, benutze \`/game <rolle>\` und finde deinen Spielpartner.\n\n` +
-          `Server Spielmodi\n\n` +
-          `- <@&1259972154963918858>\n` +
-          `- <@&1303652117487157300>\n` +
-          `- <@&1263620833423654942>\n\n` +
-          `Für erweiterte Spielersuche\n\n` +
-          `- <@&1232072165654794281>\n` +
-          `- <@&1232066510554529905>\n` +
-          `- <@&1232066545492955136>\n` +
-          `- <@&1232066588216135880>\n` +
-          `- <@&1232066657896108082>\n` +
-          `- <@&1273369483951734866>\n` +
-          `- <@&1232066632491208704>\n` +
-          `- <@&1232070141127426058>`
+          "Hier kannst du deinen Spielpartner finden, benutze `/game <rolle>` und finde deinen Spielpartner.\n\n" +
+          "Server Spielmodi\n\n" +
+          "- <@&1259972154963918858>\n" +
+          "- <@&1303652117487157300>\n" +
+          "- <@&1263620833423654942>\n\n" +
+          "Für erweiterte Spielersuche\n\n" +
+          "- <@&1232072165654794281>\n" +
+          "- <@&1232066510554529905>\n" +
+          "- <@&1232066545492955136>\n" +
+          "- <@&1232066588216135880>\n" +
+          "- <@&1232066657896108082>\n" +
+          "- <@&1273369483951734866>\n" +
+          "- <@&1232066632491208704>\n" +
+          "- <@&1232070141127426058>",
         )
-        .setColor('Blurple');
+        .setColor("Blurple");
 
       channel.send({ embeds: [SpielersucheEmbed] })
         .then(msg => {
@@ -86,5 +86,5 @@ export default {
 
     // Sofort einmal senden beim Start
     sendeSpielersuche();
-  }
+  },
 };

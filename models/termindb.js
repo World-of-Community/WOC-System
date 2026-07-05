@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 
 const terminSchema = new Schema({
   userId: { type: String, required: true, unique: true },
@@ -7,4 +7,4 @@ const terminSchema = new Schema({
   teamMemberId: { type: String, required: false },
 });
 
-export default model('Termin', terminSchema);
+export default model("Termin", terminSchema);

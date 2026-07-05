@@ -20,7 +20,7 @@ const flags = [
   { country: "Südkorea", imageUrl: "https://www.worldometers.info/img/flags/ks-flag.gif" },
   { country: "Italien", imageUrl: "https://www.worldometers.info/img/flags/it-flag.gif" },
   { country: "Spanien", imageUrl: "https://www.worldometers.info/img/flags/sp-flag.gif" },
-  { country: "Mexiko", imageUrl: "https://www.worldometers.info/img/flags/mx-flag.gif" }
+  { country: "Mexiko", imageUrl: "https://www.worldometers.info/img/flags/mx-flag.gif" },
 ];
 
 /* =========================
@@ -32,22 +32,22 @@ async function sendNewFlag(channel, guild) {
 
   const embed = new EmbedBuilder()
     .setDescription(
-      `\`🚩\` » Welche Flagge ist das?\n\n` +
+      "`🚩` » Welche Flagge ist das?\n\n" +
       `\`💡\` » Tipp: Beginnt mit **${firstLetter}**\n\n` +
-      `\`✍️\` » Schreibe den Ländernamen in den Chat!`
+      "`✍️` » Schreibe den Ländernamen in den Chat!",
     )
     .setImage(randomFlag.imageUrl)
-    .setColor('Random')
+    .setColor("Random")
     .setFooter({
-      text: '» Benutze den Button, um die Flagge zu überspringen.',
-      iconURL: guild.iconURL()
+      text: "» Benutze den Button, um die Flagge zu überspringen.",
+      iconURL: guild.iconURL(),
     });
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId('skip_flag')
-      .setLabel('➡️ Überspringen')
-      .setStyle(ButtonStyle.Secondary)
+      .setCustomId("skip_flag")
+      .setLabel("➡️ Überspringen")
+      .setStyle(ButtonStyle.Secondary),
   );
 
   const msg = await channel.send({ embeds: [embed], components: [row] });
@@ -59,9 +59,9 @@ async function sendNewFlag(channel, guild) {
       channelId: channel.id,
       messageId: msg.id,
       country: randomFlag.country,
-      imageUrl: randomFlag.imageUrl
+      imageUrl: randomFlag.imageUrl,
     },
-    { upsert: true }
+    { upsert: true },
   );
 }
 
@@ -69,14 +69,14 @@ async function sendNewFlag(channel, guild) {
    GLOBALER BUTTON HANDLER
 ========================= */
 export const handleButton = async (interaction) => {
-  if (!interaction.isButton()) return;
-  if (interaction.customId !== 'skip_flag') return;
+  if (!interaction.isButton()) {return;}
+  if (interaction.customId !== "skip_flag") {return;}
 
   const quiz = await Flaggenquiz.findOne({ channelId: interaction.channel.id });
   if (!quiz) {
     return interaction.reply({
-      content: '> `❌` » Kein aktives Flaggenquiz.',
-      ephemeral: true
+      content: "> `❌` » Kein aktives Flaggenquiz.",
+      ephemeral: true,
     });
   }
 
@@ -93,16 +93,16 @@ export const handleButton = async (interaction) => {
    GLOBALER MESSAGE HANDLER
 ========================= */
 export const handleMessage = async (message) => {
-  if (message.author.bot) return;
+  if (message.author.bot) {return;}
 
   const quiz = await Flaggenquiz.findOne({ channelId: message.channel.id });
-  if (!quiz) return;
+  if (!quiz) {return;}
 
   if (message.content.toLowerCase() === quiz.country.toLowerCase()) {
-    await message.react('✅');
+    await message.react("✅");
 
     await message.channel.send(
-      `> \`✅\` » Richtig! Das ist **${quiz.country}**.`
+      `> \`✅\` » Richtig! Das ist **${quiz.country}**.`,
     );
 
     await Flaggenquiz.deleteOne({ channelId: message.channel.id });
@@ -118,29 +118,29 @@ export const handleMessage = async (message) => {
 ========================= */
 export default {
   name: "flaggenquiz",
-    description: "» Startet ein Flaggenquiz",
-    type: 1,
-    default_member_permissions: "268435456",
-    options: [
-        {
-            "name": "kanal",
-            "description": "Kanal für das Quiz",
-            "required": true,
-            "type": 7
-        }
-    ],
+  description: "» Startet ein Flaggenquiz",
+  type: 1,
+  default_member_permissions: "268435456",
+  options: [
+    {
+      "name": "kanal",
+      "description": "Kanal für das Quiz",
+      "required": true,
+      "type": 7,
+    },
+  ],
 
   async run(client, interaction) {
-    const channel = interaction.options.getChannel('kanal');
+    const channel = interaction.options.getChannel("kanal");
 
     await interaction.reply({
-      content: '> `⏳` » Flaggenquiz wird gestartet...',
-      ephemeral: true
+      content: "> `⏳` » Flaggenquiz wird gestartet...",
+      ephemeral: true,
     });
 
     await Flaggenquiz.deleteOne({ channelId: channel.id });
     await sendNewFlag(channel, interaction.guild);
   },
   handleButton,
-  handleMessage
+  handleMessage,
 };

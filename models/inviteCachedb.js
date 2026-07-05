@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const inviteCacheSchema = new mongoose.Schema({
   guildID: {
@@ -11,4 +11,4 @@ const inviteCacheSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model('InviteCache', inviteCacheSchema);
+export default mongoose.model("InviteCache", inviteCacheSchema);

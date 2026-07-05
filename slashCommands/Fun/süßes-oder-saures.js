@@ -1,15 +1,15 @@
 import { EmbedBuilder } from "discord.js";
-import eventItems from '../../models/eventItems.js';
+import eventItems from "../../models/eventItems.js";
 
 export default {
   name: "süßes-oder-saures",
-    description: "» Sammle täglich Kürbisse beim Halloween-Event! 🎃",
-    type: 1,
-    options: [],
+  description: "» Sammle täglich Kürbisse beim Halloween-Event! 🎃",
+  type: 1,
+  options: [],
 
   async run(client, interaction) {
     const userId = interaction.user.id;
-    const eventType = 'halloween';
+    const eventType = "halloween";
 
     let userData = await eventItems.findOne({ userId, eventType });
     if (!userData) {
@@ -25,7 +25,7 @@ export default {
 
     if (sameDay) {
       return interaction.reply({
-        content: '> `🎃` | Du hast heute bereits Alle Kürbisse gesammelt! Komm morgen wieder.',
+        content: "> `🎃` | Du hast heute bereits Alle Kürbisse gesammelt! Komm morgen wieder.",
         ephemeral: true,
       });
     }
@@ -37,9 +37,9 @@ export default {
     await userData.save();
 
     const embed = new EmbedBuilder()
-      .setTitle('`🎃` Süßes oder Saures!')
+      .setTitle("`🎃` Süßes oder Saures!")
       .setDescription(`Du hast heute **${collected} Kürbisse** gesammelt! \`🎃\`\n\nInsgesamt hast du nun **${userData.amount} Kürbisse**.`)
-      .setColor('Orange');
+      .setColor("Orange");
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
   },

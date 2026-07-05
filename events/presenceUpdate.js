@@ -1,39 +1,39 @@
 import client from "../index.js";
-import { Events } from 'discord.js';
+import { Events } from "discord.js";
 
-const STREAM_ROLE_ID = '1266095218239995968'; // Streamer-Rolle ID
+const STREAM_ROLE_ID = "1266095218239995968"; // Streamer-Rolle ID
 
 client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
-    if (!newPresence || !newPresence.member) return;
+  if (!newPresence || !newPresence.member) {return;}
 
-    const member = newPresence.member;
-    const liveRole = newPresence.guild.roles.cache.get(STREAM_ROLE_ID);
-    if (!liveRole) return;
+  const member = newPresence.member;
+  const liveRole = newPresence.guild.roles.cache.get(STREAM_ROLE_ID);
+  if (!liveRole) {return;}
 
-    const isStreaming = newPresence.activities?.some(a => a.type === 1); // 1 = STREAMING
+  const isStreaming = newPresence.activities?.some(a => a.type === 1); // 1 = STREAMING
 
-    const now = new Date();
-    const formatter = new Intl.DateTimeFormat('de-DE', {
-      weekday: 'long',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    const timestamp = formatter.format(now);
-
-    if (isStreaming && !member.roles.cache.has(liveRole.id)) {
-      await member.roles.add(liveRole).catch(() => {});
-      console.log(`${member.user.tag} ist jetzt LIVE`);
-      console.log(`Datum: ${timestamp}`);
-    }
-    else if (!isStreaming && member.roles.cache.has(liveRole.id)) {
-      await member.roles.remove(liveRole).catch(() => {});
-      console.log(`${member.user.tag} ist nicht mehr live`);
-      console.log(`Datum: ${timestamp}`);
-    }
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("de-DE", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
+  const timestamp = formatter.format(now);
+
+  if (isStreaming && !member.roles.cache.has(liveRole.id)) {
+    await member.roles.add(liveRole).catch(() => {});
+    console.log(`${member.user.tag} ist jetzt LIVE`);
+    console.log(`Datum: ${timestamp}`);
+  }
+  else if (!isStreaming && member.roles.cache.has(liveRole.id)) {
+    await member.roles.remove(liveRole).catch(() => {});
+    console.log(`${member.user.tag} ist nicht mehr live`);
+    console.log(`Datum: ${timestamp}`);
+  }
+});
 
 /*
 import { Events, ActivityType, EmbedBuilder } from "discord.js";

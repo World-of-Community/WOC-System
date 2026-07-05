@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const matchSchema = new mongoose.Schema({
   homeTeam: { type: String, required: true },
@@ -10,7 +10,7 @@ const matchSchema = new mongoose.Schema({
   awayScore: { type: Number, default: null },
   events: [{
     time: Number,
-    type: { type: String, enum: ['goal', 'yellow', 'red', 'substitution'] },
+    type: { type: String, enum: ["goal", "yellow", "red", "substitution"] },
     player: String,
     team: String,
   }],
@@ -28,6 +28,6 @@ const matchSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-const Match = mongoose.models.Match || mongoose.model('Match', matchSchema);
+const Match = mongoose.models.Match || mongoose.model("Match", matchSchema);
 
 export default Match;

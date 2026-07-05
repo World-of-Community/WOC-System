@@ -1,20 +1,20 @@
 import { EmbedBuilder } from "discord.js";
 
 export default {
-    id: 'feedback_reject_open',
-    run: async (client, interaction) => {
-        if (!interaction.guild) return;
+  id: "feedback_reject_open",
+  run: async (client, interaction) => {
+    if (!interaction.guild) {return;}
 
-        await interaction.deferUpdate();
+    await interaction.deferUpdate();
 
-        const rejectEmbed = new EmbedBuilder()
-            .setTitle('🔓 » Ticket bleibt weiterhin offen')
-            .setDescription('Das Ticket bleibt weiterhin geöffnet.')
-            .setColor('Red');
+    const rejectEmbed = new EmbedBuilder()
+      .setTitle("🔓 » Ticket bleibt weiterhin offen")
+      .setDescription("Das Ticket bleibt weiterhin geöffnet.")
+      .setColor("Red");
 
-        await interaction.editReply({
-            embeds: [rejectEmbed],
-            components: []
-        });
-    }
+    await interaction.editReply({
+      embeds: [rejectEmbed],
+      components: [],
+    });
+  },
 };

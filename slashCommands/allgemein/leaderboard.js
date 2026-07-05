@@ -1,62 +1,62 @@
 import { EmbedBuilder } from "discord.js";
-import { Coin } from '../../models/coindb.js';
+import { Coin } from "../../models/coindb.js";
 import userDB from "../../models/userdb.js";
 
 export default {
   name: "leaderboard",
-    description: "Zeigt dir die besten User in verschiedenen Kategorien an.",
-    type: 1,
-    options: [
+  description: "Zeigt dir die besten User in verschiedenen Kategorien an.",
+  type: 1,
+  options: [
+    {
+      "type": 3,
+      "choices": [
         {
-            "type": 3,
-            "choices": [
-                {
-                    "name": "Coins",
-                    "value": "coins"
-                },
-                {
-                    "name": "Daily",
-                    "value": "daily"
-                },
-                {
-                    "name": "Spenden",
-                    "value": "spenden"
-                }
-            ],
-            "name": "kategorie",
-            "description": "Wähle eine Kategorie",
-            "required": true
-        }
-    ],
+          "name": "Coins",
+          "value": "coins",
+        },
+        {
+          "name": "Daily",
+          "value": "daily",
+        },
+        {
+          "name": "Spenden",
+          "value": "spenden",
+        },
+      ],
+      "name": "kategorie",
+      "description": "Wähle eine Kategorie",
+      "required": true,
+    },
+  ],
 
   async run(client, interaction) {
     await interaction.deferReply({ ephemeral: true });
 
-    const category = interaction.options.getString('kategorie');
+    const category = interaction.options.getString("kategorie");
 
     let data = [];
-    let title = '';
+    let title = "";
     let formatValue;
-    let totalText = '';
+    let totalText = "";
 
     // 🔹 COINS
-    if (category === 'coins') {
+    if (category === "coins") {
       data = await Coin.find().sort({ coins: -1 });
 
-      formatValue = (u) => `${u.coins.toLocaleString('de-DE')} Coins`;
-      title = '`🏆` Top 10 Coins Leaderboard';
+      formatValue = (u) => `${u.coins.toLocaleString("de-DE")} Coins`;
+      title = "`🏆` Top 10 Coins Leaderboard";
 
       const total = data.reduce((acc, u) => acc + (u.coins || 0), 0);
-      totalText = `\n\n\`👥\` » Insgesamt: **${total.toLocaleString('de-DE')} Coins**`;
+      totalText = `\n\n\`👥\` » Insgesamt: **${total.toLocaleString("de-DE")} Coins**`;
     }
 
     // 🔹 DAILY
-    if (category === 'daily') {
+    if (category === "daily") {
       const now = new Date();
       data = await Coin.find();
 
       for (const u of data) {
-        if (!u.lastDaily) continue;
+        if (!u.lastDaily) {continue;}
         const diffDays = Math.floor((now - new Date(u.lastDaily)) / (1000*60*60*24));
         if (diffDays >= 2) {
           u.streak = 0;
@@ -67,39 +67,39 @@ export default {
       data.sort((a, b) => b.streak - a.streak || b.coins - a.coins);
 
       formatValue = (u) => `${u.streak || 0}x Streak`;
-      title = '`🏆` Top 10 Daily-Streak Leaderboard';
+      title = "`🏆` Top 10 Daily-Streak Leaderboard";
 
       const total = data.reduce((acc, u) => acc + (u.streak || 0), 0);
-      totalText = `\n\n\`📅\` » Insgesamt **${total.toLocaleString('de-DE')} Tage** aktiv`;
+      totalText = `\n\n\`📅\` » Insgesamt **${total.toLocaleString("de-DE")} Tage** aktiv`;
     }
 
     // 🔹 SPENDEN
-    if (category === 'spenden') {
+    if (category === "spenden") {
       data = await userDB.find({ donation: { $gt: 0 } })
         .sort({ donation: -1 });
 
-      formatValue = (u) => `${u.donation.toLocaleString('de-DE')}€`;
-      title = '`💸` Top 10 Spenden Leaderboard';
+      formatValue = (u) => `${u.donation.toLocaleString("de-DE")}€`;
+      title = "`💸` Top 10 Spenden Leaderboard";
 
       const total = data.reduce((acc, u) => acc + (u.donation || 0), 0);
-      totalText = `\n\n\`💖\` » Insgesamt: **${total.toLocaleString('de-DE')}€** gespendet`;
+      totalText = `\n\n\`💖\` » Insgesamt: **${total.toLocaleString("de-DE")}€** gespendet`;
     }
 
     if (!data.length) {
-      return interaction.editReply({ content: '> `❌` » Keine Daten vorhanden.' });
+      return interaction.editReply({ content: "> `❌` » Keine Daten vorhanden." });
     }
 
     const top10 = data.slice(0, 10);
 
-    let description = '';
+    let description = "";
 
     for (let i = 0; i < top10.length; i++) {
       const entry = top10[i];
 
       let place = `#${i + 1}`;
-      if (i === 0) place = '🥇';
-      else if (i === 1) place = '🥈';
-      else if (i === 2) place = '🥉';
+      if (i === 0) {place = "🥇";}
+      else if (i === 1) {place = "🥈";}
+      else if (i === 2) {place = "🥉";}
 
       const value = formatValue(entry);
 
@@ -115,13 +115,13 @@ export default {
       const value = formatValue(entry);
 
       let place = `#${index + 1}`;
-      if (index === 0) place = '🥇';
-      else if (index === 1) place = '🥈';
-      else if (index === 2) place = '🥉';
+      if (index === 0) {place = "🥇";}
+      else if (index === 1) {place = "🥈";}
+      else if (index === 2) {place = "🥉";}
 
       description += `\nDein Rang: \`${place}\` mit **${value}** ist <@${userId}>`;
     } else {
-      description += `\n> \`❗\` » Du bist nicht im Leaderboard.`;
+      description += "\n> `❗` » Du bist nicht im Leaderboard.";
     }
 
     description += totalText;
@@ -129,10 +129,10 @@ export default {
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(description)
-      .setColor('Gold')
+      .setColor("Gold")
       .setFooter({
         text: `» ${interaction.guild.name} | Leaderboard`,
-        iconURL: interaction.guild.iconURL()
+        iconURL: interaction.guild.iconURL(),
       })
       .setTimestamp();
 

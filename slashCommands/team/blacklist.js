@@ -1,74 +1,74 @@
 import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 
-import { DiscordBlacklist, MinecraftBlacklist } from '../../models/blacklistdb.js';
+import { DiscordBlacklist, MinecraftBlacklist } from "../../models/blacklistdb.js";
 
 const CHANNEL_ID = "877446081036836884";
 const MESSAGE_ID = "1389649798000545926";
 
 export default {
   name: "blacklist",
-    description: "Blacklist-Verwaltung",
-    type: 1,
-    default_member_permissions: "268435456",
-    options: [
+  description: "Blacklist-Verwaltung",
+  type: 1,
+  default_member_permissions: "268435456",
+  options: [
+    {
+      "type": 1,
+      "name": "add",
+      "description": "» Fügt jemanden zur Blacklist hinzu",
+      "options": [
         {
-            "type": 1,
-            "name": "add",
-            "description": "» Fügt jemanden zur Blacklist hinzu",
-            "options": [
-                {
-                    "type": 3,
-                    "name": "input",
-                    "description": "User-ID, Username oder Minecraft-Name",
-                    "required": true
-                },
-                {
-                    "type": 3,
-                    "name": "grund",
-                    "description": "Grund für die Blacklist",
-                    "required": false
-                }
-            ]
+          "type": 3,
+          "name": "input",
+          "description": "User-ID, Username oder Minecraft-Name",
+          "required": true,
         },
         {
-            "type": 1,
-            "name": "remove",
-            "description": "» Entfernt jemanden von der Blacklist",
-            "options": [
-                {
-                    "type": 3,
-                    "name": "input",
-                    "description": "User-ID, Username oder Minecraft-Name",
-                    "required": true
-                }
-            ]
+          "type": 3,
+          "name": "grund",
+          "description": "Grund für die Blacklist",
+          "required": false,
+        },
+      ],
+    },
+    {
+      "type": 1,
+      "name": "remove",
+      "description": "» Entfernt jemanden von der Blacklist",
+      "options": [
+        {
+          "type": 3,
+          "name": "input",
+          "description": "User-ID, Username oder Minecraft-Name",
+          "required": true,
+        },
+      ],
+    },
+    {
+      "type": 1,
+      "name": "edit",
+      "description": "» Bearbeitet den Grund eines Blacklist-Eintrags",
+      "options": [
+        {
+          "type": 3,
+          "name": "input",
+          "description": "User-ID, Username oder Minecraft-Name",
+          "required": true,
         },
         {
-            "type": 1,
-            "name": "edit",
-            "description": "» Bearbeitet den Grund eines Blacklist-Eintrags",
-            "options": [
-                {
-                    "type": 3,
-                    "name": "input",
-                    "description": "User-ID, Username oder Minecraft-Name",
-                    "required": true
-                },
-                {
-                    "type": 3,
-                    "name": "grund",
-                    "description": "Neuer Grund",
-                    "required": true
-                }
-            ]
+          "type": 3,
+          "name": "grund",
+          "description": "Neuer Grund",
+          "required": true,
         },
-        {
-            "type": 1,
-            "name": "list",
-            "description": "» Zeigt alle geblacklisteten Personen",
-            "options": []
-        }
-    ],
+      ],
+    },
+    {
+      "type": 1,
+      "name": "list",
+      "description": "» Zeigt alle geblacklisteten Personen",
+      "options": [],
+    },
+  ],
 
   async run(client, interaction) {
     const sub = interaction.options.getSubcommand();
@@ -81,18 +81,18 @@ export default {
       const minecraftEntries = await MinecraftBlacklist.find();
 
       const discordFormatted = discordEntries.map(e => ({
-        type: 'discord',
+        type: "discord",
         userId: e.userId,
         username: e.username,
         reason: e.reason,
-        date: e.date
+        date: e.date,
       }));
 
       const minecraftFormatted = minecraftEntries.map(e => ({
-        type: 'minecraft',
+        type: "minecraft",
         minecraftName: e.minecraftName,
         reason: e.reason,
-        date: e.date
+        date: e.date,
       }));
 
       return [...discordFormatted, ...minecraftFormatted]
@@ -109,23 +109,23 @@ export default {
 
       if (combinedList.length === 0) {
         return new EmbedBuilder()
-          .setTitle('📄 Blacklist Übersicht')
-          .setColor('Red')
-          .setDescription('Die Blacklist ist leer.');
+          .setTitle("📄 Blacklist Übersicht")
+          .setColor("Red")
+          .setDescription("Die Blacklist ist leer.");
       }
 
       const lines = await Promise.all(pageEntries.map(async (entry) => {
-        const reason = entry.reason || 'Kein Grund angegeben';
+        const reason = entry.reason || "Kein Grund angegeben";
         const timestamp = entry.date
           ? `<t:${Math.floor(new Date(entry.date).getTime() / 1000)}:F>`
-          : 'Unbekannt';
+          : "Unbekannt";
 
-        if (entry.type === 'discord') {
-          let userTag = entry.username || 'Unbekannt';
+        if (entry.type === "discord") {
+          let userTag = entry.username || "Unbekannt";
 
           try {
             const user = await interaction.client.users.fetch(entry.userId);
-            if (user) userTag = user.tag;
+            if (user) {userTag = user.tag;}
           } catch {}
 
           return `💙 **Discord:** <@${entry.userId}> – ${userTag} (\`${entry.userId}\`)
@@ -133,22 +133,22 @@ export default {
 > Hinzugefügt: ${timestamp}`;
         }
 
-        if (entry.type === 'minecraft') {
+        if (entry.type === "minecraft") {
           return `🎮 **Minecraft:** ${entry.minecraftName}
 > Grund: ${reason}
 > Hinzugefügt: ${timestamp}`;
         }
 
-        return `❓ Unbekannter Eintrag`;
+        return "❓ Unbekannter Eintrag";
       }));
 
       return new EmbedBuilder()
-        .setTitle('📄 Blacklist Übersicht')
-        .setColor('Red')
+        .setTitle("📄 Blacklist Übersicht")
+        .setColor("Red")
         .setDescription(
-          'Information zu den Nutzern:\n' +
-          '> Geblacklistete Nutzer haben keinen Zugriff auf Discord & Minecraft.\n\n' +
-          lines.join('\n\n')
+          "Information zu den Nutzern:\n" +
+          "> Geblacklistete Nutzer haben keinen Zugriff auf Discord & Minecraft.\n\n" +
+          lines.join("\n\n"),
         )
         .setTimestamp();
     }
@@ -159,24 +159,24 @@ export default {
     async function updateBlacklistMessage(client) {
       try {
         const channel = await client.channels.fetch(CHANNEL_ID);
-        if (!channel) return;
+        if (!channel) {return;}
 
         const msg = await channel.messages.fetch(MESSAGE_ID);
-        if (!msg) return;
+        if (!msg) {return;}
 
         const embed = await createCombinedBlacklistEmbed(0, 10);
         await msg.edit({ embeds: [embed] });
       } catch (err) {
-        console.error('Fehler beim Aktualisieren der Blacklist-Nachricht:', err);
+        console.error("Fehler beim Aktualisieren der Blacklist-Nachricht:", err);
       }
     }
 
     // ---------------------------
     // ADD
     // ---------------------------
-    if (sub === 'add') {
-      const input = interaction.options.getString('input');
-      const reason = interaction.options.getString('grund') || 'Kein Grund angegeben';
+    if (sub === "add") {
+      const input = interaction.options.getString("input");
+      const reason = interaction.options.getString("grund") || "Kein Grund angegeben";
 
       let user = null;
       let minecraftName = null;
@@ -187,17 +187,17 @@ export default {
         const member = interaction.guild?.members.cache.find(
           m =>
             m.user.tag.toLowerCase() === input.toLowerCase() ||
-            m.user.username.toLowerCase() === input.toLowerCase()
+            m.user.username.toLowerCase() === input.toLowerCase(),
         );
 
-        if (member) user = member.user;
-        else minecraftName = input;
+        if (member) {user = member.user;}
+        else {minecraftName = input;}
       }
 
       if (!user && !minecraftName) {
         return interaction.reply({
-          content: '> `❗` » Nutzer nicht gefunden.',
-          ephemeral: true
+          content: "> `❗` » Nutzer nicht gefunden.",
+          ephemeral: true,
         });
       }
 
@@ -205,7 +205,7 @@ export default {
         if (await DiscordBlacklist.findOne({ userId: user.id })) {
           return interaction.reply({
             content: `> ❗ » ${user.tag} ist bereits geblacklistet.`,
-            ephemeral: true
+            ephemeral: true,
           });
         }
 
@@ -213,14 +213,14 @@ export default {
           userId: user.id,
           username: user.tag,
           reason,
-          date: new Date()
+          date: new Date(),
         });
 
         await updateBlacklistMessage(interaction.client);
 
         return interaction.reply({
           content: `> ✅ » **${user.tag}** wurde geblacklistet.`,
-          ephemeral: true
+          ephemeral: true,
         });
       }
 
@@ -228,21 +228,21 @@ export default {
         if (await MinecraftBlacklist.findOne({ minecraftName: minecraftName.toLowerCase() })) {
           return interaction.reply({
             content: `> ❗ » Minecraft-Name **${minecraftName}** ist bereits geblacklistet.`,
-            ephemeral: true
+            ephemeral: true,
           });
         }
 
         await MinecraftBlacklist.create({
           minecraftName: minecraftName.toLowerCase(),
           reason,
-          date: new Date()
+          date: new Date(),
         });
 
         await updateBlacklistMessage(interaction.client);
 
         return interaction.reply({
           content: `> ✅ » **${minecraftName}** wurde geblacklistet.`,
-          ephemeral: true
+          ephemeral: true,
         });
       }
     }
@@ -250,85 +250,85 @@ export default {
     // ---------------------------
     // REMOVE
     // ---------------------------
-    if (sub === 'remove') {
-      const input = interaction.options.getString('input');
+    if (sub === "remove") {
+      const input = interaction.options.getString("input");
 
       let removed = await DiscordBlacklist.findOneAndDelete({
         $or: [
           { userId: input },
-          { username: new RegExp(`^${input}$`, 'i') }
-        ]
+          { username: new RegExp(`^${input}$`, "i") },
+        ],
       });
 
       if (!removed) {
         removed = await MinecraftBlacklist.findOneAndDelete({
-          minecraftName: new RegExp(`^${input}$`, 'i')
+          minecraftName: new RegExp(`^${input}$`, "i"),
         });
       }
 
       if (!removed) {
         return interaction.reply({
-          content: `> ❗ » Kein Eintrag gefunden.`,
-          ephemeral: true
+          content: "> ❗ » Kein Eintrag gefunden.",
+          ephemeral: true,
         });
       }
 
       await updateBlacklistMessage(interaction.client);
 
       return interaction.reply({
-        content: `> ❌ » Eintrag wurde entfernt.`,
-        ephemeral: true
+        content: "> ❌ » Eintrag wurde entfernt.",
+        ephemeral: true,
       });
     }
 
     // ---------------------------
     // EDIT
     // ---------------------------
-    if (sub === 'edit') {
-      const input = interaction.options.getString('input');
-      const newReason = interaction.options.getString('grund');
+    if (sub === "edit") {
+      const input = interaction.options.getString("input");
+      const newReason = interaction.options.getString("grund");
 
       let entry = await DiscordBlacklist.findOneAndUpdate(
-        { $or: [{ userId: input }, { username: new RegExp(`^${input}$`, 'i') }] },
+        { $or: [{ userId: input }, { username: new RegExp(`^${input}$`, "i") }] },
         { reason: newReason },
-        { returnDocument: 'after' }
+        { returnDocument: "after" },
       );
 
       if (!entry) {
         entry = await MinecraftBlacklist.findOneAndUpdate(
-          { minecraftName: new RegExp(`^${input}$`, 'i') },
+          { minecraftName: new RegExp(`^${input}$`, "i") },
           { reason: newReason },
-          { returnDocument: 'after' }
+          { returnDocument: "after" },
         );
       }
 
       if (!entry) {
         return interaction.reply({
-          content: '> ❗ » Kein Eintrag gefunden.',
-          ephemeral: true
+          content: "> ❗ » Kein Eintrag gefunden.",
+          ephemeral: true,
         });
       }
 
       await updateBlacklistMessage(interaction.client);
 
       return interaction.reply({
-        content: `> ✏️ » Grund wurde aktualisiert.`,
-        ephemeral: true
+        content: "> ✏️ » Grund wurde aktualisiert.",
+        ephemeral: true,
       });
     }
 
     // ---------------------------
     // LIST (EPHEMERAL + OHNE BUTTONS)
     // ---------------------------
-    if (sub === 'list') {
+    if (sub === "list") {
       const embed = await createCombinedBlacklistEmbed(0, 10);
 
       return interaction.reply({
         embeds: [embed],
-        ephemeral: true
+        ephemeral: true,
       });
     }
-  }
+  },
 };
 
 /*

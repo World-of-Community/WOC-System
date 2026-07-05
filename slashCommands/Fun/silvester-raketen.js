@@ -1,15 +1,15 @@
 import { EmbedBuilder } from "discord.js";
-import eventItems from '../../models/eventItems.js';
+import eventItems from "../../models/eventItems.js";
 
 export default {
   name: "raketen",
-    description: "» Sammle täglich Raketen beim Silvester-Event! 🎆",
-    type: 1,
-    options: [],
+  description: "» Sammle täglich Raketen beim Silvester-Event! 🎆",
+  type: 1,
+  options: [],
 
   async run(client, interaction) {
     const userId = interaction.user.id;
-    const eventType = 'newyear';
+    const eventType = "newyear";
 
     let userData = await eventItems.findOne({ userId, eventType });
     if (!userData) {
@@ -25,7 +25,7 @@ export default {
 
     if (sameDay) {
       return interaction.reply({
-        content: '> `🎆` | Du hast heute bereits Alle Raketen gesammelt! Komm morgen wieder.',
+        content: "> `🎆` | Du hast heute bereits Alle Raketen gesammelt! Komm morgen wieder.",
         ephemeral: true,
       });
     }
@@ -36,9 +36,9 @@ export default {
     await userData.save();
 
     const embed = new EmbedBuilder()
-      .setTitle('`🎇` Frohes neues Jahr!')
+      .setTitle("`🎇` Frohes neues Jahr!")
       .setDescription(`Du hast **${collected} Raketen** eingesammelt! \`🎆\`\n\nInsgesamt hast du nun **${userData.amount} Raketen**.`)
-      .setColor('Blue');
+      .setColor("Blue");
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
   },

@@ -1,15 +1,15 @@
 import { EmbedBuilder } from "discord.js";
-import eventItems from '../../models/eventItems.js';
+import eventItems from "../../models/eventItems.js";
 
 export default {
   name: "ostereier",
-    description: "» Sammle täglich Ostereier beim Oster-Event! 🐣",
-    type: 1,
-    options: [],
+  description: "» Sammle täglich Ostereier beim Oster-Event! 🐣",
+  type: 1,
+  options: [],
 
   async run(client, interaction) {
     const userId = interaction.user.id;
-    const eventType = 'easter';
+    const eventType = "easter";
 
     let userData = await eventItems.findOne({ userId, eventType });
     if (!userData) {
@@ -25,7 +25,7 @@ export default {
 
     if (sameDay) {
       return interaction.reply({
-        content: '> `🐇` | Du hast heute bereits Alle Ostereier gesammelt! Komm morgen wieder.',
+        content: "> `🐇` | Du hast heute bereits Alle Ostereier gesammelt! Komm morgen wieder.",
         ephemeral: true,
       });
     }
@@ -36,9 +36,9 @@ export default {
     await userData.save();
 
     const embed = new EmbedBuilder()
-      .setTitle('`🐣` Ostereiersuche!')
+      .setTitle("`🐣` Ostereiersuche!")
       .setDescription(`Du hast **${collected} Ostereier** gefunden! \`🥚\`\n\nInsgesamt hast du nun **${userData.amount} Ostereier**.`)
-      .setColor('Green');
+      .setColor("Green");
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
   },

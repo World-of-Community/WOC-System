@@ -1,26 +1,26 @@
-import { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle } from 'discord.js';
+import { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle } from "discord.js";
 
 export default {
-    id: 'editBanReason_',
-    prefix: true,
-    run: async (client, interaction) => {
-        const userId = interaction.customId.split('_')[1];
+  id: "editBanReason_",
+  prefix: true,
+  run: async (client, interaction) => {
+    const userId = interaction.customId.split("_")[1];
 
-        const modal = new ModalBuilder()
-            .setCustomId(`banReasonModal_${userId}`)
-            .setTitle('Ban-Grund bearbeiten');
+    const modal = new ModalBuilder()
+      .setCustomId(`banReasonModal_${userId}`)
+      .setTitle("Ban-Grund bearbeiten");
 
-        const banReasonInput = new TextInputBuilder()
-            .setCustomId('banReasonInput')
-            .setLabel("Neuer Ban-Grund")
-            .setStyle(TextInputStyle.Paragraph)
-            .setPlaceholder("Gib hier den neuen Ban-Grund ein")
-            .setRequired(true);
+    const banReasonInput = new TextInputBuilder()
+      .setCustomId("banReasonInput")
+      .setLabel("Neuer Ban-Grund")
+      .setStyle(TextInputStyle.Paragraph)
+      .setPlaceholder("Gib hier den neuen Ban-Grund ein")
+      .setRequired(true);
 
-        const firstActionRow = new ActionRowBuilder().addComponents(banReasonInput);
+    const firstActionRow = new ActionRowBuilder().addComponents(banReasonInput);
 
-        modal.addComponents(firstActionRow);
+    modal.addComponents(firstActionRow);
 
-        await interaction.showModal(modal);
-    }
+    await interaction.showModal(modal);
+  },
 };
