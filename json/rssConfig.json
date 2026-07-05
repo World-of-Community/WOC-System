@@ -1,0 +1,26 @@
+{
+    "feeds": [
+
+        {
+            "name": "Giga",
+            "url": "https://www.giga.de/rss/games.rss",
+            "iconURL": "https://th.bing.com/th/id/OIP.doSKK2VtIVmPin6orrFFkwHaHa?rs=1&pid=ImgDetMain",
+            "message": {
+                "channelId": "1230540230470144073",
+                "content": "`🎮` » Es gibt neue **Gaming News**, <@&1231257421016469596>!",
+                "color": "Green"
+            }
+        },
+        
+        {
+            "name": "Filmstarts",
+            "url": "https://www.filmstarts.de/rss/nachrichten.xml",
+            "iconURL": "https://www.appgefahren.de/wp-content/uploads/2016/06/Filmstarts-icon.jpg",
+            "message": {
+                "channelId": "1230540761708105728",
+                "content": "`📺` » Es gibt was neues von **Filmstarts**, <@&1231257532844998666>!",
+                "color": "Red"
+            }
+        }
+    ]
+}

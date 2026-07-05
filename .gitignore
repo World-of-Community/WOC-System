@@ -2,4 +2,7 @@ node_modules/
 .history/
 .npm/
 .env
+
+# IDE
 .idea
+.vscode

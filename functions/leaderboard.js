@@ -1,6 +1,6 @@
 import cron from 'node-cron';
-import userdb from '../Datenbank/userdb.js';
-import leaderboarddb from '../Datenbank/leaderboarddb.js';
+import userdb from '../models/userdb.js';
+import leaderboarddb from '../models/leaderboarddb.js';
 import { EmbedBuilder, codeBlock } from 'discord.js';
 const RoleID = '1150753421339676722';
 

@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
-import warndb from "../Datenbank/warndb.js";
-import { client } from "../src/index.js";
+import warndb from "../models/warndb.js";
+import client from "../index.js";
 
 async function getWarnlistEmbed(interaction) {
     // Fetch all warning data for the guild
