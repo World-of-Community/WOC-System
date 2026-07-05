@@ -1,5 +1,6 @@
-import { EmbedBuilder } from "discord.js";
+import {EmbedBuilder} from "discord.js";
 import serverDB from "../../models/serverdb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "partner",
@@ -107,7 +108,7 @@ export default {
           filtered.map(partner => ({ name: `${partner.name} (${partner.category || "N/A"})`, value: partner.name })),
         );
       } catch (error) {
-        console.error("Fehler beim Abrufen der Server-Partner aus der Datenbank:", error);
+        logger.error("Fehler beim Abrufen der Server-Partner aus der Datenbank:", error);
       }
     }
   },
@@ -140,7 +141,7 @@ export default {
           await serverData.save();
           await interaction.reply({ content: `> \`✅\` » Der Server-Partner **${name}** (${owner}) wurde im Bereich **${kategorie}** erfolgreich hinzugefügt!`, ephemeral: true });
         } catch (error) {
-          console.error("Fehler beim Speichern der Partnerdaten:", error);
+          logger.error("Fehler beim Speichern der Partnerdaten:", error);
           await interaction.reply({ content: "`❌` » Fehler beim Speichern der Partnerdaten.", ephemeral: true });
         }
 
@@ -172,7 +173,7 @@ export default {
 
           await interaction.reply({ content: `> \`✅\` » Server-Partner **${partnerNameToDelete}** wurde erfolgreich gelöscht.`, ephemeral: true });
         } catch (error) {
-          console.error("Fehler beim Löschen des Partners:", error);
+          logger.error("Fehler beim Löschen des Partners:", error);
           await interaction.reply({ content: "`❌` » Fehler beim Löschen des Partners.", ephemeral: true });
         }
 
@@ -195,7 +196,7 @@ export default {
           await sentMessage.edit({ embeds: [newEmbed] });
           await interaction.reply({ content: "> `✅` » Die Partnerliste wurde erfolgreich aktualisiert!", ephemeral: true });
         } catch (error) {
-          console.error("Fehler beim Aktualisieren der Partnerliste:", error);
+          logger.error("Fehler beim Aktualisieren der Partnerliste:", error);
           await interaction.reply({ content: "> `❌` » Fehler beim Aktualisieren der Partnerliste.", ephemeral: true });
         }
 

@@ -1,6 +1,7 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder} from "discord.js";
 import teamdb from "../../models/teamdb.js";
 import serverdb from "../../models/serverdb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "team",
@@ -138,7 +139,7 @@ export default {
           return interaction.reply({ content: "> `❌` » Bitte gib das Datum im Format `DD.MM.YYYY HH:MM` ein.", ephemeral: true });
         }
 
-        const [_, day, month, year, hour, minute] = match;
+        const [, day, month, year, hour, minute] = match;
 
         // Erstelle das Meeting-Datum in UTC
         const meetingDateUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
@@ -231,7 +232,7 @@ export default {
                         */
 
         } catch (error) {
-          console.error("Fehler beim Speichern des Meetings:", error);
+          logger.error("Fehler beim Speichern des Meetings:", error);
           await interaction.reply({ content: "> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.", ephemeral: true });
         }
         break;

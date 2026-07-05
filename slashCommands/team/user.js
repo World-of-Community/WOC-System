@@ -1,35 +1,9 @@
-import { EmbedBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits} from "discord.js";
 
 import Timeout from "../../models/timeoutdb.js";
 import Warn from "../../models/warndb.js";
 import bandb from "../../models/bandb.js";
 import Note from "../../models/notedb.js";
-
-const RoleIds = [
-  "959869691529154631", // Admin
-  "929349039433056276", // Developer
-  "816985466230145044", // Sr-Moderator
-  "815920052385480754", // Moderator
-  "815920170371383366", // Support
-  "1263645368441241700", // Builder
-  "1399157711752532132", // Content
-  "815920219247214644", // Creator
-  "862708375698538507", // VIP
-  "815921105407574056", // Supreme
-  "917826787977871441", // Premium
-  "815920452337139733", // Legende
-  "835775627721179167", // Diamond
-  "835775556611997697", // Emerald
-  "835775597446955048", // Episch
-  "1258825307239219371", // Hyper Aktiv
-  "1258794321533075526", // Ultra Aktiv
-  "1258825144697360485", // Mega Aktiv
-  "1258827956634128467", // Stark Aktiv
-  "1258794479570124920", // Sehr Aktiv
-  "1258794944953319534", // Aktiv
-  "1258827226846199808", // Inaktiv
-  "1391760378924630109", // OG
-];
 
 const BANNED_ROLE_ID = "886989738244964362";
 
@@ -150,14 +124,14 @@ export default {
     // ───────────── NOTE ADD ─────────────
     if (sub === "note-add") {
       if (!hasModPerm)
-      {return interaction.reply({ content: "> \`❌\` » Keine Berechtigung.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", ephemeral: true });}
 
       const user = interaction.options.getUser("user");
       const text = interaction.options.getString("text");
       const proof = interaction.options.getAttachment("beweis");
 
       if (text.length > 4000)
-      {return interaction.reply({ content: "> \`❌\` » Max. 4000 Zeichen.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Max. 4000 Zeichen.", ephemeral: true });}
 
       await Note.create({
         userId: user.id,
@@ -176,14 +150,14 @@ export default {
     // ───────────── NOTE EDIT ─────────────
     if (sub === "note-edit") {
       if (!hasModPerm)
-      {return interaction.reply({ content: "> \`❌\` » Keine Berechtigung.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", ephemeral: true });}
 
       const noteId = interaction.options.getString("noteid");
       const newText = interaction.options.getString("text");
 
       const note = await Note.findOne({ _id: noteId, guildId: interaction.guild.id });
       if (!note)
-      {return interaction.reply({ content: "> \`❌\` » Notiz nicht gefunden.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Notiz nicht gefunden.", ephemeral: true });}
 
       note.note = newText;
       await note.save();
@@ -197,13 +171,13 @@ export default {
     // ───────────── NOTE DELETE ─────────────
     if (sub === "note-delete") {
       if (!hasModPerm)
-      {return interaction.reply({ content: "> \`❌\` » Keine Berechtigung.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", ephemeral: true });}
 
       const noteId = interaction.options.getString("noteid");
 
       const deleted = await Note.findOneAndDelete({ _id: noteId, guildId: interaction.guild.id });
       if (!deleted)
-      {return interaction.reply({ content: "> \`❌\` » Notiz nicht gefunden.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Notiz nicht gefunden.", ephemeral: true });}
 
       return interaction.reply({
         content: `> \`🗑️\` » Notiz **\`${noteId}\`** gelöscht.`,
@@ -214,7 +188,7 @@ export default {
     // ───────────── NOTE CLEAR ─────────────
     if (sub === "note-clear") {
       if (!hasModPerm)
-      {return interaction.reply({ content: "> \`❌\` » Keine Berechtigung.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", ephemeral: true });}
 
       const user = interaction.options.getUser("user");
 

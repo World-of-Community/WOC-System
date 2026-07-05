@@ -1,6 +1,7 @@
 // Code von @vxnsin
-import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import {EmbedBuilder, PermissionFlagsBits} from "discord.js";
 import ms from "ms";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "timeout",
@@ -124,7 +125,7 @@ export default {
       .setFooter({ text: `» wurde ausgeführt von ${interaction.user.displayName}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true, format: "png", size: 2048 }) })
       .setTimestamp();
 
-    await member.timeout(zeitInMilliseconds, grund).catch(console.log);
+    await member.timeout(zeitInMilliseconds, grund).catch(logger.log);
 
     const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
 

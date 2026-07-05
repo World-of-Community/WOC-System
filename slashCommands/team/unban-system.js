@@ -1,5 +1,5 @@
-import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
-import bandb from "../../models/bandb.js";
+import {EmbedBuilder, PermissionFlagsBits} from "discord.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "unban",
@@ -82,7 +82,7 @@ export default {
       try {
         thread = logChannel.threads.cache.get(threadId) || await interaction.client.channels.fetch(threadId);
       } catch (err) {
-        console.error("Thread konnte nicht geladen werden:", err);
+        logger.error("Thread konnte nicht geladen werden:", err);
         return interaction.reply({ content: "> `❌` » Thread konnte nicht geladen werden.", ephemeral: true });
       }
 
@@ -104,7 +104,7 @@ export default {
           await thread.setLocked(false, "Automatisch vom Bot entsperrt");
         }
 
-      } catch (err) {
+      } catch {
         return interaction.reply({
           content: "> `❌` » Der Thread ist archiviert oder gesperrt und konnte nicht automatisch geöffnet werden.",
           ephemeral: true,
@@ -118,9 +118,9 @@ export default {
       }
 
       try {
-        let banInfo;
+        // let banInfo;
         try {
-          banInfo = await interaction.guild.bans.fetch(user.id);
+          // banInfo = await interaction.guild.bans.fetch(user.id); FIXME unused var
         } catch (err) {
           if (err.code === 10026) {
             return interaction.reply({ content: `> \`❌\` » ${user} ist nicht gebannt oder wurde bereits entbannt.`, ephemeral: true });
@@ -141,7 +141,7 @@ export default {
 
         await interaction.reply({ content: `> \`✅\` » ${user} wurde erfolgreich entbannt.`, ephemeral: true });
       } catch (error) {
-        console.error("Fehler beim Entbannen:", error);
+        logger.error("Fehler beim Entbannen:", error);
         if (error.code === 10026) {
           return interaction.reply({ content: `> \`❌\` » ${user} ist nicht gebannt oder wurde bereits entbannt.`, ephemeral: true });
         } else if (error.code === 50013) {

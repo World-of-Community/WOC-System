@@ -1,4 +1,5 @@
-import { EmbedBuilder } from "discord.js";
+import {EmbedBuilder} from "discord.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "spielersuche",
@@ -50,7 +51,7 @@ export default {
         .then(msg => {
           currentMessage = msg;
         })
-        .catch(console.error);
+        .catch(logger.error);
     }
 
     function getMillisUntilNextMidnight() {
@@ -64,7 +65,7 @@ export default {
     // Starte initiale Wartezeit bis Mitternacht
     setTimeout(() => {
       if (currentMessage && currentMessage.deletable) {
-        currentMessage.delete().catch(console.error);
+        currentMessage.delete().catch(logger.error);
       }
 
       setTimeout(() => {
@@ -74,7 +75,7 @@ export default {
       // Wiederhole das Ganze alle 24 Stunden
       setInterval(() => {
         if (currentMessage && currentMessage.deletable) {
-          currentMessage.delete().catch(console.error);
+          currentMessage.delete().catch(logger.error);
         }
 
         setTimeout(() => {

@@ -1,5 +1,6 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder} from "discord.js";
 import Meeting from "../../models/meetingdb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "team-meeting",
@@ -130,7 +131,7 @@ export default {
 
         await interaction.reply({ content: "> `✅` » Team-Meeting wurde erfolgreich erstellt!", ephemeral: true });
       } catch (error) {
-        console.error("Fehler beim Erstellen des Meetings:", error);
+        logger.error("Fehler beim Erstellen des Meetings:", error);
         return interaction.reply({ content: "> `❌` » Fehler beim Erstellen des Meetings.", ephemeral: true });
       }
     }
@@ -190,7 +191,7 @@ export default {
 
         await interaction.reply({ content: "> `✅` » Team-Meeting wurde erfolgreich bearbeitet!", ephemeral: true });
       } catch (error) {
-        console.error("Fehler beim Bearbeiten des Meetings:", error);
+        logger.error("Fehler beim Bearbeiten des Meetings:", error);
         return interaction.reply({ content: "> `❌` » Fehler beim Bearbeiten des Meetings.", ephemeral: true });
       }
     }
@@ -209,7 +210,7 @@ export default {
         const channel = await interaction.guild.channels.fetch(meeting.channelId);
         const msg = await channel.messages.fetch(meeting.messageId);
         await msg.delete();
-      } catch (error) {
+      } catch {
         // Nachricht evtl. schon gelöscht, ignoriere
       }
 

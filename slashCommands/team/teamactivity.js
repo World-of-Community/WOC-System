@@ -1,5 +1,4 @@
-import { EmbedBuilder } from "discord.js";
-import teammessagedb from "../../models/teammessagedb.js";
+import {EmbedBuilder} from "discord.js";
 import teamdb from "../../models/teamdb.js";
 
 // Hier kannst du die Nachrichtenziele dynamisch speichern (z.B. in einer Datenbank)
@@ -103,10 +102,3 @@ export default {
     }
   },
 };
-
-// Funktion, um Nachrichten aus der Datenbank zu holen
-async function getMessagesForUser(userId) {
-  // Beispiel-Datenbankabfrage
-  const messages = await teammessagedb.getMessageCount(userId);
-  return messages || 0;
-}
