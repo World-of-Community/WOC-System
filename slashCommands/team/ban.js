@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import ms from "ms";
 import bandb from "../../models/bandb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "ban",
@@ -140,7 +141,7 @@ export default {
       await member.roles.add(banRole);
       await member.roles.remove(memberRole).catch(() => { });
       await member.roles.remove(newmemberRole).catch(() => { });
-    } catch (err) {
+    } catch {
       return interaction.reply({ content: "> `❌` » Fehler beim Zuweisen oder Entfernen von Rollen.", ephemeral: true });
     }
 
@@ -165,7 +166,7 @@ export default {
         endTime,
       }).save();
     } catch (err) {
-      console.error("Fehler beim Speichern des Banns in der Datenbank:", err);
+      logger.error("Fehler beim Speichern des Banns in der Datenbank:", err);
       return interaction.reply({ content: "> `❌` » Fehler beim Speichern des Banns in der Datenbank. Details in der Konsole.", ephemeral: true });
     }
 

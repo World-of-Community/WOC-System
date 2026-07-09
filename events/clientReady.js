@@ -1,18 +1,12 @@
 import client from "../index.js";
 import { Events, ActivityType, EmbedBuilder, ChannelType, PermissionsBitField } from "discord.js";
-import mongoose from "mongoose";
 import fs from "fs";
-import func from "../functions/funktionen.js";
 import messagedb from "../models/messagedb.js";
-import userDB from "../models/userdb.js";
 import serverDB from "../models/serverdb.js";
 import bandb from "../models/bandb.js";
-import teamdb from "../models/teamdb.js";
-import internal from "stream";
 import cron from "node-cron";
-import Parser from "rss-parser";
-const parser = new Parser();
 import FeedManager from "../functions/FeedManager.js";
+import logger from "../functions/logger.js";
 const { processRSSFeed } = FeedManager;
 
 client.on(Events.ClientReady, async (client) => {
@@ -22,7 +16,7 @@ client.on(Events.ClientReady, async (client) => {
     const data = fs.readFileSync("json/lastEntries.json");
     lastEntries = JSON.parse(data);
   } catch (error) {
-    console.error("Error loading lastEntries:", error);
+    logger.error("Error loading lastEntries:", error);
   }
   const file = fs.readFileSync("json/config.json", "utf-8");
   const config = JSON.parse(file);
@@ -30,10 +24,10 @@ client.on(Events.ClientReady, async (client) => {
   const guild = await client.guilds.fetch("815919809379172354");
 
   if (!guild) {
-    console.log("Server wurde nicht gefunden");
+    logger.info("Server wurde nicht gefunden");
     return;
   }
-  console.log("💙  | Verbunden mit Discord");
+  logger.info("💙  | Verbunden mit Discord");
 
   // RSS Feed
   setInterval(async () => {
@@ -60,7 +54,7 @@ client.on(Events.ClientReady, async (client) => {
       const customStatus = `Spielt 💖 | mit ${username}`;
       await client.user.setActivity(customStatus, { type: ActivityType.Playing });
     } catch (err) {
-      console.error("❗  | Status-Update Fehler:", err);
+      logger.error("❗  | Status-Update Fehler:", err);
     }
 
     // nächstes Update
@@ -110,7 +104,7 @@ client.on(Events.ClientReady, async (client) => {
       await guild.channels.cache.get(config.category5)?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${totalGameChannels})`);
 
     } catch (err) {
-      console.error("❗  | Channel-Update Fehler:", err);
+      logger.error("❗  | Channel-Update Fehler:", err);
     }
 
     // nächstes Update
@@ -126,30 +120,30 @@ client.on(Events.ClientReady, async (client) => {
     try {
       const channel = await client.channels.fetch(config.willkommen);
       if (!channel) {
-        console.log("Kanal nicht gefunden!");
+        logger.info("Kanal nicht gefunden!");
         return;
       }
 
       if (channel.type !== ChannelType.GuildText) {
-        console.log("Kein Textkanal!");
+        logger.info("Kein Textkanal!");
         return;
       }
 
       const perms = channel.permissionsFor(client.user);
       if (!perms?.has(PermissionsBitField.Flags.ManageChannels)) {
-        console.log("Bot hat keine Berechtigung zum Ändern des Themas!");
+        logger.info("Bot hat keine Berechtigung zum Ändern des Themas!");
         return;
       }
 
       let messageData = await messagedb.findOne({ guildID: config.server });
 
       if (!messageData) {
-        console.log("Kein Eintrag gefunden, erstelle neuen...");
+        logger.info("Kein Eintrag gefunden, erstelle neuen...");
         messageData = await messagedb.create({ guildID: config.server, messages: 0 });
       }
 
       if (typeof messageData.messages !== "number") {
-        console.log("Falscher Datentyp für messages, konvertiere...");
+        logger.info("Falscher Datentyp für messages, konvertiere...");
         messageData.messages = Number(messageData.messages) || 0;
         await messageData.save();
       }
@@ -166,7 +160,7 @@ client.on(Events.ClientReady, async (client) => {
       );
 
     } catch (err) {
-      console.error("Fehler beim Setzen der Kanalbeschreibung:", err);
+      logger.error("Fehler beim Setzen der Kanalbeschreibung:", err);
     }
   }, 1000 * 60 * 5); // alle 5 Minuten
 
@@ -201,23 +195,23 @@ client.on(Events.ClientReady, async (client) => {
               list.push(`${member} - ${member.user.username} (\`Kein Grund angegeben\`)`);
             }
           } catch (error) {
-            console.error(`Fehler bei Ban-Daten für ${member.id}:`, error);
+            logger.error(`Fehler bei Ban-Daten für ${member.id}:`, error);
           }
         }
         return list;
       }
 
       const gebannt = server.roles.cache.get("886989738244964362");
-      if (!gebannt) {return console.log("Rolle für Gebannte nicht gefunden.");}
+      if (!gebannt) {return logger.info("Rolle für Gebannte nicht gefunden.");}
 
       const bans = await getMemberList(server, gebannt.id);
 
       const channel = await server.channels.fetch("1217020305671983205");
-      if (!channel) {return console.log("Kanal nicht gefunden.");}
+      if (!channel) {return logger.info("Kanal nicht gefunden.");}
 
       const messages = await channel.messages.fetch({ limit: 1 });
       const message = messages.first();
-      if (!message) {return console.log("Keine Nachricht gefunden zum Bearbeiten.");}
+      if (!message) {return logger.info("Keine Nachricht gefunden zum Bearbeiten.");}
 
       const currentTime = new Date().toLocaleDateString("de-DE", {
         weekday: "long",
@@ -238,7 +232,7 @@ client.on(Events.ClientReady, async (client) => {
 
       await message.edit({ embeds: [bannembed] });
     } catch (error) {
-      console.error("Fehler im Bann-Update:", error);
+      logger.error("Fehler im Bann-Update:", error);
     }
   }
 
@@ -247,10 +241,9 @@ client.on(Events.ClientReady, async (client) => {
 
   // Globale Variablen zum Speichern von Kanal- und Nachrichten-IDs
   let lastChannelId = null;
-  let lastMessageId = null;
 
   client.once("clientReady", async () => {
-    console.log(`${client.user.tag} ist online!`);
+    logger.info(`${client.user.tag} ist online!`);
 
     // Sende die Nachricht, dass der Bot wieder online ist
     if (lastChannelId) {
@@ -261,12 +254,11 @@ client.on(Events.ClientReady, async (client) => {
           await channel.send({ text: "> `✅` » Der Bot ist wieder online und einsatzbereit.", ephemeral: true });
         }
       } catch (error) {
-        console.error("Fehler beim Senden der Wieder-Online-Nachricht:", error);
+        logger.error("Fehler beim Senden der Wieder-Online-Nachricht:", error);
       }
 
       // Variablen zurücksetzen
       lastChannelId = null;
-      lastMessageId = null;
     }
   });
 
@@ -278,39 +270,28 @@ client.on(Events.ClientReady, async (client) => {
       .then((messages) => {
         messages.forEach((message) => {
           if (!message.pinned) {
-            message.delete().catch(console.error);
+            message.delete().catch(logger.error);
           }
         });
       })
-      .catch(console.error);
+      .catch(logger.error);
   });
 
   cron.schedule("0 0 * * *", async () => {
     const guild = await client.guilds.fetch("815919809379172354");
-    if (!guild) {return console.error("Guild wurde nicht gefunden.");}
+    if (!guild) {return logger.error("Guild wurde nicht gefunden.");}
 
     const roleRemove = guild.roles.cache.find(role => role.id === "1222122625594294272");
-    if (!roleRemove) {return console.error('Rolle "1222122625594294272" wurde nicht gefunden.');}
+    if (!roleRemove) {return logger.error('Rolle "1222122625594294272" wurde nicht gefunden.');}
 
     await guild.members.cache.forEach(async (member) => {
       if (member.roles.cache.has(roleRemove.id)) {
         try {
           await member.roles.remove(roleRemove);
         } catch (err) {
-          console.error("Fehler beim Entfernen der Rolle:", err);
+          logger.error("Fehler beim Entfernen der Rolle:", err);
         }
       }
     });
   });
 });
-
-function teamAktivitätReset() {
-  cron.schedule("0 0 0 1 * *", async () => {
-    const teamMitglieder = await teamdb.find();
-
-    teamMitglieder.forEach(async teamMitglied => {
-      teamMitglied.messages = 0;
-      await teamMitglied.save();
-    });
-  });
-}

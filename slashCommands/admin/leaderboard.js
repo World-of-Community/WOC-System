@@ -1,19 +1,5 @@
-import cron from "node-cron";
-import userdb from "../../models/userdb.js";
 import leaderboarddb from "../../models/leaderboarddb.js";
 import { createLeaderboardMessage } from "../../functions/leaderboard.js";
-const RoleID = "1150753421339676722"; // Minenarbeiter (Event) Rolle
-
-function getCurrentMonth() {
-  const monthNames = [
-    "Januar", "Februar", "März", "April", "Mai", "Juni",
-    "Juli", "August", "September", "Oktober", "November", "Dezember",
-  ];
-  const now = new Date();
-  return monthNames[now.getMonth()];
-}
-
-const positionEmojis = ["`1️⃣`", "`2️⃣`", "`3️⃣`", "`4️⃣`", "`5️⃣`", "`6️⃣`", "`7️⃣`", "`8️⃣`", "`9️⃣`", "`🔟`"];
 
 export default {
   name: "leaderboard",

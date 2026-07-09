@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import logger from "../../functions/logger.js";
 
 const colorMap = {
   red: "#FF0000",
@@ -187,7 +188,7 @@ export default {
         await message.edit({ embeds: [embed] });
         return interaction.reply({ content: "> ✅ » Embed erfolgreich bearbeitet.", ephemeral: true });
       } catch (err) {
-        console.error(err);
+        logger.error(err);
         return interaction.reply({ content: "> ❌ » Fehler: Nachricht nicht gefunden oder Bearbeitung fehlgeschlagen.", ephemeral: true });
       }
     }

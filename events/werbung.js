@@ -40,6 +40,7 @@ setInterval(async () => {
       .then(async msg => {
         msg.crosspost();
       });
-  } catch (error) {
+  } catch {
+    // Senden fehlgeschlagen, beim nächsten Intervall erneut versuchen
   }
 }, 60000 * 360); // 6 Stunden in Millisekunden

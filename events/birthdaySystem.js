@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import client from "../index.js";
 import userdb from "../models/userdb.js";
+import logger from "../functions/logger.js";
 
 // Birthday System
 cron.schedule("0 0 * * *", async () => {
@@ -17,7 +18,7 @@ cron.schedule("0 0 * * *", async () => {
       try {
         await member.roles.remove(birthdayRole2);
       } catch (removeError) {
-        console.error(`Fehler beim Entfernen der Rollen von Mitglied ${member.id}:`, removeError);
+        logger.error(`Fehler beim Entfernen der Rollen von Mitglied ${member.id}:`, removeError);
       }
     });
 
@@ -46,7 +47,7 @@ cron.schedule("0 0 * * *", async () => {
           }
           await member.roles.add(birthdayRole2);
         } catch (fetchError) {
-          console.error(`Fehler beim Verarbeiten des Mitglieds mit ID ${user.userID}:`, fetchError);
+          logger.error(`Fehler beim Verarbeiten des Mitglieds mit ID ${user.userID}:`, fetchError);
           continue;
         }
       }
@@ -78,6 +79,6 @@ cron.schedule("0 0 * * *", async () => {
 
     }
   } catch (error) {
-    console.error("Fehler beim Verarbeiten der Geburtstage:", error);
+    logger.error("Fehler beim Verarbeiten der Geburtstage:", error);
   }
 });

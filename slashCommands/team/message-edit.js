@@ -1,3 +1,4 @@
+import logger from "../../functions/logger.js";
 export default {
   name: "message-edit",
   description: "» Bearbeite eine Nachricht des Bots. 💬",
@@ -68,7 +69,7 @@ export default {
         ephemeral: true,
       });
     } catch (error) {
-      console.error(`Fehler beim Bearbeiten der Nachricht (${messageId}) im Kanal (${channel.id}):`, error);
+      logger.error(`Fehler beim Bearbeiten der Nachricht (${messageId}) im Kanal (${channel.id}):`, error);
       await interaction.reply({
         content: "> `❌` » Ein Fehler ist beim Bearbeiten der Nachricht aufgetreten. Stelle sicher, dass die ID korrekt ist und der Bot Zugriff hat.",
         ephemeral: true,

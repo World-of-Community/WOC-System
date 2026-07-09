@@ -1,3 +1,4 @@
+import logger from "../../functions/logger.js";
 export default {
   name: "delete-dm",
   description: "Löscht eine DM-Nachricht vom Bot per ID",
@@ -26,7 +27,7 @@ export default {
       await message.delete();
       await interaction.reply({ content: "> `✅` » Nachricht erfolgreich gelöscht.", ephemeral: true });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       await interaction.reply({ content: "> `❌` » Nachricht konnte nicht gelöscht werden. Prüfe die ID.", ephemeral: true });
     }
   },

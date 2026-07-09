@@ -1,4 +1,5 @@
 import NewsStatus from "../../models/newsdb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   id: "enable_news",
@@ -17,7 +18,7 @@ export default {
 
       await interaction.reply({ content: "> `🔔` » Du wirst wieder Neuigkeiten per DM erhalten.", ephemeral: true });
     } catch (error) {
-      console.error("Fehler bei der Verarbeitung der Button-Interaktion:", error);
+      logger.error("Fehler bei der Verarbeitung der Button-Interaktion:", error);
       await interaction.reply({ content: "> `❌` » Es gab einen Fehler bei der Verarbeitung der Interaktion.", ephemeral: true });
     }
   },

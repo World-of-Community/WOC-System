@@ -2,6 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, Times
 import cron from "node-cron";
 import client from "../index.js";
 import serverdb from "../models/serverdb.js";
+import logger from "../functions/logger.js";
 
 const buttonConfig = {
   1: { label: "1🎁", style: ButtonStyle.Primary },
@@ -74,9 +75,9 @@ cron.schedule("00 00 * * *", async () => {
 
     // Nachricht bearbeiten
     await message.edit({ embeds: [updatedEmbed], components: rows });
-    console.log(`Adventskalener-Embed erfolgreich aktualisiert: Heute ist der ${currentDay}. Dezember`);
+    logger.info(`Adventskalener-Embed erfolgreich aktualisiert: Heute ist der ${currentDay}. Dezember`);
   } catch (error) {
-    console.error("Fehler beim Bearbeiten des Embeds:", error);
+    logger.error("Fehler beim Bearbeiten des Embeds:", error);
   }
 });
 
@@ -95,7 +96,7 @@ cron.schedule("0 0 * * *", async () => {
     const channel = await client.channels.fetch(channelId);
 
     if (!channel || !channel.isTextBased()) {
-      console.error("Kanal konnte nicht gefunden oder ist kein Textkanal.");
+      logger.error("Kanal konnte nicht gefunden oder ist kein Textkanal.");
       return;
     }
 
@@ -107,6 +108,6 @@ cron.schedule("0 0 * * *", async () => {
     setTimeout(() => reminderMessage.delete().catch(() => {}), 3 * 60 * 1000);
 
   } catch (error) {
-    console.error("Fehler beim Senden der Nachricht:", error);
+    logger.error("Fehler beim Senden der Nachricht:", error);
   }
 });

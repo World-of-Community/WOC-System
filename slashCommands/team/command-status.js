@@ -2,6 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import logger from "../../functions/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +17,7 @@ export default {
   async run(client, interaction) {
     // Pfad zu den Befehlen
     const commandsPath = path.resolve(__dirname, "../");
-    console.log(`Befehle Verzeichnis: ${commandsPath}`); // Debug-Ausgabe
+    logger.info(`Befehle Verzeichnis: ${commandsPath}`); // Debug-Ausgabe
 
     // Funktion zum rekursiven Durchsuchen von Verzeichnissen
     const getCommandFiles = (dir) => {
@@ -33,14 +34,14 @@ export default {
           }
         });
       } catch (error) {
-        console.error(`Fehler beim Durchsuchen von ${dir}: ${error.message}`); // Fehlerprotokollierung
+        logger.error(`Fehler beim Durchsuchen von ${dir}: ${error.message}`); // Fehlerprotokollierung
       }
       return results;
     };
 
     // Alle Befehlsdateien finden
     const commandFiles = getCommandFiles(commandsPath);
-    console.log(`Gefundene Befehlsdateien: ${commandFiles.join(", ")}`); // Debug-Ausgabe
+    logger.info(`Gefundene Befehlsdateien: ${commandFiles.join(", ")}`); // Debug-Ausgabe
 
     // Liste der Befehle und deren Status (🟢 oder 🔴)
     const commandList = interaction.client.commands.map(command => {
@@ -51,11 +52,11 @@ export default {
 
         // Überprüfen, ob der Pfad in der Liste der gefundenen Befehlsdateien enthalten ist
         if (!commandFiles.some(file => file.includes(command.data.name))) {
-          console.error(`Datei nicht gefunden: ${commandFilePath}`); // Fehlerprotokollierung
+          logger.error(`Datei nicht gefunden: ${commandFilePath}`); // Fehlerprotokollierung
           status = "🔴"; // Falls die Datei nicht existiert, setze den Status auf rot
         }
       } catch (error) {
-        console.error(`Fehler beim Überprüfen der Datei: ${error.message}`); // Fehlerprotokollierung
+        logger.error(`Fehler beim Überprüfen der Datei: ${error.message}`); // Fehlerprotokollierung
         status = "🔴"; // Falls ein Fehler auftritt, setze den Status auf rot
       }
       return `(\`${status}\`) - \`/${command.data.name}\``; // Befehl und Status

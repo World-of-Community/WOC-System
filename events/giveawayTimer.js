@@ -2,6 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import client from "../index.js";
 import giveawaydb from "../models/giveawaydb.js";
 import userdb from "../models/userdb.js";
+import logger from "../functions/logger.js";
 
 // Prüft alle 30 Sekunden, ob Gewinnspiele abgelaufen sind, und lost die Gewinner aus
 setInterval(async () => {
@@ -32,7 +33,7 @@ setInterval(async () => {
         }
       }
 
-      console.log(winnerIds);
+      logger.info(winnerIds);
 
       const channel = await client.channels.fetch(giveaway.channelID);
       const giveawayMessage = await channel.messages.fetch(giveaway.msgID);
@@ -57,7 +58,7 @@ setInterval(async () => {
             .setTitle("<a:Cool:915211628755169301> » GEWINNSPIEL GEWONNEN! <a:Cool:915211628755169301>")
             .setDescription("» Du hast bei dem Gewinnspiel auf **[World Of Community](https://discord.gg/dHzbdsqST8)** gewonnen!\n» Ein Teammitglied wird sich **demnächst** bei dir melden.")
             .setColor("Blurple");
-          await winner.send({ content: "Du hast bei einem Gewinnspiel **GEWONNEN!!!**", embeds: [embed] }).catch(() => console.log("Nachricht konnte nicht an den Gewinner gesendet werden."));
+          await winner.send({ content: "Du hast bei einem Gewinnspiel **GEWONNEN!!!**", embeds: [embed] }).catch(() => logger.info("Nachricht konnte nicht an den Gewinner gesendet werden."));
         }
       }
 
@@ -77,7 +78,7 @@ setInterval(async () => {
           .setTitle("<a:Information:1007267420316106903> » GEWINNSPIEL VORBEI!")
           .setDescription("`✅` » Das Gewinnspiel auf **[World Of Community](https://discord.gg/dHzbdsqST8)** ist vorbei!\n`📌` » Da du das Event gestartet hast, habe ich **dich informiert.**\n\n`💸` » **Zahle das Gewinnspiel** selbst aus, oder kümmere dich\n`💸` » darum, dass es die zuständige Person erledigt.")
           .setColor("Orange");
-        await creator.send({ embeds: [creatorEmbed] }).catch(() => console.log("Nachricht konnte nicht an den Giveaway Ersteller gesendet werden."));
+        await creator.send({ embeds: [creatorEmbed] }).catch(() => logger.info("Nachricht konnte nicht an den Giveaway Ersteller gesendet werden."));
       }
     }
   }

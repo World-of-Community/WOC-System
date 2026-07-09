@@ -1,4 +1,3 @@
-import Discord from "discord.js";
 import mongoose from "mongoose";
 
 const banSchema = new mongoose.Schema({

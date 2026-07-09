@@ -1,5 +1,6 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from "discord.js";
 import { Match } from "../../models/fussballdb.js";
+import logger from "../../functions/logger.js";
 
 const proLeagueTeams = [
   "FC Adler","SV Löwen","TSV Eiche","SC Blau","VfB Stern",
@@ -35,7 +36,7 @@ export default {
 
     try {
       await Match.deleteMany({});
-      console.log("✅  | Alle bisherigen Matches wurden gelöscht.");
+      logger.info("✅  | Alle bisherigen Matches wurden gelöscht.");
 
       const teams = [...proLeagueTeams];
       const spieltage = 34;
@@ -148,7 +149,7 @@ export default {
       // Live-Updates
       // --------------------------
       const channel = await interaction.client.channels.fetch(LIVE_CHANNEL_ID);
-      if (!channel) {return console.error("`❌` Kanal nicht gefunden.");}
+      if (!channel) {return logger.error("`❌` Kanal nicht gefunden.");}
 
       let liveMsg;
       const announcedMatches = new Set();
@@ -222,7 +223,7 @@ export default {
       updateLive();
 
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       await interaction.followUp("❌ Fehler beim Generieren der Saison.");
     }
   },

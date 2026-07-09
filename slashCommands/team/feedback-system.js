@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "feedback",
@@ -8,7 +9,7 @@ export default {
   options: [],
 
   async run(client, interaction) {
-    console.log(`[FEEDBACK-SYSTEM] Command executed by ${interaction.user.tag} in ${interaction.guild?.name}`);
+    logger.info(`[FEEDBACK-SYSTEM] Command executed by ${interaction.user.tag} in ${interaction.guild?.name}`);
 
     try {
       // Defer the reply immediately to prevent timeout
@@ -50,7 +51,7 @@ export default {
         content: "> `✅` » Das **Feedback-System** wurde erfolgreich gesendet.",
       });
 
-    } catch (err) {
+    } catch {
       try {
         if (interaction.deferred) {
           await interaction.editReply({
@@ -63,7 +64,7 @@ export default {
           });
         }
       } catch (replyErr) {
-        console.error("[FEEDBACK-SYSTEM] Failed to send error message:", replyErr);
+        logger.error("[FEEDBACK-SYSTEM] Failed to send error message:", replyErr);
       }
     }
   },

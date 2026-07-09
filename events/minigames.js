@@ -29,7 +29,7 @@ async function counting(message, counting) {
     counting.currentCount = 0;
     message.reply({ content: "**Falsch!** Du darfst nicht 2x hintereinander hochzählen." });
     message.react("❌");
-  } else if (message.content != counting.currentCount + 1) {
+  } else if (Number(message.content) !== counting.currentCount + 1) {
     counting.lastUserId = null;
     counting.currentCount = 0;
     message.reply({ content: `**Falsch!** Die richtige Zahl wäre \`${counting.currentCount + 1}\` gewesen.` });

@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import cron from "node-cron";
 import client from "../index.js";
+import logger from "../functions/logger.js";
 
 // Jeden ersten Freitag im Monat um 15:00 Uhr das Wochenend-Event ankündigen
 cron.schedule("0 15 * * 5", async () => {
@@ -11,7 +12,7 @@ cron.schedule("0 15 * * 5", async () => {
   if (day <= 7) {
     try {
       const channel = await client.channels.fetch("1008696596000677998");
-      if (!channel) {return console.log("Kanal nicht gefunden!");}
+      if (!channel) {return logger.info("Kanal nicht gefunden!");}
 
       // 1️⃣ Banner senden
       await channel.send({
@@ -29,9 +30,9 @@ cron.schedule("0 15 * * 5", async () => {
                 "Mit freundlichen Grüßen\nEuer **World Of Community**-Team <:pepeheart:974642478055555082>",
       );
 
-      console.log("✅ | Banner und Nachricht gesendet!");
+      logger.info("✅ | Banner und Nachricht gesendet!");
     } catch (error) {
-      console.error("❌ Fehler beim Senden:", error);
+      logger.error("❌ Fehler beim Senden:", error);
     }
   }
 });
@@ -57,7 +58,7 @@ setInterval(async () => {
     commandExecuted = true;
     const channel = await client.channels.fetch(BotCHANNEL_ID);
     channel.send(":?pmulti set 2");
-    console.log("Command am Freitag um 15 Uhr ausgeführt!");
+    logger.info("Command am Freitag um 15 Uhr ausgeführt!");
   }
 
   // Sonntag 22:00 Uhr → zurücksetzen
@@ -65,7 +66,7 @@ setInterval(async () => {
     commandExecuted = false;
     const channel = await client.channels.fetch(BotCHANNEL_ID);
     channel.send(":?pmulti set 1"); // optional zurücksetzen
-    console.log("Command am Sonntag um 22 Uhr zurückgesetzt!");
+    logger.info("Command am Sonntag um 22 Uhr zurückgesetzt!");
   }
 
 }, 60 * 60 * 1000); // jede Stunde prüfen

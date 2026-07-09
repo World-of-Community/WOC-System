@@ -47,7 +47,7 @@ export default {
       const data = await serverdb.findOne({ guildID: interaction.guild.id, roleBypass: { $in: [role.id] } });
 
       if (data) {return interaction.reply({ content: `> ⚠️ » die ${role} ist bereits hinzugefügt.`, ephemeral: true });}
-      const serverData = await serverdb.findOneAndUpdate({ guildID: interaction.guild.id }, { $push: { roleBypass: role.id } });
+      await serverdb.findOneAndUpdate({ guildID: interaction.guild.id }, { $push: { roleBypass: role.id } });
 
       await interaction.reply({ content: `> \`✅\` » Du hast die ${role} erfolgreich hinzugefügt.`, ephemeral: true });
     }
@@ -57,7 +57,7 @@ export default {
       const data = await serverdb.findOne({ guildID: interaction.guild.id, roleBypass: { $in: [role.id] } });
 
       if (!data) {return interaction.reply({ content: "> ⚠️ » Diese Rolle wurde bereits entfernt.", ephemeral: true });}
-      const serverData = await serverdb.findOneAndUpdate({ guildID: interaction.guild.id }, { $pull: { roleBypass: role.id } });
+      await serverdb.findOneAndUpdate({ guildID: interaction.guild.id }, { $pull: { roleBypass: role.id } });
 
       await interaction.reply({ content: `> \`✅\` » Du hast die ${role} erfolgreich entfernt.`, ephemeral: true });
     }

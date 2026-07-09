@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import fs from "fs";
 import serverdb from "../../models/serverdb.js";
+import logger from "../../functions/logger.js";
 
 //Nicht Bearbeiten + ausser wenn eine neue Kategorie hinzugefügt wird!!!
 const kategorieMapping = {
@@ -75,7 +76,7 @@ export default {
   ],
 
   async run(client, interaction) {
-    console.log("Update wurde ins Changelog hinzugefügt");
+    logger.info("Update wurde ins Changelog hinzugefügt");
     const file = fs.readFileSync("json/config.json", "utf-8");
     const config = JSON.parse(file);
 
@@ -94,7 +95,7 @@ export default {
         { $push: { [field]: `${emoji} » ${update}` } },
       );
     } else {
-      console.log(`Kategorie '${kategorie}' nicht gefunden.`);
+      logger.info(`Kategorie '${kategorie}' nicht gefunden.`);
     }
 
     await channel.messages.fetch(serverData.updateMessage).then(async msg => {
@@ -106,9 +107,6 @@ export default {
         const nextWeek = new Date(today);
 
         nextWeek.setDate(today.getDate() + 6);
-
-        const todayDate = `${today.getDate().toString().padStart(2, "0")}.${(today.getMonth() + 1).toString().padStart(2, "0")}`;
-        const nextWeekDate = `${nextWeek.getDate().toString().padStart(2, "0")}.${(nextWeek.getMonth() + 1).toString().padStart(2, "0")}`;
 
         const updateEmbed = new EmbedBuilder()
           .setTitle(`<a:Neuigkeiten:1018910061348798564> » UPDATE-WOCHENRÜCKBLICK [${serverData.updateWeek}]`)
@@ -164,7 +162,7 @@ export default {
         await msg.edit({ embeds: [updateEmbed] });
         const message = await updateChannel.send({content: "Neues Changelog Update"});
         setTimeout(() => {
-          message.delete().catch(console.error);
+          message.delete().catch(logger.error);
         }, 5000);
       }, 5000);
     });

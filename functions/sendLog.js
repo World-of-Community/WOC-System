@@ -1,4 +1,5 @@
 import client from "../index.js";
+import logger from "./logger.js";
 
 // Thread-IDs für die verschiedenen Log-Kategorien (aus der alten index.js)
 export const ThreadIDs = {
@@ -32,6 +33,6 @@ export async function sendLog(threadID, embed) {
 
     await thread.send({ embeds: [embed] });
   } catch (error) {
-    console.error(`Fehler beim Senden des Logs: ${error.message}`);
+    logger.error(`Fehler beim Senden des Logs: ${error.message}`);
   }
 }

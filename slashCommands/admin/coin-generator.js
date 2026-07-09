@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { Coin, CoinConfig } from "../../models/coindb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "coin",
@@ -44,8 +45,6 @@ export default {
         ephemeral: true,
       });
 
-      const message = await interaction.fetchReply();
-
       const interval = setInterval(async () => {
         const coins = Math.floor(Math.random() * (max - min + 1)) + min;
         collectedCoins += coins;
@@ -84,7 +83,7 @@ export default {
       }, intervalMs);
 
     } catch (error) {
-      console.error("Fehler im Coin-Generator:", error);
+      logger.error("Fehler im Coin-Generator:", error);
       if (!interaction.replied && !interaction.deferred) {
         await interaction.reply({ content: "> `❌` » Ein unerwarteter Fehler ist aufgetreten.", ephemeral: true });
       }

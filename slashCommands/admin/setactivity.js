@@ -1,6 +1,10 @@
 import { ActivityType } from "discord.js";
+import logger from "../../functions/logger.js";
 
 let statusInterval; // globale Variable zum Speichern des Intervalls
+
+// Standard-Aktivität, bis der automatische Statuswechsel übernimmt
+const DEFAULT_ACTIVITY = { name: "World Of Community", type: ActivityType.Playing };
 
 /**
  * Startet den automatischen Statuswechsel für den Bot.
@@ -29,7 +33,7 @@ export function startStatusCycle(client, guild) {
       await client.user.setActivity(customStatus, { type: ActivityType.Playing });
 
     } catch (error) {
-      console.error("Fehler im Status-Cycle:", error);
+      logger.error("Fehler im Status-Cycle:", error);
     }
   }, 60000); // alle 1 Minute
 }
@@ -115,7 +119,7 @@ export default {
         });
       }
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       await interaction.reply({ content: "Fehler beim Setzen des Status.", ephemeral: true });
     }
   },

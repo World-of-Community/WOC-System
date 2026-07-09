@@ -15,8 +15,8 @@ async function trackOnlineTime(client) {
         status === "online" || status === "dnd" || status === "idle";
 
       if (isOnline) {
-        await User.updateOne(
-          { userId: member.id },
+        await userDB.updateOne(
+          { userID: member.id },
           { $inc: { onlineTime: 1 } },
           { upsert: true },
         );

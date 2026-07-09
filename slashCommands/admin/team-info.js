@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import TeamInfo from "../../models/teaminfodb.js";
 import UserDB from "../../models/userdb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "team-info",
@@ -203,7 +204,7 @@ export default {
         await interaction.reply({ content: `> \`✅\` » ${user} wurde dem Team im Bereich **${bereich}** hinzugefügt.`, ephemeral: true });
         await updateTeamEmbed(interaction);
       } catch (err) {
-        console.error("Fehler beim Speichern:", err);
+        logger.error("Fehler beim Speichern:", err);
         return interaction.reply({ content: "> `❌` » Fehler beim Speichern des Teammitglieds.", ephemeral: true });
       }
     }
@@ -235,7 +236,7 @@ export default {
         await interaction.reply({ content: `> \`✅\` » Teammitglied ${user} wurde aktualisiert.`, ephemeral: true });
         await updateTeamEmbed(interaction);
       } catch (err) {
-        console.error("Fehler beim Aktualisieren:", err);
+        logger.error("Fehler beim Aktualisieren:", err);
         return interaction.reply({ content: "> `❌` » Fehler beim Aktualisieren des Teammitglieds.", ephemeral: true });
       }
     }
@@ -323,16 +324,16 @@ async function updateTeamEmbed(interaction) {
     const channel = interaction.guild.channels.cache.get("1291421526238822481"); // Channel-ID prüfen
     const messageId = "1293559329961803950"; // Embed-Nachricht-ID prüfen
 
-    if (!channel) {return console.error("Team-Channel nicht gefunden.");}
+    if (!channel) {return logger.error("Team-Channel nicht gefunden.");}
     const message = await channel.messages.fetch(messageId).catch(err => {
-      console.error("Fehler beim Nachricht-Fetch:", err);
+      logger.error("Fehler beim Nachricht-Fetch:", err);
       return null;
     });
 
     if (message) {await message.edit({ embeds: [TeamEmbed] });}
-    else {console.error("Embed-Nachricht nicht gefunden.");}
+    else {logger.error("Embed-Nachricht nicht gefunden.");}
   } catch (error) {
-    console.error("Fehler beim Aktualisieren des Embeds:", error);
+    logger.error("Fehler beim Aktualisieren des Embeds:", error);
   }
 }
 

@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import logger from "../../functions/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +21,7 @@ function loadTwitchConfig() {
       const data = fs.readFileSync(twitchStatusPath, "utf-8");
       twitchconfig = JSON.parse(data);
     } catch (err) {
-      console.error("Fehler beim Laden der twitchStatus.json:", err);
+      logger.error("Fehler beim Laden der twitchStatus.json:", err);
       twitchconfig = {};
     }
   }
@@ -72,7 +73,7 @@ export default {
             try {
               await updateTwitchStatus(interaction.client, interaction.guild, interaction.user);
             } catch (err) {
-              console.error("Fehler bei automatischer Twitch-Status-Aktualisierung:", err);
+              logger.error("Fehler bei automatischer Twitch-Status-Aktualisierung:", err);
             }
           }, 60 * 1000);
         }
@@ -82,7 +83,7 @@ export default {
             try {
               await getAccessToken();
             } catch (err) {
-              console.error("Fehler beim Erneuern des Twitch Access Tokens:", err);
+              logger.error("Fehler beim Erneuern des Twitch Access Tokens:", err);
             }
           }, 10 * 60 * 1000);
         }
@@ -90,7 +91,7 @@ export default {
         await interaction.editReply({ content: "> `✅` » Automatische Twitch-Status-Aktualisierung wurde **aktiviert**." });
 
       } catch (err) {
-        console.error("Fehler beim Starten:", err);
+        logger.error("Fehler beim Starten:", err);
         await interaction.editReply({ content: "> `❌` » Fehler beim Starten des automatischen Status-Updates." });
       }
 
@@ -205,8 +206,8 @@ async function updateTwitchStatus(client, guild, user) {
         embeds: [embed],
         components: [createButton()],
       });
-    } catch (err) {
-      console.warn("Gespeicherte Twitch-Status-Nachricht nicht gefunden, sende neue Nachricht.");
+    } catch {
+      logger.warn("Gespeicherte Twitch-Status-Nachricht nicht gefunden, sende neue Nachricht.");
       message = await channel.send({
         content: `https://www.twitch.tv/${twitchconfig.twitchUser}`,
         embeds: [embed],

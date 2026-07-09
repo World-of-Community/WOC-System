@@ -29,7 +29,7 @@ export default {
     userData.openedDays.push(dayNumber);
     await userData.save();
 
-    let rewardMessage = "";
+    let rewardMessage;
 
     const reward = rewards[dayNumber];
 

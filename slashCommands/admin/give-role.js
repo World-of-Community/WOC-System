@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "give-role",
@@ -64,7 +65,7 @@ export default {
 
       await thread.send({ embeds: [giverole] });
     } catch (error) {
-      console.error("Fehler beim Hinzufügen der Rolle:", error);
+      logger.error("Fehler beim Hinzufügen der Rolle:", error);
       interaction.reply({
         content: "> `❌` » Ein Fehler ist aufgetreten.",
         ephemeral: true,

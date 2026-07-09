@@ -1,9 +1,10 @@
-import { EmbedBuilder, Events, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import erfolgDB from "../models/erfolgdb.js";
 import vorschlagEmitter from "./vorschlagEmitter.js";
 import { EventEmitter } from "node:events";
 const gewinnspielEmitter = new EventEmitter();
 import cron from "node-cron";
+import logger from "./logger.js";
 
 export default (client) => {
   client.handleErfolg = async () => {
@@ -25,24 +26,24 @@ export default (client) => {
           );
 
           // Todo: Economy System einbinden. ~ @vxnsin
-          const button = new ButtonBuilder()
-            .setCustomId("first_message_reward" + message.author.id)
-            .setLabel("» Belohnung abholen")
-            .setStyle(ButtonStyle.Success)
-            .setEmoji("968876390982234202");
+          // const button = new ButtonBuilder()
+          //   .setCustomId("first_message_reward" + message.author.id)
+          //   .setLabel("» Belohnung abholen")
+          //   .setStyle(ButtonStyle.Success)
+          //   .setEmoji("968876390982234202");
 
-          const actionRow = new ActionRowBuilder().addComponents(button);
+          // const actionRow = new ActionRowBuilder().addComponents(button);
           //await message.reply({ content: `Du hast so eben deine **erste Nachricht** geschrieben, Glückwunsch!`, components: [actionRow] });
         }
       } catch (err) {
-        console.error("Fehler bei der Verarbeitung der ersten Nachricht:", err);
+        logger.error("Fehler bei der Verarbeitung der ersten Nachricht:", err);
       }
     });
 
     // 1 Jahr Server mitglied
     cron.schedule("0 0 * * *", async () => {
       const guild = await client.guilds.fetch("815919809379172354");
-      if (!guild) {return console.error("Guild wurde nicht gefunden.");}
+      if (!guild) {return logger.error("Guild wurde nicht gefunden.");}
 
       const members = await guild.members.fetch();
 
@@ -76,16 +77,15 @@ export default (client) => {
             const minute = now.getMinutes().toString().padStart(2, "0");
 
             const datumUhrzeit = `${tagName}, ${tag}.${monat}.${jahr}, ${stunde}:${minute} Uhr`;
-            console.log(`Rolle hinzugefügt zu ${member.user.displayName} - ${member.user.username}`);
-            console.log(`Datum: ${datumUhrzeit}`);
-          }).catch(console.error);
+            logger.info(`Rolle hinzugefügt zu ${member.user.displayName} - ${member.user.username}`);
+            logger.info(`Datum: ${datumUhrzeit}`);
+          }).catch(logger.error);
         }
       });
     });
 
     // 10 Vorschläge (Accepted)
     vorschlagEmitter.on("accept", async (inter) => {
-      const channel = inter.channel;
       const message = await inter.channel.fetchStarterMessage();
       const vorschlagsembed = message.embeds[0];
 
@@ -94,7 +94,7 @@ export default (client) => {
       const userIDMatch = footerText.match(regex);
       const userID = userIDMatch ? userIDMatch[1] : null;
       if (!userID) {
-        console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+        logger.error("Fehler bei der Verarbeitung der UserID.");
         return;
       }
 
@@ -115,7 +115,7 @@ export default (client) => {
             .setDescription("» `💕`**-lichen Glückwunsch zu diesem Erfolg!**\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💡〢 Informant (10 Server-Ideen)`\n<:PfeilBlau:1119711275014955080> Vielen Dank dass du den Server und uns dabei unterstützt mit deinen Kreativen Ideen!\n\n<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: https://discord.com/channels/815919809379172354/872063101640532008")
             .setColor("Green")
             .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&")
-            .setFooter({ text: `» Erfolg freigeschaltet auf ${guild.name}`, iconURL: `${guild.iconURL()}` })
+            .setFooter({ text: `» Erfolg freigeschaltet auf ${inter.guild.name}`, iconURL: `${inter.guild.iconURL()}` })
             .setTimestamp();
           user.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] });
         }
@@ -124,7 +124,6 @@ export default (client) => {
 
     // Gewinnspiel Gewinner (Accepted)
     gewinnspielEmitter.on("win", async (inter) => {
-      const channel = inter.channel;
       const message = await inter.channel.fetchStarterMessage();
       const gewinnspielEmbed = message.embeds[0];
 
@@ -134,7 +133,7 @@ export default (client) => {
       const userID = userIDMatch ? userIDMatch[1] : null;
 
       if (!userID) {
-        console.log("Fehler bei der Verarbeitung der UserID:", err);
+        logger.info("Fehler bei der Verarbeitung der UserID.");
         return;
       }
 
@@ -174,7 +173,7 @@ export default (client) => {
             .setDescription("» `💕`**-lichen Glückwunsch zum Gewinn des Gewinnspiels!**\n\n<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `☘️ 〢 Glückspilz (Event-Gewinner)`\n<:PfeilBlau:1119711275014955080> Vielen Dank für deine Teilnahme und viel Glück beim nächsten Mal!\n\n<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: https://discord.com/channels/815919809379172354/872063101640532008")
             .setColor("Green")
             .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&")
-            .setFooter({ text: `» Erfolg freigeschaltet auf ${guild.name}`, iconURL: `${guild.iconURL()}` });
+            .setFooter({ text: `» Erfolg freigeschaltet auf ${inter.guild.name}`, iconURL: `${inter.guild.iconURL()}` });
           await user.send({ content: "<a:Cool:915211628755169301> **GEWINNSPIEL ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] });
         }
       }

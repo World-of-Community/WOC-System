@@ -1,4 +1,5 @@
 import { Client, GatewayIntentBits } from "discord.js";
+import logger from "../../functions/logger.js";
 
 let lastChannelId = null;
 let lastMessageId = null;
@@ -6,7 +7,7 @@ let lastMessageId = null;
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once("clientReady", async () => {
-  console.log(`${client.user.tag} ist online!`);
+  logger.info(`${client.user.tag} ist online!`);
 
   const timestamp = Math.floor(Date.now() / 1000);
 
@@ -19,7 +20,7 @@ client.once("clientReady", async () => {
         await message.edit({ content: `> \`✅\` » Der Bot ist wieder online und einsatzbereit. (hochgefahren um <t:${timestamp}:R>)`, ephemeral: true });
       }
     } catch (error) {
-      console.error("Fehler beim Bearbeiten der Wieder-Online-Nachricht:", error);
+      logger.error("Fehler beim Bearbeiten der Wieder-Online-Nachricht:", error);
     }
 
     lastChannelId = null;

@@ -1,7 +1,5 @@
-import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import Termin from "../../models/termindb.js";
-
-const remindMap = new Map();
 
 // Unterstützt:
 // 30.07.2025
@@ -163,7 +161,6 @@ export default {
         );
 
       return interaction.reply({ embeds: [embed], ephemeral: false });
-      interaction.followUp({ content: "embed und Termin gesendet", ephemeral: true });
     }
 
     // EDIT

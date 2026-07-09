@@ -1,4 +1,5 @@
 import userdb from "../../models/userdb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "onlinezeit-manage",
@@ -148,7 +149,7 @@ export default {
       await interaction.reply({ content: message, ephemeral: true });
 
     } catch (err) {
-      console.error("Fehler bei /onlinezeit-manage:", err);
+      logger.error("Fehler bei /onlinezeit-manage:", err);
       await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
     }
   },

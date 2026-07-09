@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { Team, Match } from "../../models/fussballdb.js";
+import { Match } from "../../models/fussballdb.js";
 
 export default {
   name: "fussball-live",
@@ -27,8 +27,6 @@ export default {
     function getMinute(match) {
       const start = match.date;
       const extraFirstHalf = match.extraFirstHalf || 0;
-      const extraSecondHalf = match.extraSecondHalf || 0;
-      const pause = 5;
 
       let diff = Math.floor((now - start) / 60000); // Minuten seit Anpfiff
       if (diff <= 45) {return `${diff}'`;}

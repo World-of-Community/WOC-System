@@ -108,7 +108,7 @@ export default {
 
     // 🔹 Eigener Rang
     const userId = interaction.user.id;
-    const index = data.findIndex(u => (u.userId || u.userID) == userId);
+    const index = data.findIndex(u => String(u.userId || u.userID) === String(userId));
 
     if (index !== -1) {
       const entry = data[index];

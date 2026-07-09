@@ -56,7 +56,6 @@ export default {
     }
 
     const createdAt = `<t:${Math.round(guild.createdTimestamp / 1000)}:D>`;
-    const emojiCount = guild.emojis.cache.size;
 
     // 🔥 Booster vorbereiten
     const boosterRole = guild.roles.cache.find(role => role.tags?.premiumSubscriberRole);

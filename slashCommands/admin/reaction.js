@@ -1,3 +1,4 @@
+import logger from "../../functions/logger.js";
 export default {
   name: "reaction",
   description: "» Fügt Reaktionen zu einer Nachricht hinzu. 📌",
@@ -46,7 +47,7 @@ export default {
 
       return interaction.reply({ content: "> `✅` » Reaktionen wurden erfolgreich hinzugefügt!", ephemeral: true });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       return interaction.reply({ content: "> `❌` » Es gab ein Problem beim Hinzufügen der Reaktionen. Bitte überprüfe die Nachricht-ID und die Emojis.", ephemeral: true });
     }
   },

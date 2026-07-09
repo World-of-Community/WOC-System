@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import ms from "ms";
 import schedule from "node-schedule";
+import logger from "../../functions/logger.js";
 
 const reminders = new Map();
 
@@ -54,24 +55,24 @@ export default {
     const sub = interaction.options.getSubcommand();
 
     switch (sub) {
-      case "create":
+      case "create": {
         const duration = interaction.options.getString("zeit");
 
-        var list = duration.split(" ");
-        var durationDauer = 0;
+        const list = duration.split(" ");
+        let durationDauer = 0;
 
         list.forEach(async element => {
           try {
             durationDauer += ms(element);
           } catch (error) {
-            console.log(error);
+            logger.info(error);
           }
         });
         if (durationDauer !== durationDauer) {
           return await interaction.reply({content: "> `❌` » Die Dauer konnte nicht verarbeitet werden!", ephemeral: true});
         }
 
-        var endDate = new Date(new Date().getTime() + durationDauer);
+        const endDate = new Date(new Date().getTime() + durationDauer);
 
         const timestamp = Math.floor(endDate / 1000);
 
@@ -103,7 +104,7 @@ export default {
           try {
             await user.send({ embeds: [dmEmbed] });
           } catch (error) {
-            console.error(`DM konnte nicht an ${user.username} gesendet werden:`, error);
+            logger.error(`DM konnte nicht an ${user.username} gesendet werden:`, error);
           }
 
           const userReminders = reminders.get(userId).filter(r => r.timestamp !== timestamp);
@@ -112,8 +113,9 @@ export default {
 
         reminders.get(userId).push({ reminder, timestamp, job: reminderJob });
         break;
+      }
 
-      case "list":
+      case "list": {
         if (!reminders.has(userId) || reminders.get(userId).length === 0) {
           return await interaction.reply({ content: "> `❌` » Du hast keine Erinnerungen gesetzt.", ephemeral: true });
         }
@@ -131,8 +133,9 @@ export default {
 
         await interaction.reply({ embeds: [listEmbed], ephemeral: true });
         break;
+      }
 
-      case "remove":
+      case "remove": {
         const index = interaction.options.getInteger("reminder") - 1;
 
         if (!reminders.has(userId) || reminders.get(userId).length === 0) {
@@ -164,6 +167,7 @@ export default {
 
         await interaction.reply({ embeds: [removeEmbed], ephemeral: true });
         break;
+      }
     }
   },
 };

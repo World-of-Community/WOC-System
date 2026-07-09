@@ -1,5 +1,6 @@
 import { PermissionFlagsBits, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
 import userDB from "../../models/userdb.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "birthday",
@@ -121,7 +122,7 @@ export default {
           }
           await interaction.reply({ content: "> `✅` » Danke dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>", ephemeral: true });
         } catch (error) {
-          console.error(error);
+          logger.error(error);
           await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Speichern deines Geburtstags. Bitte melde dich beim Ticket Support.", ephemeral: true });
         }
         break;
@@ -143,7 +144,7 @@ export default {
           );
           await interaction.reply({ content: "> `✅` » Der Geburtstag wurde gelöscht.", ephemeral: true });
         } catch (error) {
-          console.error(error);
+          logger.error(error);
           await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Löschen des Geburtstags. Bitte melde dich beim Ticket Support.", ephemeral: true });
         }
         break;
@@ -189,7 +190,7 @@ export default {
           }
           await interaction.reply({ content: "> `✅` » Der Geburtstag wurde geändert.", ephemeral: true });
         } catch (error) {
-          console.error(error);
+          logger.error(error);
           await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Ändern des Geburtstags. Bitte melde dich beim Ticket Support.", ephemeral: true });
         }
         break;

@@ -1,6 +1,5 @@
 import { EmbedBuilder } from "discord.js";
 import warndb from "../models/warndb.js";
-import client from "../index.js";
 
 async function getWarnlistEmbed(interaction) {
   // Fetch all warning data for the guild
@@ -22,7 +21,7 @@ async function getWarnlistEmbed(interaction) {
     const warnText = warnCount === 1 ? "Warnung" : "Warnungen";  // Singular or plural
     const user = await interaction.guild.members.cache.get(userId);
 
-    userWarns.forEach((warn, index) => {
+    userWarns.forEach((warn) => {
       // Display based on the count of warnings
       const date = formatDate(warn.date);
       list += `<@${userId}> (${user?.user.username}) (${user?.user.displayName}) - \`${warnCount}\` ${warnText} (Grund: ${warn.reason}, Datum: ${date})\n`;

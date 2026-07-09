@@ -1,3 +1,4 @@
+import logger from "../../functions/logger.js";
 export default {
   name: "nick",
   description: "Verwalte Nicknamen für Benutzer",
@@ -57,7 +58,7 @@ export default {
         await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.username}\` wurde erfolgreich entfernt.`, ephemeral: true });
       }
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       await interaction.reply({ content: "> `❌` » Ich habe keine Berechtigung, den Nicknamen dieses Benutzers zu ändern.", ephemeral: true });
     }
   },

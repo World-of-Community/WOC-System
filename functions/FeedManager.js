@@ -1,10 +1,9 @@
 import fs from "fs";
-import cron from "node-cron";
 import Parser from "rss-parser";
 const parser = new Parser();
 import { EmbedBuilder } from "discord.js";
 import rssConfig from "../json/rssConfig.json" with { type: "json" };
-import { parseString } from "xml2js";
+import logger from "./logger.js";
 
 const FeedManager = {
   processRSSFeed: async (client, lastEntries) => {
@@ -14,7 +13,6 @@ const FeedManager = {
 
         if (feed.items && feed.items.length > 0) {
           const newestEntry = feed.items[0];
-          const description = newestEntry.description || newestEntry.contentSnippet || "**Beschreibung wurde nicht gefunden.**";
 
           if (!await FeedManager.isEntrySent(feedConfig.url, newestEntry.guid, lastEntries)) {
             const embed = new EmbedBuilder();
@@ -44,7 +42,7 @@ const FeedManager = {
             const channel = client.channels.cache.get(feedConfig.message.channelId);
             if (channel) {
               channel.send({ content: feedConfig.message.content, embeds: [embed] })
-                .catch(error => console.error("Error sending embed message:", error));
+                .catch(error => logger.error("Error sending embed message:", error));
             }
 
             FeedManager.markEntryAsSent(feedConfig.url, newestEntry.guid, lastEntries);
@@ -52,7 +50,7 @@ const FeedManager = {
         }
       }
     } catch (error) {
-      console.error("Error fetching RSS feed:", error);
+      logger.error("Error fetching RSS feed:", error);
     }
   },
 
@@ -68,15 +66,13 @@ const FeedManager = {
   saveLastEntries: async (lastEntries) => {
     fs.writeFile("json/lastEntries.json", JSON.stringify(lastEntries), (err) => {
       if (err) {
-        console.error("Error saving lastEntries:", err);
+        logger.error("Error saving lastEntries:", err);
       }
     });
   },
 
   getImageFromContent: async (content) => {
-    let imageUrl = null;
-
-    imageUrl = await FeedManager.extractImageFromContentEncoded(content);
+    let imageUrl = await FeedManager.extractImageFromContentEncoded(content);
 
     if (!imageUrl) {
       imageUrl = await FeedManager.extractImageFromMediaThumbnail(content);

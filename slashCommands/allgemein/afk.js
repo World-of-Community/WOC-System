@@ -1,4 +1,5 @@
 import userdb from "../../models/userdb.js";
+import logger from "../../functions/logger.js";
 
 const afktexte = [
   "Die Tür vom Nachbarn mit Brettern zunageln. <a:Ping_Hammer:1077295673289998417>",
@@ -49,7 +50,7 @@ export default {
       await interaction.member.setNickname(`AFK | ${interaction.member.displayName}`).catch(() => {});
 
     } catch (error) {
-      console.error("Fehler beim AFK-Setzen:", error);
+      logger.error("Fehler beim AFK-Setzen:", error);
       await interaction.reply({ content: "> `❌` » Fehler, Falls dieser Fehler sich wiederholt, Melde dies bitte im Support (<#819555839362072606>) ", ephemeral: true });
     }
   },

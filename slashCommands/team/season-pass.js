@@ -1,5 +1,4 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import User from "../../models/userdb.js";
 
 export default {
   name: "season-pass",
@@ -9,8 +8,6 @@ export default {
   options: [],
 
   async run(client, interaction) {
-    const userData = await User.findOne({ userId: interaction.user.id }) || { shoppass: false, coins: 0 };
-
     const embed = new EmbedBuilder()
       .setTitle("🎟️ SeasonPass")
       .setColor("Blurple")

@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import bandb from "../../models/bandb.js";
+import logger from "../../functions/logger.js";
 
 const BANLISTE_MESSAGE_ID = "1298680434347081730"; // Falls du es automatisch speichern willst, sag Bescheid!
 
@@ -28,7 +29,7 @@ export default {
           const banData = await bandb.findOne({ user: member.id });
           return `${member} - ${member.user.username} (\`${banData?.reason || "Kein Grund angegeben"}\`)`;
         } catch (error) {
-          console.error(`Fehler beim Abrufen der Bann-Daten für ${member.user.tag}: ${error.message}`);
+          logger.error(`Fehler beim Abrufen der Bann-Daten für ${member.user.tag}: ${error.message}`);
           return `${member} - ${member.user.username} (Fehler beim Laden)`;
         }
       }),
@@ -53,12 +54,12 @@ export default {
         await message.edit({ embeds: [bannembed] });
         await interaction.editReply({ content: "> `✅` » Die Bannliste wurde aktualisiert." });
       }
-    } catch (error) {
-      console.log("Banliste-Nachricht nicht gefunden oder gelöscht. Erstelle eine neue...");
+    } catch {
+      logger.info("Banliste-Nachricht nicht gefunden oder gelöscht. Erstelle eine neue...");
       const newMessage = await interaction.channel.send({ embeds: [bannembed] });
       await interaction.editReply({ content: "> `✅` » Die Bannliste wurde erstellt." });
 
-      console.log(`Neue Banliste-ID: ${newMessage.id}`);
+      logger.info(`Neue Banliste-ID: ${newMessage.id}`);
     }
   },
 };

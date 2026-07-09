@@ -18,7 +18,7 @@ export default {
     const member = await interaction.options.getMember("mitglied") || interaction.member;
 
     if (member.user.bot) {
-      return interaction.reply({ content: "> \`❌\` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
     }
 
     const userData = await userdb.findOne({ userID: member.id });

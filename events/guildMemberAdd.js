@@ -1,8 +1,10 @@
 import client from "../index.js";
-import { Events, ActivityType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { Events, EmbedBuilder } from "discord.js";
 import serverdb from "../models/serverdb.js";
 import userdb from "../models/userdb.js";
 import InviteCacheModel from "../models/inviteCachedb.js";
+import { Coin } from "../models/coindb.js";
+import logger from "../functions/logger.js";
 
 client.on(Events.GuildMemberAdd, async (member) => {
 
@@ -73,7 +75,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
     await member.roles.add(neuesMitglied);
     await member.roles.add(mitglied);
   } catch (error) {
-    console.error("Fehler beim Hinzufügen der Rolle:", error);
+    logger.error("Fehler beim Hinzufügen der Rolle:", error);
   }
 
   // Fake Bot Account System
@@ -95,9 +97,9 @@ client.on(Events.GuildMemberAdd, async (member) => {
       const role = member.guild.roles.cache.get(suspiciousRoleID);
       if (role) {
         await member.roles.add(role);
-        console.log(`Rolle "Gebannt" zugewiesen an: ${member.user.tag}`);
+        logger.info(`Rolle "Gebannt" zugewiesen an: ${member.user.tag}`);
       } else {
-        console.error('Die Rolle "Gebannt" wurde nicht gefunden.');
+        logger.error('Die Rolle "Gebannt" wurde nicht gefunden.');
       }
 
       const embed = new EmbedBuilder()
@@ -112,12 +114,12 @@ client.on(Events.GuildMemberAdd, async (member) => {
       const thread = await member.guild.channels.fetch(threadID);
       if (thread && thread.isThread()) {
         await thread.send({ embeds: [embed] });
-        console.log(`Embed in Thread gesendet: ${thread.name}`);
+        logger.info(`Embed in Thread gesendet: ${thread.name}`);
       } else {
-        console.error("Thread mit der angegebenen ID wurde nicht gefunden oder ist kein Thread.");
+        logger.error("Thread mit der angegebenen ID wurde nicht gefunden oder ist kein Thread.");
       }
     } catch (error) {
-      console.error(`Fehler bei der Verarbeitung von ${member.user.tag}:`, error);
+      logger.error(`Fehler bei der Verarbeitung von ${member.user.tag}:`, error);
     }
   }
   // Invite System
@@ -176,7 +178,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
     const userData = await Coin.findOne({ userId });
 
     if (!userData) {
-      console.log(`[DAILY-STREAK] ${member.user.tag} tritt neu bei – kein Datensatz vorhanden, kein Reset nötig.`);
+      logger.info(`[DAILY-STREAK] ${member.user.tag} tritt neu bei – kein Datensatz vorhanden, kein Reset nötig.`);
       return;
     }
 
@@ -184,11 +186,11 @@ client.on(Events.GuildMemberAdd, async (member) => {
     if (userData.streak !== 0) {
       userData.streak = 0;
       await userData.save();
-      console.log(`[DAILY-STREAK] ${member.user.tag} ist zurückgekehrt – Streak auf 0 gesetzt.`);
+      logger.info(`[DAILY-STREAK] ${member.user.tag} ist zurückgekehrt – Streak auf 0 gesetzt.`);
     } else {
-      console.log(`[DAILY-STREAK] ${member.user.tag} ist zurückgekehrt – Streak war bereits 0.`);
+      logger.info(`[DAILY-STREAK] ${member.user.tag} ist zurückgekehrt – Streak war bereits 0.`);
     }
   } catch (error) {
-    console.error("Fehler beim Zurücksetzen der Streak beim Beitritt:", error);
+    logger.error("Fehler beim Zurücksetzen der Streak beim Beitritt:", error);
   }
 });

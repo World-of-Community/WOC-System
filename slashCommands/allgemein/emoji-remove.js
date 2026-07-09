@@ -12,7 +12,7 @@ export default {
 
     if (!userData) {return;}
 
-    if (userData.reactions.length == 0) {
+    if (userData.reactions.length === 0) {
       return await interaction.reply({ content: "> `❌` » Du hast keine aktiven Emojis.", ephemeral: true });
     }
 

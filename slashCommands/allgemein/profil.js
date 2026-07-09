@@ -177,7 +177,7 @@ export default {
     let nationalitätRoleMention = "";
     let exklusivRoleMention = "";
     let memberRoleMention = "";
-    let outputText = "";
+    let outputText;
 
     // Rollen-Prüfungen für Team, Bundesland, Nationalität, Exklusiv, Mitglied
     const hasTeamRole = TeamRoleIds.some(roleId => {
@@ -188,7 +188,7 @@ export default {
       return false;
     });
 
-    const hasLeitungRole = LeitungRoleIds.some(roleId => {
+    LeitungRoleIds.some(roleId => {
       if (member.roles.cache.has(roleId)) {
         leitungRoleMentions.push(`<@&${roleId}>`);
         return true;
@@ -196,7 +196,7 @@ export default {
       return false;
     });
 
-    const hasBundeslandRole = BundeslandRoleIds.some(roleId => {
+    BundeslandRoleIds.some(roleId => {
       if (member.roles.cache.has(roleId)) {
         bundeslandRoleMention = `<@&${roleId}>`;
         return true;
@@ -204,7 +204,7 @@ export default {
       return false;
     });
 
-    const hasNationalitätRole = NationalitätRoleIds.some(roleId => {
+    NationalitätRoleIds.some(roleId => {
       if (member.roles.cache.has(roleId)) {
         nationalitätRoleMention = `<@&${roleId}>`;
         return true;
@@ -344,9 +344,9 @@ export default {
                 `(\`${totalInvites}\` Gesamt, \`${inviteBonus}\` Bonus & \`${inviteLeft}\` Verlassen)\n\n`,
       )
       .addFields(
-        { name: "\`👥\` » Server-Mitglied seit:"
+        { name: "`👥` » Server-Mitglied seit:"
           , value: `<t:${Math.floor(member.joinedTimestamp / 1000)}:f> (<t:${Math.round(member.joinedTimestamp / 1000)}:R>)`, inline: false  },
-        { name: "\`⏰\` » Account erstellt am:"
+        { name: "`⏰` » Account erstellt am:"
           , value: `<t:${Math.round(member.user.createdTimestamp / 1000)}> (<t:${Math.round(member.user.createdTimestamp / 1000)}:R>)`, inline: false,
         },
       )

@@ -1,6 +1,7 @@
-import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
 import { DiscordBlacklist, MinecraftBlacklist } from "../../models/blacklistdb.js";
+import logger from "../../functions/logger.js";
 
 const CHANNEL_ID = "877446081036836884";
 const MESSAGE_ID = "1389649798000545926";
@@ -126,7 +127,9 @@ export default {
           try {
             const user = await interaction.client.users.fetch(entry.userId);
             if (user) {userTag = user.tag;}
-          } catch {}
+          } catch {
+            // User nicht abrufbar, gespeicherten Namen verwenden
+          }
 
           return `💙 **Discord:** <@${entry.userId}> – ${userTag} (\`${entry.userId}\`)
 > Grund: ${reason}
@@ -167,7 +170,7 @@ export default {
         const embed = await createCombinedBlacklistEmbed(0, 10);
         await msg.edit({ embeds: [embed] });
       } catch (err) {
-        console.error("Fehler beim Aktualisieren der Blacklist-Nachricht:", err);
+        logger.error("Fehler beim Aktualisieren der Blacklist-Nachricht:", err);
       }
     }
 

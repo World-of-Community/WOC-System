@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles } from "discord.js";
-import { setTimeout } from "timers/promises";
 import serverdb from "../../models/serverdb.js";
+import logger from "../../functions/logger.js";
 
 // Anpassbare Buttons
 const buttonConfig = {
@@ -72,9 +72,9 @@ export default {
       .setColor("Green")
       .setFooter({ text: `${interaction.guild.name} wünscht euch Frohe Weihnachten!` });
 
-    await interaction.reply({ content: "> \`✅\` » Der Adventskalender wurde erfolgreich gesendet.", ephemeral: true });
+    await interaction.reply({ content: "> `✅` » Der Adventskalender wurde erfolgreich gesendet.", ephemeral: true });
     const kalenderMessage = await interaction.channel.send({ embeds: [Adventskalender], components: rows });
-    console.log(kalenderMessage.id);
+    logger.info(kalenderMessage.id);
     server.adventskalender = {
       messageId: kalenderMessage.id,
       channelId: kalenderMessage.channelId,

@@ -1,4 +1,5 @@
 import ms from "ms";
+import logger from "../../functions/logger.js";
 
 export default {
 
@@ -127,7 +128,7 @@ export default {
             });
 
           } catch (error) {
-            console.error("Fehler beim Senden:", error);
+            logger.error("Fehler beim Senden:", error);
 
             await interaction.editReply({
               content: "> `❌` » Fehler beim Senden der Nachricht.",
@@ -153,7 +154,7 @@ export default {
 
         } catch (error) {
 
-          console.error("Fehler beim Senden:", error);
+          logger.error("Fehler beim Senden:", error);
 
           await interaction.reply({
             content: "> `❌` » Fehler beim Senden der Nachricht.",
@@ -193,7 +194,7 @@ export default {
 
       } catch (error) {
 
-        console.error("Fehler beim Bearbeiten:", error);
+        logger.error("Fehler beim Bearbeiten:", error);
 
         await interaction.reply({
           content: "> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten.",

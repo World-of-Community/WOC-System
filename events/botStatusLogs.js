@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import client from "../index.js";
 import { sendLog, ThreadIDs } from "../functions/sendLog.js";
+import logger from "../functions/logger.js";
 
 // Event, wenn der Bot bereit ist
 client.on("clientReady", async () => {
@@ -13,7 +14,7 @@ client.on("clientReady", async () => {
   try {
     await sendLog(ThreadIDs.ONLINE, onlineEmbed);
   } catch (error) {
-    console.error("Fehler beim Senden des Online-Logs:", error);
+    logger.error("Fehler beim Senden des Online-Logs:", error);
   }
 });
 
@@ -28,7 +29,7 @@ client.on("shardDisconnect", async () => {
   try {
     await sendLog(ThreadIDs.OFFLINE, offlineEmbed);
   } catch (error) {
-    console.error("Fehler beim Senden des Offline-Logs:", error);
+    logger.error("Fehler beim Senden des Offline-Logs:", error);
   }
 });
 
@@ -43,6 +44,6 @@ client.on("error", async (error) => {
   try {
     await sendLog(ThreadIDs.ERROR, errorEmbed);
   } catch (sendError) {
-    console.error("Fehler beim Senden des Error-Logs:", sendError);
+    logger.error("Fehler beim Senden des Error-Logs:", sendError);
   }
 });

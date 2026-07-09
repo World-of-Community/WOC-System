@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder } from "discord.js";
+import logger from "../functions/logger.js";
 
 export default {
   id: "feedback-modal",
@@ -72,7 +73,7 @@ export default {
       });
 
       await interaction.editReply({ content: `> \`✅\` » Dein **Feedback-Ticket** wurde erstellt: ${thread}` });
-    } catch (err) {
+    } catch {
       try {
         if (interaction.deferred && !interaction.replied) {
           await interaction.editReply({
@@ -84,7 +85,7 @@ export default {
           });
         }
       } catch (replyErr) {
-        console.error("[FEEDBACK-MODAL] Failed to send error message:", replyErr);
+        logger.error("[FEEDBACK-MODAL] Failed to send error message:", replyErr);
       }
     }
   },

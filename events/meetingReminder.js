@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 import client from "../index.js";
 import Meeting from "../models/meetingdb.js";
+import logger from "../functions/logger.js";
 
 // Erinnert Meeting-Teilnehmer 10 Minuten vor Beginn per DM
 const scheduleReminder = (meeting) => {
@@ -27,7 +28,7 @@ const scheduleReminder = (meeting) => {
         const user = await client.users.fetch(id);
         await user.send({ embeds: [reminderEmbed] });
       } catch (err) {
-        console.error(`Konnte DM an ${id} nicht senden:`, err);
+        logger.error(`Konnte DM an ${id} nicht senden:`, err);
       }
     }
   }, delay);
@@ -35,7 +36,7 @@ const scheduleReminder = (meeting) => {
 
 // Beim Bot-Start Reminder für alle kommenden Meetings setzen
 client.once("clientReady", async () => {
-  console.log("✅  | Meeting Reminder-System aktiviert");
+  logger.info("✅  | Meeting Reminder-System aktiviert");
   const upcomingMeetings = await Meeting.find({ time: { $gte: new Date() } });
   for (const m of upcomingMeetings) {
     scheduleReminder(m);

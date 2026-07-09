@@ -31,7 +31,7 @@ client.on(Events.MessageCreate, async (message) => {
       { level: 100 },
     ];
     for (const levelL of levelList) {
-      if (level == levelL.level) {
+      if (level === levelL.level) {
         channel.send(`<a:trophy:1375557481434189934> **LEVEL-UP!** ${mention} hat das Level **${level}.** erreicht - und einen **neuen Rang** erhalten! <a:Cool:1033461188299858001>`);
         newRankAchieved = true;
         break;

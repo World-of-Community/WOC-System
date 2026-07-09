@@ -2,6 +2,7 @@ import cron from "node-cron";
 import userdb from "../models/userdb.js";
 import leaderboarddb from "../models/leaderboarddb.js";
 import { EmbedBuilder, codeBlock } from "discord.js";
+import logger from "./logger.js";
 const RoleID = "1150753421339676722";
 
 const positionEmojis = ["`🥇`", "`🥈`", "`🥉`", "`4️⃣`", "`5️⃣`", "`6️⃣`", "`7️⃣`", "`8️⃣`", "`9️⃣`", "`🔟`"];
@@ -102,7 +103,7 @@ async function createLeaderboardMessage(guild) {
       .setColor("Red")
       .setDescription(`Beim laden des Leaderboards ist ein Fehler aufgetreten:\n${codeBlock(error.message)}`);
 
-    console.error("Fehler beim Aktualisieren des Leaderboards:", error);
+    logger.error("Fehler beim Aktualisieren des Leaderboards:", error);
     return { embeds: [errorEmbed] };
   }
 }
@@ -132,7 +133,7 @@ async function resetLeaderboardStats(client) {
   if (role) {
     const membersWithRole = await guild.members.fetch({ role: RoleID });
     membersWithRole.forEach(member => {
-      member.roles.remove(role).catch(err => console.error(`Fehler beim Entfernen der Rolle: ${err}`));
+      member.roles.remove(role).catch(err => logger.error(`Fehler beim Entfernen der Rolle: ${err}`));
     });
 
     const topMessagesMembers = await userdb.find().sort({ "stats.messages": -1 }).limit(3);
@@ -144,7 +145,7 @@ async function resetLeaderboardStats(client) {
     const roleAssignments = uniqueUserIds.map(async userID => {
       const member = await guild.members.fetch(userID).catch(() => null);
       if (member && !member.roles.cache.has(role.id)) {
-        await member.roles.add(role).then(msg => {
+        await member.roles.add(role).then(() => {
           leaderboardChannel.send({
             content: `${member} hat für die hohe Aktivität die ${role} Rolle erhalten`,
           }).then(m => {
@@ -152,13 +153,13 @@ async function resetLeaderboardStats(client) {
               m.delete().catch(() => null);
             }, 5 * 60 * 1000); // Nachricht nach 5 Minuten löschen
           });
-        }).catch(err => console.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
+        }).catch(err => logger.error(`Fehler beim Hinzufügen der Rolle: ${err}`));
       }
     });
     await Promise.all(roleAssignments);
   }
 
-  console.log("Leaderboard wurde monatlich zurückgesetzt und die Rolle wurde an die Top 3 Mitglieder vergeben.");
+  logger.info("Leaderboard wurde monatlich zurückgesetzt und die Rolle wurde an die Top 3 Mitglieder vergeben.");
   await createLeaderboardMessage();
 }
 

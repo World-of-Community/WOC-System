@@ -1,10 +1,11 @@
 import client from "../index.js";
-import { Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ComponentType } from "discord.js";
+import { Events, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ComponentType } from "discord.js";
 import fs from "fs";
 import serverdb from "../models/serverdb.js";
 import userdb from "../models/userdb.js";
 import messagedb from "../models/messagedb.js";
 import teamdb from "../models/teamdb.js";
+import logger from "../functions/logger.js";
 
 const TeamRoleIds = [
   "959869691529154631", // Admin
@@ -89,8 +90,8 @@ client.on(Events.MessageCreate, async (message) => {
 
     const reply = await message.reply({ embeds: [embed] });
     setTimeout(() => {
-      reply.delete().catch(console.error);
-      message.delete().catch(console.error);
+      reply.delete().catch(logger.error);
+      message.delete().catch(logger.error);
     }, deleteAfter);
   }
 
@@ -105,7 +106,7 @@ client.on(Events.MessageCreate, async (message) => {
       { returnDocument: "after", upsert: true },
     );
   } catch (err) {
-    console.error("Fehler beim Hochzählen der Nachrichten:", err);
+    logger.error("Fehler beim Hochzählen der Nachrichten:", err);
   }
 
   if (!message.guild) {return;}
@@ -145,10 +146,10 @@ client.on(Events.MessageCreate, async (message) => {
       message.reply("Bitte erwähne oder Pinge keine Teammitglieder, öffne ein Ticket im <#819555839362072606> bei Fragen oder Problemen.")
         .then(sentMessage => {
           setTimeout(() => {
-            sentMessage.delete().catch(console.error);
+            sentMessage.delete().catch(logger.error);
           }, 5000);
         })
-        .catch(console.error);
+        .catch(logger.error);
     }
   }
 
@@ -173,7 +174,9 @@ client.on(Events.MessageCreate, async (message) => {
       setTimeout(async () => {
         try {
           await m.delete();
-        } catch (error) {}
+        } catch {
+          // Nachricht wurde bereits gelöscht
+        }
       }, 5000);
 
       await message.member.setNickname(
@@ -377,17 +380,17 @@ client.on(Events.MessageCreate, async (message) => {
       try {
         await message.author.send({ embeds: [WarnEmbed] });
       } catch (error) {
-        console.error(`❗  | Konnte DM nicht senden: ${error}`);
+        logger.error(`❗  | Konnte DM nicht senden: ${error}`);
 
         const channelWarning = await message.channel.send({
           content: `${message.author}, du kannst keine Server-Links in diesem Kanal teilen.`,
           embeds: [WarnEmbed],
         });
 
-        setTimeout(() => channelWarning.delete().catch(console.error), 10000); // 10 Sekunden
+        setTimeout(() => channelWarning.delete().catch(logger.error), 10000); // 10 Sekunden
       }
     } catch (error) {
-      console.error(`❗  | Konnte Nachricht nicht löschen: ${error}`);
+      logger.error(`❗  | Konnte Nachricht nicht löschen: ${error}`);
     }
   }
 });

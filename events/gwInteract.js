@@ -1,6 +1,5 @@
 import client from "../index.js";
 import { Events, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder  } from "discord.js";
-import fs from "fs";
 import giveawaydb from "../models/giveawaydb.js";
 import userdb from "../models/userdb.js";
 import serverdb from "../models/serverdb.js";
@@ -8,14 +7,11 @@ import serverdb from "../models/serverdb.js";
 client.on(Events.InteractionCreate, async (interaction) => {
 
   if (!interaction.isButton()) {return;}
-  const client = interaction.client;
-  const file = fs.readFileSync("json/config.json", "utf-8");
-  const config = JSON.parse(file);
 
   if (interaction.customId === "giveaway-enter") {
     const giveawayData = await giveawaydb.findOne({ msgID: interaction.message.id });
-    if (!giveawayData) {return await interaction.reply({ content: "> \`❌\` » Das Gewinnspiel existiert nicht.", ephemeral: true });}
-    if (giveawayData.endTime !== null) {return await interaction.reply({ content: "> \`❌\` » Das Gewinnspiel wurde schon beendet!", ephemeral: true });}
+    if (!giveawayData) {return await interaction.reply({ content: "> `❌` » Das Gewinnspiel existiert nicht.", ephemeral: true });}
+    if (giveawayData.endTime !== null) {return await interaction.reply({ content: "> `❌` » Das Gewinnspiel wurde schon beendet!", ephemeral: true });}
 
     const userData = await userdb.findOne({ userID: interaction.user.id });
     const statsData = userData ? userData.stats : null;

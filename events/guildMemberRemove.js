@@ -1,9 +1,10 @@
 import client from "../index.js";
-import { Events, ActivityType, EmbedBuilder } from "discord.js";
-import fs from "fs";
+import { Events, EmbedBuilder } from "discord.js";
 import userdb from "../models/userdb.js";
 import InviteCache from "../models/inviteCachedb.js";
 import serverdb from "../models/serverdb.js";
+import { Coin } from "../models/coindb.js";
+import logger from "../functions/logger.js";
 
 client.on(Events.GuildMemberRemove, async (member) => {
 
@@ -59,10 +60,6 @@ client.on(Events.GuildMemberRemove, async (member) => {
   const thread = logchannel.threads.cache.get("1269998215512457259");
   if (thread) {await thread.send({ embeds: [leave] });}
 
-  const guild = member.guild;
-  const newInvites = await member.guild.invites.fetch();
-  const Invites = await guild.invites.fetch();
-
   const inviteCacheData = await InviteCache.findOne({ guildID: member.guild.id });
 
   if (!inviteCacheData) {return;}
@@ -94,7 +91,7 @@ client.on(Events.GuildMemberRemove, async (member) => {
   // Nachrichten des Users in bestimmtem Kanal löschen
   const CHANNEL_ID = "1172920281526960238";
   const channel = member.guild.channels.cache.get(CHANNEL_ID);
-  if (!channel) {return console.log("Kanal nicht gefunden.");}
+  if (!channel) {return logger.info("Kanal nicht gefunden.");}
 
   try {
     const messages = await channel.messages.fetch();
@@ -102,10 +99,10 @@ client.on(Events.GuildMemberRemove, async (member) => {
 
     for (const [, msg] of userMessages) {
       await msg.delete();
-      console.log(`Nachricht gelöscht von ${member.user.displayName}`);
+      logger.info(`Nachricht gelöscht von ${member.user.displayName}`);
     }
   } catch (error) {
-    console.log("Fehler beim Abrufen oder Löschen von Nachrichten:", error);
+    logger.info("Fehler beim Abrufen oder Löschen von Nachrichten:", error);
   }
 
   try {
@@ -113,7 +110,7 @@ client.on(Events.GuildMemberRemove, async (member) => {
     const userData = await Coin.findOne({ userId });
 
     if (!userData) {
-      console.log(`[DAILY-STREAK] Kein Eintrag für ${member.user.tag} gefunden.`);
+      logger.info(`[DAILY-STREAK] Kein Eintrag für ${member.user.tag} gefunden.`);
       return;
     }
 
@@ -121,8 +118,8 @@ client.on(Events.GuildMemberRemove, async (member) => {
     userData.streak = 0;
     await userData.save();
 
-    console.log(`[DAILY-STREAK] ${member.user.tag} (${userId}) hat den Server verlassen – Streak auf 0 gesetzt.`);
+    logger.info(`[DAILY-STREAK] ${member.user.tag} (${userId}) hat den Server verlassen – Streak auf 0 gesetzt.`);
   } catch (error) {
-    console.error("Fehler beim Zurücksetzen der Streak beim Verlassen des Servers:", error);
+    logger.error("Fehler beim Zurücksetzen der Streak beim Verlassen des Servers:", error);
   }
 });

@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import logger from "../../functions/logger.js";
 
 export default {
   id: "feedback_accept_close",
@@ -23,7 +24,7 @@ export default {
       } else if (interaction.channel?.deletable) {
         await interaction.channel.delete().catch(() => {});
       } else {
-        console.log("[FEEDBACK-BUTTON] Channel/Thread not closeable");
+        logger.info("[FEEDBACK-BUTTON] Channel/Thread not closeable");
       }
     }, 5000);
   },

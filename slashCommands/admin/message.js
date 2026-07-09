@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "message",
@@ -53,7 +54,7 @@ export default {
       await member.send({ embeds: [Nachrichtembed] });
       await interaction.reply({ content: `> \`✅\` » Ich habe die Nachricht erfolgreich an ${member} gesendet!`, ephemeral: true });
     } catch (error) {
-      console.error(`Fehler beim Senden der Nachricht an ${member}:`, error);
+      logger.error(`Fehler beim Senden der Nachricht an ${member}:`, error);
       await interaction.reply({ content: `> \`❌\` » Beim Senden der Nachricht an ${member} ist ein Fehler aufgetreten.\n> \`📌\` » Bitte schau im Server-Log nach oder melde dich bei einem Admin.`, ephemeral: true });
     }
   },

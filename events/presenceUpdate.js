@@ -1,5 +1,6 @@
 import client from "../index.js";
 import { Events } from "discord.js";
+import logger from "../functions/logger.js";
 
 const STREAM_ROLE_ID = "1266095218239995968"; // Streamer-Rolle ID
 
@@ -25,13 +26,13 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
 
   if (isStreaming && !member.roles.cache.has(liveRole.id)) {
     await member.roles.add(liveRole).catch(() => {});
-    console.log(`${member.user.tag} ist jetzt LIVE`);
-    console.log(`Datum: ${timestamp}`);
+    logger.info(`${member.user.tag} ist jetzt LIVE`);
+    logger.info(`Datum: ${timestamp}`);
   }
   else if (!isStreaming && member.roles.cache.has(liveRole.id)) {
     await member.roles.remove(liveRole).catch(() => {});
-    console.log(`${member.user.tag} ist nicht mehr live`);
-    console.log(`Datum: ${timestamp}`);
+    logger.info(`${member.user.tag} ist nicht mehr live`);
+    logger.info(`Datum: ${timestamp}`);
   }
 });
 

@@ -3,6 +3,7 @@ import cron from "node-cron";
 import client from "../index.js";
 import serverdb from "../models/serverdb.js";
 import config from "../json/config.json" with { type: "json" };
+import logger from "../functions/logger.js";
 
 // Changelog Embed (jeden Montag um Mitternacht)
 cron.schedule("0 0 * * 1", async () => {
@@ -101,7 +102,7 @@ cron.schedule("0 0 * * 1", async () => {
     });
 
   } catch (error) {
-    console.log("Fehler im Cron job:", error);
+    logger.info("Fehler im Cron job:", error);
   }
 });
 

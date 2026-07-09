@@ -97,7 +97,7 @@ export default {
     const sub = interaction.options.getSubcommand();
 
     switch (sub) {
-      case "start":
+      case "start": {
         const sponsor = interaction.options.getMember("sponsor") || null;
         const channel = interaction.options.getChannel("kanal") || interaction.channel;
         const bedingung = interaction.options.getString("bedingung");
@@ -110,7 +110,7 @@ export default {
         //await interaction.reply(`> \`✅\` - **Gewinnspiel geplant:** Das Gewinnspiel wird in ${startenIn} in dem Kanal ${channel} erstellt.`);
 
         const generateRandomId = () => Math.floor(1000 + Math.random() * 9000);
-        var id = generateRandomId();
+        const id = generateRandomId();
         const modal = new ModalBuilder()
           .setTitle("🎁 - Gewinnspiel starten")
           .setCustomId(`gw-modal-${id}`);
@@ -162,18 +162,14 @@ export default {
 
             let bedingungInput = "none";
             let bedingungsvalue = "none";
-            let serverEmpfehlung;
 
-            if (bedingung != "none" && bedingung && bedingungsInputs[bedingung]) {
+            if (bedingung !== "none" && bedingung && bedingungsInputs[bedingung]) {
               bedingungsvalue = inter.fields.getTextInputValue("bedingungsinput") || "";
 
               if (bedingung === "voiceTime" || bedingung === "membersince") {
                 bedingungInput = bedingungsvalue || null;
               } else {
                 bedingungInput = bedingungsvalue;
-              }
-              if (bedingung === "server") {
-                serverEmpfehlung = bedingungsvalue;
               }
             }
 
@@ -185,7 +181,7 @@ export default {
 
             const durationDauer = ms(durationInput);
             if (isNaN(durationDauer)) {
-              return inter.reply({ content: "> \`❌\` » Ungültige Dauer angegeben.", ephemeral: true });
+              return inter.reply({ content: "> `❌` » Ungültige Dauer angegeben.", ephemeral: true });
             }
 
             const endDate = new Date(Date.now() + durationDauer);
@@ -236,7 +232,7 @@ export default {
             });
             await newGiveaway.save();
 
-            const result = await userDB.updateMany({}, { $set: { "stats.messages": 0, "stats.voiceTime": 0 } });
+            await userDB.updateMany({}, { $set: { "stats.messages": 0, "stats.voiceTime": 0 } });
 
             await inter.reply({ content: `> \`✅\` - **Gewinnspiel erstellt:** Das Gewinnspiel wurde so eben in dem Kanal ${channel} erstellt.`, ephemeral: true });
             isProcessingComplete = true;
@@ -244,73 +240,75 @@ export default {
         });
 
         break;
+      }
 
-      case "end":
+      case "end": {
         const messageId = interaction.options.getString("nachrichtenid");
         const giveaway = await giveawaydb.findOne({ _id: messageId });
 
         if (!giveaway) {
-          return interaction.reply({ content: "> \`❌\` » Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
         }
         const endechannel = await interaction.client.channels.fetch(giveaway.channelID);
-        const giveawayMessage = await endechannel.messages.fetch(activeGiveaways.msgID);
+        const giveawayMessage = await endechannel.messages.fetch(giveaway.msgID);
         if (!giveawayMessage) {
-          return interaction.reply({ content: "> \`❌\` » Nachricht nicht gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Nachricht nicht gefunden.", ephemeral: true });
         }
 
         const winners = await giveawayMessage.reactions.cache.get("🎉")?.users.fetch();
 
         if (!winners || winners.size === 0) {
-          return interaction.reply({ content: "> \`❌\` » Keine Gewinner für dieses Gewinnspiel gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Keine Gewinner für dieses Gewinnspiel gefunden.", ephemeral: true });
         }
 
         const winnerList = Array.from(winners.values()).filter(user => !user.bot);
         if (winnerList.length === 0) {
-          return interaction.reply({ content: "> \`❌\` » Keine gültigen Gewinner gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Keine gültigen Gewinner gefunden.", ephemeral: true });
         }
 
         const winnersDisplay = winnerList.map((winner, index) => `**${index + 1}.** <@${winner.id}>`).join("\n");
         const giveawayend = new EmbedBuilder()
-          .setTitle(`${embed.title}`)
+          .setTitle(`<a:Diamond:1018911546430210128> ${giveaway.price} <a:Diamond:1018911546430210128>`)
           .setDescription(`<a:Neuigkeiten:1018910061348798564> » **__Gewinnspiel - Gewinner__**
-      <:PfeilBlau:1147248395837247613> Teilnehmer: **${activeGiveaways.teilnehmer.length}**
-      <:PfeilBlau:1147248395837247613> Gewinner: ${winnerId ? `<@${winnerId}>` : "**`Zu wenig Teilnehmer`**"}
-      <:PfeilBlau:1147248395837247613> Erstellt von <@${activeGiveaways.creator}>`)
+      <:PfeilBlau:1147248395837247613> Teilnehmer: **${giveaway.teilnehmer.length}**
+      <:PfeilBlau:1147248395837247613> Gewinner: ${winnersDisplay || "**`Zu wenig Teilnehmer`**"}
+      <:PfeilBlau:1147248395837247613> Erstellt von <@${giveaway.creator}>`)
           .setColor("Red")
           .setThumbnail("https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=53e18bea4e53fcfa6bef3450c65670ac3d7d1d57e3dd66a18e23d9660dfdfc6d&")
           .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
           .setTimestamp();
 
-        await giveawayMessage.edit({ embeds: [endEmbed] });
+        await giveawayMessage.edit({ embeds: [giveawayend] });
 
         await giveawaydb.deleteOne({ _id: messageId });
 
-        await interaction.reply({ content: "> \`✅\` » Gewinnspiel erfolgreich beendet!", ephemeral: true });
+        await interaction.reply({ content: "> `✅` » Gewinnspiel erfolgreich beendet!", ephemeral: true });
         break;
+      }
 
-      case "reroll":
+      case "reroll": {
         const rerollId = interaction.options.getString("nachrichtenid");
         const rerollGiveaway = await giveawaydb.findOne({ _id: rerollId });
 
         if (!rerollGiveaway) {
-          return interaction.reply({ content: "> \`❌\` » Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Kein Gewinnspiel mit dieser ID gefunden.", ephemeral: true });
         }
 
         const rerollChannel = await interaction.client.channels.fetch(rerollGiveaway.channelID);
         const rerollMessage = await rerollChannel.messages.fetch(rerollId);
         if (!rerollMessage) {
-          return interaction.reply({ content: "> \`❌\` » Nachricht nicht gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Nachricht nicht gefunden.", ephemeral: true });
         }
 
         const rerollWinners = await rerollMessage.reactions.cache.get("🎉")?.users.fetch();
 
         if (!rerollWinners || rerollWinners.size === 0) {
-          return interaction.reply({ content: "> \`❌\` » Keine Gewinner für dieses Gewinnspiel gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Keine Gewinner für dieses Gewinnspiel gefunden.", ephemeral: true });
         }
 
         const rerollWinnerList = Array.from(rerollWinners.values()).filter(user => !user.bot);
         if (rerollWinnerList.length === 0) {
-          return interaction.reply({ content: "> \`❌\` » Keine gültigen Gewinner gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Keine gültigen Gewinner gefunden.", ephemeral: true });
         }
 
         const newWinner = rerollWinnerList[Math.floor(Math.random() * rerollWinnerList.length)];
@@ -328,8 +326,9 @@ export default {
 
         await rerollMessage.edit({ embeds: [rerollEmbed] });
 
-        await interaction.reply({ content: "> \`✅\` » Gewinner erfolgreich neu gezogen und die Nachricht aktualisiert!", ephemeral: true });
+        await interaction.reply({ content: "> `✅` » Gewinner erfolgreich neu gezogen und die Nachricht aktualisiert!", ephemeral: true });
         break;
+      }
     }
   },
 };

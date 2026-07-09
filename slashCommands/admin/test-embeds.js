@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "test-embed",
@@ -77,7 +78,7 @@ export default {
       await member.send({ embeds: [embedToSend] });
       await interaction.reply({ content: `> \`✅\` » Das Test-Embed wurde an **${member.username}** (${member}) per DM gesendet.`, ephemeral: true });
     } catch (error) {
-      console.error("Fehler beim Senden der DM:", error);
+      logger.error("Fehler beim Senden der DM:", error);
       await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Senden der DM an **${member.username}**.`, ephemeral: true });
     }
   },

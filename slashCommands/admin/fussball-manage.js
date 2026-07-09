@@ -1,4 +1,4 @@
-import { Team, Match, ProLeagueEmbed } from "../../models/fussballdb.js";
+import { Team } from "../../models/fussballdb.js";
 
 export default {
   name: "fussball-manage",

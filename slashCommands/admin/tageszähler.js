@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import logger from "../../functions/logger.js";
 
 const reminders = new Map(); // aktive Reminder / Intervalle
 
@@ -132,7 +133,7 @@ export default {
             reminders.delete(interaction.user.id);
           }
         } catch (err) {
-          console.error("Fehler beim Aktualisieren des Embeds:", err);
+          logger.error("Fehler beim Aktualisieren des Embeds:", err);
           clearInterval(intervalId);
           reminders.delete(interaction.user.id);
         }
@@ -141,7 +142,7 @@ export default {
       reminders.set(interaction.user.id, intervalId);
 
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       await interaction.reply({
         content: "> `❌` » Ich konnte dir keine DM senden. Bitte aktiviere deine Direktnachrichten.",
         ephemeral: true,

@@ -1,6 +1,7 @@
 import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType } from "discord.js";
 import mongoose from "mongoose";
 import axios from "axios";
+import logger from "../../functions/logger.js";
 const PLACEHOLDER_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/d/d6/KeinBildVorhanden.jpg";
 
 const YT_API_KEY = "AIzaSyCvg3Nd7BkHQzLqbHDObsyNlX_fOzoU2-4";
@@ -15,7 +16,7 @@ export default {
 
   async run(client, interaction) {
     try {
-      const { embed, videoUrl, videoId, channelName } = await getYouTubeEmbed();
+      const { embed, videoUrl } = await getYouTubeEmbed();
 
       const row = createActionRow(videoUrl);
 
@@ -51,13 +52,13 @@ export default {
       // Embed alle 60 Sekunden aktualisieren
       setInterval(async () => {
         try {
-          const { embed: updatedEmbed, videoUrl: updatedVideoUrl, videoId: updatedVideoId, channelName: updatedChannelName, isNewVideo, previousVideo } = await getYouTubeEmbed();
+          const { embed: updatedEmbed, videoUrl: updatedVideoUrl, channelName: updatedChannelName, isNewVideo, previousVideo } = await getYouTubeEmbed();
 
           const updatedRow = createActionRow(updatedVideoUrl);
 
           if (isNewVideo) {
             // Sende Nachricht für das neue Video
-            const newVideoMessage = await interaction.channel.send({
+            await interaction.channel.send({
               content: `> <@&${YOUTUBE_ROLE_ID}> Ein neues Video von **${updatedChannelName}** ist verfügbar!`,
               embeds: [updatedEmbed],
               components: [updatedRow],
@@ -92,12 +93,12 @@ export default {
             components: [updatedRow],
           });
         } catch (error) {
-          console.error("Fehler beim Aktualisieren des Embeds:", error);
+          logger.error("Fehler beim Aktualisieren des Embeds:", error);
         }
       }, 60000);
 
     } catch (error) {
-      console.error("Fehler beim Senden des YouTube-Embeds:", error);
+      logger.error("Fehler beim Senden des YouTube-Embeds:", error);
       await interaction.reply({ content: `> \`❌\` » Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
     }
   },
@@ -171,7 +172,7 @@ async function getYouTubeEmbed() {
 
       latestVideos.push({ ...videoData, isNewVideo, previousVideo });
     } catch (error) {
-      console.error(`Fehler beim Abrufen der Videos von Kanal ${channelId}:`, error);
+      logger.error(`Fehler beim Abrufen der Videos von Kanal ${channelId}:`, error);
     }
   }
 

@@ -77,7 +77,7 @@ export default {
     }
 
     switch (sub) {
-      case "urlaub":
+      case "urlaub": {
         const vonStr = interaction.options.getString("von");
         const bisStr = interaction.options.getString("bis");
 
@@ -127,6 +127,7 @@ export default {
 
         await interaction.reply({ content: "> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.", ephemeral: true });
         break;
+      }
 
       case "plan": {
         const dateStr = interaction.options.getString("datum");

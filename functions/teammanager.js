@@ -1,8 +1,8 @@
-import { EmbedBuilder } from "discord.js";
 import teamDB from "../models/teamdb.js";
 import serverDB from "../models/serverdb.js";
 import cron from "node-cron";
 import schedule from "node-schedule";
+import logger from "./logger.js";
 
 export default (client) => {
   client.manageTeam = async () => {
@@ -31,11 +31,11 @@ export default (client) => {
               content: `> \`❗\` » \`${user.displayName}\` ist derzeit im Urlaub und daher nicht erreichbar. ${urlaubMessageUrl}`,
             }).then(sentMessage => {
               setTimeout(() => {
-                sentMessage.delete().catch(console.error);
+                sentMessage.delete().catch(logger.error);
               }, 5000);
             });
           } catch (error) {
-            console.error("Fehler beim Senden der Antwort:", error);
+            logger.error("Fehler beim Senden der Antwort:", error);
           }
         }
       }
@@ -57,7 +57,7 @@ export default (client) => {
 
       const channel = client.channels.cache.get("877446081036836884");
       if (!channel) {
-        console.error("Channel not found");
+        logger.error("Channel not found");
         return;
       }
 
@@ -69,7 +69,7 @@ export default (client) => {
               await message.delete();
             }
           } catch (err) {
-            console.error("Fehler beim Löschen der Nachricht:", err);
+            logger.error("Fehler beim Löschen der Nachricht:", err);
           }
         }
 
@@ -84,9 +84,9 @@ export default (client) => {
             { guildID: "815919809379172354" },
             { $pull: { meetings: { date: { $lt: now } } } },
           );
-          console.log("Abgelaufene Meetings erfolgreich gelöscht.");
+          logger.info("Abgelaufene Meetings erfolgreich gelöscht.");
         } catch (error) {
-          console.error("Fehler beim Löschen abgelaufener Meetings:", error);
+          logger.error("Fehler beim Löschen abgelaufener Meetings:", error);
         }
       }
     });
@@ -134,7 +134,7 @@ export default (client) => {
               await interaction.reply({ content: "> `🔔` » Du wirst 10 Minuten vor dem Meeting erinnert.", ephemeral: true });
             }
           } catch (error) {
-            console.error(`Fehler bei der Bearbeitung des "remindMe"-Befehls: ${error}`);
+            logger.error(`Fehler bei der Bearbeitung des "remindMe"-Befehls: ${error}`);
             await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.", ephemeral: true });
           }
 
@@ -203,12 +203,12 @@ export default (client) => {
                       await user.send(`> \`📣\` » Erinnerung: Das Meeting beginnt in **10 Minuten**.\nDatum: ${meetingDateUTC}`);
                     }
                   } catch (error) {
-                    console.error(`Fehler beim Senden der Erinnerung an Benutzer ${userId}: ${error}`);
+                    logger.error(`Fehler beim Senden der Erinnerung an Benutzer ${userId}: ${error}`);
                   }
                 }
               }
             } catch (error) {
-              console.error(`Fehler beim Abrufen des Meetings für Erinnerung: ${error}`);
+              logger.error(`Fehler beim Abrufen des Meetings für Erinnerung: ${error}`);
             }
           });
 
@@ -226,12 +226,12 @@ export default (client) => {
                       await message.delete();
                     }
                   } catch (error) {
-                    console.error(`Fehler beim Löschen der Nachricht: ${error}`);
+                    logger.error(`Fehler beim Löschen der Nachricht: ${error}`);
                   }
                 }
               }
             } catch (error) {
-              console.error(`Fehler beim Abrufen des Meetings für Löschung: ${error}`);
+              logger.error(`Fehler beim Abrufen des Meetings für Löschung: ${error}`);
             }
           });
         }

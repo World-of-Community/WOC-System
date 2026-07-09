@@ -34,7 +34,7 @@ export default {
 
       return interaction.reply({ embeds: [bannedEmbed], ephemeral: true });
 
-    } catch (error) {
+    } catch {
       const notBannedEmbed = new EmbedBuilder()
         .setTitle("`✅` Benutzer ist nicht gebannt")
         .setColor("Green")

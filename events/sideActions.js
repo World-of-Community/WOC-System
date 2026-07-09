@@ -1,9 +1,8 @@
 import client from "../index.js";
 import { Events } from "discord.js";
-import serverdb from "../models/serverdb.js";
 import userdb from "../models/userdb.js";
-import messagedb from "../models/messagedb.js";
 import fs from "fs";
+import logger from "../functions/logger.js";
 
 client.on(Events.MessageCreate, async (message) => {
   try {
@@ -16,7 +15,8 @@ client.on(Events.MessageCreate, async (message) => {
       setTimeout(async () => {
         try {
           await message.delete();
-        } catch (error) {
+        } catch {
+          // Nachricht wurde bereits gelöscht
         }
       }, 30000);
     }
@@ -39,7 +39,7 @@ client.on(Events.MessageCreate, async (message) => {
             try {
               await m.delete();
             } catch (error) {
-              console.error("❗  | Fehler beim Löschen der AFK-Nachricht:", error);
+              logger.error("❗  | Fehler beim Löschen der AFK-Nachricht:", error);
             }
           }, 5000);
         }
@@ -74,6 +74,6 @@ client.on(Events.MessageCreate, async (message) => {
         break;
     }
   } catch (error) {
-    console.error("❗  | Fehler bei der Ausführung des Eventhandlers:", error);
+    logger.error("❗  | Fehler bei der Ausführung des Eventhandlers:", error);
   }
 });

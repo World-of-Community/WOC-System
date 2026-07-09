@@ -1,3 +1,4 @@
+import logger from "../../functions/logger.js";
 export default {
   name: "reaction-remove",
   description: "» Entfernt Reaktionen von einer bestimmten Nachricht. 📌",
@@ -57,7 +58,7 @@ export default {
 
       await interaction.reply({ content: "> `✅` » Reaktionen erfolgreich entfernt.", ephemeral: true });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       await interaction.reply({ content: "> `❗` » Fehler beim Entfernen der Reaktionen.", ephemeral: true });
     }
   },

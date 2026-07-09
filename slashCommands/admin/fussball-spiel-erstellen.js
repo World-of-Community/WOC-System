@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { Match } from "../../models/fussballdb.js";
+import logger from "../../functions/logger.js";
 
 const proLeagueTeams = [
   "FC Adler","SV Löwen","TSV Eiche","SC Blau","VfB Stern",
@@ -59,7 +60,7 @@ export default {
         }
 
         await Match.insertMany(matches);
-        console.log(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
+        logger.info(`Spieltag ${spieltag} erstellt (${matches.length} Spiele).`);
 
         // Spiele nach Datum + Uhrzeit sortieren
         const sortedMatches = matches.sort((a, b) => a.date - b.date);
@@ -81,7 +82,7 @@ export default {
       await interaction.followUp({ content: "> `✅` Saison erfolgreich generiert!", embeds: embeds.slice(0, 10) });
 
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       await interaction.followUp("❌ Fehler beim Generieren der Saison.");
     }
   },

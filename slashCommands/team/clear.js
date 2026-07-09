@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "clear",
@@ -46,7 +47,7 @@ export default {
 
       await interaction.reply({ embeds: [infomessagedeleteembed], ephemeral: true });
     } catch (error) {
-      console.error("Fehler beim Löschen von Nachrichten:", error);
+      logger.error("Fehler beim Löschen von Nachrichten:", error);
       interaction.reply({ content: "> `❗` » Beim Versuch, Nachrichten zu löschen, ist ein Fehler aufgetreten.", ephemeral: true });
     }
   },

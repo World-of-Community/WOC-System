@@ -1,8 +1,7 @@
 import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
-import teamdb from "../../models/teamdb.js";
 import serverdb from "../../models/serverdb.js";
 import userdb from "../../models/userdb.js";
-import schedule from "node-schedule";
+import logger from "../../functions/logger.js";
 
 export default {
   name: "admin",
@@ -200,7 +199,6 @@ export default {
     const role = interaction.options.getRole("role");
     const reason = interaction.options.getString("reason") || "Kein Grund angegeben";
     const targetChannel = interaction.guild.channels.cache.get("1173986308641804338");
-    const targetChannel2 = interaction.guild.channels.cache.get("877446081036836884");
     const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
     const sub = interaction.options.getSubcommand();
     const teamrole = interaction.guild.roles.cache.get("820658664536145940");
@@ -227,7 +225,7 @@ export default {
 
           await interaction.reply({ content: "> `✅` » Das Teammitglied wurde **befördert.**", ephemeral: true });
         } catch (error) {
-          console.error("Fehler beim Hinzufügen der Rolle:", error);
+          logger.error("Fehler beim Hinzufügen der Rolle:", error);
 
           await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
         }
@@ -247,7 +245,7 @@ export default {
           await interaction.reply({ content: "> `✅` » Das Teammitglied wurde **herabgestuft.**", ephemeral: true });
 
         } catch (error) {
-          console.error("Fehler beim Herabstufen des Benutzers:", error);
+          logger.error("Fehler beim Herabstufen des Benutzers:", error);
           await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
         }
         break;
@@ -291,7 +289,7 @@ export default {
 
         } catch (error) {
 
-          console.error("Fehler beim Bereichswechsel:", error);
+          logger.error("Fehler beim Bereichswechsel:", error);
 
           await interaction.reply({
             content: "> `❌` » Es ist ein Fehler aufgetreten.",
@@ -351,12 +349,12 @@ export default {
           targetChannel.send({ content: `${member}`, embeds: [TeammitgliedEmbed] });
           await interaction.reply({ content: "> `✅` » Ein neues Teammitglied ist nun da.", ephemeral: true});
         } catch (error) {
-          console.error("Fehler beim Hinzufügen der Rolle:", error);
+          logger.error("Fehler beim Hinzufügen der Rolle:", error);
           interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
         }
         break;
 
-      case "kick":
+      case "kick": {
         const extraRoles = [
           "1011207481357238272", // Ticket Support
           "1270369938972082177", // Ticket Bereich
@@ -385,15 +383,16 @@ export default {
             .setTimestamp();
 
           targetChannel.send({ embeds: [kickEmbed] });
-          await interaction.reply({ content: "> \`✅\` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**", ephemeral: true });
+          await interaction.reply({ content: "> `✅` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**", ephemeral: true });
         } catch (error) {
-          console.error("❌  | Fehler beim Kicken des Benutzers:", error);
+          logger.error("❌  | Fehler beim Kicken des Benutzers:", error);
           interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
         }
         break;
+      }
 
       case "aktivieren":
-      case "deaktivieren":
+      case "deaktivieren": {
         const system = await interaction.options.getString("system");
         const serverData = await serverdb.findOne({ guildID: interaction.guildId });
         if (!serverData) {return;}
@@ -406,8 +405,9 @@ export default {
           await interaction.reply({ content: `> \`🔴\` » Das \`${system}\` System wurde **erfolgreich** __deaktiviert.__`, ephemeral: true });
         }
         break;
+      }
 
-      case "donate":
+      case "donate": {
         const amount = interaction.options.getInteger("amount");
 
         const confirmButton = new ButtonBuilder()
@@ -463,43 +463,11 @@ export default {
             });
           }
         } catch (err) {
-          console.error(err);
+          logger.error(err);
           await interaction.followUp({ content: "> `⚠️` » Die Aktion wurde nicht rechtzeitig bestätigt.", ephemeral: true });
         }
         break;
+      }
     }
   },
 };
-
-async function remindUsers(client, meetingDateUTC) {
-  const meeting = await serverdb.findOne({ "meetings.date": meetingDateUTC });
-
-  if (!meeting) {return;}
-
-  for (const userId of meeting.reminders) {
-    const user = await client.users.fetch(userId);
-    if (user) {
-      await user.send(`> \`📣\` » Erinnerung: Das Meeting beginnt in **10 Minuten**.\nDatum: ${meetingDateUTC}`);
-    }
-  }
-}
-
-async function deleteMeetingMessage(client, meetingDateUTC) {
-  const meeting = await serverdb.findOne({ "meetings.date": meetingDateUTC });
-
-  if (!meeting) {return;}
-
-  const messageID = meeting.messageID;
-  const channel = await client.channels.fetch("877446081036836884");
-
-  if (channel && messageID) {
-    try {
-      const message = await channel.messages.fetch(messageID);
-      if (message) {
-        await message.delete();
-      }
-    } catch (error) {
-      console.error(`Fehler beim Löschen der Nachricht: ${error}`);
-    }
-  }
-}

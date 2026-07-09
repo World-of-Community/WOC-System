@@ -2,13 +2,6 @@ import { EmbedBuilder } from "discord.js";
 import { Team } from "../../models/fussballdb.js";
 import Match from "../../models/matchdb.js";
 
-const proLeagueTeams = [
-  "FC Adler", "SV Löwen", "TSV Eiche", "SC Blau", "VfB Stern",
-  "FC Rot-Weiß", "SV Grünwald", "TSV Nord", "SC Süd", "VfB West",
-  "FC Ostwind", "SV Nordstern", "TSV Berg", "SC Tal", "VfB See",
-  "FC Sturm", "SV Blitz", "TSV Vulkan", "SC Frost", "VfB Flamme",
-  "FC Donner", "SV Schatten", "TSV Nebel", "SC Licht",
-];
 
 export default {
   name: "club-profil",

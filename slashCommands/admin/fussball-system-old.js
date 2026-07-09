@@ -1,5 +1,5 @@
 import { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle, ComponentType } from "discord.js";
-import { Team, Match, ProLeagueEmbed } from "../../models/fussballdb.js";
+import { Team, Match } from "../../models/fussballdb.js";
 
 const teamsData = [
   { name: "FC Adler", players: ["Müller", "Schmidt", "Fischer", "Weber"], stadium: "Adler Arena" },
@@ -70,7 +70,7 @@ export default {
     }
 
     const tabelleEmbed = new EmbedBuilder()
-      .setTitle("\`📊\` Aktuelle Tabelle")
+      .setTitle("`📊` Aktuelle Tabelle")
       .setColor("#0099ff");
 
     for (const [i, team] of teams.entries()) {
@@ -105,7 +105,7 @@ export default {
     // Nächstes Spiel Embed
     const nextMatch = upcomingMatches[0];
     const naechstesSpielEmbed = new EmbedBuilder()
-      .setTitle("\`🏟️\` Nächstes Spiel")
+      .setTitle("`🏟️` Nächstes Spiel")
       .setColor("#00cc66");
     if (nextMatch) {
       naechstesSpielEmbed.setDescription(
@@ -135,7 +135,7 @@ export default {
     }
 
     const overviewEmbed = new EmbedBuilder()
-      .setTitle("\`⚽\` » Fußball Übersicht")
+      .setTitle("`⚽` » Fußball Übersicht")
       .setDescription(
         "Die **Pro League** ist die höchste Spielklasse in unserem Fußball-Universum. Hier treffen die besten Mannschaften aufeinander, um Ruhm, Ehre und den begehrten Meistertitel zu kämpfen.\n\n" +
         "- `💥` » **Spannende Matches** mit Live-Statistiken\n" +
@@ -210,36 +210,6 @@ function delay(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-const extraTimeFirstHalf = Math.floor(Math.random() * 10) + 1; // 1-10 Minuten Nachspielzeit 1. Halbzeit
-const extraTimeSecondHalf = Math.floor(Math.random() * 20) + 1; // 1-20 Minuten Nachspielzeit 2. Halbzeit
-
-const pauseDuration = 5; // 5 Minuten Pause
-
-const totalMatchTime = 45 + extraTimeFirstHalf + pauseDuration + 45 + extraTimeSecondHalf; // Gesamtminuten inklusive Pause
-
-function getDisplayMinute(minute, extraFirstHalf, extraSecondHalf) {
-  const pauseStart = 45 + extraFirstHalf;
-  const pauseEnd = pauseStart + 5;
-
-  // Erste Halbzeit (1 - 45)
-  if (minute <= 45) {return `${minute}'`;}
-
-  // Nachspielzeit der ersten Halbzeit (z. B. 45 + 3)
-  if (minute <= pauseStart) {return `45' +${minute - 45}`;}
-
-  // Pause
-  if (minute <= pauseEnd) {return `45' +${extraFirstHalf} (Pause)`;}
-
-  // 2. Halbzeit beginnt
-  const zweiteHalbzeitMinute = minute - pauseEnd;
-
-  // Normale zweite Halbzeit (46 - 90)
-  if (zweiteHalbzeitMinute <= 45) {return `${45 + zweiteHalbzeitMinute}'`;}
-
-  // Nachspielzeit der zweiten Halbzeit
-  return `90' +${zweiteHalbzeitMinute - 45}`;
-}
-
 function generateOdds() {
   const probTeam1 = Math.random() * 0.5 + 0.25;
   const probTeam2 = Math.random() * (1 - probTeam1);
@@ -255,7 +225,7 @@ function generateOdds() {
 async function simulateRandomMatch(interaction) {
   const proLeagueTeams = await Team.find({ league: "Pro League" });
   if (!proLeagueTeams || proLeagueTeams.length < 2) {
-    return interaction.followUp({ content: "> \`❌\` Nicht genug Teams in Pro League.", ephemeral: true });
+    return interaction.followUp({ content: "> `❌` Nicht genug Teams in Pro League.", ephemeral: true });
   }
 
   const [team1, team2] = getTwoDifferentTeams(proLeagueTeams);
@@ -275,9 +245,9 @@ async function simulateRandomMatch(interaction) {
       { name: "Spielstand", value: "0 - 0", inline: true },
       { name: "xG", value: "0.00 - 0.00", inline: true },
       //{ name: 'Torschüsse', value: '\`🎯\` 0-0', inline: true },
-      { name: "Gelbe Karten", value: "\`🟨\` 0-0", inline: true },
+      { name: "Gelbe Karten", value: "`🟨` 0-0", inline: true },
       { name: "Ballbesitz", value: "0% - 0%", inline: true },
-      { name: "Ecken", value: "\`🚩\` 0-0", inline: true },
+      { name: "Ecken", value: "`🚩` 0-0", inline: true },
       { name: "Ereignisse", value: "Noch keine Ereignisse..." },
     )
     .setImage("https://media.istockphoto.com/id/179518838/de/vektor/realistische-vektor-fu%C3%9Fball-fu%C3%9Fballplatz.jpg?s=612x612&w=0&k=20&c=1eyMFLfUuGZtZm8VCbLjEIo68OzOuQEoHe5zq8teRWQ=");
@@ -286,7 +256,7 @@ async function simulateRandomMatch(interaction) {
   const players1 = teamsData.find(t => t.name === team1Name)?.players || [];
   const players2 = teamsData.find(t => t.name === team2Name)?.players || [];
   const embedLineup = new EmbedBuilder()
-    .setTitle("\`📋\` Aufstellung")
+    .setTitle("`📋` Aufstellung")
     .setColor("Blue")
     .setDescription(
       `**${team1Name}:**\n${players1.length ? players1.join(", ") : "Keine Spieler-Daten"}\n\n` +
@@ -318,8 +288,6 @@ async function simulateRandomMatch(interaction) {
   const filter = i => i.user.id === interaction.user.id;
   const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button });
 
-  let userTip;
-
   collector.on("collect", async i => {
     let userTip;
 
@@ -329,17 +297,17 @@ async function simulateRandomMatch(interaction) {
       case "win_team2": userTip = "team2"; break;
     }
 
-    await i.update({ content: "\`⏳\` Anpfiff in wenigen Sekunden...", embeds: [], components: [] });
+    await i.update({ content: "`⏳` Anpfiff in wenigen Sekunden...", embeds: [], components: [] });
 
     collector.stop();
     await delay(3000);
-    await interaction.followUp({ content: "\`🔊\` **Anpfiff! Das Spiel beginnt!** \`⚽\`" });
+    await interaction.followUp({ content: "`🔊` **Anpfiff! Das Spiel beginnt!** `⚽`" });
     await simulateMatch(interaction, statusMessage, team1, team2, team1Name, team2Name, userTip);
   });
 
   collector.on("end", async collected => {
     if (collected.size === 0) {
-      await interaction.followUp({ content: "\`⏱️\` Zeit abgelaufen, kein Tipp abgegeben." });
+      await interaction.followUp({ content: "`⏱️` Zeit abgelaufen, kein Tipp abgegeben." });
     }
   });
 }
@@ -350,9 +318,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
   let yellowCardsTeam1 = 0, yellowCardsTeam2 = 0;
   let cornersTeam1 = 0, cornersTeam2 = 0;
   let team1Passes = 0, team2Passes = 0;
-  let team1Shots = 0, team2Shots = 0;
-  let team1Tackles = 0, team2Tackles = 0;
-  let team1Saves = 0, team2Saves = 0;
 
   const goalEvents = [];
 
@@ -362,8 +327,8 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
   for (let minute = 1; minute <= 90 + extraTime; minute++) {
     let torGezaehlt = true;
-    let scorer = "";
-    let xG = 0;
+    let scorer;
+    let xG;
 
     // Torchance alle 4 Minuten mit 15% Wahrscheinlichkeit
     if (minute % 4 === 0 && Math.random() < 0.15) {
@@ -437,10 +402,10 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
       const ownGoalTeamName = ownGoalBy === "team1" ? team1Name : team2Name;
 
       // Tor zählen
-      if (teamName === "team1") {
-        team1Name++;
+      if (scoringTeam === "team1") {
+        score1++;
       } else {
-        team2Name++;
+        score2++;
       }
 
       events.push(`\`😵\` EIGENTOR von ${ownGoalTeamName}! TOR! für ${scoringTeamName} (${getDisplayMinute(minute)})`);
@@ -489,9 +454,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
 
       const treffer = Math.random() < 0.5 ? "Latten" : "Pfosten";
 
-      // Torschüsse zählen
-      if (isTeam1) {team1Shots++;} else {team2Shots++;}
-
       events.push(`\`💥\` ${treffer}schuss von **${player}** (${teamName}) (${getDisplayMinute(minute)})`);
     }
 
@@ -509,12 +471,6 @@ async function simulateMatch(interaction, statusMessage, team1, team2, team1Name
     // Ballbesitz & Aktionen jede Minute aktualisieren
     team1Passes += Math.floor(Math.random() * 5);
     team2Passes += Math.floor(Math.random() * 5);
-    //team1Shots += Math.floor(Math.random() * 2);
-    //team2Shots += Math.floor(Math.random() * 2);
-    team1Tackles += Math.floor(Math.random() * 2);
-    team2Tackles += Math.floor(Math.random() * 2);
-    team1Saves += Math.floor(Math.random() * 1);
-    team2Saves += Math.floor(Math.random() * 1);
 
     // Ballbesitz in Prozent
     const totalPasses = team1Passes + team2Passes;

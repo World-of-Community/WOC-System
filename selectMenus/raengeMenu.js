@@ -232,7 +232,7 @@ export default {
           rolemember.forEach(async element => {
             liste += `<@${element.user.id}> , `;
           });
-          if (liste.length == 0) { return "Niemand"; }
+          if (liste.length === 0) { return "Niemand"; }
           return liste.slice(0, -2);
         }
         const admin = await interaction.guild.roles.cache.get("959869691529154631");
@@ -294,7 +294,7 @@ export default {
                         "<:PfeilBlau:1119711275014955080> **Ideen-, Spielersuche-& Changelog-System**\n" +
                         "<:PfeilBlau:1119711275014955080> **Bewerbungs-& Rollen-Verwaltung**\n" +
                         "<:PfeilBlau:1119711275014955080> **Verwaltung der Gewinnspiele**\n\n" +
-                        "> \`🚑\` 𑁉 <@1031487336783028274> (Tickets bearbeitet: `10.000+🎫`)\n" +
+                        "> `🚑` 𑁉 <@1031487336783028274> (Tickets bearbeitet: `10.000+🎫`)\n" +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Erstellung, Verwaltung und Organisierung von Tickets.\n\n" +
                         "> <a:pin:1119708768326914100> 𑁉 **DIE RESTLICHEN BOTS...**\n" +
                         "<:Pfeil:1119709908540076124> **Aufgaben:** Die restlichen Bots erfüllen nur noch kleine Aufgaben oder werden bald durch einen eigenen Bot von uns ersetzt.",

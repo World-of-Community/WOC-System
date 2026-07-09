@@ -1,5 +1,6 @@
 import client from "../index.js";
 import userdb from "../models/userdb.js";
+import logger from "../functions/logger.js";
 
 // Trackt die Sprachkanal-Zeit für Giveaway-Voraussetzungen und Statistiken
 client.on("voiceStateUpdate", async (oldState, newState) => {
@@ -15,7 +16,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       userData.giveaway.startTime = currentTime;
       await userData.save();
     } else {
-      console.error(`Für die Benutzer-ID wurde keine Benutzerdaten gefunden: ${userId}`);
+      logger.error(`Für die Benutzer-ID wurde keine Benutzerdaten gefunden: ${userId}`);
     }
   }
   else if (oldState.channelId && !newState.channelId) {
@@ -49,13 +50,13 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
     if (!oldState.channel && newState.channel) {
       // Benutzer betritt einen Kanal
-      console.log(`Benutzer ${user.username} ist einem Sprachkanal beigetreten: ${newState.channel.name}\n${datumStr}`);
+      logger.info(`Benutzer ${user.username} ist einem Sprachkanal beigetreten: ${newState.channel.name}\n${datumStr}`);
     } else if (oldState.channel && !newState.channel) {
       // Benutzer verlässt einen Kanal
-      console.log(`Benutzer ${user.username} hat einen Sprachkanal verlassen: ${oldState.channel.name}\n${datumStr}`);
+      logger.info(`Benutzer ${user.username} hat einen Sprachkanal verlassen: ${oldState.channel.name}\n${datumStr}`);
     } else if (oldState.channel && newState.channel && oldState.channel.id !== newState.channel.id) {
       // Benutzer wechselt den Kanal
-      console.log(`Benutzer ${user.username} ist von "${oldState.channel.name}" zu "${newState.channel.name}" gewechselt\n${datumStr}`);
+      logger.info(`Benutzer ${user.username} ist von "${oldState.channel.name}" zu "${newState.channel.name}" gewechselt\n${datumStr}`);
     }
 
     const userData = await userdb.findOne({ userID: userId });
@@ -70,13 +71,13 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
           userData.giveaway.startTime = 0;
           await userData.save();
         } else {
-          console.error("Ungültige durationInMilliseconds:", durationInMilliseconds);
+          logger.error("Ungültige durationInMilliseconds:", durationInMilliseconds);
         }
       } else {
-        console.error("Die Startzeit war Null oder nicht eingestellt.");
+        logger.error("Die Startzeit war Null oder nicht eingestellt.");
       }
     } else {
-      console.error("Für die Benutzer-ID wurde keine Benutzerdaten gefunden:", userId);
+      logger.error("Für die Benutzer-ID wurde keine Benutzerdaten gefunden:", userId);
     }
   }
 });

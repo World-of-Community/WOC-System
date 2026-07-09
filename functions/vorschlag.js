@@ -1,5 +1,6 @@
-import { Events, EmbedBuilder, ChannelType, ButtonBuilder, ButtonStyle, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { Events, EmbedBuilder, ChannelType, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import vorschlagEmitter from "./vorschlagEmitter.js";
+import logger from "./logger.js";
 
 export default (client) => {
   client.vorschlag = async () => {
@@ -24,9 +25,7 @@ export default (client) => {
           "1266724906930929709": "<a:MinecraftGrassBlock:872034424181637171> `MC-Server`",
         };
         const tags = thread.appliedTags;
-        console.log(tags);
-
-        const tagIDMap = tags.map(id => tagMap[id]);
+        logger.info(tags);
 
         let matchedTagText = "`❌` - **Tag wurde nicht gefunden**";
         for (const id of tags) {
@@ -61,7 +60,6 @@ export default (client) => {
       if (reaction.message.channel.type !== ChannelType.PublicThread) {return;}
       if (reaction.message.channel.parentId !== "1254340245772701747") {return;}
 
-      const emojiId = reaction.emoji.id;
       if (reaction.emoji.id !== "1008781495055429672") {return;}
 
       const message = reaction.message;
@@ -77,7 +75,6 @@ export default (client) => {
       const existingFieldIndex = existingEmbed.data.fields.findIndex(field => field.name === "`📊` - **Nützlich?**");
 
       if (existingFieldIndex !== -1) {
-        const fieldValue = existingEmbed.data.fields[existingFieldIndex].value;
         const updatedFieldValue = `» Votes: \`${upvoteCount}\` <a:upvote:1008781495055429672>`;
 
         existingEmbed.data.fields[existingFieldIndex].value = updatedFieldValue;
@@ -97,9 +94,8 @@ export default (client) => {
         try {
           await message.edit({ embeds: [updatedEmbed] });
         } catch (error) {
-          console.error("Fehler beim Bearbeiten der Nachricht:", error);
+          logger.error("Fehler beim Bearbeiten der Nachricht:", error);
         }
-      } else {
       }
     });
     client.on(Events.MessageReactionRemove, async (reaction, user) => {
@@ -107,7 +103,6 @@ export default (client) => {
       if (reaction.message.channel.type !== ChannelType.PublicThread) {return;}
       if (reaction.message.channel.parentId !== "1254340245772701747") {return;}
 
-      const emojiId = reaction.emoji.id;
       if (reaction.emoji.id !== "1008781495055429672") {return;}
 
       const message = reaction.message;
@@ -123,7 +118,6 @@ export default (client) => {
       const existingFieldIndex = existingEmbed.data.fields.findIndex(field => field.name === "`📊` - **Nützlich?**");
 
       if (existingFieldIndex !== -1) {
-        const fieldValue = existingEmbed.data.fields[existingFieldIndex].value;
         const updatedFieldValue = `» Votes: \`${upvoteCount}\` <a:upvote:1008781495055429672>`;
 
         existingEmbed.data.fields[existingFieldIndex].value = updatedFieldValue;
@@ -143,9 +137,8 @@ export default (client) => {
         try {
           await message.edit({ embeds: [updatedEmbed] });
         } catch (error) {
-          console.error("Fehler beim Bearbeiten der Nachricht:", error);
+          logger.error("Fehler beim Bearbeiten der Nachricht:", error);
         }
-      } else {
       }
     });
     client.on("interactionCreate", async (interaction) => {
@@ -166,7 +159,7 @@ export default (client) => {
 
           modal.addComponents(new ActionRowBuilder().addComponents(textInputAccept));
 
-          await interaction.showModal(modal).then(async msg => {
+          await interaction.showModal(modal).then(async () => {
             await interaction.client.once("interactionCreate", async (inter) => {
               if (inter.customId === "acceptreason") {
                 const channel = inter.channel;
@@ -209,7 +202,7 @@ export default (client) => {
                 const userIDMatch = vorschlagsembed.footer.text.match(/»\s+(\d{17,19})$/);
                 const userID = userIDMatch ? userIDMatch[1] : null;
                 if (!userID) {
-                  console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+                  logger.error("Fehler bei der Verarbeitung der UserID.");
                   return;
                 }
                 const user = await inter.client.users.fetch(userID);
@@ -238,7 +231,7 @@ export default (client) => {
 
           modal.addComponents(new ActionRowBuilder().addComponents(textInputAccept));
 
-          await interaction.showModal(modal).then(async msg => {
+          await interaction.showModal(modal).then(async () => {
             await interaction.client.once("interactionCreate", async (inter) => {
               if (inter.customId === "editreason") {
                 const channel = inter.channel;
@@ -281,7 +274,7 @@ export default (client) => {
                 const userIDMatch = vorschlagsembed.footer.text.match(/»\s+(\d{17,19})$/);
                 const userID = userIDMatch ? userIDMatch[1] : null;
                 if (!userID) {
-                  console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+                  logger.error("Fehler bei der Verarbeitung der UserID.");
                   return;
                 }
                 const user = await inter.client.users.fetch(userID);
@@ -311,7 +304,7 @@ export default (client) => {
 
           modal.addComponents(new ActionRowBuilder().addComponents(textInputAccept));
 
-          await interaction.showModal(modal).then(async msg => {
+          await interaction.showModal(modal).then(async () => {
             await interaction.client.once("interactionCreate", async (inter) => {
               if (inter.customId === "delicereason") {
                 const channel = inter.channel;
@@ -354,7 +347,7 @@ export default (client) => {
                 const userIDMatch = vorschlagsembed.footer.text.match(/»\s+(\d{17,19})$/);
                 const userID = userIDMatch ? userIDMatch[1] : null;
                 if (!userID) {
-                  console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+                  logger.error("Fehler bei der Verarbeitung der UserID.");
                   return;
                 }
                 const user = await inter.client.users.fetch(userID);
@@ -409,7 +402,7 @@ export default (client) => {
           const userIDMatch = vorschlagsembed.footer.text.match(/»\s+(\d{17,19})$/);
           const userID = userIDMatch ? userIDMatch[1] : null;
           if (!userID) {
-            console.error("Fehler bei der Verarbeitung des UserIDs:", err);
+            logger.error("Fehler bei der Verarbeitung der UserID.");
             return;
           }
           const user = await interaction.client.users.fetch(userID);
