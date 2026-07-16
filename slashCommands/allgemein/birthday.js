@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits} from "discord.js";
 import userDB from "../../models/userdb.js";
 import logger from "../../functions/logger.js";
 
@@ -28,6 +28,12 @@ export default {
           "type": 4,
           "name": "jahr",
           "description": "» In welchen Jahr wurdest du geboren?",
+          "required": false,
+        },
+        {
+          "type": 6,
+          "name": "user",
+          "description": "» (Nur Admins) Für welchen Nutzer soll der Geburtstag gesetzt werden?",
           "required": false,
         },
       ],
@@ -93,16 +99,21 @@ export default {
         tag = interaction.options.getInteger("tag");
         monat = interaction.options.getInteger("monat");
         jahr = interaction.options.getInteger("jahr");
+        user = interaction.options.getUser("user");
 
+        if (user && user.id !== interaction.user.id && !interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+          return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, den Geburtstag anderer Nutzer zu setzen.", ephemeral: true });
+        }
 
         if (!isValidDate(tag, monat, jahr)) {
           return interaction.reply({ content: "> `❌` » Bitte gib ein gültiges Datum ein.", ephemeral: true });
         }
 
         try {
+          const targetID = user ? user.id : interaction.user.id;
           if (jahr) {
             await userDB.findOneAndUpdate(
-              { userID: interaction.user.id },
+              { userID: targetID },
               {
                 "birthday.tag": tag,
                 "birthday.monat": monat,
@@ -112,7 +123,7 @@ export default {
             );
           } else {
             await userDB.findOneAndUpdate(
-              { userID: interaction.user.id },
+              { userID: targetID },
               {
                 "birthday.tag": tag,
                 "birthday.monat": monat,
@@ -120,10 +131,14 @@ export default {
               { upsert: true, returnDocument: "after" },
             );
           }
-          await interaction.reply({ content: "> `✅` » Danke dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>", ephemeral: true });
+          if (user && user.id !== interaction.user.id) {
+            await interaction.reply({ content: `> \`✅\` » Der Geburtstag von ${user} wurde erfolgreich gespeichert.`, ephemeral: true });
+          } else {
+            await interaction.reply({ content: "> `✅` » Danke dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>", ephemeral: true });
+          }
         } catch (error) {
           logger.error(error);
-          await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Speichern deines Geburtstags. Bitte melde dich beim Ticket Support.", ephemeral: true });
+          await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Speichern des Geburtstags. Bitte melde dich beim Ticket Support.", ephemeral: true });
         }
         break;
 
@@ -170,7 +185,7 @@ export default {
         try {
           if (jahr) {
             await userDB.findOneAndUpdate(
-              { userID: interaction.user.id },
+              { userID: user.id },
               {
                 "birthday.tag": tag,
                 "birthday.monat": monat,
@@ -180,7 +195,7 @@ export default {
             );
           } else {
             await userDB.findOneAndUpdate(
-              { userID: interaction.user.id },
+              { userID: user.id },
               {
                 "birthday.tag": tag,
                 "birthday.monat": monat,
