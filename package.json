@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon --ignore '*json' index.js"
+    "dev": "nodemon --ignore '*json' index.js",
+    "postinstall": "npm install -g typescript@5.4.5 ts-node@10.9.2 || true"
   },
   "author": "",
   "license": "ISC",
