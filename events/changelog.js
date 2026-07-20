@@ -6,7 +6,7 @@ import config from "../json/config.json" with { type: "json" };
 import logger from "../functions/logger.js";
 
 // Changelog Embed (jeden Montag um Mitternacht)
-cron.schedule("0 0 * * 1", async () => {
+cron.schedule("30 20 * * 1", async () => {
   try {
     const channel = await client.channels.cache.get(config.changelog);
     if (!channel) {return;}
