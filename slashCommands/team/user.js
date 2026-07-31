@@ -310,7 +310,7 @@ export default {
                     "**`👮` Moderation**\n" +
                     `> \`⛔\` » Bannstatus: ${banned ? "`🔴` Gebannt" : "`🟢` Nicht gebannt"}\n` +
                     `> \`🔇\` » Timeouts: \`${timeouts}\`\n` +
-                    `> \`❗\` » Warnungen: \`${warns}\`\n\n` +
+                    `> \`❗\` » Warnungen: \`${warns}\` (max. 5)\n\n` +
 
                     `**\`📝\` Notizen**\n> ${noteText}`,
         )
