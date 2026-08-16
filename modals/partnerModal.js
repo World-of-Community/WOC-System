@@ -34,7 +34,7 @@ export default {
     });
 
     return interaction.reply({
-      content: "> ✅ Deine Anfrage wurde abgesendet. Bitte habe etwas Geduld.",
+      content: "> `✅` » Deine Anfrage wurde abgesendet. Bitte habe etwas Geduld.",
       ephemeral: true,
     });
   },
