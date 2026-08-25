@@ -61,7 +61,7 @@ export default {
                         "<:Pfeil:1119709908540076124> War bei der **Server-Eröffnung 2021** dabei.",
           )
           .setColor("Orange")
-          .setImage("https://cdn.discordapp.com/attachments/1145779055644393592/1190736340531302450/WOC_Banner_Unsere_Server_Erfolge.jpg?ex=65ac1d22&is=6599a822&hm=48316e7dc0ac8328953f6fcb6685bc2f1fbf53f286de7f8f864258a6ca81af85&")
+          .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539322429581688884/image.png?ex=6a8e76fa&is=6a8d257a&hm=4c39c912ab0faeaeb9df82e0a15ca6dd095a19d1b6dda1abbe2cfbc4b93acdb6&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
         await interaction.reply({ embeds: [serverEmbed], ephemeral: true });
@@ -104,7 +104,7 @@ export default {
                         "<:PfeilBlau:1119711275014955080> Bald Verfügbar.",
           )
           .setColor("Green")
-          .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269340189336010757/WOC_Banner_Minecraft_Range.png?ex=66b4faac&is=66b3a92c&hm=dbde292175421ce18da1a067f1a5e164b65d5f23b12911bfc57b509f723c&")
+          .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1541857396941393962/WOC_Banner_Minecraft_Range.png?ex=6a8f1e19&is=6a8dcc99&hm=38022366bfbdbdc181f9319347589e03346fd8662a177fcec308090647704fe1&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
         await interaction.reply({ embeds: [spielerEmbed], ephemeral: true });
@@ -157,7 +157,7 @@ export default {
                         "<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden",
           )
           .setColor("Orange")
-          .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269340226862452896/WOC_Banner_Levelsystem.png?ex=66b4fab5&is=66b3a935&hm=56c41f63e7f2cb41f0fbb42cd8423b6f03e05e310af8afba5e7eb7f7437d7a3f&")
+          .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1541857231832612945/WOC_Banner_Levelsystem.jpg?ex=6a8f1df2&is=6a8dcc72&hm=d3167878dc7bbabd8213537948c4984d9026ddb84105c329608afd599e67656d&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
         await interaction.reply({ embeds: [levelEmbed], ephemeral: true });
@@ -218,7 +218,7 @@ export default {
                         "<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!",
           )
           .setColor("DarkBlue")
-          .setImage("https://cdn.discordapp.com/attachments/1145779055644393592/1181732753243381870/WOC_Banner_Exklusive_Rollen.jpg?ex=65949663&is=65822163&hm=72a1632efc783e7be7d34cfc055637a1e344e9b56fd0e6f051b89fd60da868d1&")
+          .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321628972818522/image.png?ex=6a8e763b&is=6a8d24bb&hm=9417739db302b8bfe278815640f691a8de617dce0b241945685962f0ca9ea327&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
         await interaction.reply({ embeds: [exklusiveEmbed], ephemeral: true });
@@ -277,7 +277,7 @@ export default {
                         `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(builder.id)}`,
           )
           .setColor("Red")
-          .setImage("https://cdn.discordapp.com/attachments/1145779055644393592/1181732690458837083/WOC_Banner_Unser_Server-Team.jpg?ex=65949654&is=65822154&hm=4a077c7d4e3975ee38617cb9b3de6aa8fe7861c9e45c8c3665b2f9b50e045786&")
+          .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321535632900188/image.png?ex=6a8e7625&is=6a8d24a5&hm=69b32dabe1c3dcb7a4c8706d613ff9ad776c527cd6563fafdf6aa760c6d6eebe&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
         await interaction.reply({ embeds: [teamEmbed], ephemeral: true });
@@ -300,7 +300,7 @@ export default {
                         "<:Pfeil:1119709908540076124> **Aufgaben:** Die restlichen Bots erfüllen nur noch kleine Aufgaben oder werden bald durch einen eigenen Bot von uns ersetzt.",
           )
           .setColor("Aqua")
-          .setImage("https://cdn.discordapp.com/attachments/1145779055644393592/1181732786554540183/WOC_Banner_Discord_Bots.jpg?ex=6594966b&is=6582216b&hm=e036aa4455500313ff188c610bdbc1981f0190d78f5e6cde9490b91ad56ecec1&")
+          .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321673927622676/image.png?ex=6a8e7646&is=6a8d24c6&hm=de2cc77ff112df59355a1c55bebe0ee330fc63724cbc9ea9305a1ad18f2cb392&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
         await interaction.reply({ embeds: [botEmbed], ephemeral: true });

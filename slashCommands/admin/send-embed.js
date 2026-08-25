@@ -114,7 +114,7 @@ export default {
                     "🔟 𑁉 Stimmverzerrer oder Soundboards sind nur gestattet, wenn dies ein Teammitglied erlaubt.",
         )
         .setColor("Red")
-        .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269340748256514153/WOC_Banner_Server-Regeln.png?ex=66c575f1&is=66c42471&hm=e9b95fe842b4290f67f9802066feafbf86d7d9270f437b589858621e26ec5b73&")
+        .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321491265683486/image.png?ex=6a8e761a&is=6a8d249a&hm=98dc3e8fc517bcb25f32224d03fdc437a6ba061767ac58a581eca0cdc051fe27&")
         .setFooter({ text: "Du erklärst dich mit diesen Regeln bei der Nutzung unseres Discord-Servers einverstanden.", iconURL: "https://media.discordapp.net/attachments/943859953318371359/1055943224092532846/WOC_Orange.png" });
 
       const regelButton = new ActionRowBuilder()
@@ -144,7 +144,7 @@ export default {
                     "<:Pfeil:1119709908540076124> Wir veranstalten regelmäßig Events um die Server unserer Partner noch etwas bekannter zu machen.",
         )
         .setColor("Blurple")
-        .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269341195310469200/WOC_Partner_werden_Banner.png?ex=66c5765c&is=66c424dc&hm=32f98edaa2aa32418c879199d7fe5f03562fbace9b105396d6df475005cf4674&");
+        .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321446432505986/image.png?ex=6a8e7610&is=6a8d2490&hm=eaca0313ce62bc14795b31a950297646bd97ce1da3aadcbc92913fbb81c6bf30&");
 
       const partnerButton = new ActionRowBuilder()
         .addComponents(
