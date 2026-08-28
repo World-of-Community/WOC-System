@@ -71,10 +71,10 @@ cron.schedule("0 0 * * *", async () => {
       const selectedBirthdayWord = birthdayWords[randomIndex];
 
       const birthdaymessage = await birthdayChannel.send({
-        content: `🎂 𑁉 ${birthdayMessage}\nWünscht dem **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"}** alles Gute! <a:2herzen:1196502635465932984>\nTrage auch deinen Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n*${selectedBirthdayWord}*`,
+        content: `🎂 𑁉 ${birthdayMessage}\nWünscht dem **${birthdayUsersList.length > 1 ? "Mitgliedern" : "Mitglied"}** alles Gute! <a:2herzen:1196502635465932984>\nTrage auch deinen Geburtstag ein mit \`/birthday set\` (**MIT JAHR** für eine Altersrolle!).\n<a:Chat1:976129450112593990> × ${birthdayUsersList.length > 1 ? "Ihr habt" : "Du hast"} **2x MEHR XP** für Heute in allen Chats!\n\`🪙\` × ${birthdayUsersList.length > 1 ? "Ihr bekommt" : "Du bekommst"} **10.000 Coins auf unserem Minecraft-Server** – ${birthdayUsersList.length > 1 ? "meldet euch" : "melde dich"} dazu im **Ticket-Support**!\n*${selectedBirthdayWord}*`,
       });
 
-      await birthdaymessage.react("<a:herzen:1394561549602914386> ");
+      await birthdaymessage.react("<a:herzen:1394561549602914386>");
       await birthdaymessage.react("<a:Cool:915211628755169301>");
 
     }
