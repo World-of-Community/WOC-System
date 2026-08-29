@@ -152,7 +152,7 @@ export default {
 
         // Speichern des Meetings in der Datenbank
         try {
-          const teamDataMeeting =await serverdb.findOneAndUpdate(
+          const teamDataMeeting = await serverdb.findOneAndUpdate(
             { guildID: "815919809379172354" },
             {
               $push: {
