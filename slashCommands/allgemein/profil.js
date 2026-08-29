@@ -67,11 +67,10 @@ export default {
       "1154345358030282782", // Dev Leitung
       "1155080722466488351", // Support Leitung
       "1258773853249863734", // Builder Leitung
-      "1269384021402714263", // Creator Leitung
+      "1512871214278770860", // Creator Leitung
       "1269383970349650087", // Clan Leitung
       "1175879013688954980", // Partner Leitung
       "1290377533984079923", // Social Media Leitung
-      "1399156593802612908", // Content Leitung
       "1246368940318392411", // Event Leitung
       "1269370651500609586", // Bewerbung Leitung
       "1400183875774185554", // Emoji Quiz Leitung
