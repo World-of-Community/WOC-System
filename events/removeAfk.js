@@ -1,11 +1,8 @@
 import client from "../index.js";
-import { Events, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ComponentType } from "discord.js";
-import fs from "fs";
-import serverdb from "../models/serverdb.js";
+import { Events } from "discord.js";
+
 import userdb from "../models/userdb.js";
-import messagedb from "../models/messagedb.js";
-import teamdb from "../models/teamdb.js";
-import logger from "../functions/logger.js";
+
 
 client.on(Events.MessageCreate, async (message) => {
 
