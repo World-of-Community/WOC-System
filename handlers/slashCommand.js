@@ -17,9 +17,8 @@ const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 // (übernommen aus dem alten deployCommands.js)
 const isBlockedCommand = (name = "") => {
   const normalized = name.toLowerCase();
-  return normalized.includes("coin")
-    || normalized.includes("leaderboard")
-    || normalized === "season-pass"
+  
+     normalized === "season-pass"
     || normalized === "daily";
 };
 

@@ -1,6 +1,7 @@
 import client from "../index.js";
 import userdb from "../models/userdb.js";
 import logger from "../functions/logger.js";
+import { updateLeaderboard } from "../functions/leaderboard.js";
 
 // Trackt die Sprachkanal-Zeit für Giveaway-Voraussetzungen und Statistiken
 client.on("voiceStateUpdate", async (oldState, newState) => {
@@ -8,6 +9,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 
   const userId = newState.member.user.id;
   const currentTime = new Date().getTime();
+
 
   if (!oldState.channelId && newState.channelId) {
 
@@ -60,7 +62,9 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     }
 
     const userData = await userdb.findOne({ userID: userId });
+
     if (userData) {
+     
       const startTime = userData.giveaway.startTime;
 
       if (startTime !== 0) {
@@ -70,6 +74,8 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
           userData.stats.voiceTime += durationInMilliseconds;
           userData.giveaway.startTime = 0;
           await userData.save();
+          updateLeaderboard(client).catch(err => logger.error(`Fehler beim Aktualisieren des Leaderboards: ${err}`));
+       
         } else {
           logger.error("Ungültige durationInMilliseconds:", durationInMilliseconds);
         }
