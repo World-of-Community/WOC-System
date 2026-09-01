@@ -166,4 +166,5 @@ async function resetLeaderboardStats(client) {
 export {
   leaderboardSchedules,
   createLeaderboardMessage,
+  updateLeaderboard,
 };

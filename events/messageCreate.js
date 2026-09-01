@@ -5,6 +5,7 @@ import serverdb from "../models/serverdb.js";
 import userdb from "../models/userdb.js";
 import messagedb from "../models/messagedb.js";
 import teamdb from "../models/teamdb.js";
+import { updateLeaderboard } from "../functions/leaderboard.js";
 import logger from "../functions/logger.js";
 
 const TeamRoleIds = [
@@ -74,7 +75,7 @@ client.on(Events.MessageCreate, async (message) => {
   ];
 
   // nur reagieren, wenn der Channel erlaubt ist
-  if (!allowedChannels.includes(message.channel.id)) {return;}
+  //if (!allowedChannels.includes(message.channel.id)) {return;}
 
   if (suchbegriffe.some(begriff => frage.includes(begriff.toLowerCase()))) {
     const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
@@ -98,8 +99,6 @@ client.on(Events.MessageCreate, async (message) => {
 
   const erlaubterKanal = "815922756918181898"; // Haupt chat
 
-  if (message.channel.id !== erlaubterKanal) {return;} // Bricht ab, wenn es nicht der Kanal ist
-
   try {
     await messagedb.findOneAndUpdate(
       { guildID: message.guild.id },
@@ -109,6 +108,10 @@ client.on(Events.MessageCreate, async (message) => {
   } catch (err) {
     logger.error("Fehler beim Hochzählen der Nachrichten:", err);
   }
+
+  //if (message.channel.id !== erlaubterKanal) {return;}  Bricht ab, wenn es nicht der Kanal ist
+
+  
 
   if (!message.guild) {return;}
   const file = fs.readFileSync("json/config.json", "utf-8");
@@ -168,6 +171,7 @@ client.on(Events.MessageCreate, async (message) => {
   }
 
   let userData = await userdb.findOne({ userID: message.author.id });
+
   if (!userData) {
     userData = new userdb({
       userID: message.author.id,
@@ -186,8 +190,10 @@ client.on(Events.MessageCreate, async (message) => {
   } else {
     userData.giveaway.messages += 1;
     userData.stats.messages += 1;
+    
   }
-
+  userData.save().catch(err => logger.error(`Fehler beim Speichern der User-Daten für ${message.author.tag}: ${err}`));
+  updateLeaderboard(client).catch(err => logger.error(`Fehler beim Aktualisieren des Leaderboards: ${err}`));
   // Erste Nachricht Belohnung
   if (!userData.firstMessage && !message.author.bot) {
     userData.firstMessage = true;

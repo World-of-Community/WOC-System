@@ -1,9 +1,10 @@
+
 import leaderboarddb from "../../models/leaderboarddb.js";
 import { createLeaderboardMessage } from "../../functions/leaderboard.js";
 
 export default {
-  name: "leaderboard",
-  description: "» Zeigt das Leaderboard für Nachrichten und Sprachzeit. 📌",
+  name: "setup-leaderboard",
+  description: "» Richtet das Leaderboard für Nachrichten und Sprachzeit ein. 📌",
   type: 1,
   default_member_permissions: "8",
   options: [],
