@@ -127,7 +127,7 @@ client.on(Events.MessageCreate, async (message) => {
 
   // Teammitglied erwähnen Bot gibt Info Ticket Support
   if (!message.author.bot) {
-   
+
 
     if(message.member.roles.cache.some(role => TeamRoleIds.includes(role.id))) {
       let teamMitglied = await teamdb.findOne({ userID: message.author.id });
