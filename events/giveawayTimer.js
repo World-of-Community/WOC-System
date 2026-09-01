@@ -8,12 +8,12 @@ import logger from "../functions/logger.js";
 setInterval(async () => {
   const currentTime = new Date();
   const activeGiveaways = await giveawaydb.find({ endTime: null });
-  if (!activeGiveaways || activeGiveaways.length === 0) return;
+  if (!activeGiveaways || activeGiveaways.length === 0) {return;}
 
   for (const giveaway of activeGiveaways) {
     const startTime = new Date(giveaway.startTime);
     if (startTime.getTime() + giveaway.duration <= currentTime.getTime()) {
-      if (giveaway.endTime) continue;
+      if (giveaway.endTime) {continue;}
 
       giveaway.endTime = new Date();
       await giveaway.save();
@@ -27,7 +27,7 @@ setInterval(async () => {
         continue;
       }
 
-      if (!giveawayMessage) continue;
+      if (!giveawayMessage) {continue;}
 
       if (giveaway.teilnehmer.length < giveaway.gewinnerAnzahl) {
         const oldEmbed = giveawayMessage.embeds[0];
@@ -36,10 +36,10 @@ setInterval(async () => {
         const cancelledEmbed = new EmbedBuilder()
           .setTitle(giveawayTitle)
           .setDescription(
-            `<a:Neuigkeiten:1018910061348798564> » **__Gewinnspiel - Abgebrochen__**\n` +
+            "<a:Neuigkeiten:1018910061348798564> » **__Gewinnspiel - Abgebrochen__**\n" +
             `<:PfeilBlau:1147248395837247613> Teilnehmer: **${giveaway.teilnehmer.length}**\n` +
-            `<:PfeilBlau:1147248395837247613> Status: **` + "`Zu wenig Teilnehmer`" + `**\n` +
-            `<:PfeilBlau:1147248395837247613> Erstellt von <@${giveaway.creator}>`
+            "<:PfeilBlau:1147248395837247613> Status: **" + "`Zu wenig Teilnehmer`" + "**\n" +
+            `<:PfeilBlau:1147248395837247613> Erstellt von <@${giveaway.creator}>`,
           )
           .setColor("Red")
           .setFooter({ text: `${client.user.displayName} - Bot`, iconURL: `${client.user.displayAvatarURL()}` })
@@ -49,12 +49,12 @@ setInterval(async () => {
         await giveawayMessage.edit({
           content: "⛔ **GEWINNSPIEL ABGEBROCHEN!** ⛔",
           embeds: [cancelledEmbed],
-          components: []
+          components: [],
         });
 
         // Öffentliche Benachrichtigung im Channel
         await giveawayMessage.reply({
-          content: `\`⛔\` » **Gewinnspiel abgebrochen:** Es fehlten \`${giveaway.gewinnerAnzahl - giveaway.teilnehmer.length}👥\` Teilnehmer!`
+          content: `\`⛔\` » **Gewinnspiel abgebrochen:** Es fehlten \`${giveaway.gewinnerAnzahl - giveaway.teilnehmer.length}👥\` Teilnehmer!`,
         });
 
         continue; // Sauber zum nächsten Gewinnspiel springen
@@ -77,13 +77,13 @@ setInterval(async () => {
       const winnersMentions = winnerIds.map(id => `<@${id}>`).join(", ");
 
       await giveawayMessage.reply({
-        content: `<a:bier:1196502621427601498> **Herzlichen Glückwunsch**, ${winnersMentions} ${winnerIds.length === 1 ? "hat" : "haben"} ${emoji} **${priceInput}** ${emoji} gewonnen! <a:2herzen:1196502635465932984>`
+        content: `<a:bier:1196502621427601498> **Herzlichen Glückwunsch**, ${winnersMentions} ${winnerIds.length === 1 ? "hat" : "haben"} ${emoji} **${priceInput}** ${emoji} gewonnen! <a:2herzen:1196502635465932984>`,
       });
 
       for (const winnerId of winnerIds) {
         const userData = await userdb.findOne({ userID: winnerId });
         if (userData) {
-          if (!userData.giveaway) userData.giveaway = { eventWins: 0 };
+          if (!userData.giveaway) {userData.giveaway = { eventWins: 0 };}
           userData.giveaway.eventWins += 1;
           await userData.save();
         }
@@ -132,7 +132,7 @@ setInterval(async () => {
 }, 30000);
 
 function determineEmoji(priceInput) {
-  if (!priceInput) return "<a:Diamond:1018911546430210128>";
+  if (!priceInput) {return "<a:Diamond:1018911546430210128>";}
   const input = priceInput.toLowerCase();
   if (input.includes("nitro") && !input.includes("basic")) {
     return "<a:nitro:1186636151335944283>";
