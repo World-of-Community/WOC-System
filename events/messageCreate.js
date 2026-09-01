@@ -24,7 +24,7 @@ client.on(Events.MessageCreate, async (message) => {
   const mcServerIP = "worldofcommunity.de";
 
   const allowedChannels = [
-    "1544268490251182120", // Hauptchat
+    "815922756918181898", // Hauptchat
     "896743941813207081", // Spielersuche
     "979431125053227068",  // Bots verwenden
     "1284823233761251328", // Schrift Support
@@ -96,7 +96,7 @@ client.on(Events.MessageCreate, async (message) => {
     }, deleteAfter);
   }
 
-  const erlaubterKanal = "1544268490251182120"; // Haupt chat
+  const erlaubterKanal = "815922756918181898"; // Haupt chat
 
   if (message.channel.id !== erlaubterKanal) {return;} // Bricht ab, wenn es nicht der Kanal ist
 
