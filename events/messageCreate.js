@@ -19,11 +19,12 @@ const TeamRoleIds = [
 
 client.on(Events.MessageCreate, async (message) => {
 
+
   const deleteAfter = 30 * 1000;
   const mcServerIP = "worldofcommunity.de";
 
   const allowedChannels = [
-    "815922756918181898", // Hauptchat
+    "1544268490251182120", // Hauptchat
     "896743941813207081", // Spielersuche
     "979431125053227068",  // Bots verwenden
     "1284823233761251328", // Schrift Support
@@ -95,7 +96,7 @@ client.on(Events.MessageCreate, async (message) => {
     }, deleteAfter);
   }
 
-  const erlaubterKanal = "815922756918181898"; // Haupt chat
+  const erlaubterKanal = "1544268490251182120"; // Haupt chat
 
   if (message.channel.id !== erlaubterKanal) {return;} // Bricht ab, wenn es nicht der Kanal ist
 
@@ -123,6 +124,7 @@ client.on(Events.MessageCreate, async (message) => {
 
   // Teammitglied erwähnen Bot gibt Info Ticket Support
   if (!message.author.bot) {
+   
 
     if(message.member.roles.cache.some(role => TeamRoleIds.includes(role.id))) {
       let teamMitglied = await teamdb.findOne({ userID: message.author.id });
@@ -150,38 +152,6 @@ client.on(Events.MessageCreate, async (message) => {
           }, 5000);
         })
         .catch(logger.error);
-    }
-  }
-
-  // AFK System
-  if (!message.author.bot) {
-    const uD = await userdb.findOne({ userID: message.author.id });
-    if (uD && uD.afk && uD.afkStamp) {
-      const afkSeit = uD.afkStamp;
-
-      // Nachricht senden
-      const m = await message.reply(
-        `<:grnAFK:1021087367261585439> | ${message.author} **ist wieder da!**\n` +
-                    `> *Dein AFK-Status wurde entfernt. (Dauer: <t:${afkSeit}:R>)*`,
-      );
-
-      // AFK-Status entfernen
-      uD.afk = false;
-      uD.afkReason = "";
-      uD.afkStamp = "";
-      await uD.save();
-
-      setTimeout(async () => {
-        try {
-          await m.delete();
-        } catch {
-          // Nachricht wurde bereits gelöscht
-        }
-      }, 5000);
-
-      await message.member.setNickname(
-        message.member.displayName.replace("AFK | ", ""),
-      ).catch(() => {});
     }
   }
 
