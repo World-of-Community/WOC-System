@@ -64,7 +64,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
     const userData = await userdb.findOne({ userID: userId });
 
     if (userData) {
-     
+
       const startTime = userData.giveaway.startTime;
 
       if (startTime !== 0) {
@@ -75,7 +75,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
           userData.giveaway.startTime = 0;
           await userData.save();
           updateLeaderboard(client).catch(err => logger.error(`Fehler beim Aktualisieren des Leaderboards: ${err}`));
-       
+
         } else {
           logger.error("Ungültige durationInMilliseconds:", durationInMilliseconds);
         }

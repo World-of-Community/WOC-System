@@ -1,11 +1,11 @@
 import client from "../index.js";
-import { Events, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ComponentType } from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ComponentType, EmbedBuilder, Events} from "discord.js";
 import fs from "fs";
 import serverdb from "../models/serverdb.js";
 import userdb from "../models/userdb.js";
 import messagedb from "../models/messagedb.js";
 import teamdb from "../models/teamdb.js";
-import { updateLeaderboard } from "../functions/leaderboard.js";
+import {updateLeaderboard} from "../functions/leaderboard.js";
 import logger from "../functions/logger.js";
 
 const TeamRoleIds = [
@@ -23,13 +23,6 @@ client.on(Events.MessageCreate, async (message) => {
 
   const deleteAfter = 30 * 1000;
   const mcServerIP = "worldofcommunity.de";
-
-  const allowedChannels = [
-    "815922756918181898", // Hauptchat
-    "896743941813207081", // Spielersuche
-    "979431125053227068",  // Bots verwenden
-    "1284823233761251328", // Schrift Support
-  ];
   const frage = message.content.toLowerCase();
 
   const suchbegriffe = [
@@ -97,8 +90,6 @@ client.on(Events.MessageCreate, async (message) => {
     }, deleteAfter);
   }
 
-  const erlaubterKanal = "815922756918181898"; // Haupt chat
-
   try {
     await messagedb.findOneAndUpdate(
       { guildID: message.guild.id },
@@ -111,7 +102,7 @@ client.on(Events.MessageCreate, async (message) => {
 
   //if (message.channel.id !== erlaubterKanal) {return;}  Bricht ab, wenn es nicht der Kanal ist
 
-  
+
 
   if (!message.guild) {return;}
   const file = fs.readFileSync("json/config.json", "utf-8");
@@ -190,7 +181,7 @@ client.on(Events.MessageCreate, async (message) => {
   } else {
     userData.giveaway.messages += 1;
     userData.stats.messages += 1;
-    
+
   }
   userData.save().catch(err => logger.error(`Fehler beim Speichern der User-Daten für ${message.author.tag}: ${err}`));
   updateLeaderboard(client).catch(err => logger.error(`Fehler beim Aktualisieren des Leaderboards: ${err}`));
