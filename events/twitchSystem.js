@@ -11,7 +11,11 @@ const TWITCH_STATUS_PATH = path.resolve("json/twitchStatus.json");
 let twitchconfig = {};
 let accessToken = "";
 let tokenExpiresAt = 0;
-let isUpdating = false;
+let updatePromise = null;
+
+// Discord API Fehlercodes, bei denen die gespeicherte Nachricht wirklich weg ist
+const MISSING_MESSAGE_CODES = [10003, 10004, 10008];
+const EMBED_AUTHOR_NAME = "Red3405 Ankündigung";
 
 function loadTwitchConfig() {
   if (!fs.existsSync(TWITCH_STATUS_PATH)) {
@@ -80,7 +84,7 @@ async function getAccessToken(force = false) {
 function createOfflineEmbed() {
   return new EmbedBuilder()
     .setAuthor({
-      name: "Red3405 Ankündigung",
+      name: EMBED_AUTHOR_NAME,
       iconURL: client.user.displayAvatarURL({ dynamic: true }),
       url: `https://twitch.tv/${twitchconfig.twitchUser}`,
     })
@@ -98,7 +102,7 @@ function createOfflineEmbed() {
 function createLiveEmbed(stream) {
   return new EmbedBuilder()
     .setAuthor({
-      name: "Red3405 Ankündigung",
+      name: EMBED_AUTHOR_NAME,
       iconURL: client.user.displayAvatarURL({ dynamic: true }),
       url: `https://twitch.tv/${twitchconfig.twitchUser}`,
     })
@@ -145,7 +149,31 @@ async function fetchStream() {
   return data.data && data.data.length > 0 ? data.data[0] : null;
 }
 
-async function updateTwitchStatus() {
+// Sucht im Kanal nach einer bereits existierenden Status-Nachricht des Bots,
+// damit nach einem verlorenen statusMessageId keine doppelten Nachrichten entstehen
+async function findExistingStatusMessage(channel) {
+  try {
+    const messages = await channel.messages.fetch({ limit: 50 });
+
+    return messages.find((message) =>
+      message.author.id === client.user.id &&
+      message.embeds.length > 0 &&
+      message.embeds[0].author?.name === EMBED_AUTHOR_NAME,
+    ) || null;
+  } catch (err) {
+    logger.warn("Twitch System: Konnte Kanal-Verlauf nicht durchsuchen:", err);
+    return null;
+  }
+}
+
+function setStatusMessageId(messageId) {
+  if (twitchconfig.statusMessageId === messageId) {return;}
+
+  twitchconfig.statusMessageId = messageId;
+  saveTwitchConfig();
+}
+
+async function runTwitchStatusUpdate() {
   loadTwitchConfig();
 
   if (!hasCompleteConfig()) {throw new Error("Twitch-Konfiguration ist unvollständig (twitchStatus.json).");}
@@ -166,27 +194,47 @@ async function updateTwitchStatus() {
       const message = await channel.messages.fetch(twitchconfig.statusMessageId);
       await message.edit(payload);
       return;
-    } catch {
-      logger.warn("Twitch System: Gespeicherte Status-Nachricht nicht gefunden, sende neue Nachricht.");
+    } catch (err) {
+      // Nur bei wirklich gelöschter Nachricht neu senden, sonst (Rate-Limit,
+      // API-Ausfall, fehlende Rechte) den Fehler melden statt zu spammen
+      if (!MISSING_MESSAGE_CODES.includes(err?.code)) {throw err;}
+
+      logger.warn("Twitch System: Gespeicherte Status-Nachricht existiert nicht mehr, suche nach vorhandener Nachricht.");
     }
   }
 
+  const existing = await findExistingStatusMessage(channel);
+
+  if (existing) {
+    await existing.edit(payload);
+    setStatusMessageId(existing.id);
+    return;
+  }
+
   const message = await channel.send(payload);
-  twitchconfig.statusMessageId = message.id;
-  saveTwitchConfig();
+  setStatusMessageId(message.id);
+}
+
+// Verhindert, dass Cronjob und /twitch-status gleichzeitig laufen und dabei
+// zwei Nachrichten erzeugen
+async function updateTwitchStatus() {
+  if (updatePromise) {return updatePromise;}
+
+  updatePromise = runTwitchStatusUpdate().finally(() => {
+    updatePromise = null;
+  });
+
+  return updatePromise;
 }
 
 // Aktualisiert das Embed jede volle Minute, solange der Status aktiviert ist
 cron.schedule("* * * * *", async () => {
-  if (!client.isReady() || !isTwitchStatusEnabled() || isUpdating) {return;}
+  if (!client.isReady() || !isTwitchStatusEnabled()) {return;}
 
-  isUpdating = true;
   try {
     await updateTwitchStatus();
   } catch (err) {
     logger.error("Twitch System: Fehler bei automatischer Status-Aktualisierung:", err);
-  } finally {
-    isUpdating = false;
   }
 });
 
