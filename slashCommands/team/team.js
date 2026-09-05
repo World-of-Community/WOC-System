@@ -13,6 +13,7 @@ export default {
       "type": 1,
       "name": "urlaub",
       "description": "» Teile deinen Urlaub mit. 🌴",
+      "permission": "820658664536145940",
       "options": [
         {
           "type": 3,
