@@ -4,7 +4,7 @@ import userDB from "../../models/userdb.js";
 
 export default {
   name: "leaderboard",
-  description: "Zeigt dir die besten User in verschiedenen Kategorien an.",
+  description: "» Zeigt dir die besten User in verschiedenen Kategorien an. 🏆",
   type: 1,
   options: [
     {

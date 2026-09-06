@@ -12,8 +12,8 @@ export default {
       .setTitle("`📡` × Community - Hilfe")
       .setDescription(
         "» Hier findest du alle **Befehle**, erfahre mehr über\n" +
-                "World Of Community oder schau dir **nützliche Stats** an.\n\n" +
-                "`🚑` » Öffne bei Fragen oder Problemen ein Ticket im Support.",
+        "World Of Community oder schau dir **nützliche Stats** an.\n\n" +
+        "`🚑` » Öffne bei Fragen oder Problemen ein Ticket im Support.",
       )
       .setColor("Orange")
       .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269340406043381937/WOC_Banner_Bot_Hilfe_Community_Bot.png?ex=66b4fae0&is=66b3a960&hm=087cd6850d21387d5b583343abefc277ba95bcd6b058f0fe34bde5c7491432e5&")
@@ -52,8 +52,8 @@ export default {
             .setTitle("`😎` » Fun-Befehle (Kategorie) - Hilfe")
             .setDescription(
               "» Hier findest du alle unterhaltsamen **Fun-Befehle**, welche jederzeit verwendet werden können zum Spaß.\n\n" +
-                        "`🚑` » Öffne bei Fragen oder Problemen ein Ticket im Support.\n" +
-                        "`📌` » Du musst bei jedem Befehl einen User **erwähnen!**\n\n",
+              "`🚑` » Öffne bei Fragen oder Problemen ein Ticket im Support.\n" +
+              "`📌` » Du musst bei jedem Befehl einen User **erwähnen!**\n\n",
             )
             .addFields(
               {
