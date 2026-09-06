@@ -77,7 +77,7 @@ function leaderboardSchedules(client) {
     } catch (error) {
       logger.error(
         "Fehler beim automatischen Aktualisieren des Leaderboards:",
-        error
+        error,
       );
     }
   });
@@ -89,7 +89,7 @@ function leaderboardSchedules(client) {
     } catch (error) {
       logger.error(
         "Fehler beim monatlichen Zurücksetzen des Leaderboards:",
-        error
+        error,
       );
     }
   });
@@ -154,7 +154,7 @@ async function createLeaderboardMessage(guild) {
           messages: user.stats?.messages ?? 0,
           userID: user.userID,
         };
-      })
+      }),
     );
 
     // ========================================================
@@ -170,17 +170,17 @@ async function createLeaderboardMessage(guild) {
         const voiceTime = user.stats?.voiceTime ?? 0;
 
         const days = Math.floor(
-          voiceTime / (24 * 60 * 60 * 1000)
+          voiceTime / (24 * 60 * 60 * 1000),
         );
 
         const hours = Math.floor(
           (voiceTime % (24 * 60 * 60 * 1000)) /
-            (60 * 60 * 1000)
+            (60 * 60 * 1000),
         );
 
         const minutes = Math.floor(
           (voiceTime % (60 * 60 * 1000)) /
-            (60 * 1000)
+            (60 * 1000),
         );
 
         return {
@@ -188,7 +188,7 @@ async function createLeaderboardMessage(guild) {
           timeText: `${days} Tage ${hours} Stunden ${minutes} Minuten`,
           userID: user.userID,
         };
-      })
+      }),
     );
 
     // ========================================================
@@ -255,7 +255,7 @@ async function createLeaderboardMessage(guild) {
           "- Bilder senden in <#815922756918181898>\n" +
           "- Höher gelistet\n" +
           "- Ping Reaktion (`/emoji`)\n\n" +
-          "> `📌` » Das Leaderboard wird monatlich zurückgesetzt."
+          "> `📌` » Das Leaderboard wird monatlich zurückgesetzt.",
       )
       .setColor("Orange");
 
@@ -305,7 +305,7 @@ async function createLeaderboardMessage(guild) {
       messageEmbed.setThumbnail(
         topMessagesMembers[0].member.displayAvatarURL({
           dynamic: true,
-        })
+        }),
       );
     }
 
@@ -313,7 +313,7 @@ async function createLeaderboardMessage(guild) {
       voiceEmbed.setThumbnail(
         topVoiceMembers[0].member.displayAvatarURL({
           dynamic: true,
-        })
+        }),
       );
     }
 
@@ -329,13 +329,13 @@ async function createLeaderboardMessage(guild) {
       .setColor("Red")
       .setDescription(
         `Beim Laden des Leaderboards ist ein Fehler aufgetreten:\n${codeBlock(
-          error.message
-        )}`
+          error.message,
+        )}`,
       );
 
     logger.error(
       "Fehler beim Erstellen des Leaderboards:",
-      error
+      error,
     );
 
     return {
@@ -356,30 +356,30 @@ async function updateLeaderboard(client) {
 
     if (!savedMessage) {
       logger.warn(
-        "Kein gespeichertes Leaderboard gefunden."
+        "Kein gespeichertes Leaderboard gefunden.",
       );
       return;
     }
 
     const guild = client.guilds.cache.get(
-      savedMessage.guildId
+      savedMessage.guildId,
     );
 
     if (!guild) {
       logger.warn(
-        `Guild ${savedMessage.guildId} konnte nicht gefunden werden.`
+        `Guild ${savedMessage.guildId} konnte nicht gefunden werden.`,
       );
       return;
     }
 
     const leaderboardChannel =
       guild.channels.cache.get(
-        savedMessage.channelId
+        savedMessage.channelId,
       );
 
     if (!leaderboardChannel) {
       logger.warn(
-        `Leaderboard-Channel ${savedMessage.channelId} konnte nicht gefunden werden.`
+        `Leaderboard-Channel ${savedMessage.channelId} konnte nicht gefunden werden.`,
       );
       return;
     }
@@ -391,7 +391,7 @@ async function updateLeaderboard(client) {
 
     if (!leaderboardMessage) {
       logger.warn(
-        `Leaderboard-Nachricht ${savedMessage.messageId} konnte nicht gefunden werden.`
+        `Leaderboard-Nachricht ${savedMessage.messageId} konnte nicht gefunden werden.`,
       );
       return;
     }
@@ -405,7 +405,7 @@ async function updateLeaderboard(client) {
   } catch (error) {
     logger.error(
       "Fehler beim Aktualisieren des Leaderboards:",
-      error
+      error,
     );
   }
 }
@@ -420,7 +420,7 @@ async function resetLeaderboardStats(client) {
 
     if (!guild) {
       logger.error(
-        `Guild ${GUILD_ID} konnte beim Reset nicht gefunden werden.`
+        `Guild ${GUILD_ID} konnte beim Reset nicht gefunden werden.`,
       );
       return;
     }
@@ -431,19 +431,19 @@ async function resetLeaderboardStats(client) {
 
     if (!savedMessage) {
       logger.error(
-        "Kein gespeichertes Leaderboard gefunden."
+        "Kein gespeichertes Leaderboard gefunden.",
       );
       return;
     }
 
     const leaderboardChannel =
       guild.channels.cache.get(
-        savedMessage.channelId
+        savedMessage.channelId,
       );
 
     if (!leaderboardChannel) {
       logger.error(
-        `Leaderboard-Channel ${savedMessage.channelId} konnte nicht gefunden werden.`
+        `Leaderboard-Channel ${savedMessage.channelId} konnte nicht gefunden werden.`,
       );
       return;
     }
@@ -454,7 +454,7 @@ async function resetLeaderboardStats(client) {
 
     if (!role) {
       logger.error(
-        `Leaderboard-Rolle ${RoleID} konnte nicht gefunden werden.`
+        `Leaderboard-Rolle ${RoleID} konnte nicht gefunden werden.`,
       );
       return;
     }
@@ -498,10 +498,10 @@ async function resetLeaderboardStats(client) {
     const uniqueUserIds = [
       ...new Set([
         ...topMessagesMembers.map(
-          (user) => user.userID
+          (user) => user.userID,
         ),
         ...topVoiceMembers.map(
-          (user) => user.userID
+          (user) => user.userID,
         ),
       ]),
     ];
@@ -510,7 +510,7 @@ async function resetLeaderboardStats(client) {
     // Ausgeschlossene User niemals berücksichtigen.
     const filteredUserIds = uniqueUserIds.filter(
       (userID) =>
-        !EXCLUDED_USER_IDS.includes(userID)
+        !EXCLUDED_USER_IDS.includes(userID),
     );
 
     // ========================================================
@@ -524,7 +524,7 @@ async function resetLeaderboardStats(client) {
 
     const membersToRemoveRole =
       membersWithRole.filter((member) =>
-        member.roles.cache.has(role.id)
+        member.roles.cache.has(role.id),
       );
 
     await Promise.all(
@@ -533,15 +533,15 @@ async function resetLeaderboardStats(client) {
           await member.roles.remove(role);
 
           logger.debug?.(
-            `Leaderboard-Rolle von ${member.user.tag} entfernt.`
+            `Leaderboard-Rolle von ${member.user.tag} entfernt.`,
           );
         } catch (error) {
           logger.error(
             `Fehler beim Entfernen der Leaderboard-Rolle von ${member.user.tag}:`,
-            error
+            error,
           );
         }
-      })
+      }),
     );
 
     // ========================================================
@@ -556,7 +556,7 @@ async function resetLeaderboardStats(client) {
 
         if (!member) {
           logger.warn(
-            `User ${userID} konnte nicht gefunden werden.`
+            `User ${userID} konnte nicht gefunden werden.`,
           );
           return;
         }
@@ -567,7 +567,7 @@ async function resetLeaderboardStats(client) {
           EXCLUDED_USER_IDS.includes(member.id)
         ) {
           logger.warn(
-            `Ausgeschlossener User ${member.user.tag} wurde beim Rollenverteilen übersprungen.`
+            `Ausgeschlossener User ${member.user.tag} wurde beim Rollenverteilen übersprungen.`,
           );
           return;
         }
@@ -577,7 +577,7 @@ async function resetLeaderboardStats(client) {
             await member.roles.add(role);
 
             logger.info(
-              `${member.user.tag} hat die Leaderboard-Rolle erhalten.`
+              `${member.user.tag} hat die Leaderboard-Rolle erhalten.`,
             );
 
             // ==================================================
@@ -599,7 +599,7 @@ async function resetLeaderboardStats(client) {
         } catch (error) {
           logger.error(
             `Fehler beim Hinzufügen der Leaderboard-Rolle zu ${member.user.tag}:`,
-            error
+            error,
           );
         }
       });
@@ -619,7 +619,7 @@ async function resetLeaderboardStats(client) {
           "stats.messages": 0,
           "stats.voiceTime": 0,
         },
-      }
+      },
     );
 
     // ========================================================
@@ -629,12 +629,12 @@ async function resetLeaderboardStats(client) {
     await updateLeaderboard(client);
 
     logger.info(
-      "Leaderboard wurde monatlich zurückgesetzt und die Rolle wurde an die Top 3 Mitglieder des vergangenen Monats vergeben."
+      "Leaderboard wurde monatlich zurückgesetzt und die Rolle wurde an die Top 3 Mitglieder des vergangenen Monats vergeben.",
     );
   } catch (error) {
     logger.error(
       "Fehler beim monatlichen Leaderboard-Reset:",
-      error
+      error,
     );
   }
 }
@@ -659,31 +659,31 @@ import logger from "./logger.js";
 const RoleID = "1150753421339676722";
 
 const positionEmojis = [
-  "`🥇`", 
-  "`🥈`", 
-  "`🥉`", 
-  "`4️⃣`", 
-  "`5️⃣`", 
-  "`6️⃣`", 
-  "`7️⃣`", 
-  "`8️⃣`", 
-  "`9️⃣`", 
+  "`🥇`",
+  "`🥈`",
+  "`🥉`",
+  "`4️⃣`",
+  "`5️⃣`",
+  "`6️⃣`",
+  "`7️⃣`",
+  "`8️⃣`",
+  "`9️⃣`",
   "`🔟`"
 ];
 
 function getCurrentMonth() {
   const monthNames = [
-    "Januar", 
-    "Februar", 
-    "März", 
-    "April", 
-    "Mai", 
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
     "Juni",
-    "Juli", 
-    "August", 
-    "September", 
-    "Oktober", 
-    "November", 
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
     "Dezember",
   ];
 
