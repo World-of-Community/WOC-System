@@ -28,7 +28,7 @@ const RoleID = "1150753421339676722";
 // Ihre normalen Stats in der Datenbank bleiben erhalten.
 //
 const EXCLUDED_USER_IDS = [
-  // "123456789012345678",
+   "996364148361400330",
 ];
 
 const positionEmojis = [
