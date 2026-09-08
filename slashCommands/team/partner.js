@@ -23,7 +23,7 @@ export default {
         {
           type: 3,
           name: "name",
-          description: "» Name des Server-Partners",
+          description: "» Name des Server-Partner's",
           required: true,
         },
         {
@@ -37,31 +37,31 @@ export default {
             { name: "Sonstiges", value: "Sonstiges" },
           ],
           name: "kategorie",
-          description: "» Kategorie des Server-Partners",
+          description: "» Kategorie des Server-Partner's",
           required: true,
         },
         {
           type: 6,
           name: "owner",
-          description: "» Ansprechpartner / Besitzer des Server-Partners",
+          description: "» Ansprechpartner / Besitzer des Server-Partner's",
           required: true,
         },
         {
           type: 3,
           name: "invite",
-          description: "» Einladungslink des Server-Partners",
+          description: "» Einladungslink des Server-Partner's",
           required: true,
         },
         {
           type: 3,
           name: "description",
-          description: "» Beschreibung des Partners",
+          description: "» Beschreibung des Partner's",
           required: false,
         },
         {
           type: 3,
           name: "thumbnail",
-          description: "» Bild-/Logo-URL des Partners",
+          description: "» Bild-/Logo-URL des Partner's",
           required: false,
         },
       ],
@@ -88,7 +88,7 @@ export default {
       try {
         const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
         if (!serverData || !serverData.partner || !serverData.partner.partners) {
-          await interaction.respond([{ name: "❌ » Kein Partner gefunden", value: "error" }]);
+          await interaction.respond([{ name: "`❌` » Kein Partner gefunden", value: "error" }]);
           return;
         }
 
@@ -98,7 +98,7 @@ export default {
           .slice(0, 25);
 
         if (filtered.length === 0) {
-          await interaction.respond([{ name: "❌ » Kein Eintrag", value: "Kein Eintrag" }]);
+          await interaction.respond([{ name: "`❌` » Kein Eintrag", value: "Kein Eintrag" }]);
           return;
         }
 
@@ -126,7 +126,7 @@ export default {
         const thumbnail = interaction.options.getString("thumbnail");
 
         if (!isValidInviteLink(invite)) {
-          await interaction.editReply({ content: "❌ » Der angegebene Einladungslink ist ungültig." });
+          await interaction.editReply({ content: "> `❌` » Der angegebene Einladungslink ist ungültig." });
           return;
         }
 
@@ -135,7 +135,7 @@ export default {
         const forumChannel = interaction.guild.channels.cache.get(forumChannelId);
 
         if (!forumChannel || (forumChannel.type !== ChannelType.GuildForum && forumChannel.type !== ChannelType.GuildText)) {
-          await interaction.editReply({ content: "❌ » Kein gültiger Forum- oder Textkanal für Partner in der Datenbank konfiguriert." });
+          await interaction.editReply({ content: "> `❌` » Kein gültiger Forum- oder Textkanal für Partner in der Datenbank konfiguriert." });
           return;
         }
 
@@ -150,7 +150,7 @@ export default {
         const mainEmbed = new EmbedBuilder()
           .setTitle(`:shield: ${name} (ID: ${partnerCount})`)
           .setDescription(description)
-          .setColor("#E91E63");
+          .setColor("Blurple");
 
         if (thumbnail) {
           mainEmbed.setThumbnail(thumbnail);
@@ -164,7 +164,7 @@ export default {
             `• Ansprechpartner: <@${owner.id}>\n` +
             `• Kategorie: \`${kategorie}\``,
           )
-          .setColor("#E91E63");
+          .setColor("Blurple");
 
         // 3. Link Button
         const button = new ActionRowBuilder().addComponents(
@@ -219,12 +219,12 @@ export default {
           await serverData.save();
 
           await interaction.editReply({
-            content: `> ✅ » Der Server-Partner **${name}** wurde im Thread <#${thread.id}> erfolgreich erstellt!`,
+            content: `> \`✅\` » Der Server-Partner **${name}** wurde im Thread <#${thread.id}> erfolgreich erstellt!`,
           });
 
         } catch (error) {
           logger.error("Fehler beim Erstellen des Partner-Threads:", error);
-          await interaction.editReply({ content: "❌ » Fehler beim Erstellen des Forum-Beitrags." });
+          await interaction.editReply({ content: "`❌` » Fehler beim Erstellen des Forum-Beitrags." });
         }
 
         break;
@@ -237,7 +237,7 @@ export default {
           const serverData = await serverDB.findOne({ guildID: interaction.guild.id });
 
           if (!serverData || !serverData.partner || !serverData.partner.partners) {
-            await interaction.reply({ content: "❌ » Keine Server-Partner gefunden.", ephemeral: true });
+            await interaction.reply({ content: "`❌` » Keine Server-Partner gefunden.", ephemeral: true });
             return;
           }
 
@@ -246,7 +246,7 @@ export default {
           );
 
           if (partnerIndex === -1) {
-            await interaction.reply({ content: "❌ » Der angegebene Server-Partner wurde nicht gefunden.", ephemeral: true });
+            await interaction.reply({ content: "`❌` » Der angegebene Server-Partner wurde nicht gefunden.", ephemeral: true });
             return;
           }
 
@@ -263,10 +263,10 @@ export default {
           serverData.partner.partners.splice(partnerIndex, 1);
           await serverData.save();
 
-          await interaction.reply({ content: `> ✅ » Server-Partner **${partnerNameToDelete}** und der zugehörige Beitrag wurden gelöscht.`, ephemeral: true });
+          await interaction.reply({ content: `> \`✅\` » Server-Partner **${partnerNameToDelete}** und der zugehörige Beitrag wurden gelöscht.`, ephemeral: true });
         } catch (error) {
           logger.error("Fehler beim Löschen des Partners:", error);
-          await interaction.reply({ content: "❌ » Fehler beim Löschen des Partners.", ephemeral: true });
+          await interaction.reply({ content: "> `❌` » Fehler beim Löschen des Partners.", ephemeral: true });
         }
 
         break;
