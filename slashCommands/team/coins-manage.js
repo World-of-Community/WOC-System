@@ -116,7 +116,7 @@ export default {
         .setDescription(
           `» ${user} hat **${formattedAmount} Coins** erhalten.\n\n` +
           `» Vorher: **${formattedOldCoins} Coins**\n` +
-          `» Nachher: **${formattedNewCoins} Coins**`
+          `» Nachher: **${formattedNewCoins} Coins**`,
         )
         .setColor("Green")
         .setThumbnail(user.displayAvatarURL({ dynamic: true }))
@@ -201,7 +201,7 @@ export default {
 
       // Coin-Daten suchen
       const userCoins = await Coin.findOne({
-        userId: userId,
+        userId,
       });
 
       if (!userCoins) {
@@ -257,7 +257,7 @@ export default {
         .setDescription(
           `» **${formattedAmount} Coins** wurden von ${user} entfernt.\n\n` +
           `» Vorher: **${formattedOldCoins} Coins**\n` +
-          `» Nachher: **${formattedNewCoins} Coins**`
+          `» Nachher: **${formattedNewCoins} Coins**`,
         )
         .setColor("Red")
         .setThumbnail(user.displayAvatarURL({ dynamic: true }))
