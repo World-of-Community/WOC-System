@@ -119,7 +119,7 @@ export default {
       else if (index === 1) {place = "🥈";}
       else if (index === 2) {place = "🥉";}
 
-      description += `\nDein Rang: \`${place}\` mit **${value}** ist <@${userId}>`;
+      description += `\nDein Rang: \`${place}\` mit **${value}**`;
     } else {
       description += "\n> `❗` » Du bist nicht im Leaderboard.";
     }
