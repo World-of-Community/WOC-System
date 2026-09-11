@@ -121,42 +121,42 @@ export default {
         //  .setColor("Green")
         //  .setFooter({ text: `${interaction.user.username}'s Urlaub`, iconURL: interaction.user.displayAvatarURL() })
         //  .setTimestamp();
-//
+        //
         //const message = await targetChannel.send({ embeds: [urlaubEmbed] });
         //teamData.urlaub.messageID = message.id;
         //await teamData.save();
-//
+        //
         //await interaction.reply({ content: "> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.", ephemeral: true });
         //break;
 
         const grundText = grund?.trim()
           ? `\n\n\`📋\` Grund: \`${grund.trim()}\``
           : "";
-        
+
         const urlaubEmbed = new EmbedBuilder()
           .setTitle("🌴 Urlaubsmeldung")
           .setDescription(
-            `\`📅\` ${interaction.user} hat Urlaub von \`${vonStr}\` bis \`${bisStr}\`.${grundText}`
+            `\`📅\` ${interaction.user} hat Urlaub von \`${vonStr}\` bis \`${bisStr}\`.${grundText}`,
           )
           .setColor("Green")
           .setFooter({
             text: `${interaction.user.username}'s Urlaub`,
-            iconURL: interaction.user.displayAvatarURL()
+            iconURL: interaction.user.displayAvatarURL(),
           })
           .setTimestamp();
-        
+
         const message = await targetChannel.send({
-          embeds: [urlaubEmbed]
+          embeds: [urlaubEmbed],
         });
-        
+
         teamData.urlaub.messageID = message.id;
         await teamData.save();
-        
+
         await interaction.reply({
           content: "> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.",
-          ephemeral: true
+          ephemeral: true,
         });
-        
+
         break;
       }
 
