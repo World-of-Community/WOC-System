@@ -261,7 +261,7 @@ export default {
       data.sort(
         (a, b) =>
           (b.streak || 0) - (a.streak || 0) ||
-          (b.coins || 0) - (a.coins || 0)
+          (b.coins || 0) - (a.coins || 0),
       );
 
       formatValue = (u) => `${u.streak || 0}x Streak`;
@@ -289,11 +289,11 @@ export default {
 
       const total = data.reduce(
         (acc, u) => acc + (u.donation || 0),
-        0
+        0,
       );
 
       totalText = `\n\n\`💰\` » Insgesamt: **${total.toLocaleString("de-DE")}€** gespendet\n` +
-        `\`💖\` » Wir danken jedem einzelnen für die Spende!`;
+        "`💖` » Wir danken jedem einzelnen für die Spende!";
     }
 
     // ============================================================
