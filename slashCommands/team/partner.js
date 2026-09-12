@@ -482,7 +482,7 @@ export default {
       }
 
       const searchValue =
-        focusedOption.value.toLowerCase();
+        String(focusedOption.value || "").toLowerCase();
 
       const filtered =
         serverData.partner.partners
@@ -506,7 +506,7 @@ export default {
 
       await interaction.respond(
         filtered.map((p) => ({
-          name: `${p.name} (${p.category || "N/A"})`,
+          name: `${p.name} (ID: ${p.partnerID || "?"})`,
           value: p.name,
         })),
       );
@@ -554,8 +554,8 @@ export default {
         const invite =
           interaction.options.getString("invite");
 
-        // \n wird hier absichtlich nur dann
-        // umgewandelt, wenn der Benutzer es selbst eingibt.
+        // \n wird nur umgewandelt,
+        // wenn der Benutzer es manuell eingibt.
         const description =
           interaction.options
             .getString("description")
@@ -596,6 +596,65 @@ export default {
             guildID: interaction.guild.id,
           });
 
+        if (!serverData) {
+          await interaction.editReply({
+            content:
+              "> `❌` » Für diesen Server wurde kein Datenbankeintrag gefunden.",
+          });
+
+          return;
+        }
+
+        // -------------------------------------------------------
+        // PARTNER ARRAY SICHERSTELLEN
+        // -------------------------------------------------------
+        if (!serverData.partner) {
+          serverData.partner = {
+            partners: [],
+          };
+        }
+
+        if (
+          !Array.isArray(
+            serverData.partner.partners,
+          )
+        ) {
+          serverData.partner.partners = [];
+        }
+
+        // -------------------------------------------------------
+        // PARTNER ID ERMITTELN
+        // -------------------------------------------------------
+        // Die höchste bisher verwendete ID + 1.
+        //
+        // Beispiel:
+        // ID 1
+        // ID 2
+        // ID 3
+        //
+        // ID 2 wird gelöscht
+        //
+        // Neuer Partner = ID 4
+        // -------------------------------------------------------
+        const existingPartners =
+          serverData.partner.partners;
+
+        const highestPartnerID =
+          existingPartners.length > 0
+            ? Math.max(
+                ...existingPartners.map(
+                  (partner) =>
+                    Number(partner.partnerID) || 0,
+                ),
+              )
+            : 0;
+
+        const partnerID =
+          highestPartnerID + 1;
+
+        // -------------------------------------------------------
+        // FORUM CHANNEL
+        // -------------------------------------------------------
         const forumChannelId =
           config.partnerForumChannelId;
 
@@ -659,20 +718,17 @@ export default {
         }
 
         // -------------------------------------------------------
-        // PARTNER ID
-        // -------------------------------------------------------
-        const partnerCount =
-          (serverData?.partner?.partners?.length || 0) + 1;
-
-        // -------------------------------------------------------
         // DATUM
         // -------------------------------------------------------
         const formattedDate =
-          new Date().toLocaleDateString("de-DE", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          });
+          new Date().toLocaleDateString(
+            "de-DE",
+            {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            },
+          );
 
         // =======================================================
         // HAUPT-EMBED
@@ -680,7 +736,7 @@ export default {
         const mainEmbed =
           new EmbedBuilder()
             .setTitle(
-              `:shield: ${name} (ID: ${partnerCount})`,
+              `:shield: ${name} (ID: ${partnerID})`,
             )
             .setURL(invite)
             .setDescription(
@@ -690,11 +746,15 @@ export default {
             .setColor("Blurple");
 
         if (thumbnail) {
-          mainEmbed.setThumbnail(thumbnail);
+          mainEmbed.setThumbnail(
+            thumbnail,
+          );
         }
 
         if (embed) {
-          mainEmbed.setImage(embed);
+          mainEmbed.setImage(
+            embed,
+          );
         }
 
         // =======================================================
@@ -720,13 +780,18 @@ export default {
         // TAGS
         // =======================================================
         const tagId =
-          config.partnerKategorieIds?.[kategorie] || null;
+          config.partnerKategorieIds?.[
+            kategorie
+          ] || null;
 
         const generalTagId =
           config.partnerGeneralTagId || null;
 
         const appliedTags =
-          [tagId, generalTagId].filter(Boolean);
+          [
+            tagId,
+            generalTagId,
+          ].filter(Boolean);
 
         try {
           let thread;
@@ -768,7 +833,9 @@ export default {
             thread =
               await forumChannel.threads.create({
                 name,
+
                 autoArchiveDuration: 60,
+
                 reason:
                   `Partner Thread für ${name}`,
               });
@@ -787,33 +854,35 @@ export default {
           }
 
           // =====================================================
-          // DB
+          // PARTNER SPEICHERN
           // =====================================================
-          if (!serverData.partner) {
-            serverData.partner = {
-              partners: [],
-            };
-          }
-
-          if (
-            !Array.isArray(
-              serverData.partner.partners,
-            )
-          ) {
-            serverData.partner.partners = [];
-          }
-
           serverData.partner.partners.push({
+            partnerID,
+
             name,
-            category: kategorie,
-            ownerID: owner.id,
+
+            category:
+              kategorie,
+
+            ownerID:
+              owner.id,
+
             invite,
+
             description,
+
             thumbnail,
+
             embed,
-            threadID: thread.id,
-            messageID: message?.id || null,
-            createdAt: new Date(),
+
+            threadID:
+              thread.id,
+
+            messageID:
+              message?.id || null,
+
+            createdAt:
+              new Date(),
           });
 
           serverData.markModified(
@@ -824,7 +893,7 @@ export default {
 
           await interaction.editReply({
             content:
-              `> \`✅\` » Der Server-Partner **${name}** wurde im Thread <#${thread.id}> erfolgreich erstellt!`,
+              `> \`✅\` » Der Server-Partner **${name}** wurde mit der **ID ${partnerID}** im Thread <#${thread.id}> erfolgreich erstellt!`,
           });
         } catch (error) {
           logger.error(
@@ -873,6 +942,9 @@ export default {
             return;
           }
 
+          // -----------------------------------------------------
+          // PARTNER SUCHEN
+          // -----------------------------------------------------
           const partnerIndex =
             serverData.partner.partners.findIndex(
               (p) =>
@@ -891,8 +963,13 @@ export default {
           }
 
           const partner =
-            serverData.partner.partners[partnerIndex];
+            serverData.partner.partners[
+              partnerIndex
+            ];
 
+          // -----------------------------------------------------
+          // NEUE WERTE
+          // -----------------------------------------------------
           const newName =
             interaction.options.getString("name");
 
@@ -905,10 +982,10 @@ export default {
           const newInvite =
             interaction.options.getString("invite");
 
-          // Auch beim Bearbeiten muss \n
-          // manuell eingegeben werden.
           const newDescriptionRaw =
-            interaction.options.getString("description");
+            interaction.options.getString(
+              "description",
+            );
 
           const newDescription =
             newDescriptionRaw !== null
@@ -919,10 +996,14 @@ export default {
               : null;
 
           const newThumbnail =
-            interaction.options.getString("thumbnail");
+            interaction.options.getString(
+              "thumbnail",
+            );
 
           const newEmbed =
-            interaction.options.getString("embed");
+            interaction.options.getString(
+              "embed",
+            );
 
           // -----------------------------------------------------
           // ENDGÜLTIGE WERTE
@@ -931,35 +1012,43 @@ export default {
             newName || partner.name;
 
           const finalCategory =
-            newCategory || partner.category;
+            newCategory ||
+            partner.category;
 
           const finalOwnerID =
-            newOwner?.id || partner.ownerID;
+            newOwner?.id ||
+            partner.ownerID;
 
           const finalInvite =
-            newInvite || partner.invite;
+            newInvite ||
+            partner.invite;
 
           const finalDescription =
             newDescription !== null
               ? newDescription
-              : partner.description || null;
+              : partner.description ||
+                null;
 
           const finalThumbnail =
             newThumbnail !== null
               ? newThumbnail
-              : partner.thumbnail || null;
+              : partner.thumbnail ||
+                null;
 
           const finalEmbed =
             newEmbed !== null
               ? newEmbed
-              : partner.embed || null;
+              : partner.embed ||
+                null;
 
           // -----------------------------------------------------
           // INVITE VALIDIEREN
           // -----------------------------------------------------
           if (
             newInvite &&
-            !isValidInviteLink(newInvite)
+            !isValidInviteLink(
+              newInvite,
+            )
           ) {
             await interaction.editReply({
               content:
@@ -974,7 +1063,9 @@ export default {
           // -----------------------------------------------------
           if (
             newEmbed &&
-            !isValidImageUrl(newEmbed)
+            !isValidImageUrl(
+              newEmbed,
+            )
           ) {
             await interaction.editReply({
               content:
@@ -1021,19 +1112,41 @@ export default {
           if (partner.messageID) {
             message =
               await thread.messages
-                .fetch(partner.messageID)
-                .catch(() => null);
+                .fetch(
+                  partner.messageID,
+                )
+                .catch(
+                  () => null,
+                );
           }
 
           if (!message) {
             message =
               await thread
                 .fetchStarterMessage()
-                .catch(() => null);
+                .catch(
+                  () => null,
+                );
           }
 
+          // =====================================================
+          // PARTNER-ID
+          // =====================================================
+          // Die gespeicherte ID bleibt beim Bearbeiten
+          // immer gleich.
+          //
+          // Falls alte Partner noch keine partnerID haben,
+          // wird zur Sicherheit die alte Position verwendet.
+          // =====================================================
           const partnerID =
+            Number(partner.partnerID) ||
             partnerIndex + 1;
+
+          // Bei alten Partnern ID nachträglich speichern.
+          if (!partner.partnerID) {
+            partner.partnerID =
+              partnerID;
+          }
 
           // =====================================================
           // HAUPT-EMBED
@@ -1067,7 +1180,9 @@ export default {
           // =====================================================
           const infoEmbed =
             new EmbedBuilder()
-              .setTitle("🔔 Informationen")
+              .setTitle(
+                "🔔 Informationen",
+              )
               .setDescription(
                 `• Partner seit: \`${getPartnerDate(partner)}\`\n` +
                 `• Ansprechpartner: <@${finalOwnerID}>\n` +
@@ -1079,13 +1194,16 @@ export default {
           // BUTTON
           // =====================================================
           const button =
-            createPartnerButton(finalInvite);
+            createPartnerButton(
+              finalInvite,
+            );
 
           const messageData = {
             embeds: [
               mainEmbed,
               infoEmbed,
             ],
+
             components: [
               button,
             ],
@@ -1109,16 +1227,21 @@ export default {
           // THREAD NAME
           // -----------------------------------------------------
           if (
-            thread.name !== finalName
+            thread.name !==
+            finalName
           ) {
             await thread
-              .setName(finalName)
-              .catch((error) => {
-                logger.error(
-                  "Thread-Name konnte nicht geändert werden:",
-                  error,
-                );
-              });
+              .setName(
+                finalName,
+              )
+              .catch(
+                (error) => {
+                  logger.error(
+                    "Thread-Name konnte nicht geändert werden:",
+                    error,
+                  );
+                },
+              );
           }
 
           // =====================================================
@@ -1135,7 +1258,8 @@ export default {
               ] || null;
 
             const generalTagId =
-              config.partnerGeneralTagId || null;
+              config.partnerGeneralTagId ||
+              null;
 
             const newTags =
               [
@@ -1148,19 +1272,26 @@ export default {
               "function"
             ) {
               await thread
-                .setAppliedTags(newTags)
-                .catch((error) => {
-                  logger.error(
-                    "Forum-Tags konnten nicht aktualisiert werden:",
-                    error,
-                  );
-                });
+                .setAppliedTags(
+                  newTags,
+                )
+                .catch(
+                  (error) => {
+                    logger.error(
+                      "Forum-Tags konnten nicht aktualisiert werden:",
+                      error,
+                    );
+                  },
+                );
             }
           }
 
           // =====================================================
           // DB AKTUALISIEREN
           // =====================================================
+          partner.partnerID =
+            partnerID;
+
           partner.name =
             finalName;
 
@@ -1196,7 +1327,7 @@ export default {
 
           await interaction.editReply({
             content:
-              `> \`✅\` » Der Server-Partner **${finalName}** wurde erfolgreich bearbeitet.`,
+              `> \`✅\` » Der Server-Partner **${finalName}** mit der **ID ${partnerID}** wurde erfolgreich bearbeitet.`,
           });
         } catch (error) {
           logger.error(
@@ -1222,12 +1353,15 @@ export default {
         });
 
         const partnerNameToDelete =
-          interaction.options.getString("partner");
+          interaction.options.getString(
+            "partner",
+          );
 
         try {
           const serverData =
             await serverDB.findOne({
-              guildID: interaction.guild.id,
+              guildID:
+                interaction.guild.id,
             });
 
           if (
@@ -1245,6 +1379,9 @@ export default {
             return;
           }
 
+          // -----------------------------------------------------
+          // PARTNER SUCHEN
+          // -----------------------------------------------------
           const partnerIndex =
             serverData.partner.partners.findIndex(
               (p) =>
@@ -1267,6 +1404,10 @@ export default {
               partnerIndex
             ];
 
+          const partnerID =
+            Number(partner.partnerID) ||
+            partnerIndex + 1;
+
           // -----------------------------------------------------
           // THREAD LÖSCHEN
           // -----------------------------------------------------
@@ -1276,23 +1417,28 @@ export default {
                 partner.threadID,
               ) ||
               await interaction.guild.channels
-                .fetch(partner.threadID)
-                .catch(() => null);
+                .fetch(
+                  partner.threadID,
+                )
+                .catch(
+                  () => null,
+                );
 
             if (threadChannel) {
               await threadChannel
                 .delete()
-                .catch((err) =>
-                  logger.error(
-                    "Thread konnte nicht gelöscht werden:",
-                    err,
-                  ),
+                .catch(
+                  (err) =>
+                    logger.error(
+                      "Thread konnte nicht gelöscht werden:",
+                      err,
+                    ),
                 );
             }
           }
 
           // -----------------------------------------------------
-          // DB
+          // PARTNER AUS DB LÖSCHEN
           // -----------------------------------------------------
           serverData.partner.partners.splice(
             partnerIndex,
@@ -1307,7 +1453,7 @@ export default {
 
           await interaction.editReply({
             content:
-              `> \`✅\` » Server-Partner **${partnerNameToDelete}** und der zugehörige Beitrag wurden gelöscht.`,
+              `> \`✅\` » Server-Partner **${partnerNameToDelete}** (ID: ${partnerID}) und der zugehörige Beitrag wurden gelöscht.`,
           });
         } catch (error) {
           logger.error(
@@ -1334,8 +1480,12 @@ export default {
 function createPartnerButton(invite) {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setLabel("Partner besuchen")
-      .setStyle(ButtonStyle.Link)
+      .setLabel(
+        "Partner besuchen",
+      )
+      .setStyle(
+        ButtonStyle.Link,
+      )
       .setURL(invite),
   );
 }
@@ -1364,11 +1514,15 @@ function isValidImageUrl(link) {
 
   try {
     const url =
-      new URL(link.trim());
+      new URL(
+        link.trim(),
+      );
 
     if (
-      url.protocol !== "http:" &&
-      url.protocol !== "https:"
+      url.protocol !==
+        "http:" &&
+      url.protocol !==
+        "https:"
     ) {
       return false;
     }
