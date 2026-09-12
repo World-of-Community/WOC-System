@@ -356,7 +356,7 @@ export default {
 
       // Platz 1-10 ohne Backticks
       description +=
-        `${rank} » **${username}** mit **${value}**\n`;
+        `${rank} » **${username}** \`×\` **${value}**\n`;
     }
 
     // ============================================================
