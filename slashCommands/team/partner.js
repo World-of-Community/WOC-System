@@ -310,7 +310,6 @@ export default {
       type: 1,
       name: "add",
       description: "» Füge einen Server-Partner hinzu. 🤝",
-
       options: [
         {
           type: 3,
@@ -318,13 +317,11 @@ export default {
           description: "» Name des Server-Partners",
           required: true,
         },
-
         {
           type: 3,
           name: "kategorie",
           description: "» Kategorie des Server-Partners",
           required: true,
-
           choices: [
             { name: "Hosting", value: "Hosting" },
             { name: "Minecraft-Server", value: "Minecraft-Server" },
@@ -334,35 +331,30 @@ export default {
             { name: "Sonstiges", value: "Sonstiges" },
           ],
         },
-
         {
           type: 6,
           name: "owner",
           description: "» Ansprechpartner / Besitzer des Partners",
           required: true,
         },
-
         {
           type: 3,
           name: "invite",
           description: "» Discord-Einladungslink des Partners",
           required: true,
         },
-
         {
           type: 3,
           name: "description",
           description: "» Beschreibung des Partners",
           required: false,
         },
-
         {
           type: 3,
           name: "thumbnail",
           description: "» Kleine Bild-/Logo-URL des Partners",
           required: false,
         },
-
         {
           type: 3,
           name: "embed",
@@ -379,7 +371,6 @@ export default {
       type: 1,
       name: "edit",
       description: "» Bearbeite einen bestehenden Server-Partner. ✏️",
-
       options: [
         {
           type: 3,
@@ -388,20 +379,17 @@ export default {
           required: true,
           autocomplete: true,
         },
-
         {
           type: 3,
           name: "name",
           description: "» Neuer Name des Partners",
           required: false,
         },
-
         {
           type: 3,
           name: "kategorie",
           description: "» Neue Kategorie",
           required: false,
-
           choices: [
             { name: "Hosting", value: "Hosting" },
             { name: "Minecraft-Server", value: "Minecraft-Server" },
@@ -411,35 +399,30 @@ export default {
             { name: "Sonstiges", value: "Sonstiges" },
           ],
         },
-
         {
           type: 6,
           name: "owner",
           description: "» Neuer Ansprechpartner / Besitzer",
           required: false,
         },
-
         {
           type: 3,
           name: "invite",
           description: "» Neuer Discord-Einladungslink",
           required: false,
         },
-
         {
           type: 3,
           name: "description",
           description: "» Neue Beschreibung",
           required: false,
         },
-
         {
           type: 3,
           name: "thumbnail",
           description: "» Neue kleine Bild-/Logo-URL",
           required: false,
         },
-
         {
           type: 3,
           name: "embed",
@@ -456,7 +439,6 @@ export default {
       type: 1,
       name: "delete",
       description: "» Lösche einen Partner. 🤝",
-
       options: [
         {
           type: 3,
@@ -479,17 +461,14 @@ export default {
     if (focusedOption.name !== "partner") return;
 
     try {
-      const serverData =
-        await serverDB.findOne({
-          guildID: interaction.guild.id,
-        });
+      const serverData = await serverDB.findOne({
+        guildID: interaction.guild.id,
+      });
 
       if (
         !serverData ||
         !serverData.partner ||
-        !Array.isArray(
-          serverData.partner.partners,
-        ) ||
+        !Array.isArray(serverData.partner.partners) ||
         serverData.partner.partners.length === 0
       ) {
         await interaction.respond([
@@ -552,8 +531,7 @@ export default {
   // RUN
   // =========================================================
   async run(client, interaction) {
-    const sub =
-      interaction.options.getSubcommand();
+    const sub = interaction.options.getSubcommand();
 
     switch (sub) {
       // =======================================================
@@ -565,39 +543,29 @@ export default {
         });
 
         const name =
-          interaction.options.getString(
-            "name",
-          );
+          interaction.options.getString("name");
 
         const kategorie =
-          interaction.options.getString(
-            "kategorie",
-          );
+          interaction.options.getString("kategorie");
 
         const owner =
-          interaction.options.getUser(
-            "owner",
-          );
+          interaction.options.getUser("owner");
 
         const invite =
-          interaction.options.getString(
-            "invite",
-          );
+          interaction.options.getString("invite");
 
+        // \n wird hier absichtlich nur dann
+        // umgewandelt, wenn der Benutzer es selbst eingibt.
         const description =
-          interaction.options.getString(
-            "description",
-          ) || null;
+          interaction.options
+            .getString("description")
+            ?.replace(/\\n/g, "\n") || null;
 
         const thumbnail =
-          interaction.options.getString(
-            "thumbnail",
-          ) || null;
+          interaction.options.getString("thumbnail") || null;
 
         const embed =
-          interaction.options.getString(
-            "embed",
-          ) || null;
+          interaction.options.getString("embed") || null;
 
         // -------------------------------------------------------
         // INVITE VALIDIEREN
@@ -612,12 +580,9 @@ export default {
         }
 
         // -------------------------------------------------------
-        // EMBED URL VALIDIEREN
+        // BANNER VALIDIEREN
         // -------------------------------------------------------
-        if (
-          embed &&
-          !isValidImageUrl(embed)
-        ) {
+        if (embed && !isValidImageUrl(embed)) {
           await interaction.editReply({
             content:
               "> `❌` » Die angegebene Embed-/Banner-URL ist ungültig.",
@@ -626,9 +591,6 @@ export default {
           return;
         }
 
-        // -------------------------------------------------------
-        // DATENBANK
-        // -------------------------------------------------------
         const serverData =
           await serverDB.findOne({
             guildID: interaction.guild.id,
@@ -645,10 +607,8 @@ export default {
         if (
           !forumChannel ||
           (
-            forumChannel.type !==
-              ChannelType.GuildForum &&
-            forumChannel.type !==
-              ChannelType.GuildText
+            forumChannel.type !== ChannelType.GuildForum &&
+            forumChannel.type !== ChannelType.GuildText
           )
         ) {
           await interaction.editReply({
@@ -659,146 +619,159 @@ export default {
           return;
         }
 
+        // =======================================================
+        // PARTNER-FORUM SCHREIBGESCHÜTZT
+        // =======================================================
+        if (
+          forumChannel.type === ChannelType.GuildForum
+        ) {
+          try {
+            await forumChannel.permissionOverwrites.edit(
+              interaction.guild.roles.everyone,
+              {
+                SendMessages: false,
+                SendMessagesInThreads: false,
+                CreatePublicThreads: false,
+                CreatePrivateThreads: false,
+              },
+            );
+
+            const botMember =
+              interaction.guild.members.me;
+
+            if (botMember) {
+              await forumChannel.permissionOverwrites.edit(
+                botMember,
+                {
+                  SendMessages: true,
+                  SendMessagesInThreads: true,
+                  CreatePublicThreads: true,
+                  CreatePrivateThreads: true,
+                },
+              );
+            }
+          } catch (error) {
+            logger.error(
+              "Fehler beim Setzen der Partner-Forum-Berechtigungen:",
+              error,
+            );
+          }
+        }
+
         // -------------------------------------------------------
-        // PARTNER-ID
+        // PARTNER ID
         // -------------------------------------------------------
         const partnerCount =
-          (
-            serverData?.partner
-              ?.partners?.length || 0
-          ) + 1;
+          (serverData?.partner?.partners?.length || 0) + 1;
 
+        // -------------------------------------------------------
+        // DATUM
+        // -------------------------------------------------------
         const formattedDate =
-          new Date().toLocaleDateString(
-            "de-DE",
-            {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            },
-          );
+          new Date().toLocaleDateString("de-DE", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          });
 
-        // -------------------------------------------------------
+        // =======================================================
         // HAUPT-EMBED
-        // -------------------------------------------------------
+        // =======================================================
         const mainEmbed =
           new EmbedBuilder()
             .setTitle(
               `:shield: ${name} (ID: ${partnerCount})`,
             )
-
-            // Titel ist klickbar
             .setURL(invite)
-
             .setDescription(
               description ||
                 "Keine Beschreibung angegeben.",
             )
-
             .setColor("Blurple");
 
-        // Kleines Logo
         if (thumbnail) {
-          mainEmbed.setThumbnail(
-            thumbnail,
-          );
+          mainEmbed.setThumbnail(thumbnail);
         }
 
-        // Großes Banner optional
         if (embed) {
           mainEmbed.setImage(embed);
         }
 
-        // -------------------------------------------------------
-        // INFO-EMBED
-        // -------------------------------------------------------
+        // =======================================================
+        // INFO EMBED
+        // =======================================================
         const infoEmbed =
           new EmbedBuilder()
-            .setTitle(
-              "🔔 Informationen",
-            )
-
+            .setTitle("🔔 Informationen")
             .setDescription(
               `• Partner seit: \`${formattedDate}\`\n` +
               `• Ansprechpartner: <@${owner.id}>\n` +
               `• Kategorie: \`${kategorie}\``,
             )
-
             .setColor("Blurple");
 
-        // -------------------------------------------------------
+        // =======================================================
         // BUTTON
-        // -------------------------------------------------------
+        // =======================================================
         const button =
-          createPartnerButton(
-            invite,
-          );
+          createPartnerButton(invite);
 
-        // -------------------------------------------------------
+        // =======================================================
         // TAGS
-        // -------------------------------------------------------
+        // =======================================================
         const tagId =
-          config.partnerKategorieIds?.[
-            kategorie
-          ] || null;
+          config.partnerKategorieIds?.[kategorie] || null;
 
         const generalTagId =
-          config.partnerGeneralTagId ||
-          null;
+          config.partnerGeneralTagId || null;
 
-        const appliedTags = [
-          tagId,
-          generalTagId,
-        ].filter(Boolean);
+        const appliedTags =
+          [tagId, generalTagId].filter(Boolean);
 
         try {
           let thread;
           let message;
 
-          // =====================================================
+          // -----------------------------------------------------
           // FORUM
-          // =====================================================
+          // -----------------------------------------------------
           if (
             forumChannel.type ===
             ChannelType.GuildForum
           ) {
             thread =
-              await forumChannel.threads.create(
-                {
-                  name,
+              await forumChannel.threads.create({
+                name,
 
-                  message: {
-                    embeds: [
-                      mainEmbed,
-                      infoEmbed,
-                    ],
+                message: {
+                  embeds: [
+                    mainEmbed,
+                    infoEmbed,
+                  ],
 
-                    components: [
-                      button,
-                    ],
-                  },
-
-                  appliedTags,
+                  components: [
+                    button,
+                  ],
                 },
-              );
+
+                appliedTags,
+              });
 
             message =
               await thread.fetchStarterMessage();
           }
 
-          // =====================================================
+          // -----------------------------------------------------
           // TEXTKANAL
-          // =====================================================
+          // -----------------------------------------------------
           else {
             thread =
-              await forumChannel.threads.create(
-                {
-                  name,
-                  autoArchiveDuration: 60,
-                  reason:
-                    `Partner Thread für ${name}`,
-                },
-              );
+              await forumChannel.threads.create({
+                name,
+                autoArchiveDuration: 60,
+                reason:
+                  `Partner Thread für ${name}`,
+              });
 
             message =
               await thread.send({
@@ -813,9 +786,9 @@ export default {
               });
           }
 
-          // -----------------------------------------------------
-          // PARTNER ARRAY
-          // -----------------------------------------------------
+          // =====================================================
+          // DB
+          // =====================================================
           if (!serverData.partner) {
             serverData.partner = {
               partners: [],
@@ -827,33 +800,21 @@ export default {
               serverData.partner.partners,
             )
           ) {
-            serverData.partner.partners =
-              [];
+            serverData.partner.partners = [];
           }
 
-          // -----------------------------------------------------
-          // PARTNER SPEICHERN
-          // -----------------------------------------------------
-          serverData.partner.partners.push(
-            {
-              name,
-              category: kategorie,
-              ownerID: owner.id,
-              invite,
-              description,
-              thumbnail,
-
-              // Optionales Banner
-              embed,
-
-              threadID: thread.id,
-              messageID:
-                message?.id || null,
-
-              createdAt:
-                new Date(),
-            },
-          );
+          serverData.partner.partners.push({
+            name,
+            category: kategorie,
+            ownerID: owner.id,
+            invite,
+            description,
+            thumbnail,
+            embed,
+            threadID: thread.id,
+            messageID: message?.id || null,
+            createdAt: new Date(),
+          });
 
           serverData.markModified(
             "partner.partners",
@@ -889,15 +850,12 @@ export default {
         });
 
         const partnerName =
-          interaction.options.getString(
-            "partner",
-          );
+          interaction.options.getString("partner");
 
         try {
           const serverData =
             await serverDB.findOne({
-              guildID:
-                interaction.guild.id,
+              guildID: interaction.guild.id,
             });
 
           if (
@@ -915,9 +873,6 @@ export default {
             return;
           }
 
-          // -----------------------------------------------------
-          // PARTNER SUCHEN
-          // -----------------------------------------------------
           const partnerIndex =
             serverData.partner.partners.findIndex(
               (p) =>
@@ -936,46 +891,38 @@ export default {
           }
 
           const partner =
-            serverData.partner
-              .partners[partnerIndex];
+            serverData.partner.partners[partnerIndex];
 
-          // -----------------------------------------------------
-          // NEUE WERTE
-          // -----------------------------------------------------
           const newName =
-            interaction.options.getString(
-              "name",
-            );
+            interaction.options.getString("name");
 
           const newCategory =
-            interaction.options.getString(
-              "kategorie",
-            );
+            interaction.options.getString("kategorie");
 
           const newOwner =
-            interaction.options.getUser(
-              "owner",
-            );
+            interaction.options.getUser("owner");
 
           const newInvite =
-            interaction.options.getString(
-              "invite",
-            );
+            interaction.options.getString("invite");
+
+          // Auch beim Bearbeiten muss \n
+          // manuell eingegeben werden.
+          const newDescriptionRaw =
+            interaction.options.getString("description");
 
           const newDescription =
-            interaction.options.getString(
-              "description",
-            );
+            newDescriptionRaw !== null
+              ? newDescriptionRaw.replace(
+                  /\\n/g,
+                  "\n",
+                )
+              : null;
 
           const newThumbnail =
-            interaction.options.getString(
-              "thumbnail",
-            );
+            interaction.options.getString("thumbnail");
 
           const newEmbed =
-            interaction.options.getString(
-              "embed",
-            );
+            interaction.options.getString("embed");
 
           // -----------------------------------------------------
           // ENDGÜLTIGE WERTE
@@ -984,43 +931,35 @@ export default {
             newName || partner.name;
 
           const finalCategory =
-            newCategory ||
-            partner.category;
+            newCategory || partner.category;
 
           const finalOwnerID =
-            newOwner?.id ||
-            partner.ownerID;
+            newOwner?.id || partner.ownerID;
 
           const finalInvite =
-            newInvite ||
-            partner.invite;
+            newInvite || partner.invite;
 
           const finalDescription =
             newDescription !== null
               ? newDescription
-              : partner.description ||
-                null;
+              : partner.description || null;
 
           const finalThumbnail =
             newThumbnail !== null
               ? newThumbnail
-              : partner.thumbnail ||
-                null;
+              : partner.thumbnail || null;
 
           const finalEmbed =
             newEmbed !== null
               ? newEmbed
-              : partner.embed ||
-                null;
+              : partner.embed || null;
 
           // -----------------------------------------------------
           // INVITE VALIDIEREN
           // -----------------------------------------------------
           if (
             newInvite &&
-            !isValidInviteLink(
-              newInvite,
-            )
+            !isValidInviteLink(newInvite)
           ) {
             await interaction.editReply({
               content:
@@ -1031,13 +970,11 @@ export default {
           }
 
           // -----------------------------------------------------
-          // EMBED VALIDIEREN
+          // BANNER VALIDIEREN
           // -----------------------------------------------------
           if (
             newEmbed &&
-            !isValidImageUrl(
-              newEmbed,
-            )
+            !isValidImageUrl(newEmbed)
           ) {
             await interaction.editReply({
               content:
@@ -1048,7 +985,7 @@ export default {
           }
 
           // -----------------------------------------------------
-          // THREAD LADEN
+          // THREAD
           // -----------------------------------------------------
           if (!partner.threadID) {
             await interaction.editReply({
@@ -1064,9 +1001,7 @@ export default {
               partner.threadID,
             ) ||
             await interaction.guild.channels
-              .fetch(
-                partner.threadID,
-              )
+              .fetch(partner.threadID)
               .catch(() => null);
 
           if (!thread) {
@@ -1079,16 +1014,14 @@ export default {
           }
 
           // -----------------------------------------------------
-          // MESSAGE LADEN
+          // MESSAGE
           // -----------------------------------------------------
           let message = null;
 
           if (partner.messageID) {
             message =
               await thread.messages
-                .fetch(
-                  partner.messageID,
-                )
+                .fetch(partner.messageID)
                 .catch(() => null);
           }
 
@@ -1099,84 +1032,68 @@ export default {
                 .catch(() => null);
           }
 
-          // -----------------------------------------------------
-          // PARTNER-ID
-          // -----------------------------------------------------
           const partnerID =
             partnerIndex + 1;
 
-          // -----------------------------------------------------
+          // =====================================================
           // HAUPT-EMBED
-          // -----------------------------------------------------
+          // =====================================================
           const mainEmbed =
             new EmbedBuilder()
               .setTitle(
                 `:shield: ${finalName} (ID: ${partnerID})`,
               )
-
-              // Titel klickbar
               .setURL(finalInvite)
-
               .setDescription(
                 finalDescription ||
                   "Keine Beschreibung angegeben.",
               )
-
               .setColor("Blurple");
 
-          // Kleines Logo
           if (finalThumbnail) {
             mainEmbed.setThumbnail(
               finalThumbnail,
             );
           }
 
-          // Großes Banner
           if (finalEmbed) {
             mainEmbed.setImage(
               finalEmbed,
             );
           }
 
-          // -----------------------------------------------------
-          // INFO-EMBED
-          // -----------------------------------------------------
+          // =====================================================
+          // INFO EMBED
+          // =====================================================
           const infoEmbed =
             new EmbedBuilder()
-              .setTitle(
-                "🔔 Informationen",
-              )
-
+              .setTitle("🔔 Informationen")
               .setDescription(
                 `• Partner seit: \`${getPartnerDate(partner)}\`\n` +
                 `• Ansprechpartner: <@${finalOwnerID}>\n` +
                 `• Kategorie: \`${finalCategory}\``,
               )
-
               .setColor("Blurple");
 
-          // -----------------------------------------------------
+          // =====================================================
           // BUTTON
-          // -----------------------------------------------------
+          // =====================================================
           const button =
-            createPartnerButton(
-              finalInvite,
-            );
+            createPartnerButton(finalInvite);
 
-          // -----------------------------------------------------
-          // MESSAGE AKTUALISIEREN
-          // -----------------------------------------------------
           const messageData = {
             embeds: [
               mainEmbed,
               infoEmbed,
             ],
-
             components: [
               button,
             ],
           };
 
+          // -----------------------------------------------------
+          // MESSAGE BEARBEITEN
+          // -----------------------------------------------------
           if (message) {
             await message.edit(
               messageData,
@@ -1189,27 +1106,24 @@ export default {
           }
 
           // -----------------------------------------------------
-          // THREAD-NAME
+          // THREAD NAME
           // -----------------------------------------------------
           if (
-            thread.name !==
-            finalName
+            thread.name !== finalName
           ) {
             await thread
               .setName(finalName)
-              .catch(
-                (error) => {
-                  logger.error(
-                    "Thread-Name konnte nicht geändert werden:",
-                    error,
-                  );
-                },
-              );
+              .catch((error) => {
+                logger.error(
+                  "Thread-Name konnte nicht geändert werden:",
+                  error,
+                );
+              });
           }
 
-          // -----------------------------------------------------
-          // FORUM-TAGS
-          // -----------------------------------------------------
+          // =====================================================
+          // FORUM TAGS
+          // =====================================================
           if (
             thread.parent &&
             thread.parent.type ===
@@ -1221,36 +1135,32 @@ export default {
               ] || null;
 
             const generalTagId =
-              config.partnerGeneralTagId ||
-              null;
+              config.partnerGeneralTagId || null;
 
-            const newTags = [
-              newTagId,
-              generalTagId,
-            ].filter(Boolean);
+            const newTags =
+              [
+                newTagId,
+                generalTagId,
+              ].filter(Boolean);
 
             if (
               typeof thread.setAppliedTags ===
               "function"
             ) {
               await thread
-                .setAppliedTags(
-                  newTags,
-                )
-                .catch(
-                  (error) => {
-                    logger.error(
-                      "Forum-Tags konnten nicht aktualisiert werden:",
-                      error,
-                    );
-                  },
-                );
+                .setAppliedTags(newTags)
+                .catch((error) => {
+                  logger.error(
+                    "Forum-Tags konnten nicht aktualisiert werden:",
+                    error,
+                  );
+                });
             }
           }
 
-          // -----------------------------------------------------
-          // DATENBANK AKTUALISIEREN
-          // -----------------------------------------------------
+          // =====================================================
+          // DB AKTUALISIEREN
+          // =====================================================
           partner.name =
             finalName;
 
@@ -1269,7 +1179,6 @@ export default {
           partner.thumbnail =
             finalThumbnail;
 
-          // Banner speichern
           partner.embed =
             finalEmbed;
 
@@ -1313,15 +1222,12 @@ export default {
         });
 
         const partnerNameToDelete =
-          interaction.options.getString(
-            "partner",
-          );
+          interaction.options.getString("partner");
 
         try {
           const serverData =
             await serverDB.findOne({
-              guildID:
-                interaction.guild.id,
+              guildID: interaction.guild.id,
             });
 
           if (
@@ -1357,8 +1263,9 @@ export default {
           }
 
           const partner =
-            serverData.partner
-              .partners[partnerIndex];
+            serverData.partner.partners[
+              partnerIndex
+            ];
 
           // -----------------------------------------------------
           // THREAD LÖSCHEN
@@ -1369,9 +1276,7 @@ export default {
                 partner.threadID,
               ) ||
               await interaction.guild.channels
-                .fetch(
-                  partner.threadID,
-                )
+                .fetch(partner.threadID)
                 .catch(() => null);
 
             if (threadChannel) {
@@ -1387,7 +1292,7 @@ export default {
           }
 
           // -----------------------------------------------------
-          // PARTNER AUS DATENBANK ENTFERNEN
+          // DB
           // -----------------------------------------------------
           serverData.partner.partners.splice(
             partnerIndex,
@@ -1423,18 +1328,14 @@ export default {
 };
 
 // =============================================================
-// BUTTON
+// PARTNER BUTTON
 // =============================================================
 
 function createPartnerButton(invite) {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setLabel(
-        "Partner besuchen",
-      )
-      .setStyle(
-        ButtonStyle.Link,
-      )
+      .setLabel("Partner besuchen")
+      .setStyle(ButtonStyle.Link)
       .setURL(invite),
   );
 }
@@ -1462,9 +1363,8 @@ function isValidImageUrl(link) {
   if (!link) return false;
 
   try {
-    const url = new URL(
-      link.trim(),
-    );
+    const url =
+      new URL(link.trim());
 
     if (
       url.protocol !== "http:" &&
