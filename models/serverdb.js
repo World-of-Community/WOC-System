@@ -23,12 +23,34 @@ const serverSchema = new mongoose.Schema({
       required: false,
     },
     partners: [{
+      partnerID: {
+        type: Number,
+        required: true,
+      },
+    
       name: String,
+    
       category: String,
+    
       ownerID: String,
+    
       invite: String,
-
-    }],
+    
+      description: String,
+    
+      thumbnail: String,
+    
+      embed: String,
+    
+      threadID: String,
+    
+      messageID: String,
+    
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+  }],
   },
   roleBypass: {
     type: Object,
