@@ -290,160 +290,318 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ChannelType,
+  PermissionFlagsBits,
 } from "discord.js";
 
 import serverDB from "../../models/serverdb.js";
-import logger from "../../functions/logger.js";
 import config from "../../json/config.json" with { type: "json" };
+import logger from "../../functions/logger.js";
+
+function normalizePartnerIDs(partners) {
+  const usedIDs = new Set();
+
+  for (const partner of partners) {
+    const id = Number(partner.partnerID);
+
+    if (
+      Number.isInteger(id) &&
+      id > 0 &&
+      !usedIDs.has(id)
+    ) {
+      partner.partnerID = id;
+      usedIDs.add(id);
+    } else {
+      partner.partnerID = null;
+    }
+  }
+
+  let nextID = 1;
+
+  for (const partner of partners) {
+    if (partner.partnerID !== null) continue;
+
+    while (usedIDs.has(nextID)) {
+      nextID++;
+    }
+
+    partner.partnerID = nextID;
+    usedIDs.add(nextID);
+    nextID++;
+  }
+
+  return partners;
+}
+
+function getHighestPartnerID(partners) {
+  if (!partners.length) return 0;
+
+  return Math.max(
+    ...partners.map((partner) => {
+      const id = Number(partner.partnerID);
+
+      return Number.isInteger(id) && id > 0
+        ? id
+        : 0;
+    }),
+  );
+}
+
+function isValidInviteLink(url) {
+  try {
+    const parsed = new URL(url);
+
+    return (
+      parsed.protocol === "https:" ||
+      parsed.protocol === "http:"
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isValidImageUrl(url) {
+  try {
+    const parsed = new URL(url);
+
+    return (
+      parsed.protocol === "https:" ||
+      parsed.protocol === "http:"
+    );
+  } catch {
+    return false;
+  }
+}
+
+function getPartnerDate(date = new Date()) {
+  return new Intl.DateTimeFormat("de-DE", {
+    timeZone: "Europe/Berlin",
+    dateStyle: "long",
+  }).format(date);
+}
+
+function createPartnerButton(invite) {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setLabel("Partner besuchen")
+      .setStyle(ButtonStyle.Link)
+      .setURL(invite)
+      .setEmoji("🔗"),
+  );
+}
 
 export default {
   name: "partner",
-  description: "Partner System",
+  description: "» Verwalte die Partner des Servers.",
   type: 1,
-  default_member_permissions: "8",
+
+  default_member_permissions:
+    PermissionFlagsBits.Administrator.toString(),
 
   options: [
-    // =========================================================
-    // ADD
-    // =========================================================
+    /*
+     * ============================================================
+     * ADD
+     * ============================================================
+     */
+
     {
       type: 1,
       name: "add",
-      description: "» Füge einen Server-Partner hinzu. 🤝",
+      description: "Füge einen neuen Partner hinzu.",
+
       options: [
         {
           type: 3,
           name: "name",
-          description: "» Name des Server-Partners",
+          description: "Name des Partners.",
           required: true,
         },
+
         {
           type: 3,
           name: "kategorie",
-          description: "» Kategorie des Server-Partners",
+          description: "Kategorie des Partners.",
           required: true,
+
           choices: [
-            { name: "Hosting", value: "Hosting" },
-            { name: "Minecraft-Server", value: "Minecraft-Server" },
-            { name: "Webseite", value: "Webseite" },
-            { name: "Discord-Server", value: "Discord-Server" },
-            { name: "Affiliate", value: "Affiliate" },
-            { name: "Sonstiges", value: "Sonstiges" },
+            {
+              name: "Hosting",
+              value: "Hosting",
+            },
+            {
+              name: "Minecraft-Server",
+              value: "Minecraft-Server",
+            },
+            {
+              name: "Webseite",
+              value: "Webseite",
+            },
+            {
+              name: "Discord-Server",
+              value: "Discord-Server",
+            },
+            {
+              name: "Affiliate",
+              value: "Affiliate",
+            },
+            {
+              name: "Sonstiges",
+              value: "Sonstiges",
+            },
           ],
         },
+
         {
           type: 6,
           name: "owner",
-          description: "» Ansprechpartner / Besitzer des Partners",
+          description: "Besitzer des Partners.",
           required: true,
         },
+
         {
           type: 3,
           name: "invite",
-          description: "» Discord-Einladungslink des Partners",
+          description: "Einladungs-/Partnerlink.",
           required: true,
         },
+
         {
           type: 3,
           name: "description",
-          description: "» Beschreibung des Partners",
+          description: "Beschreibung des Partners.",
           required: false,
         },
+
         {
           type: 3,
           name: "thumbnail",
-          description: "» Kleine Bild-/Logo-URL des Partners",
+          description: "Thumbnail-URL.",
           required: false,
         },
+
         {
           type: 3,
           name: "embed",
-          description: "» Optionale Banner-/Embed-Bild-URL",
+          description: "Bild-URL für das Embed.",
           required: false,
         },
       ],
     },
 
-    // =========================================================
-    // EDIT
-    // =========================================================
+    /*
+     * ============================================================
+     * EDIT
+     * ============================================================
+     */
+
     {
       type: 1,
       name: "edit",
-      description: "» Bearbeite einen bestehenden Server-Partner. ✏️",
+      description: "Bearbeite einen bestehenden Partner.",
+
       options: [
         {
           type: 3,
           name: "partner",
-          description: "» Wähle den zu bearbeitenden Partner",
+          description: "Welcher Partner soll bearbeitet werden?",
           required: true,
           autocomplete: true,
         },
+
         {
           type: 3,
           name: "name",
-          description: "» Neuer Name des Partners",
+          description: "Neuer Name.",
           required: false,
         },
+
         {
           type: 3,
           name: "kategorie",
-          description: "» Neue Kategorie",
+          description: "Neue Kategorie.",
           required: false,
+
           choices: [
-            { name: "Hosting", value: "Hosting" },
-            { name: "Minecraft-Server", value: "Minecraft-Server" },
-            { name: "Webseite", value: "Webseite" },
-            { name: "Discord-Server", value: "Discord-Server" },
-            { name: "Affiliate", value: "Affiliate" },
-            { name: "Sonstiges", value: "Sonstiges" },
+            {
+              name: "Hosting",
+              value: "Hosting",
+            },
+            {
+              name: "Minecraft-Server",
+              value: "Minecraft-Server",
+            },
+            {
+              name: "Webseite",
+              value: "Webseite",
+            },
+            {
+              name: "Discord-Server",
+              value: "Discord-Server",
+            },
+            {
+              name: "Affiliate",
+              value: "Affiliate",
+            },
+            {
+              name: "Sonstiges",
+              value: "Sonstiges",
+            },
           ],
         },
+
         {
           type: 6,
           name: "owner",
-          description: "» Neuer Ansprechpartner / Besitzer",
+          description: "Neuer Besitzer.",
           required: false,
         },
+
         {
           type: 3,
           name: "invite",
-          description: "» Neuer Discord-Einladungslink",
+          description: "Neuer Einladungs-/Partnerlink.",
           required: false,
         },
+
         {
           type: 3,
           name: "description",
-          description: "» Neue Beschreibung",
+          description: "Neue Beschreibung.",
           required: false,
         },
+
         {
           type: 3,
           name: "thumbnail",
-          description: "» Neue kleine Bild-/Logo-URL",
+          description: "Neue Thumbnail-URL.",
           required: false,
         },
+
         {
           type: 3,
           name: "embed",
-          description: "» Neue Banner-/Embed-Bild-URL",
+          description: "Neue Bild-URL.",
           required: false,
         },
       ],
     },
 
-    // =========================================================
-    // DELETE
-    // =========================================================
+    /*
+     * ============================================================
+     * DELETE
+     * ============================================================
+     */
+
     {
       type: 1,
       name: "delete",
-      description: "» Lösche einen Partner. 🤝",
+      description: "Lösche einen bestehenden Partner.",
+
       options: [
         {
           type: 3,
           name: "partner",
-          description: "» Wähle einen Server-Partner aus",
+          description: "Welcher Partner soll gelöscht werden?",
           required: true,
           autocomplete: true,
         },
@@ -451,288 +609,365 @@ export default {
     },
   ],
 
-  // =========================================================
-  // AUTOCOMPLETE
-  // =========================================================
-  async autocomplete(interaction) {
-    const focusedOption =
-      interaction.options.getFocused(true);
-
-    if (focusedOption.name !== "partner") return;
-
+  async execute(interaction) {
     try {
-      const serverData = await serverDB.findOne({
-        guildID: interaction.guild.id,
-      });
+      /*
+       * ============================================================
+       * AUTOCOMPLETE
+       * ============================================================
+       */
 
-      if (
-        !serverData ||
-        !serverData.partner ||
-        !Array.isArray(serverData.partner.partners) ||
-        serverData.partner.partners.length === 0
-      ) {
-        await interaction.respond([
-          {
-            name: "`❌` » Kein Partner gefunden",
-            value: "error",
-          },
-        ]);
-
-        return;
-      }
-
-      const searchValue =
-        String(focusedOption.value || "").toLowerCase();
-
-      const filtered =
-        serverData.partner.partners
-          .filter((p) =>
-            String(p.name || "")
-              .toLowerCase()
-              .includes(searchValue),
-          )
-          .slice(0, 25);
-
-      if (filtered.length === 0) {
-        await interaction.respond([
-          {
-            name: "`❌` » Kein Eintrag",
-            value: "Kein Eintrag",
-          },
-        ]);
-
-        return;
-      }
-
-      await interaction.respond(
-        filtered.map((p) => ({
-          name: `${p.name} (ID: ${p.partnerID || "?"})`,
-          value: p.name,
-        })),
-      );
-    } catch (error) {
-      logger.error(
-        "Fehler beim Autocomplete der Server-Partner:",
-        error,
-      );
-
-      try {
-        await interaction.respond([
-          {
-            name: "`❌` » Fehler beim Laden",
-            value: "error",
-          },
-        ]);
-      } catch {}
-    }
-  },
-
-  // =========================================================
-  // RUN
-  // =========================================================
-  async run(client, interaction) {
-    const sub = interaction.options.getSubcommand();
-
-    switch (sub) {
-      // =======================================================
-      // ADD
-      // =======================================================
-      case "add": {
-        await interaction.deferReply({
-          ephemeral: true,
+      if (interaction.isAutocomplete()) {
+        const serverData = await serverDB.findOne({
+          guildID: interaction.guild.id,
         });
 
+        if (
+          !serverData?.partner?.partners?.length
+        ) {
+          return interaction.respond([]);
+        }
+
+        const focused =
+          interaction.options
+            .getFocused()
+            .toLowerCase();
+
+        const results =
+          serverData.partner.partners
+            .filter((partner) => {
+              const name = String(
+                partner.name || "",
+              ).toLowerCase();
+
+              const id = String(
+                partner.partnerID || "",
+              );
+
+              return (
+                name.includes(focused) ||
+                id.includes(focused)
+              );
+            })
+            .slice(0, 25)
+            .map((partner) => ({
+              name: `#${partner.partnerID} – ${partner.name}`.slice(
+                0,
+                100,
+              ),
+
+              value: String(
+                partner.partnerID,
+              ),
+            }));
+
+        return interaction.respond(results);
+      }
+
+      const subcommand =
+        interaction.options.getSubcommand();
+
+      /*
+       * ============================================================
+       * SERVER DB
+       * ============================================================
+       */
+
+      let serverData =
+        await serverDB.findOne({
+          guildID: interaction.guild.id,
+        });
+
+      if (!serverData) {
+        serverData = await serverDB.create({
+          guildID: interaction.guild.id,
+        });
+      }
+
+      if (!serverData.partner) {
+        serverData.partner = {
+          partners: [],
+        };
+      }
+
+      if (
+        !Array.isArray(
+          serverData.partner.partners,
+        )
+      ) {
+        serverData.partner.partners = [];
+      }
+
+      /*
+       * IDs reparieren
+       */
+
+      normalizePartnerIDs(
+        serverData.partner.partners,
+      );
+
+      /*
+       * ============================================================
+       * ADD
+       * ============================================================
+       */
+
+      if (subcommand === "add") {
         const name =
-          interaction.options.getString("name");
+          interaction.options.getString(
+            "name",
+          );
 
         const kategorie =
-          interaction.options.getString("kategorie");
+          interaction.options.getString(
+            "kategorie",
+          );
 
         const owner =
-          interaction.options.getUser("owner");
+          interaction.options.getUser(
+            "owner",
+          );
 
         const invite =
-          interaction.options.getString("invite");
+          interaction.options.getString(
+            "invite",
+          );
 
-        // \n wird nur umgewandelt,
-        // wenn der Benutzer es manuell eingibt.
         const description =
-          interaction.options
-            .getString("description")
-            ?.replace(/\\n/g, "\n") || null;
+          interaction.options.getString(
+            "description",
+          ) || "";
 
         const thumbnail =
-          interaction.options.getString("thumbnail") || null;
+          interaction.options.getString(
+            "thumbnail",
+          ) || "";
 
-        const embed =
-          interaction.options.getString("embed") || null;
+        const embedImage =
+          interaction.options.getString(
+            "embed",
+          ) || "";
 
-        // -------------------------------------------------------
-        // INVITE VALIDIEREN
-        // -------------------------------------------------------
+        /*
+         * ========================================================
+         * URL PRÜFEN
+         * ========================================================
+         */
+
         if (!isValidInviteLink(invite)) {
-          await interaction.editReply({
+          return interaction.reply({
             content:
-              "> `❌` » Der angegebene Discord-Einladungslink ist ungültig.",
+              "❌ » Der angegebene Invite-/Partnerlink ist ungültig.",
+            flags: 64,
           });
-
-          return;
-        }
-
-        // -------------------------------------------------------
-        // BANNER VALIDIEREN
-        // -------------------------------------------------------
-        if (embed && !isValidImageUrl(embed)) {
-          await interaction.editReply({
-            content:
-              "> `❌` » Die angegebene Embed-/Banner-URL ist ungültig.",
-          });
-
-          return;
-        }
-
-        const serverData =
-          await serverDB.findOne({
-            guildID: interaction.guild.id,
-          });
-
-        if (!serverData) {
-          await interaction.editReply({
-            content:
-              "> `❌` » Für diesen Server wurde kein Datenbankeintrag gefunden.",
-          });
-
-          return;
-        }
-
-        // -------------------------------------------------------
-        // PARTNER ARRAY SICHERSTELLEN
-        // -------------------------------------------------------
-        if (!serverData.partner) {
-          serverData.partner = {
-            partners: [],
-          };
         }
 
         if (
-          !Array.isArray(
-            serverData.partner.partners,
-          )
+          thumbnail &&
+          !isValidImageUrl(thumbnail)
         ) {
-          serverData.partner.partners = [];
+          return interaction.reply({
+            content:
+              "❌ » Die angegebene Thumbnail-URL ist ungültig.",
+            flags: 64,
+          });
         }
 
-        // -------------------------------------------------------
-        // PARTNER ID ERMITTELN
-        // -------------------------------------------------------
-        // Die höchste bisher verwendete ID + 1.
-        //
-        // Beispiel:
-        // ID 1
-        // ID 2
-        // ID 3
-        //
-        // ID 2 wird gelöscht
-        //
-        // Neuer Partner = ID 4
-        // -------------------------------------------------------
-        const existingPartners =
-          serverData.partner.partners;
+        if (
+          embedImage &&
+          !isValidImageUrl(embedImage)
+        ) {
+          return interaction.reply({
+            content:
+              "❌ » Die angegebene Embed-Bild-URL ist ungültig.",
+            flags: 64,
+          });
+        }
+
+        /*
+         * ========================================================
+         * PARTNER ID
+         * ========================================================
+         */
 
         const highestPartnerID =
-          existingPartners.length > 0
-            ? Math.max(
-                ...existingPartners.map(
-                  (partner) =>
-                    Number(partner.partnerID) || 0,
-                ),
-              )
-            : 0;
+          getHighestPartnerID(
+            serverData.partner.partners,
+          );
 
         const partnerID =
           highestPartnerID + 1;
 
-        // -------------------------------------------------------
-        // FORUM CHANNEL
-        // -------------------------------------------------------
-        const forumChannelId =
-          config.partnerForumChannelId;
+        /*
+         * ========================================================
+         * FORUM HOLEN
+         * ========================================================
+         */
+
+        if (
+          !config.partnerForumChannelId
+        ) {
+          return interaction.reply({
+            content:
+              "❌ » Es wurde keine `partnerForumChannelId` in der Config hinterlegt.",
+            flags: 64,
+          });
+        }
 
         const forumChannel =
-          interaction.guild.channels.cache.get(
-            forumChannelId,
-          );
+          await interaction.guild.channels
+            .fetch(
+              config.partnerForumChannelId,
+            )
+            .catch(() => null);
 
-        if (
-          !forumChannel ||
-          (
-            forumChannel.type !== ChannelType.GuildForum &&
-            forumChannel.type !== ChannelType.GuildText
-          )
-        ) {
-          await interaction.editReply({
+        if (!forumChannel) {
+          return interaction.reply({
             content:
-              "> `❌` » Kein gültiger Forum- oder Textkanal für Partner konfiguriert.",
+              "❌ » Der konfigurierte Partner-Forum-Kanal wurde nicht gefunden.",
+            flags: 64,
           });
-
-          return;
         }
 
-        // =======================================================
-        // PARTNER-FORUM SCHREIBGESCHÜTZT
-        // =======================================================
         if (
-          forumChannel.type === ChannelType.GuildForum
+          forumChannel.type !==
+          ChannelType.GuildForum
         ) {
-          try {
-            await forumChannel.permissionOverwrites.edit(
-              interaction.guild.roles.everyone,
-              {
-                SendMessages: false,
-                SendMessagesInThreads: false,
-                CreatePublicThreads: false,
-                CreatePrivateThreads: false,
-              },
-            );
-
-            const botMember =
-              interaction.guild.members.me;
-
-            if (botMember) {
-              await forumChannel.permissionOverwrites.edit(
-                botMember,
-                {
-                  SendMessages: true,
-                  SendMessagesInThreads: true,
-                  CreatePublicThreads: true,
-                  CreatePrivateThreads: true,
-                },
-              );
-            }
-          } catch (error) {
-            logger.error(
-              "Fehler beim Setzen der Partner-Forum-Berechtigungen:",
-              error,
-            );
-          }
+          return interaction.reply({
+            content:
+              "❌ » Der konfigurierte Partner-Kanal ist kein Forum-Kanal.",
+            flags: 64,
+          });
         }
 
-        // -------------------------------------------------------
-        // DATUM
-        // -------------------------------------------------------
-        const formattedDate =
-          new Date().toLocaleDateString(
-            "de-DE",
+        /*
+         * ========================================================
+         * MITGLIEDER DÜRFEN NICHT SCHREIBEN
+         * ========================================================
+         *
+         * @everyone:
+         * - keine Nachrichten
+         * - keine Antworten
+         * - keine öffentlichen Threads
+         * - keine privaten Threads
+         *
+         * Bot:
+         * - darf schreiben
+         * - darf in Threads schreiben
+         * - darf Threads erstellen
+         */
+
+        try {
+          await forumChannel.permissionOverwrites.edit(
+            interaction.guild.roles.everyone,
             {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
+              SendMessages: false,
+              SendMessagesInThreads: false,
+              CreatePublicThreads: false,
+              CreatePrivateThreads: false,
             },
           );
 
-        // =======================================================
-        // HAUPT-EMBED
-        // =======================================================
+          const botMember =
+            interaction.guild.members.me;
+
+          if (botMember) {
+            await forumChannel.permissionOverwrites.edit(
+              botMember,
+              {
+                SendMessages: true,
+                SendMessagesInThreads: true,
+                CreatePublicThreads: true,
+                CreatePrivateThreads: true,
+              },
+            );
+          }
+        } catch (error) {
+          logger.error(
+            `Partner Forum Permissions konnten nicht gesetzt werden:\n` +
+              `Message: ${error?.message}\n` +
+              `Code: ${error?.code}\n` +
+              `Status: ${error?.status}\n` +
+              `Raw: ${JSON.stringify(
+                error?.rawError || {},
+                null,
+                2,
+              )}`,
+          );
+
+          console.error(
+            "PARTNER PERMISSION ERROR:",
+            error,
+          );
+        }
+
+        /*
+         * ========================================================
+         * FORUM TAGS
+         * ========================================================
+         */
+
+        const availableTags =
+          forumChannel.availableTags || [];
+
+        const availableTagIDs =
+          new Set(
+            availableTags.map(
+              (tag) => tag.id,
+            ),
+          );
+
+        const categoryTag =
+          config.partnerKategorieIds?.[
+            kategorie
+          ];
+
+        const generalTag =
+          config.partnerGeneralTagId;
+
+        const configuredTagIDs = [
+          categoryTag,
+          generalTag,
+        ].filter(Boolean);
+
+        const appliedTags =
+          configuredTagIDs.filter(
+            (tagID) =>
+              availableTagIDs.has(tagID),
+          );
+
+        const invalidTagIDs =
+          configuredTagIDs.filter(
+            (tagID) =>
+              !availableTagIDs.has(tagID),
+          );
+
+        if (invalidTagIDs.length) {
+          logger.warn(
+            `Partner ${partnerID}: Ungültige Forum-Tags: ${invalidTagIDs.join(
+              ", ",
+            )}`,
+          );
+        }
+
+        /*
+         * ========================================================
+         * BESCHREIBUNG
+         * ========================================================
+         */
+
+        const cleanDescription =
+          description.replace(
+            /\\n/g,
+            "\n",
+          );
+
+        /*
+         * ========================================================
+         * HAUPT EMBED
+         * ========================================================
+         */
+
         const mainEmbed =
           new EmbedBuilder()
             .setTitle(
@@ -740,7 +975,7 @@ export default {
             )
             .setURL(invite)
             .setDescription(
-              description ||
+              cleanDescription ||
                 "Keine Beschreibung angegeben.",
             )
             .setColor("Blurple");
@@ -751,62 +986,67 @@ export default {
           );
         }
 
-        if (embed) {
+        if (embedImage) {
           mainEmbed.setImage(
-            embed,
+            embedImage,
           );
         }
 
-        // =======================================================
-        // INFO EMBED
-        // =======================================================
+        /*
+         * ========================================================
+         * INFO EMBED
+         * ========================================================
+         */
+
         const infoEmbed =
           new EmbedBuilder()
-            .setTitle("🔔 Informationen")
-            .setDescription(
-              `• Partner seit: \`${formattedDate}\`\n` +
-              `• Ansprechpartner: <@${owner.id}>\n` +
-              `• Kategorie: \`${kategorie}\``,
+            .setTitle(
+              "🔔 Informationen",
             )
-            .setColor("Blurple");
+            .setColor("Blurple")
+            .addFields(
+              {
+                name: "📅 Erstellt am",
+                value: getPartnerDate(),
+                inline: true,
+              },
+              {
+                name: "👤 Besitzer",
+                value: `${owner}`,
+                inline: true,
+              },
+              {
+                name: "📁 Kategorie",
+                value: `\`${kategorie}\``,
+                inline: true,
+              },
+            );
 
-        // =======================================================
-        // BUTTON
-        // =======================================================
+        /*
+         * ========================================================
+         * BUTTON
+         * ========================================================
+         */
+
         const button =
           createPartnerButton(invite);
 
-        // =======================================================
-        // TAGS
-        // =======================================================
-        const tagId =
-          config.partnerKategorieIds?.[
-            kategorie
-          ] || null;
+        /*
+         * ========================================================
+         * FORUM THREAD ERSTELLEN
+         * ========================================================
+         */
 
-        const generalTagId =
-          config.partnerGeneralTagId || null;
-
-        const appliedTags =
-          [
-            tagId,
-            generalTagId,
-          ].filter(Boolean);
+        let thread;
+        let starterMessage;
 
         try {
-          let thread;
-          let message;
+          thread =
+            await forumChannel.threads.create(
+              {
+                name: name.slice(0, 100),
 
-          // -----------------------------------------------------
-          // FORUM
-          // -----------------------------------------------------
-          if (
-            forumChannel.type ===
-            ChannelType.GuildForum
-          ) {
-            thread =
-              await forumChannel.threads.create({
-                name,
+                appliedTags,
 
                 message: {
                   embeds: [
@@ -819,737 +1059,515 @@ export default {
                   ],
                 },
 
-                appliedTags,
-              });
-
-            message =
-              await thread.fetchStarterMessage();
-          }
-
-          // -----------------------------------------------------
-          // TEXTKANAL
-          // -----------------------------------------------------
-          else {
-            thread =
-              await forumChannel.threads.create({
-                name,
-
-                autoArchiveDuration: 60,
-
                 reason:
-                  `Partner Thread für ${name}`,
-              });
+                  `Partner ${name} (ID: ${partnerID})`,
+              },
+            );
 
-            message =
-              await thread.send({
-                embeds: [
-                  mainEmbed,
-                  infoEmbed,
-                ],
+          /*
+           * Starter Message
+           */
 
-                components: [
-                  button,
-                ],
-              });
-          }
+          starterMessage =
+            await thread.fetchStarterMessage();
 
-          // =====================================================
-          // PARTNER SPEICHERN
-          // =====================================================
-          serverData.partner.partners.push({
-            partnerID,
-
-            name,
-
-            category:
-              kategorie,
-
-            ownerID:
-              owner.id,
-
-            invite,
-
-            description,
-
-            thumbnail,
-
-            embed,
-
-            threadID:
-              thread.id,
-
-            messageID:
-              message?.id || null,
-
-            createdAt:
-              new Date(),
-          });
-
-          serverData.markModified(
-            "partner.partners",
-          );
-
-          await serverData.save();
-
-          await interaction.editReply({
-            content:
-              `> \`✅\` » Der Server-Partner **${name}** wurde mit der **ID ${partnerID}** im Thread <#${thread.id}> erfolgreich erstellt!`,
-          });
         } catch (error) {
           logger.error(
-            "Fehler beim Erstellen des Partner-Threads:",
+            `Fehler beim Erstellen des Partner-Threads:\n` +
+              `Message: ${error?.message}\n` +
+              `Code: ${error?.code}\n` +
+              `Status: ${error?.status}\n` +
+              `Raw: ${JSON.stringify(
+                error?.rawError || {},
+                null,
+                2,
+              )}`,
+          );
+
+          console.error(
+            "PARTNER THREAD ERROR:",
             error,
           );
 
-          await interaction.editReply({
+          return interaction.reply({
             content:
-              "> `❌` » Fehler beim Erstellen des Forum-Beitrags.",
+              "❌ » Fehler beim Erstellen des Forum-Beitrags.\n\n" +
+              "Bitte überprüfe die Bot-Berechtigungen und die Forum-Tags.",
+            flags: 64,
           });
         }
 
-        break;
-      }
+        /*
+         * ========================================================
+         * IN DB SPEICHERN
+         * ========================================================
+         */
 
-      // =======================================================
-      // EDIT
-      // =======================================================
-      case "edit": {
-        await interaction.deferReply({
-          ephemeral: true,
+        serverData.partner.partners.push({
+          partnerID,
+          name,
+          category: kategorie,
+          ownerID: owner.id,
+          invite,
+          description: cleanDescription,
+          thumbnail,
+          embed: embedImage,
+          threadID: thread.id,
+          messageID:
+            starterMessage?.id || null,
+          createdAt: new Date(),
         });
 
-        const partnerName =
-          interaction.options.getString("partner");
+        await serverData.save();
 
-        try {
-          const serverData =
-            await serverDB.findOne({
-              guildID: interaction.guild.id,
-            });
+        /*
+         * ========================================================
+         * ERFOLG
+         * ========================================================
+         */
 
+        return interaction.reply({
+          content:
+            `✅ » Der Partner **${name}** wurde erfolgreich hinzugefügt.\n\n` +
+            `> **Partner-ID:** \`${partnerID}\`\n` +
+            `> **Kategorie:** \`${kategorie}\`\n` +
+            `> **Forum-Beitrag:** ${thread}`,
+          flags: 64,
+        });
+      }
+
+      /*
+       * ============================================================
+       * EDIT
+       * ============================================================
+       */
+
+      if (subcommand === "edit") {
+        const partnerID = Number(
+          interaction.options.getString(
+            "partner",
+          ),
+        );
+
+        const partner =
+          serverData.partner.partners.find(
+            (entry) =>
+              Number(entry.partnerID) ===
+              partnerID,
+          );
+
+        if (!partner) {
+          return interaction.reply({
+            content:
+              "❌ » Dieser Partner wurde nicht gefunden.",
+            flags: 64,
+          });
+        }
+
+        const newName =
+          interaction.options.getString(
+            "name",
+          );
+
+        const newCategory =
+          interaction.options.getString(
+            "kategorie",
+          );
+
+        const newOwner =
+          interaction.options.getUser(
+            "owner",
+          );
+
+        const newInvite =
+          interaction.options.getString(
+            "invite",
+          );
+
+        const newDescription =
+          interaction.options.getString(
+            "description",
+          );
+
+        const newThumbnail =
+          interaction.options.getString(
+            "thumbnail",
+          );
+
+        const newEmbed =
+          interaction.options.getString(
+            "embed",
+          );
+
+        /*
+         * Werte ändern
+         */
+
+        if (newName) {
+          partner.name = newName;
+        }
+
+        if (newCategory) {
+          partner.category =
+            newCategory;
+        }
+
+        if (newOwner) {
+          partner.ownerID =
+            newOwner.id;
+        }
+
+        if (newInvite) {
           if (
-            !serverData ||
-            !serverData.partner ||
-            !Array.isArray(
-              serverData.partner.partners,
-            )
-          ) {
-            await interaction.editReply({
-              content:
-                "> `❌` » Keine Server-Partner gefunden.",
-            });
-
-            return;
-          }
-
-          // -----------------------------------------------------
-          // PARTNER SUCHEN
-          // -----------------------------------------------------
-          const partnerIndex =
-            serverData.partner.partners.findIndex(
-              (p) =>
-                String(p.name || "")
-                  .toLowerCase() ===
-                partnerName.toLowerCase(),
-            );
-
-          if (partnerIndex === -1) {
-            await interaction.editReply({
-              content:
-                "> `❌` » Der angegebene Server-Partner wurde nicht gefunden.",
-            });
-
-            return;
-          }
-
-          const partner =
-            serverData.partner.partners[
-              partnerIndex
-            ];
-
-          // -----------------------------------------------------
-          // NEUE WERTE
-          // -----------------------------------------------------
-          const newName =
-            interaction.options.getString("name");
-
-          const newCategory =
-            interaction.options.getString("kategorie");
-
-          const newOwner =
-            interaction.options.getUser("owner");
-
-          const newInvite =
-            interaction.options.getString("invite");
-
-          const newDescriptionRaw =
-            interaction.options.getString(
-              "description",
-            );
-
-          const newDescription =
-            newDescriptionRaw !== null
-              ? newDescriptionRaw.replace(
-                  /\\n/g,
-                  "\n",
-                )
-              : null;
-
-          const newThumbnail =
-            interaction.options.getString(
-              "thumbnail",
-            );
-
-          const newEmbed =
-            interaction.options.getString(
-              "embed",
-            );
-
-          // -----------------------------------------------------
-          // ENDGÜLTIGE WERTE
-          // -----------------------------------------------------
-          const finalName =
-            newName || partner.name;
-
-          const finalCategory =
-            newCategory ||
-            partner.category;
-
-          const finalOwnerID =
-            newOwner?.id ||
-            partner.ownerID;
-
-          const finalInvite =
-            newInvite ||
-            partner.invite;
-
-          const finalDescription =
-            newDescription !== null
-              ? newDescription
-              : partner.description ||
-                null;
-
-          const finalThumbnail =
-            newThumbnail !== null
-              ? newThumbnail
-              : partner.thumbnail ||
-                null;
-
-          const finalEmbed =
-            newEmbed !== null
-              ? newEmbed
-              : partner.embed ||
-                null;
-
-          // -----------------------------------------------------
-          // INVITE VALIDIEREN
-          // -----------------------------------------------------
-          if (
-            newInvite &&
             !isValidInviteLink(
               newInvite,
             )
           ) {
-            await interaction.editReply({
+            return interaction.reply({
               content:
-                "> `❌` » Der neue Discord-Einladungslink ist ungültig.",
+                "❌ » Der neue Invite-/Partnerlink ist ungültig.",
+              flags: 64,
             });
-
-            return;
           }
 
-          // -----------------------------------------------------
-          // BANNER VALIDIEREN
-          // -----------------------------------------------------
+          partner.invite =
+            newInvite;
+        }
+
+        if (
+          newDescription !== null
+        ) {
+          partner.description =
+            newDescription.replace(
+              /\\n/g,
+              "\n",
+            );
+        }
+
+        if (
+          newThumbnail !== null
+        ) {
+          if (
+            newThumbnail &&
+            !isValidImageUrl(
+              newThumbnail,
+            )
+          ) {
+            return interaction.reply({
+              content:
+                "❌ » Die neue Thumbnail-URL ist ungültig.",
+              flags: 64,
+            });
+          }
+
+          partner.thumbnail =
+            newThumbnail;
+        }
+
+        if (newEmbed !== null) {
           if (
             newEmbed &&
             !isValidImageUrl(
               newEmbed,
             )
           ) {
-            await interaction.editReply({
+            return interaction.reply({
               content:
-                "> `❌` » Die neue Embed-/Banner-URL ist ungültig.",
+                "❌ » Die neue Embed-Bild-URL ist ungültig.",
+              flags: 64,
             });
-
-            return;
           }
 
-          // -----------------------------------------------------
-          // THREAD
-          // -----------------------------------------------------
-          if (!partner.threadID) {
-            await interaction.editReply({
-              content:
-                "> `❌` » Für diesen Partner wurde kein Thread gespeichert.",
-            });
+          partner.embed =
+            newEmbed;
+        }
 
-            return;
-          }
+        /*
+         * ========================================================
+         * THREAD LADEN
+         * ========================================================
+         */
 
-          const thread =
-            interaction.guild.channels.cache.get(
-              partner.threadID,
-            ) ||
+        let thread = null;
+
+        if (partner.threadID) {
+          thread =
             await interaction.guild.channels
-              .fetch(partner.threadID)
+              .fetch(
+                partner.threadID,
+              )
               .catch(() => null);
+        }
 
-          if (!thread) {
-            await interaction.editReply({
-              content:
-                "> `❌` » Der zugehörige Partner-Thread wurde nicht gefunden.",
-            });
-
-            return;
-          }
-
-          // -----------------------------------------------------
-          // MESSAGE
-          // -----------------------------------------------------
-          let message = null;
-
-          if (partner.messageID) {
-            message =
-              await thread.messages
-                .fetch(
-                  partner.messageID,
-                )
-                .catch(
-                  () => null,
-                );
-          }
-
-          if (!message) {
-            message =
-              await thread
-                .fetchStarterMessage()
-                .catch(
-                  () => null,
-                );
-          }
-
-          // =====================================================
-          // PARTNER-ID
-          // =====================================================
-          // Die gespeicherte ID bleibt beim Bearbeiten
-          // immer gleich.
-          //
-          // Falls alte Partner noch keine partnerID haben,
-          // wird zur Sicherheit die alte Position verwendet.
-          // =====================================================
-          const partnerID =
-            Number(partner.partnerID) ||
-            partnerIndex + 1;
-
-          // Bei alten Partnern ID nachträglich speichern.
-          if (!partner.partnerID) {
-            partner.partnerID =
-              partnerID;
-          }
-
-          // =====================================================
-          // HAUPT-EMBED
-          // =====================================================
-          const mainEmbed =
+        if (thread) {
+          const newMainEmbed =
             new EmbedBuilder()
               .setTitle(
-                `:shield: ${finalName} (ID: ${partnerID})`,
+                `:shield: ${partner.name} (ID: ${partner.partnerID})`,
               )
-              .setURL(finalInvite)
+              .setURL(
+                partner.invite,
+              )
               .setDescription(
-                finalDescription ||
+                partner.description ||
                   "Keine Beschreibung angegeben.",
               )
-              .setColor("Blurple");
+              .setColor(
+                "Blurple",
+              );
 
-          if (finalThumbnail) {
-            mainEmbed.setThumbnail(
-              finalThumbnail,
+          if (
+            partner.thumbnail
+          ) {
+            newMainEmbed.setThumbnail(
+              partner.thumbnail,
             );
           }
 
-          if (finalEmbed) {
-            mainEmbed.setImage(
-              finalEmbed,
+          if (partner.embed) {
+            newMainEmbed.setImage(
+              partner.embed,
             );
           }
 
-          // =====================================================
-          // INFO EMBED
-          // =====================================================
-          const infoEmbed =
+          const ownerUser =
+            await interaction.client.users
+              .fetch(
+                partner.ownerID,
+              )
+              .catch(() => null);
+
+          const newInfoEmbed =
             new EmbedBuilder()
               .setTitle(
                 "🔔 Informationen",
               )
-              .setDescription(
-                `• Partner seit: \`${getPartnerDate(partner)}\`\n` +
-                `• Ansprechpartner: <@${finalOwnerID}>\n` +
-                `• Kategorie: \`${finalCategory}\``,
+              .setColor(
+                "Blurple",
               )
-              .setColor("Blurple");
-
-          // =====================================================
-          // BUTTON
-          // =====================================================
-          const button =
-            createPartnerButton(
-              finalInvite,
-            );
-
-          const messageData = {
-            embeds: [
-              mainEmbed,
-              infoEmbed,
-            ],
-
-            components: [
-              button,
-            ],
-          };
-
-          // -----------------------------------------------------
-          // MESSAGE BEARBEITEN
-          // -----------------------------------------------------
-          if (message) {
-            await message.edit(
-              messageData,
-            );
-          } else {
-            message =
-              await thread.send(
-                messageData,
+              .addFields(
+                {
+                  name:
+                    "📅 Erstellt am",
+                  value:
+                    getPartnerDate(
+                      partner.createdAt,
+                    ),
+                  inline: true,
+                },
+                {
+                  name:
+                    "👤 Besitzer",
+                  value:
+                    ownerUser
+                      ? `${ownerUser}`
+                      : `<@${partner.ownerID}>`,
+                  inline: true,
+                },
+                {
+                  name:
+                    "📁 Kategorie",
+                  value:
+                    `\`${partner.category}\``,
+                  inline: true,
+                },
               );
+
+          const message =
+            await thread
+              .fetchStarterMessage()
+              .catch(() => null);
+
+          if (message) {
+            await message.edit({
+              embeds: [
+                newMainEmbed,
+                newInfoEmbed,
+              ],
+
+              components: [
+                createPartnerButton(
+                  partner.invite,
+                ),
+              ],
+            });
           }
 
-          // -----------------------------------------------------
-          // THREAD NAME
-          // -----------------------------------------------------
+          await thread
+            .setName(
+              partner.name.slice(
+                0,
+                100,
+              ),
+            )
+            .catch(() => null);
+
+          /*
+           * ======================================================
+           * TAGS AKTUALISIEREN
+           * ======================================================
+           */
+
           if (
-            thread.name !==
-            finalName
+            thread.parent?.type ===
+            ChannelType.GuildForum
           ) {
+            const availableTags =
+              thread.parent
+                .availableTags || [];
+
+            const availableTagIDs =
+              new Set(
+                availableTags.map(
+                  (tag) => tag.id,
+                ),
+              );
+
+            const categoryTag =
+              config
+                .partnerKategorieIds?.[
+                partner.category
+              ];
+
+            const generalTag =
+              config.partnerGeneralTagId;
+
+            const newTags = [
+              categoryTag,
+              generalTag,
+            ].filter(
+              (id) =>
+                id &&
+                availableTagIDs.has(
+                  id,
+                ),
+            );
+
             await thread
-              .setName(
-                finalName,
+              .setAppliedTags(
+                newTags,
               )
               .catch(
                 (error) => {
-                  logger.error(
-                    "Thread-Name konnte nicht geändert werden:",
-                    error,
+                  logger.warn(
+                    `Partner ${partner.partnerID}: Tags konnten nicht aktualisiert werden: ${error.message}`,
                   );
                 },
               );
           }
-
-          // =====================================================
-          // FORUM TAGS
-          // =====================================================
-          if (
-            thread.parent &&
-            thread.parent.type ===
-              ChannelType.GuildForum
-          ) {
-            const newTagId =
-              config.partnerKategorieIds?.[
-                finalCategory
-              ] || null;
-
-            const generalTagId =
-              config.partnerGeneralTagId ||
-              null;
-
-            const newTags =
-              [
-                newTagId,
-                generalTagId,
-              ].filter(Boolean);
-
-            if (
-              typeof thread.setAppliedTags ===
-              "function"
-            ) {
-              await thread
-                .setAppliedTags(
-                  newTags,
-                )
-                .catch(
-                  (error) => {
-                    logger.error(
-                      "Forum-Tags konnten nicht aktualisiert werden:",
-                      error,
-                    );
-                  },
-                );
-            }
-          }
-
-          // =====================================================
-          // DB AKTUALISIEREN
-          // =====================================================
-          partner.partnerID =
-            partnerID;
-
-          partner.name =
-            finalName;
-
-          partner.category =
-            finalCategory;
-
-          partner.ownerID =
-            finalOwnerID;
-
-          partner.invite =
-            finalInvite;
-
-          partner.description =
-            finalDescription;
-
-          partner.thumbnail =
-            finalThumbnail;
-
-          partner.embed =
-            finalEmbed;
-
-          partner.threadID =
-            thread.id;
-
-          partner.messageID =
-            message.id;
-
-          serverData.markModified(
-            "partner.partners",
-          );
-
-          await serverData.save();
-
-          await interaction.editReply({
-            content:
-              `> \`✅\` » Der Server-Partner **${finalName}** mit der **ID ${partnerID}** wurde erfolgreich bearbeitet.`,
-          });
-        } catch (error) {
-          logger.error(
-            "Fehler beim Bearbeiten des Partners:",
-            error,
-          );
-
-          await interaction.editReply({
-            content:
-              "> `❌` » Beim Bearbeiten des Partners ist ein Fehler aufgetreten.",
-          });
         }
 
-        break;
+        await serverData.save();
+
+        return interaction.reply({
+          content:
+            `✅ » Der Partner **${partner.name}** (\`${partner.partnerID}\`) wurde erfolgreich bearbeitet.`,
+          flags: 64,
+        });
       }
 
-      // =======================================================
-      // DELETE
-      // =======================================================
-      case "delete": {
-        await interaction.deferReply({
-          ephemeral: true,
-        });
+      /*
+       * ============================================================
+       * DELETE
+       * ============================================================
+       */
 
-        const partnerNameToDelete =
+      if (subcommand === "delete") {
+        const partnerID = Number(
           interaction.options.getString(
             "partner",
+          ),
+        );
+
+        const partnerIndex =
+          serverData.partner.partners.findIndex(
+            (entry) =>
+              Number(entry.partnerID) ===
+              partnerID,
           );
 
-        try {
-          const serverData =
-            await serverDB.findOne({
-              guildID:
-                interaction.guild.id,
-            });
-
-          if (
-            !serverData ||
-            !serverData.partner ||
-            !Array.isArray(
-              serverData.partner.partners,
-            )
-          ) {
-            await interaction.editReply({
-              content:
-                "`❌` » Keine Server-Partner gefunden.",
-            });
-
-            return;
-          }
-
-          // -----------------------------------------------------
-          // PARTNER SUCHEN
-          // -----------------------------------------------------
-          const partnerIndex =
-            serverData.partner.partners.findIndex(
-              (p) =>
-                String(p.name || "")
-                  .toLowerCase() ===
-                partnerNameToDelete.toLowerCase(),
-            );
-
-          if (partnerIndex === -1) {
-            await interaction.editReply({
-              content:
-                "`❌` » Der angegebene Server-Partner wurde nicht gefunden.",
-            });
-
-            return;
-          }
-
-          const partner =
-            serverData.partner.partners[
-              partnerIndex
-            ];
-
-          const partnerID =
-            Number(partner.partnerID) ||
-            partnerIndex + 1;
-
-          // -----------------------------------------------------
-          // THREAD LÖSCHEN
-          // -----------------------------------------------------
-          if (partner.threadID) {
-            const threadChannel =
-              interaction.guild.channels.cache.get(
-                partner.threadID,
-              ) ||
-              await interaction.guild.channels
-                .fetch(
-                  partner.threadID,
-                )
-                .catch(
-                  () => null,
-                );
-
-            if (threadChannel) {
-              await threadChannel
-                .delete()
-                .catch(
-                  (err) =>
-                    logger.error(
-                      "Thread konnte nicht gelöscht werden:",
-                      err,
-                    ),
-                );
-            }
-          }
-
-          // -----------------------------------------------------
-          // PARTNER AUS DB LÖSCHEN
-          // -----------------------------------------------------
-          serverData.partner.partners.splice(
-            partnerIndex,
-            1,
-          );
-
-          serverData.markModified(
-            "partner.partners",
-          );
-
-          await serverData.save();
-
-          await interaction.editReply({
+        if (partnerIndex === -1) {
+          return interaction.reply({
             content:
-              `> \`✅\` » Server-Partner **${partnerNameToDelete}** (ID: ${partnerID}) und der zugehörige Beitrag wurden gelöscht.`,
-          });
-        } catch (error) {
-          logger.error(
-            "Fehler beim Löschen des Partners:",
-            error,
-          );
-
-          await interaction.editReply({
-            content:
-              "> `❌` » Fehler beim Löschen des Partners.",
+              "❌ » Dieser Partner wurde nicht gefunden.",
+            flags: 64,
           });
         }
 
-        break;
+        const partner =
+          serverData.partner.partners[
+            partnerIndex
+          ];
+
+        /*
+         * Thread löschen
+         */
+
+        if (partner.threadID) {
+          const thread =
+            await interaction.guild.channels
+              .fetch(
+                partner.threadID,
+              )
+              .catch(() => null);
+
+          if (thread) {
+            await thread
+              .delete(
+                `Partner gelöscht: ${partner.name} (ID: ${partner.partnerID})`,
+              )
+              .catch(
+                (error) => {
+                  logger.warn(
+                    `Partner-Thread konnte nicht gelöscht werden: ${error.message}`,
+                  );
+                },
+              );
+          }
+        }
+
+        /*
+         * DB löschen
+         */
+
+        serverData.partner.partners.splice(
+          partnerIndex,
+          1,
+        );
+
+        await serverData.save();
+
+        return interaction.reply({
+          content:
+            `✅ » Der Partner **${partner.name}** (\`${partner.partnerID}\`) wurde erfolgreich gelöscht.`,
+          flags: 64,
+        });
+      }
+    } catch (error) {
+      logger.error(
+        `Fehler im /partner Command:\n` +
+          `Message: ${error?.message}\n` +
+          `Code: ${error?.code}\n` +
+          `Status: ${error?.status}\n` +
+          `Raw: ${JSON.stringify(
+            error?.rawError || {},
+            null,
+            2,
+          )}`,
+      );
+
+      console.error(
+        "PARTNER COMMAND ERROR:",
+        error,
+      );
+
+      if (!interaction.replied) {
+        return interaction.reply({
+          content:
+            "❌ » Beim Ausführen des Partner-Befehls ist ein Fehler aufgetreten.",
+          flags: 64,
+        });
       }
     }
   },
 };
-
-// =============================================================
-// PARTNER BUTTON
-// =============================================================
-
-function createPartnerButton(invite) {
-  return new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setLabel(
-        "Partner besuchen",
-      )
-      .setStyle(
-        ButtonStyle.Link,
-      )
-      .setURL(invite),
-  );
-}
-
-// =============================================================
-// DISCORD INVITE VALIDIERUNG
-// =============================================================
-
-function isValidInviteLink(link) {
-  if (!link) return false;
-
-  const inviteRegex =
-    /^(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|plus)\/|discordapp\.com\/invite\/)([a-zA-Z0-9]{2,32})$/;
-
-  return inviteRegex.test(
-    link.trim(),
-  );
-}
-
-// =============================================================
-// BILD-/BANNER-URL VALIDIERUNG
-// =============================================================
-
-function isValidImageUrl(link) {
-  if (!link) return false;
-
-  try {
-    const url =
-      new URL(
-        link.trim(),
-      );
-
-    if (
-      url.protocol !==
-        "http:" &&
-      url.protocol !==
-        "https:"
-    ) {
-      return false;
-    }
-
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// =============================================================
-// PARTNER-DATUM
-// =============================================================
-
-function getPartnerDate(partner) {
-  if (partner.createdAt) {
-    return new Date(
-      partner.createdAt,
-    ).toLocaleDateString(
-      "de-DE",
-      {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      },
-    );
-  }
-
-  return "Unbekannt";
-}
