@@ -480,6 +480,8 @@ async function setupPartnerForumPermissions(
 
           CreatePublicThreads: true,
           CreatePrivateThreads: true,
+
+          ManageThreads: true,
         },
       );
     }
@@ -627,6 +629,10 @@ async function setupPartnerThreadPermissions(
   guild,
 ) {
   try {
+    /*
+     * @everyone darf im Partner-Beitrag NICHT schreiben
+     */
+
     await thread.permissionOverwrites.edit(
       guild.roles.everyone,
       {
@@ -634,6 +640,10 @@ async function setupPartnerThreadPermissions(
         SendMessagesInThreads: false,
       },
     );
+
+    /*
+     * Bot darf schreiben
+     */
 
     const botMember =
       guild.members.me ||
@@ -645,8 +655,11 @@ async function setupPartnerThreadPermissions(
       await thread.permissionOverwrites.edit(
         botMember,
         {
+          ViewChannel: true,
+          ReadMessageHistory: true,
           SendMessages: true,
           SendMessagesInThreads: true,
+          ManageThreads: true,
         },
       );
     }
@@ -909,7 +922,20 @@ export default {
     },
   ],
 
-  async execute(interaction) {
+  /*
+   * ==========================================================
+   * RUN
+   * ==========================================================
+   *
+   * WICHTIG:
+   * Dein interactionCreate.js verwendet:
+   *
+   * slashCommand.run(client, interaction)
+   *
+   * Deshalb MUSS der Command "run" verwenden.
+   */
+
+  async run(client, interaction) {
     try {
       /*
        * ======================================================
@@ -1744,6 +1770,18 @@ export default {
           flags: 64,
         });
       }
+
+      /*
+       * ======================================================
+       * UNBEKANNTER SUBCOMMAND
+       * ======================================================
+       */
+
+      return interaction.reply({
+        content:
+          "❌ » Unbekannter Partner-Subcommand.",
+        flags: 64,
+      });
     } catch (error) {
       logger.error(
         "Fehler im /partner Command:\n" +
@@ -1762,11 +1800,21 @@ export default {
         error,
       );
 
-      if (!interaction.replied) {
+      if (
+        !interaction.replied &&
+        !interaction.deferred
+      ) {
         return interaction.reply({
           content:
             "❌ » Beim Ausführen des Partner-Befehls ist ein Fehler aufgetreten.",
           flags: 64,
+        });
+      }
+
+      if (interaction.deferred) {
+        return interaction.editReply({
+          content:
+            "❌ » Beim Ausführen des Partner-Befehls ist ein Fehler aufgetreten.",
         });
       }
     }
