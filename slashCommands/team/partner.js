@@ -310,7 +310,6 @@ export default {
       type: 1,
       name: "add",
       description: "» Füge einen Server-Partner hinzu. 🤝",
-
       options: [
         {
           type: 3,
@@ -356,12 +355,6 @@ export default {
           description: "» Bild-/Logo-URL des Partners",
           required: false,
         },
-        {
-          type: 5,
-          name: "embed",
-          description: "» Soll der Partner als Embed angezeigt werden?",
-          required: false,
-        },
       ],
     },
 
@@ -372,7 +365,6 @@ export default {
       type: 1,
       name: "edit",
       description: "» Bearbeite einen bestehenden Server-Partner. ✏️",
-
       options: [
         {
           type: 3,
@@ -425,12 +417,6 @@ export default {
           description: "» Neue Bild-/Logo-URL",
           required: false,
         },
-        {
-          type: 5,
-          name: "embed",
-          description: "» Embed aktivieren/deaktivieren",
-          required: false,
-        },
       ],
     },
 
@@ -441,7 +427,6 @@ export default {
       type: 1,
       name: "delete",
       description: "» Lösche einen Partner. 🤝",
-
       options: [
         {
           type: 3,
@@ -483,11 +468,9 @@ export default {
         return;
       }
 
-      const partners = serverData.partner.partners;
-
       const searchValue = focusedOption.value.toLowerCase();
 
-      const filtered = partners
+      const filtered = serverData.partner.partners
         .filter((p) =>
           String(p.name || "")
             .toLowerCase()
@@ -542,21 +525,23 @@ export default {
       case "add": {
         await interaction.deferReply({ ephemeral: true });
 
-        const name = interaction.options.getString("name");
-        const kategorie = interaction.options.getString("kategorie");
-        const owner = interaction.options.getUser("owner");
-        const invite = interaction.options.getString("invite");
+        const name =
+          interaction.options.getString("name");
+
+        const kategorie =
+          interaction.options.getString("kategorie");
+
+        const owner =
+          interaction.options.getUser("owner");
+
+        const invite =
+          interaction.options.getString("invite");
 
         const description =
           interaction.options.getString("description") || null;
 
         const thumbnail =
           interaction.options.getString("thumbnail") || null;
-
-        // Optional:
-        // Wenn nichts angegeben wurde, wird Embed aktiviert.
-        const embedOption = interaction.options.getBoolean("embed");
-        const useEmbed = embedOption ?? true;
 
         // -------------------------------------------------------
         // INVITE VALIDIEREN
@@ -577,10 +562,13 @@ export default {
           guildID: interaction.guild.id,
         });
 
-        const forumChannelId = config.partnerForumChannelId;
+        const forumChannelId =
+          config.partnerForumChannelId;
 
         const forumChannel =
-          interaction.guild.channels.cache.get(forumChannelId);
+          interaction.guild.channels.cache.get(
+            forumChannelId,
+          );
 
         if (
           !forumChannel ||
@@ -603,22 +591,25 @@ export default {
         const partnerCount =
           (serverData?.partner?.partners?.length || 0) + 1;
 
-        const formattedDate = new Date().toLocaleDateString(
-          "de-DE",
-          {
+        const formattedDate =
+          new Date().toLocaleDateString("de-DE", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
-          },
-        );
+          });
 
         // -------------------------------------------------------
-        // EMBEDS
+        // HAUPT-EMBED
         // -------------------------------------------------------
         const mainEmbed = new EmbedBuilder()
-          .setTitle(`:shield: ${name} (ID: ${partnerCount})`)
+          .setTitle(
+            `:shield: ${name} (ID: ${partnerCount})`,
+          )
+          // Embed-Titel wird anklickbar
+          .setURL(invite)
           .setDescription(
-            description || "Keine Beschreibung angegeben.",
+            description ||
+              "Keine Beschreibung angegeben.",
           )
           .setColor("Blurple");
 
@@ -626,6 +617,9 @@ export default {
           mainEmbed.setThumbnail(thumbnail);
         }
 
+        // -------------------------------------------------------
+        // INFO-EMBED
+        // -------------------------------------------------------
         const infoEmbed = new EmbedBuilder()
           .setTitle("🔔 Informationen")
           .setDescription(
@@ -661,71 +655,59 @@ export default {
           // =====================================================
           // FORUM
           // =====================================================
-          if (forumChannel.type === ChannelType.GuildForum) {
-            thread = await forumChannel.threads.create({
-              name,
-              message: {
-                ...(useEmbed
-                  ? {
-                      embeds: [
-                        mainEmbed,
-                        infoEmbed,
-                      ],
-                    }
-                  : {
-                      content:
-                        `**${name}**\n\n` +
-                        `${description || "Keine Beschreibung angegeben."}\n\n` +
-                        `**🔔 Informationen**\n` +
-                        `• Partner seit: \`${formattedDate}\`\n` +
-                        `• Ansprechpartner: <@${owner.id}>\n` +
-                        `• Kategorie: \`${kategorie}\``,
-                    }),
+          if (
+            forumChannel.type === ChannelType.GuildForum
+          ) {
+            thread =
+              await forumChannel.threads.create({
+                name,
 
-                components: [button],
-              },
+                message: {
+                  embeds: [
+                    mainEmbed,
+                    infoEmbed,
+                  ],
 
-              appliedTags,
-            });
+                  components: [
+                    button,
+                  ],
+                },
 
-            // Starter Message des Forum-Posts
-            message = await thread.fetchStarterMessage();
+                appliedTags,
+              });
+
+            // Starter Message speichern
+            message =
+              await thread.fetchStarterMessage();
           }
 
           // =====================================================
           // TEXTKANAL
           // =====================================================
           else {
-            thread = await forumChannel.threads.create({
-              name,
-              autoArchiveDuration: 60,
-              reason: `Partner Thread für ${name}`,
-            });
+            thread =
+              await forumChannel.threads.create({
+                name,
+                autoArchiveDuration: 60,
+                reason:
+                  `Partner Thread für ${name}`,
+              });
 
-            message = await thread.send({
-              ...(useEmbed
-                ? {
-                    embeds: [
-                      mainEmbed,
-                      infoEmbed,
-                    ],
-                  }
-                : {
-                    content:
-                      `**${name}**\n\n` +
-                      `${description || "Keine Beschreibung angegeben."}\n\n` +
-                      `**🔔 Informationen**\n` +
-                      `• Partner seit: \`${formattedDate}\`\n` +
-                      `• Ansprechpartner: <@${owner.id}>\n` +
-                      `• Kategorie: \`${kategorie}\``,
-                  }),
+            message =
+              await thread.send({
+                embeds: [
+                  mainEmbed,
+                  infoEmbed,
+                ],
 
-              components: [button],
-            });
+                components: [
+                  button,
+                ],
+              });
           }
 
           // -----------------------------------------------------
-          // DATENBANK VORBEREITEN
+          // PARTNER ARRAY
           // -----------------------------------------------------
           if (!serverData.partner) {
             serverData.partner = {
@@ -733,7 +715,11 @@ export default {
             };
           }
 
-          if (!Array.isArray(serverData.partner.partners)) {
+          if (
+            !Array.isArray(
+              serverData.partner.partners,
+            )
+          ) {
             serverData.partner.partners = [];
           }
 
@@ -747,10 +733,14 @@ export default {
             invite,
             description,
             thumbnail,
-            embed: useEmbed,
             threadID: thread.id,
             messageID: message?.id || null,
+            createdAt: new Date(),
           });
+
+          serverData.markModified(
+            "partner.partners",
+          );
 
           await serverData.save();
 
@@ -766,7 +756,7 @@ export default {
 
           await interaction.editReply({
             content:
-              "`❌` » Fehler beim Erstellen des Forum-Beitrags.",
+              "> `❌` » Fehler beim Erstellen des Forum-Beitrags.",
           });
         }
 
@@ -779,19 +769,21 @@ export default {
       case "edit": {
         await interaction.deferReply({ ephemeral: true });
 
-        const partnerName = interaction.options.getString(
-          "partner",
-        );
+        const partnerName =
+          interaction.options.getString("partner");
 
         try {
-          const serverData = await serverDB.findOne({
-            guildID: interaction.guild.id,
-          });
+          const serverData =
+            await serverDB.findOne({
+              guildID: interaction.guild.id,
+            });
 
           if (
             !serverData ||
             !serverData.partner ||
-            !Array.isArray(serverData.partner.partners)
+            !Array.isArray(
+              serverData.partner.partners,
+            )
           ) {
             await interaction.editReply({
               content:
@@ -807,7 +799,8 @@ export default {
           const partnerIndex =
             serverData.partner.partners.findIndex(
               (p) =>
-                String(p.name || "").toLowerCase() ===
+                String(p.name || "")
+                  .toLowerCase() ===
                 partnerName.toLowerCase(),
             );
 
@@ -821,18 +814,20 @@ export default {
           }
 
           const partner =
-            serverData.partner.partners[partnerIndex];
+            serverData.partner.partners[
+              partnerIndex
+            ];
 
           // -----------------------------------------------------
           // NEUE WERTE
           // -----------------------------------------------------
           const newName =
-            interaction.options.getString("name") ||
-            partner.name;
+            interaction.options.getString("name");
 
           const newCategory =
-            interaction.options.getString("kategorie") ||
-            partner.category;
+            interaction.options.getString(
+              "kategorie",
+            );
 
           const newOwner =
             interaction.options.getUser("owner");
@@ -841,25 +836,23 @@ export default {
             interaction.options.getString("invite");
 
           const newDescription =
-            interaction.options.getString("description");
+            interaction.options.getString(
+              "description",
+            );
 
           const newThumbnail =
-            interaction.options.getString("thumbnail");
-
-          const embedOption =
-            interaction.options.getBoolean("embed");
+            interaction.options.getString(
+              "thumbnail",
+            );
 
           // -----------------------------------------------------
-          // WERTE AKTUALISIEREN
+          // ENDGÜLTIGE WERTE
           // -----------------------------------------------------
-          if (newInvite && !isValidInviteLink(newInvite)) {
-            await interaction.editReply({
-              content:
-                "> `❌` » Der neue Einladungslink ist ungültig.",
-            });
+          const finalName =
+            newName || partner.name;
 
-            return;
-          }
+          const finalCategory =
+            newCategory || partner.category;
 
           const finalOwnerID =
             newOwner?.id ||
@@ -879,10 +872,20 @@ export default {
               ? newThumbnail
               : partner.thumbnail || null;
 
-          const finalEmbed =
-            embedOption !== null
-              ? embedOption
-              : partner.embed !== false;
+          // -----------------------------------------------------
+          // INVITE VALIDIEREN
+          // -----------------------------------------------------
+          if (
+            newInvite &&
+            !isValidInviteLink(newInvite)
+          ) {
+            await interaction.editReply({
+              content:
+                "> `❌` » Der neue Einladungslink ist ungültig.",
+            });
+
+            return;
+          }
 
           // -----------------------------------------------------
           // THREAD LADEN
@@ -900,9 +903,9 @@ export default {
             interaction.guild.channels.cache.get(
               partner.threadID,
             ) ||
-            await interaction.guild.channels.fetch(
-              partner.threadID,
-            ).catch(() => null);
+            await interaction.guild.channels
+              .fetch(partner.threadID)
+              .catch(() => null);
 
           if (!thread) {
             await interaction.editReply({
@@ -919,117 +922,136 @@ export default {
           let message = null;
 
           if (partner.messageID) {
-            message = await thread.messages
-              .fetch(partner.messageID)
-              .catch(() => null);
+            message =
+              await thread.messages
+                .fetch(partner.messageID)
+                .catch(() => null);
           }
 
-          // Bei Forum-Threads Starter Message versuchen
-          if (!message && thread.type === ChannelType.PublicThread) {
-            message = await thread
-              .fetchStarterMessage()
-              .catch(() => null);
+          // Forum Starter Message
+          if (!message) {
+            message =
+              await thread
+                .fetchStarterMessage()
+                .catch(() => null);
           }
 
           // -----------------------------------------------------
-          // NEUE EMBEDS
+          // PARTNER-ID
           // -----------------------------------------------------
           const partnerID =
             partnerIndex + 1;
 
-          const mainEmbed = new EmbedBuilder()
-            .setTitle(
-              `:shield: ${newName} (ID: ${partnerID})`,
-            )
-            .setDescription(
-              finalDescription ||
-                "Keine Beschreibung angegeben.",
-            )
-            .setColor("Blurple");
+          // -----------------------------------------------------
+          // HAUPT-EMBED
+          // -----------------------------------------------------
+          const mainEmbed =
+            new EmbedBuilder()
+              .setTitle(
+                `:shield: ${finalName} (ID: ${partnerID})`,
+              )
+              // Auch beim Bearbeiten wird der Link gesetzt
+              .setURL(finalInvite)
+              .setDescription(
+                finalDescription ||
+                  "Keine Beschreibung angegeben.",
+              )
+              .setColor("Blurple");
 
           if (finalThumbnail) {
-            mainEmbed.setThumbnail(finalThumbnail);
+            mainEmbed.setThumbnail(
+              finalThumbnail,
+            );
           }
 
-          const infoEmbed = new EmbedBuilder()
-            .setTitle("🔔 Informationen")
-            .setDescription(
-              `• Partner seit: \`${getPartnerDate(partner)}\`\n` +
-              `• Ansprechpartner: <@${finalOwnerID}>\n` +
-              `• Kategorie: \`${newCategory}\``,
-            )
-            .setColor("Blurple");
+          // -----------------------------------------------------
+          // INFO-EMBED
+          // -----------------------------------------------------
+          const infoEmbed =
+            new EmbedBuilder()
+              .setTitle("🔔 Informationen")
+              .setDescription(
+                `• Partner seit: \`${getPartnerDate(partner)}\`\n` +
+                `• Ansprechpartner: <@${finalOwnerID}>\n` +
+                `• Kategorie: \`${finalCategory}\``,
+              )
+              .setColor("Blurple");
 
+          // -----------------------------------------------------
+          // BUTTON
+          // -----------------------------------------------------
           const button =
-            createPartnerButton(finalInvite);
+            createPartnerButton(
+              finalInvite,
+            );
 
           // -----------------------------------------------------
-          // NEUE MESSAGE
+          // MESSAGE AKTUALISIEREN
           // -----------------------------------------------------
-          const messageData = finalEmbed
-            ? {
-                content: null,
-                embeds: [
-                  mainEmbed,
-                  infoEmbed,
-                ],
-                components: [button],
-              }
-            : {
-                content:
-                  `**${newName}**\n\n` +
-                  `${finalDescription || "Keine Beschreibung angegeben."}\n\n` +
-                  `**🔔 Informationen**\n` +
-                  `• Partner seit: \`${getPartnerDate(partner)}\`\n` +
-                  `• Ansprechpartner: <@${finalOwnerID}>\n` +
-                  `• Kategorie: \`${newCategory}\``,
-                embeds: [],
-                components: [button],
-              };
+          const messageData = {
+            embeds: [
+              mainEmbed,
+              infoEmbed,
+            ],
 
-          // -----------------------------------------------------
-          // MESSAGE BEARBEITEN
-          // -----------------------------------------------------
+            components: [
+              button,
+            ],
+          };
+
           if (message) {
-            await message.edit(messageData);
+            await message.edit(
+              messageData,
+            );
           } else {
-            // Falls alte Partner keine messageID haben
-            message = await thread.send(messageData);
-          }
-
-          // -----------------------------------------------------
-          // THREAD-NAMEN ÄNDERN
-          // -----------------------------------------------------
-          if (thread.name !== newName) {
-            await thread.setName(newName).catch((error) => {
-              logger.error(
-                "Thread-Name konnte nicht geändert werden:",
-                error,
+            message =
+              await thread.send(
+                messageData,
               );
-            });
           }
 
           // -----------------------------------------------------
-          // FORUM-TAGS AKTUALISIEREN
+          // THREAD-NAME
+          // -----------------------------------------------------
+          if (
+            thread.name !== finalName
+          ) {
+            await thread
+              .setName(finalName)
+              .catch((error) => {
+                logger.error(
+                  "Thread-Name konnte nicht geändert werden:",
+                  error,
+                );
+              });
+          }
+
+          // -----------------------------------------------------
+          // FORUM-TAGS
           // -----------------------------------------------------
           if (
             thread.parent &&
-            thread.parent.type === ChannelType.GuildForum
+            thread.parent.type ===
+              ChannelType.GuildForum
           ) {
             const newTagId =
               config.partnerKategorieIds?.[
-                newCategory
+                finalCategory
               ] || null;
 
-            const generalTag =
-              config.partnerGeneralTagId || null;
+            const generalTagId =
+              config.partnerGeneralTagId ||
+              null;
 
             const newTags = [
               newTagId,
-              generalTag,
+              generalTagId,
             ].filter(Boolean);
 
-            if (typeof thread.setAppliedTags === "function") {
+            if (
+              typeof thread.setAppliedTags ===
+              "function"
+            ) {
               await thread
                 .setAppliedTags(newTags)
                 .catch((error) => {
@@ -1044,15 +1066,29 @@ export default {
           // -----------------------------------------------------
           // DATENBANK AKTUALISIEREN
           // -----------------------------------------------------
-          partner.name = newName;
-          partner.category = newCategory;
-          partner.ownerID = finalOwnerID;
-          partner.invite = finalInvite;
-          partner.description = finalDescription;
-          partner.thumbnail = finalThumbnail;
-          partner.embed = finalEmbed;
-          partner.threadID = thread.id;
-          partner.messageID = message.id;
+          partner.name =
+            finalName;
+
+          partner.category =
+            finalCategory;
+
+          partner.ownerID =
+            finalOwnerID;
+
+          partner.invite =
+            finalInvite;
+
+          partner.description =
+            finalDescription;
+
+          partner.thumbnail =
+            finalThumbnail;
+
+          partner.threadID =
+            thread.id;
+
+          partner.messageID =
+            message.id;
 
           serverData.markModified(
             "partner.partners",
@@ -1062,7 +1098,7 @@ export default {
 
           await interaction.editReply({
             content:
-              `> \`✅\` » Der Server-Partner **${newName}** wurde erfolgreich bearbeitet.`,
+              `> \`✅\` » Der Server-Partner **${finalName}** wurde erfolgreich bearbeitet.`,
           });
         } catch (error) {
           logger.error(
@@ -1083,20 +1119,27 @@ export default {
       // DELETE
       // =======================================================
       case "delete": {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({
+          ephemeral: true,
+        });
 
         const partnerNameToDelete =
-          interaction.options.getString("partner");
+          interaction.options.getString(
+            "partner",
+          );
 
         try {
-          const serverData = await serverDB.findOne({
-            guildID: interaction.guild.id,
-          });
+          const serverData =
+            await serverDB.findOne({
+              guildID: interaction.guild.id,
+            });
 
           if (
             !serverData ||
             !serverData.partner ||
-            !Array.isArray(serverData.partner.partners)
+            !Array.isArray(
+              serverData.partner.partners,
+            )
           ) {
             await interaction.editReply({
               content:
@@ -1109,7 +1152,8 @@ export default {
           const partnerIndex =
             serverData.partner.partners.findIndex(
               (p) =>
-                String(p.name || "").toLowerCase() ===
+                String(p.name || "")
+                  .toLowerCase() ===
                 partnerNameToDelete.toLowerCase(),
             );
 
@@ -1123,7 +1167,9 @@ export default {
           }
 
           const partner =
-            serverData.partner.partners[partnerIndex];
+            serverData.partner.partners[
+              partnerIndex
+            ];
 
           // -----------------------------------------------------
           // THREAD LÖSCHEN
@@ -1150,7 +1196,7 @@ export default {
           }
 
           // -----------------------------------------------------
-          // DATENBANK LÖSCHEN
+          // PARTNER AUS DATENBANK ENTFERNEN
           // -----------------------------------------------------
           serverData.partner.partners.splice(
             partnerIndex,
@@ -1215,7 +1261,9 @@ function isValidInviteLink(link) {
 
 function getPartnerDate(partner) {
   if (partner.createdAt) {
-    return new Date(partner.createdAt).toLocaleDateString(
+    return new Date(
+      partner.createdAt,
+    ).toLocaleDateString(
       "de-DE",
       {
         day: "2-digit",
@@ -1225,6 +1273,5 @@ function getPartnerDate(partner) {
     );
   }
 
-  // Alte Partner ohne gespeichertes Datum
   return "Unbekannt";
 }
