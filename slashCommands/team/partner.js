@@ -318,7 +318,7 @@ function normalizePartnerIDs(partners) {
   let nextID = 1;
 
   for (const partner of partners) {
-    if (partner.partnerID !== null) continue;
+    if (partner.partnerID !== null) {continue;}
 
     while (usedIDs.has(nextID)) {
       nextID++;
@@ -333,7 +333,7 @@ function normalizePartnerIDs(partners) {
 }
 
 function getHighestPartnerID(partners) {
-  if (!partners.length) return 0;
+  if (!partners.length) {return 0;}
 
   return Math.max(
     ...partners.map((partner) => {
@@ -884,7 +884,7 @@ export default {
           }
         } catch (error) {
           logger.error(
-            `Partner Forum Permissions konnten nicht gesetzt werden:\n` +
+            "Partner Forum Permissions konnten nicht gesetzt werden:\n" +
               `Message: ${error?.message}\n` +
               `Code: ${error?.code}\n` +
               `Status: ${error?.status}\n` +
@@ -1073,7 +1073,7 @@ export default {
 
         } catch (error) {
           logger.error(
-            `Fehler beim Erstellen des Partner-Threads:\n` +
+            "Fehler beim Erstellen des Partner-Threads:\n" +
               `Message: ${error?.message}\n` +
               `Code: ${error?.code}\n` +
               `Status: ${error?.status}\n` +
@@ -1426,8 +1426,8 @@ export default {
             const categoryTag =
               config
                 .partnerKategorieIds?.[
-                partner.category
-              ];
+                  partner.category
+                ];
 
             const generalTag =
               config.partnerGeneralTagId;
@@ -1545,7 +1545,7 @@ export default {
       }
     } catch (error) {
       logger.error(
-        `Fehler im /partner Command:\n` +
+        "Fehler im /partner Command:\n" +
           `Message: ${error?.message}\n` +
           `Code: ${error?.code}\n` +
           `Status: ${error?.status}\n` +
