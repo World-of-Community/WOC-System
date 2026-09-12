@@ -264,7 +264,8 @@ export default {
           (b.coins || 0) - (a.coins || 0),
       );
 
-      formatValue = (u) => `${u.streak || 0}x Streak`;
+      formatValue = (u) =>
+        `${u.streak || 0}x Streak`;
 
       title = "`📅` Top 10 Leaderboard (Daily-Streak)";
 
@@ -287,10 +288,7 @@ export default {
 
       title = "`💸` Top 10 Leaderboard (Spenden)";
 
-      const total = data.reduce(
-        (acc, u) => acc + (u.donation || 0),
-        0,
-      );
+      const total = data.reduce((acc, u) => acc + (u.donation || 0), 0);
 
       totalText = `\n\n\`💰\` » Insgesamt: **${total.toLocaleString("de-DE")}€** gespendet\n` +
         "`💖` » Wir danken jedem einzelnen für die Spende!";
@@ -301,8 +299,39 @@ export default {
     // ============================================================
 
     if (!data.length) {
-      return interaction.editReply({ content: "> `❌` » Keine Daten vorhanden."});
+      return interaction.editReply({
+        content: "> `❌` » Keine Daten vorhanden.",
+      });
     }
+
+    // ============================================================
+    // USERNAMEN LADEN
+    // ============================================================
+
+    const usernameCache = new Map();
+
+    const getUsername = async (userId) => {
+      if (!userId) {
+        return "Unbekannter User";
+      }
+
+      if (usernameCache.has(userId)) {
+        return usernameCache.get(userId);
+      }
+
+      try {
+        const user = await client.users.fetch(userId);
+        const username = user.username;
+
+        usernameCache.set(userId, username);
+
+        return username;
+      } catch {
+        usernameCache.set(userId, "Unbekannter User");
+
+        return "Unbekannter User";
+      }
+    };
 
     // ============================================================
     // TOP 10
@@ -323,9 +352,11 @@ export default {
       const rank = getRank(i);
       const value = formatValue(entry);
       const userId = entry.userId || entry.userID;
+      const username = await getUsername(userId);
 
+      // Platz 1-10 ohne Backticks
       description +=
-        `\`${rank}\` **<@${userId}>** mit **${value}**\n`;
+        `${rank} **${username}** mit **${value}**\n`;
     }
 
     // ============================================================
@@ -334,15 +365,26 @@ export default {
 
     const userId = interaction.user.id;
 
-    const index = data.findIndex((u) => String(u.userId || u.userID) === String(userId));
+    const index = data.findIndex(
+      (u) =>
+        String(u.userId || u.userID) ===
+        String(userId)
+    );
 
     if (index !== -1) {
       const entry = data[index];
       const value = formatValue(entry);
       const rank = getRank(index);
 
-      description +=
-        `\n\`👤\` » Du belegst Platz \`${rank}\` mit **${value}**!`;
+      // Platz 1-10 ohne Backticks
+      // Ab Platz 11 mit Backticks
+      if (index < 10) {
+        description +=
+          `\n\`👤\` » Du belegst Platz ${rank} mit **${value}**!`;
+      } else {
+        description +=
+          `\n\`👤\` » Du belegst Platz \`${rank}\` mit **${value}**!`;
+      }
     } else {
       description +=
         "\n> `❗` » Du bist nicht im Leaderboard.";
