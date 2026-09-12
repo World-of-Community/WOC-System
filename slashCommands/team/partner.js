@@ -396,20 +396,7 @@ function isValidImageUrl(url) {
 
 /*
  * ============================================================
- * DATUM
- * ============================================================
- */
-
-function getPartnerDate(date = new Date()) {
-  return new Intl.DateTimeFormat("de-DE", {
-    timeZone: "Europe/Berlin",
-    dateStyle: "long",
-  }).format(date);
-}
-
-/*
- * ============================================================
- * BUTTON
+ * PARTNER BUTTON
  * ============================================================
  */
 
@@ -428,10 +415,10 @@ function createPartnerButton(invite) {
  * FORUM BERECHTIGUNGEN
  * ============================================================
  *
- * @everyone:
- * ❌ keine Nachrichten
- * ❌ keine Antworten
- * ❌ keine Threads
+ * Mitglieder:
+ * ❌ Keine Nachrichten
+ * ❌ Keine Antworten
+ * ❌ Keine Threads
  *
  * Bot:
  * ✅ Nachrichten
@@ -444,10 +431,6 @@ async function setupPartnerForumPermissions(
   guild,
 ) {
   try {
-    /*
-     * @everyone
-     */
-
     await forumChannel.permissionOverwrites.edit(
       guild.roles.everyone,
       {
@@ -457,10 +440,6 @@ async function setupPartnerForumPermissions(
         CreatePrivateThreads: false,
       },
     );
-
-    /*
-     * Bot
-     */
 
     const botMember =
       guild.members.me ||
@@ -474,13 +453,10 @@ async function setupPartnerForumPermissions(
         {
           ViewChannel: true,
           ReadMessageHistory: true,
-
           SendMessages: true,
           SendMessagesInThreads: true,
-
           CreatePublicThreads: true,
           CreatePrivateThreads: true,
-
           ManageThreads: true,
         },
       );
@@ -489,7 +465,7 @@ async function setupPartnerForumPermissions(
     return true;
   } catch (error) {
     logger.error(
-      "Partner Forum Permissions konnten nicht gesetzt werden:\n" +
+      `Partner Forum Permissions konnten nicht gesetzt werden:\n` +
         `Message: ${error?.message}\n` +
         `Code: ${error?.code}\n` +
         `Status: ${error?.status}\n` +
@@ -511,7 +487,7 @@ async function setupPartnerForumPermissions(
 
 /*
  * ============================================================
- * FORUM TAGS ERMITTELN
+ * FORUM TAGS
  * ============================================================
  */
 
@@ -556,7 +532,7 @@ function getPartnerTags(
 
 /*
  * ============================================================
- * EMBEDS
+ * HAUPT EMBED
  * ============================================================
  */
 
@@ -588,33 +564,33 @@ function createMainPartnerEmbed(partner) {
   return embed;
 }
 
+/*
+ * ============================================================
+ * INFO EMBED
+ * ============================================================
+ *
+ * KEINE FIELDS
+ *
+ * Emojis stehen jeweils in Backticks.
+ */
+
 function createInfoPartnerEmbed(
   partner,
   ownerUser,
 ) {
   return new EmbedBuilder()
-    .setTitle("🔔 Informationen")
+    .setTitle("`🔔` Informationen")
     .setColor("Blurple")
-    .addFields(
-      {
-        name: "📅 Erstellt am",
-        value: getPartnerDate(
-          partner.createdAt,
-        ),
-        inline: true,
-      },
-      {
-        name: "👤 Besitzer",
-        value: ownerUser
-          ? `${ownerUser}`
-          : `<@${partner.ownerID}>`,
-        inline: true,
-      },
-      {
-        name: "📁 Kategorie",
-        value: `\`${partner.category}\``,
-        inline: true,
-      },
+    .setDescription(
+      `\`📅\` **Partner seit:** <t:${Math.floor(
+        new Date(partner.createdAt).getTime() / 1000,
+      )}:D>\n\n` +
+        `\`👤\` **Ansprechpartner:** ${
+          ownerUser
+            ? `${ownerUser}`
+            : `<@${partner.ownerID}>`
+        }\n\n` +
+        `\`📁\` **Kategorie:** \`${partner.category}\``,
     );
 }
 
@@ -629,10 +605,6 @@ async function setupPartnerThreadPermissions(
   guild,
 ) {
   try {
-    /*
-     * @everyone darf im Partner-Beitrag NICHT schreiben
-     */
-
     await thread.permissionOverwrites.edit(
       guild.roles.everyone,
       {
@@ -640,10 +612,6 @@ async function setupPartnerThreadPermissions(
         SendMessagesInThreads: false,
       },
     );
-
-    /*
-     * Bot darf schreiben
-     */
 
     const botMember =
       guild.members.me ||
@@ -692,12 +660,6 @@ export default {
     PermissionFlagsBits.Administrator.toString(),
 
   options: [
-    /*
-     * ========================================================
-     * ADD
-     * ========================================================
-     */
-
     {
       type: 1,
       name: "add",
@@ -789,12 +751,6 @@ export default {
         },
       ],
     },
-
-    /*
-     * ========================================================
-     * EDIT
-     * ========================================================
-     */
 
     {
       type: 1,
@@ -897,12 +853,6 @@ export default {
       ],
     },
 
-    /*
-     * ========================================================
-     * DELETE
-     * ========================================================
-     */
-
     {
       type: 1,
       name: "delete",
@@ -922,27 +872,8 @@ export default {
     },
   ],
 
-  /*
-   * ==========================================================
-   * RUN
-   * ==========================================================
-   *
-   * WICHTIG:
-   * Dein interactionCreate.js verwendet:
-   *
-   * slashCommand.run(client, interaction)
-   *
-   * Deshalb MUSS der Command "run" verwenden.
-   */
-
   async run(client, interaction) {
     try {
-      /*
-       * ======================================================
-       * AUTOCOMPLETE
-       * ======================================================
-       */
-
       if (interaction.isAutocomplete()) {
         const serverData =
           await serverDB.findOne({
@@ -997,20 +928,8 @@ export default {
         );
       }
 
-      /*
-       * ======================================================
-       * SUBCOMMAND
-       * ======================================================
-       */
-
       const subcommand =
         interaction.options.getSubcommand();
-
-      /*
-       * ======================================================
-       * SERVER DB
-       * ======================================================
-       */
 
       let serverData =
         await serverDB.findOne({
@@ -1040,18 +959,14 @@ export default {
         serverData.partner.partners = [];
       }
 
-      /*
-       * IDs reparieren
-       */
-
       normalizePartnerIDs(
         serverData.partner.partners,
       );
 
       /*
-       * ======================================================
+       * ========================================================
        * ADD
-       * ======================================================
+       * ========================================================
        */
 
       if (subcommand === "add") {
@@ -1090,14 +1005,10 @@ export default {
             "embed",
           ) || "";
 
-        /*
-         * URLs prüfen
-         */
-
         if (!isValidInviteLink(invite)) {
           return interaction.reply({
             content:
-              "❌ » Der angegebene Invite-/Partnerlink ist ungültig.",
+              "`❌` » Der angegebene Invite-/Partnerlink ist ungültig.",
             flags: 64,
           });
         }
@@ -1108,7 +1019,7 @@ export default {
         ) {
           return interaction.reply({
             content:
-              "❌ » Die angegebene Thumbnail-URL ist ungültig.",
+              "`❌` » Die angegebene Thumbnail-URL ist ungültig.",
             flags: 64,
           });
         }
@@ -1119,14 +1030,10 @@ export default {
         ) {
           return interaction.reply({
             content:
-              "❌ » Die angegebene Embed-Bild-URL ist ungültig.",
+              "`❌` » Die angegebene Embed-Bild-URL ist ungültig.",
             flags: 64,
           });
         }
-
-        /*
-         * Partner-ID
-         */
 
         const highestPartnerID =
           getHighestPartnerID(
@@ -1136,18 +1043,12 @@ export default {
         const partnerID =
           highestPartnerID + 1;
 
-        /*
-         * ======================================================
-         * FORUM
-         * ======================================================
-         */
-
         if (
           !config.partnerForumChannelId
         ) {
           return interaction.reply({
             content:
-              "❌ » Es wurde keine `partnerForumChannelId` in der Config hinterlegt.",
+              "`❌` » Es wurde keine `partnerForumChannelId` in der Config hinterlegt.",
             flags: 64,
           });
         }
@@ -1162,7 +1063,7 @@ export default {
         if (!forumChannel) {
           return interaction.reply({
             content:
-              "❌ » Der konfigurierte Partner-Forum-Kanal wurde nicht gefunden.",
+              "`❌` » Der konfigurierte Partner-Forum-Kanal wurde nicht gefunden.",
             flags: 64,
           });
         }
@@ -1173,14 +1074,10 @@ export default {
         ) {
           return interaction.reply({
             content:
-              "❌ » Der konfigurierte Partner-Kanal ist kein Forum-Kanal.",
+              "`❌` » Der konfigurierte Partner-Kanal ist kein Forum-Kanal.",
             flags: 64,
           });
         }
-
-        /*
-         * Forum-Berechtigungen
-         */
 
         const permissionsOK =
           await setupPartnerForumPermissions(
@@ -1191,17 +1088,11 @@ export default {
         if (!permissionsOK) {
           return interaction.reply({
             content:
-              "❌ » Die Berechtigungen des Partner-Forums konnten nicht gesetzt werden.\n\n" +
+              "`❌` » Die Berechtigungen des Partner-Forums konnten nicht gesetzt werden.\n\n" +
               "Bitte überprüfe, ob der Bot die notwendigen Kanalberechtigungen besitzt.",
             flags: 64,
           });
         }
-
-        /*
-         * ======================================================
-         * TAGS
-         * ======================================================
-         */
 
         const {
           appliedTags,
@@ -1219,23 +1110,11 @@ export default {
           );
         }
 
-        /*
-         * ======================================================
-         * BESCHREIBUNG
-         * ======================================================
-         */
-
         const cleanDescription =
           description.replace(
             /\\n/g,
             "\n",
           );
-
-        /*
-         * ======================================================
-         * PARTNER OBJEKT
-         * ======================================================
-         */
 
         const partnerData = {
           partnerID,
@@ -1250,12 +1129,6 @@ export default {
           createdAt: new Date(),
         };
 
-        /*
-         * ======================================================
-         * EMBEDS
-         * ======================================================
-         */
-
         const mainEmbed =
           createMainPartnerEmbed(
             partnerData,
@@ -1266,23 +1139,6 @@ export default {
             partnerData,
             owner,
           );
-
-        /*
-         * ======================================================
-         * BUTTON
-         * ======================================================
-         */
-
-        const button =
-          createPartnerButton(
-            invite,
-          );
-
-        /*
-         * ======================================================
-         * THREAD ERSTELLEN
-         * ======================================================
-         */
 
         let thread = null;
         let starterMessage = null;
@@ -1303,7 +1159,9 @@ export default {
                   ],
 
                   components: [
-                    button,
+                    createPartnerButton(
+                      invite,
+                    ),
                   ],
                 },
 
@@ -1312,16 +1170,8 @@ export default {
               },
             );
 
-          /*
-           * Starter Message
-           */
-
           starterMessage =
             await thread.fetchStarterMessage();
-
-          /*
-           * Thread-Berechtigungen
-           */
 
           await setupPartnerThreadPermissions(
             thread,
@@ -1347,17 +1197,11 @@ export default {
 
           return interaction.reply({
             content:
-              "❌ » Fehler beim Erstellen des Forum-Beitrags.\n\n" +
+              "`❌` » Fehler beim Erstellen des Forum-Beitrags.\n\n" +
               "Bitte überprüfe die Bot-Berechtigungen und die Forum-Tags.",
             flags: 64,
           });
         }
-
-        /*
-         * ======================================================
-         * DB SPEICHERN
-         * ======================================================
-         */
 
         serverData.partner.partners.push({
           partnerID,
@@ -1378,15 +1222,9 @@ export default {
 
         await serverData.save();
 
-        /*
-         * ======================================================
-         * ERFOLG
-         * ======================================================
-         */
-
         return interaction.reply({
           content:
-            `✅ » Der Partner **${name}** wurde erfolgreich hinzugefügt.\n\n` +
+            "`✅` » Der Partner **${name}** wurde erfolgreich hinzugefügt.\n\n" +
             `> **Partner-ID:** \`${partnerID}\`\n` +
             `> **Kategorie:** \`${kategorie}\`\n` +
             `> **Forum-Beitrag:** ${thread}`,
@@ -1395,9 +1233,9 @@ export default {
       }
 
       /*
-       * ======================================================
+       * ========================================================
        * EDIT
-       * ======================================================
+       * ========================================================
        */
 
       if (subcommand === "edit") {
@@ -1419,7 +1257,7 @@ export default {
         if (!partner) {
           return interaction.reply({
             content:
-              "❌ » Dieser Partner wurde nicht gefunden.",
+              "`❌` » Dieser Partner wurde nicht gefunden.",
             flags: 64,
           });
         }
@@ -1459,17 +1297,13 @@ export default {
             "embed",
           );
 
-        /*
-         * URLs validieren
-         */
-
         if (
           newInvite &&
           !isValidInviteLink(newInvite)
         ) {
           return interaction.reply({
             content:
-              "❌ » Der neue Invite-/Partnerlink ist ungültig.",
+              "`❌` » Der neue Invite-/Partnerlink ist ungültig.",
             flags: 64,
           });
         }
@@ -1482,7 +1316,7 @@ export default {
         ) {
           return interaction.reply({
             content:
-              "❌ » Die neue Thumbnail-URL ist ungültig.",
+              "`❌` » Die neue Thumbnail-URL ist ungültig.",
             flags: 64,
           });
         }
@@ -1495,14 +1329,10 @@ export default {
         ) {
           return interaction.reply({
             content:
-              "❌ » Die neue Bild-URL ist ungültig.",
+              "`❌` » Die neue Bild-URL ist ungültig.",
             flags: 64,
           });
         }
-
-        /*
-         * Werte ändern
-         */
 
         if (newName !== null) {
           partner.name =
@@ -1542,12 +1372,6 @@ export default {
             newEmbed;
         }
 
-        /*
-         * ======================================================
-         * THREAD LADEN
-         * ======================================================
-         */
-
         let thread = null;
 
         if (partner.threadID) {
@@ -1560,20 +1384,12 @@ export default {
         }
 
         if (thread) {
-          /*
-           * Owner
-           */
-
           const ownerUser =
             await interaction.client.users
               .fetch(
                 partner.ownerID,
               )
               .catch(() => null);
-
-          /*
-           * Neue Embeds
-           */
 
           const newMainEmbed =
             createMainPartnerEmbed(
@@ -1586,12 +1402,9 @@ export default {
               ownerUser,
             );
 
-          /*
-           * Starter Message
-           */
-
           const message =
-            await thread.fetchStarterMessage()
+            await thread
+              .fetchStarterMessage()
               .catch(() => null);
 
           if (message) {
@@ -1609,10 +1422,6 @@ export default {
             });
           }
 
-          /*
-           * Thread Name
-           */
-
           await thread
             .setName(
               partner.name.slice(
@@ -1621,12 +1430,6 @@ export default {
               ),
             )
             .catch(() => null);
-
-          /*
-           * ====================================================
-           * TAGS
-           * ====================================================
-           */
 
           if (
             thread.parent?.type ===
@@ -1662,37 +1465,25 @@ export default {
               });
           }
 
-          /*
-           * Thread-Berechtigungen
-           */
-
           await setupPartnerThreadPermissions(
             thread,
             interaction.guild,
           );
         }
 
-        /*
-         * DB speichern
-         */
-
         await serverData.save();
-
-        /*
-         * Erfolg
-         */
 
         return interaction.reply({
           content:
-            `✅ » Der Partner **${partner.name}** (\`${partner.partnerID}\`) wurde erfolgreich bearbeitet.`,
+            "`✅` » Der Partner **${partner.name}** (`${partner.partnerID}`) wurde erfolgreich bearbeitet.",
           flags: 64,
         });
       }
 
       /*
-       * ======================================================
+       * ========================================================
        * DELETE
-       * ======================================================
+       * ========================================================
        */
 
       if (subcommand === "delete") {
@@ -1714,7 +1505,7 @@ export default {
         if (partnerIndex === -1) {
           return interaction.reply({
             content:
-              "❌ » Dieser Partner wurde nicht gefunden.",
+              "`❌` » Dieser Partner wurde nicht gefunden.",
             flags: 64,
           });
         }
@@ -1723,10 +1514,6 @@ export default {
           serverData.partner.partners[
             partnerIndex
           ];
-
-        /*
-         * Thread löschen
-         */
 
         if (partner.threadID) {
           const thread =
@@ -1749,10 +1536,6 @@ export default {
           }
         }
 
-        /*
-         * DB löschen
-         */
-
         serverData.partner.partners.splice(
           partnerIndex,
           1,
@@ -1760,26 +1543,16 @@ export default {
 
         await serverData.save();
 
-        /*
-         * Erfolg
-         */
-
         return interaction.reply({
           content:
-            `✅ » Der Partner **${partner.name}** (\`${partner.partnerID}\`) wurde erfolgreich gelöscht.`,
+            "`✅` » Der Partner **${partner.name}** (`${partner.partnerID}`) wurde erfolgreich gelöscht.",
           flags: 64,
         });
       }
 
-      /*
-       * ======================================================
-       * UNBEKANNTER SUBCOMMAND
-       * ======================================================
-       */
-
       return interaction.reply({
         content:
-          "❌ » Unbekannter Partner-Subcommand.",
+          "`❌` » Unbekannter Partner-Subcommand.",
         flags: 64,
       });
     } catch (error) {
@@ -1806,7 +1579,7 @@ export default {
       ) {
         return interaction.reply({
           content:
-            "❌ » Beim Ausführen des Partner-Befehls ist ein Fehler aufgetreten.",
+            "`❌` » Beim Ausführen des Partner-Befehls ist ein Fehler aufgetreten.",
           flags: 64,
         });
       }
@@ -1814,7 +1587,7 @@ export default {
       if (interaction.deferred) {
         return interaction.editReply({
           content:
-            "❌ » Beim Ausführen des Partner-Befehls ist ein Fehler aufgetreten.",
+            "`❌` » Beim Ausführen des Partner-Befehls ist ein Fehler aufgetreten.",
         });
       }
     }
