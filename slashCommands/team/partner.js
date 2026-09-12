@@ -465,7 +465,7 @@ async function setupPartnerForumPermissions(
     return true;
   } catch (error) {
     logger.error(
-      `Partner Forum Permissions konnten nicht gesetzt werden:\n` +
+      "Partner Forum Permissions konnten nicht gesetzt werden:\n" +
         `Message: ${error?.message}\n` +
         `Code: ${error?.code}\n` +
         `Status: ${error?.status}\n` +
