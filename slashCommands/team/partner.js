@@ -578,19 +578,22 @@ function createInfoPartnerEmbed(
   partner,
   ownerUser,
 ) {
+  const partnerDate = new Date(partner.createdAt);
+
+  const formattedDate =
+    partnerDate.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
   return new EmbedBuilder()
-    .setTitle("`🔔` Informationen")
+    .setTitle("🔔 Informationen")
     .setColor("Blurple")
     .setDescription(
-      `\`📅\` **Partner seit:** <t:${Math.floor(
-        new Date(partner.createdAt).getTime() / 1000,
-      )}:D>\n\n` +
-        `\`👤\` **Ansprechpartner:** ${
-          ownerUser
-            ? `${ownerUser}`
-            : `<@${partner.ownerID}>`
-        }\n\n` +
-        `\`📁\` **Kategorie:** \`${partner.category}\``,
+      `- **Partner seit:** \`${formattedDate}\`\n` +
+      `- **Ansprechpartner:** ${ownerUser ? `${ownerUser}` : `<@${partner.ownerID}>`}\n` +
+      `- **Kategorie:** \`${partner.category}\``,
     );
 }
 
@@ -857,7 +860,7 @@ export default {
       type: 1,
       name: "delete",
       description:
-        "Lösche einen bestehenden Partner.",
+        "Lösche einen bestehenden Partner. 🗑️",
 
       options: [
         {
@@ -1224,7 +1227,7 @@ export default {
 
         return interaction.reply({
           content:
-            "`✅` » Der Partner **${name}** wurde erfolgreich hinzugefügt.\n\n" +
+            `\`✅\` » Der Partner **${name}** wurde erfolgreich hinzugefügt.\n\n` +
             `> **Partner-ID:** \`${partnerID}\`\n` +
             `> **Kategorie:** \`${kategorie}\`\n` +
             `> **Forum-Beitrag:** ${thread}`,
