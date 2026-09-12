@@ -368,7 +368,7 @@ export default {
     const index = data.findIndex(
       (u) =>
         String(u.userId || u.userID) ===
-        String(userId)
+        String(userId),
     );
 
     if (index !== -1) {
