@@ -1,6 +1,3 @@
-
-// test
-
 import client from "../index.js";
 import {
   Events,
@@ -24,16 +21,15 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
 
     if (!liveRole) {
       logger.error(
-        `Streamer-Rolle ${STREAM_ROLE_ID} wurde auf ${guild.name} nicht gefunden.`,
+        `❌ Streamer-Rolle ${STREAM_ROLE_ID} wurde auf ${guild.name} nicht gefunden.`,
       );
       return;
     }
 
-    // Prüfen, ob der Bot die Rolle überhaupt vergeben darf
     const botMember = guild.members.me;
 
     if (!botMember) {
-      logger.error("Bot-Mitglied konnte nicht gefunden werden.");
+      logger.error("❌ Bot-Mitglied konnte nicht gefunden werden.");
       return;
     }
 
@@ -44,7 +40,6 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
       return;
     }
 
-    // Discord erlaubt nur Rollen unterhalb der höchsten Bot-Rolle
     if (liveRole.position >= botMember.roles.highest.position) {
       logger.error(
         `❌ Die Streamer-Rolle "${liveRole.name}" steht über oder auf gleicher Position wie die höchste Bot-Rolle.`,
@@ -52,7 +47,6 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
       return;
     }
 
-    // Prüfen, ob der User gerade streamt
     const isStreaming = newPresence.activities?.some(
       (activity) => activity.type === ActivityType.Streaming,
     );
@@ -70,9 +64,9 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
 
     const timestamp = formatter.format(now);
 
-    // =========================
-    // USER IST LIVE
-    // =========================
+    // ==========================================
+    // STREAM GESTARTET
+    // ==========================================
 
     if (isStreaming && !member.roles.cache.has(liveRole.id)) {
       try {
@@ -81,11 +75,12 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
           "Streamer ist live gegangen",
         );
 
-        logger.info(
-          `🟢 ${member.user.tag} ist jetzt LIVE`,
-        );
-
-        logger.info(`Datum: ${timestamp}`);
+        logger.info("==========================================");
+        logger.info("🟢 STREAMER-SYSTEM AKTIVIERT");
+        logger.info(`👤 Streamer: ${member.user.tag}`);
+        logger.info(`🎭 Rolle: ${liveRole.name}`);
+        logger.info(`📅 Datum: ${timestamp}`);
+        logger.info("==========================================");
       } catch (error) {
         logger.error(
           `❌ Fehler beim Vergeben der Streamer-Rolle an ${member.user.tag}:`,
@@ -97,9 +92,9 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
       return;
     }
 
-    // =========================
-    // USER IST NICHT MEHR LIVE
-    // =========================
+    // ==========================================
+    // STREAM BEENDET
+    // ==========================================
 
     if (!isStreaming && member.roles.cache.has(liveRole.id)) {
       try {
@@ -108,11 +103,12 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
           "Streamer ist nicht mehr live",
         );
 
-        logger.info(
-          `🔴 ${member.user.tag} ist nicht mehr live`,
-        );
-
-        logger.info(`Datum: ${timestamp}`);
+        logger.info("==========================================");
+        logger.info("🔴 STREAMER-SYSTEM DEAKTIVIERT");
+        logger.info(`👤 Streamer: ${member.user.tag}`);
+        logger.info(`🎭 Rolle entfernt: ${liveRole.name}`);
+        logger.info(`📅 Datum: ${timestamp}`);
+        logger.info("==========================================");
       } catch (error) {
         logger.error(
           `❌ Fehler beim Entfernen der Streamer-Rolle von ${member.user.tag}:`,
