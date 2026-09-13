@@ -84,13 +84,13 @@ export default {
 
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-          .setCustomId("partner_accept_done")
+          .setCustomId("partner_accept")
           .setLabel(angenommen ? "Angenommen" : "Akzeptieren")
           .setStyle(ButtonStyle.Success)
           .setDisabled(true),
 
         new ButtonBuilder()
-          .setCustomId("partner_deny_done")
+          .setCustomId("partner_deny")
           .setLabel(angenommen ? "Ablehnen" : "Abgelehnt")
           .setStyle(ButtonStyle.Danger)
           .setDisabled(true),
