@@ -54,7 +54,7 @@ export default {
         .setRequired(true),
     );
 
-    partnerModal.addComponents(partnernameInput, partnerbeschreibungInput);
+    partnerModal.addComponents(partnernameInput, mitgliederInput, themaInput, kategorieInput, partnerbeschreibungInput);
     return interaction.showModal(partnerModal);
   },
 };
