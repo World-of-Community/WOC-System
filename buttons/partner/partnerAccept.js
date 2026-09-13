@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "discord.js";
 
 export default {
-  id: "partner_accept_",
+  id: "partner_accept",
   prefix: true,
   run: async (client, interaction) => {
     const id = interaction.customId.split("_")[2];
