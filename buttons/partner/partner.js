@@ -16,6 +16,33 @@ export default {
         .setRequired(true),
     );
 
+    const mitgliederInput = new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId("partner-mitglieder")
+        .setLabel("👥 - WIE VIELE MITGLIEDER HAT DER SERVER?")
+        .setPlaceholder("z. B. 250")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true),
+    );
+
+    const themaInput = new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId("partner-thema")
+        .setLabel("🎮 - WAS IST DAS THEMA DES SERVERS?")
+        .setPlaceholder("z. B. Gaming, Community, Roleplay")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true),
+    );
+
+    const kategorieInput = new ActionRowBuilder().addComponents(
+      new TextInputBuilder()
+        .setCustomId("partner-kategorie")
+        .setLabel("📁 - WELCHE KATEGORIE PASST?")
+        .setPlaceholder("z. B. Minecraft, FiveM, Shooter")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true),
+    );
+
     const partnerbeschreibungInput = new ActionRowBuilder().addComponents(
       new TextInputBuilder()
         .setCustomId("partner-beschreibung")
