@@ -85,9 +85,9 @@ async function sendNewFlag(channel, guild) {
 
   const embed = new EmbedBuilder()
     .setDescription(
-      `🚩 » Welche Flagge ist das?\n\n` +
+      "🚩 » Welche Flagge ist das?\n\n" +
       `💡 » Tipp: Beginnt mit **${firstLetter}**\n\n` +
-      `✍️ » Schreibe den Ländernamen in den Chat!`,
+      "✍️ » Schreibe den Ländernamen in den Chat!",
     )
     .setImage(randomFlag.imageUrl)
     .setColor("Random")
