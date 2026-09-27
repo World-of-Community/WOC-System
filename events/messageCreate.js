@@ -20,7 +20,6 @@ const TeamRoleIds = [
 
 client.on(Events.MessageCreate, async (message) => {
 
-
   const deleteAfter = 30 * 1000;
   const mcServerIP = "worldofcommunity.de";
   const frage = message.content.toLowerCase();
@@ -67,8 +66,18 @@ client.on(Events.MessageCreate, async (message) => {
     "ip vom minecraft server",
   ];
 
+  const allowedChannels = [
+  "815922756918181898", // Haupt-Chat
+  "896743941813207081", // Spielersuche
+  "886140608039747614", // Bilder und Videos
+  "979431125053227068", // Bots-verwenden
+  "1284823233761251328", // Schrift Support
+];
+
   // nur reagieren, wenn der Channel erlaubt ist
-  if (!allowedChannels.includes(message.channel.id)) {return;}
+  if (!allowedChannels.includes(message.channel.id)) {
+    return;
+  }
 
   if (suchbegriffe.some(begriff => frage.includes(begriff.toLowerCase()))) {
     const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
@@ -100,7 +109,7 @@ client.on(Events.MessageCreate, async (message) => {
     logger.error("Fehler beim Hochzählen der Nachrichten:", err);
   }
 
-  //if (message.channel.id !== erlaubterKanal) {return;}  Bricht ab, wenn es nicht der Kanal ist
+  //if (message.channel.id !== erlaubterKanal) {return;}  //Bricht ab, wenn es nicht der Kanal ist
 
 
 
