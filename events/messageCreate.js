@@ -23,7 +23,7 @@ client.on(Events.MessageCreate, async (message) => {
   const deleteAfter = 30 * 1000;
   const mcServerIP = "worldofcommunity.de";
   const frage = message.content.toLowerCase().trim();
-  
+
   const suchbegriffe = [
     "wie ist die ip",
     "was ist die ip",
@@ -55,7 +55,7 @@ client.on(Events.MessageCreate, async (message) => {
     "wie war nochmal die ip",
     "ip vom minecraft server",
   ];
-  
+
   const allowedChannels = [
     "815922756918181898", // Haupt-Chat
     "896743941813207081", // Spielersuche
@@ -68,32 +68,32 @@ client.on(Events.MessageCreate, async (message) => {
   if (!allowedChannels.includes(message.channel.id)) {
     return;
   }
-  
+
   // Suchbegriffe prüfen
   const passtSuchbegriff = suchbegriffe.some(begriff =>
-    frage.includes(begriff)
+    frage.includes(begriff),
   );
-  
+
   // "IP" nur als eigenes Wort erkennen
   const einzelneIP = /\bip\b/i.test(frage);
-  
+
   if (passtSuchbegriff || einzelneIP) {
     const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
-  
+
     const embed = new EmbedBuilder()
       .setTitle("`🌐` Minecraft-Server IP")
       .setDescription(
         "> `📡` » Die IP des Servers lautet:\n" +
         `\`\`\`${mcServerIP}\`\`\`\n` +
         "> `⚙️` » Version: **ab 1.21.x**\n\n" +
-        `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`
+        `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`,
       )
       .setColor("Green");
-  
+
     const reply = await message.reply({
-      embeds: [embed]
+      embeds: [embed],
     });
-  
+
     setTimeout(() => {
       reply.delete().catch(logger.error);
       message.delete().catch(logger.error);
