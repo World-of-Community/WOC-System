@@ -68,7 +68,7 @@ client.on(Events.MessageCreate, async (message) => {
   ];
 
   // nur reagieren, wenn der Channel erlaubt ist
-  //if (!allowedChannels.includes(message.channel.id)) {return;}
+  if (!allowedChannels.includes(message.channel.id)) {return;}
 
   if (suchbegriffe.some(begriff => frage.includes(begriff.toLowerCase()))) {
     const timestamp = Math.floor((Date.now() + deleteAfter) / 1000);
