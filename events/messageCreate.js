@@ -67,12 +67,12 @@ client.on(Events.MessageCreate, async (message) => {
   ];
 
   const allowedChannels = [
-  "815922756918181898", // Haupt-Chat
-  "896743941813207081", // Spielersuche
-  "886140608039747614", // Bilder und Videos
-  "979431125053227068", // Bots-verwenden
-  "1284823233761251328", // Schrift Support
-];
+    "815922756918181898", // Haupt-Chat
+    "896743941813207081", // Spielersuche
+    "886140608039747614", // Bilder und Videos
+    "979431125053227068", // Bots-verwenden
+    "1284823233761251328", // Schrift Support
+  ];
 
   // nur reagieren, wenn der Channel erlaubt ist
   if (!allowedChannels.includes(message.channel.id)) {
