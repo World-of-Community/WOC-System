@@ -10,7 +10,7 @@ const STREAM_ROLE_ID = "1266095218239995968";
 
 async function updateStreamerRole(member) {
   try {
-    if (!member || member.user.bot) return;
+    if (!member || member.user.bot) {return;}
 
     const guild = member.guild;
     const liveRole = guild.roles.cache.get(STREAM_ROLE_ID);
@@ -24,7 +24,7 @@ async function updateStreamerRole(member) {
 
     const botMember = guild.members.me;
 
-    if (!botMember) return;
+    if (!botMember) {return;}
 
     if (!botMember.permissions.has(PermissionFlagsBits.ManageRoles)) {
       logger.error(
@@ -90,7 +90,7 @@ async function updateStreamerRole(member) {
 // ==========================================
 
 client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
-  if (!newPresence?.member) return;
+  if (!newPresence?.member) {return;}
 
   await updateStreamerRole(newPresence.member);
 });
