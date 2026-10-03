@@ -6,17 +6,13 @@ import {
 } from "discord.js";
 import logger from "../functions/logger.js";
 
-const STREAM_ROLE_ID = "1266095218239995968"; // Streamer-Rolle
+const STREAM_ROLE_ID = "1266095218239995968";
 
-client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
+async function updateStreamerRole(member) {
   try {
-    if (!newPresence?.member || !newPresence?.guild) {
-      return;
-    }
+    if (!member || member.user.bot) return;
 
-    const member = newPresence.member;
-    const guild = newPresence.guild;
-
+    const guild = member.guild;
     const liveRole = guild.roles.cache.get(STREAM_ROLE_ID);
 
     if (!liveRole) {
@@ -28,10 +24,7 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
 
     const botMember = guild.members.me;
 
-    if (!botMember) {
-      logger.error("❌ Bot-Mitglied konnte nicht gefunden werden.");
-      return;
-    }
+    if (!botMember) return;
 
     if (!botMember.permissions.has(PermissionFlagsBits.ManageRoles)) {
       logger.error(
@@ -47,80 +40,77 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
       return;
     }
 
-    const isStreaming = newPresence.activities?.some(
+    const isStreaming = member.presence?.activities?.some(
       (activity) => activity.type === ActivityType.Streaming,
-    );
+    ) ?? false;
 
-    const now = new Date();
-
-    const formatter = new Intl.DateTimeFormat("de-DE", {
-      weekday: "long",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    const timestamp = formatter.format(now);
+    const hasRole = member.roles.cache.has(STREAM_ROLE_ID);
 
     // ==========================================
-    // STREAM GESTARTET
+    // AKTUELL LIVE → ROLLE VERGEBEN
     // ==========================================
 
-    if (isStreaming && !member.roles.cache.has(liveRole.id)) {
-      try {
-        await member.roles.add(
-          liveRole,
-          "Streamer ist live gegangen",
-        );
+    if (isStreaming && !hasRole) {
+      await member.roles.add(
+        liveRole,
+        "Streamer ist aktuell live",
+      );
 
-        logger.info("==========================================");
-        logger.info("🟢 STREAMER-SYSTEM AKTIVIERT");
-        logger.info(`👤 Streamer: ${member.user.tag}`);
-        logger.info(`🎭 Rolle: ${liveRole.name}`);
-        logger.info(`📅 Datum: ${timestamp}`);
-        logger.info("==========================================");
-      } catch (error) {
-        logger.error(
-          `❌ Fehler beim Vergeben der Streamer-Rolle an ${member.user.tag}:`,
-        );
-
-        logger.error(error);
-      }
+      logger.info(
+        `🟢 Streamer-Rolle vergeben: ${member.user.tag}`,
+      );
 
       return;
     }
 
     // ==========================================
-    // STREAM BEENDET
+    // NICHT MEHR LIVE → ROLLE ENTFERNEN
     // ==========================================
 
-    if (!isStreaming && member.roles.cache.has(liveRole.id)) {
-      try {
-        await member.roles.remove(
-          liveRole,
-          "Streamer ist nicht mehr live",
-        );
+    if (!isStreaming && hasRole) {
+      await member.roles.remove(
+        liveRole,
+        "Streamer ist nicht mehr live",
+      );
 
-        logger.info("==========================================");
-        logger.info("🔴 STREAMER-SYSTEM DEAKTIVIERT");
-        logger.info(`👤 Streamer: ${member.user.tag}`);
-        logger.info(`🎭 Rolle entfernt: ${liveRole.name}`);
-        logger.info(`📅 Datum: ${timestamp}`);
-        logger.info("==========================================");
-      } catch (error) {
-        logger.error(
-          `❌ Fehler beim Entfernen der Streamer-Rolle von ${member.user.tag}:`,
-        );
-
-        logger.error(error);
-      }
+      logger.info(
+        `🔴 Streamer-Rolle entfernt: ${member.user.tag}`,
+      );
     }
   } catch (error) {
-    logger.error("❌ Fehler im PresenceUpdate-Event:");
+    logger.error(
+      `❌ Fehler beim Streamer-System für ${member?.user?.tag}:`,
+    );
     logger.error(error);
   }
+}
+
+// ==========================================
+// PRESENCE UPDATE
+// ==========================================
+
+client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
+  if (!newPresence?.member) return;
+
+  await updateStreamerRole(newPresence.member);
+});
+
+// ==========================================
+// BOT START → AKTUELL LIVE PRÜFEN
+// ==========================================
+
+client.once(Events.ClientReady, async () => {
+  logger.info("🟢 Prüfe aktuell laufende Streams...");
+
+  for (const guild of client.guilds.cache.values()) {
+    await guild.members.fetch();
+
+    for (const member of guild.members.cache.values()) {
+      await updateStreamerRole(member);
+    }
+  }
+
+  logger.info("✅ Prüfung der aktuell laufenden Streams abgeschlossen.");
 });
 
 /*
