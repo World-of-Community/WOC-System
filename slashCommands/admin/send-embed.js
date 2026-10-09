@@ -43,7 +43,7 @@ export default {
         .setTitle("`🏆` 𑁉 ERHALTE NEUE RÄNGE & VORTEILE!")
         .setDescription("<:Pfeil:1119709908540076124> Jeder Rang hat seine eigenen Vorteile und seine eigene Art und Weise wie man diesen erhalten kann.\n\n`🏆` - **WELCHE VORTEILE GIBT ES?**\n<:Pfeil:1119709908540076124> Sie sind sehr **zahlreich:** von Discord-Nitro Basic, bis hin zu einem **Ping-Emoji für Nachrichten** auf unserem Discord-Server!\n\n- `⭐` **Server-Erfolge:** Diese sind nur für das Sammeln gedacht und bieten keine direkten Vorteile\n- `🏆` **Level-Rollen:** Sei ein aktives Mitglied und steige dadurch **neue Level auf** - dadurch erhältst du viele Vorteile!\n- `💎` **Exklusive Rollen:** Jeder Rang aus dieser Liste hat einen eigenen Weg um freigeschaltet zu werden!\n\n`❓` - **WELCHE ROLLEN BESITZT IHR?**\n<:Pfeil:1119709908540076124> `📌` » Klicke auf das **untere Menü** um alle Rollen zu sehen!\n<:Pfeil:1119709908540076124> `🚑` » Öffne ein Ticket im Support bei Fragen oder Problemen.")
         .setColor("Orange")
-        .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269340748256514153/WOC_Banner_Server-Regeln.png?ex=6aca70b1&is=6ac91f31&hm=5319881ca26dba96936e67731f49d0a81261ae983dc46829e45022ae7ee9d5e2&")
+        .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269340917991473162/WOC_Banner_Rollen_Information.png?ex=6aca70da&is=6ac91f5a&hm=395c2a7a33b4ad4de4ddd749021b9adf4842111742112cf9be693b52cf4d7191&")
         .setFooter({ text: "Klicke auf eine Kategorie, um dir die Rollen anzusehen!", iconURL: client.user.displayAvatarURL() });
 
       const rängeMenu = new ActionRowBuilder()
@@ -114,7 +114,7 @@ export default {
                     "🔟 𑁉 Stimmverzerrer oder Soundboards sind nur gestattet, wenn dies ein Teammitglied erlaubt.",
         )
         .setColor("Red")
-        .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321491265683486/image.png?ex=6a8e761a&is=6a8d249a&hm=98dc3e8fc517bcb25f32224d03fdc437a6ba061767ac58a581eca0cdc051fe27&")
+        .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269340748256514153/WOC_Banner_Server-Regeln.png?ex=6aca70b1&is=6ac91f31&hm=5319881ca26dba96936e67731f49d0a81261ae983dc46829e45022ae7ee9d5e2&")
         .setFooter({ text: "Du erklärst dich mit diesen Regeln bei der Nutzung unseres Discord-Servers einverstanden.", iconURL: client.user.displayAvatarURL() });
 
       const regelButton = new ActionRowBuilder()
