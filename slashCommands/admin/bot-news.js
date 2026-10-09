@@ -113,7 +113,7 @@ export default {
           .setDescription("<:PointRed:1123612255800524940> = Bug behoben\n<:PointOrange:1123612277669630092> = Änderung\n<:PointGreen:1123612318694117477> = Neu hinzugefügt\n\n<:Pfeil:1119709908540076124> Diese Nachricht wird mit jeder **neuen Änderung** welche in dieser Woche passiert ist, bearbeitet. Der Ping zu allen Änderungen erfolgt **am Ende jeder Woche.**\n⠀ ⠀ ⠀⠀ ⠀⠀ ⠀⠀\n")
           .setColor("#ff7b00")
           .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321721322999940/image.png?ex=6a8e7651&is=6a8d24d1&hm=792559fcdab06110df061689420a64cc56130f6d70f69be54d4c2f60298dce78&")
-          .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData?.updateWeek.split(" - ")[0]}.${today.getFullYear()}`, iconURL: "https://cdn.discordapp.com/attachments/943859953318371359/1055943224092532846/WOC_Orange.png" });
+          .setFooter({ text: `» Wir wünschen euch viel Spaß mit dem neuen Update! - ${serverData?.updateWeek.split(" - ")[0]}.${today.getFullYear()}`, iconURL: client.user.displayAvatarURL() });
 
         if (serverData.support.length > 0) {
           updateEmbed.addFields(
