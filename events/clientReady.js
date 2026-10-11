@@ -5,9 +5,7 @@ import messagedb from "../models/messagedb.js";
 import serverDB from "../models/serverdb.js";
 import bandb from "../models/bandb.js";
 import cron from "node-cron";
-import FeedManager from "../functions/FeedManager.js";
 import logger from "../functions/logger.js";
-const { processRSSFeed } = FeedManager;
 
 client.on(Events.ClientReady, async (client) => {
 
@@ -28,19 +26,6 @@ client.on(Events.ClientReady, async (client) => {
     return;
   }
   logger.info("💙  | Verbunden mit Discord");
-
-  // RSS Feed
-  setInterval(async () => {
-    processRSSFeed(client, lastEntries);
-  }, 60000);
-
-  function getInterval() {
-    const hour = new Date().getHours();
-    // Nacht: 22:00–08:00 → 5 Minuten
-    if (hour >= 22 || hour < 8) {return 300000;}
-    // Tag: 2,5 Minuten
-    return 150000;
-  }
 
   // =================== STATUS ROTATION ===================
   async function updateStatus() {
