@@ -14,7 +14,7 @@ export default {
       .setDescription('> **__Aktuelles Event__**\n# ```Aktuell findet kein "Season-Event" statt!```')
       .setColor("Blurple")
       .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269341310989369384/World_Of_Community.png?ex=671884f7&is=67173377&hm=f32ce42648668f4434a7055d6269bc439d88f088226cfde13b52a38b0f2457e2&")
-      .setFooter({ text: `${interaction.guild.name} | 🧡 Bleibt Gesund 🧡`, iconURL: `${interaction.guild.iconURL()}` });
+      .setFooter({ text: `${interaction.guild.name} | 🧡 Bleibt Gesund 🧡` });
 
     const buttons = new ActionRowBuilder()
       .addComponents(
