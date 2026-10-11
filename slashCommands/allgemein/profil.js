@@ -136,7 +136,6 @@ export default {
       "1273369483951734866", // League of Legends
       "1232066632491208704", // Valorant
       "1232070141127426058", // Fortnite
-      "1300487353990647881", // Clash of Clans
     ];
 
     const PingRoleIDs = [
@@ -149,8 +148,6 @@ export default {
       "1478434516451463341", // Changelog Ping
       "1246190426646642698", // Dead Chat Ping
       "1230568420240527462", // Gratis Spiele Ping
-      "1231257421016469596", // Gaming News Ping
-      "1231257532844998666", // Mediathek Ping
     ];
 
     const LevelRoleIds = [
