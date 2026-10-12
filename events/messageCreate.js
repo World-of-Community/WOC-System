@@ -112,8 +112,6 @@ client.on(Events.MessageCreate, async (message) => {
 
   //if (message.channel.id !== erlaubterKanal) {return;}  //Bricht ab, wenn es nicht der Kanal ist
 
-
-
   if (!message.guild) {return;}
   const file = fs.readFileSync("json/config.json", "utf-8");
   const config = JSON.parse(file);
@@ -128,7 +126,6 @@ client.on(Events.MessageCreate, async (message) => {
 
   // Teammitglied erwähnen Bot gibt Info Ticket Support
   if (!message.author.bot) {
-
 
     if(message.member.roles.cache.some(role => TeamRoleIds.includes(role.id))) {
       let teamMitglied = await teamdb.findOne({ userID: message.author.id });
