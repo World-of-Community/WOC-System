@@ -14,21 +14,13 @@ export default {
       interaction.isModalSubmit() &&
       interaction.customId === "partner-modal"
     ) {
-      const partnerName = interaction.fields.getTextInputValue("partner-name");
-      const mitglieder = interaction.fields.getTextInputValue(
-        "partner-mitglieder",
-      );
-      const thema = interaction.fields.getTextInputValue("partner-thema");
-      const kategorie = interaction.fields.getTextInputValue(
-        "partner-kategorie",
-      );
-      const partnerBeschreibung = interaction.fields.getTextInputValue(
-        "partner-beschreibung",
-      );
+      const partnerNameInput = interaction.fields.getTextInputValue("partner-name");
+      const mitgliederInput = interaction.fields.getTextInputValue("partner-mitglieder");
+      const themaInput = interaction.fields.getTextInputValue("partner-thema");
+      const kategorieInput = interaction.fields.getTextInputValue("partner-kategorie");
+      const partnerBeschreibungInput = interaction.fields.getTextInputValue("partner-beschreibung");
 
-      const channel = await interaction.client.channels.fetch(
-        "1187028500461391984",
-      );
+      const channel = await interaction.client.channels.fetch("1187028500461391984");
 
       await channel.send({
         embeds: [
@@ -36,11 +28,11 @@ export default {
             .setTitle("🤝 » NEUE SERVER PARTNER ANFRAGE")
             .setDescription(
               `${interaction.user} möchte sich als **Server-Partner** bewerben!\n\n` +
-                `> \`🔗\` **Server-Link**\n${partnerName}\n\n` +
-                `> \`👥\` **Mitgliederanzahl**\n${mitglieder}\n\n` +
-                `> \`🎮\` **Thema**\n${thema}\n\n` +
-                `> \`📁\` **Kategorie**\n${kategorie}\n\n` +
-                `> \`💬\` **Server-Beschreibung**\n${partnerBeschreibung}`,
+                `> \`🔗\` **Server-Link**\n${partnerNameInput}\n\n` +
+                `> \`👥\` **Mitgliederanzahl**\n${mitgliederInput}\n\n` +
+                `> \`🎮\` **Thema**\n${themaInput}\n\n` +
+                `> \`📁\` **Kategorie**\n${kategorieInput}\n\n` +
+                `> \`💬\` **Server-Beschreibung**\n${partnerBeschreibungInput}`,
             )
             .setColor("Orange")
             .setTimestamp(),
