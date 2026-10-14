@@ -104,8 +104,16 @@ export async function checkAnswer(message) {
   // mark the round as solved so a second correct answer in the same 5 s does nothing
   await Flaggenquiz.updateOne({ channelId: message.channel.id }, { $set: { code: null, country: null } });
 
+  const reward = Number(settings.get("coins.flagQuizReward")) || 0;
+  if (reward > 0) {
+    await Coin.updateOne({ userId: message.author.id }, { $inc: { coins: reward } }, { upsert: true });
+  }
+
   await message.react("✅").catch(() => {});
-  await message.channel.send(`> \`✅\` » ${message.author} hat es erraten: **${quiz.country}** ${guess.emoji}`);
+  await message.channel.send(
+    `> \`✅\` » ${message.author} hat es erraten: **${quiz.country}** ${guess.emoji}` +
+    (reward > 0 ? `\n> \`🪙\` » **+${reward.toLocaleString("de-DE")} Coins**` : ""),
+  );
 
   setTimeout(async () => {
     await clearChannel(message.channel, quiz.messageId);
