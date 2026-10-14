@@ -6,6 +6,7 @@ import serverDB from "../models/serverdb.js";
 import bandb from "../models/bandb.js";
 import cron from "node-cron";
 import logger from "../functions/logger.js";
+import { leaderboardSchedules } from "../functions/leaderboard.js";
 
 client.on(Events.ClientReady, async (client) => {
 
@@ -26,6 +27,7 @@ client.on(Events.ClientReady, async (client) => {
     return;
   }
   logger.info("💙  | Verbunden mit Discord");
+  leaderboardSchedules(client);
 
   function getInterval() {
     const hour = new Date().getHours();
