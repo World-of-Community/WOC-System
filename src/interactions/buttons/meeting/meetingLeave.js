@@ -2,7 +2,7 @@ import Meeting from "#models/Meeting.js";
 
 export default {
   id: "meeting_leave",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const meeting = await Meeting.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
     if (!meeting) {return interaction.reply({ content: "> `❌` » Kein Meeting gefunden.", ephemeral: true });}
 

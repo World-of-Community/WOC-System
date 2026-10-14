@@ -3,7 +3,7 @@ import { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle } from
 export default {
   id: "editBanReason_",
   prefix: true,
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const userId = interaction.customId.split("_")[1];
 
     const modal = new ModalBuilder()

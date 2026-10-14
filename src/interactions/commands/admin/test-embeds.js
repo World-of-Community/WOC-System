@@ -9,30 +9,30 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 3,
-      "choices": [
+      type: 3,
+      choices: [
         {
-          "name": "Willkommens-Embed",
-          "value": "welcome_embed",
+          name: "Willkommens-Embed",
+          value: "welcome_embed",
         },
         {
-          "name": "Info-Embed",
-          "value": "info_embed",
+          name: "Info-Embed",
+          value: "info_embed",
         },
         {
-          "name": "Regeln-Embed",
-          "value": "rules_embed",
+          name: "Regeln-Embed",
+          value: "rules_embed",
         },
       ],
-      "name": "embed",
-      "description": "Wähle das Embed aus",
-      "required": true,
+      name: "embed",
+      description: "Wähle das Embed aus",
+      required: true,
     },
     {
-      "name": "user",
-      "description": "Wähle einen Benutzer aus (optional)",
-      "required": false,
-      "type": 6,
+      name: "user",
+      description: "Wähle einen Benutzer aus (optional)",
+      required: false,
+      type: 6,
     },
   ],
 

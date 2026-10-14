@@ -6,10 +6,10 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 3,
-      "name": "messageid",
-      "description": "ID der Nachricht, die gelöscht werden soll",
-      "required": true,
+      type: 3,
+      name: "messageid",
+      description: "ID der Nachricht, die gelöscht werden soll",
+      required: true,
     },
   ],
 

@@ -10,10 +10,10 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "name": "user",
-      "description": "Benutzer, der Coins erhalten soll",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "Benutzer, der Coins erhalten soll",
+      required: true,
+      type: 6,
     },
   ],
 

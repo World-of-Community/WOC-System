@@ -6,7 +6,7 @@ import Warn from "#models/Warning.js";
 export default {
   id: "banReasonModal_",
   prefix: true,
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const userId = interaction.customId.split("_")[1];
     const newReason = interaction.fields.getTextInputValue("banReasonInput");
 

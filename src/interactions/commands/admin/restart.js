@@ -9,10 +9,10 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 3,
-      "name": "bestätigung",
-      "description": "Bestätige mit \"ja\"",
-      "required": true,
+      type: 3,
+      name: "bestätigung",
+      description: "Bestätige mit \"ja\"",
+      required: true,
     },
   ],
 

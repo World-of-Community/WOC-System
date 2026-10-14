@@ -2,7 +2,7 @@ import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from
 
 export default {
   id: "verifizieren",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const rndNumber = Math.floor(Math.random() * 999) + 1000;
     const verifyNumber = rndNumber.toString();
 

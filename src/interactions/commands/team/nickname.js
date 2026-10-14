@@ -6,34 +6,34 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "type": 1,
-      "name": "set",
-      "description": "Setze einen neuen Nicknamen für einen Benutzer",
-      "options": [
+      type: 1,
+      name: "set",
+      description: "Setze einen neuen Nicknamen für einen Benutzer",
+      options: [
         {
-          "type": 3,
-          "name": "nickname",
-          "description": "Der neue Nickname",
-          "required": true,
+          type: 3,
+          name: "nickname",
+          description: "Der neue Nickname",
+          required: true,
         },
         {
-          "name": "benutzer",
-          "description": "Der Benutzer, dessen Nickname geändert werden soll",
-          "required": false,
-          "type": 6,
+          name: "benutzer",
+          description: "Der Benutzer, dessen Nickname geändert werden soll",
+          required: false,
+          type: 6,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "remove",
-      "description": "Entferne den Nicknamen eines Benutzers",
-      "options": [
+      type: 1,
+      name: "remove",
+      description: "Entferne den Nicknamen eines Benutzers",
+      options: [
         {
-          "name": "benutzer",
-          "description": "Der Benutzer, dessen Nickname entfernt werden soll",
-          "required": false,
-          "type": 6,
+          name: "benutzer",
+          description: "Der Benutzer, dessen Nickname entfernt werden soll",
+          required: false,
+          type: 6,
         },
       ],
     },

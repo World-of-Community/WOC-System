@@ -3,7 +3,7 @@ import { settings } from "#core/settings.js";
 
 export default {
   id: "gebannt-modal",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const bannInfo = interaction.fields.getTextInputValue("banngrund");
     const bannDescription = interaction.fields.getTextInputValue("entbannungsbeschreibung");
 

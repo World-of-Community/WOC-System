@@ -3,7 +3,7 @@ import { settings } from "#core/settings.js";
 
 export default {
   id: "ränge-menu",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     switch (interaction.values[0]) {
       case "server": {
         const year = await interaction.guild.roles.cache.get(settings.get("achievementRoles.oneYear"));

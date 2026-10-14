@@ -9,16 +9,16 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "name": "user",
-      "description": "» Welcher User soll es sein?",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "» Welcher User soll es sein?",
+      required: true,
+      type: 6,
     },
     {
-      "name": "role",
-      "description": "» Welche Rolle soll der User bekommen?",
-      "required": true,
-      "type": 8,
+      name: "role",
+      description: "» Welche Rolle soll der User bekommen?",
+      required: true,
+      type: 8,
     },
   ],
 

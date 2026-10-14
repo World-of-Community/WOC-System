@@ -8,16 +8,16 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "name": "user",
-      "description": "» Der Nutzer, von dem die Rolle entfernt werden soll.",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "» Der Nutzer, von dem die Rolle entfernt werden soll.",
+      required: true,
+      type: 6,
     },
     {
-      "name": "role",
-      "description": "» Die Rolle, die entfernt werden soll.",
-      "required": true,
-      "type": 8,
+      name: "role",
+      description: "» Die Rolle, die entfernt werden soll.",
+      required: true,
+      type: 8,
     },
   ],
 

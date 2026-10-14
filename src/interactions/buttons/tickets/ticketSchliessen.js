@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "disc
 
 export default {
   id: "ticket_schliessen",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const embed = new EmbedBuilder()
       .setColor("Blurple")
       .setTitle("`❓` » Schließ Anfrage")

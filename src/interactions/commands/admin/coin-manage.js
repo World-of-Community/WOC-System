@@ -7,16 +7,16 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 4,
-      "name": "min",
-      "description": "Minimal generierte Coins pro Tick (z.B. 1)",
-      "required": true,
+      type: 4,
+      name: "min",
+      description: "Minimal generierte Coins pro Tick (z.B. 1)",
+      required: true,
     },
     {
-      "type": 4,
-      "name": "max",
-      "description": "Maximal generierte Coins pro Tick (z.B. 5)",
-      "required": true,
+      type: 4,
+      name: "max",
+      description: "Maximal generierte Coins pro Tick (z.B. 5)",
+      required: true,
     },
   ],
 

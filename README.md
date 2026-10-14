@@ -57,6 +57,20 @@ npm run check    # lädt alle Module ohne Login/DB, bricht bei Ladefehlern ab (l
 
 ---
 
+## Code-Stil
+
+Jede Datei hat dieselbe Reihenfolge: **Imports → Konstanten → Hilfsfunktionen → `export default`** (bzw. benannte Exporte am Ende).
+
+- Commands: `name, description, type, default_member_permissions?, options, run, autocomplete?` – immer `async run(client, interaction) {}`, Optionen ohne Anführungszeichen um die Keys.
+- Komponenten: `id, prefix?, run`. Events: `name, once?, execute`. Schedules: `name, cron|interval|start, runOnReady?, execute`.
+- Logik, die mehrere Dateien teilen, gehört nach `src/systems/` – Events, Schedules und Commands rufen sie nur auf.
+- Kein `try/catch` um den ganzen Handler, kein `console.*` – Fehler werfen (`UserError` für Nutzer-Feedback), der Loader fängt sie.
+- Keine hardcodierten Discord-IDs: alles über `settings.get()`, neue Werte ins Schema.
+- Kommentare auf Englisch und nur, wenn sie etwas erklären, das der Code nicht zeigt. Keine Banner-Kommentare.
+- Doppelte oder auskommentierte Alt-Versionen werden gelöscht, nicht aufbewahrt – dafür gibt es Git.
+
+`npm run lint` erzwingt Formatierung (2 Spaces, Semikolons, doppelte Anführungszeichen, trailing commas).
+
 ## Entwickeln
 
 ### Slash-Command

@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "disc
 
 export default {
   id: "close_feedback_ticket",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     if (!interaction.guild) {return;}
 
     const decisionEmbed = new EmbedBuilder()

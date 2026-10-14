@@ -7,10 +7,10 @@ export default {
   type: 1,
   options: [
     {
-      "name": "user",
-      "description": "Der Benutzer, dessen Coins angezeigt werden sollen",
-      "required": false,
-      "type": 6,
+      name: "user",
+      description: "Der Benutzer, dessen Coins angezeigt werden sollen",
+      required: false,
+      type: 6,
     },
   ],
 

@@ -9,59 +9,59 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "type": 1,
-      "name": "create",
-      "description": "» Erstellt ein neues Team-Meeting. ➕",
-      "options": [
+      type: 1,
+      name: "create",
+      description: "» Erstellt ein neues Team-Meeting. ➕",
+      options: [
         {
-          "type": 3,
-          "name": "beschreibung",
-          "description": "Beschreibung des Team-Meetings",
-          "required": true,
+          type: 3,
+          name: "beschreibung",
+          description: "Beschreibung des Team-Meetings",
+          required: true,
         },
         {
-          "type": 3,
-          "name": "datum",
-          "description": "Datum des Team-Meetings (z.B. 25.05.2025 12:00)",
-          "required": true,
-        },
-      ],
-    },
-    {
-      "type": 1,
-      "name": "edit",
-      "description": "» Editiert ein Team-Meeting. ✍️",
-      "options": [
-        {
-          "type": 3,
-          "name": "beschreibung",
-          "description": "Neue Beschreibung",
-          "required": true,
-        },
-        {
-          "type": 3,
-          "name": "datum",
-          "description": "Neues Datum",
-          "required": true,
-        },
-        {
-          "type": 3,
-          "name": "messageid",
-          "description": "ID des Team-Meeting-Embeds",
-          "required": false,
+          type: 3,
+          name: "datum",
+          description: "Datum des Team-Meetings (z.B. 25.05.2025 12:00)",
+          required: true,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "remove",
-      "description": "» Löscht ein Team-Meeting. 🗑️",
-      "options": [
+      type: 1,
+      name: "edit",
+      description: "» Editiert ein Team-Meeting. ✍️",
+      options: [
         {
-          "type": 3,
-          "name": "messageid",
-          "description": "ID des Team-Meeting-Embeds",
-          "required": false,
+          type: 3,
+          name: "beschreibung",
+          description: "Neue Beschreibung",
+          required: true,
+        },
+        {
+          type: 3,
+          name: "datum",
+          description: "Neues Datum",
+          required: true,
+        },
+        {
+          type: 3,
+          name: "messageid",
+          description: "ID des Team-Meeting-Embeds",
+          required: false,
+        },
+      ],
+    },
+    {
+      type: 1,
+      name: "remove",
+      description: "» Löscht ein Team-Meeting. 🗑️",
+      options: [
+        {
+          type: 3,
+          name: "messageid",
+          description: "ID des Team-Meeting-Embeds",
+          required: false,
         },
       ],
     },

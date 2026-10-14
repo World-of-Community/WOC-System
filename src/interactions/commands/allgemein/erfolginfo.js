@@ -11,10 +11,10 @@ export default {
   type: 1,
   options: [
     {
-      "name": "user",
-      "description": "Der Benutzer, dessen Erfolge du sehen möchtest",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "Der Benutzer, dessen Erfolge du sehen möchtest",
+      required: true,
+      type: 6,
     },
   ],
 

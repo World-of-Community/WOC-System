@@ -7,10 +7,10 @@ export default {
   type: 1,
   options: [
     {
-      "name": "mitglied",
-      "description": "» Welches Profil möchtest du Abrufen?",
-      "required": false,
-      "type": 6,
+      name: "mitglied",
+      description: "» Welches Profil möchtest du Abrufen?",
+      required: false,
+      type: 6,
     },
   ],
 

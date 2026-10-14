@@ -12,34 +12,34 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "type": 1,
-      "name": "setgoal",
-      "description": "» Setzt das Nachrichtenziel für eine Rolle.",
-      "options": [
+      type: 1,
+      name: "setgoal",
+      description: "» Setzt das Nachrichtenziel für eine Rolle.",
+      options: [
         {
-          "name": "role",
-          "description": "Die Rolle, für die das Ziel festgelegt wird",
-          "required": true,
-          "type": 8,
+          name: "role",
+          description: "Die Rolle, für die das Ziel festgelegt wird",
+          required: true,
+          type: 8,
         },
         {
-          "type": 4,
-          "name": "messagegoal",
-          "description": "Das Nachrichtenziel für diese Rolle",
-          "required": true,
+          type: 4,
+          name: "messagegoal",
+          description: "Das Nachrichtenziel für diese Rolle",
+          required: true,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "check",
-      "description": "» Überprüft die Nachrichtenaktivität eines Benutzers.",
-      "options": [
+      type: 1,
+      name: "check",
+      description: "» Überprüft die Nachrichtenaktivität eines Benutzers.",
+      options: [
         {
-          "name": "user",
-          "description": "Der Benutzer, dessen Aktivität angezeigt werden soll",
-          "required": true,
-          "type": 6,
+          name: "user",
+          description: "Der Benutzer, dessen Aktivität angezeigt werden soll",
+          required: true,
+          type: 6,
         },
       ],
     },

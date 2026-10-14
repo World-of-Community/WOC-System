@@ -6,36 +6,36 @@ export default {
   type: 1,
   options: [
     {
-      "type": 1,
-      "name": "add",
-      "description": "» Lege eine Rolle fest, welche keine GW-Anforderungen erfüllen muss. 🎀",
-      "options": [
+      type: 1,
+      name: "add",
+      description: "» Lege eine Rolle fest, welche keine GW-Anforderungen erfüllen muss. 🎀",
+      options: [
         {
-          "name": "role",
-          "description": "Welche Rolle möchtest du wählen?",
-          "required": true,
-          "type": 8,
+          name: "role",
+          description: "Welche Rolle möchtest du wählen?",
+          required: true,
+          type: 8,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "remove",
-      "description": "» Entferne eine Rolle fest, welche keine GW-Anforderungen erfüllen muss. 🎀",
-      "options": [
+      type: 1,
+      name: "remove",
+      description: "» Entferne eine Rolle fest, welche keine GW-Anforderungen erfüllen muss. 🎀",
+      options: [
         {
-          "name": "role",
-          "description": "Welche Rolle möchtest du wählen?",
-          "required": true,
-          "type": 8,
+          name: "role",
+          description: "Welche Rolle möchtest du wählen?",
+          required: true,
+          type: 8,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "list",
-      "description": "» Zeigt alle Rollen an, welche keine GW-Anforderungen erfüllen muss. 🎀",
-      "options": [],
+      type: 1,
+      name: "list",
+      description: "» Zeigt alle Rollen an, welche keine GW-Anforderungen erfüllen muss. 🎀",
+      options: [],
     },
   ],
 

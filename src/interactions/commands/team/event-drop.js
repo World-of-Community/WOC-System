@@ -8,53 +8,53 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "type": 1,
-      "name": "start",
-      "description": "» Startet die Gewinn-Drops für das Event. ✅",
-      "options": [
+      type: 1,
+      name: "start",
+      description: "» Startet die Gewinn-Drops für das Event. ✅",
+      options: [
         {
-          "channel_types": [
+          channel_types: [
             0,
           ],
-          "name": "kanal",
-          "description": "Wähle einen Textkanal für die Event-Drops",
-          "required": true,
-          "type": 7,
+          name: "kanal",
+          description: "Wähle einen Textkanal für die Event-Drops",
+          required: true,
+          type: 7,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "stop",
-      "description": "» Stoppt die Gewinn-Drops für das Event. ❌",
-      "options": [
+      type: 1,
+      name: "stop",
+      description: "» Stoppt die Gewinn-Drops für das Event. ❌",
+      options: [
         {
-          "channel_types": [
+          channel_types: [
             0,
           ],
-          "name": "kanal",
-          "description": "Wähle einen Textkanal für die Event-Drops",
-          "required": true,
-          "type": 7,
+          name: "kanal",
+          description: "Wähle einen Textkanal für die Event-Drops",
+          required: true,
+          type: 7,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "check",
-      "description": "» Zeigt die gesammelten Gewinne eines Benutzers an",
-      "options": [],
+      type: 1,
+      name: "check",
+      description: "» Zeigt die gesammelten Gewinne eines Benutzers an",
+      options: [],
     },
     {
-      "type": 1,
-      "name": "reset",
-      "description": "» Setzt die Gewinne eines Benutzers zurück",
-      "options": [
+      type: 1,
+      name: "reset",
+      description: "» Setzt die Gewinne eines Benutzers zurück",
+      options: [
         {
-          "name": "user",
-          "description": "Benutzer, dessen Gewinne zurückgesetzt werden",
-          "required": true,
-          "type": 6,
+          name: "user",
+          description: "Benutzer, dessen Gewinne zurückgesetzt werden",
+          required: true,
+          type: 6,
         },
       ],
     },

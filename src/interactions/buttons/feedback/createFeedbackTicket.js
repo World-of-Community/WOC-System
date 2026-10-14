@@ -2,7 +2,7 @@ import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from
 
 export default {
   id: "create_feedback_ticket",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     if (!interaction.guild) {return;}
     if (interaction.replied || interaction.deferred) {return;}
 

@@ -2,7 +2,7 @@ import { EmbedBuilder } from "discord.js";
 
 export default {
   id: "feedback_reject_open",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     if (!interaction.guild) {return;}
 
     await interaction.deferUpdate();

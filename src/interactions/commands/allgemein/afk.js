@@ -15,10 +15,10 @@ export default {
   type: 1,
   options: [
     {
-      "type": 3,
-      "name": "grund",
-      "description": "Setze einen Grund dafür, dass du AFK bist!",
-      "required": false,
+      type: 3,
+      name: "grund",
+      description: "Setze einen Grund dafür, dass du AFK bist!",
+      required: false,
     },
   ],
 

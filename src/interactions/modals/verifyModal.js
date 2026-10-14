@@ -4,7 +4,7 @@ export default {
   // (gesetzt in buttons/rules/verifizieren.js)
   id: "verify-modal",
   prefix: true,
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const verifyNumber = interaction.customId.split("_")[1];
     const input = interaction.fields.getTextInputValue("verifyInput");
 

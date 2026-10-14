@@ -11,82 +11,82 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 1,
-      "name": "start",
-      "description": "» Starte ein neues Gewinnspiel. 🎁",
-      "options": [
+      type: 1,
+      name: "start",
+      description: "» Starte ein neues Gewinnspiel. 🎁",
+      options: [
         {
-          "channel_types": [
+          channel_types: [
             0,
           ],
-          "name": "kanal",
-          "description": "In welchen Kanal soll das Gewinnspiel stattfinden?",
-          "required": true,
-          "type": 7,
+          name: "kanal",
+          description: "In welchen Kanal soll das Gewinnspiel stattfinden?",
+          required: true,
+          type: 7,
         },
         {
-          "type": 3,
-          "choices": [
+          type: 3,
+          choices: [
             {
-              "name": "⛔ × Keine Bedingung",
-              "value": "none",
+              name: "⛔ × Keine Bedingung",
+              value: "none",
             },
             {
-              "name": "📚 × Nachrichtenanzahl",
-              "value": "messages",
+              name: "📚 × Nachrichtenanzahl",
+              value: "messages",
             },
             {
-              "name": "🔊 × Sprachkanal-Zeit",
-              "value": "voiceTime",
+              name: "🔊 × Sprachkanal-Zeit",
+              value: "voiceTime",
             },
             {
-              "name": "📌 × Rolle besitzen",
-              "value": "role",
+              name: "📌 × Rolle besitzen",
+              value: "role",
             },
             {
-              "name": "👥 × Server-Mitgliedschaft",
-              "value": "membersince",
+              name: "👥 × Server-Mitgliedschaft",
+              value: "membersince",
             },
             {
-              "name": "💡 × Server-Empfehlung",
-              "value": "server",
+              name: "💡 × Server-Empfehlung",
+              value: "server",
             },
           ],
-          "name": "bedingung",
-          "description": "Möchtest du eine Teilnahmebedingung festlegen?",
-          "required": true,
+          name: "bedingung",
+          description: "Möchtest du eine Teilnahmebedingung festlegen?",
+          required: true,
         },
         {
-          "name": "sponsor",
-          "description": "Wähle einen Sponsor für das Gewinnspiel aus.",
-          "required": false,
-          "type": 6,
-        },
-      ],
-    },
-    {
-      "type": 1,
-      "name": "end",
-      "description": "» Beende ein spezielles Gewinnspiel sofort. 🎊",
-      "options": [
-        {
-          "type": 3,
-          "name": "nachrichtenid",
-          "description": "Welche Nachricht ist es?",
-          "required": true,
+          name: "sponsor",
+          description: "Wähle einen Sponsor für das Gewinnspiel aus.",
+          required: false,
+          type: 6,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "reroll",
-      "description": "» Ziehe neue Gewinner aus einem beendeten Gewinnspiel. 🔄",
-      "options": [
+      type: 1,
+      name: "end",
+      description: "» Beende ein spezielles Gewinnspiel sofort. 🎊",
+      options: [
         {
-          "type": 3,
-          "name": "nachrichtenid",
-          "description": "Welche Nachricht ist es?",
-          "required": true,
+          type: 3,
+          name: "nachrichtenid",
+          description: "Welche Nachricht ist es?",
+          required: true,
+        },
+      ],
+    },
+    {
+      type: 1,
+      name: "reroll",
+      description: "» Ziehe neue Gewinner aus einem beendeten Gewinnspiel. 🔄",
+      options: [
+        {
+          type: 3,
+          name: "nachrichtenid",
+          description: "Welche Nachricht ist es?",
+          required: true,
         },
       ],
     },

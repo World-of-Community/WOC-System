@@ -36,28 +36,28 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "type": 1,
-      "name": "check",
-      "description": "Zeigt geöffnete Adventskalender-Tage an 📅",
-      "options": [
+      type: 1,
+      name: "check",
+      description: "Zeigt geöffnete Adventskalender-Tage an 📅",
+      options: [
         {
-          "name": "user",
-          "description": "Benutzer auswählen (optional).",
-          "required": false,
-          "type": 6,
+          name: "user",
+          description: "Benutzer auswählen (optional).",
+          required: false,
+          type: 6,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "reset",
-      "description": "Setzt den Adventskalender für einen Benutzer zurück 🔄",
-      "options": [
+      type: 1,
+      name: "reset",
+      description: "Setzt den Adventskalender für einen Benutzer zurück 🔄",
+      options: [
         {
-          "name": "user",
-          "description": "Benutzer auswählen.",
-          "required": true,
-          "type": 6,
+          name: "user",
+          description: "Benutzer auswählen.",
+          required: true,
+          type: 6,
         },
       ],
     },

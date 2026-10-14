@@ -7,16 +7,16 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "name": "user",
-      "description": "Der Nutzer, der das Geschenk erhalten soll",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "Der Nutzer, der das Geschenk erhalten soll",
+      required: true,
+      type: 6,
     },
     {
-      "type": 3,
-      "name": "link",
-      "description": "Der Geschenk-Link (z.B. Nitro, etc.)",
-      "required": true,
+      type: 3,
+      name: "link",
+      description: "Der Geschenk-Link (z.B. Nitro, etc.)",
+      required: true,
     },
   ],
 

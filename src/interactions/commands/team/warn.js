@@ -9,54 +9,54 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "type": 1,
-      "name": "add",
-      "description": "» Füge eine Warnung für einen Benutzer hinzu.",
-      "options": [
+      type: 1,
+      name: "add",
+      description: "» Füge eine Warnung für einen Benutzer hinzu.",
+      options: [
         {
-          "name": "user",
-          "description": "Der Benutzer, der gewarnt werden soll",
-          "required": true,
-          "type": 6,
+          name: "user",
+          description: "Der Benutzer, der gewarnt werden soll",
+          required: true,
+          type: 6,
         },
         {
-          "type": 3,
-          "name": "grund",
-          "description": "Der Grund für die Warnung",
-          "required": true,
-        },
-      ],
-    },
-    {
-      "type": 1,
-      "name": "remove",
-      "description": "» Entferne eine Warnung für einen Benutzer.",
-      "options": [
-        {
-          "name": "user",
-          "description": "Der Benutzer, dessen Warnung entfernt werden soll",
-          "required": true,
-          "type": 6,
-        },
-        {
-          "type": 3,
-          "name": "grund",
-          "description": "Der Grund für die Warnung (optional)",
-          "required": false,
+          type: 3,
+          name: "grund",
+          description: "Der Grund für die Warnung",
+          required: true,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "refresh",
-      "description": "» Aktualisiere die Warnliste.",
-      "options": [],
+      type: 1,
+      name: "remove",
+      description: "» Entferne eine Warnung für einen Benutzer.",
+      options: [
+        {
+          name: "user",
+          description: "Der Benutzer, dessen Warnung entfernt werden soll",
+          required: true,
+          type: 6,
+        },
+        {
+          type: 3,
+          name: "grund",
+          description: "Der Grund für die Warnung (optional)",
+          required: false,
+        },
+      ],
     },
     {
-      "type": 1,
-      "name": "list",
-      "description": "» Zeigt die Warnliste der Benutzer an.",
-      "options": [],
+      type: 1,
+      name: "refresh",
+      description: "» Aktualisiere die Warnliste.",
+      options: [],
+    },
+    {
+      type: 1,
+      name: "list",
+      description: "» Zeigt die Warnliste der Benutzer an.",
+      options: [],
     },
   ],
 

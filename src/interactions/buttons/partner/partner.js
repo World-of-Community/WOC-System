@@ -2,7 +2,7 @@ import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from
 
 export default {
   id: "partner",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const partnerModal = new ModalBuilder()
       .setTitle("🤝 - BEWERBEN ALS PARTNER")
       .setCustomId("partner-modal");

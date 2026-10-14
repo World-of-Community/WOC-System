@@ -21,58 +21,58 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 3,
-      "choices": [
+      type: 3,
+      choices: [
         {
-          "name": "WOC SUPPORT",
-          "value": "support",
+          name: "WOC SUPPORT",
+          value: "support",
         },
         {
-          "name": "WOC SYSTEM",
-          "value": "system",
+          name: "WOC SYSTEM",
+          value: "system",
         },
         {
-          "name": "MINECRAFT",
-          "value": "minecraft",
+          name: "MINECRAFT",
+          value: "minecraft",
         },
         {
-          "name": "WEBSEITE",
-          "value": "webseite",
+          name: "WEBSEITE",
+          value: "webseite",
         },
         {
-          "name": "DISCORD SERVER",
-          "value": "dc",
-        },
-      ],
-      "name": "kategorie",
-      "description": "» Wähle eine Update-Kategorie",
-      "required": true,
-    },
-    {
-      "type": 3,
-      "choices": [
-        {
-          "name": "🔴 = Bug behoben",
-          "value": "<:PointRed:1123612255800524940>",
-        },
-        {
-          "name": "🟠 = Änderung",
-          "value": "<:PointOrange:1123612277669630092>",
-        },
-        {
-          "name": "🟢 = Neu hinzugefügt",
-          "value": "<:PointGreen:1123612318694117477>",
+          name: "DISCORD SERVER",
+          value: "dc",
         },
       ],
-      "name": "emoji",
-      "description": "» Wähle ein Update-Emoji",
-      "required": true,
+      name: "kategorie",
+      description: "» Wähle eine Update-Kategorie",
+      required: true,
     },
     {
-      "type": 3,
-      "name": "update",
-      "description": "» Beschreibe was geändert wurde",
-      "required": true,
+      type: 3,
+      choices: [
+        {
+          name: "🔴 = Bug behoben",
+          value: "<:PointRed:1123612255800524940>",
+        },
+        {
+          name: "🟠 = Änderung",
+          value: "<:PointOrange:1123612277669630092>",
+        },
+        {
+          name: "🟢 = Neu hinzugefügt",
+          value: "<:PointGreen:1123612318694117477>",
+        },
+      ],
+      name: "emoji",
+      description: "» Wähle ein Update-Emoji",
+      required: true,
+    },
+    {
+      type: 3,
+      name: "update",
+      description: "» Beschreibe was geändert wurde",
+      required: true,
     },
   ],
 

@@ -7,10 +7,10 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 4,
-      "name": "jahr",
-      "description": "Das Jahr, z.B. 2022",
-      "required": true,
+      type: 4,
+      name: "jahr",
+      description: "Das Jahr, z.B. 2022",
+      required: true,
     },
   ],
 

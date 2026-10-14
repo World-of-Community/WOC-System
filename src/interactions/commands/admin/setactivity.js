@@ -45,38 +45,38 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 3,
-      "name": "status",
-      "description": "Die Statusnachricht, die angezeigt werden soll",
-      "required": false,
+      type: 3,
+      name: "status",
+      description: "Die Statusnachricht, die angezeigt werden soll",
+      required: false,
     },
     {
-      "type": 3,
-      "choices": [
+      type: 3,
+      choices: [
         {
-          "name": "Online",
-          "value": "online",
+          name: "Online",
+          value: "online",
         },
         {
-          "name": "AFK (Idle)",
-          "value": "idle",
+          name: "AFK (Idle)",
+          value: "idle",
         },
         {
-          "name": "Bitte nicht stören (DND)",
-          "value": "dnd",
+          name: "Bitte nicht stören (DND)",
+          value: "dnd",
         },
         {
-          "name": "Unsichtbar (Offline)",
-          "value": "invisible",
+          name: "Unsichtbar (Offline)",
+          value: "invisible",
         },
         {
-          "name": "Zurücksetzen (Standard)",
-          "value": "reset",
+          name: "Zurücksetzen (Standard)",
+          value: "reset",
         },
       ],
-      "name": "presence",
-      "description": "Der Online-Status des Bots",
-      "required": false,
+      name: "presence",
+      description: "Der Online-Status des Bots",
+      required: false,
     },
   ],
 

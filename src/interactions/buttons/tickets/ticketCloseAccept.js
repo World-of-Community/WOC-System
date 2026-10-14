@@ -2,7 +2,7 @@ import { EmbedBuilder } from "discord.js";
 
 export default {
   id: "ticket_close_accept",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const embed = new EmbedBuilder()
       .setColor("Red")
       .setDescription("Das Ticket wird in `5 Sekunden` geschlossen.");

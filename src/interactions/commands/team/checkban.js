@@ -7,10 +7,10 @@ export default {
   default_member_permissions: "4",
   options: [
     {
-      "name": "user",
-      "description": "» Welcher Benutzer soll überprüft werden?",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "» Welcher Benutzer soll überprüft werden?",
+      required: true,
+      type: 6,
     },
   ],
 

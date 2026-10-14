@@ -8,28 +8,28 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 3,
-      "choices": [
+      type: 3,
+      choices: [
         {
-          "name": "Ränge Info (Rollen Info)",
-          "value": "ränge-info",
+          name: "Ränge Info (Rollen Info)",
+          value: "ränge-info",
         },
         {
-          "name": "Regelwerk (Server-regeln)",
-          "value": "regelwerk",
+          name: "Regelwerk (Server-regeln)",
+          value: "regelwerk",
         },
         {
-          "name": "Partner (Partner werden)",
-          "value": "partner",
+          name: "Partner (Partner werden)",
+          value: "partner",
         },
         {
-          "name": "Bann-Bereich Embed (Gebannt)",
-          "value": "gebannt",
+          name: "Bann-Bereich Embed (Gebannt)",
+          value: "gebannt",
         },
       ],
-      "name": "embed",
-      "description": "Welches Embed?",
-      "required": true,
+      name: "embed",
+      description: "Welches Embed?",
+      required: true,
     },
   ],
 

@@ -10,10 +10,10 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "name": "user",
-      "description": "» Wähle einen Benutzer aus, um die Gesamtspenden zu sehen.",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "» Wähle einen Benutzer aus, um die Gesamtspenden zu sehen.",
+      required: true,
+      type: 6,
     },
   ],
 

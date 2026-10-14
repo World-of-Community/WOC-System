@@ -7,16 +7,16 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "type": 1,
-      "name": "reward",
-      "description": "» Zeigt die Belohnungen mit Seltenheiten 🎁",
-      "options": [],
+      type: 1,
+      name: "reward",
+      description: "» Zeigt die Belohnungen mit Seltenheiten 🎁",
+      options: [],
     },
     {
-      "type": 1,
-      "name": "bewerbung",
-      "description": "» Sendet eine Info Bewerbungsnachricht 💬",
-      "options": [],
+      type: 1,
+      name: "bewerbung",
+      description: "» Sendet eine Info Bewerbungsnachricht 💬",
+      options: [],
     },
   ],
 

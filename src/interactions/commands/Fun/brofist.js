@@ -6,10 +6,10 @@ export default {
   type: 1,
   options: [
     {
-      "name": "user",
-      "description": "Verbünde dich offiziell mit deinem besten Freund.",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "Verbünde dich offiziell mit deinem besten Freund.",
+      required: true,
+      type: 6,
     },
   ],
 

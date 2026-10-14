@@ -6,10 +6,10 @@ export default {
   type: 1,
   options: [
     {
-      "name": "user",
-      "description": "Wähle einen User aus",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "Wähle einen User aus",
+      required: true,
+      type: 6,
     },
   ],
 

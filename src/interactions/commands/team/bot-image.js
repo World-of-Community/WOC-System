@@ -7,25 +7,25 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "channel_types": [
+      channel_types: [
         0,
       ],
-      "name": "kanal",
-      "description": "Der Kanal, in den das Bild gesendet werden soll",
-      "required": true,
-      "type": 7,
+      name: "kanal",
+      description: "Der Kanal, in den das Bild gesendet werden soll",
+      required: true,
+      type: 7,
     },
     {
-      "type": 3,
-      "name": "image",
-      "description": "» URL des Bildes, das hinzugefügt werden soll",
-      "required": true,
+      type: 3,
+      name: "image",
+      description: "» URL des Bildes, das hinzugefügt werden soll",
+      required: true,
     },
     {
-      "type": 3,
-      "name": "starten_in",
-      "description": "Wann soll es gesendet werden? (z.B. 10s, 5m, 2h, 1d)",
-      "required": false,
+      type: 3,
+      name: "starten_in",
+      description: "Wann soll es gesendet werden? (z.B. 10s, 5m, 2h, 1d)",
+      required: false,
     },
   ],
 

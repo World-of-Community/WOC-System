@@ -3,7 +3,7 @@ import { EmbedBuilder } from "discord.js";
 export default {
   id: "partner_deny",
   prefix: true,
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const id = interaction.customId.split("_")[2];
     const user = await interaction.client.users.fetch(id);
 

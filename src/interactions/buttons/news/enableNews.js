@@ -3,7 +3,7 @@ import logger from "#core/logger.js";
 
 export default {
   id: "enable_news",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const userId = interaction.user.id;
 
     try {

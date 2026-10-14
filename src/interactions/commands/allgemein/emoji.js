@@ -6,10 +6,10 @@ export default {
   type: 1,
   options: [
     {
-      "type": 3,
-      "name": "emoji",
-      "description": "» Wähle bis zu 3 Emojis",
-      "required": true,
+      type: 3,
+      name: "emoji",
+      description: "» Wähle bis zu 3 Emojis",
+      required: true,
     },
   ],
 

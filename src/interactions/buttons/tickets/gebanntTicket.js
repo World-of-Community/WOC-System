@@ -2,7 +2,7 @@ import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from
 
 export default {
   id: "gebannt-ticket",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     if (!interaction.guild) {return;}
 
     const gebanntModal = new ModalBuilder()

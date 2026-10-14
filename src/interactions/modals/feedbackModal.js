@@ -4,7 +4,7 @@ import { settings } from "#core/settings.js";
 
 export default {
   id: "feedback-modal",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     try {
       await interaction.deferReply({ ephemeral: true });
 

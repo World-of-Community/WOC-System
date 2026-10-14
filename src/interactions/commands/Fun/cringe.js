@@ -6,10 +6,10 @@ export default {
   type: 1,
   options: [
     {
-      "name": "user",
-      "description": "Hat sich blamiert? Verdammt ich habs verpasst!",
-      "required": true,
-      "type": 6,
+      name: "user",
+      description: "Hat sich blamiert? Verdammt ich habs verpasst!",
+      required: true,
+      type: 6,
     },
   ],
 

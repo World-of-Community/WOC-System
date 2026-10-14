@@ -9,7 +9,7 @@ const rewards = {
 export default {
   id: "advent_",
   prefix: true,
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const currentDay = new Date().getDate();
     const [, day] = interaction.customId.split("_");
     const dayNumber = parseInt(day);

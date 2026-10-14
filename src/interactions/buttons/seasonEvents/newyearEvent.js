@@ -3,7 +3,7 @@ import { eventPeriods, isEventActive } from "#systems/seasonEvents.js";
 
 export default {
   id: "newyear_event",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const SilvesterEmbed = new EmbedBuilder()
       .setTitle("`🎆` Silvester Event `🎆`")
       .setDescription(isEventActive(eventPeriods.newyear) ? "**Das Silvester-Event ist aktiv! Feiere das neue Jahr mit uns!**" : "**Dieses Event findet erst zwischen dem `27. Dezember` und dem `02. Januar` statt!**")

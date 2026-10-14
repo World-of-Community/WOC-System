@@ -6,7 +6,7 @@ import Note from "#models/UserNote.js";
 export default {
   id: "showPunishments_",
   prefix: true,
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const userId = interaction.customId.split("_")[1];
     const guildId = interaction.guild.id;
 

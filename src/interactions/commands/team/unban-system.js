@@ -9,50 +9,50 @@ export default {
   default_member_permissions: "4",
   options: [
     {
-      "type": 1,
-      "name": "user",
-      "description": "» Entbannt einen User.",
-      "options": [
+      type: 1,
+      name: "user",
+      description: "» Entbannt einen User.",
+      options: [
         {
-          "name": "user",
-          "description": "» Welcher User soll entbannt werden?",
-          "required": true,
-          "type": 6,
+          name: "user",
+          description: "» Welcher User soll entbannt werden?",
+          required: true,
+          type: 6,
         },
       ],
     },
     {
-      "type": 1,
-      "name": "info",
-      "description": "» Sendet Informationen zur Entbannung.",
-      "options": [
+      type: 1,
+      name: "info",
+      description: "» Sendet Informationen zur Entbannung.",
+      options: [
         {
-          "type": 3,
-          "choices": [
+          type: 3,
+          choices: [
             {
-              "name": "Statusupdate",
-              "value": "statusupdate",
+              name: "Statusupdate",
+              value: "statusupdate",
             },
             {
-              "name": "Wichtiger Hinweis",
-              "value": "hinweis",
+              name: "Wichtiger Hinweis",
+              value: "hinweis",
             },
             {
-              "name": "vorerst abgelehnt",
-              "value": "vorerst_abgelehnt",
+              name: "vorerst abgelehnt",
+              value: "vorerst_abgelehnt",
             },
           ],
-          "name": "typ",
-          "description": "Welche Nachricht soll gesendet werden?",
-          "required": true,
+          name: "typ",
+          description: "Welche Nachricht soll gesendet werden?",
+          required: true,
         },
         {
-          "max_value": 30,
-          "min_value": 1,
-          "type": 4,
-          "name": "dauer",
-          "description": "Wie viele Tage soll der Antrag gültig sein? (Standard 2 Tage)",
-          "required": false,
+          max_value: 30,
+          min_value: 1,
+          type: 4,
+          name: "dauer",
+          description: "Wie viele Tage soll der Antrag gültig sein? (Standard 2 Tage)",
+          required: false,
         },
       ],
     },

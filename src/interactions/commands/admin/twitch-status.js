@@ -8,20 +8,20 @@ export default {
   default_member_permissions: "8",
   options: [
     {
-      "type": 3,
-      "choices": [
+      type: 3,
+      choices: [
         {
-          "name": "Aktivieren",
-          "value": "start",
+          name: "Aktivieren",
+          value: "start",
         },
         {
-          "name": "Deaktivieren",
-          "value": "stop",
+          name: "Deaktivieren",
+          value: "stop",
         },
       ],
-      "name": "aktion",
-      "description": "Wähle, ob du den Auto-Status aktivieren oder deaktivieren willst",
-      "required": true,
+      name: "aktion",
+      description: "Wähle, ob du den Auto-Status aktivieren oder deaktivieren willst",
+      required: true,
     },
   ],
 

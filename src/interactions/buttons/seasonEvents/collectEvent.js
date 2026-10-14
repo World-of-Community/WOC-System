@@ -3,7 +3,7 @@ import { eventPeriods, isEventActive } from "#systems/seasonEvents.js";
 
 export default {
   id: "collect_event",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     const activeEvent = Object.keys(eventPeriods).find((key) =>
       isEventActive(eventPeriods[key]),
     );

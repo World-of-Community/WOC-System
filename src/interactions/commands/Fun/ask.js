@@ -4,10 +4,10 @@ export default {
   type: 1,
   options: [
     {
-      "type": 3,
-      "name": "frage",
-      "description": "Wie lautet deine Frage?",
-      "required": true,
+      type: 3,
+      name: "frage",
+      description: "Wie lautet deine Frage?",
+      required: true,
     },
   ],
 

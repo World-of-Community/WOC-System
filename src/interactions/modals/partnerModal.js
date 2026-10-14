@@ -9,7 +9,7 @@ import { settings } from "#core/settings.js";
 export default {
   id: "partner",
 
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     // Partner-Modal absenden
     if (
       interaction.isModalSubmit() &&

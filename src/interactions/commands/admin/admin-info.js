@@ -7,10 +7,10 @@ export default {
   default_member_permissions: "268435456",
   options: [
     {
-      "name": "rolle",
-      "description": "Die Rolle, die abgefragt werden soll",
-      "required": true,
-      "type": 8,
+      name: "rolle",
+      description: "Die Rolle, die abgefragt werden soll",
+      required: true,
+      type: 8,
     },
   ],
 

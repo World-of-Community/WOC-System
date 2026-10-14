@@ -8,10 +8,10 @@ export default {
   default_member_permissions: "16",
   options: [
     {
-      "name": "kanal",
-      "description": "» In welchen Kanal soll gezählt werden?",
-      "required": true,
-      "type": 7,
+      name: "kanal",
+      description: "» In welchen Kanal soll gezählt werden?",
+      required: true,
+      type: 7,
     },
   ],
 

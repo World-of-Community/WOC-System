@@ -3,7 +3,7 @@ import logger from "#core/logger.js";
 
 export default {
   id: "feedback_accept_close",
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     if (!interaction.guild) {return;}
 
     await interaction.deferUpdate();
