@@ -331,8 +331,8 @@ export const SETTINGS_SCHEMA = {
     label: "Twitch-Status",
     keys: {
       enabled: boolean(true, "Status-System aktiv"),
-      user: string("red3405_", "Twitch-Username"),
-      statusMessageId: string("1545767658257915996", "ID der Status-Nachricht (wird automatisch gesetzt)"),
+      // one status message per streamer; messageId is managed by the system
+      streamers: json([{ login: "red3405_", messageId: "1545767658257915996" }], "Twitch-Kanäle (/settings twitch add|remove|list)"),
     },
   },
 

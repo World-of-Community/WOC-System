@@ -13,10 +13,11 @@ let updatePromise = null;
 
 // Discord error codes meaning the stored message is really gone
 const MISSING_MESSAGE_CODES = [10003, 10004, 10008];
-const EMBED_AUTHOR_NAME = "Red3405 Ankündigung";
+const EMBED_AUTHOR_SUFFIX = "Ankündigung";
+const LOGIN_RE = /^[a-z0-9_]{3,25}$/i;
 
-const twitchUser = () => settings.get("twitch.user");
-const twitchUrl = () => `https://twitch.tv/${twitchUser()}`;
+const twitchUrl = (login) => `https://twitch.tv/${login}`;
+const authorName = (login) => `${login} ${EMBED_AUTHOR_SUFFIX}`;
 
 export function isTwitchStatusEnabled() {
   return settings.get("twitch.enabled") !== false;
@@ -26,8 +27,41 @@ export async function setTwitchStatusEnabled(enabled, by = null) {
   await settings.set("twitch.enabled", enabled, by);
 }
 
-function hasCompleteConfig() {
-  return Boolean(env.twitch.clientId && env.twitch.clientSecret && twitchUser() && settings.get("channels.twitch"));
+export function getStreamers() {
+  const list = settings.get("twitch.streamers");
+  return Array.isArray(list) ? list : [];
+}
+
+export async function addStreamer(login, by = null) {
+  const normalized = String(login).trim().toLowerCase().replace(/^@/, "");
+  if (!LOGIN_RE.test(normalized)) {throw new Error(`"${login}" ist kein gültiger Twitch-Name`);}
+
+  const streamers = getStreamers();
+  if (streamers.some((s) => s.login === normalized)) {throw new Error(`"${normalized}" ist bereits eingetragen`);}
+
+  await settings.set("twitch.streamers", [...streamers, { login: normalized, messageId: null }], by);
+  return normalized;
+}
+
+export async function removeStreamer(login, by = null) {
+  const normalized = String(login).trim().toLowerCase();
+  const streamers = getStreamers();
+  const entry = streamers.find((s) => s.login === normalized);
+  if (!entry) {throw new Error(`"${normalized}" ist nicht eingetragen`);}
+
+  await settings.set("twitch.streamers", streamers.filter((s) => s.login !== normalized), by);
+
+  if (entry.messageId) {
+    const channel = await client.channels.fetch(settings.get("channels.twitch")).catch(() => null);
+    const message = await channel?.messages.fetch(entry.messageId).catch(() => null);
+    await message?.delete().catch(() => {});
+  }
+  return normalized;
+}
+
+async function saveMessageId(login, messageId) {
+  const streamers = getStreamers().map((s) => (s.login === login ? { ...s, messageId } : s));
+  await settings.set("twitch.streamers", streamers);
 }
 
 async function getAccessToken(force = false) {
@@ -53,39 +87,10 @@ async function getAccessToken(force = false) {
   return accessToken;
 }
 
-function createOfflineEmbed() {
-  return new EmbedBuilder()
-    .setAuthor({ name: EMBED_AUTHOR_NAME, iconURL: client.user.displayAvatarURL({ dynamic: true }), url: twitchUrl() })
-    .setTitle("Offline!")
-    .setDescription("- Titel: **?**\n- Kategorie: **?**\n- Zuschauer: **0**")
-    .setColor("Red")
-    .setFooter({ text: "Zuletzt aktualisiert" })
-    .setTimestamp();
-}
-
-function createLiveEmbed(stream) {
-  return new EmbedBuilder()
-    .setAuthor({ name: EMBED_AUTHOR_NAME, iconURL: client.user.displayAvatarURL({ dynamic: true }), url: twitchUrl() })
-    .setTitle(`${stream.user_name} streamt!`)
-    .setDescription(
-      `- Titel: **${stream.title || "Kein Titel"}**\n` +
-      `- Kategorie: **${stream.game_name || "Keine Angabe"}**\n` +
-      `- Zuschauer: **${stream.viewer_count.toLocaleString("de-DE")}**`,
-    )
-    .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${twitchUser()}-640x360.jpg?${Date.now()}`)
-    .setColor("Purple")
-    .setFooter({ text: "Live seit" })
-    .setTimestamp(new Date(stream.started_at));
-}
-
-function createButton() {
-  return new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setLabel("🔗 Twitch: Red3405").setStyle(ButtonStyle.Link).setURL(twitchUrl()),
-  );
-}
-
-async function fetchStream() {
-  const request = async () => fetch(`https://api.twitch.tv/helix/streams?user_login=${encodeURIComponent(twitchUser())}`, {
+// One request for all streamers; returns Map<login, stream|null>
+async function fetchStreams(logins) {
+  const query = logins.map((l) => `user_login=${encodeURIComponent(l)}`).join("&");
+  const request = async () => fetch(`https://api.twitch.tv/helix/streams?${query}`, {
     headers: {
       "Client-ID": env.twitch.clientId,
       Authorization: `Bearer ${await getAccessToken()}`,
@@ -103,67 +108,103 @@ async function fetchStream() {
   if (!res.ok) {throw new Error(`Twitch API Fehler: ${res.status} ${res.statusText}`);}
 
   const data = await res.json();
-  return data.data?.length > 0 ? data.data[0] : null;
+  const result = new Map(logins.map((l) => [l, null]));
+  for (const stream of data.data ?? []) {
+    result.set(stream.user_login.toLowerCase(), stream);
+  }
+  return result;
 }
 
-// avoids duplicate status messages when statusMessageId got lost
-async function findExistingStatusMessage(channel) {
+function createEmbed(login, stream) {
+  const author = { name: authorName(login), iconURL: client.user.displayAvatarURL({ dynamic: true }), url: twitchUrl(login) };
+
+  if (!stream) {
+    return new EmbedBuilder()
+      .setAuthor(author)
+      .setTitle("Offline!")
+      .setDescription("- Titel: **?**\n- Kategorie: **?**\n- Zuschauer: **0**")
+      .setColor("Red")
+      .setFooter({ text: "Zuletzt aktualisiert" })
+      .setTimestamp();
+  }
+
+  return new EmbedBuilder()
+    .setAuthor(author)
+    .setTitle(`${stream.user_name} streamt!`)
+    .setDescription(
+      `- Titel: **${stream.title || "Kein Titel"}**\n` +
+      `- Kategorie: **${stream.game_name || "Keine Angabe"}**\n` +
+      `- Zuschauer: **${stream.viewer_count.toLocaleString("de-DE")}**`,
+    )
+    .setImage(`https://static-cdn.jtvnw.net/previews-ttv/live_user_${login}-640x360.jpg?${Date.now()}`)
+    .setColor("Purple")
+    .setFooter({ text: "Live seit" })
+    .setTimestamp(new Date(stream.started_at));
+}
+
+function createButton(login) {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setLabel(`🔗 Twitch: ${login}`).setStyle(ButtonStyle.Link).setURL(twitchUrl(login)),
+  );
+}
+
+// avoids duplicate status messages when a messageId got lost
+async function findExistingStatusMessage(channel, login) {
   try {
     const messages = await channel.messages.fetch({ limit: 50 });
-    return messages.find((message) =>
-      message.author.id === client.user.id &&
-      message.embeds[0]?.author?.name === EMBED_AUTHOR_NAME,
-    ) || null;
+    return messages.find((m) => m.author.id === client.user.id && m.embeds[0]?.author?.name === authorName(login)) || null;
   } catch (err) {
-    log.warn("Could not search channel history:", err);
+    log.warn("Could not search channel history:", err?.message ?? err);
     return null;
   }
 }
 
-async function setStatusMessageId(messageId) {
-  if (settings.get("twitch.statusMessageId") === messageId) {return;}
-  await settings.set("twitch.statusMessageId", messageId);
-}
-
-async function runTwitchStatusUpdate() {
-  if (!hasCompleteConfig()) {throw new Error("Twitch-Konfiguration ist unvollständig (.env TWITCH_* oder /settings twitch).");}
-
-  const stream = await fetchStream();
-
-  const channel = await client.channels.fetch(settings.get("channels.twitch"));
-  if (!channel || !channel.isTextBased()) {throw new Error("Konnte Kanal nicht finden oder ist kein Textkanal.");}
-
+async function updateStreamerMessage(channel, streamer, stream) {
   const payload = {
-    content: `https://www.twitch.tv/${twitchUser()}`,
-    embeds: [stream ? createLiveEmbed(stream) : createOfflineEmbed()],
-    components: [createButton()],
+    content: twitchUrl(streamer.login),
+    embeds: [createEmbed(streamer.login, stream)],
+    components: [createButton(streamer.login)],
   };
 
-  const statusMessageId = settings.get("twitch.statusMessageId");
-  if (statusMessageId) {
+  if (streamer.messageId) {
     try {
-      const message = await channel.messages.fetch(statusMessageId);
+      const message = await channel.messages.fetch(streamer.messageId);
       await message.edit(payload);
       return;
     } catch (err) {
       // only re-send if the message is actually gone; rate limits / outages / missing perms should surface as errors
       if (!MISSING_MESSAGE_CODES.includes(err?.code)) {throw err;}
-      log.warn("Stored status message is gone, looking for an existing one.");
+      log.warn(`Status message for ${streamer.login} is gone, looking for an existing one`);
     }
   }
 
-  const existing = await findExistingStatusMessage(channel);
+  const existing = await findExistingStatusMessage(channel, streamer.login);
   if (existing) {
     await existing.edit(payload);
-    await setStatusMessageId(existing.id);
+    await saveMessageId(streamer.login, existing.id);
     return;
   }
 
   const message = await channel.send(payload);
-  await setStatusMessageId(message.id);
+  await saveMessageId(streamer.login, message.id);
 }
 
-// cron and /twitch-status must not run concurrently (would create two messages)
+async function runTwitchStatusUpdate() {
+  const streamers = getStreamers();
+  if (streamers.length === 0) {return;}
+  if (!env.twitch.clientId || !env.twitch.clientSecret) {throw new Error("TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET fehlen in der .env");}
+
+  const channel = await client.channels.fetch(settings.get("channels.twitch"));
+  if (!channel?.isTextBased()) {throw new Error("Twitch-Kanal nicht gefunden oder kein Textkanal");}
+
+  const streams = await fetchStreams(streamers.map((s) => s.login));
+
+  for (const streamer of streamers) {
+    await updateStreamerMessage(channel, streamer, streams.get(streamer.login));
+  }
+}
+
+// cron and /settings twitch must not run concurrently (would create duplicate messages)
 export async function updateTwitchStatus() {
   if (updatePromise) {return updatePromise;}
 
