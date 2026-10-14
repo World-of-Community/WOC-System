@@ -75,8 +75,8 @@ function buildQuizMessage(channel, entry) {
     .setDescription(
       `Gesuchter Begriff • ${entry.emojis}\n\n` +
       `Schwierigkeit • **${entry.schwierigkeit}**\n\n` +
-      (entry.tipp ? `Tipp: **${entry.tipp}**\n\n` : "") +
-      "Dir fällt der Begriff nicht ein? Du kannst das Emojiquiz auch überspringen.",
+      (entry.tipp ? `Tipp • **${entry.tipp}**\n\n` : "") +
+      "`❓` Dir fällt der Begriff nicht ein? Du kannst das Emojiquiz auch überspringen.",
     )
     .setColor("Random");
 
