@@ -15,7 +15,6 @@ export default {
       type: 1,
       name: "urlaub",
       description: "» Teile deinen Urlaub mit. 🌴",
-      permission: settings.get("teamRoles.member"),
       options: [
         {
           type: 3,
