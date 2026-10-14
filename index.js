@@ -67,10 +67,20 @@ process.on("unhandledRejection", (error) => {
 });
 
 function printAsciiLogo() {
-  // Website: https://patorjk.com/software/taag/
+  // Website: https://patorjk.com
   // Font: ANSI Shadow
 
-  logger.log(chalk.hex("#ff7b00")("\n\n██╗    ██// ==========================================
+  logger.log(chalk.hex("#ff7b00")("\n\n" +
+    "██╗    ██╗ ██████╗  ██████╗\n" +
+    "██║    ██║██╔═══██╗██╔════╝\n" +
+    "██║ █╗ ██║██║   ██║██║     \n" +
+    "██║███╗██║██║   ██║██║     \n" +
+    "╚███╔███╔╝╚██████╔╝╚██████╗\n" +
+    " ╚══╝╚══╝  ╚═════╝  ╚═════╝\n" +
+    "      WORLD OF COMMUNITY   \n"));
+}
+
+// ==========================================
 // TEMPORÄRER TEST-BEFEHL (Danach wieder löschen)
 // ==========================================
 client.on("messageCreate", async (message) => {
@@ -92,36 +102,24 @@ client.on("messageCreate", async (message) => {
       ]
     };
 
-    // Wir importieren die Funktion direkt, falls sie in einer anderen Datei liegt.
-    // Falls updateStreamerRole in derselben Datei ist, kannst du das 'await' so lassen.
-    try {
-      await updateStreamerRole(member);
-    } catch (e) {
-      // Falls die Funktion in index.js nicht direkt aufrufbar ist, rufen wir das Event manuell auf:
-      client.emit("presenceUpdate", null, { member: member, user: message.author, activities: member.presence.activities });
-    }
+    // Wir triggern das Event manuell, damit dein Live-Rollen-System anspringt
+    client.emit("presenceUpdate", null, { 
+      member: member, 
+      user: message.author, 
+      activities: member.presence.activities 
+    });
 
     // Nach 10 Sekunden wird das Ende simuliert
     setTimeout(async () => {
       message.channel.send("🔴 Simuliere Stream-Ende...");
-      
+
       member.presence = { activities: [] };
-      
-      try {
-        await updateStreamerRole(member);
-      } catch (e) {
-        client.emit("presenceUpdate", null, { member: member, user: message.author, activities: [] });
-      }
+
+      client.emit("presenceUpdate", null, { 
+        member: member, 
+        user: message.author, 
+        activities: [] 
+      });
     }, 10000);
   }
 });
-╗ ██████╗  ██████╗\n" +
-    "██║    ██║██╔═══██╗██╔════╝\n" +
-    "██║ █╗ ██║██║   ██║██║     \n" +
-    "██║███╗██║██║   ██║██║     \n" +
-    "╚███╔███╔╝╚██████╔╝╚██████╗\n" +
-    " ╚══╝╚══╝  ╚═════╝  ╚═════╝\n" +
-    "      WORLD OF COMMUNITY   \n"));
-}
-
-
