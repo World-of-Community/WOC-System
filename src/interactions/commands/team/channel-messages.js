@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import messagedb from "#models/MessageCounter.js";
 
 export default {
@@ -53,12 +54,12 @@ export default {
       const newValue = parseInt(raw.replace(/\./g, ""), 10);
 
       if (isNaN(newValue)) {
-        return interaction.reply({ content: "> ❌ » Ungültige Zahl eingegeben.", ephemeral: true });
+        return interaction.reply({ content: "> ❌ » Ungültige Zahl eingegeben.", flags: MessageFlags.Ephemeral });
       }
 
       messageData.messages = newValue;
       await messageData.save();
-      return interaction.reply({ content: `> \`✅\` » Nachrichtenanzahl wurde auf **${newValue.toLocaleString("de-DE")}** gesetzt.`, ephemeral: true });
+      return interaction.reply({ content: `> \`✅\` » Nachrichtenanzahl wurde auf **${newValue.toLocaleString("de-DE")}** gesetzt.`, flags: MessageFlags.Ephemeral });
     }
 
     if (sub === "edit") {
@@ -66,19 +67,19 @@ export default {
       const diff = parseInt(raw.replace(/\./g, ""), 10);
 
       if (isNaN(diff)) {
-        return interaction.reply({ content: "> ❌ » Ungültige Zahl eingegeben.", ephemeral: true });
+        return interaction.reply({ content: "> ❌ » Ungültige Zahl eingegeben.", flags: MessageFlags.Ephemeral });
       }
 
       messageData.messages += diff;
       if (messageData.messages < 0) {messageData.messages = 0;}
       await messageData.save();
-      return interaction.reply({ content: `> \`✏️\` » Nachrichtenanzahl wurde um **${diff.toLocaleString("de-DE")}** geändert. Aktuell: **${messageData.messages.toLocaleString("de-DE")}**.`, ephemeral: true });
+      return interaction.reply({ content: `> \`✏️\` » Nachrichtenanzahl wurde um **${diff.toLocaleString("de-DE")}** geändert. Aktuell: **${messageData.messages.toLocaleString("de-DE")}**.`, flags: MessageFlags.Ephemeral });
     }
 
     if (sub === "remove") {
       messageData.messages = 0;
       await messageData.save();
-      return interaction.reply({ content: "> `🗑️` » Nachrichtenanzahl wurde zurückgesetzt (0).", ephemeral: true });
+      return interaction.reply({ content: "> `🗑️` » Nachrichtenanzahl wurde zurückgesetzt (0).", flags: MessageFlags.Ephemeral });
     }
   },
 };

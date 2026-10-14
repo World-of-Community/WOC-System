@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
   name: "gift",
@@ -41,9 +41,9 @@ export default {
 
     try {
       await user.send({ embeds: [embed] });
-      await interaction.reply({ content: `> \`✅\` » Das Geschenk wurde erfolgreich an ${user} per DM geschickt! \`📬\``, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Das Geschenk wurde erfolgreich an ${user} per DM geschickt! \`📬\``, flags: MessageFlags.Ephemeral });
     } catch {
-      await interaction.reply({ content: `> \`❌\` » Ich konnte ${user} keine DM schicken. Bitte überprüfe die Datenschutzeinstellungen des Nutzers.`, ephemeral: true });
+      await interaction.reply({ content: `> \`❌\` » Ich konnte ${user} keine DM schicken. Bitte überprüfe die Datenschutzeinstellungen des Nutzers.`, flags: MessageFlags.Ephemeral });
     }
   },
 };

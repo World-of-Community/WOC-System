@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
 
@@ -32,7 +32,7 @@ export default {
       await member.roles.add(role);
       await interaction.reply({
         content: `> \`✅\` » Die <@&${role.id}>-Rolle wurde an ${member} **vergeben**.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
 
       // Log-Kanal und Thread holen
@@ -40,7 +40,7 @@ export default {
       if (!logchannel) {
         return interaction.followUp({
           content: "> `❌` » Logkanal nicht gefunden.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -48,7 +48,7 @@ export default {
       if (!thread) {
         return interaction.followUp({
           content: "> `❌` » Thread nicht gefunden oder ungültig.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -69,7 +69,7 @@ export default {
       logger.error("Fehler beim Hinzufügen der Rolle:", error);
       interaction.reply({
         content: "> `❌` » Ein Fehler ist aufgetreten.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

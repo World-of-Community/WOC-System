@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 export default {
@@ -83,28 +83,28 @@ export default {
     if (grund === "sonstiges" && !sonstigesGrund) {
       return interaction.reply({
         content: "> `❌` » Bitte gib bei **Sonstiges** einen erklärenden Kommentar an.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     if (reportedUser.id === interaction.user.id) {
       return interaction.reply({
         content: "> `❌` » Du kannst dich nicht selbst melden.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     if (reportedUser.bot) {
       return interaction.reply({
         content: "> `❌` » Du kannst keine Bots melden.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     if (beweis && !beweis.contentType?.startsWith("image/")) {
       return interaction.reply({
         content: "> `❌` » Der Beweis muss ein Bild sein (PNG/JPG).",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -152,7 +152,7 @@ export default {
       content:
                 "> `✅` » Danke für deinen Report. Ein Teammitglied kümmert sich darum.\n" +
                 "> `❗` » Beachte: Extremer Missbrauch des `/report`-Befehls wird bestraft!",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

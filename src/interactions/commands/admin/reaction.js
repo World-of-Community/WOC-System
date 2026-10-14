@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 export default {
   name: "reaction",
@@ -35,7 +36,7 @@ export default {
       const message = await interaction.channel.messages.fetch(messageId);
 
       if (!message) {
-        return interaction.reply({ content: "> `❗` » Die Nachricht mit dieser ID konnte nicht gefunden werden.", ephemeral: true });
+        return interaction.reply({ content: "> `❗` » Die Nachricht mit dieser ID konnte nicht gefunden werden.", flags: MessageFlags.Ephemeral });
       }
 
       // Reaktionen hinzufügen
@@ -45,10 +46,10 @@ export default {
         await message.react(emoji2);
       }
 
-      return interaction.reply({ content: "> `✅` » Reaktionen wurden erfolgreich hinzugefügt!", ephemeral: true });
+      return interaction.reply({ content: "> `✅` » Reaktionen wurden erfolgreich hinzugefügt!", flags: MessageFlags.Ephemeral });
     } catch (error) {
       logger.error(error);
-      return interaction.reply({ content: "> `❌` » Es gab ein Problem beim Hinzufügen der Reaktionen. Bitte überprüfe die Nachricht-ID und die Emojis.", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Es gab ein Problem beim Hinzufügen der Reaktionen. Bitte überprüfe die Nachricht-ID und die Emojis.", flags: MessageFlags.Ephemeral });
     }
   },
 };

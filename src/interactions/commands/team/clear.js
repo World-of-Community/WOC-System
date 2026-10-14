@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 
 export default {
@@ -34,7 +34,7 @@ export default {
     const grund = interaction.options.getString("grund") || "Kein Grund angegeben";
 
     if (messagedelete < 1 || messagedelete > 100) {
-      return interaction.reply({ content: "> `❗` » Bitte gib eine Anzahl von Nachrichten zwischen `1 und 100` an.", ephemeral: true });
+      return interaction.reply({ content: "> `❗` » Bitte gib eine Anzahl von Nachrichten zwischen `1 und 100` an.", flags: MessageFlags.Ephemeral });
     }
 
     try {
@@ -45,10 +45,10 @@ export default {
         .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
         .setTimestamp();
 
-      await interaction.reply({ embeds: [infomessagedeleteembed], ephemeral: true });
+      await interaction.reply({ embeds: [infomessagedeleteembed], flags: MessageFlags.Ephemeral });
     } catch (error) {
       logger.error("Fehler beim Löschen von Nachrichten:", error);
-      interaction.reply({ content: "> `❗` » Beim Versuch, Nachrichten zu löschen, ist ein Fehler aufgetreten.", ephemeral: true });
+      interaction.reply({ content: "> `❗` » Beim Versuch, Nachrichten zu löschen, ist ein Fehler aufgetreten.", flags: MessageFlags.Ephemeral });
     }
   },
 };

@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import userdb from "#models/User.js";
 import { settings } from "#core/settings.js";
 
@@ -105,6 +105,6 @@ export default {
       .setFooter({ text: "Schaffst du es alle Erfolge zu sammeln?", iconURL: interaction.guild.iconURL({ dynamic: true }) })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [ErfolgEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [ErfolgEmbed], flags: MessageFlags.Ephemeral });
   },
 };

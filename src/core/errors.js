@@ -1,4 +1,4 @@
-import { EmbedBuilder, DiscordAPIError, codeBlock } from "discord.js";
+import { EmbedBuilder, DiscordAPIError, MessageFlags, codeBlock } from "discord.js";
 import logger from "./logger.js";
 import { sendLog } from "./discordLog.js";
 import { safeReply } from "./reply.js";
@@ -82,7 +82,7 @@ export const genericErrorMessage = () =>
 
 export async function handleInteractionError(interaction, error, context = {}) {
   if (error instanceof UserError) {
-    await safeReply(interaction, { content: error.message, ephemeral: error.ephemeral });
+    await safeReply(interaction, { content: error.message, flags: error.ephemeral ? MessageFlags.Ephemeral : undefined });
     return;
   }
 
@@ -97,7 +97,7 @@ export async function handleInteractionError(interaction, error, context = {}) {
   // interaction token expired, nothing left to reply to
   if (error instanceof DiscordAPIError && error.code === 10062) {return;}
 
-  await safeReply(interaction, { content: genericErrorMessage(), ephemeral: true });
+  await safeReply(interaction, { content: genericErrorMessage(), flags: MessageFlags.Ephemeral });
 }
 
 export function registerProcessHandlers() {

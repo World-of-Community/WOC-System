@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import CountingModel from "#models/Counting.js";
 
 export default {
@@ -34,7 +34,7 @@ export default {
     countingData.currentCount = 0;
     countingData.lastUserId = null;
 
-    await interaction.reply({ content: `> \`✅\` » Der Zählkanal wurde auf <#${selectedChannel.id}> eingestellt.`, ephemeral: true });
+    await interaction.reply({ content: `> \`✅\` » Der Zählkanal wurde auf <#${selectedChannel.id}> eingestellt.`, flags: MessageFlags.Ephemeral });
 
     const countingEmbed = new EmbedBuilder()
       .setTitle("`🔢` » Zahlen Spiel Information")

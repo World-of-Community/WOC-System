@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import serverdb from "#models/Guild.js";
 
 import logger from "#core/logger.js";
@@ -98,7 +98,7 @@ export default {
     }
 
     await channel.messages.fetch(serverData.updateMessage).then(async msg => {
-      await interaction.reply({ content: "> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.", ephemeral: true });
+      await interaction.reply({ content: "> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.", flags: MessageFlags.Ephemeral });
       setTimeout(async () => {
         serverData = await serverdb.findOne({ guildID: interaction.guildId });
         // Week Date
@@ -156,7 +156,7 @@ export default {
         }
 
         await serverData.save();
-        await interaction.editReply({ content: "> `✅` » Ich habe das Update erfolgreich hinzugefügt.", ephemeral: true });
+        await interaction.editReply({ content: "> `✅` » Ich habe das Update erfolgreich hinzugefügt.", flags: MessageFlags.Ephemeral });
         const updateChannel = await interaction.guild.channels.cache.get(settings.get("channels.changelog"));
         await msg.edit({ embeds: [updateEmbed] });
         const message = await updateChannel.send({content: "Neues Changelog Update"});

@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
 
 export default {
   name: "season-pass",
@@ -40,6 +40,6 @@ export default {
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
-    await interaction.reply({ content: "> `🎟️` » SeasonPass Embed gesendet.", ephemeral: true });
+    await interaction.reply({ content: "> `🎟️` » SeasonPass Embed gesendet.", flags: MessageFlags.Ephemeral });
   },
 };

@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import userdb from "#models/User.js";
 
 export default {
@@ -17,7 +18,7 @@ export default {
 
     const hasRole = settings.get("system.emojiRoles").some(roleId => interaction.member.roles.cache.has(roleId));
 
-    if(!hasRole) {return interaction.reply({ content: "> `❌` » Du hast keine Berechtigte Rolle um diesen Befehl zu benutzen.", ephemeral: true });}
+    if(!hasRole) {return interaction.reply({ content: "> `❌` » Du hast keine Berechtigte Rolle um diesen Befehl zu benutzen.", flags: MessageFlags.Ephemeral });}
 
     const emojisInput = await interaction.options.getString("emoji");
     const userData = await userdb.findOne({ userID: interaction.user.id });
@@ -27,13 +28,13 @@ export default {
     const emojiRegex = /<a?:[a-zA-Z0-9_]+:[0-9]+>/g;
     const emojis = await emojisInput.match(emojiRegex);
 
-    if (!emojis) {return interaction.reply({ content: "> `❗` » Bitte füge min. 1 Emoji hinzu.", ephemeral: true });}
-    if (emojis.length > 3) {return interaction.reply({ content: "> `❌` » Du kannst nicht mehr als **3 Emojis** auswählen.", ephemeral: true });}
+    if (!emojis) {return interaction.reply({ content: "> `❗` » Bitte füge min. 1 Emoji hinzu.", flags: MessageFlags.Ephemeral });}
+    if (emojis.length > 3) {return interaction.reply({ content: "> `❌` » Du kannst nicht mehr als **3 Emojis** auswählen.", flags: MessageFlags.Ephemeral });}
 
     const emojiArray = emojis ? emojis.map(emoji => emoji.toString()) : [];
 
     await userdb.findOneAndUpdate({ userID: interaction.user.id }, { $set: { reactions: emojiArray } });
-    await interaction.reply({ content: "> `✅` » Die Emojis wurden erfolgreich hinzugefügt.", ephemeral: true });
+    await interaction.reply({ content: "> `✅` » Die Emojis wurden erfolgreich hinzugefügt.", flags: MessageFlags.Ephemeral });
   },
 };
 

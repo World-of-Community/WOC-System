@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 export default {
@@ -29,7 +29,7 @@ export default {
     try {
       // Entferne die angegebene Rolle vom Mitglied
       await member.roles.remove(role);
-      await interaction.reply({ content: `> \`✅\` » Die Rolle <@&${role.id}> wurde von ${member} **entfernt**.`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Die Rolle <@&${role.id}> wurde von ${member} **entfernt**.`, flags: MessageFlags.Ephemeral });
 
       // Remove Role Log
       const logchannel = await member.guild.channels.cache.get(settings.get("channels.serverLogs"));
@@ -43,7 +43,7 @@ export default {
 
       await logchannel.threads.cache.get(settings.get("logThreads.roles")).send({embeds: [removerole]});
     } catch (error) {
-      await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`, ephemeral: true });
+      await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`, flags: MessageFlags.Ephemeral });
     }
   },
 };

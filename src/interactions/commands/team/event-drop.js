@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, ChannelType } from "discord.js";
+import { PermissionFlagsBits, ChannelType, MessageFlags } from "discord.js";
 import EventDropAndUser from "#models/EventDrop.js";
 
 export default {
@@ -63,35 +63,35 @@ export default {
   async run(client, interaction) {
     // Berechtigungsprüfung: Nur Admins oder bestimmte Rollen dürfen ausführen
     if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-      return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, diesen Befehl auszuführen.", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, diesen Befehl auszuführen.", flags: MessageFlags.Ephemeral });
     }
 
     const subcommand = interaction.options.getSubcommand();
     const selectedChannel = interaction.options.getChannel("kanal");
 
     if (selectedChannel && selectedChannel.type !== ChannelType.GuildText) {
-      return interaction.reply({ content: "> `❗` » Bitte wähle einen Textkanal aus.", ephemeral: true });
+      return interaction.reply({ content: "> `❗` » Bitte wähle einen Textkanal aus.", flags: MessageFlags.Ephemeral });
     }
 
     if (subcommand === "start") {
       // Aktivieren der Event-Drops im ausgewählten Kanal
       await EventDropAndUser.findOneAndUpdate({ event: "active" }, { status: "active", channelId: selectedChannel.id }, { upsert: true });
-      return interaction.reply({ content: `> \`✅\` » Die Gewinn-Drops wurden **gestartet** im Kanal ${selectedChannel.name}!`, ephemeral: true });
+      return interaction.reply({ content: `> \`✅\` » Die Gewinn-Drops wurden **gestartet** im Kanal ${selectedChannel.name}!`, flags: MessageFlags.Ephemeral });
     }
 
     if (subcommand === "stop") {
       // Deaktivieren der Event-Drops im ausgewählten Kanal
       await EventDropAndUser.findOneAndUpdate({ event: "active" }, { status: "inactive", channelId: selectedChannel.id });
-      return interaction.reply({ content: `> \`✅\` » Die Gewinn-Drops wurden **gestoppt** im Kanal ${selectedChannel.name}!`, ephemeral: true });
+      return interaction.reply({ content: `> \`✅\` » Die Gewinn-Drops wurden **gestoppt** im Kanal ${selectedChannel.name}!`, flags: MessageFlags.Ephemeral });
     }
 
     if (subcommand === "check") {
       // Zeige die gesammelten Gewinne des Benutzers an
       const user = await EventDropAndUser.findOne({ userId: interaction.user.id });
       if (!user || !user.eventDrops || user.eventDrops.length === 0) {
-        return interaction.reply({ content: "> `❌` » Du hast noch keine Gewinne gesammelt.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Du hast noch keine Gewinne gesammelt.", flags: MessageFlags.Ephemeral });
       }
-      return interaction.reply({ content: `> \`📌\` » Deine gesammelten Gewinne: ${user.eventDrops.join(", ")}`, ephemeral: true });
+      return interaction.reply({ content: `> \`📌\` » Deine gesammelten Gewinne: ${user.eventDrops.join(", ")}`, flags: MessageFlags.Ephemeral });
     }
 
     if (subcommand === "reset") {
@@ -100,12 +100,12 @@ export default {
       const userToReset = await EventDropAndUser.findOne({ userId: targetUser.id });
 
       if (!userToReset || !userToReset.eventDrops || userToReset.eventDrops.length === 0) {
-        return interaction.reply({ content: "> `❌` » Dieser Benutzer hat keine Gewinne zu resetten.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Dieser Benutzer hat keine Gewinne zu resetten.", flags: MessageFlags.Ephemeral });
       }
 
       userToReset.eventDrops = [];
       await userToReset.save();
-      return interaction.reply({ content: `> \`✅\` » Die gesammelten Gewinne von ${targetUser.tag} wurden erfolgreich zurückgesetzt.`, ephemeral: true });
+      return interaction.reply({ content: `> \`✅\` » Die gesammelten Gewinne von ${targetUser.tag} wurden erfolgreich zurückgesetzt.`, flags: MessageFlags.Ephemeral });
     }
 
     // Preis zufällig aus den Levels 1 bis 5 auswählen
@@ -128,7 +128,7 @@ export default {
           await neuerNutzer.save();
           return interaction.reply({
             content: `> \`🏆\` » Du hast **${zufälligesLevel}** gewonnen!`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         } else {
           const zufälligeCoins = Math.floor(Math.random() * (5000 - 10 + 1)) + 10;
@@ -136,7 +136,7 @@ export default {
           await neuerNutzer.save();
           return interaction.reply({
             content: `> \`🪙\` » Du hast **${zufälligeCoins.toLocaleString("de-DE")} Coins** gewonnen!`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
       } else {
@@ -146,7 +146,7 @@ export default {
           await nutzer.save();
           return interaction.reply({
             content: `> \`🏆\` » Du hast **${zufälligesLevel}** gewonnen!`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         } else {
           const zufälligeCoins = Math.floor(Math.random() * (5000 - 10 + 1)) + 10;
@@ -154,7 +154,7 @@ export default {
           await nutzer.save();
           return interaction.reply({
             content: `> \`🪙\` » Du hast **${zufälligeCoins.toLocaleString("de-DE")} Coins** gewonnen!`,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
       }

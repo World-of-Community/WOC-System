@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
 
@@ -72,15 +72,15 @@ export default {
         embedToSend = RegelDMEmbed;
         break;
       default:
-        return interaction.reply({ content: "Ungültige Auswahl.", ephemeral: true });
+        return interaction.reply({ content: "Ungültige Auswahl.", flags: MessageFlags.Ephemeral });
     }
 
     try {
       await member.send({ embeds: [embedToSend] });
-      await interaction.reply({ content: `> \`✅\` » Das Test-Embed wurde an **${member.username}** (${member}) per DM gesendet.`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Das Test-Embed wurde an **${member.username}** (${member}) per DM gesendet.`, flags: MessageFlags.Ephemeral });
     } catch (error) {
       logger.error("Fehler beim Senden der DM:", error);
-      await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Senden der DM an **${member.username}**.`, ephemeral: true });
+      await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Senden der DM an **${member.username}**.`, flags: MessageFlags.Ephemeral });
     }
   },
 };

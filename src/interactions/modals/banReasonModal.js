@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
 import bandb from "#models/Ban.js";
 import Timeout from "#models/Timeout.js";
 import Warn from "#models/Warning.js";
@@ -67,10 +67,10 @@ export default {
       if (interaction.message) {
         await interaction.update({ embeds: [embed], components });
       } else {
-        await interaction.reply({ content: "Ban-Grund wurde aktualisiert.", ephemeral: true });
+        await interaction.reply({ content: "Ban-Grund wurde aktualisiert.", flags: MessageFlags.Ephemeral });
       }
     } catch {
-      await interaction.reply({ content: "Ban-Grund wurde aktualisiert.", ephemeral: true });
+      await interaction.reply({ content: "Ban-Grund wurde aktualisiert.", flags: MessageFlags.Ephemeral });
     }
   },
 };

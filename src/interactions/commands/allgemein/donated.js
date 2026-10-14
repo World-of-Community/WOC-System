@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import userDB from "#models/User.js";
 
 export default {
@@ -22,7 +22,7 @@ export default {
     const member = interaction.options.getUser("user");
     const userData = await userDB.findOne({userID: member.id});
 
-    if(!userData || !userData.donation) {return await interaction.reply({content: `> \`❌\` » ${member} hat aktuell noch nichts gespendet.`, ephemeral: true});}
+    if(!userData || !userData.donation) {return await interaction.reply({content: `> \`❌\` » ${member} hat aktuell noch nichts gespendet.`, flags: MessageFlags.Ephemeral});}
 
     const donateAmount = userData.donation.toLocaleString("de-DE") + "€";
 
@@ -34,6 +34,6 @@ export default {
       .setFooter({ text: `${interaction.guild.name} dankt dir für alle Spenden`, iconURL: `${interaction.guild.iconURL()}` })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [donateEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [donateEmbed], flags: MessageFlags.Ephemeral });
   },
 };

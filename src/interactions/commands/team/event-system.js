@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
 
 export default {
   name: "event-system",
@@ -45,6 +45,6 @@ export default {
       );
 
     await interaction.channel.send({ embeds: [eventEmbed], components: [buttons, buttons2] });
-    await interaction.reply({ content: "> `✅` » Das `Event-Embed` wurde erfolgreich gesendet", ephemeral: true });
+    await interaction.reply({ content: "> `✅` » Das `Event-Embed` wurde erfolgreich gesendet", flags: MessageFlags.Ephemeral });
   },
 };

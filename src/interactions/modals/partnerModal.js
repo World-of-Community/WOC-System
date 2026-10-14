@@ -1,98 +1,35 @@
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder,
-} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
+import { UserError } from "#core/errors.js";
 
 export default {
-  id: "partner",
+  id: "partner-modal",
 
   async run(client, interaction) {
-    // Partner-Modal absenden
-    if (
-      interaction.isModalSubmit() &&
-      interaction.customId === "partner-modal"
-    ) {
-      const partnerName = interaction.fields.getTextInputValue("partner-name");
-      const mitglieder = interaction.fields.getTextInputValue("partner-mitglieder");
-      const thema = interaction.fields.getTextInputValue("partner-thema");
-      const kategorie = interaction.fields.getTextInputValue("partner-kategorie");
-      const partnerBeschreibung = interaction.fields.getTextInputValue("partner-beschreibung");
+    const field = (name) => interaction.fields.getTextInputValue(name);
 
-      const channel = await interaction.client.channels.fetch(settings.get("channels.partnerApplications"));
+    const channel = await client.channels.fetch(settings.get("channels.partnerApplications")).catch(() => null);
+    if (!channel?.isTextBased()) {throw new UserError("> `❌` » Der Bewerbungs-Kanal ist nicht konfiguriert.");}
 
-      await channel.send({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("🤝 » NEUE SERVER PARTNER ANFRAGE")
-            .setDescription(
-              `${interaction.user} ((${interaction.user.username})) möchte sich als **Server-Partner** bewerben!\n\n` +
-                `> \`🔗\` **Server-Link**\n${partnerName}\n\n` +
-                `> \`👥\` **Mitgliederanzahl**\n${mitglieder}\n\n` +
-                `> \`🎮\` **Thema**\n${thema}\n\n` +
-                `> \`📁\` **Kategorie**\n${kategorie}\n\n` +
-                `> \`💬\` **Server-Beschreibung**\n${partnerBeschreibung}`,
-            )
-            .setColor("Orange")
-            .setTimestamp(),
-        ],
-        components: [
-          new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-              .setCustomId("partner_accept")
-              .setLabel("Akzeptieren")
-              .setStyle(ButtonStyle.Success),
+    const embed = new EmbedBuilder()
+      .setTitle("🤝 » NEUE SERVER PARTNER ANFRAGE")
+      .setDescription(
+        `${interaction.user} (${interaction.user.username}) möchte sich als **Server-Partner** bewerben!\n\n` +
+        `> \`🔗\` **Server-Link**\n${field("partner-name")}\n\n` +
+        `> \`👥\` **Mitgliederanzahl**\n${field("partner-mitglieder")}\n\n` +
+        `> \`🎮\` **Thema**\n${field("partner-thema")}\n\n` +
+        `> \`📁\` **Kategorie**\n${field("partner-kategorie")}\n\n` +
+        `> \`💬\` **Server-Beschreibung**\n${field("partner-beschreibung")}`,
+      )
+      .setColor("Orange")
+      .setTimestamp();
 
-            new ButtonBuilder()
-              .setCustomId("partner_deny")
-              .setLabel("Ablehnen")
-              .setStyle(ButtonStyle.Danger),
-          ),
-        ],
-      });
+    const buttons = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId("partner_accept").setLabel("Akzeptieren").setStyle(ButtonStyle.Success),
+      new ButtonBuilder().setCustomId("partner_deny").setLabel("Ablehnen").setStyle(ButtonStyle.Danger),
+    );
 
-      return interaction.reply({
-        content: "> `✅` » Deine Anfrage wurde abgesendet. Bitte habe etwas Geduld.",
-        ephemeral: true,
-      });
-    }
-
-    // Partneranfrage annehmen oder ablehnen
-    if (
-      interaction.isButton() &&
-      ["partner_accept", "partner_deny"].includes(interaction.customId)
-    ) {
-      const angenommen = interaction.customId === "partner_accept";
-      const embed = EmbedBuilder.from(interaction.message.embeds[0]);
-
-      embed.setDescription(
-        `${embed.data.description}\n\n` +
-          `> ${angenommen ? "✅" : "❌"} **Status**\n` +
-          `Die Anfrage wurde von ${interaction.user} **${
-            angenommen ? "angenommen" : "abgelehnt"
-          }**.`,
-      );
-
-      const buttons = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId("partner_accept")
-          .setLabel(angenommen ? "Angenommen" : "Akzeptieren")
-          .setStyle(ButtonStyle.Success)
-          .setDisabled(true),
-
-        new ButtonBuilder()
-          .setCustomId("partner_deny")
-          .setLabel(angenommen ? "Ablehnen" : "Abgelehnt")
-          .setStyle(ButtonStyle.Danger)
-          .setDisabled(true),
-      );
-
-      return interaction.update({
-        embeds: [embed],
-        components: [buttons],
-      });
-    }
+    await channel.send({ embeds: [embed], components: [buttons] });
+    await interaction.reply({ content: "> `✅` » Deine Anfrage wurde abgesendet. Bitte habe etwas Geduld.", flags: MessageFlags.Ephemeral });
   },
 };

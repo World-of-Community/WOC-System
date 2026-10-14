@@ -1,4 +1,4 @@
-import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags } from "discord.js";
 import giveawaydb from "#models/Giveaway.js";
 import userdb from "#models/User.js";
 import serverdb from "#models/Guild.js";
@@ -58,7 +58,7 @@ export default {
     if (giveaway.endTime !== null) {throw new UserError("> `❌` » Das Gewinnspiel wurde schon beendet!");}
 
     if (giveaway.teilnehmer.includes(interaction.user.id)) {
-      await interaction.reply({ content: "> `❌` » Du nimmst bereits am Gewinnspiel teil!", components: [leaveRow(giveaway.msgID)], ephemeral: true });
+      await interaction.reply({ content: "> `❌` » Du nimmst bereits am Gewinnspiel teil!", components: [leaveRow(giveaway.msgID)], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -86,6 +86,6 @@ export default {
     }
     await interaction.message.edit(edit);
 
-    await interaction.reply({ content: "> `✅` » **Teilnahme erfolgreich**: Ich habe dich erfolgreich als Teilnehmer des Gewinnspiels eingetragen! <a:Gewinnspiel:1148705932231057598>", ephemeral: true });
+    await interaction.reply({ content: "> `✅` » **Teilnahme erfolgreich**: Ich habe dich erfolgreich als Teilnehmer des Gewinnspiels eingetragen! <a:Gewinnspiel:1148705932231057598>", flags: MessageFlags.Ephemeral });
   },
 };

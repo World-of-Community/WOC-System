@@ -1,11 +1,11 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import Meeting from "#models/Meeting.js";
 
 export default {
   id: "meeting_show",
   async run(client, interaction) {
     const meeting = await Meeting.findOne({ guildId: interaction.guildId, messageId: interaction.message.id });
-    if (!meeting) {return interaction.reply({ content: "> `❌` Team-Meeting nicht gefunden.", ephemeral: true });}
+    if (!meeting) {return interaction.reply({ content: "> `❌` Team-Meeting nicht gefunden.", flags: MessageFlags.Ephemeral });}
 
     const now = new Date();
     const formattedDate = now.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -30,6 +30,6 @@ export default {
       .setFooter({ text: `Stand: ${formattedDate} ${formattedTime}` })
       .setTimestamp();
 
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    return interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   },
 };

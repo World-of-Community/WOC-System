@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import ms from "ms";
 import bandb from "#models/Ban.js";
 import logger from "#core/logger.js";
@@ -103,11 +103,11 @@ export default {
   async run(client, interaction) {
     const member = interaction.options.getMember("user");
     if (!member) {
-      return interaction.reply({ content: "> `❌` » Der Benutzer konnte nicht gefunden werden.", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Der Benutzer konnte nicht gefunden werden.", flags: MessageFlags.Ephemeral });
     }
 
     if (!member.bannable) {
-      return interaction.reply({ content: "> `❌` » Ich kann diesen Benutzer nicht bannen.", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Ich kann diesen Benutzer nicht bannen.", flags: MessageFlags.Ephemeral });
     }
 
     const selectedReason = interaction.options.getString("grund");
@@ -127,7 +127,7 @@ export default {
     if (!newmemberRole) {missing.push("Neue Mitglieder-Rolle");}
     if (!thread) {missing.push("Log-Thread");}
     if (missing.length > 0) {
-      return interaction.reply({ content: `> \`❌\` » Folgendes wurde nicht gefunden: ${missing.join(", ")}`, ephemeral: true });
+      return interaction.reply({ content: `> \`❌\` » Folgendes wurde nicht gefunden: ${missing.join(", ")}`, flags: MessageFlags.Ephemeral });
     }
 
     const durationMs = durationInput !== "PERMANENT" ? ms(durationInput) : null;
@@ -143,7 +143,7 @@ export default {
       await member.roles.remove(memberRole).catch(() => { });
       await member.roles.remove(newmemberRole).catch(() => { });
     } catch {
-      return interaction.reply({ content: "> `❌` » Fehler beim Zuweisen oder Entfernen von Rollen.", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Fehler beim Zuweisen oder Entfernen von Rollen.", flags: MessageFlags.Ephemeral });
     }
 
     const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
@@ -168,10 +168,10 @@ export default {
       }).save();
     } catch (err) {
       logger.error("Fehler beim Speichern des Banns in der Datenbank:", err);
-      return interaction.reply({ content: "> `❌` » Fehler beim Speichern des Banns in der Datenbank. Details in der Konsole.", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Fehler beim Speichern des Banns in der Datenbank. Details in der Konsole.", flags: MessageFlags.Ephemeral });
     }
 
     await thread.send({ embeds: [banEmbed] });
-    await interaction.reply({ content: `> \`✅\` » ${member} wurde erfolgreich gebannt.`, ephemeral: true });
+    await interaction.reply({ content: `> \`✅\` » ${member} wurde erfolgreich gebannt.`, flags: MessageFlags.Ephemeral });
   },
 };

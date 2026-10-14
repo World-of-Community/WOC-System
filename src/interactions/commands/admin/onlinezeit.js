@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import userdb from "#models/User.js";
 import logger from "#core/logger.js";
 
@@ -100,7 +101,7 @@ export default {
       switch (subcommand) {
         case "add": {
           const hours = interaction.options.getInteger("stunden");
-          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", ephemeral: true });}
+          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", flags: MessageFlags.Ephemeral });}
 
           const ms = hours * 3600000;
           userData.onlineTime = (userData.onlineTime || 0) + ms;
@@ -110,7 +111,7 @@ export default {
 
         case "remove": {
           const hours = interaction.options.getInteger("stunden");
-          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", ephemeral: true });}
+          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", flags: MessageFlags.Ephemeral });}
 
           const ms = hours * 3600000;
           userData.onlineTime = Math.max(0, (userData.onlineTime || 0) - ms);
@@ -120,7 +121,7 @@ export default {
 
         case "set": {
           const hours = interaction.options.getInteger("stunden");
-          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", ephemeral: true });}
+          if (hours < 0) {return interaction.reply({ content: "> `❌` » Stunden dürfen nicht negativ sein.", flags: MessageFlags.Ephemeral });}
 
           userData.onlineTime = hours * 3600000;
           message = `> \`✅\` » Die Onlinezeit von <@${user.id}> wurde auf \`${hours}h\` gesetzt.`;
@@ -146,11 +147,11 @@ export default {
       userData.lastOnline = new Date();
       await userData.save();
 
-      await interaction.reply({ content: message, ephemeral: true });
+      await interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
 
     } catch (err) {
       logger.error("Fehler bei /onlinezeit-manage:", err);
-      await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
+      await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", flags: MessageFlags.Ephemeral });
     }
   },
 };

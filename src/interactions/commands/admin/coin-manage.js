@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 export default {
@@ -28,7 +29,7 @@ export default {
     if (min < 0 || max < 1 || min > max) {
       return interaction.reply({
         content: "> `⛔` » Ungültige Eingaben. Bitte stelle sicher, dass `min ≥ 0`, `max ≥ 1` und `min ≤ max` ist.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
     await settings.set("coins.min", min, interaction.user.id);
@@ -37,7 +38,7 @@ export default {
     // Antwort
     await interaction.reply({
       content: `> \`✅\` » Der Coin-Generator wurde aktualisiert:\n> Es werden nun **zwischen ${min.toLocaleString("de-DE")} und ${max.toLocaleString("de-DE")} Coins** alle **3 Sekunden** generiert.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

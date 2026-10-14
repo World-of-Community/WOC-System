@@ -1,4 +1,4 @@
-import { ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType } from "discord.js";
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 export default {
@@ -9,14 +9,14 @@ export default {
   options: [],
 
   async run(client, interaction) {
-    if (interaction.channel.type !== ChannelType.PublicThread) {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", ephemeral: true});}
-    if (interaction.channel.parentId !== settings.get("channels.suggestions")) {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", ephemeral: true});}
+    if (interaction.channel.type !== ChannelType.PublicThread) {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", flags: MessageFlags.Ephemeral});}
+    if (interaction.channel.parentId !== settings.get("channels.suggestions")) {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", flags: MessageFlags.Ephemeral});}
     const message = await interaction.channel.fetchStarterMessage();
     const vorschlagsembed = message.embeds[0];
 
-    if (vorschlagsembed.color === "Green") {return await interaction.reply({ content: "> `❌` » Der Vorschlag wurde bereits akzeptiert.", ephemeral: true });}
-    if (vorschlagsembed.color === "Grey") {return await interaction.reply({ content: "> `❌` » Der Vorschlag wurde bereits in Planung gesetzt.", ephemeral: true });}
-    if (vorschlagsembed.color === "Red") {return await interaction.reply({ content: "> `❌` » Der Vorschlag wurde bereits abgelehnt.", ephemeral: true });}
+    if (vorschlagsembed.color === "Green") {return await interaction.reply({ content: "> `❌` » Der Vorschlag wurde bereits akzeptiert.", flags: MessageFlags.Ephemeral });}
+    if (vorschlagsembed.color === "Grey") {return await interaction.reply({ content: "> `❌` » Der Vorschlag wurde bereits in Planung gesetzt.", flags: MessageFlags.Ephemeral });}
+    if (vorschlagsembed.color === "Red") {return await interaction.reply({ content: "> `❌` » Der Vorschlag wurde bereits abgelehnt.", flags: MessageFlags.Ephemeral });}
 
 
     const accept = new ButtonBuilder()
@@ -42,6 +42,6 @@ export default {
 
     const row = new ActionRowBuilder().addComponents(accept, edit, duplicate, delice);
 
-    await interaction.reply({ content: "> `💡` » Wähle eine Aktion aus.", components: [row], ephemeral: true });
+    await interaction.reply({ content: "> `💡` » Wähle eine Aktion aus.", components: [row], flags: MessageFlags.Ephemeral });
   },
 };

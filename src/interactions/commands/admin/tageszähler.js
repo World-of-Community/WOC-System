@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 
 const reminders = new Map(); // aktive Reminder / Intervalle
@@ -100,7 +100,7 @@ export default {
     if (!startDate || !endDate) {
       return interaction.reply({
         content: "> `❌` » Bitte benutze das Format: DD.MM.YYYY",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -112,7 +112,7 @@ export default {
 
       await interaction.reply({
         content: "> `✅` » Ich habe dir eine DM mit dem Tageszähler geschickt!",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
 
       // Intervall alle Minute starten
@@ -145,7 +145,7 @@ export default {
       logger.error(err);
       await interaction.reply({
         content: "> `❌` » Ich konnte dir keine DM senden. Bitte aktiviere deine Direktnachrichten.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

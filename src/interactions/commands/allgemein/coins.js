@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js";
 
 export default {
@@ -19,7 +19,7 @@ export default {
 
     // Bots ignorieren
     if (user.bot) {
-      return interaction.reply({ content: "> `❌` » Bots können keine Coins haben.", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Bots können keine Coins haben.", flags: MessageFlags.Ephemeral });
     }
 
     // Suche nach den Coins des Benutzers in der Datenbank
@@ -43,6 +43,6 @@ export default {
       .setFooter({ text: `» ${interaction.guild.name} | Coin-System`, iconURL: interaction.guild.iconURL() })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [CoinEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [CoinEmbed], flags: MessageFlags.Ephemeral });
   },
 };

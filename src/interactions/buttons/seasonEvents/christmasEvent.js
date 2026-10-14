@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { eventPeriods, isEventActive } from "#systems/seasonEvents.js";
 
 export default {
@@ -9,6 +9,6 @@ export default {
       .setDescription(isEventActive(eventPeriods.christmas) ? "**Das Weihnachts-Event ist aktiv! Genieße die festliche Stimmung!**" : "**Dieses Event findet erst zwischen dem `20. Dezember` und dem `26. Dezember` statt!**")
       .setColor("DarkBlue");
 
-    await interaction.reply({ embeds: [WeihnachtsEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [WeihnachtsEmbed], flags: MessageFlags.Ephemeral });
   },
 };

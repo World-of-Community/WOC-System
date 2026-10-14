@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 export default {
   name: "message-edit",
@@ -37,7 +38,7 @@ export default {
     if (!channel.isTextBased()) {
       return await interaction.reply({
         content: "> `❌` » Der angegebene Kanal unterstützt keine Nachrichten.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -45,7 +46,7 @@ export default {
     if (newContent.length > 2000) {
       return await interaction.reply({
         content: "> `❌` » Der neue Inhalt darf maximal 2000 Zeichen enthalten.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -57,7 +58,7 @@ export default {
       if (fetchedMessage.author.id !== interaction.client.user.id) {
         return await interaction.reply({
           content: "> `❌` » Der Bot kann nur seine eigenen Nachrichten bearbeiten.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -66,13 +67,13 @@ export default {
 
       await interaction.reply({
         content: "> `✅` » Die Nachricht wurde erfolgreich bearbeitet.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
       logger.error(`Fehler beim Bearbeiten der Nachricht (${messageId}) im Kanal (${channel.id}):`, error);
       await interaction.reply({
         content: "> `❌` » Ein Fehler ist beim Bearbeiten der Nachricht aufgetreten. Stelle sicher, dass die ID korrekt ist und der Bot Zugriff hat.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

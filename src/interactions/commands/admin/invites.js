@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import userdb from "#models/User.js";
 
 export default {
@@ -71,6 +71,6 @@ export default {
       .setFooter({ text: `Aktualisiert von ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [InviteEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [InviteEmbed], flags: MessageFlags.Ephemeral });
   },
 };

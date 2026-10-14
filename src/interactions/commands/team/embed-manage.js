@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 
 const colorMap = {
@@ -164,7 +164,7 @@ export default {
       if (footer) {embed.setFooter({ text: footer, iconURL: interaction.guild.iconURL({ dynamic: true }) || "" });}
 
       await channel.send({ embeds: [embed] });
-      return interaction.reply({ content: "> ✅ » Embed erfolgreich erstellt.", ephemeral: true });
+      return interaction.reply({ content: "> ✅ » Embed erfolgreich erstellt.", flags: MessageFlags.Ephemeral });
     }
 
     if (sub === "edit") {
@@ -186,10 +186,10 @@ export default {
         if (footer) {embed.setFooter({ text: footer, iconURL: interaction.guild.iconURL({ dynamic: true }) || "" });}
 
         await message.edit({ embeds: [embed] });
-        return interaction.reply({ content: "> ✅ » Embed erfolgreich bearbeitet.", ephemeral: true });
+        return interaction.reply({ content: "> ✅ » Embed erfolgreich bearbeitet.", flags: MessageFlags.Ephemeral });
       } catch (err) {
         logger.error(err);
-        return interaction.reply({ content: "> ❌ » Fehler: Nachricht nicht gefunden oder Bearbeitung fehlgeschlagen.", ephemeral: true });
+        return interaction.reply({ content: "> ❌ » Fehler: Nachricht nicht gefunden oder Bearbeitung fehlgeschlagen.", flags: MessageFlags.Ephemeral });
       }
     }
   },

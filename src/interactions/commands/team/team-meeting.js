@@ -1,4 +1,4 @@
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
 import Meeting from "#models/Meeting.js";
 import logger from "#core/logger.js";
 
@@ -86,7 +86,7 @@ export default {
       const datumStr = interaction.options.getString("datum");
       const dateObj = parseDate(datumStr);
       if (!dateObj || isNaN(dateObj.getTime())) {
-        return interaction.reply({ content: "> `❌` » Ungültiges Datum. Bitte Format: TT.MM.JJJJ HH:mm", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Ungültiges Datum. Bitte Format: TT.MM.JJJJ HH:mm", flags: MessageFlags.Ephemeral });
       }
       const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
 
@@ -129,10 +129,10 @@ export default {
         });
         await newMeeting.save();
 
-        await interaction.reply({ content: "> `✅` » Team-Meeting wurde erfolgreich erstellt!", ephemeral: true });
+        await interaction.reply({ content: "> `✅` » Team-Meeting wurde erfolgreich erstellt!", flags: MessageFlags.Ephemeral });
       } catch (error) {
         logger.error("Fehler beim Erstellen des Meetings:", error);
-        return interaction.reply({ content: "> `❌` » Fehler beim Erstellen des Meetings.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Fehler beim Erstellen des Meetings.", flags: MessageFlags.Ephemeral });
       }
     }
     else if (sub === "edit") {
@@ -142,7 +142,7 @@ export default {
 
       const dateObj = parseDate(datumStr);
       if (!dateObj || isNaN(dateObj.getTime())) {
-        return interaction.reply({ content: "> `❌` » Ungültiges Datum. Bitte Format: TT.MM.JJJJ HH:mm", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Ungültiges Datum. Bitte Format: TT.MM.JJJJ HH:mm", flags: MessageFlags.Ephemeral });
       }
       const unixTimestamp = Math.floor(dateObj.getTime() / 1000);
 
@@ -153,7 +153,7 @@ export default {
         meeting = await Meeting.findOne({ guildId: interaction.guildId }).sort({ _id: -1 });
       }
 
-      if (!meeting) {return interaction.reply({ content: "> `❌` » Kein Team-Meeting gefunden.", ephemeral: true });}
+      if (!meeting) {return interaction.reply({ content: "> `❌` » Kein Team-Meeting gefunden.", flags: MessageFlags.Ephemeral });}
 
       meeting.description = description;
       meeting.time = dateObj;  // Update als Date
@@ -189,10 +189,10 @@ export default {
 
         await msg.edit({ embeds: [embed], components: [row] });
 
-        await interaction.reply({ content: "> `✅` » Team-Meeting wurde erfolgreich bearbeitet!", ephemeral: true });
+        await interaction.reply({ content: "> `✅` » Team-Meeting wurde erfolgreich bearbeitet!", flags: MessageFlags.Ephemeral });
       } catch (error) {
         logger.error("Fehler beim Bearbeiten des Meetings:", error);
-        return interaction.reply({ content: "> `❌` » Fehler beim Bearbeiten des Meetings.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Fehler beim Bearbeiten des Meetings.", flags: MessageFlags.Ephemeral });
       }
     }
     else if (sub === "remove") {
@@ -204,7 +204,7 @@ export default {
       } else {
         meeting = await Meeting.findOne({ guildId: interaction.guildId }).sort({ _id: -1 });
       }
-      if (!meeting) {return interaction.reply({ content: "> `❌` » Kein Team-Meeting gefunden.", ephemeral: true });}
+      if (!meeting) {return interaction.reply({ content: "> `❌` » Kein Team-Meeting gefunden.", flags: MessageFlags.Ephemeral });}
 
       try {
         const channel = await interaction.guild.channels.fetch(meeting.channelId);
@@ -216,7 +216,7 @@ export default {
 
       await meeting.deleteOne();
 
-      await interaction.reply({ content: "> `✅` » Team-Meeting wurde erfolgreich gelöscht!", ephemeral: true });
+      await interaction.reply({ content: "> `✅` » Team-Meeting wurde erfolgreich gelöscht!", flags: MessageFlags.Ephemeral });
     }
   },
 };

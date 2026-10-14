@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import schedule from "node-schedule";
 import teamDB from "#models/TeamMember.js";
 import serverDB from "#models/Guild.js";
@@ -130,14 +131,14 @@ export async function handleMeetingButton(interaction, action) {
 
   const dateMatch = interaction.message.embeds[0]?.description?.match(/Datum:\s*(.*)\n/);
   if (!dateMatch) {
-    await interaction.reply({ content: "> `❌` » Meeting-Datum konnte nicht extrahiert werden.", ephemeral: true });
+    await interaction.reply({ content: "> `❌` » Meeting-Datum konnte nicht extrahiert werden.", flags: MessageFlags.Ephemeral });
     return;
   }
 
   const meetingDate = new Date(dateMatch[1]);
   const server = await serverDB.findOne({ "meetings.date": meetingDate });
   if (!server) {
-    await interaction.reply({ content: "> `❌` » Meeting nicht gefunden.", ephemeral: true });
+    await interaction.reply({ content: "> `❌` » Meeting nicht gefunden.", flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -149,35 +150,35 @@ export async function handleMeetingButton(interaction, action) {
     case "remindMe":
       if (isReminderSet) {
         await serverDB.updateOne({ "meetings.date": meetingDate }, { $pull: { "meetings.$.reminders": userId } });
-        await interaction.reply({ content: "> `🔕` » Deine Erinnerung an das Meeting wurde deaktiviert.", ephemeral: true });
+        await interaction.reply({ content: "> `🔕` » Deine Erinnerung an das Meeting wurde deaktiviert.", flags: MessageFlags.Ephemeral });
       } else {
         await serverDB.updateOne({ "meetings.date": meetingDate }, { $addToSet: { "meetings.$.reminders": userId } });
-        await interaction.reply({ content: "> `🔔` » Du wirst 10 Minuten vor dem Meeting erinnert.", ephemeral: true });
+        await interaction.reply({ content: "> `🔔` » Du wirst 10 Minuten vor dem Meeting erinnert.", flags: MessageFlags.Ephemeral });
       }
       break;
 
     case "attend":
       if (isAttending) {
-        await interaction.reply({ content: "> `⚠️` » Du hast bereits deine Teilnahme bestätigt.", ephemeral: true });
+        await interaction.reply({ content: "> `⚠️` » Du hast bereits deine Teilnahme bestätigt.", flags: MessageFlags.Ephemeral });
         break;
       }
       await serverDB.updateOne(
         { "meetings.date": meetingDate },
         { $addToSet: { "meetings.$.attendees": userId }, $pull: { "meetings.$.nonAttendees": userId } },
       );
-      await interaction.reply({ content: "> `✅` » Du hast deine Teilnahme bestätigt.", ephemeral: true });
+      await interaction.reply({ content: "> `✅` » Du hast deine Teilnahme bestätigt.", flags: MessageFlags.Ephemeral });
       break;
 
     case "decline":
       if (isNonAttending) {
-        await interaction.reply({ content: "> `⚠️` » Du hast bereits deine Teilnahme abgelehnt.", ephemeral: true });
+        await interaction.reply({ content: "> `⚠️` » Du hast bereits deine Teilnahme abgelehnt.", flags: MessageFlags.Ephemeral });
         break;
       }
       await serverDB.updateOne(
         { "meetings.date": meetingDate },
         { $addToSet: { "meetings.$.nonAttendees": userId }, $pull: { "meetings.$.attendees": userId } },
       );
-      await interaction.reply({ content: "> `❌` » Du hast deine Teilnahme abgelehnt.", ephemeral: true });
+      await interaction.reply({ content: "> `❌` » Du hast deine Teilnahme abgelehnt.", flags: MessageFlags.Ephemeral });
       break;
   }
 }

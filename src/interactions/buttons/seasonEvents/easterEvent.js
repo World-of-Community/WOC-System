@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { eventPeriods, isEventActive } from "#systems/seasonEvents.js";
 
 export default {
@@ -9,6 +9,6 @@ export default {
       .setDescription(isEventActive(eventPeriods.easter) ? "**Das Oster-Event ist aktuell aktiv! Viel Spaß beim Sammeln der Oster-Eier!**" : "**Dieses Event startet erst zwischen den Monaten `März` und `April`!**")
       .setColor("Green");
 
-    await interaction.reply({ embeds: [OsterEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [OsterEmbed], flags: MessageFlags.Ephemeral });
   },
 };

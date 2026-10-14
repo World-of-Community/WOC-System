@@ -1,4 +1,4 @@
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, MessageFlags } from "discord.js";
 
 import Timeout from "#models/Timeout.js";
 import Warn from "#models/Warning.js";
@@ -123,14 +123,14 @@ export default {
     // ───────────── NOTE ADD ─────────────
     if (sub === "note-add") {
       if (!hasModPerm)
-      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", flags: MessageFlags.Ephemeral });}
 
       const user = interaction.options.getUser("user");
       const text = interaction.options.getString("text");
       const proof = interaction.options.getAttachment("beweis");
 
       if (text.length > 4000)
-      {return interaction.reply({ content: "> `❌` » Max. 4000 Zeichen.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Max. 4000 Zeichen.", flags: MessageFlags.Ephemeral });}
 
       await Note.create({
         userId: user.id,
@@ -142,52 +142,52 @@ export default {
 
       return interaction.reply({
         content: `> \`📝\` » Notiz für **${user.username}** erfolgreich gespeichert.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     // ───────────── NOTE EDIT ─────────────
     if (sub === "note-edit") {
       if (!hasModPerm)
-      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", flags: MessageFlags.Ephemeral });}
 
       const noteId = interaction.options.getString("noteid");
       const newText = interaction.options.getString("text");
 
       const note = await Note.findOne({ _id: noteId, guildId: interaction.guild.id });
       if (!note)
-      {return interaction.reply({ content: "> `❌` » Notiz nicht gefunden.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Notiz nicht gefunden.", flags: MessageFlags.Ephemeral });}
 
       note.note = newText;
       await note.save();
 
       return interaction.reply({
         content: `> \`✏️\` » Notiz **\`${noteId}\`** erfolgreich bearbeitet.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     // ───────────── NOTE DELETE ─────────────
     if (sub === "note-delete") {
       if (!hasModPerm)
-      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", flags: MessageFlags.Ephemeral });}
 
       const noteId = interaction.options.getString("noteid");
 
       const deleted = await Note.findOneAndDelete({ _id: noteId, guildId: interaction.guild.id });
       if (!deleted)
-      {return interaction.reply({ content: "> `❌` » Notiz nicht gefunden.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Notiz nicht gefunden.", flags: MessageFlags.Ephemeral });}
 
       return interaction.reply({
         content: `> \`🗑️\` » Notiz **\`${noteId}\`** gelöscht.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     // ───────────── NOTE CLEAR ─────────────
     if (sub === "note-clear") {
       if (!hasModPerm)
-      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", ephemeral: true });}
+      {return interaction.reply({ content: "> `❌` » Keine Berechtigung.", flags: MessageFlags.Ephemeral });}
 
       const user = interaction.options.getUser("user");
 
@@ -198,7 +198,7 @@ export default {
 
       return interaction.reply({
         content: `> \`🗑️\` » Alle Notizen für **${user.username}** gelöscht.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -210,7 +210,7 @@ export default {
       if (!/^\d+$/.test(userId)) {
         return interaction.reply({
           content: "> `❌` » Ungültige User-ID.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -220,7 +220,7 @@ export default {
       } catch {
         return interaction.reply({
           content: "> `❌` » Kein User mit dieser ID gefunden.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -238,7 +238,7 @@ export default {
         )
         .setTimestamp();
 
-      return interaction.reply({ embeds: [embed], ephemeral: true });
+      return interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
     }
 
     // ───────────── INFO ─────────────
@@ -249,7 +249,7 @@ export default {
       if (!user && !userIdInput) {
         return interaction.reply({
           content: "> `❌` » Bitte User oder User-ID angeben.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -259,7 +259,7 @@ export default {
         } catch {
           return interaction.reply({
             content: "> `❌` » User mit dieser ID nicht gefunden.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
       }
@@ -324,7 +324,7 @@ export default {
             .setStyle(ButtonStyle.Danger),
         );
 
-      return interaction.reply({ embeds: [embed], components: [buttonRow], ephemeral: true });
+      return interaction.reply({ embeds: [embed], components: [buttonRow], flags: MessageFlags.Ephemeral });
     }
   },
 };

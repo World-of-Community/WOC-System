@@ -4,13 +4,15 @@
 // Deploy loop: download the latest main, install dependencies if they changed, start the bot.
 // When the bot exits with code 0 (e.g. /restart) the update runs again; on a crash it restarts
 // with backoff. Run with `node update.js` on the server; the bot itself is started as a child.
-import "dotenv/config";
+import dotenv from "dotenv";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import crypto from "node:crypto";
 import { spawn } from "node:child_process";
 import * as tar from "tar";
+
+dotenv.config({ quiet: true });
 
 const OWNER = "World-of-Community";
 const REPO = "WOC-System";

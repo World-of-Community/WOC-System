@@ -1,6 +1,6 @@
 // test
 
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js";
 import userDB from "#models/User.js";
 
@@ -33,7 +33,7 @@ export default {
   ],
 
   async run(client, interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const category = interaction.options.getString("kategorie");
 

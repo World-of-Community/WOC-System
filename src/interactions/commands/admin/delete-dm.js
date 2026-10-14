@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 export default {
   name: "delete-dm",
@@ -25,10 +26,10 @@ export default {
       const message = await dmChannel.messages.fetch(messageId);
 
       await message.delete();
-      await interaction.reply({ content: "> `✅` » Nachricht erfolgreich gelöscht.", ephemeral: true });
+      await interaction.reply({ content: "> `✅` » Nachricht erfolgreich gelöscht.", flags: MessageFlags.Ephemeral });
     } catch (error) {
       logger.error(error);
-      await interaction.reply({ content: "> `❌` » Nachricht konnte nicht gelöscht werden. Prüfe die ID.", ephemeral: true });
+      await interaction.reply({ content: "> `❌` » Nachricht konnte nicht gelöscht werden. Prüfe die ID.", flags: MessageFlags.Ephemeral });
     }
   },
 };

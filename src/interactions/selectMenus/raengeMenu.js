@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 export default {
@@ -65,7 +65,7 @@ export default {
           .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539322429581688884/image.png?ex=6a8e76fa&is=6a8d257a&hm=4c39c912ab0faeaeb9df82e0a15ca6dd095a19d1b6dda1abbe2cfbc4b93acdb6&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
-        await interaction.reply({ embeds: [serverEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [serverEmbed], flags: MessageFlags.Ephemeral });
       } break;
 
       case "minecraft": {
@@ -108,7 +108,7 @@ export default {
           .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1541857396941393962/WOC_Banner_Minecraft_Range.png?ex=6a8f1e19&is=6a8dcc99&hm=38022366bfbdbdc181f9319347589e03346fd8662a177fcec308090647704fe1&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
-        await interaction.reply({ embeds: [spielerEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [spielerEmbed], flags: MessageFlags.Ephemeral });
       } break;
 
       case "level": {
@@ -161,7 +161,7 @@ export default {
           .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1541857231832612945/WOC_Banner_Levelsystem.jpg?ex=6a8f1df2&is=6a8dcc72&hm=d3167878dc7bbabd8213537948c4984d9026ddb84105c329608afd599e67656d&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
-        await interaction.reply({ embeds: [levelEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [levelEmbed], flags: MessageFlags.Ephemeral });
       } break;
 
       case "exklusiv": {
@@ -222,7 +222,7 @@ export default {
           .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321628972818522/image.png?ex=6a8e763b&is=6a8d24bb&hm=9417739db302b8bfe278815640f691a8de617dce0b241945685962f0ca9ea327&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
-        await interaction.reply({ embeds: [exklusiveEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [exklusiveEmbed], flags: MessageFlags.Ephemeral });
       } break;
 
       case "team": {
@@ -281,7 +281,7 @@ export default {
           .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321535632900188/image.png?ex=6a8e7625&is=6a8d24a5&hm=69b32dabe1c3dcb7a4c8706d613ff9ad776c527cd6563fafdf6aa760c6d6eebe&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
-        await interaction.reply({ embeds: [teamEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [teamEmbed], flags: MessageFlags.Ephemeral });
       } break;
 
       case "bot": {
@@ -304,7 +304,7 @@ export default {
           .setImage("https://cdn.discordapp.com/attachments/1539321113010765924/1539321673927622676/image.png?ex=6a8e7646&is=6a8d24c6&hm=de2cc77ff112df59355a1c55bebe0ee330fc63724cbc9ea9305a1ad18f2cb392&")
           .setFooter({ text: "Öffne ein Ticket im Support bei Fragen oder Problemen.", iconURL: "https://cdn.discordapp.com/attachments/969637733033205851/1117815438177480754/WOC_Orange.png" })
           .setTimestamp();
-        await interaction.reply({ embeds: [botEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [botEmbed], flags: MessageFlags.Ephemeral });
       } break;
     }
   },

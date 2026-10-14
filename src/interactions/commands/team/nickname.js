@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 export default {
   name: "nick",
@@ -45,21 +46,21 @@ export default {
     const member = interaction.guild.members.cache.get(user.id);
 
     if (!member) {
-      return interaction.reply({ content: "> `❌` » Benutzer nicht gefunden.", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Benutzer nicht gefunden.", flags: MessageFlags.Ephemeral });
     }
 
     try {
       if (subcommand === "set") {
         const nickname = interaction.options.getString("nickname");
         await member.setNickname(nickname);
-        await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.username}\` wurde erfolgreich auf \`${nickname}\` gesetzt.`, ephemeral: true });
+        await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.username}\` wurde erfolgreich auf \`${nickname}\` gesetzt.`, flags: MessageFlags.Ephemeral });
       } else if (subcommand === "remove") {
         await member.setNickname(null);
-        await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.username}\` wurde erfolgreich entfernt.`, ephemeral: true });
+        await interaction.reply({ content: `> \`✅\` » Der Nickname von \`${user.username}\` wurde erfolgreich entfernt.`, flags: MessageFlags.Ephemeral });
       }
     } catch (error) {
       logger.error(error);
-      await interaction.reply({ content: "> `❌` » Ich habe keine Berechtigung, den Nicknamen dieses Benutzers zu ändern.", ephemeral: true });
+      await interaction.reply({ content: "> `❌` » Ich habe keine Berechtigung, den Nicknamen dieses Benutzers zu ändern.", flags: MessageFlags.Ephemeral });
     }
   },
 };

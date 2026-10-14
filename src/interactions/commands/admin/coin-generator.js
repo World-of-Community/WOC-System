@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
@@ -36,13 +36,13 @@ export default {
       if (min > max || min < 0 || max < 1) {
         return interaction.reply({
           content: "> `⛔` » Ungültige Coin-Konfiguration. Bitte überprüfe die Einstellungen mit `/coin-manage`.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
       await interaction.reply({
         content: `> \`⏳\` » Starte Coin-Generator für <@${targetMember.id}> für **1 Minute**...`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
 
       const interval = setInterval(async () => {
@@ -85,7 +85,7 @@ export default {
     } catch (error) {
       logger.error("Fehler im Coin-Generator:", error);
       if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content: "> `❌` » Ein unerwarteter Fehler ist aufgetreten.", ephemeral: true });
+        await interaction.reply({ content: "> `❌` » Ein unerwarteter Fehler ist aufgetreten.", flags: MessageFlags.Ephemeral });
       }
     }
   },

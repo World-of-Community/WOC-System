@@ -1,4 +1,4 @@
-import { ActivityType } from "discord.js";
+import { ActivityType, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 
 let statusInterval; // globale Variable zum Speichern des Intervalls
@@ -102,7 +102,7 @@ export default {
 
         await interaction.reply({
           content: "Status wurde auf Standard zurückgesetzt. Automatischer Statuswechsel läuft wieder.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       } else {
         // Manuellen Status setzen, automatischen Statuswechsel stoppen
@@ -115,12 +115,12 @@ export default {
 
         await interaction.reply({
           content: `Benutzerdefinierter Status gesetzt: **${status}**\nOnline-Status: **${presence}**`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     } catch (error) {
       logger.error(error);
-      await interaction.reply({ content: "Fehler beim Setzen des Status.", ephemeral: true });
+      await interaction.reply({ content: "Fehler beim Setzen des Status.", flags: MessageFlags.Ephemeral });
     }
   },
   // Exportiere auch startStatusCycle, damit du ihn beim Bot-Start aufrufen kannst

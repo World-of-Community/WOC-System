@@ -1,4 +1,4 @@
-import { EmbedBuilder, ChannelType } from "discord.js";
+import { EmbedBuilder, ChannelType, MessageFlags } from "discord.js";
 import client from "#client";
 import vorschlagEmitter from "./vorschlagEmitter.js";
 import logger from "#core/logger.js";
@@ -102,7 +102,7 @@ export async function finalizeVorschlag(interaction, {
   const message = await channel.fetchStarterMessage();
   const original = message.embeds[0];
   if (!original) {
-    await interaction.reply({ content: "> `❌` » Vorschlags-Embed nicht gefunden.", ephemeral: true });
+    await interaction.reply({ content: "> `❌` » Vorschlags-Embed nicht gefunden.", flags: MessageFlags.Ephemeral });
     return;
   }
 
@@ -145,7 +145,7 @@ export async function finalizeVorschlag(interaction, {
     log.warn("Could not read user id from suggestion embed");
   }
 
-  await interaction.reply({ content: replyText, ephemeral: true });
+  await interaction.reply({ content: replyText, flags: MessageFlags.Ephemeral });
 }
 
 export const STATUS_PRESETS = Object.freeze({

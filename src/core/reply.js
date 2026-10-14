@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import logger from "./logger.js";
 
 // Replies regardless of interaction state (fresh / deferred / already replied). Never throws.
@@ -22,5 +23,5 @@ export async function safeReply(interaction, payload) {
 }
 
 export function replyError(interaction, content) {
-  return safeReply(interaction, { content, ephemeral: true });
+  return safeReply(interaction, { content, flags: MessageFlags.Ephemeral });
 }

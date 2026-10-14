@@ -1,4 +1,4 @@
-import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits, MessageFlags } from "discord.js";
 import { settings, formatValue } from "#core/settings.js";
 import { UserError } from "#core/errors.js";
 import { iterateSettings } from "#config/settings.schema.js";
@@ -116,7 +116,7 @@ export default {
           .setTitle("`⚙️` Einstellungsgruppen")
           .setDescription(`${lines.join("\n")}\n\n> \`/settings list gruppe:<name>\` zeigt die Werte.`)
           .setColor("Orange");
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
         return;
       }
 
@@ -129,7 +129,7 @@ export default {
           .setDescription(chunk.map((e) => `**${e.key}** · ${e.description ?? e.type}\n${formatValue(e.type, e.value)}`).join("\n"))
           .setColor("Orange"));
       }
-      await interaction.reply({ embeds: embeds.slice(0, 10), ephemeral: true });
+      await interaction.reply({ embeds: embeds.slice(0, 10), flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -142,7 +142,7 @@ export default {
         .setTitle(`\`⚙️\` ${spec.path}`)
         .setDescription(`${spec.description ?? ""}\n\n**Typ:** \`${spec.type}\`\n**Wert:** ${formatValue(spec.type, spec.value)}\n**Standard:** ${formatValue(spec.type, spec.default)}`)
         .setColor("Orange");
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -153,13 +153,13 @@ export default {
       } catch (error) {
         throw new UserError(`> \`❌\` » ${error.message}`);
       }
-      await interaction.reply({ content: `> \`✅\` » \`${key}\` ist jetzt ${formatValue(spec.type, value)}`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » \`${key}\` ist jetzt ${formatValue(spec.type, value)}`, flags: MessageFlags.Ephemeral });
       return;
     }
 
     if (sub === "reset") {
       const value = await settings.reset(key, interaction.user.id);
-      await interaction.reply({ content: `> \`✅\` » \`${key}\` wurde zurückgesetzt auf ${formatValue(spec.type, value)}`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » \`${key}\` wurde zurückgesetzt auf ${formatValue(spec.type, value)}`, flags: MessageFlags.Ephemeral });
     }
   },
 };
@@ -177,13 +177,13 @@ async function runTwitch(interaction) {
       .setTitle("`🟣` Twitch-Kanäle")
       .setDescription(`${lines.join("\n")}\n\nStatus-System: ${isTwitchStatusEnabled() ? "`✅ an`" : "`❌ aus`"} · Kanal: <#${settings.get("channels.twitch")}>`)
       .setColor("Purple");
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
     return;
   }
 
   if (sub === "enable" || sub === "disable") {
     await setTwitchStatusEnabled(sub === "enable", by);
-    await interaction.reply({ content: `> \`${sub === "enable" ? "✅" : "🛑"}\` » Twitch-Status ist jetzt **${sub === "enable" ? "aktiv" : "deaktiviert"}**.`, ephemeral: true });
+    await interaction.reply({ content: `> \`${sub === "enable" ? "✅" : "🛑"}\` » Twitch-Status ist jetzt **${sub === "enable" ? "aktiv" : "deaktiviert"}**.`, flags: MessageFlags.Ephemeral });
     if (sub === "enable") {await updateTwitchStatus().catch(() => {});}
     return;
   }
@@ -192,11 +192,11 @@ async function runTwitch(interaction) {
   try {
     if (sub === "add") {
       const added = await addStreamer(login, by);
-      await interaction.reply({ content: `> \`✅\` » **${added}** wurde hinzugefügt.`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » **${added}** wurde hinzugefügt.`, flags: MessageFlags.Ephemeral });
       await updateTwitchStatus().catch(() => {});
     } else if (sub === "remove") {
       const removed = await removeStreamer(login, by);
-      await interaction.reply({ content: `> \`✅\` » **${removed}** wurde entfernt.`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » **${removed}** wurde entfernt.`, flags: MessageFlags.Ephemeral });
     }
   } catch (error) {
     throw new UserError(`> \`❌\` » ${error.message}`);

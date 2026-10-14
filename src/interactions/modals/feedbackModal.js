@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
 
@@ -6,7 +6,7 @@ export default {
   id: "feedback-modal",
   async run(client, interaction) {
     try {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
       const title = interaction.fields.getTextInputValue("feedback-title");
       const description = interaction.fields.getTextInputValue("feedback-description");

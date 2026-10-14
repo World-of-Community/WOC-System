@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } from "discord.js";
 
 export default {
   name: "info",
@@ -58,12 +58,8 @@ export default {
         .setDescription("Wähle eine **Seltenheit**, um die möglichen Rewards zu sehen.")
         .setColor("Blurple");
 
-      const message = await interaction.reply({
-        embeds: [startEmbed],
-        components: [rarityButtons],
-        ephemeral: true,
-        fetchReply: true,
-      });
+      await interaction.reply({ embeds: [startEmbed], components: [rarityButtons], flags: MessageFlags.Ephemeral });
+      const message = await interaction.fetchReply();
 
       // ───────────── COLLECTOR ─────────────
       const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button });
@@ -72,7 +68,7 @@ export default {
         if (btn.user.id !== interaction.user.id) {
           return btn.reply({
             content: "> `❌` » Du darfst diese Buttons nicht benutzen.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -138,7 +134,6 @@ export default {
         await btn.update({
           embeds: [embed],
           components: [rarityButtons],
-          ephemeral: true,
         });
       });
 
@@ -153,7 +148,7 @@ export default {
 
       return interaction.reply({
         content: "`✅` » Die Nachricht wurde erfolgreich gesendet",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

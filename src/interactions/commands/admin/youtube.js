@@ -1,4 +1,4 @@
-import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType } from "discord.js";
+import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType, MessageFlags } from "discord.js";
 import YoutubeNotify from "#models/YoutubeNotify.js";
 import YoutubeChannel from "#models/YoutubeChannel.js";
 import axios from "axios";
@@ -27,7 +27,7 @@ export default {
         components: [row],
       });
 
-      await interaction.reply({ content: "> Das **YouTube**-Embed wurde erfolgreich gesendet.", ephemeral: true });
+      await interaction.reply({ content: "> Das **YouTube**-Embed wurde erfolgreich gesendet.", flags: MessageFlags.Ephemeral });
 
       // Component collector für Notification-Toggle
       const collector = embedMessage.createMessageComponentCollector({ componentType: ComponentType.Button });
@@ -40,10 +40,10 @@ export default {
 
           if (existing) {
             await YoutubeNotify.deleteOne({ userId });
-            await i.reply({ content: "> `🔕` Du hast YouTube-Benachrichtigungen **deaktiviert**.", ephemeral: true });
+            await i.reply({ content: "> `🔕` Du hast YouTube-Benachrichtigungen **deaktiviert**.", flags: MessageFlags.Ephemeral });
           } else {
             await YoutubeNotify.create({ userId });
-            await i.reply({ content: "> `🔔` Du hast YouTube-Benachrichtigungen **aktiviert**.", ephemeral: true });
+            await i.reply({ content: "> `🔔` Du hast YouTube-Benachrichtigungen **aktiviert**.", flags: MessageFlags.Ephemeral });
           }
         }
       });
@@ -98,7 +98,7 @@ export default {
 
     } catch (error) {
       logger.error("Fehler beim Senden des YouTube-Embeds:", error);
-      await interaction.reply({ content: `> \`❌\` » Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, ephemeral: true });
+      await interaction.reply({ content: `> \`❌\` » Fehler beim Laden des YouTube-Embeds.\n\n**${error.message}**`, flags: MessageFlags.Ephemeral });
     }
   },
 };

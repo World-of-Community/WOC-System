@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import ms from "ms";
 import schedule from "node-schedule";
 import logger from "#core/logger.js";
@@ -69,7 +69,7 @@ export default {
           }
         });
         if (durationDauer !== durationDauer) {
-          return await interaction.reply({content: "> `❌` » Die Dauer konnte nicht verarbeitet werden!", ephemeral: true});
+          return await interaction.reply({content: "> `❌` » Die Dauer konnte nicht verarbeitet werden!", flags: MessageFlags.Ephemeral});
         }
 
         const endDate = new Date(new Date().getTime() + durationDauer);
@@ -85,7 +85,7 @@ export default {
           .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
           .setTimestamp();
 
-        await interaction.reply({ embeds: [remindEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [remindEmbed], flags: MessageFlags.Ephemeral });
 
         if (!reminders.has(userId)) {
           reminders.set(userId, []);
@@ -117,7 +117,7 @@ export default {
 
       case "list": {
         if (!reminders.has(userId) || reminders.get(userId).length === 0) {
-          return await interaction.reply({ content: "> `❌` » Du hast keine Erinnerungen gesetzt.", ephemeral: true });
+          return await interaction.reply({ content: "> `❌` » Du hast keine Erinnerungen gesetzt.", flags: MessageFlags.Ephemeral });
         }
 
         const reminderList = reminders.get(userId).map((reminder, index) =>
@@ -131,7 +131,7 @@ export default {
           .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
           .setTimestamp();
 
-        await interaction.reply({ embeds: [listEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [listEmbed], flags: MessageFlags.Ephemeral });
         break;
       }
 
@@ -139,13 +139,13 @@ export default {
         const index = interaction.options.getInteger("reminder") - 1;
 
         if (!reminders.has(userId) || reminders.get(userId).length === 0) {
-          return await interaction.reply({ content: "> `❌` » Du hast keine Erinnerungen gesetzt.", ephemeral: true });
+          return await interaction.reply({ content: "> `❌` » Du hast keine Erinnerungen gesetzt.", flags: MessageFlags.Ephemeral });
         }
 
         const userReminders = reminders.get(userId);
 
         if (index < 0 || index >= userReminders.length) {
-          return await interaction.reply({ content: "> `❌` » Ungültiger Index. Bitte überprüfe die Liste deiner Erinnerungen.", ephemeral: true });
+          return await interaction.reply({ content: "> `❌` » Ungültiger Index. Bitte überprüfe die Liste deiner Erinnerungen.", flags: MessageFlags.Ephemeral });
         }
 
         const removedReminder = userReminders.splice(index, 1)[0];
@@ -165,7 +165,7 @@ export default {
           .setFooter({ text: `${interaction.guild.name}`, iconURL: `${interaction.guild.iconURL()}` })
           .setTimestamp();
 
-        await interaction.reply({ embeds: [removeEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [removeEmbed], flags: MessageFlags.Ephemeral });
         break;
       }
     }

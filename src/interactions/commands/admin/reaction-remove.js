@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 export default {
   name: "reaction-remove",
@@ -35,7 +36,7 @@ export default {
     try {
       const message = await channel.messages.fetch(messageId);
       if (!message) {
-        return interaction.reply({ content: "> `❌` » Nachricht nicht gefunden.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Nachricht nicht gefunden.", flags: MessageFlags.Ephemeral });
       }
 
       // Entfernt die erste Reaktion
@@ -43,7 +44,7 @@ export default {
       if (reaction1) {
         await reaction1.remove();
       } else {
-        return interaction.reply({ content: `> \`❌\` » Reaktion ${emoji1} nicht gefunden.`, ephemeral: true });
+        return interaction.reply({ content: `> \`❌\` » Reaktion ${emoji1} nicht gefunden.`, flags: MessageFlags.Ephemeral });
       }
 
       // Entfernt die optionale zweite Reaktion
@@ -52,14 +53,14 @@ export default {
         if (reaction2) {
           await reaction2.remove();
         } else {
-          return interaction.reply({ content: `> \`❌\` »Reaktion ${emoji2} nicht gefunden.`, ephemeral: true });
+          return interaction.reply({ content: `> \`❌\` »Reaktion ${emoji2} nicht gefunden.`, flags: MessageFlags.Ephemeral });
         }
       }
 
-      await interaction.reply({ content: "> `✅` » Reaktionen erfolgreich entfernt.", ephemeral: true });
+      await interaction.reply({ content: "> `✅` » Reaktionen erfolgreich entfernt.", flags: MessageFlags.Ephemeral });
     } catch (error) {
       logger.error(error);
-      await interaction.reply({ content: "> `❗` » Fehler beim Entfernen der Reaktionen.", ephemeral: true });
+      await interaction.reply({ content: "> `❗` » Fehler beim Entfernen der Reaktionen.", flags: MessageFlags.Ephemeral });
     }
   },
 };

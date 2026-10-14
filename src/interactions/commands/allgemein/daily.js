@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js"; // Coin Modell importieren
 
 const bonusLevels = [
@@ -50,7 +50,7 @@ export default {
       const unixTimestamp = Math.floor(naechsteMoeglichkeit.getTime() / 1000);
 
       return await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         embeds: [
           new EmbedBuilder()
             .setColor("Red")
@@ -84,7 +84,7 @@ export default {
     const streakText = user.streak === 1 ? "Tag" : "Tage";
 
     await interaction.reply({
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
       embeds: [
         new EmbedBuilder()
           .setColor("Green")

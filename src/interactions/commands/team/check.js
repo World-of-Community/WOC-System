@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
   name: "check",
@@ -81,6 +81,6 @@ export default {
       )
       .setFooter({ text: "Automatische Einschätzung – Team muss finale Entscheidung treffen." });
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   },
 };

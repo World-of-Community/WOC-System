@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ComponentType, EmbedBuilder, Events } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ComponentType, EmbedBuilder, Events, MessageFlags } from "discord.js";
 import serverdb from "#models/Guild.js";
 import userdb from "#models/User.js";
 import messagedb from "#models/MessageCounter.js";
@@ -201,7 +201,7 @@ async function sendFirstMessageReward(message) {
     if (i.customId !== "newbieClaim_button") {return;}
 
     if (i.user.id !== message.author.id) {
-      await i.reply({ content: "> `❌` » Das ist nicht für dich!", ephemeral: true });
+      await i.reply({ content: "> `❌` » Das ist nicht für dich!", flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -222,7 +222,7 @@ async function sendFirstMessageReward(message) {
       )
       .setColor(RARITY_COLORS[gewinn.rarity]);
 
-    await i.followUp({ embeds: [lootEmbed], ephemeral: true });
+    await i.followUp({ embeds: [lootEmbed], flags: MessageFlags.Ephemeral });
     collector.stop("claimed");
     setTimeout(() => msg.delete().catch(() => {}), 500);
   });

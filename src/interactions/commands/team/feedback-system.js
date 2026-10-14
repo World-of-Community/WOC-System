@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 
 export default {
@@ -13,7 +13,7 @@ export default {
 
     try {
       // Defer the reply immediately to prevent timeout
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
       // Hauptbild-Embed (Banner)
       const bannerEmbed = new EmbedBuilder()
@@ -47,7 +47,7 @@ export default {
 
       // Bestätigung
       await interaction.editReply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "> `✅` » Das **Feedback-System** wurde erfolgreich gesendet.",
       });
 
@@ -60,7 +60,7 @@ export default {
         } else if (!interaction.replied) {
           await interaction.reply({
             content: "> `❌` » Beim Senden des Feedback-Systems ist ein Fehler aufgetreten.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
       } catch (replyErr) {

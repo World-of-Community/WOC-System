@@ -1,4 +1,4 @@
-import {EmbedBuilder} from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import teamdb from "#models/TeamMember.js";
 import { settings } from "#core/settings.js";
 
@@ -56,7 +56,7 @@ export default {
       messageGoals[role.id] = messagegoal;
 
       // Rückmeldung an den Benutzer
-      await interaction.reply({ content: `> \`✅\` » Das Nachrichtenziel für die Rolle ${role} wurde auf \`${messagegoal}\` Nachrichten gesetzt.`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Das Nachrichtenziel für die Rolle ${role} wurde auf \`${messagegoal}\` Nachrichten gesetzt.`, flags: MessageFlags.Ephemeral });
     }
 
     if (interaction.options.getSubcommand() === "check") {
@@ -64,7 +64,7 @@ export default {
 
       // noch beheben
       //if (messageGoal === 0) {
-      //    return interaction.reply({ content: `> \`📌\` » ${member} hat **keine** Nachrichten als Team Mitglied gesammelt.`, ephemeral: true });
+      //    return interaction.reply({ content: `> \`📌\` » ${member} hat **keine** Nachrichten als Team Mitglied gesammelt.`, flags: MessageFlags.Ephemeral });
       //}
 
       const TeamRoleIds = [

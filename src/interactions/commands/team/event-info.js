@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import ms from "ms";
 import logger from "#core/logger.js";
 
@@ -101,7 +102,7 @@ export default {
         if (!timeMs) {
           return await interaction.reply({
             content: "> `❌` » Bitte gib eine gültige Zeit an. Beispiel: `10s`, `5m`, `1h`",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -110,7 +111,7 @@ export default {
 
         await interaction.reply({
           content: `> \`⏳\` » Die Nachricht wird <t:${timestamp}:R> gesendet.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
 
         setTimeout(async () => {
@@ -124,7 +125,7 @@ export default {
 
             await interaction.editReply({
               content: `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
 
           } catch (error) {
@@ -132,7 +133,7 @@ export default {
 
             await interaction.editReply({
               content: "> `❌` » Fehler beim Senden der Nachricht.",
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           }
 
@@ -149,7 +150,7 @@ export default {
 
           await interaction.reply({
             content: `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
 
         } catch (error) {
@@ -158,7 +159,7 @@ export default {
 
           await interaction.reply({
             content: "> `❌` » Fehler beim Senden der Nachricht.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
       }
@@ -189,7 +190,7 @@ export default {
 
         await interaction.reply({
           content: "> `✅` » Nachricht erfolgreich bearbeitet.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
 
       } catch (error) {
@@ -198,7 +199,7 @@ export default {
 
         await interaction.reply({
           content: "> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }

@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import TeamInfo from "#models/TeamInfo.js";
 import UserDB from "#models/User.js";
 import logger from "#core/logger.js";
@@ -174,7 +174,7 @@ export default {
 
       const existing = await TeamInfo.findOne({ userID: user.id });
       if (existing) {
-        return interaction.reply({ content: `> \`⚠️\` » ${user} ist bereits ein Teammitglied.`, ephemeral: true });
+        return interaction.reply({ content: `> \`⚠️\` » ${user} ist bereits ein Teammitglied.`, flags: MessageFlags.Ephemeral });
       }
 
       if (!alter) {
@@ -202,11 +202,11 @@ export default {
         });
 
         await newMember.save();
-        await interaction.reply({ content: `> \`✅\` » ${user} wurde dem Team im Bereich **${bereich}** hinzugefügt.`, ephemeral: true });
+        await interaction.reply({ content: `> \`✅\` » ${user} wurde dem Team im Bereich **${bereich}** hinzugefügt.`, flags: MessageFlags.Ephemeral });
         await updateTeamEmbed(interaction);
       } catch (err) {
         logger.error("Fehler beim Speichern:", err);
-        return interaction.reply({ content: "> `❌` » Fehler beim Speichern des Teammitglieds.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Fehler beim Speichern des Teammitglieds.", flags: MessageFlags.Ephemeral });
       }
     }
 
@@ -215,7 +215,7 @@ export default {
       const member = await TeamInfo.findOne({ userID: user.id });
 
       if (!member) {
-        return interaction.reply({ content: `> \`❗\` » ${user} ist kein Teammitglied.`, ephemeral: true });
+        return interaction.reply({ content: `> \`❗\` » ${user} ist kein Teammitglied.`, flags: MessageFlags.Ephemeral });
       }
 
       const bereich = interaction.options.getString("bereich");
@@ -234,11 +234,11 @@ export default {
 
       try {
         await member.save();
-        await interaction.reply({ content: `> \`✅\` » Teammitglied ${user} wurde aktualisiert.`, ephemeral: true });
+        await interaction.reply({ content: `> \`✅\` » Teammitglied ${user} wurde aktualisiert.`, flags: MessageFlags.Ephemeral });
         await updateTeamEmbed(interaction);
       } catch (err) {
         logger.error("Fehler beim Aktualisieren:", err);
-        return interaction.reply({ content: "> `❌` » Fehler beim Aktualisieren des Teammitglieds.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Fehler beim Aktualisieren des Teammitglieds.", flags: MessageFlags.Ephemeral });
       }
     }
 
@@ -250,7 +250,7 @@ export default {
       if (!idToRemove) {
         return interaction.reply({
           content: "> `❗` » Bitte gib einen Nutzer an oder eine ID ein.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -260,14 +260,14 @@ export default {
         const displayName = user ? `${user}` : `\`${idToRemove}\``;
         await interaction.reply({
           content: `> \`❌\` » ${displayName} wurde aus dem Team entfernt.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         await updateTeamEmbed(interaction);
       } else {
         const displayName = user ? `${user}` : `\`${idToRemove}\``;
         await interaction.reply({
           content: `> \`❗\` » ${displayName} ist kein Teammitglied.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }
@@ -278,7 +278,7 @@ export default {
 
     else if (subcommand === "refresh") {
       await updateTeamEmbed(interaction);
-      await interaction.reply({ content: "> `✅` » Das Team Embed wurde aktualisiert.", ephemeral: true });
+      await interaction.reply({ content: "> `✅` » Das Team Embed wurde aktualisiert.", flags: MessageFlags.Ephemeral });
     }
   },
 };
@@ -376,5 +376,5 @@ async function sendTeamEmbed(interaction) {
     .setFooter({ text: "Zuletzt Aktualisiert" })
     .setTimestamp();
 
-  await interaction.reply({ embeds: [TeamEmbed], ephemeral: true });
+  await interaction.reply({ embeds: [TeamEmbed], flags: MessageFlags.Ephemeral });
 }

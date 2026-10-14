@@ -1,4 +1,4 @@
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, MessageFlags } from "discord.js";
 import teamdb from "#models/TeamMember.js";
 import serverdb from "#models/Guild.js";
 import logger from "#core/logger.js";
@@ -92,14 +92,14 @@ export default {
         const formattedBis = convertDate(bisStr);
 
         if (!formattedVon || !formattedBis) {
-          return interaction.reply({ content: "> `❌` » Bitte gib gültige Daten im Format `DD.MM.YYYY` ein.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Bitte gib gültige Daten im Format `DD.MM.YYYY` ein.", flags: MessageFlags.Ephemeral });
         }
 
         const vonDate = new Date(formattedVon);
         const bisDate = new Date(formattedBis);
 
         if (vonDate > bisDate) {
-          return interaction.reply({ content: "> `❌` » Das Enddatum muss nach dem Startdatum liegen.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Das Enddatum muss nach dem Startdatum liegen.", flags: MessageFlags.Ephemeral });
         }
 
         const teamData = await teamdb.findOneAndUpdate(
@@ -127,7 +127,7 @@ export default {
         //teamData.urlaub.messageID = message.id;
         //await teamData.save();
         //
-        //await interaction.reply({ content: "> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.", ephemeral: true });
+        //await interaction.reply({ content: "> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.", flags: MessageFlags.Ephemeral });
         //break;
 
         const grundText = grund?.trim()
@@ -155,7 +155,7 @@ export default {
 
         await interaction.reply({
           content: "> `✅` » Deine Urlaubsmeldung wurde **erfolgreich** gesendet.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
 
         break;
@@ -169,7 +169,7 @@ export default {
         const match = dateStr.match(datePattern);
 
         if (!match) {
-          return interaction.reply({ content: "> `❌` » Bitte gib das Datum im Format `DD.MM.YYYY HH:MM` ein.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Bitte gib das Datum im Format `DD.MM.YYYY HH:MM` ein.", flags: MessageFlags.Ephemeral });
         }
 
         const [, day, month, year, hour, minute] = match;
@@ -179,7 +179,7 @@ export default {
 
         // Überprüfe die Gültigkeit des Datums
         if (isNaN(meetingDateUTC.getTime())) {
-          return interaction.reply({ content: "> `❌` » Das Datum scheint ungültig zu sein. Bitte überprüfe deine Eingabe.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Das Datum scheint ungültig zu sein. Bitte überprüfe deine Eingabe.", flags: MessageFlags.Ephemeral });
         }
 
         // Speichern des Meetings in der Datenbank
@@ -201,7 +201,7 @@ export default {
             { returnDocument: "after", upsert: true },
           );
 
-          await interaction.reply({ content: "> `✅` » Das Meeting wurde **erfolgreich** geplant.", ephemeral: true });
+          await interaction.reply({ content: "> `✅` » Das Meeting wurde **erfolgreich** geplant.", flags: MessageFlags.Ephemeral });
 
           const localDate = new Date(meetingDateUTC.getTime() - meetingDateUTC.getTimezoneOffset() * 60000);
           const days = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
@@ -266,7 +266,7 @@ export default {
 
         } catch (error) {
           logger.error("Fehler beim Speichern des Meetings:", error);
-          await interaction.reply({ content: "> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.", ephemeral: true });
+          await interaction.reply({ content: "> `❌` » Es ist ein Fehler beim Planen des Meetings aufgetreten.", flags: MessageFlags.Ephemeral });
         }
         break;
       }
@@ -275,7 +275,7 @@ export default {
         const serverData = await serverdb.findOne({ guildID: env.discord.guildId });
 
         if (!serverData || !serverData.meetings || serverData.meetings.length === 0) {
-          return interaction.reply({ content: "> `❌` » Derzeit ist keine Team-Besprechung geplant.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Derzeit ist keine Team-Besprechung geplant.", flags: MessageFlags.Ephemeral });
         }
 
         const sortedMeetings = serverData.meetings.sort((a, b) => a.date - b.date);
@@ -298,7 +298,7 @@ export default {
           });
         });
 
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
       }
         break;
 
@@ -497,7 +497,7 @@ export default {
         await interaction.reply({
           embeds: [homeEmbed],
           components: [row],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
 
 
@@ -511,7 +511,7 @@ export default {
 
         collector.on("collect", async btn => {
           if (btn.user.id !== interaction.user.id)
-          {return btn.reply({ content: "Du kannst diese Hilfe nicht bedienen.", ephemeral: true });}
+          {return btn.reply({ content: "Du kannst diese Hilfe nicht bedienen.", flags: MessageFlags.Ephemeral });}
 
           switch (btn.customId) {
             case "help_home":

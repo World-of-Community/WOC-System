@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import Advent from "#models/Advent.js";
 import { settings } from "#core/settings.js";
 
@@ -20,11 +21,11 @@ export default {
     }
 
     if (userData.openedDays.includes(dayNumber)) {
-      return interaction.reply({ content: `> \`❗\` » Du hast diesen Tag (${dayNumber}. Dezember) bereits geöffnet!`, ephemeral: true });
+      return interaction.reply({ content: `> \`❗\` » Du hast diesen Tag (${dayNumber}. Dezember) bereits geöffnet!`, flags: MessageFlags.Ephemeral });
     }
 
     if (dayNumber > currentDay) {
-      return interaction.reply({ content: "> `❌` » Du kannst zukünftige Tage nicht öffnen!", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Du kannst zukünftige Tage nicht öffnen!", flags: MessageFlags.Ephemeral });
     }
 
     userData.openedDays.push(dayNumber);
@@ -55,6 +56,6 @@ export default {
         rewardMessage = `> \`❗\` » Du hast den **${dayNumber}. Dezember** bereits geöffnet.`;
     }
 
-    return interaction.reply({ content: rewardMessage, ephemeral: true });
+    return interaction.reply({ content: rewardMessage, flags: MessageFlags.Ephemeral });
   },
 };

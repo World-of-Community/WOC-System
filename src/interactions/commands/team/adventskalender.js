@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles, MessageFlags } from "discord.js";
 import serverdb from "#models/Guild.js";
 import logger from "#core/logger.js";
 import { env } from "#config";
@@ -40,7 +40,7 @@ export default {
 
   async run(client, interaction) {
     const server = await serverdb.findOne({ guildID: env.discord.guildId });
-    if(!server) {return interaction.reply({ content: "> `❌` » Fehler: Server nicht gefunden", ephemeral: true });}
+    if(!server) {return interaction.reply({ content: "> `❌` » Fehler: Server nicht gefunden", flags: MessageFlags.Ephemeral });}
     const currentDate = new Date();
     const currentDay = new Date().getDate();
     const maxDay = 24;
@@ -73,7 +73,7 @@ export default {
       .setColor("Green")
       .setFooter({ text: `${interaction.guild.name} wünscht euch Frohe Weihnachten!` });
 
-    await interaction.reply({ content: "> `✅` » Der Adventskalender wurde erfolgreich gesendet.", ephemeral: true });
+    await interaction.reply({ content: "> `✅` » Der Adventskalender wurde erfolgreich gesendet.", flags: MessageFlags.Ephemeral });
     const kalenderMessage = await interaction.channel.send({ embeds: [Adventskalender], components: rows });
     logger.info(kalenderMessage.id);
     server.adventskalender = {

@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import Advent from "#models/Advent.js";
 import { settings } from "#core/settings.js";
 
@@ -77,7 +78,7 @@ export default {
       if (!userData || openedDays.length === 0) {
         return interaction.reply({
           content: `> \`📭\` » **${displayName}** hat noch kein Türchen geöffnet.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -100,7 +101,7 @@ export default {
                          (nextDay
                            ? `> \`🎁\` » Nächstes öffnbares Türchen: ${nextDay}. Dezember\n> Belohnung: ${nextRewardText}`
                            : "> `🎁` » Alle bisherigen Tage geöffnet!"),
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -109,14 +110,14 @@ export default {
       if (!userData) {
         return interaction.reply({
           content: `> \`ℹ️\` » Für **${displayName}** existiert kein Adventskalender-Eintrag.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
       await Advent.deleteOne({ userId: target.id });
       return interaction.reply({
         content: `> \`🔄\` » Adventskalender für **${displayName}** wurde **zurückgesetzt**!`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

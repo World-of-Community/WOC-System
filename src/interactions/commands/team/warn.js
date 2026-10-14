@@ -1,4 +1,4 @@
-import {EmbedBuilder} from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import warndb from "#models/Warning.js";
 import logger from "#core/logger.js";
 
@@ -68,7 +68,7 @@ export default {
       const reason = interaction.options.getString("grund");
 
       if (!member) {
-        return interaction.reply({ content: "`❌` » Dieser Benutzer ist nicht im Server.", ephemeral: true });
+        return interaction.reply({ content: "`❌` » Dieser Benutzer ist nicht im Server.", flags: MessageFlags.Ephemeral });
       }
 
       // Warnung in der Datenbank speichern
@@ -84,7 +84,7 @@ export default {
         }).save();
       }
 
-      await interaction.reply({ content: `> \`✅\` » Warnung für ${member} hinzugefügt, Grund: ${reason}`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Warnung für ${member} hinzugefügt, Grund: ${reason}`, flags: MessageFlags.Ephemeral });
 
     } else if (subcommand === "remove") {
       const user = interaction.options.getUser("user");
@@ -96,14 +96,14 @@ export default {
         const filteredWarnings = warningData.warnings.filter(w => w.reason !== reason);
 
         if (filteredWarnings.length === warningData.warnings.length) {
-          await interaction.reply({ content: `> \`❌\` » Keine Warnung für ${user} mit dem Grund "${reason}" gefunden.`, ephemeral: true });
+          await interaction.reply({ content: `> \`❌\` » Keine Warnung für ${user} mit dem Grund "${reason}" gefunden.`, flags: MessageFlags.Ephemeral });
         } else {
           warningData.warnings = filteredWarnings;
           await warningData.save();
-          await interaction.reply({ content: `> \`✅\` » Warnung für ${user} entfernt.`, ephemeral: true });
+          await interaction.reply({ content: `> \`✅\` » Warnung für ${user} entfernt.`, flags: MessageFlags.Ephemeral });
         }
       } else {
-        await interaction.reply({ content: `> \`❌\` » Keine Warnungen für ${user} gefunden.`, ephemeral: true });
+        await interaction.reply({ content: `> \`❌\` » Keine Warnungen für ${user} gefunden.`, flags: MessageFlags.Ephemeral });
       }
 
     } else if (subcommand === "refresh") {
@@ -125,10 +125,10 @@ export default {
           .setDescription(list)
           .setColor("Red");
 
-        await interaction.reply({ embeds: [updateEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [updateEmbed], flags: MessageFlags.Ephemeral });
       } catch (error) {
         logger.error(error);
-        await interaction.reply({ content: "`❌` » Ein Fehler ist aufgetreten, während die Warnliste aktualisiert wurde.", ephemeral: true });
+        await interaction.reply({ content: "`❌` » Ein Fehler ist aufgetreten, während die Warnliste aktualisiert wurde.", flags: MessageFlags.Ephemeral });
       }
 
     } else if (subcommand === "list") {
@@ -140,7 +140,7 @@ export default {
             .setTitle("Information zu den Warnungen der Nutzer")
             .setDescription("> `❌` » Keine Warnungen vorhanden!")
             .setColor("Red");
-          await interaction.reply({ embeds: [noWarningsEmbed], ephemeral: true });
+          await interaction.reply({ embeds: [noWarningsEmbed], flags: MessageFlags.Ephemeral });
           return;
         }
 
@@ -154,10 +154,10 @@ export default {
           .setDescription(list)
           .setColor("Red");
 
-        await interaction.reply({ embeds: [WarnEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [WarnEmbed], flags: MessageFlags.Ephemeral });
       } catch (error) {
         logger.error(error);
-        await interaction.reply({ content: "`❌` » Ein Fehler ist aufgetreten, während die Warnliste abgerufen wurde.", ephemeral: true });
+        await interaction.reply({ content: "`❌` » Ein Fehler ist aufgetreten, während die Warnliste abgerufen wurde.", flags: MessageFlags.Ephemeral });
       }
     }
   },

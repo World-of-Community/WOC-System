@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
   name: "uptime",
@@ -30,6 +30,6 @@ export default {
       .setColor("Orange")
       .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
       .setTimestamp();
-    await interaction.reply({ embeds: [uptimeEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [uptimeEmbed], flags: MessageFlags.Ephemeral });
   },
 };

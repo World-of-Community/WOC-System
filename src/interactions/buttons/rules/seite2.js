@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
   id: "seite-2",
@@ -16,6 +16,6 @@ export default {
           .setLabel("✅ » Verifizieren")
           .setStyle(ButtonStyle.Success),
       );
-    await interaction.reply({ embeds: [seite2Embed], components: [regelButton], ephemeral: true });
+    await interaction.reply({ embeds: [seite2Embed], components: [regelButton], flags: MessageFlags.Ephemeral });
   },
 };

@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 export default {
@@ -178,10 +178,10 @@ export default {
         );
       await msg.edit({ embeds: [gebanntEmbed], components: [gebanntButton] });
     } else {
-      await interaction.reply({ content: "> `❌` » Embed wurde nicht gefunden.", ephemeral: true });
+      await interaction.reply({ content: "> `❌` » Embed wurde nicht gefunden.", flags: MessageFlags.Ephemeral });
     }
 
-    await interaction.reply({ content: `> \`✅\` » das \`${embedType}\`-Embed wurde gesendet oder bearbeitet.`, ephemeral: true });
+    await interaction.reply({ content: `> \`✅\` » das \`${embedType}\`-Embed wurde gesendet oder bearbeitet.`, flags: MessageFlags.Ephemeral });
   },
 };
 

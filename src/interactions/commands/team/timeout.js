@@ -1,5 +1,5 @@
 // Code von @vxnsin
-import {EmbedBuilder, PermissionFlagsBits} from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits, MessageFlags } from "discord.js";
 import ms from "ms";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
@@ -92,19 +92,19 @@ export default {
     const grund = interaction.options.getString("grund");
     const member = await interaction.guild.members.fetch({ user, force: true }).catch(() => null);
 
-    if (!member) {return await interaction.reply({ content: "> `❌` » Benutzer nicht gefunden.", ephemeral: true });}
-    if (interaction.user.id === user.id) {return interaction.reply({ content: "> `❌` » Du kannst dir selbst keinen Timeout geben.", ephemeral: true });}
-    if (!member.kickable) {return interaction.reply({ content: "> `❌` » Dieser Benutzer kann nicht getimeoutet werden.", ephemeral: true });}
-    if (member.isCommunicationDisabled()) {return interaction.reply({ content: "> `❌` » Dieser Benutzer hat bereits ein Timeout.", ephemeral: true });}
-    if (member.permissions.has(PermissionFlagsBits.Administrator)) {return interaction.reply({ content: "> `❌` » Dieser Benutzer hat `Administrator` Berechtigungen und kann nicht timeoutet werden.", ephemeral: true });}
-    if (member.permissions.has(PermissionFlagsBits.KickMembers)) {return interaction.reply({ content: "> `❌` » Du darfst Nutzer, die dieselben Berechtigungen haben, nicht timeouten.", ephemeral: true });}
+    if (!member) {return await interaction.reply({ content: "> `❌` » Benutzer nicht gefunden.", flags: MessageFlags.Ephemeral });}
+    if (interaction.user.id === user.id) {return interaction.reply({ content: "> `❌` » Du kannst dir selbst keinen Timeout geben.", flags: MessageFlags.Ephemeral });}
+    if (!member.kickable) {return interaction.reply({ content: "> `❌` » Dieser Benutzer kann nicht getimeoutet werden.", flags: MessageFlags.Ephemeral });}
+    if (member.isCommunicationDisabled()) {return interaction.reply({ content: "> `❌` » Dieser Benutzer hat bereits ein Timeout.", flags: MessageFlags.Ephemeral });}
+    if (member.permissions.has(PermissionFlagsBits.Administrator)) {return interaction.reply({ content: "> `❌` » Dieser Benutzer hat `Administrator` Berechtigungen und kann nicht timeoutet werden.", flags: MessageFlags.Ephemeral });}
+    if (member.permissions.has(PermissionFlagsBits.KickMembers)) {return interaction.reply({ content: "> `❌` » Du darfst Nutzer, die dieselben Berechtigungen haben, nicht timeouten.", flags: MessageFlags.Ephemeral });}
 
 
     let zeitInMilliseconds = 0;
     if (zeitString !== null) {
       zeitInMilliseconds = ms(zeitString);
       if (zeitInMilliseconds === undefined) {
-        return interaction.reply({ content: "> `❌` » Ungültiges Zeitformat.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Ungültiges Zeitformat.", flags: MessageFlags.Ephemeral });
       }
     }
     const timeoutTime = new Date(Date.now() + zeitInMilliseconds);
@@ -137,6 +137,6 @@ export default {
       }
     }
 
-    await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\n**Information:**\n» Grund: \`${grund}\`\n» Endet: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, ephemeral: true });
+    await interaction.reply({ content: `> \`✅\` » ${user} hat nun einen **Timeout**.\n\n**Information:**\n» Grund: \`${grund}\`\n» Endet: <t:${Math.floor(timeoutTime.getTime() / 1000)}:F> (<t:${Math.floor(timeoutTime.getTime() / 1000)}:R>)`, flags: MessageFlags.Ephemeral });
   },
 };

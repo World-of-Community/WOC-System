@@ -27,7 +27,6 @@ export default {
       content: `<@${interaction.user.id}>`,
       embeds: [decisionEmbed],
       components: [decisionButtons],
-      ephemeral: false,
     });
   },
 };

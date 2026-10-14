@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
   id: "partner_deny",
@@ -17,6 +17,6 @@ export default {
     });
 
     await interaction.message.edit({ components: [] });
-    return interaction.reply({ content: `> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** abgelehnt.`, ephemeral: true });
+    return interaction.reply({ content: `> \`❗\` » Die Server-Partner Anfrage wurde von **${interaction.user.displayName}** abgelehnt.`, flags: MessageFlags.Ephemeral });
   },
 };

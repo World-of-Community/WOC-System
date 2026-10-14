@@ -1,4 +1,4 @@
-import { EmbedBuilder, time } from "discord.js";
+import { EmbedBuilder, time, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 export default {
@@ -20,6 +20,6 @@ export default {
       embeds: [embed],
     });
 
-    interaction.reply({ ephemeral: true, content: ":white_check_mark: Erfolgreich gemeldet!"});
+    interaction.reply({ flags: MessageFlags.Ephemeral, content: ":white_check_mark: Erfolgreich gemeldet!"});
   },
 };

@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 import { shutdown } from "#core/shutdown.js";
 
@@ -18,11 +19,11 @@ export default {
 
   async run(client, interaction) {
     if (interaction.options.getString("bestätigung") !== "ja") {
-      return interaction.reply({ content: '> `❗` » Du musst mit "ja" bestätigen, um den Bot neu zu starten.', ephemeral: true });
+      return interaction.reply({ content: '> `❗` » Du musst mit "ja" bestätigen, um den Bot neu zu starten.', flags: MessageFlags.Ephemeral });
     }
 
     const timestamp = Math.floor(Date.now() / 1000);
-    await interaction.reply({ content: `> \`🕒\` » Der Bot wird neu gestartet... (<t:${timestamp}:R>) (Max. 30 Sekunden)`, ephemeral: true });
+    await interaction.reply({ content: `> \`🕒\` » Der Bot wird neu gestartet... (<t:${timestamp}:R>) (Max. 30 Sekunden)`, flags: MessageFlags.Ephemeral });
     logger.warn(`Restart requested by ${interaction.user.tag}`);
 
     setTimeout(() => shutdown(client, { reason: "restart command" }), 2000);

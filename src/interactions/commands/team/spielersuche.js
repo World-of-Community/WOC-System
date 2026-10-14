@@ -1,4 +1,4 @@
-import {EmbedBuilder} from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
 
@@ -15,13 +15,13 @@ export default {
     if (interaction.channel.id !== allowedChannelId) {
       return interaction.reply({
         content: "> `❌` » Dieser Befehl kann nur in einem bestimmten Channel verwendet werden.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     await interaction.reply({
       content: "> `✅` » Das Spielersuche-System wurde gestartet und sendet jeden Tag um 00:00 Uhr automatisch eine neue Nachricht.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     const channel = interaction.channel;

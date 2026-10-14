@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import translator from "open-google-translator";
 
 export default {
@@ -13,6 +14,6 @@ export default {
       toLanguage: interaction.locale,
     });
 
-    interaction.reply({ ephemeral: true, content: translated[0].translation });
+    interaction.reply({ flags: MessageFlags.Ephemeral, content: translated[0].translation });
   },
 };

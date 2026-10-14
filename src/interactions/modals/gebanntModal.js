@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 export default {
@@ -48,7 +48,7 @@ export default {
         .setDescription(`\`✅\` » Du hast **erfolgreich** ein Ticket für deinen Entbannungsantrag erstellt, du kannst diesen hier erreichen: ${channel}`)
         .setColor("Green");
 
-      interaction.reply({ embeds: [InfoBannEmbed], ephemeral: true });
+      interaction.reply({ embeds: [InfoBannEmbed], flags: MessageFlags.Ephemeral });
     });
   },
 };

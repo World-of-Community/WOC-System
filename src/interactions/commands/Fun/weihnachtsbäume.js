@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import eventItems from "#models/EventItem.js";
 
 export default {
@@ -26,7 +26,7 @@ export default {
     if (sameDay) {
       return interaction.reply({
         content: "> `🎄` | Du hast heute bereits einen Weihnachtsbaum geschmückt! Komm morgen wieder.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -40,6 +40,6 @@ export default {
       .setDescription(`Du hast **${collected} Weihnachtsbäume** gesammelt! \`🎁\`\n\nInsgesamt hast du nun **${userData.amount} Bäume**.`)
       .setColor("Green");
 
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    return interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   },
 };

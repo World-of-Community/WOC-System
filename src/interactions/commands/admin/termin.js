@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import Termin from "#models/Termin.js";
 
 // Unterstützt:
@@ -103,14 +103,14 @@ export default {
     if (["add", "edit", "remove"].includes(action) && !user) {
       return interaction.reply({
         content: "> `❌` » Bitte gib einen Nutzer an.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     if (["add", "edit"].includes(action) && !zeitInput) {
       return interaction.reply({
         content: "> `❌` » Bitte gib ein Datum an.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -122,7 +122,7 @@ export default {
       if (!parsed) {
         return interaction.reply({
           content: "> `❌` » Ungültiges Datum! Beispiele: `30.07.2025` oder `30.07.2025 18:00`",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -133,7 +133,7 @@ export default {
       if (existing) {
         return interaction.reply({
           content: "> `❗` » Nutzer hat schon einen Termin!",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -160,7 +160,7 @@ export default {
           (note ? `\n> \`📝\` » Notiz: ${note}` : ""),
         );
 
-      return interaction.reply({ embeds: [embed], ephemeral: false });
+      return interaction.reply({ embeds: [embed] });
     }
 
     // EDIT
@@ -171,7 +171,7 @@ export default {
       if (!parsed) {
         return interaction.reply({
           content: "> `❌` » Ungültiges Datum! Beispiele: `30.07.2025` oder `30.07.2025 18:00`",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -182,7 +182,7 @@ export default {
       if (!termin) {
         return interaction.reply({
           content: "> `❗` » Kein Termin gefunden.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -208,7 +208,7 @@ export default {
           (termin.note ? `\n> \`📝\` » Notiz: ${termin.note}` : ""),
         );
 
-      return interaction.reply({ embeds: [embed], ephemeral: false });
+      return interaction.reply({ embeds: [embed] });
     }
 
     // REMOVE
@@ -219,7 +219,7 @@ export default {
       if (!termin) {
         return interaction.reply({
           content: "> `❗` » Kein Termin gefunden.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -230,7 +230,7 @@ export default {
 
       return interaction.reply({
         embeds: [embed],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -242,7 +242,7 @@ export default {
       if (termine.length === 0) {
         return interaction.reply({
           content: "> `ℹ️` » Es sind keine Termine gespeichert.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -281,13 +281,12 @@ export default {
 
       return interaction.reply({
         embeds: [embed],
-        ephemeral: false,
       });
     }
 
     return interaction.reply({
       content: "> `❌` » Ungültige Aktion!",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

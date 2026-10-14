@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import userdb from "#models/User.js";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
@@ -37,7 +38,7 @@ export default {
           afkStamp: timestamp,
         });
       } else if (userData.afk) {
-        return await interaction.reply({ content: "> `❌` » Du bist bereits AFK!", ephemeral: true });
+        return await interaction.reply({ content: "> `❌` » Du bist bereits AFK!", flags: MessageFlags.Ephemeral });
       } else {
         userData.afk = true;
         userData.afkReason = grund;
@@ -52,7 +53,7 @@ export default {
 
     } catch (error) {
       logger.error("Fehler beim AFK-Setzen:", error);
-      await interaction.reply({ content: `> \`❌\` » Fehler, Falls dieser Fehler sich wiederholt, Melde dies bitte im Support (<#${settings.get("channels.support")}>) `, ephemeral: true });
+      await interaction.reply({ content: `> \`❌\` » Fehler, Falls dieser Fehler sich wiederholt, Melde dies bitte im Support (<#${settings.get("channels.support")}>) `, flags: MessageFlags.Ephemeral });
     }
   },
 };

@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } from "discord.js";
 
 export default {
   name: "admin-info",
@@ -24,7 +24,7 @@ export default {
     if (membersWithRole.size === 0) {
       return interaction.reply({
         content: `> \`❌\` » Es gibt keine Mitglieder mit der Rolle ${role.toString()}`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -67,7 +67,7 @@ export default {
     const message = await interaction.reply({
       embeds: [generateEmbed(currentPage)],
       components: [row],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     const collector = message.createMessageComponentCollector({

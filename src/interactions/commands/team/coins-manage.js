@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js";
 
 export default {
@@ -71,14 +71,14 @@ export default {
       if (!user) {
         return interaction.reply({
           content: "> `❗` » Es wurde kein Benutzer angegeben.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
       if (user.bot) {
         return interaction.reply({
           content: "> `❌` » Bots können keine Coins erhalten.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -86,7 +86,7 @@ export default {
         return interaction.reply({
           content:
             "> `❗` » Die Anzahl der Coins muss eine positive Zahl sein.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -128,7 +128,7 @@ export default {
 
       return interaction.reply({
         embeds: [CoinEmbed],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -145,7 +145,7 @@ export default {
         return interaction.reply({
           content:
             "> `❗` » Die Anzahl der Coins muss größer als **0** sein.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -154,7 +154,7 @@ export default {
         return interaction.reply({
           content:
             "> `❗` » Du musst entweder einen Benutzer **pingen** oder eine **ID angeben**.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -166,7 +166,7 @@ export default {
         return interaction.reply({
           content:
             "> `❗` » Die angegebene Benutzer-ID ist keine gültige Discord-ID.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -186,7 +186,7 @@ export default {
         return interaction.reply({
           content:
             `> \`❌\` » Der Benutzer mit der ID \`${userId}\` konnte nicht gefunden werden.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -195,7 +195,7 @@ export default {
         return interaction.reply({
           content:
             "> `❌` » Bots können keine Coins haben.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -208,7 +208,7 @@ export default {
         return interaction.reply({
           content:
             `> \`❗\` » ${user} besitzt aktuell keine Coins.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -217,7 +217,7 @@ export default {
         return interaction.reply({
           content:
             `> \`❗\` » ${user} besitzt aktuell **0 Coins**.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -227,7 +227,7 @@ export default {
             `> \`❗\` » ${user} besitzt nicht genügend Coins.\n\n` +
             `» Vorhanden: **${userCoins.coins.toLocaleString("de-DE")} Coins**\n` +
             `» Entfernen: **${amount.toLocaleString("de-DE")} Coins**`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -269,7 +269,7 @@ export default {
 
       return interaction.reply({
         embeds: [CoinEmbed],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

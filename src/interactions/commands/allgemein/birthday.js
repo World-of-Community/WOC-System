@@ -1,4 +1,4 @@
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, MessageFlags } from "discord.js";
 import userDB from "#models/User.js";
 import logger from "#core/logger.js";
 
@@ -102,11 +102,11 @@ export default {
         user = interaction.options.getUser("user");
 
         if (user && user.id !== interaction.user.id && !interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
-          return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, den Geburtstag anderer Nutzer zu setzen.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, den Geburtstag anderer Nutzer zu setzen.", flags: MessageFlags.Ephemeral });
         }
 
         if (!isValidDate(tag, monat, jahr)) {
-          return interaction.reply({ content: "> `❌` » Bitte gib ein gültiges Datum ein.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Bitte gib ein gültiges Datum ein.", flags: MessageFlags.Ephemeral });
         }
 
         try {
@@ -132,24 +132,24 @@ export default {
             );
           }
           if (user && user.id !== interaction.user.id) {
-            await interaction.reply({ content: `> \`✅\` » Der Geburtstag von ${user} wurde erfolgreich gespeichert.`, ephemeral: true });
+            await interaction.reply({ content: `> \`✅\` » Der Geburtstag von ${user} wurde erfolgreich gespeichert.`, flags: MessageFlags.Ephemeral });
           } else {
-            await interaction.reply({ content: "> `✅` » Danke dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>", ephemeral: true });
+            await interaction.reply({ content: "> `✅` » Danke dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>", flags: MessageFlags.Ephemeral });
           }
         } catch (error) {
           logger.error(error);
-          await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Speichern des Geburtstags. Bitte melde dich beim Ticket Support.", ephemeral: true });
+          await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Speichern des Geburtstags. Bitte melde dich beim Ticket Support.", flags: MessageFlags.Ephemeral });
         }
         break;
 
       case "delete":
         if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-          return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.", flags: MessageFlags.Ephemeral });
         }
 
         user = interaction.options.getUser("user");
         if (!user) {
-          return interaction.reply({ content: "> `❌` » User wurde nicht gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » User wurde nicht gefunden.", flags: MessageFlags.Ephemeral });
         }
 
         try {
@@ -157,16 +157,16 @@ export default {
             { userID: user.id },
             { $unset: { birthday: "" } },
           );
-          await interaction.reply({ content: "> `✅` » Der Geburtstag wurde gelöscht.", ephemeral: true });
+          await interaction.reply({ content: "> `✅` » Der Geburtstag wurde gelöscht.", flags: MessageFlags.Ephemeral });
         } catch (error) {
           logger.error(error);
-          await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Löschen des Geburtstags. Bitte melde dich beim Ticket Support.", ephemeral: true });
+          await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Löschen des Geburtstags. Bitte melde dich beim Ticket Support.", flags: MessageFlags.Ephemeral });
         }
         break;
 
       case "change":
         if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-          return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Du hast keine Berechtigung, diesen Befehl zu verwenden.", flags: MessageFlags.Ephemeral });
         }
 
         user = interaction.options.getUser("user");
@@ -175,11 +175,11 @@ export default {
         jahr = interaction.options.getInteger("jahr");
 
         if (!user) {
-          return interaction.reply({ content: "> `❌` » User wurde nicht gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » User wurde nicht gefunden.", flags: MessageFlags.Ephemeral });
         }
 
         if (!isValidDate(tag, monat, jahr)) {
-          return interaction.reply({ content: "> `❌` » Bitte gib ein gültiges Datum ein.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Bitte gib ein gültiges Datum ein.", flags: MessageFlags.Ephemeral });
         }
 
         try {
@@ -203,10 +203,10 @@ export default {
               { upsert: true, returnDocument: "after" },
             );
           }
-          await interaction.reply({ content: "> `✅` » Der Geburtstag wurde geändert.", ephemeral: true });
+          await interaction.reply({ content: "> `✅` » Der Geburtstag wurde geändert.", flags: MessageFlags.Ephemeral });
         } catch (error) {
           logger.error(error);
-          await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Ändern des Geburtstags. Bitte melde dich beim Ticket Support.", ephemeral: true });
+          await interaction.reply({ content: "> `❌` » Es gab einen Fehler beim Ändern des Geburtstags. Bitte melde dich beim Ticket Support.", flags: MessageFlags.Ephemeral });
         }
         break;
 
@@ -223,7 +223,7 @@ export default {
         upcomingBirthdays = upcomingBirthdays.filter(b => b.birthday.tag !== 0);
 
         if (upcomingBirthdays.length === 0) {
-          return interaction.reply({ content: "> `❌` » Keine Geburtstage gefunden.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Keine Geburtstage gefunden.", flags: MessageFlags.Ephemeral });
         }
 
         // Heute-Datum holen
@@ -311,7 +311,7 @@ export default {
         const embed = createBirthdayEmbed(upcomingBirthdays, currentPage);
         const buttons = createPaginationButtons(currentPage, totalPages);
 
-        const message = await interaction.reply({ embeds: [embed], components: [buttons], ephemeral: true });
+        const message = await interaction.reply({ embeds: [embed], components: [buttons], flags: MessageFlags.Ephemeral });
 
         const filter = i => ["prev", "next"].includes(i.customId) && i.user.id === interaction.user.id;
         const collector = message.createMessageComponentCollector({ filter });

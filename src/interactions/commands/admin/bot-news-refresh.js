@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, EmbedBuilder } from "discord.js";
+import { PermissionFlagsBits, EmbedBuilder, MessageFlags } from "discord.js";
 import serverdb from "#models/Guild.js";
 
 import { settings } from "#core/settings.js";
@@ -18,7 +18,7 @@ export default {
     if (!serverData) {return;}
     const channel = await interaction.client.channels.cache.get(settings.get("channels.changelog"));
     await channel.messages.fetch(serverData.updateMessage).then(async msg => {
-      await interaction.reply({ content: "> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.", ephemeral: true });
+      await interaction.reply({ content: "> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.", flags: MessageFlags.Ephemeral });
       setTimeout(async () => {
 
         // Week Date
@@ -103,7 +103,7 @@ export default {
           );
         }
 
-        await interaction.editReply({ content: "> `✅` » Ich habe das Changelog erfolgreich aktualisiert.", ephemeral: true });
+        await interaction.editReply({ content: "> `✅` » Ich habe das Changelog erfolgreich aktualisiert.", flags: MessageFlags.Ephemeral });
         await msg.edit({ embeds: [updateEmbed] });
       }, 5000);
     });

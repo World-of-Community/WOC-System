@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -71,6 +71,6 @@ export default {
       .setTimestamp();
 
     // Sende das Embed als Antwort
-    await interaction.reply({ embeds: [commandEmbed], ephemeral: true });
+    await interaction.reply({ embeds: [commandEmbed], flags: MessageFlags.Ephemeral });
   },
 };

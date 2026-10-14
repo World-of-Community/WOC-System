@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
   name: "checkban",
@@ -32,7 +32,7 @@ export default {
         .setFooter({ text: `${interaction.guild.name} | Ban-System`, iconURL: interaction.client.user.displayAvatarURL() })
         .setTimestamp();
 
-      return interaction.reply({ embeds: [bannedEmbed], ephemeral: true });
+      return interaction.reply({ embeds: [bannedEmbed], flags: MessageFlags.Ephemeral });
 
     } catch {
       const notBannedEmbed = new EmbedBuilder()
@@ -46,7 +46,7 @@ export default {
         .setFooter({ text: `${interaction.guild.name} | Ban-Check-System`, iconURL: interaction.client.user.displayAvatarURL() })
         .setTimestamp();
 
-      return interaction.reply({ embeds: [notBannedEmbed], ephemeral: true });
+      return interaction.reply({ embeds: [notBannedEmbed], flags: MessageFlags.Ephemeral });
     }
   },
 };

@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import leaderboarddb from "#models/Leaderboard.js";
 import { createLeaderboardMessage } from "#systems/leaderboard.js";
 
@@ -10,11 +11,11 @@ export default {
 
   async run(client, interaction) {
     if(!interaction.guild) {return;}
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const msgContent = await createLeaderboardMessage(interaction.guild);
 
-    const message = await interaction.channel.send({ embeds: msgContent.embeds, fetchReply: true });
+    const message = await interaction.channel.send({ embeds: msgContent.embeds });
 
     let savedMessage = await leaderboarddb.findOne({ guildId: interaction.guild.id });
     if(!savedMessage) {

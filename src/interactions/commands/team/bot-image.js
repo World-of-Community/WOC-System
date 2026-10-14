@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
   name: "bot-image",
@@ -55,13 +55,13 @@ export default {
           verzögerungInMs = zeitwert * 24 * 60 * 60 * 1000; // Tage in Millisekunden
           break;
         default:
-          return interaction.reply({ content: "> `❗` » Bitte gib eine gültige Zeiteinheit an (s, m, h, d).", ephemeral: true });
+          return interaction.reply({ content: "> `❗` » Bitte gib eine gültige Zeiteinheit an (s, m, h, d).", flags: MessageFlags.Ephemeral });
       }
 
       const timestamp = Math.floor((Date.now() + verzögerungInMs) / 1000);
-      await interaction.reply({ content: `> \`📌\` » Das Bild wird **<t:${timestamp}:R>** im Kanal ${kanal} gesendet.\n> \`📌\` » Geplanter Zeitpunkt: <t:${timestamp}:F>`, ephemeral: true });
+      await interaction.reply({ content: `> \`📌\` » Das Bild wird **<t:${timestamp}:R>** im Kanal ${kanal} gesendet.\n> \`📌\` » Geplanter Zeitpunkt: <t:${timestamp}:F>`, flags: MessageFlags.Ephemeral });
     } else {
-      await interaction.reply({ content: `> \`📌\` » Das Bild wird sofort im Kanal ${kanal} gesendet.`, ephemeral: true });
+      await interaction.reply({ content: `> \`📌\` » Das Bild wird sofort im Kanal ${kanal} gesendet.`, flags: MessageFlags.Ephemeral });
     }
 
     const imageEmbed = new EmbedBuilder()

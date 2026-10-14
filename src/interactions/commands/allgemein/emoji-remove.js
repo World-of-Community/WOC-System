@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import userdb from "#models/User.js";
 
 export default {
@@ -13,10 +14,10 @@ export default {
     if (!userData) {return;}
 
     if (userData.reactions.length === 0) {
-      return await interaction.reply({ content: "> `❌` » Du hast keine aktiven Emojis.", ephemeral: true });
+      return await interaction.reply({ content: "> `❌` » Du hast keine aktiven Emojis.", flags: MessageFlags.Ephemeral });
     }
 
     await userdb.findOneAndUpdate({ userID: interaction.user.id }, { $set: { reactions: [] } });
-    await interaction.reply({ content: "> `✅` » Die Emojis wurden erfolgreich entfernt.", ephemeral: true });
+    await interaction.reply({ content: "> `✅` » Die Emojis wurden erfolgreich entfernt.", flags: MessageFlags.Ephemeral });
   },
 };

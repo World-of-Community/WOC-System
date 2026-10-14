@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } from "discord.js";
 import Timeout from "#models/Timeout.js";
 import Warn from "#models/Warning.js";
 import Note from "#models/UserNote.js";
@@ -32,7 +32,7 @@ export default {
     ];
 
     if (!punishments.length)
-    {return interaction.reply({ content: "> `🟢` » Keine Strafen vorhanden.", ephemeral: true });}
+    {return interaction.reply({ content: "> `🟢` » Keine Strafen vorhanden.", flags: MessageFlags.Ephemeral });}
 
     // ───────────── Lade Notizen ─────────────
     const notes = await Note.find({ userId, guildId }).sort({ createdAt: 1 });
@@ -78,7 +78,7 @@ export default {
           .setDisabled(page === punishments.length - 1),
       );
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     await interaction.editReply({ embeds: [buildEmbed()], components: [row()] });
 
     const msg = await interaction.fetchReply();
@@ -86,7 +86,7 @@ export default {
 
     collector.on("collect", async i => {
       if (i.user.id !== interaction.user.id)
-      {return i.reply({ content: "> `❌` » Nicht dein Menü.", ephemeral: true });}
+      {return i.reply({ content: "> `❌` » Nicht dein Menü.", flags: MessageFlags.Ephemeral });}
 
       if (i.customId === "punish_prev") {page--;}
       if (i.customId === "punish_next") {page++;}

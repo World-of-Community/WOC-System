@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
 
 export default {
   name: "search",
@@ -16,7 +16,7 @@ export default {
 
   async run(client, interaction) {
     const jahr = interaction.options.getInteger("jahr");
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const allMembers = await interaction.guild.members.fetch();
     const gefiltert = allMembers.filter(member =>

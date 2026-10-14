@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 
 export default {
@@ -52,10 +52,10 @@ export default {
     // Nachricht und Embed an den Benutzer per DM senden
     try {
       await member.send({ embeds: [Nachrichtembed] });
-      await interaction.reply({ content: `> \`✅\` » Ich habe die Nachricht erfolgreich an ${member} gesendet!`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Ich habe die Nachricht erfolgreich an ${member} gesendet!`, flags: MessageFlags.Ephemeral });
     } catch (error) {
       logger.error(`Fehler beim Senden der Nachricht an ${member}:`, error);
-      await interaction.reply({ content: `> \`❌\` » Beim Senden der Nachricht an ${member} ist ein Fehler aufgetreten.\n> \`📌\` » Bitte schau im Server-Log nach oder melde dich bei einem Admin.`, ephemeral: true });
+      await interaction.reply({ content: `> \`❌\` » Beim Senden der Nachricht an ${member} ist ein Fehler aufgetreten.\n> \`📌\` » Bitte schau im Server-Log nach oder melde dich bei einem Admin.`, flags: MessageFlags.Ephemeral });
     }
   },
 };

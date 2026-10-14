@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import userdb from "#models/User.js";
 import { settings } from "#core/settings.js";
 
@@ -19,7 +19,7 @@ export default {
     const member = interaction.options.getMember("mitglied") || interaction.member;
 
     if (member.user.bot) {
-      return interaction.reply({ content: "> `❌` » Du kannst keine Statistiken über Bots abrufen!", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Du kannst keine Statistiken über Bots abrufen!", flags: MessageFlags.Ephemeral });
     }
 
     const roleBundesland = {
@@ -366,12 +366,12 @@ export default {
     //    components.push(new ActionRowBuilder().addComponents(adventButton));
     //}
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 
     //if (components.length>0){
-    //    await interaction.reply({ embeds:[embed], components, ephemeral:true });
+    //    await interaction.reply({ embeds:[embed], components, flags: MessageFlags.Ephemeral });
     //} else {
-    //    await interaction.reply({ embeds:[embed], ephemeral:true });
+    //    await interaction.reply({ embeds:[embed], flags: MessageFlags.Ephemeral });
     //}
   },
 };

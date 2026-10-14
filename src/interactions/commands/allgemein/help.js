@@ -1,4 +1,4 @@
-import { EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } from "discord.js";
+import { EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, MessageFlags } from "discord.js";
 
 export default {
   name: "help",
@@ -37,7 +37,7 @@ export default {
       );
 
     const row = new ActionRowBuilder().addComponents(helpSelectMenü);
-    await interaction.reply({ embeds: [helpEmbed], components: [row], ephemeral: true });
+    await interaction.reply({ embeds: [helpEmbed], components: [row], flags: MessageFlags.Ephemeral });
 
 
     const filter = i => i.customId === "befehl_kategorie" && i.user.id === interaction.user.id;

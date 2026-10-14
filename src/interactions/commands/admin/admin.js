@@ -1,4 +1,4 @@
-import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags } from "discord.js";
 import serverdb from "#models/Guild.js";
 import userdb from "#models/User.js";
 import logger from "#core/logger.js";
@@ -207,7 +207,7 @@ export default {
     if (member.user.bot) {
       return interaction.reply({
         content: "> `❌` » Bots sind nicht erlaubt!",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -224,11 +224,11 @@ export default {
 
           await targetChannel.send({ content: `${member}`, embeds: [Uprankembed] });
 
-          await interaction.reply({ content: "> `✅` » Das Teammitglied wurde **befördert.**", ephemeral: true });
+          await interaction.reply({ content: "> `✅` » Das Teammitglied wurde **befördert.**", flags: MessageFlags.Ephemeral });
         } catch (error) {
           logger.error("Fehler beim Hinzufügen der Rolle:", error);
 
-          await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
+          await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", flags: MessageFlags.Ephemeral });
         }
         break;
 
@@ -243,11 +243,11 @@ export default {
             .setTimestamp();
 
           await targetChannel.send({ embeds: [RangUpdateembed] });
-          await interaction.reply({ content: "> `✅` » Das Teammitglied wurde **herabgestuft.**", ephemeral: true });
+          await interaction.reply({ content: "> `✅` » Das Teammitglied wurde **herabgestuft.**", flags: MessageFlags.Ephemeral });
 
         } catch (error) {
           logger.error("Fehler beim Herabstufen des Benutzers:", error);
-          await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
+          await interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", flags: MessageFlags.Ephemeral });
         }
         break;
 
@@ -285,7 +285,7 @@ export default {
 
           await interaction.reply({
             content: "> `✅` » Der Bereich wurde erfolgreich geändert.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
 
         } catch (error) {
@@ -294,7 +294,7 @@ export default {
 
           await interaction.reply({
             content: "> `❌` » Es ist ein Fehler aufgetreten.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
 
         }
@@ -348,10 +348,10 @@ export default {
             .setTimestamp();
 
           targetChannel.send({ content: `${member}`, embeds: [TeammitgliedEmbed] });
-          await interaction.reply({ content: "> `✅` » Ein neues Teammitglied ist nun da.", ephemeral: true});
+          await interaction.reply({ content: "> `✅` » Ein neues Teammitglied ist nun da.", flags: MessageFlags.Ephemeral});
         } catch (error) {
           logger.error("Fehler beim Hinzufügen der Rolle:", error);
-          interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
+          interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", flags: MessageFlags.Ephemeral });
         }
         break;
 
@@ -384,10 +384,10 @@ export default {
             .setTimestamp();
 
           targetChannel.send({ embeds: [kickEmbed] });
-          await interaction.reply({ content: "> `✅` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**", ephemeral: true });
+          await interaction.reply({ content: "> `✅` » Das Teammitglied wurde aus dem Server-Team **Entfernt.**", flags: MessageFlags.Ephemeral });
         } catch (error) {
           logger.error("❌  | Fehler beim Kicken des Benutzers:", error);
-          interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", ephemeral: true });
+          interaction.reply({ content: "> `❌` » Es ist ein Fehler aufgetreten.", flags: MessageFlags.Ephemeral });
         }
         break;
       }
@@ -400,10 +400,10 @@ export default {
 
         if(sub === "aktivieren") {
           await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $pull: { deactivated: `${system}` } });
-          await interaction.reply({ content: `> \`🟢\` » Das \`${system}\` System wurde **erfolgreich** __aktiviert.__`, ephemeral: true });
+          await interaction.reply({ content: `> \`🟢\` » Das \`${system}\` System wurde **erfolgreich** __aktiviert.__`, flags: MessageFlags.Ephemeral });
         } else if(sub === "deaktivieren") {
           await serverdb.findOneAndUpdate({ guildID: interaction.guildId }, { $push: { deactivated: `${system}` } });
-          await interaction.reply({ content: `> \`🔴\` » Das \`${system}\` System wurde **erfolgreich** __deaktiviert.__`, ephemeral: true });
+          await interaction.reply({ content: `> \`🔴\` » Das \`${system}\` System wurde **erfolgreich** __deaktiviert.__`, flags: MessageFlags.Ephemeral });
         }
         break;
       }
@@ -426,7 +426,7 @@ export default {
         const response1 = await interaction.reply({
           content: `> \`❗\` » Möchtest du wirklich den Betrag in Höhe von \`${amount}€\` hinzufügen?`,
           components: [row],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
 
         const collectorFilter1 = (i) => i.user.id === interaction.user.id;
@@ -454,18 +454,17 @@ export default {
               .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
               .setTimestamp();
 
-            await confirmation.update({ content: null, embeds: [donateEmbed], ephemeral: true, components: [] });
+            await confirmation.update({ content: null, embeds: [donateEmbed], components: [] });
           } else if (confirmation.customId === "cancel") {
             // Handle cancellation
             await confirmation.update({
               content: `> \`❌\` » Du hast die Spende in Höhe von \`${amount}€\` **nicht hinzugefügt**`,
-              ephemeral: true,
               components: [],
             });
           }
         } catch (err) {
           logger.error(err);
-          await interaction.followUp({ content: "> `⚠️` » Die Aktion wurde nicht rechtzeitig bestätigt.", ephemeral: true });
+          await interaction.followUp({ content: "> `⚠️` » Die Aktion wurde nicht rechtzeitig bestätigt.", flags: MessageFlags.Ephemeral });
         }
         break;
       }

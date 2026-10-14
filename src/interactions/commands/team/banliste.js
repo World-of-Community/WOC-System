@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import bandb from "#models/Ban.js";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
@@ -15,12 +15,12 @@ export default {
     if (!gebannt) {
       return interaction.reply({
         content: "> `❌` » Die Rolle für gebannte Nutzer wurde nicht gefunden.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     // Schnelle Antwort senden
-    await interaction.reply({ content: "> `🔄` » Lade Bannliste...", ephemeral: true });
+    await interaction.reply({ content: "> `🔄` » Lade Bannliste...", flags: MessageFlags.Ephemeral });
 
     const bans = await Promise.all(
       gebannt.members.map(async (member) => {

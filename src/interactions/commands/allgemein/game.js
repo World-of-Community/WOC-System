@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 export default {
   name: "game",
@@ -63,7 +64,7 @@ export default {
     const rolle = interaction.guild.roles.cache.get(rolleId);
 
     if (!rolle) {
-      return interaction.reply({ content: "> `❌` » Rolle nicht gefunden!", ephemeral: true });
+      return interaction.reply({ content: "> `❌` » Rolle nicht gefunden!", flags: MessageFlags.Ephemeral });
     }
 
     await interaction.reply({

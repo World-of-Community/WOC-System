@@ -1,9 +1,4 @@
-import {
-  EmbedBuilder,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-} from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
 
 import logger from "#core/logger.js";
 import Flaggenquiz from "#models/Flaggenquiz.js";
@@ -137,7 +132,7 @@ export const handleButton = async (interaction) => {
   if (!quiz) {
     await interaction.reply({
       content: "> `❌` » Kein aktives Flaggenquiz.",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -214,14 +209,14 @@ export default {
     if (!channel?.isTextBased()) {
       await interaction.reply({
         content: "> `❌` » Bitte wähle einen Textkanal aus.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
     await interaction.reply({
       content: "> `⏳` » Flaggenquiz wird gestartet...",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     const oldQuiz = await Flaggenquiz.findOne({

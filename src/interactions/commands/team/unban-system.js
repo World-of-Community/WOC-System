@@ -1,4 +1,4 @@
-import {EmbedBuilder, PermissionFlagsBits} from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits, MessageFlags } from "discord.js";
 import logger from "#core/logger.js";
 import { settings } from "#core/settings.js";
 
@@ -68,7 +68,7 @@ export default {
       const user = interaction.options.getUser("user");
 
       if (!user) {
-        return interaction.reply({ content: "> `❌` » Der Benutzer wurde nicht gefunden.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Der Benutzer wurde nicht gefunden.", flags: MessageFlags.Ephemeral });
       }
 
       const logChannelId = settings.get("channels.serverLogs");
@@ -76,7 +76,7 @@ export default {
 
       const logChannel = interaction.guild.channels.cache.get(logChannelId);
       if (!logChannel) {
-        return interaction.reply({ content: "> `❌` » Log-Kanal konnte nicht gefunden werden.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Log-Kanal konnte nicht gefunden werden.", flags: MessageFlags.Ephemeral });
       }
 
       let thread;
@@ -84,13 +84,13 @@ export default {
         thread = logChannel.threads.cache.get(threadId) || await interaction.client.channels.fetch(threadId);
       } catch (err) {
         logger.error("Thread konnte nicht geladen werden:", err);
-        return interaction.reply({ content: "> `❌` » Thread konnte nicht geladen werden.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Thread konnte nicht geladen werden.", flags: MessageFlags.Ephemeral });
       }
 
       if (!thread) {
         return interaction.reply({
           content: "> `❌` » Der Thread wurde nicht gefunden.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -108,14 +108,14 @@ export default {
       } catch {
         return interaction.reply({
           content: "> `❌` » Der Thread ist archiviert oder gesperrt und konnte nicht automatisch geöffnet werden.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
       const botMember = interaction.guild.members.me;
       const perms = thread.permissionsFor(botMember);
       if (!perms || !perms.has(PermissionFlagsBits.SendMessages)) {
-        return interaction.reply({ content: "> `❌` » Ich habe keine Rechte, um im Thread zu schreiben.", ephemeral: true });
+        return interaction.reply({ content: "> `❌` » Ich habe keine Rechte, um im Thread zu schreiben.", flags: MessageFlags.Ephemeral });
       }
 
       try {
@@ -124,7 +124,7 @@ export default {
           // banInfo = await interaction.guild.bans.fetch(user.id); FIXME unused var
         } catch (err) {
           if (err.code === 10026) {
-            return interaction.reply({ content: `> \`❌\` » ${user} ist nicht gebannt oder wurde bereits entbannt.`, ephemeral: true });
+            return interaction.reply({ content: `> \`❌\` » ${user} ist nicht gebannt oder wurde bereits entbannt.`, flags: MessageFlags.Ephemeral });
           }
           throw err;
         }
@@ -140,15 +140,15 @@ export default {
 
         await thread.send({ embeds: [unbanEmbed] });
 
-        await interaction.reply({ content: `> \`✅\` » ${user} wurde erfolgreich entbannt.`, ephemeral: true });
+        await interaction.reply({ content: `> \`✅\` » ${user} wurde erfolgreich entbannt.`, flags: MessageFlags.Ephemeral });
       } catch (error) {
         logger.error("Fehler beim Entbannen:", error);
         if (error.code === 10026) {
-          return interaction.reply({ content: `> \`❌\` » ${user} ist nicht gebannt oder wurde bereits entbannt.`, ephemeral: true });
+          return interaction.reply({ content: `> \`❌\` » ${user} ist nicht gebannt oder wurde bereits entbannt.`, flags: MessageFlags.Ephemeral });
         } else if (error.code === 50013) {
-          return interaction.reply({ content: "> `❌` » Ich habe nicht genügend Rechte, um diesen Benutzer zu entbannen.", ephemeral: true });
+          return interaction.reply({ content: "> `❌` » Ich habe nicht genügend Rechte, um diesen Benutzer zu entbannen.", flags: MessageFlags.Ephemeral });
         } else {
-          return interaction.reply({ content: "> `⚠️` » Unerwarteter Fehler beim Entbannen. Bitte überprüfe die Logs.", ephemeral: true });
+          return interaction.reply({ content: "> `⚠️` » Unerwarteter Fehler beim Entbannen. Bitte überprüfe die Logs.", flags: MessageFlags.Ephemeral });
         }
       }
     }
@@ -220,7 +220,7 @@ export default {
       await interaction.reply({
         content: "> Die Nachricht wurde erfolgreich im Kanal gesendet." +
           (typ !== "vorerst_abgelehnt" ? ` (**Gültigkeit: ${dauer} Tage**)` : ""),
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },

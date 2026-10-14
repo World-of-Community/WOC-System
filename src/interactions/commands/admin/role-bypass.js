@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 import serverdb from "#models/Guild.js";
 export default {
   name: "role-bypass",
@@ -41,25 +41,25 @@ export default {
 
   async run(client, interaction) {
 
-    if (!interaction.member.permissions.has("Administrator")) {return interaction.reply({ content: "> `❌` » Du hast dazu keine Rechte diesen Befehl zu benutzen.", ephemeral: true });}
+    if (!interaction.member.permissions.has("Administrator")) {return interaction.reply({ content: "> `❌` » Du hast dazu keine Rechte diesen Befehl zu benutzen.", flags: MessageFlags.Ephemeral });}
     if (interaction.options.getSubcommand() === "add") {
       const role = interaction.options.getRole("role");
       const data = await serverdb.findOne({ guildID: interaction.guild.id, roleBypass: { $in: [role.id] } });
 
-      if (data) {return interaction.reply({ content: `> ⚠️ » die ${role} ist bereits hinzugefügt.`, ephemeral: true });}
+      if (data) {return interaction.reply({ content: `> ⚠️ » die ${role} ist bereits hinzugefügt.`, flags: MessageFlags.Ephemeral });}
       await serverdb.findOneAndUpdate({ guildID: interaction.guild.id }, { $push: { roleBypass: role.id } });
 
-      await interaction.reply({ content: `> \`✅\` » Du hast die ${role} erfolgreich hinzugefügt.`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Du hast die ${role} erfolgreich hinzugefügt.`, flags: MessageFlags.Ephemeral });
     }
 
     if (interaction.options.getSubcommand() === "remove") {
       const role = interaction.options.getRole("role");
       const data = await serverdb.findOne({ guildID: interaction.guild.id, roleBypass: { $in: [role.id] } });
 
-      if (!data) {return interaction.reply({ content: "> ⚠️ » Diese Rolle wurde bereits entfernt.", ephemeral: true });}
+      if (!data) {return interaction.reply({ content: "> ⚠️ » Diese Rolle wurde bereits entfernt.", flags: MessageFlags.Ephemeral });}
       await serverdb.findOneAndUpdate({ guildID: interaction.guild.id }, { $pull: { roleBypass: role.id } });
 
-      await interaction.reply({ content: `> \`✅\` » Du hast die ${role} erfolgreich entfernt.`, ephemeral: true });
+      await interaction.reply({ content: `> \`✅\` » Du hast die ${role} erfolgreich entfernt.`, flags: MessageFlags.Ephemeral });
     }
 
     if (interaction.options.getSubcommand() === "list") {
@@ -70,7 +70,7 @@ export default {
         .setTitle("Hier sind alle ByPass Rollen aufgelistet")
         .setDescription(`${roleListe || "**Keine Rollen als Bypass aufgelistet.**"}`)
         .setColor("Blurple");
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
     }
   },
 };

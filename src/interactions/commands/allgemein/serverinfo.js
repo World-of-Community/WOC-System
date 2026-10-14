@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
 
 import { DateTime } from "luxon";
 import Server from "#models/UserCounter.js";
@@ -151,14 +151,14 @@ export default {
     const msg = await interaction.reply({
       embeds: [mainEmbed()],
       components: getButtons(),
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     const collector = msg.createMessageComponentCollector({ time: 60000 });
 
     collector.on("collect", async i => {
       if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: "Nicht dein Menü!", ephemeral: true });
+        return i.reply({ content: "Nicht dein Menü!", flags: MessageFlags.Ephemeral });
       }
 
       if (i.customId === "show_boosters") {
