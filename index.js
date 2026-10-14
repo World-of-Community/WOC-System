@@ -70,7 +70,52 @@ function printAsciiLogo() {
   // Website: https://patorjk.com/software/taag/
   // Font: ANSI Shadow
 
-  logger.log(chalk.hex("#ff7b00")("\n\n██╗    ██╗ ██████╗  ██████╗\n" +
+  logger.log(chalk.hex("#ff7b00")("\n\n██╗    ██// ==========================================
+// TEMPORÄRER TEST-BEFEHL (Danach wieder löschen)
+// ==========================================
+client.on("messageCreate", async (message) => {
+  // Reagiert nur auf die Nachricht !teststream und ignoriert Bots
+  if (message.content === "!teststream" && !message.author.bot) {
+    const member = message.member;
+    if (!member) return;
+
+    message.reply("🔄 Simuliere Stream-Start für 10 Sekunden...");
+
+    // Wir verpassen dem Member im Cache eine künstliche Streaming-Aktivität
+    member.presence = {
+      activities: [
+        {
+          type: 1, // 1 steht in Discord.js intern für ActivityType.Streaming
+          name: "Test Stream",
+          url: "https://twitch.tv"
+        }
+      ]
+    };
+
+    // Wir importieren die Funktion direkt, falls sie in einer anderen Datei liegt.
+    // Falls updateStreamerRole in derselben Datei ist, kannst du das 'await' so lassen.
+    try {
+      await updateStreamerRole(member);
+    } catch (e) {
+      // Falls die Funktion in index.js nicht direkt aufrufbar ist, rufen wir das Event manuell auf:
+      client.emit("presenceUpdate", null, { member: member, user: message.author, activities: member.presence.activities });
+    }
+
+    // Nach 10 Sekunden wird das Ende simuliert
+    setTimeout(async () => {
+      message.channel.send("🔴 Simuliere Stream-Ende...");
+      
+      member.presence = { activities: [] };
+      
+      try {
+        await updateStreamerRole(member);
+      } catch (e) {
+        client.emit("presenceUpdate", null, { member: member, user: message.author, activities: [] });
+      }
+    }, 10000);
+  }
+});
+╗ ██████╗  ██████╗\n" +
     "██║    ██║██╔═══██╗██╔════╝\n" +
     "██║ █╗ ██║██║   ██║██║     \n" +
     "██║███╗██║██║   ██║██║     \n" +
@@ -78,3 +123,5 @@ function printAsciiLogo() {
     " ╚══╝╚══╝  ╚═════╝  ╚═════╝\n" +
     "      WORLD OF COMMUNITY   \n"));
 }
+
+
