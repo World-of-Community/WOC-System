@@ -10,3 +10,6 @@ node_modules/
 # IDE
 .idea
 .vscode
+
+# database exports from scripts/db-backup.js
+backups/
