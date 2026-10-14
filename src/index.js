@@ -7,6 +7,7 @@ import { registerProcessHandlers, reportError } from "#core/errors.js";
 import { registerShutdownHandlers, shutdown } from "#core/shutdown.js";
 import { connectDatabase } from "#db/connection.js";
 import { loadSettings } from "#core/settings.js";
+import { seedEntries } from "#systems/emojiQuiz.js";
 import { loadAll, registerCommands } from "./loaders/index.js";
 
 function printAsciiLogo() {
@@ -35,6 +36,7 @@ async function main() {
 
   await connectDatabase();
   await loadSettings();
+  await seedEntries();
   await loadAll(client);
   await registerCommands(client);
   await client.login(env.discord.token);

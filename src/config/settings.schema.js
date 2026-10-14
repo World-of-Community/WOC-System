@@ -325,6 +325,7 @@ export const SETTINGS_SCHEMA = {
       min: number(1, "Minimum pro Generierung"),
       max: number(1000, "Maximum pro Generierung"),
       flagQuizReward: number(50, "Coins für eine richtig erratene Flagge (0 = aus)"),
+      emojiQuizReward: number(50, "Coins für ein gelöstes Emoji-Rätsel (0 = aus)"),
     },
   },
 

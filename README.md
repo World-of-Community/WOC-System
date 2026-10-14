@@ -237,6 +237,7 @@ Wert beim Import ein. Immer dort aufrufen, wo er gebraucht wird.
 
 Discord-Commands: `/settings list [gruppe]`, `/settings get key`, `/settings set key wert`, `/settings reset key`
 Twitch-Status: `/settings twitch add|remove|list|enable|disable` – ein Status-Embed pro Kanal in `channels.twitch`
+Emoji-Quiz: `/settings emoji add` (Modal) · `remove` (Autocomplete) · `list` – Rätsel liegen in `emojiquiz_entries`, Start per `/emojiquiz start`
 
 ### Fehlerbehandlung
 

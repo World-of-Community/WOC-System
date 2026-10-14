@@ -1,10 +1,13 @@
-import { EmbedBuilder, PermissionFlagsBits, MessageFlags } from "discord.js";
+import {
+  ActionRowBuilder, EmbedBuilder, MessageFlags, ModalBuilder, PermissionFlagsBits, TextInputBuilder, TextInputStyle,
+} from "discord.js";
 import { settings, formatValue } from "#core/settings.js";
 import { UserError } from "#core/errors.js";
 import { iterateSettings } from "#config/settings.schema.js";
 import {
   getStreamers, addStreamer, removeStreamer, setTwitchStatusEnabled, isTwitchStatusEnabled, updateTwitchStatus,
 } from "#systems/twitch.js";
+import { searchEntries, removeEntry, listEntries } from "#systems/emojiQuiz.js";
 
 const PAGE_SIZE = 20;
 
@@ -69,11 +72,32 @@ export default {
         { type: 1, name: "disable", description: "Deaktiviert die automatische Status-Aktualisierung" },
       ],
     },
+    {
+      type: 2,
+      name: "emoji",
+      description: "Emoji-Quiz-Rätsel verwalten",
+      options: [
+        { type: 1, name: "add", description: "Fügt ein Rätsel hinzu (öffnet ein Formular)" },
+        {
+          type: 1,
+          name: "remove",
+          description: "Entfernt ein Rätsel",
+          options: [{ type: 3, name: "begriff", description: "Begriff des Rätsels", required: true, autocomplete: true }],
+        },
+        { type: 1, name: "list", description: "Zeigt alle Rätsel" },
+      ],
+    },
   ],
 
   async autocomplete(interaction) {
     const focused = interaction.options.getFocused(true);
     const query = focused.value.toLowerCase();
+
+    if (focused.name === "begriff") {
+      const entries = await searchEntries(focused.value);
+      await interaction.respond(entries.map((e) => ({ name: `${e.emojis} ${e.begriff}`.slice(0, 100), value: e.begriff })));
+      return;
+    }
 
     if (focused.name === "kanal") {
       await interaction.respond(
@@ -99,8 +123,13 @@ export default {
   },
 
   async run(client, interaction) {
-    if (interaction.options.getSubcommandGroup(false) === "twitch") {
+    const group = interaction.options.getSubcommandGroup(false);
+    if (group === "twitch") {
       await runTwitch(interaction);
+      return;
+    }
+    if (group === "emoji") {
+      await runEmoji(interaction);
       return;
     }
 
@@ -163,6 +192,59 @@ export default {
     }
   },
 };
+
+async function runEmoji(interaction) {
+  const sub = interaction.options.getSubcommand();
+
+  if (sub === "add") {
+    const input = (id, label, { style = TextInputStyle.Short, required = true, placeholder = "", max = 100 } = {}) =>
+      new ActionRowBuilder().addComponents(
+        new TextInputBuilder().setCustomId(id).setLabel(label).setStyle(style).setRequired(required).setPlaceholder(placeholder).setMaxLength(max),
+      );
+
+    const modal = new ModalBuilder()
+      .setCustomId("emoji-quiz-add")
+      .setTitle("🧩 Emoji-Rätsel hinzufügen")
+      .addComponents(
+        input("emojis", "Emojis", { placeholder: "🦁👑" }),
+        input("begriff", "Lösung", { placeholder: "König der Löwen" }),
+        input("tipp", "Tipp (optional)", { required: false, placeholder: "Film" }),
+        input("schwierigkeit", "Schwierigkeit: einfach / mittel / schwer", { required: false, placeholder: "mittel", max: 10 }),
+        input("aliases", "Weitere akzeptierte Antworten, kommagetrennt", { required: false, placeholder: "Lion King, Koenig der Loewen", max: 300 }),
+      );
+
+    await interaction.showModal(modal);
+    return;
+  }
+
+  if (sub === "remove") {
+    const begriff = interaction.options.getString("begriff");
+    try {
+      const entry = await removeEntry(begriff);
+      await interaction.reply({ content: `> \`✅\` » Rätsel ${entry.emojis} **${entry.begriff}** entfernt.`, flags: MessageFlags.Ephemeral });
+    } catch (error) {
+      throw new UserError(`> \`❌\` » ${error.message}`);
+    }
+    return;
+  }
+
+  if (sub === "list") {
+    const entries = await listEntries();
+    if (entries.length === 0) {
+      await interaction.reply({ content: "> `❌` » Keine Rätsel eingetragen.", flags: MessageFlags.Ephemeral });
+      return;
+    }
+
+    const embeds = [];
+    for (let i = 0; i < entries.length; i += 30) {
+      embeds.push(new EmbedBuilder()
+        .setTitle(`\`🧩\` Emoji-Rätsel (${entries.length})`)
+        .setDescription(entries.slice(i, i + 30).map((e) => `${e.emojis} **${e.begriff}** · ${e.schwierigkeit}${e.tipp ? ` · _${e.tipp}_` : ""}`).join("\n"))
+        .setColor("Orange"));
+    }
+    await interaction.reply({ embeds: embeds.slice(0, 10), flags: MessageFlags.Ephemeral });
+  }
+}
 
 async function runTwitch(interaction) {
   const sub = interaction.options.getSubcommand();
