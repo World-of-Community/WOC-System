@@ -81,45 +81,45 @@ function printAsciiLogo() {
 }
 
 // ==========================================
-// TEMPORÄRER TEST-BEFEHL (Danach wieder löschen)
+// TEMPORÄRER TEST-BEFEHL (KORRIGIERTE VERSION)
 // ==========================================
 client.on("messageCreate", async (message) => {
-  // Reagiert nur auf die Nachricht !teststream und ignoriert Bots
   if (message.content === "!teststream" && !message.author.bot) {
     const member = message.member;
     if (!member) return;
 
     message.reply("🔄 Simuliere Stream-Start für 10 Sekunden...");
 
-    // Wir verpassen dem Member im Cache eine künstliche Streaming-Aktivität
-    member.presence = {
+    // Wir erstellen ein künstliches Presence-Objekt für den Test
+    const fakePresence = {
+      member: member,
+      user: message.author,
+      guild: message.guild,
       activities: [
         {
-          type: 1, // 1 steht in Discord.js intern für ActivityType.Streaming
+          type: 1, // ActivityType.Streaming
           name: "Test Stream",
           url: "https://twitch.tv"
         }
       ]
     };
 
-    // Wir triggern das Event manuell, damit dein Live-Rollen-System anspringt
-    client.emit("presenceUpdate", null, { 
-      member: member, 
-      user: message.author, 
-      activities: member.presence.activities 
-    });
+    // Wir triggern das Event manuell und übergeben die gefälschte Presence direkt
+    client.emit("presenceUpdate", null, fakePresence);
 
     // Nach 10 Sekunden wird das Ende simuliert
     setTimeout(async () => {
       message.channel.send("🔴 Simuliere Stream-Ende...");
 
-      member.presence = { activities: [] };
+      const fakeOfflinePresence = {
+        member: member,
+        user: message.author,
+        guild: message.guild,
+        activities: []
+      };
 
-      client.emit("presenceUpdate", null, { 
-        member: member, 
-        user: message.author, 
-        activities: [] 
-      });
+      client.emit("presenceUpdate", null, fakeOfflinePresence);
     }, 10000);
   }
 });
+
