@@ -40,6 +40,7 @@ json/                 Konfiguration & Datenspeicher (config.json, flaggen.json ‚
 - **Command-Registrierung** passiert beim Start in `handlers/slashCommand.js` (Guild-Commands).
   Commands mit `coin`/`leaderboard` im Namen sowie `season-pass` und `daily` werden geladen,
   aber **nicht** bei Discord registriert (Filter aus dem alten `deployCommands.js`).
-- **Geblockte Events** stehen in `handlers/events.js` (`blockedEventFiles`, aktuell `presenceUpdate.js`).
+- **Geblockte Events** stehen in `handlers/events.js` (`blockedEventFiles`).
 - Dispatch der Interaktionen: `events/interactionCreate.js` (Slash/Context-Menu),
   `events/buttonInteraction.js`, `events/modalInteraction.js`, `events/selectMenus.js`.
+- `!teststream` in `index.js` nutzt die echte Streamer-Logik und kann die Live-Rolle tats√§chlich vergeben.

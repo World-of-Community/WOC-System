@@ -9,9 +9,7 @@ const table = new AsciiTable();
 table.setHeading("Events", "Stats").setBorder("|", "=", "0", "0");
 
 // Diese Event-Dateien werden nicht geladen (übernommen aus der alten index.js)
-const blockedEventFiles = new Set([
-  "presenceUpdate.js",
-]);
+const blockedEventFiles = new Set([]);
 
 export default async () => {
   const eventsPath = path.resolve("./events/");
