@@ -1,0 +1,46 @@
+import { defineModel } from "../defineModel.js";
+
+export default defineModel("Guild", {
+  guildID: { type: String, required: true, index: true },
+  adventskalender: {
+    messageId: String,
+    channelId: String,
+  },
+  partner: {
+    msg: String,
+    channel: String,
+    partners: [{
+      partnerID: { type: Number, required: true },
+      name: String,
+      category: String,
+      ownerID: String,
+      invite: String,
+      description: String,
+      thumbnail: String,
+      embed: String,
+      threadID: String,
+      messageID: String,
+      createdAt: { type: Date, default: Date.now },
+    }],
+  },
+  roleBypass: { type: [String], default: [] },
+  deactivated: { type: [String], default: [] },
+  updateMessage: { type: String, default: "" },
+  updateWeek: { type: String, default: "" },
+  support: { type: [String], default: [] },
+  system: { type: [String], default: [] },
+  gift: { type: [String], default: [] },
+  verify: { type: [String], default: [] },
+  minecraft: { type: [String], default: [] },
+  webseite: { type: [String], default: [] },
+  dc: { type: [String], default: [] },
+  service: { type: [String], default: [] },
+  meetings: [{
+    date: { type: Date, required: true },
+    description: { type: String, default: "Keine Beschreibung" },
+    messageID: String,
+    reminders: { type: [String], default: [] },
+    attendees: { type: [String], default: [] },
+    nonAttendees: { type: [String], default: [] },
+  }],
+}, { collection: "server-datas" });

@@ -1,8 +1,15 @@
 node_modules/
 .history/
 .npm/
+.config/
 .env
+.env.*
+!.env.example
+*.log
 
 # IDE
 .idea
 .vscode
+
+# database exports from scripts/db-backup.js
+backups/
