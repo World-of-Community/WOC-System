@@ -324,6 +324,7 @@ export const SETTINGS_SCHEMA = {
     keys: {
       min: number(1, "Minimum pro Generierung"),
       max: number(1000, "Maximum pro Generierung"),
+      flagQuizReward: number(50, "Coins für eine richtig erratene Flagge (0 = aus)"),
     },
   },
 

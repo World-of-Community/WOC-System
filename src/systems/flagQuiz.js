@@ -1,6 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import { getRandomFlag, findFlag, getFlagUrl, getFlagsByRegion, getRegions } from "country-flag-utils";
 import Flaggenquiz from "#models/Flaggenquiz.js";
+import { Coin } from "#models/Coin.js";
+import { settings } from "#core/settings.js";
 
 const LANGUAGE = "de";
 const IMAGE = { provider: "flagcdn", size: "w640", format: "png" };
