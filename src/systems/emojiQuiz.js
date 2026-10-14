@@ -73,14 +73,12 @@ async function pickEntry(schwierigkeit, excludeId) {
 function buildQuizMessage(channel, entry) {
   const embed = new EmbedBuilder()
     .setDescription(
-      `# ${entry.emojis}\n\n` +
-      "🤔 » Welcher Begriff ist gesucht?\n\n" +
-      (entry.tipp ? `💡 » Tipp: **${entry.tipp}**\n` : "") +
-      `🎚️ » Schwierigkeit: **${entry.schwierigkeit}**\n\n` +
-      "✍️ » Schreibe die Lösung in den Chat!",
+      `Gesuchter Begriff • ${entry.emojis}\n\n` +
+      `Schwierigkeit • **${entry.schwierigkeit}**\n\n` +
+      (entry.tipp ? `Tipp: **${entry.tipp}**\n\n` : "") +
+      "Dir fällt der Begriff nicht ein? Du kannst das Emojiquiz auch überspringen."
     )
     .setColor("Random")
-    .setFooter({ text: "» Benutze den Button, um das Rätsel zu überspringen.", iconURL: channel.guild?.iconURL() ?? undefined });
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder().setCustomId("skip_emoji").setLabel("➡️ Überspringen").setStyle(ButtonStyle.Secondary),
