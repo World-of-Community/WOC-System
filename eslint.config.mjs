@@ -4,7 +4,7 @@ import json from "@eslint/json";
 import {defineConfig} from "eslint/config";
 
 export default defineConfig([
-  { ignores: ["package-lock.json"] },
+  { ignores: ["package-lock.json", "node_modules/**"] },
 
   {
     files: ["**/*.{js,mjs,cjs}"],
@@ -38,7 +38,7 @@ export default defineConfig([
       "prefer-const": "error",
       "no-var": "error",
       "object-shorthand": "error",
-      "no-console": "warn",
+      "no-console": "error",
     },
   },
 

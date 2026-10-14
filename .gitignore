@@ -1,7 +1,11 @@
 node_modules/
 .history/
 .npm/
+.config/
 .env
+.env.*
+!.env.example
+*.log
 
 # IDE
 .idea

@@ -1,15 +1,14 @@
 # WOC-System
 
-Discord-Bot für **World Of Community** – aufgebaut nach dem gleichen Command-Handler-System wie [Clockin](https://github.com/BlackWither17/Clockin).
+Discord-Bot für **World Of Community**.
 
-## Starten
+## Setup
 
 ```bash
 npm install
-npm start        # bzw. npm run dev (nodemon)
+cp .env.example .env   # Werte eintragen
+npm start              # oder: npm run dev (nodemon)
 ```
-
-Konfiguration über `.env` (siehe `.env.example`):
 
 | Variable | Beschreibung |
 |---|---|
@@ -17,30 +16,65 @@ Konfiguration über `.env` (siehe `.env.example`):
 | `DISCORD_CLIENT_ID` | Application-ID |
 | `DISCORD_GUILD_ID` | Server-ID (Guild-Commands) |
 | `MONGO_URI` | MongoDB-Verbindungsstring |
+| `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` | Twitch-App für das Status-System |
+| `NODE_ENV` | `development` / `production` |
+| `LOG_LEVEL` | `debug` / `info` / `warn` / `error` |
 
-Nicht-geheime IDs (Kanäle, Rollen usw.) liegen weiterhin in `json/config.json`.
+Nicht-geheime IDs (Kanäle, Rollen usw.) liegen in `src/config/config.json`.
 
 ## Struktur
 
 ```
-index.js              Client, Collections, lädt alle Handler, MongoDB, Login
-handlers/             Lader für Commands, Events, Buttons, Modals, SelectMenus
-slashCommands/<kat>/  Slash-Commands: { name, description, type, options, run(client, interaction) }
-events/               Selbstregistrierende Events (client.on(...)), inkl. Crons/Intervalle
-buttons/<kat>/        Buttons: { id, run(client, interaction) } – prefix: true für dynamische IDs (z.B. advent_12)
-modals/               Modals: { id, run(client, interaction) } – prefix: true möglich
-selectMenus/          Select-Menüs: { id, run(client, interaction) }
-functions/            Hilfsfunktionen & Systeme (Logger, sendLog, Vorschlag, Erfolge, Teammanager …)
-models/               Mongoose-Models (früher „Datenbank/")
-json/                 Konfiguration & Datenspeicher (config.json, flaggen.json …)
+src/
+  index.js                 Start: env → MongoDB → Loader → Command-Registrierung → Login
+  client.js                Discord-Client + Registries (commands, buttons, modals, selectMenus, schedules)
+  config/                  env.js (validierte .env), config.json, index.js (GUILD_ID, CHANNELS, LOG_THREADS)
+  core/                    logger, errors (UserError, reportError, handleInteractionError), reply, discordLog, shutdown
+  database/                connection.js (Retry, Reconnect-Logging, Disconnect), models/
+  loaders/                 laden Commands, Komponenten, Events, Schedules; registerCommands (REST)
+  events/<bereich>/        Event-Module
+  schedules/               Crons & Intervalle
+  interactions/
+    commands/<kategorie>/  Slash-Commands
+    buttons/<bereich>/     Buttons
+    modals/                Modals
+    selectMenus/           Select-Menüs
+  systems/                 Fachlogik (vorschlag, erfolge, teammanager, leaderboard, twitch, streamerRole, …)
+  utils/
+data/                      Laufzeit-/Datendateien (twitchStatus.json, flaggen.json)
+scripts/check-load.js      lädt alle Module ohne Login (npm run check)
 ```
 
-## Besonderheiten
+Imports laufen über Aliase aus `package.json`:
+`#client`, `#config`, `#core/*`, `#db/*`, `#models/*`, `#systems/*`, `#utils/*`.
 
-- **Command-Registrierung** passiert beim Start in `handlers/slashCommand.js` (Guild-Commands).
-  Commands mit `coin`/`leaderboard` im Namen sowie `season-pass` und `daily` werden geladen,
-  aber **nicht** bei Discord registriert (Filter aus dem alten `deployCommands.js`).
-- **Geblockte Events** stehen in `handlers/events.js` (`blockedEventFiles`).
-- Dispatch der Interaktionen: `events/interactionCreate.js` (Slash/Context-Menu),
-  `events/buttonInteraction.js`, `events/modalInteraction.js`, `events/selectMenus.js`.
-- `!teststream` in `index.js` nutzt die echte Streamer-Logik und kann die Live-Rolle tatsächlich vergeben.
+## Modul-Formate
+
+```js
+// Command
+export default { name, description, type, options, run(client, interaction), autocomplete?(interaction) };
+
+// Button / Modal / SelectMenu – prefix: true matcht alle customIds, die mit id beginnen
+export default { id, prefix?, run(client, interaction) };
+
+// Event (eine Datei darf auch ein Array exportieren)
+export default { name: Events.MessageCreate, once?, execute(client, ...args) };
+
+// Schedule – startet nach ClientReady
+export default { name, cron: "0 0 * * *" | interval: ms, runOnReady?, execute(client) };
+export default { name, start(client) };   // eigener Timer, darf stop() zurückgeben
+```
+
+## Fehlerbehandlung
+
+- Jeder Command/Button/Modal/SelectMenu-Aufruf, jeder Event-Listener und jeder Schedule-Lauf ist gekapselt.
+- `throw new UserError("…")` → Text geht als ephemere Antwort an den Nutzer, kein Fehler-Log.
+- Alle anderen Fehler → Konsole + Embed im ERROR-Thread (`reportError`), Nutzer bekommt eine generische Meldung.
+- `unhandledRejection` / `uncaughtException` werden gemeldet statt den Prozess zu beenden; `SIGINT`/`SIGTERM` fahren sauber herunter.
+
+## Checks
+
+```bash
+npm run lint
+npm run check
+```

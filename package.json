@@ -1,17 +1,31 @@
 {
-  "name": "red3405s-bot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon --ignore '*json' index.js",
-    "postinstall": "npm install -g typescript@5.4.5 ts-node@10.9.2 || true"
-  },
-  "author": "",
-  "license": "ISC",
+  "name": "woc-system",
+  "version": "2.0.0",
+  "description": "Discord-Bot für World Of Community",
+  "main": "src/index.js",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon --ignore 'data/*' src/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "check": "node scripts/check-load.js"
+  },
+  "imports": {
+    "#client": "./src/client.js",
+    "#config": "./src/config/index.js",
+    "#config/*": "./src/config/*",
+    "#core/*": "./src/core/*",
+    "#db/*": "./src/database/*",
+    "#models/*": "./src/database/models/*",
+    "#systems/*": "./src/systems/*",
+    "#utils/*": "./src/utils/*"
+  },
+  "author": "World Of Community",
+  "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "^2.6.1",
     "ascii-table": "^0.0.9",
@@ -26,7 +40,6 @@
     "node-cron": "^4.6.0",
     "node-fetch": "^3.3.2",
     "node-schedule": "^2.1.1",
-    "nodemon": "^3.1.14",
     "open-google-translator": "^1.0.5",
     "rss-parser": "^3.13.0",
     "xml2js": "^0.6.2"
@@ -35,6 +48,7 @@
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^2.0.0",
     "eslint": "^10.7.0",
-    "globals": "^17.5.0"
+    "globals": "^17.5.0",
+    "nodemon": "^3.1.14"
   }
 }
