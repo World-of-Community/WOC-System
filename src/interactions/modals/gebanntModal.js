@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   id: "gebannt-modal",
@@ -9,7 +10,7 @@ export default {
     interaction.guild.channels.create({
       name: `unban-${interaction.user.username}`,
       type: ChannelType.GuildText,
-      parent: "886985648714682439", // Kategorie-ID anpassen
+      parent: settings.get("categories.unban"), // Kategorie-ID anpassen
     }).then(async channel => {
       const buttons = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -22,7 +23,7 @@ export default {
           .setStyle(ButtonStyle.Secondary),
       );
 
-      const bannsupport = interaction.guild.roles.cache.get("1209101841015504916");
+      const bannsupport = interaction.guild.roles.cache.get(settings.get("teamRoles.banSupport"));
 
       const bannEmbed = new EmbedBuilder()
         .setTitle("`⛔` 𑁉 Entbannungsantrag")

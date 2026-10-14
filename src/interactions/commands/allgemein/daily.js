@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { Coin } from "#models/coindb.js"; // Coin Modell importieren
+import { Coin } from "#models/Coin.js"; // Coin Modell importieren
 
 const bonusLevels = [
   { days: 10,  percent: 50 },

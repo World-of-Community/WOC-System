@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "remove-role",
@@ -31,7 +32,7 @@ export default {
       await interaction.reply({ content: `> \`✅\` » Die Rolle <@&${role.id}> wurde von ${member} **entfernt**.`, ephemeral: true });
 
       // Remove Role Log
-      const logchannel = await member.guild.channels.cache.get("1263436406655680513");
+      const logchannel = await member.guild.channels.cache.get(settings.get("channels.serverLogs"));
 
       const removerole = new EmbedBuilder()
         .setTitle("Info zum `/remove-role` Befehl")
@@ -40,7 +41,7 @@ export default {
         .setColor("Blurple")
         .setTimestamp();
 
-      await logchannel.threads.cache.get("1269998221518831721").send({embeds: [removerole]});
+      await logchannel.threads.cache.get(settings.get("logThreads.roles")).send({embeds: [removerole]});
     } catch (error) {
       await interaction.reply({ content: `> \`❌\` » Es gab einen Fehler beim Entfernen der Rolle.\n\n**${error.message}**`, ephemeral: true });
     }

@@ -1,7 +1,7 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import bandb from "#models/bandb.js";
-import Timeout from "#models/timeoutdb.js";
-import Warn from "#models/warndb.js";
+import bandb from "#models/Ban.js";
+import Timeout from "#models/Timeout.js";
+import Warn from "#models/Warning.js";
 
 export default {
   id: "banReasonModal_",

@@ -1,5 +1,6 @@
 import {EmbedBuilder} from "discord.js";
-import teamdb from "#models/teamdb.js";
+import teamdb from "#models/TeamMember.js";
+import { settings } from "#core/settings.js";
 
 // Hier kannst du die Nachrichtenziele dynamisch speichern (z.B. in einer Datenbank)
 const messageGoals = {};
@@ -67,13 +68,13 @@ export default {
       //}
 
       const TeamRoleIds = [
-        "959869691529154631", // Admin
-        "893423428558782465", // Team-leitung
-        "929349039433056276", // Developer
-        "816985466230145044", // Sr-Moderator
-        "815920052385480754", // Moderator
-        "815920170371383366", // Supporter
-        "1263645368441241700", // Builder
+        settings.get("teamRoles.admin"), // Admin
+        settings.get("teamRoles.teamLead"), // Team-leitung
+        settings.get("teamRoles.developer"), // Developer
+        settings.get("teamRoles.srModerator"), // Sr-Moderator
+        settings.get("teamRoles.moderator"), // Moderator
+        settings.get("teamRoles.supporter"), // Supporter
+        settings.get("teamRoles.builder"), // Builder
       ];
 
       let teamRoleMention = "";

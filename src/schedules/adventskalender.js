@@ -1,9 +1,9 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles } from "discord.js";
-import serverdb from "#models/serverdb.js";
+import serverdb from "#models/Guild.js";
 import logger from "#core/logger.js";
 import { GUILD_ID } from "#config";
+import { settings } from "#core/settings.js";
 
-const ADVENT_CHANNEL_ID = "1312772215791685743";
 const MAX_DAY = 24;
 
 const BUTTON_LABELS = {
@@ -61,7 +61,7 @@ export default [
       const now = new Date();
       if (now.getMonth() !== 11 || now.getDate() > 24) {return;}
 
-      const channel = await client.channels.fetch(ADVENT_CHANNEL_ID).catch(() => null);
+      const channel = await client.channels.fetch(settings.get("channels.advent")).catch(() => null);
       if (!channel?.isTextBased()) {
         logger.error("Advent calendar channel not found");
         return;

@@ -1,7 +1,8 @@
 import { EmbedBuilder } from "discord.js";
 import ms from "ms";
-import bandb from "#models/bandb.js";
+import bandb from "#models/Ban.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "ban",
@@ -114,11 +115,11 @@ export default {
     const reason = customReason || selectedReason || "Kein Grund angegeben";
     const durationInput = interaction.options.getString("dauer") || "PERMANENT";
 
-    const banRole = interaction.guild.roles.cache.get("886989738244964362");
-    const memberRole = interaction.guild.roles.cache.get("815920703067914290");
-    const newmemberRole = interaction.guild.roles.cache.get("1222122625594294272");
-    const logChannel = interaction.guild.channels.cache.get("1263436406655680513");
-    const thread = logChannel?.threads.cache.get("1269998219266490538");
+    const banRole = interaction.guild.roles.cache.get(settings.get("roles.banned"));
+    const memberRole = interaction.guild.roles.cache.get(settings.get("roles.member"));
+    const newmemberRole = interaction.guild.roles.cache.get(settings.get("roles.newMember"));
+    const logChannel = interaction.guild.channels.cache.get(settings.get("channels.serverLogs"));
+    const thread = logChannel?.threads.cache.get(settings.get("logThreads.moderation"));
 
     const missing = [];
     if (!banRole) {missing.push("Ban-Rolle");}

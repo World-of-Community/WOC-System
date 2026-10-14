@@ -6,6 +6,7 @@ import logger from "#core/logger.js";
 import { registerProcessHandlers, reportError } from "#core/errors.js";
 import { registerShutdownHandlers, shutdown } from "#core/shutdown.js";
 import { connectDatabase } from "#db/connection.js";
+import { loadSettings } from "#core/settings.js";
 import { loadAll, registerCommands } from "./loaders/index.js";
 
 function printAsciiLogo() {
@@ -33,6 +34,7 @@ async function main() {
   client.on("debug", (message) => logger.debug("Discord:", message));
 
   await connectDatabase();
+  await loadSettings();
   await loadAll(client);
   await registerCommands(client);
   await client.login(env.discord.token);

@@ -1,5 +1,6 @@
 import { EmbedBuilder, Events } from "discord.js";
-import { sendLog, ThreadIDs } from "#core/discordLog.js";
+import { sendLog } from "#core/discordLog.js";
+import { settings } from "#core/settings.js";
 
 export default [
   {
@@ -12,7 +13,7 @@ export default [
         .setColor("Green")
         .setTimestamp();
 
-      await sendLog(ThreadIDs.ONLINE, embed);
+      await sendLog(settings.get("logThreads.botStatus"), embed);
     },
   },
   {
@@ -24,7 +25,7 @@ export default [
         .setColor("Red")
         .setTimestamp();
 
-      await sendLog(ThreadIDs.OFFLINE, embed);
+      await sendLog(settings.get("logThreads.botStatus"), embed);
     },
   },
 ];

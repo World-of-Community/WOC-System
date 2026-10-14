@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles } from "discord.js";
-import serverdb from "#models/serverdb.js";
+import serverdb from "#models/Guild.js";
 import logger from "#core/logger.js";
+import { env } from "#config";
 
 // Anpassbare Buttons
 const buttonConfig = {
@@ -38,7 +39,7 @@ export default {
   options: [],
 
   async run(client, interaction) {
-    const server = await serverdb.findOne({ guildID: "815919809379172354" });
+    const server = await serverdb.findOne({ guildID: env.discord.guildId });
     if(!server) {return interaction.reply({ content: "> `❌` » Fehler: Server nicht gefunden", ephemeral: true });}
     const currentDate = new Date();
     const currentDay = new Date().getDate();

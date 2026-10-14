@@ -1,4 +1,4 @@
-import threaddb from "#models/threaddb.js";
+import threaddb from "#models/Thread.js";
 
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 

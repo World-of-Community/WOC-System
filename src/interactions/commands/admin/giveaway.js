@@ -1,7 +1,7 @@
 import { EmbedBuilder, ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from "discord.js";
 import ms from "ms";
-import giveawaydb from "#models/giveawaydb.js";
-import userDB from "#models/userdb.js";
+import giveawaydb from "#models/Giveaway.js";
+import userDB from "#models/User.js";
 
 
 export default {

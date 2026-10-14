@@ -1,7 +1,7 @@
 import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
-import giveawaydb from "#models/giveawaydb.js";
-import userdb from "#models/userdb.js";
-import serverdb from "#models/serverdb.js";
+import giveawaydb from "#models/Giveaway.js";
+import userdb from "#models/User.js";
+import serverdb from "#models/Guild.js";
 import { UserError } from "#core/errors.js";
 
 const GIFT_THUMBNAIL = "https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif";

@@ -8,6 +8,7 @@ process.env.MONGO_URI ??= "mongodb://localhost/check";
 process.env.LOG_LEVEL = "warn";
 
 const client = (await import("#client")).default;
+(await import("#core/settings.js")).loadDefaultsOnly();
 const { loadAll } = await import("../src/loaders/index.js");
 
 const warnings = [];

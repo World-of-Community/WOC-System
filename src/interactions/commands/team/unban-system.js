@@ -1,5 +1,6 @@
 import {EmbedBuilder, PermissionFlagsBits} from "discord.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "unban",
@@ -70,8 +71,8 @@ export default {
         return interaction.reply({ content: "> `❌` » Der Benutzer wurde nicht gefunden.", ephemeral: true });
       }
 
-      const logChannelId = "1263436406655680513";
-      const threadId = "1269998219266490538";
+      const logChannelId = settings.get("channels.serverLogs");
+      const threadId = settings.get("logThreads.moderation");
 
       const logChannel = interaction.guild.channels.cache.get(logChannelId);
       if (!logChannel) {
@@ -178,7 +179,7 @@ export default {
           .setDescription(
             "Lieber Nutzer,\n\n" +
             "du hast jetzt die Möglichkeit, einen Antrag auf Entbannung zu stellen.\n" +
-            "Bitte beachte dabei unbedingt unsere inhaltlichen Kriterien, welche du vor der Ticketerstellung in <#819555839362072606> bestätigt hast.\n\n" +
+            `Bitte beachte dabei unbedingt unsere inhaltlichen Kriterien, welche du vor der Ticketerstellung in <#${settings.get("channels.support")}> bestätigt hast.\n\n` +
             `Bitte sende uns bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) einen Antrag auf Entbannung zu. Ansonsten wird dieser automatisch abgelehnt.`,
           )
           .setColor("Orange")
@@ -191,7 +192,7 @@ export default {
           .setDescription(
             "Lieber Nutzer,\n\n" +
             "wir haben deinen Antrag geprüft und festgestellt, dass dieser **nicht** unseren inhaltlichen Kriterien entspricht.\n" +
-            "Du findest im Kanal <#819555839362072606> entsprechende Informationen und Vorgaben.\n\n" +
+            `Du findest im Kanal <#${settings.get("channels.support")}> entsprechende Informationen und Vorgaben.\n\n` +
             `Wir geben dir nun noch einmal die Gelegenheit, deinen Antrag bis zum <t:${timestamp}:F> (<t:${timestamp}:R>) ` +
             "entsprechend überarbeitet erneut zu senden.",
           )

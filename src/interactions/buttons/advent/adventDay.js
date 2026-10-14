@@ -1,8 +1,9 @@
-import Advent from "#models/adventdb.js";
+import Advent from "#models/Advent.js";
+import { settings } from "#core/settings.js";
 
 const rewards = {
-  6: { type: "role", value: "1442140220182106184" }, // Adventskalender 2025
-  24: { type: "role", value: "1445064222894460970" }, // Weihnachten 2025
+  6: { type: "role", value: settings.get("achievementRoles.advent2025") }, // Adventskalender 2025
+  24: { type: "role", value: settings.get("achievementRoles.christmas2025") }, // Weihnachten 2025
 };
 
 export default {

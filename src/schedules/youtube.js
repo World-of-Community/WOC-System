@@ -1,14 +1,11 @@
 import Parser from "rss-parser";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
-import youtubeDB from "#models/youtubedb.js";
+import youtubeDB from "#models/YoutubeChannel.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 const parser = new Parser();
 
-const YOUTUBE_CHANNEL_ID = "UCWp5vSiHFKItdlOH3vmMaOA"; // Red3405
-const DISCORD_CHANNEL_ID = "1274833689821319308";
-const YOUTUBE_ROLE_ID = "1337362885101359146";
-const FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
 
 // rss-parser returns the id as "yt:video:VIDEOID"
 const getVideoId = (item) => item.id.replace("yt:video:", "");
@@ -18,15 +15,15 @@ export default {
   cron: "*/5 * * * *",
 
   async execute(client) {
-    const feed = await parser.parseURL(FEED_URL);
+    const feed = await parser.parseURL(`https://www.youtube.com/feeds/videos.xml?channel_id=${settings.get("youtube.channelId")}`);
     if (!feed.items?.length) {return;}
 
     const newestVideoId = getVideoId(feed.items[0]);
-    const dbEntry = await youtubeDB.findOne({ channelId: YOUTUBE_CHANNEL_ID });
+    const dbEntry = await youtubeDB.findOne({ channelId: settings.get("youtube.channelId") });
 
     // first run: remember the newest video so old uploads are not posted
     if (!dbEntry) {
-      await youtubeDB.create({ channelId: YOUTUBE_CHANNEL_ID, lastVideoId: newestVideoId });
+      await youtubeDB.create({ channelId: settings.get("youtube.channelId"), lastVideoId: newestVideoId });
       return;
     }
 
@@ -35,9 +32,9 @@ export default {
     const lastKnownIndex = feed.items.findIndex((item) => getVideoId(item) === dbEntry.lastVideoId);
     const newVideos = lastKnownIndex === -1 ? [feed.items[0]] : feed.items.slice(0, lastKnownIndex);
 
-    const channel = client.channels.cache.get(DISCORD_CHANNEL_ID);
+    const channel = client.channels.cache.get(settings.get("channels.youtube"));
     if (!channel) {
-      logger.error(`YouTube channel ${DISCORD_CHANNEL_ID} not found`);
+      logger.error(`YouTube channel ${settings.get("channels.youtube")} not found`);
       return;
     }
 
@@ -59,12 +56,12 @@ export default {
       );
 
       await channel.send({
-        content: `\`🔴\` » **${video.author}** hat ein neues Video hochgeladen, <@&${YOUTUBE_ROLE_ID}>!`,
+        content: `\`🔴\` » **${video.author}** hat ein neues Video hochgeladen, <@&${settings.get("pingRoles.youtube")}>!`,
         embeds: [embed],
         components: [row],
       });
     }
 
-    await youtubeDB.updateOne({ channelId: YOUTUBE_CHANNEL_ID }, { $set: { lastVideoId: newestVideoId } });
+    await youtubeDB.updateOne({ channelId: settings.get("youtube.channelId") }, { $set: { lastVideoId: newestVideoId } });
   },
 };

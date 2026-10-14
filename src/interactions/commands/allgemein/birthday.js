@@ -1,5 +1,5 @@
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits} from "discord.js";
-import userDB from "#models/userdb.js";
+import userDB from "#models/User.js";
 import logger from "#core/logger.js";
 
 export default {

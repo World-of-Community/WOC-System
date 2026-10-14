@@ -1,7 +1,8 @@
 import { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
-import serverdb from "#models/serverdb.js";
-import userdb from "#models/userdb.js";
+import serverdb from "#models/Guild.js";
+import userdb from "#models/User.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "admin",
@@ -198,10 +199,10 @@ export default {
     const member = interaction.options.getMember("user");
     const role = interaction.options.getRole("role");
     const reason = interaction.options.getString("reason") || "Kein Grund angegeben";
-    const targetChannel = interaction.guild.channels.cache.get("1173986308641804338");
+    const targetChannel = interaction.guild.channels.cache.get(settings.get("channels.teamLog"));
     const formattedDate = `<t:${Math.floor(Date.now() / 1000)}:F>`;
     const sub = interaction.options.getSubcommand();
-    const teamrole = interaction.guild.roles.cache.get("820658664536145940");
+    const teamrole = interaction.guild.roles.cache.get(settings.get("teamRoles.member"));
 
     if (member.user.bot) {
       return interaction.reply({
@@ -254,16 +255,16 @@ export default {
         try {
 
           const areaRoles = [
-            "929349039433056276", // Developer
-            "816985466230145044", // Sr-Moderator
-            "815920052385480754", // Moderator
-            "815920170371383366", // Supporter
-            "1263645368441241700", // Builder
+            settings.get("teamRoles.developer"), // Developer
+            settings.get("teamRoles.srModerator"), // Sr-Moderator
+            settings.get("teamRoles.moderator"), // Moderator
+            settings.get("teamRoles.supporter"), // Supporter
+            settings.get("teamRoles.builder"), // Builder
 
-            "1154345358030282782", // Developer leitung
-            "1155080722466488351", // Support leitung
-            "1258773853249863734", // Builder leitung
-            "1175879013688954980", // Partner leitung
+            settings.get("leadRoles.developer"), // Developer leitung
+            settings.get("leadRoles.support"), // Support leitung
+            settings.get("leadRoles.builder"), // Builder leitung
+            settings.get("leadRoles.partner"), // Partner leitung
           ];
           const oldRole = member.roles.cache.find(r => areaRoles.includes(r.id));
 
@@ -313,21 +314,21 @@ export default {
           //});
 
           // ID der Supporter-Rolle
-          const supporterRoleId = "815920170371383366";
+          const supporterRoleId = settings.get("teamRoles.supporter");
 
           const supporterExtraRoles = [
-            "1011207481357238272", // Ticket Support
-            "1270369938972082177", // Ticket Bereich
-            "1209101841015504916", // Bann Support
-            "1155570143393488896", // Bann Bereich
-            "1285728292367892584", // Report Log
+            settings.get("teamRoles.ticketSupport"), // Ticket Support
+            settings.get("teamRoles.ticketArea"), // Ticket Bereich
+            settings.get("teamRoles.banSupport"), // Bann Support
+            settings.get("teamRoles.banArea"), // Bann Bereich
+            settings.get("teamRoles.reportLog"), // Report Log
           ];
 
           // Zusätzliche Rollen für andere Teamränge
           const defaultExtraRoles = [
-            "1270369938972082177", // Ticket Bereich
-            "1155570143393488896", // Bann Bereich
-            "1285728292367892584", // Report Log
+            settings.get("teamRoles.ticketArea"), // Ticket Bereich
+            settings.get("teamRoles.banArea"), // Bann Bereich
+            settings.get("teamRoles.reportLog"), // Report Log
           ];
 
           if (role.id === supporterRoleId) {
@@ -356,11 +357,11 @@ export default {
 
       case "kick": {
         const extraRoles = [
-          "1011207481357238272", // Ticket Support
-          "1270369938972082177", // Ticket Bereich
-          "1209101841015504916", // Bann Support
-          "1155570143393488896", // Bann Bereich
-          "1285728292367892584", // Report Log
+          settings.get("teamRoles.ticketSupport"), // Ticket Support
+          settings.get("teamRoles.ticketArea"), // Ticket Bereich
+          settings.get("teamRoles.banSupport"), // Bann Support
+          settings.get("teamRoles.banArea"), // Bann Bereich
+          settings.get("teamRoles.reportLog"), // Report Log
         ];
 
         // Hauptrollen entfernen

@@ -1,5 +1,5 @@
 import { Events, EmbedBuilder } from "discord.js";
-import countingSchema from "#models/countingdb.js";
+import countingSchema from "#models/Counting.js";
 import { GUILD_ID } from "#config";
 
 export default {

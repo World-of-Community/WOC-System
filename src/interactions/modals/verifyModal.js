@@ -1,4 +1,3 @@
-import config from "#config/config.json" with { type: "json" };
 
 export default {
   // Die Modal-ID enthält den Verifizierungscode: verify-modal_<code>
@@ -13,7 +12,9 @@ export default {
       return interaction.reply({ content: "> `❌` » Dieser Verifizierungscode war falsch, Bitte versuche es erneut.", ephemeral: true });
     }
 
-    await interaction.member.roles.add(config.verifyRolle);
-    return interaction.reply({ content: `> \`✅\` » Die Verifizierung war **erfolgreich**, du hast die <@&${config.verifyRolle}>-Rolle bekommen. Viel Spaß auf dem Server.`, ephemeral: true });
+    await interaction.member.roles.add(settings.get("roles.verify"));
+    return interaction.reply({ content: `> \`✅\` » Die Verifizierung war **erfolgreich**, du hast die <@&${settings.get("roles.verify")}>-Rolle bekommen. Viel Spaß auf dem Server.`, ephemeral: true });
   },
 };
+
+import { settings } from "#core/settings.js";

@@ -1,14 +1,13 @@
 import { EmbedBuilder, Events } from "discord.js";
-import { sendLog, ThreadIDs } from "#core/discordLog.js";
-
-const IGNORED_CHANNEL_ID = "1205936920866328576";
+import { sendLog } from "#core/discordLog.js";
+import { settings } from "#core/settings.js";
 
 export default [
   {
     name: Events.MessageCreate,
     async execute(client, message) {
       if (!message.author || message.author.bot) {return;}
-      if (message.channelId === IGNORED_CHANNEL_ID) {return;}
+      if (message.channelId === settings.get("channels.logIgnored")) {return;}
 
       const embed = new EmbedBuilder()
         .setTitle("`📨` | NACHRICHT GESENDET")
@@ -16,14 +15,14 @@ export default [
         .setColor("Green")
         .setTimestamp();
 
-      await sendLog(ThreadIDs.MESSAGE, embed);
+      await sendLog(settings.get("logThreads.message"), embed);
     },
   },
   {
     name: Events.MessageDelete,
     async execute(client, message) {
       if (!message.author || message.author.bot) {return;}
-      if (message.channelId === IGNORED_CHANNEL_ID) {return;}
+      if (message.channelId === settings.get("channels.logIgnored")) {return;}
 
       const embed = new EmbedBuilder()
         .setTitle("`🗑️` | NACHRICHT GELÖSCHT")
@@ -31,7 +30,7 @@ export default [
         .setColor("Red")
         .setTimestamp();
 
-      await sendLog(ThreadIDs.MESSAGE, embed);
+      await sendLog(settings.get("logThreads.message"), embed);
     },
   },
   {
@@ -46,7 +45,7 @@ export default [
         .setColor("Orange")
         .setTimestamp();
 
-      await sendLog(ThreadIDs.MESSAGE, embed);
+      await sendLog(settings.get("logThreads.message"), embed);
     },
   },
 ];

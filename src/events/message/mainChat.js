@@ -1,25 +1,24 @@
 import { ActionRowBuilder, ButtonBuilder, ComponentType, EmbedBuilder, Events } from "discord.js";
-import serverdb from "#models/serverdb.js";
-import userdb from "#models/userdb.js";
-import messagedb from "#models/messagedb.js";
-import teamdb from "#models/teamdb.js";
+import serverdb from "#models/Guild.js";
+import userdb from "#models/User.js";
+import messagedb from "#models/MessageCounter.js";
+import teamdb from "#models/TeamMember.js";
 import { updateLeaderboard } from "#systems/leaderboard.js";
 import logger from "#core/logger.js";
 import { reportError } from "#core/errors.js";
-import { config } from "#config";
+import { env } from "#config";
+import { settings } from "#core/settings.js";
 
 const TEAM_ROLE_IDS = [
-  "959869691529154631", // Admin
-  "893423428558782465", // Team-Leitung
-  "929349039433056276", // Developer
-  "816985466230145044", // Sr-Moderator
-  "815920052385480754", // Moderator
-  "815920170371383366", // Supporter
-  "1263645368441241700", // Builder
+  settings.get("teamRoles.admin"), // Admin
+  settings.get("teamRoles.teamLead"), // Team-Leitung
+  settings.get("teamRoles.developer"), // Developer
+  settings.get("teamRoles.srModerator"), // Sr-Moderator
+  settings.get("teamRoles.moderator"), // Moderator
+  settings.get("teamRoles.supporter"), // Supporter
+  settings.get("teamRoles.builder"), // Builder
 ];
-const TEAM_MENTION_ROLE_ID = "820658664536145940";
 
-const MC_SERVER_IP = "worldofcommunity.de";
 const IP_DELETE_AFTER = 30 * 1000;
 const IP_KEYWORDS = [
   "wie ist die ip", "was ist die ip", "server ip", "minecraft ip", "ip bitte", "ip vom server",
@@ -30,20 +29,20 @@ const IP_KEYWORDS = [
   "wie war nochmal die ip", "ip vom minecraft server",
 ];
 const IP_CHANNELS = [
-  "815922756918181898", // Haupt-Chat
-  "896743941813207081", // Spielersuche
-  "886140608039747614", // Bilder und Videos
-  "979431125053227068", // Bots-verwenden
-  "1284823233761251328", // Schrift Support
+  settings.get("channels.mainChat"), // Haupt-Chat
+  settings.get("channels.playerSearch"), // Spielersuche
+  settings.get("channels.media"), // Bilder und Videos
+  settings.get("channels.botCommands"), // Bots-verwenden
+  settings.get("channels.writingSupport"), // Schrift Support
 ];
 
 const NO_INVITE_CHANNELS = [
-  "815922756918181898", // Haupt Chat
-  "896743941813207081", // Spielersuche
-  "1250047970116636756", // Vorstellung
-  "886140608039747614", // Bilder und Videos
+  settings.get("channels.mainChat"), // Haupt Chat
+  settings.get("channels.playerSearch"), // Spielersuche
+  settings.get("channels.introductions"), // Vorstellung
+  settings.get("channels.media"), // Bilder und Videos
 ];
-const INVITE_ALLOWED_CHANNELS = ["1172920281526960238"]; // Werbung für alle
+const INVITE_ALLOWED_CHANNELS = [settings.get("channels.ads")]; // Werbung für alle
 const DISCORD_INVITE_PATTERN = /(https?:\/\/)?(www\.)?(discord\.gg|discordapp\.com\/invite)\/[^\s]+/;
 
 const LOOT_TABLE = [
@@ -80,7 +79,7 @@ export default {
     await trackTeamMessage(message).catch((error) => reportError(error, { source: "mainChat:teamMessage" }));
     await warnTeamMention(message).catch((error) => reportError(error, { source: "mainChat:teamMention" }));
 
-    if (message.guild.id !== config.server) {return;}
+    if (message.guild.id !== env.discord.guildId) {return;}
 
     await trackUserStats(client, message).catch((error) => reportError(error, { source: "mainChat:userStats" }));
     await blockInviteLinks(message).catch((error) => reportError(error, { source: "mainChat:inviteLinks" }));
@@ -99,7 +98,7 @@ async function answerIpQuestion(message) {
     .setTitle("`🌐` Minecraft-Server IP")
     .setDescription(
       "> `📡` » Die IP des Servers lautet:\n" +
-      `\`\`\`${MC_SERVER_IP}\`\`\`\n` +
+      `\`\`\`${settings.get("system.minecraftIp")}\`\`\`\n` +
       "> `⚙️` » Version: **ab 1.21.x**\n\n" +
       `> \`⏳\` » Nachricht wird gelöscht <t:${timestamp}:R> (<t:${timestamp}:F>)`,
     )
@@ -123,13 +122,13 @@ async function trackTeamMessage(message) {
 }
 
 async function warnTeamMention(message) {
-  if (message.member?.roles.cache.has(TEAM_MENTION_ROLE_ID)) {return;}
+  if (message.member?.roles.cache.has(settings.get("teamRoles.member"))) {return;}
   if (message.reference) {return;}
 
-  const mentionsTeam = message.mentions.members.some((member) => member.roles.cache.has(TEAM_MENTION_ROLE_ID));
+  const mentionsTeam = message.mentions.members.some((member) => member.roles.cache.has(settings.get("teamRoles.member")));
   if (!mentionsTeam) {return;}
 
-  const sent = await message.reply("Bitte erwähne oder Pinge keine Teammitglieder, öffne ein Ticket im <#819555839362072606> bei Fragen oder Problemen.");
+  const sent = await message.reply(`Bitte erwähne oder Pinge keine Teammitglieder, öffne ein Ticket im <#${settings.get("channels.support")}> bei Fragen oder Problemen.`);
   setTimeout(() => sent.delete().catch(() => {}), 5000);
 }
 

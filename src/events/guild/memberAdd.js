@@ -1,16 +1,12 @@
 import { Events, EmbedBuilder } from "discord.js";
-import serverdb from "#models/serverdb.js";
-import userdb from "#models/userdb.js";
-import InviteCacheModel from "#models/inviteCachedb.js";
-import { Coin } from "#models/coindb.js";
+import serverdb from "#models/Guild.js";
+import userdb from "#models/User.js";
+import InviteCacheModel from "#models/InviteCache.js";
+import { Coin } from "#models/Coin.js";
 import logger from "#core/logger.js";
 import { reportError } from "#core/errors.js";
-import { CHANNELS, LOG_THREADS } from "#config";
 
-const WELCOME_CHANNEL_ID = "1433189396475023380";
-const NEUES_MITGLIED_ROLE_ID = "1222122625594294272";
-const MITGLIED_ROLE_ID = "815920703067914290";
-const BANN_ROLE_ID = "886989738244964362";
+import { settings } from "#core/settings.js";
 
 const WELCOME_MESSAGES = [
   (m) => `<a:Join:1375559039098032299> ${m} **ist gerade auf den Server geschlittert** <a:winken:1086560167442796544>`,
@@ -43,7 +39,7 @@ export default {
     const serverData = await serverdb.findOne({ guildID: member.guild.id });
     if (serverData?.deactivated?.includes?.("willkommensnachrichten")) {return;}
 
-    const welcomeChannel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
+    const welcomeChannel = member.guild.channels.cache.get(settings.get("channels.welcome"));
     if (welcomeChannel) {
       const pick = WELCOME_MESSAGES[Math.floor(Math.random() * WELCOME_MESSAGES.length)];
       await welcomeChannel.send({ content: pick(member) }).catch((err) => logger.error("Welcome message failed:", err?.message));
@@ -56,11 +52,11 @@ export default {
       .setColor("Green")
       .setTimestamp();
 
-    const logchannel = member.guild.channels.cache.get(CHANNELS.SERVER_LOGS);
-    await logchannel?.threads.cache.get(LOG_THREADS.JOIN)?.send({ embeds: [joinEmbed] }).catch(() => {});
+    const logchannel = member.guild.channels.cache.get(settings.get("channels.serverLogs"));
+    await logchannel?.threads.cache.get(settings.get("logThreads.join"))?.send({ embeds: [joinEmbed] }).catch(() => {});
 
-    const neuesMitglied = member.guild.roles.cache.get(NEUES_MITGLIED_ROLE_ID);
-    const mitglied = member.guild.roles.cache.get(MITGLIED_ROLE_ID);
+    const neuesMitglied = member.guild.roles.cache.get(settings.get("roles.newMember"));
+    const mitglied = member.guild.roles.cache.get(settings.get("roles.member"));
     try {
       if (neuesMitglied) {await member.roles.add(neuesMitglied);}
       if (mitglied) {await member.roles.add(mitglied);}
@@ -85,7 +81,7 @@ async function flagSuspiciousAccount(member) {
 
   if (!isSuspicious) {return;}
 
-  const role = member.guild.roles.cache.get(BANN_ROLE_ID);
+  const role = member.guild.roles.cache.get(settings.get("roles.banned"));
   if (role) {
     await member.roles.add(role);
     logger.info(`Suspicious account flagged: ${member.user.tag}`);
@@ -101,7 +97,7 @@ async function flagSuspiciousAccount(member) {
     .setFooter({ text: "Überprüfe den Account und treffe geeignete Maßnahmen." })
     .setTimestamp();
 
-  const thread = await member.guild.channels.fetch(LOG_THREADS.MODERATION).catch(() => null);
+  const thread = await member.guild.channels.fetch(settings.get("logThreads.moderation")).catch(() => null);
   if (thread?.isThread()) {
     await thread.send({ embeds: [embed] });
   } else {

@@ -1,19 +1,18 @@
 import cron from "node-cron";
-import userdb from "#models/userdb.js";
-import leaderboarddb from "#models/leaderboarddb.js";
+import userdb from "#models/User.js";
+import leaderboarddb from "#models/Leaderboard.js";
 import { EmbedBuilder, codeBlock } from "discord.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
+import { env } from "#config";
 
-const GUILD_ID = "815919809379172354";
-const RoleID = "1150753421339676722";
+const GUILD_ID = env.discord.guildId;
 
 // ============================================================
 // USER, DIE PERMANENT AUS DEM LEADERBOARD AUSGESCHLOSSEN SIND
 // ============================================================
 
-const EXCLUDED_USER_IDS = [
-  "996364148361400330",
-];
+const EXCLUDED_USER_IDS = () => settings.get("system.leaderboardExcluded");
 
 // ============================================================
 // POSITION EMOJIS
@@ -133,7 +132,7 @@ async function createLeaderboardMessage(guild) {
     const topMessages = await userdb
       .find({
         userID: {
-          $nin: EXCLUDED_USER_IDS,
+          $nin: EXCLUDED_USER_IDS(),
         },
       })
       .sort({
@@ -148,7 +147,7 @@ async function createLeaderboardMessage(guild) {
     const topVoice = await userdb
       .find({
         userID: {
-          $nin: EXCLUDED_USER_IDS,
+          $nin: EXCLUDED_USER_IDS(),
         },
       })
       .sort({
@@ -290,9 +289,9 @@ async function createLeaderboardMessage(guild) {
       new EmbedBuilder()
         .setDescription(
           "Die Top 3 Mitglieder in Nachrichten & Voice erhalten\n" +
-            "die <@&1150753421339676722>-Rolle\n\n" +
+            `die <@&${settings.get("exclusiveRoles.leaderboardWinner")}>-Rolle\n\n` +
             "> `👷‍♂️` » **Vorteile**\n" +
-            "- Bilder senden in <#815922756918181898>\n" +
+            `- Bilder senden in <#${settings.get("channels.mainChat")}>\n` +
             "- Höher gelistet\n" +
             "- Ping Reaktion (`/emoji`)\n\n" +
             "> `📌` » Das Leaderboard wird monatlich zurückgesetzt.",
@@ -557,12 +556,12 @@ async function resetLeaderboardStats(client) {
 
     const role =
       await guild.roles
-        .fetch(RoleID)
+        .fetch(settings.get("exclusiveRoles.leaderboardWinner"))
         .catch(() => null);
 
     if (!role) {
       logger.error(
-        `Leaderboard-Rolle ${RoleID} konnte nicht gefunden werden.`,
+        `Leaderboard-Rolle ${settings.get("exclusiveRoles.leaderboardWinner")} konnte nicht gefunden werden.`,
       );
 
       return;
@@ -577,7 +576,7 @@ async function resetLeaderboardStats(client) {
         .find({
           userID: {
             $nin:
-              EXCLUDED_USER_IDS,
+              EXCLUDED_USER_IDS(),
           },
         })
         .sort({
@@ -594,7 +593,7 @@ async function resetLeaderboardStats(client) {
         .find({
           userID: {
             $nin:
-              EXCLUDED_USER_IDS,
+              EXCLUDED_USER_IDS(),
           },
         })
         .sort({
@@ -620,7 +619,7 @@ async function resetLeaderboardStats(client) {
     const filteredUserIds =
       uniqueUserIds.filter(
         (userID) =>
-          !EXCLUDED_USER_IDS.includes(
+          !EXCLUDED_USER_IDS().includes(
             userID,
           ),
       );
@@ -684,7 +683,7 @@ async function resetLeaderboardStats(client) {
           }
 
           if (
-            EXCLUDED_USER_IDS.includes(
+            EXCLUDED_USER_IDS().includes(
               member.id,
             )
           ) {

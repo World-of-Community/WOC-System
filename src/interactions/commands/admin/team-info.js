@@ -1,7 +1,8 @@
 import { EmbedBuilder } from "discord.js";
-import TeamInfo from "#models/teaminfodb.js";
-import UserDB from "#models/userdb.js";
+import TeamInfo from "#models/TeamInfo.js";
+import UserDB from "#models/User.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "team-info",
@@ -285,12 +286,12 @@ export default {
 async function updateTeamEmbed(interaction) {
   const teamMembers = await TeamInfo.find({});
   const bereiche = [
-    { name: "Admin", id: "959869691529154631" },
-    { name: "Developer", id: "929349039433056276" },
-    { name: "Sr-Moderator", id: "816985466230145044" },
-    { name: "Moderator", id: "815920052385480754" },
-    { name: "Supporter", id: "815920170371383366" },
-    { name: "Builder", id: "1263645368441241700" },
+    { name: "Admin", id: settings.get("teamRoles.admin") },
+    { name: "Developer", id: settings.get("teamRoles.developer") },
+    { name: "Sr-Moderator", id: settings.get("teamRoles.srModerator") },
+    { name: "Moderator", id: settings.get("teamRoles.moderator") },
+    { name: "Supporter", id: settings.get("teamRoles.supporter") },
+    { name: "Builder", id: settings.get("teamRoles.builder") },
   ];
 
   let embedDescription = "";
@@ -321,8 +322,8 @@ async function updateTeamEmbed(interaction) {
     .setTimestamp();
 
   try {
-    const channel = interaction.guild.channels.cache.get("1291421526238822481"); // Channel-ID prüfen
-    const messageId = "1293559329961803950"; // Embed-Nachricht-ID prüfen
+    const channel = interaction.guild.channels.cache.get(settings.get("channels.teamOverview")); // Channel-ID prüfen
+    const messageId = settings.get("messages.teamOverview"); // Embed-Nachricht-ID prüfen
 
     if (!channel) {return logger.error("Team-Channel nicht gefunden.");}
     const message = await channel.messages.fetch(messageId).catch(err => {
@@ -340,12 +341,12 @@ async function updateTeamEmbed(interaction) {
 async function sendTeamEmbed(interaction) {
   const teamMembers = await TeamInfo.find({});
   const bereiche = [
-    { name: "Admin", id: "959869691529154631" },
-    { name: "Developer", id: "929349039433056276" },
-    { name: "Sr-Moderator", id: "816985466230145044" },
-    { name: "Moderator", id: "815920052385480754" },
-    { name: "Supporter", id: "815920170371383366" },
-    { name: "Builder", id: "1263645368441241700" },
+    { name: "Admin", id: settings.get("teamRoles.admin") },
+    { name: "Developer", id: settings.get("teamRoles.developer") },
+    { name: "Sr-Moderator", id: settings.get("teamRoles.srModerator") },
+    { name: "Moderator", id: settings.get("teamRoles.moderator") },
+    { name: "Supporter", id: settings.get("teamRoles.supporter") },
+    { name: "Builder", id: settings.get("teamRoles.builder") },
   ];
 
   let embedDescription = "";

@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import userDB from "#models/userdb.js";
+import userDB from "#models/User.js";
 
 export default {
 

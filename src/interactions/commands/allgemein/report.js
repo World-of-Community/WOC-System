@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "report",
@@ -77,7 +78,7 @@ export default {
     const server = interaction.options.getString("server");
     const beweis = interaction.options.getAttachment("beweis");
 
-    const reportchannel = "1010515517460725782";
+    const reportchannel = settings.get("channels.reports");
 
     if (grund === "sonstiges" && !sonstigesGrund) {
       return interaction.reply({
@@ -143,7 +144,7 @@ export default {
     const modChannel = await interaction.guild.channels.fetch(reportchannel);
 
     await modChannel.send({
-      content: "> <@&1285728292367892584> » **Neuer Report eingegangen**",
+      content: `> <@&${settings.get("teamRoles.reportLog")}> » **Neuer Report eingegangen**`,
       embeds: [reportEmbed],
     });
 

@@ -1,4 +1,4 @@
-import giveawaydb from "#models/giveawaydb.js";
+import giveawaydb from "#models/Giveaway.js";
 import { withParticipantCount } from "./giveawayEnter.js";
 
 export default {

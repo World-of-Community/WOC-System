@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
-import giveawaydb from "#models/giveawaydb.js";
-import userdb from "#models/userdb.js";
+import giveawaydb from "#models/Giveaway.js";
+import userdb from "#models/User.js";
 import logger from "#core/logger.js";
 import { reportError } from "#core/errors.js";
 

@@ -1,8 +1,6 @@
 import { Events } from "discord.js";
+import { settings } from "#core/settings.js";
 
-const LEVEL_BOT_ID = "339254240012664832";
-const LEVEL_LOG_CHANNEL_ID = "1221819093100007465";
-const MAIN_CHAT_ID = "815922756918181898";
 const RANK_LEVELS = [5, 10, 20, 30, 40, 50, 75, 100];
 
 export default {
@@ -10,9 +8,9 @@ export default {
 
   async execute(client, message) {
     if (!message.guild) {return;}
-    if (message.author.id !== LEVEL_BOT_ID || message.channelId !== LEVEL_LOG_CHANNEL_ID) {return;}
+    if (message.author.id !== settings.get("bots.level") || message.channelId !== settings.get("channels.levelLog")) {return;}
 
-    const channel = message.guild.channels.cache.get(MAIN_CHAT_ID);
+    const channel = message.guild.channels.cache.get(settings.get("channels.mainChat"));
     const mention = message.mentions.users.first();
     const description = message.embeds[0]?.description;
     if (!channel || !mention || !description) {return;}

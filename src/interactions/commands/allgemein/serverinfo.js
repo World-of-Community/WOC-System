@@ -1,7 +1,7 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
 import { DateTime } from "luxon";
-import Server from "#models/usercounterdb.js";
+import Server from "#models/UserCounter.js";
 
 function formatBoostDuration(boostTimestamp) {
   const boostStart = DateTime.fromJSDate(boostTimestamp);

@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 
 import logger from "#core/logger.js";
-import Flaggenquiz from "#models/flaggenquizdb.js";
+import Flaggenquiz from "#models/Flaggenquiz.js";
 
 /* =========================
    FLAGGEN

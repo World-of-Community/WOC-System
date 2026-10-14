@@ -14,6 +14,7 @@ const CONNECT_OPTIONS = {
 };
 
 let listenersAttached = false;
+let closing = false;
 
 function attachListeners() {
   if (listenersAttached) {return;}
@@ -21,7 +22,7 @@ function attachListeners() {
 
   const conn = mongoose.connection;
   conn.on("connected", () => log.success("Connected"));
-  conn.on("disconnected", () => log.warn("Disconnected – driver will reconnect automatically"));
+  conn.on("disconnected", () => { if (!closing) {log.warn("Disconnected – driver will reconnect automatically");} });
   conn.on("reconnected", () => log.success("Reconnected"));
   conn.on("error", (error) => log.error("Connection error:", error?.message ?? error));
 }
@@ -52,6 +53,7 @@ export async function connectDatabase({ uri = env.mongo.uri, maxRetries = env.mo
 
 export async function disconnectDatabase() {
   if (mongoose.connection.readyState === 0) {return;}
+  closing = true;
   try {
     await mongoose.disconnect();
     log.info("Connection closed");

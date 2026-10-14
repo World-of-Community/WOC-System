@@ -1,4 +1,4 @@
-import userdb from "#models/userdb.js";
+import userdb from "#models/User.js";
 import { GUILD_ID } from "#config";
 
 // +1 online hour for every member that is "online" at the full hour (used by /profil)

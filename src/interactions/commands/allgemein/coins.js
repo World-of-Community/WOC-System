@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { Coin } from "#models/coindb.js";
+import { Coin } from "#models/Coin.js";
 
 export default {
   name: "coins",

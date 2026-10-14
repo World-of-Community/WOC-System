@@ -1,9 +1,8 @@
 import { EmbedBuilder } from "discord.js";
-import bandb from "#models/bandb.js";
+import bandb from "#models/Ban.js";
 import logger from "#core/logger.js";
-import { GUILD_ID, config } from "#config";
-
-const BAN_LIST_CHANNEL_ID = "1217020305671983205";
+import { GUILD_ID } from "#config";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "banList",
@@ -11,7 +10,7 @@ export default {
 
   async execute(client) {
     const guild = await client.guilds.fetch(GUILD_ID);
-    const role = guild.roles.cache.get(config.banRolle);
+    const role = guild.roles.cache.get(settings.get("roles.banned"));
     if (!role) {
       logger.warn("Ban role not found");
       return;
@@ -23,7 +22,7 @@ export default {
       lines.push(`${member} - ${member.user.username} (\`${banData?.reason ?? "Kein Grund angegeben"}\`)`);
     }
 
-    const channel = await guild.channels.fetch(BAN_LIST_CHANNEL_ID).catch(() => null);
+    const channel = await guild.channels.fetch(settings.get("channels.banList")).catch(() => null);
     const message = (await channel?.messages.fetch({ limit: 1 }))?.first();
     if (!message) {
       logger.warn("Ban list message not found");
@@ -35,7 +34,7 @@ export default {
     const embed = new EmbedBuilder()
       .setTitle("Information zu den Gebannten Nutzern")
       .setDescription(
-        `Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&${config.banRolle}> (\`${lines.length}👥\`)\n\n` +
+        `Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&${settings.get("roles.banned")}> (\`${lines.length}👥\`)\n\n` +
         (lines.length > 0 ? lines.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden."),
       )
       .setColor("Red")

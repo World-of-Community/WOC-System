@@ -1,9 +1,8 @@
 import { ActivityType } from "discord.js";
-import serverDB from "#models/serverdb.js";
+import serverDB from "#models/Guild.js";
 import { reportError } from "#core/errors.js";
-import { GUILD_ID, config } from "#config";
-
-const NEWS_CATEGORY_ID = "1230540006439915610";
+import { GUILD_ID } from "#config";
+import { settings } from "#core/settings.js";
 
 // slower at night (22:00–08:00) to save rate limit
 function nextDelay() {
@@ -32,19 +31,19 @@ async function updateChannels(client) {
   const serverData = await serverDB.findOne({ guildID: GUILD_ID });
   const partnerCount = serverData?.partner?.partners?.length ?? 0;
 
-  const newsCategory = guild.channels.cache.get(NEWS_CATEGORY_ID);
+  const newsCategory = guild.channels.cache.get(settings.get("categories.news"));
   const newsChannels = newsCategory ? newsCategory.children.cache.size : 0;
-  const gameChannels = guild.channels.cache.filter((c) => c.parentId === config.category5).size;
+  const gameChannels = guild.channels.cache.filter((c) => c.parentId === settings.get("categories.minigames")).size;
 
   const december = new Date().getMonth() === 11;
   const emoji1 = december ? "🎄" : "🌍";
   const emoji2 = december ? "⛄" : "👥";
 
-  await guild.channels.cache.get(config.category1)?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
-  await guild.channels.cache.get(config.category2)?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineCount})`);
-  await guild.channels.cache.get(config.category3)?.setName(`(⚡) - [ADS] - (PARTNER: ${partnerCount})`);
-  await guild.channels.cache.get(config.category4)?.setName(`(📰) - [NEWS] - (ABOS: ${newsChannels})`);
-  await guild.channels.cache.get(config.category5)?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${gameChannels})`);
+  await guild.channels.cache.get(settings.get("categories.info"))?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
+  await guild.channels.cache.get(settings.get("categories.unity"))?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineCount})`);
+  await guild.channels.cache.get(settings.get("categories.ads"))?.setName(`(⚡) - [ADS] - (PARTNER: ${partnerCount})`);
+  await guild.channels.cache.get(settings.get("categories.news"))?.setName(`(📰) - [NEWS] - (ABOS: ${newsChannels})`);
+  await guild.channels.cache.get(settings.get("categories.minigames"))?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${gameChannels})`);
 }
 
 function loop(client, name, fn) {

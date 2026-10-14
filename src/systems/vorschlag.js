@@ -3,29 +3,9 @@ import client from "#client";
 import vorschlagEmitter from "./vorschlagEmitter.js";
 import logger from "#core/logger.js";
 import { GUILD_ID } from "#config";
+import { settings } from "#core/settings.js";
 
 const log = logger.child("Vorschlag");
-
-export const VORSCHLAG_FORUM_ID = "1254340245772701747";
-export const UPVOTE_EMOJI_ID = "1008781495055429672";
-const DOWNVOTE_EMOJI_ID = "1008781575644782622";
-const BOT_USER_ID = "1020023299448786955";
-
-export const TAGS = Object.freeze({
-  AKZEPTIERT: "1262860469836710018",
-  ABGELEHNT: "1262860945785622731",
-  IN_PLANUNG: "1266798963076501585",
-  DOPPELT: "1266798846256746721",
-});
-
-const CATEGORY_TAG_MAP = {
-  "1262860849673142367": "<a:discordbloblove:855482395325890570> `DC-Server`",
-  "1262860327440089158": "<a:wocbook:1178664700469317692> `Website`",
-  "1262758801119907920": "<:Supporter:953359782847332362> `Support-Bot`",
-  "1262758617279369246": "<a:System:915211580805881876> `System-Bot`",
-  "1262759071937859705": "<a:Gift:1263043283555319941> `Gift-Bot`",
-  "1266724906930929709": "<a:MinecraftGrassBlock:872034424181637171> `MC-Server`",
-};
 
 const VOTES_FIELD_NAME = "`📊` - **Nützlich?**";
 const HINT_FIELD_NAME = "`💡` - **Vorschläge**";
@@ -37,18 +17,19 @@ export function extractUserId(embed) {
 
 // Re-creates the user's forum post under the bot's name so the bot owns the embed, then deletes the original.
 export async function handleThreadCreate(thread) {
-  if (thread.ownerId === BOT_USER_ID) {return;}
-  if (thread.parentId !== VORSCHLAG_FORUM_ID) {return;}
+  if (thread.ownerId === settings.get("bots.system")) {return;}
+  if (thread.parentId !== settings.get("channels.suggestions")) {return;}
 
   const guild = client.guilds.cache.get(GUILD_ID);
-  const channel = guild?.channels.cache.get(VORSCHLAG_FORUM_ID);
+  const channel = guild?.channels.cache.get(settings.get("channels.suggestions"));
   if (!channel) {return;}
 
   const member = await guild.members.fetch(thread.ownerId);
   const message = await thread.fetchStarterMessage();
 
   const tags = thread.appliedTags ?? [];
-  const matchedTagText = tags.map((id) => CATEGORY_TAG_MAP[id]).find(Boolean) ?? "`❌` - **Tag wurde nicht gefunden**";
+  const categoryTags = settings.get("suggestions.categoryTags") ?? {};
+  const matchedTagText = tags.map((id) => categoryTags[id]).find(Boolean) ?? "`❌` - **Tag wurde nicht gefunden**";
 
   const newThread = await channel.threads.create({
     name: thread.name,
@@ -61,7 +42,7 @@ export async function handleThreadCreate(thread) {
     .setDescription(`⠀\n> ${message}\n⠀\n**────────────────────────────**`)
     .addFields(
       { name: "`📚` - **Kategorie**", value: `» ${matchedTagText}`, inline: true },
-      { name: VOTES_FIELD_NAME, value: `» Votes: \`0\` <a:upvote:${UPVOTE_EMOJI_ID}>`, inline: true },
+      { name: VOTES_FIELD_NAME, value: `» Votes: \`0\` <a:upvote:${settings.get("suggestions.upvoteEmoji")}>`, inline: true },
       { name: HINT_FIELD_NAME, value: "> Erstelle einen Post um deine eigenen Vorschlag einzureichen" },
     )
     .setThumbnail("https://cdn.discordapp.com/attachments/1269339944766144574/1269340269246025872/Idee.png?ex=66b4fabf&is=66b3a93f&hm=962b53d930a743aee4a4836af336ae3aa912520db34bf6d1467d73a43fe3b3c0&")
@@ -70,8 +51,8 @@ export async function handleThreadCreate(thread) {
     .setFooter({ text: `» Eingereicht von ${member.user.username} » ${member.id}`, iconURL: member.displayAvatarURL({ dynamic: true }) });
 
   const starter = await newThread.fetchStarterMessage();
-  await starter.react(UPVOTE_EMOJI_ID);
-  await starter.react(DOWNVOTE_EMOJI_ID);
+  await starter.react(settings.get("suggestions.upvoteEmoji"));
+  await starter.react(settings.get("suggestions.downvoteEmoji"));
   await starter.edit({ content: `\`👋\` » Hey ${member}, Ich habe die Idee (**${thread.name}**) für dich eingereicht.`, embeds: [embed] });
   await thread.delete();
   log.info(`Suggestion taken over: "${thread.name}" by ${member.user.username}`);
@@ -80,14 +61,14 @@ export async function handleThreadCreate(thread) {
 export async function handleVoteChange(reaction, user) {
   if (user.bot) {return;}
   if (reaction.message.channel.type !== ChannelType.PublicThread) {return;}
-  if (reaction.message.channel.parentId !== VORSCHLAG_FORUM_ID) {return;}
-  if (reaction.emoji.id !== UPVOTE_EMOJI_ID) {return;}
+  if (reaction.message.channel.parentId !== settings.get("channels.suggestions")) {return;}
+  if (reaction.emoji.id !== settings.get("suggestions.upvoteEmoji")) {return;}
 
   const message = reaction.message.partial ? await reaction.message.fetch() : reaction.message;
   const embed = message.embeds[0];
   if (!embed) {return;}
 
-  const reactionEmoji = message.reactions.cache.find((r) => r.emoji.id === UPVOTE_EMOJI_ID);
+  const reactionEmoji = message.reactions.cache.find((r) => r.emoji.id === settings.get("suggestions.upvoteEmoji"));
   if (!reactionEmoji) {return;}
 
   // the bot's own reaction doesn't count
@@ -98,7 +79,7 @@ export async function handleVoteChange(reaction, user) {
   const index = fields.findIndex((field) => field.name === VOTES_FIELD_NAME);
   if (index === -1) {return;}
 
-  fields[index].value = `» Votes: \`${upvoteCount}\` <a:upvote:${UPVOTE_EMOJI_ID}>`;
+  fields[index].value = `» Votes: \`${upvoteCount}\` <a:upvote:${settings.get("suggestions.upvoteEmoji")}>`;
   updated.setFields(fields);
 
   await message.edit({ embeds: [updated] });
@@ -126,7 +107,7 @@ export async function finalizeVorschlag(interaction, {
   }
 
   const currentTags = replaceTags ? [] : [...(channel.appliedTags ?? [])];
-  for (const tag of tags) {
+  for (const tag of (typeof tags === "function" ? tags() : tags)) {
     if (!currentTags.includes(tag)) {currentTags.push(tag);}
   }
   await channel.setAppliedTags(currentTags);
@@ -170,7 +151,7 @@ export async function finalizeVorschlag(interaction, {
 export const STATUS_PRESETS = Object.freeze({
   accept: {
     status: "accept",
-    tags: [TAGS.AKZEPTIERT],
+    tags: () => [settings.get("suggestions.tagAccepted")],
     authorPrefix: "Akzeptiert von",
     fieldName: "`✅` » **Status**",
     fieldValue: "» Dieser Vorschlag wurde von unserem Server-Team akzeptiert.",
@@ -181,7 +162,7 @@ export const STATUS_PRESETS = Object.freeze({
   },
   edit: {
     status: "edit",
-    tags: [TAGS.IN_PLANUNG],
+    tags: () => [settings.get("suggestions.tagPlanned")],
     authorPrefix: "Bearbeitet von",
     fieldName: "`🚧` » **Status**",
     fieldValue: "» Dieser Vorschlag ist bereits in Planung und wird bald umgesetzt.",
@@ -192,7 +173,7 @@ export const STATUS_PRESETS = Object.freeze({
   },
   delice: {
     status: "delice",
-    tags: [TAGS.ABGELEHNT],
+    tags: () => [settings.get("suggestions.tagRejected")],
     replaceTags: true,
     authorPrefix: "Abgelehnt von",
     fieldName: "`❌` » **Status**",
@@ -205,7 +186,7 @@ export const STATUS_PRESETS = Object.freeze({
   duplicate: {
     status: "duplicate",
     grund: "Doppelter Vorschlag. Bitte nutze die Suche!",
-    tags: [TAGS.DOPPELT],
+    tags: () => [settings.get("suggestions.tagDuplicate")],
     authorPrefix: "Bearbeitet von",
     fieldName: "`🔗` » **Status**",
     fieldValue: "» Dieser Vorschlag ist Doppelt und wurde bereits bearbeitet.",

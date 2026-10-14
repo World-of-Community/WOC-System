@@ -2,6 +2,7 @@
 import {EmbedBuilder, PermissionFlagsBits} from "discord.js";
 import ms from "ms";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "timeout",
@@ -127,10 +128,10 @@ export default {
 
     await member.timeout(zeitInMilliseconds, grund).catch(logger.log);
 
-    const logchannel = await interaction.guild.channels.cache.get("1263436406655680513");
+    const logchannel = await interaction.guild.channels.cache.get(settings.get("channels.serverLogs"));
 
     if (logchannel) {
-      const thread = logchannel.threads.cache.get("1269998219266490538");
+      const thread = logchannel.threads.cache.get(settings.get("logThreads.moderation"));
       if (thread) {
         await thread.send({embeds: [embed]});
       }

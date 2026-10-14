@@ -1,4 +1,4 @@
-import userdb from "#models/userdb.js";
+import userdb from "#models/User.js";
 import logger from "#core/logger.js";
 
 export default {

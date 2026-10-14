@@ -1,5 +1,5 @@
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder} from "discord.js";
-import Meeting from "#models/meetingdb.js";
+import Meeting from "#models/Meeting.js";
 import logger from "#core/logger.js";
 
 export default {

@@ -1,9 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import logger from "#core/logger.js";
-
-const EVENT_CHANNEL_ID = "1008696596000677998";
-const BOT_COMMAND_CHANNEL_ID = "870645033232130098";
-const EVENT_ROLE_ID = "870683971846041650";
+import { settings } from "#core/settings.js";
 
 const isFirstFriday = (d) => d.getDay() === 5 && d.getDate() <= 7;
 
@@ -17,7 +14,7 @@ export default [
     async execute(client) {
       if (!isFirstFriday(new Date())) {return;}
 
-      const channel = await client.channels.fetch(EVENT_CHANNEL_ID).catch(() => null);
+      const channel = await client.channels.fetch(settings.get("channels.events")).catch(() => null);
       if (!channel) {
         logger.warn("Event channel not found");
         return;
@@ -29,7 +26,7 @@ export default [
 
       await channel.send(
         "<a:pin:1119708768326914100>  » | **WOCHENEND-EVENT** - <a:Chat1:976129450112593990>\n\n" +
-        `Liebe Community, <@&${EVENT_ROLE_ID}>\n\n` +
+        `Liebe Community, <@&${settings.get("pingRoles.serverEvents")}>\n\n` +
         "Von Freitag bis Sonntag läuft ein **Community-Event**. Schaut vorbei und verbringt gemeinsam eine gute Zeit auf dem Server.\n\n" +
         "Mit freundlichen Grüßen\nEuer **World Of Community**-Team <:pepeheart:974642478055555082>",
       );
@@ -46,14 +43,14 @@ export default [
 
       if (isFirstFriday(now) && hour === 15 && !multiplierActive) {
         multiplierActive = true;
-        const channel = await client.channels.fetch(BOT_COMMAND_CHANNEL_ID);
+        const channel = await client.channels.fetch(settings.get("channels.levelBotCommands"));
         await channel.send(":?pmulti set 2");
         logger.info("Weekend event: XP multiplier set to 2");
       }
 
       if (now.getDay() === 0 && hour === 22 && multiplierActive) {
         multiplierActive = false;
-        const channel = await client.channels.fetch(BOT_COMMAND_CHANNEL_ID);
+        const channel = await client.channels.fetch(settings.get("channels.levelBotCommands"));
         await channel.send(":?pmulti set 1");
         logger.info("Weekend event: XP multiplier reset to 1");
       }

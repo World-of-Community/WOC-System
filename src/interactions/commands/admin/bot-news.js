@@ -1,7 +1,8 @@
 import { EmbedBuilder } from "discord.js";
-import serverdb from "#models/serverdb.js";
-import { config } from "#config";
+import serverdb from "#models/Guild.js";
+
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 //Nicht Bearbeiten + ausser wenn eine neue Kategorie hinzugefügt wird!!!
 const kategorieMapping = {
@@ -84,7 +85,7 @@ export default {
     const update = await interaction.options.getString("update");
     let serverData = await serverdb.findOne({ guildID: interaction.guildId });
     if (!serverData) {return;}
-    const channel = await interaction.client.channels.cache.get(config.changelog);
+    const channel = await interaction.client.channels.cache.get(settings.get("channels.changelog"));
 
     if (kategorieMapping[kategorie]) {
       const field = kategorieMapping[kategorie];
@@ -156,7 +157,7 @@ export default {
 
         await serverData.save();
         await interaction.editReply({ content: "> `✅` » Ich habe das Update erfolgreich hinzugefügt.", ephemeral: true });
-        const updateChannel = await interaction.guild.channels.cache.get("1051393854328279120");
+        const updateChannel = await interaction.guild.channels.cache.get(settings.get("channels.changelog"));
         await msg.edit({ embeds: [updateEmbed] });
         const message = await updateChannel.send({content: "Neues Changelog Update"});
         setTimeout(() => {

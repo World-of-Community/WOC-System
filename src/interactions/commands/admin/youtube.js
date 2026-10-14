@@ -1,11 +1,12 @@
 import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle, ComponentType } from "discord.js";
-import mongoose from "mongoose";
+import YoutubeNotify from "#models/YoutubeNotify.js";
+import YoutubeChannel from "#models/YoutubeChannel.js";
 import axios from "axios";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
+import { env } from "#config";
 const PLACEHOLDER_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/d/d6/KeinBildVorhanden.jpg";
 
-const YT_API_KEY = "AIzaSyCvg3Nd7BkHQzLqbHDObsyNlX_fOzoU2-4";
-const YOUTUBE_ROLE_ID = "1337362885101359146";
 
 export default {
   name: "youtube",
@@ -33,17 +34,15 @@ export default {
 
       collector.on("collect", async i => {
         if (i.customId === "toggle_notify") {
-          const db = mongoose.connection.db;
-          const collection = db.collection("youtube_notify");
           const userId = i.user.id;
 
-          const existing = await collection.findOne({ userId });
+          const existing = await YoutubeNotify.findOne({ userId });
 
           if (existing) {
-            await collection.deleteOne({ userId });
+            await YoutubeNotify.deleteOne({ userId });
             await i.reply({ content: "> `🔕` Du hast YouTube-Benachrichtigungen **deaktiviert**.", ephemeral: true });
           } else {
-            await collection.insertOne({ userId });
+            await YoutubeNotify.create({ userId });
             await i.reply({ content: "> `🔔` Du hast YouTube-Benachrichtigungen **aktiviert**.", ephemeral: true });
           }
         }
@@ -59,7 +58,7 @@ export default {
           if (isNewVideo) {
             // Sende Nachricht für das neue Video
             await interaction.channel.send({
-              content: `> <@&${YOUTUBE_ROLE_ID}> Ein neues Video von **${updatedChannelName}** ist verfügbar!`,
+              content: `> <@&${settings.get("pingRoles.youtube")}> Ein neues Video von **${updatedChannelName}** ist verfügbar!`,
               embeds: [updatedEmbed],
               components: [updatedRow],
             });
@@ -105,14 +104,12 @@ export default {
 };
 
 async function getYouTubeEmbed() {
-  const db = mongoose.connection.db;
-  const collection = db.collection("youtube_channels");
-  const channels = await collection.find().toArray();
+  const channels = await YoutubeChannel.find().lean();
 
   const latestVideos = [];
 
   for (const { channelId, lastVideoId } of channels) {
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?key=${YT_API_KEY}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?key=${env.youtube.apiKey}&channelId=${channelId}&order=date&part=snippet&type=video&maxResults=1`;
 
     try {
       const searchResponse = await axios.get(searchUrl);
@@ -123,7 +120,7 @@ async function getYouTubeEmbed() {
       const videoId = latestVideo.id.videoId;
 
       // Hole zusätzliche Video-Details
-      const videoDetailsUrl = `https://www.googleapis.com/youtube/v3/videos?key=${YT_API_KEY}&id=${videoId}&part=contentDetails,snippet`;
+      const videoDetailsUrl = `https://www.googleapis.com/youtube/v3/videos?key=${env.youtube.apiKey}&id=${videoId}&part=contentDetails,snippet`;
       const videoDetailsResponse = await axios.get(videoDetailsUrl);
       const videoDetails = videoDetailsResponse.data.items[0];
 
@@ -152,7 +149,7 @@ async function getYouTubeEmbed() {
 
         // Hole Daten des vorherigen Videos
         if (lastVideoId) {
-          const previousUrl = `https://www.googleapis.com/youtube/v3/videos?key=${YT_API_KEY}&id=${lastVideoId}&part=snippet`;
+          const previousUrl = `https://www.googleapis.com/youtube/v3/videos?key=${env.youtube.apiKey}&id=${lastVideoId}&part=snippet`;
           const previousResponse = await axios.get(previousUrl);
           const previousVideoData = previousResponse.data.items[0];
 
@@ -167,7 +164,7 @@ async function getYouTubeEmbed() {
           }
         }
 
-        await collection.updateOne({ channelId }, { $set: { lastVideoId: videoId } });
+        await YoutubeChannel.updateOne({ channelId }, { $set: { lastVideoId: videoId } });
       }
 
       latestVideos.push({ ...videoData, isNewVideo, previousVideo });

@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import userdb from "#models/userdb.js";
+import userdb from "#models/User.js";
 
 export default {
   name: "invites-manage",

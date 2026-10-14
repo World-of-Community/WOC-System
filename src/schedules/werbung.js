@@ -1,14 +1,13 @@
 import { EmbedBuilder } from "discord.js";
 import { GUILD_ID } from "#config";
-
-const WERBUNG_CHANNEL_ID = "1177536720229650442";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "werbung",
   interval: 6 * 60 * 60 * 1000,
 
   async execute(client) {
-    const channel = client.guilds.cache.get(GUILD_ID)?.channels.cache.get(WERBUNG_CHANNEL_ID);
+    const channel = client.guilds.cache.get(GUILD_ID)?.channels.cache.get(settings.get("channels.advertising"));
     if (!channel) {return;}
 
     const embed = new EmbedBuilder()

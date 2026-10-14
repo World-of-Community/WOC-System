@@ -1,6 +1,7 @@
 import { PermissionFlagsBits, EmbedBuilder } from "discord.js";
-import serverdb from "#models/serverdb.js";
-import { config } from "#config";
+import serverdb from "#models/Guild.js";
+
+import { settings } from "#core/settings.js";
 
 export default {
   name: "bot-news-refresh",
@@ -15,7 +16,7 @@ export default {
     if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ["changelog"] } })) {return channel.send({ content: "> `⛔` » Das Changelog System ist momentan deaktiviert." });}
     const serverData = await serverdb.findOne({ guildID: interaction.guildId });
     if (!serverData) {return;}
-    const channel = await interaction.client.channels.cache.get(config.changelog);
+    const channel = await interaction.client.channels.cache.get(settings.get("channels.changelog"));
     await channel.messages.fetch(serverData.updateMessage).then(async msg => {
       await interaction.reply({ content: "> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.", ephemeral: true });
       setTimeout(async () => {

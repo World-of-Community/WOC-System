@@ -1,10 +1,11 @@
 import { EventEmitter } from "node:events";
 import { EmbedBuilder } from "discord.js";
-import erfolgDB from "#models/erfolgdb.js";
+import erfolgDB from "#models/Achievement.js";
 import vorschlagEmitter from "./vorschlagEmitter.js";
 import logger from "#core/logger.js";
 import { reportError } from "#core/errors.js";
 import { GUILD_ID } from "#config";
+import { settings } from "#core/settings.js";
 
 const log = logger.child("Erfolge");
 
@@ -12,8 +13,6 @@ export const gewinnspielEmitter = new EventEmitter();
 
 const ERFOLG_BANNER = "https://cdn.discordapp.com/attachments/1269339771420016722/1269339821495681116/WOC_Banner_Server_Erfolg_Erhalten.png?ex=66bedd94&is=66bd8c14&hm=d764c1b8be0977c7068a86366b3e411e95c679a4cd5ccf3be54192879c5fa337&";
 const ERFOLGE_CHANNEL_URL = "https://discord.com/channels/815919809379172354/872063101640532008";
-const GEWINNER_ROLE_ID = "1124598019862573096";
-const ONE_YEAR_ROLE_ID = "972193356333604874";
 
 function extractUserId(embed) {
   const match = embed?.footer?.text?.match(/»\s+(\d{17,19})$/);
@@ -83,7 +82,7 @@ async function onGewinnspielWin(inter) {
   await userErfolge.save();
 
   const member = await inter.guild.members.fetch(userID).catch(() => null);
-  const gewinnerRole = inter.guild.roles.cache.get(GEWINNER_ROLE_ID);
+  const gewinnerRole = inter.guild.roles.cache.get(settings.get("achievementRoles.lucky"));
   if (gewinnerRole && member) {
     await member.roles.add(gewinnerRole).catch((err) => log.error("Failed to add winner role:", err?.message));
   }
@@ -124,8 +123,8 @@ export async function trackFirstMessage(message) {
 
 export async function grantOneYearRole(client) {
   const guild = await client.guilds.fetch(GUILD_ID);
-  const role = guild.roles.cache.get(ONE_YEAR_ROLE_ID);
-  if (!role) {throw new Error(`role ${ONE_YEAR_ROLE_ID} not found`);}
+  const role = guild.roles.cache.get(settings.get("achievementRoles.oneYear"));
+  if (!role) {throw new Error(`role ${settings.get("achievementRoles.oneYear")} not found`);}
 
   const members = await guild.members.fetch();
   const oneYearAgo = new Date();
@@ -133,7 +132,7 @@ export async function grantOneYearRole(client) {
 
   let granted = 0;
   for (const member of members.values()) {
-    if (member.user.bot || member.roles.cache.has(ONE_YEAR_ROLE_ID) || !member.joinedAt || member.joinedAt > oneYearAgo) {continue;}
+    if (member.user.bot || member.roles.cache.has(settings.get("achievementRoles.oneYear")) || !member.joinedAt || member.joinedAt > oneYearAgo) {continue;}
 
     try {
       await member.roles.add(role);

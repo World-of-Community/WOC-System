@@ -2,7 +2,7 @@ import { EmbedBuilder, DiscordAPIError, codeBlock } from "discord.js";
 import logger from "./logger.js";
 import { sendLog } from "./discordLog.js";
 import { safeReply } from "./reply.js";
-import { LOG_THREADS, CHANNELS } from "#config";
+import { settings } from "#core/settings.js";
 
 // Thrown by commands/components when the message is meant for the user.
 // Not reported as a bot error.
@@ -70,15 +70,15 @@ export async function reportError(error, context = {}) {
       .setColor("Orange")
       .setTimestamp();
 
-    await sendLog(LOG_THREADS.ERROR, embed);
+    await sendLog(settings.get("logThreads.error"), embed);
   } catch (sendError) {
     logger.error("Could not send error report to Discord:", sendError);
   }
 }
 
-export const GENERIC_ERROR_MESSAGE =
+export const genericErrorMessage = () =>
   "> `❌` » Es ist ein Fehler beim Ausführen aufgetreten!\n" +
-  `> \`📌\` » Bitte gib einem Teammitglied Bescheid oder öffne ein Ticket im <#${CHANNELS.SUPPORT_TICKETS}>`;
+  `> \`📌\` » Bitte gib einem Teammitglied Bescheid oder öffne ein Ticket im <#${settings.get("channels.support")}>`;
 
 export async function handleInteractionError(interaction, error, context = {}) {
   if (error instanceof UserError) {
@@ -97,7 +97,7 @@ export async function handleInteractionError(interaction, error, context = {}) {
   // interaction token expired, nothing left to reply to
   if (error instanceof DiscordAPIError && error.code === 10062) {return;}
 
-  await safeReply(interaction, { content: GENERIC_ERROR_MESSAGE, ephemeral: true });
+  await safeReply(interaction, { content: genericErrorMessage(), ephemeral: true });
 }
 
 export function registerProcessHandlers() {

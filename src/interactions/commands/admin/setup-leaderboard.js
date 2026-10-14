@@ -1,5 +1,4 @@
-
-import leaderboarddb from "#models/leaderboarddb.js";
+import leaderboarddb from "#models/Leaderboard.js";
 import { createLeaderboardMessage } from "#systems/leaderboard.js";
 
 export default {

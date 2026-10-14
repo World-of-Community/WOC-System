@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import CountingModel from "#models/countingdb.js";
+import CountingModel from "#models/Counting.js";
 
 export default {
   name: "counting",

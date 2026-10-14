@@ -1,5 +1,5 @@
 import { Events } from "discord.js";
-import userdb from "#models/userdb.js";
+import userdb from "#models/User.js";
 import logger from "#core/logger.js";
 import { updateLeaderboard } from "#systems/leaderboard.js";
 

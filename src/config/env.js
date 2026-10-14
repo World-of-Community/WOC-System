@@ -29,6 +29,10 @@ export const env = Object.freeze({
     maxRetries: Number.parseInt(process.env.MONGO_MAX_RETRIES ?? "5", 10),
   }),
 
+  youtube: Object.freeze({
+    apiKey: process.env.YOUTUBE_API_KEY ?? "",
+  }),
+
   twitch: Object.freeze({
     clientId: process.env.TWITCH_CLIENT_ID ?? "",
     clientSecret: process.env.TWITCH_CLIENT_SECRET ?? "",

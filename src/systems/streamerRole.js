@@ -4,8 +4,7 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 import logger from "#core/logger.js";
-
-const STREAM_ROLE_ID = "1266095218239995968";
+import { settings } from "#core/settings.js";
 
 function normalizeActivities(activities) {
   if (!Array.isArray(activities)) {return [];}
@@ -73,9 +72,9 @@ export async function syncStreamerRoleForMember(
     if (member.user?.bot) {return { status: "ignored_bot" };}
 
     const guild = member.guild;
-    const role = guild?.roles?.cache?.get(STREAM_ROLE_ID);
+    const role = guild?.roles?.cache?.get(settings.get("roles.streamer"));
     if (!role) {
-      logger.warn(`[StreamerRole] Zielrolle ${STREAM_ROLE_ID} nicht gefunden (${source}).`);
+      logger.warn(`[StreamerRole] Zielrolle ${settings.get("roles.streamer")} nicht gefunden (${source}).`);
       return { status: "missing_role" };
     }
 
@@ -173,7 +172,7 @@ export async function syncStreamerStateOnStartup(client) {
   logger.info("[StreamerRole] Starte Initial-Synchronisierung (cache-basiert).");
 
   for (const guild of client.guilds.cache.values()) {
-    const role = guild.roles.cache.get(STREAM_ROLE_ID);
+    const role = guild.roles.cache.get(settings.get("roles.streamer"));
     const candidateIds = new Set();
 
     for (const member of guild.members.cache.values()) {

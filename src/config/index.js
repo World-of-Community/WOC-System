@@ -1,27 +1,4 @@
-import config from "./config.json" with { type: "json" };
 import { env } from "./env.js";
 
-export { config, env };
-
-export const GUILD_ID = config.server;
-
-export const CHANNELS = Object.freeze({
-  SERVER_LOGS: "1263436406655680513",
-  BOT_STATUS: "1295742887388254278",
-  SUPPORT_TICKETS: "819555839362072606",
-});
-
-export const LOG_THREADS = Object.freeze({
-  CHANNEL: "1269998213952442525",
-  MESSAGE: "1269998217181921320",
-  JOIN: "1269998215512457259",
-  ROLES: "1269998221518831721",
-  SERVER: "1269998220440895510",
-  MODERATION: "1269998219266490538",
-  INVITE: "1269998218264055818",
-  OFFLINE: "1296391117507399763",
-  ONLINE: "1296391117507399763",
-  ERROR: "1296391118723878932",
-});
-
-export default config;
+export { env };
+export const GUILD_ID = env.discord.guildId;

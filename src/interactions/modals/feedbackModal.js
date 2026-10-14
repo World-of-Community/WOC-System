@@ -1,5 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder } from "discord.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   id: "feedback-modal",
@@ -11,8 +12,8 @@ export default {
       const description = interaction.fields.getTextInputValue("feedback-description");
 
       const threadName = `${title} - ${interaction.user.username}`;
-      const feedbackChannelId = "1336720916591149137"; // Feedback channel
-      const supportRoleId = "1011207481357238272"; // Team-Rolle
+      const feedbackChannelId = settings.get("channels.feedback"); // Feedback channel
+      const supportRoleId = settings.get("teamRoles.ticketSupport"); // Team-Rolle
 
       const feedbackChannel = interaction.guild.channels.cache.get(feedbackChannelId);
       if (!feedbackChannel) {
@@ -66,7 +67,7 @@ export default {
       });
 
       // Rolle als Viewer hinzufügen
-      await thread.permissionOverwrites.edit("1270369938972082177", {
+      await thread.permissionOverwrites.edit(settings.get("teamRoles.ticketArea"), {
         ViewChannel: true,
         SendMessages: true,
         ReadMessageHistory: true,

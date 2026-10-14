@@ -1,4 +1,5 @@
 import { EmbedBuilder, time } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "Nachricht melden",
@@ -6,7 +7,7 @@ export default {
   options: [],
 
   async run(client, interaction) {
-    const reportLog = interaction.guild.channels.cache.get("1010515517460725782");
+    const reportLog = interaction.guild.channels.cache.get(settings.get("channels.reports"));
 
     const embed = new EmbedBuilder()
       .setTitle(`\`📝\` | Neuer Report von ${interaction.user.displayName}`)

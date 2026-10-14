@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import serverdb from "#models/serverdb.js";
+import serverdb from "#models/Guild.js";
 export default {
   name: "role-bypass",
   description: "» Einstellen der Rollen für das Gewinnspiel-System. 🎁",

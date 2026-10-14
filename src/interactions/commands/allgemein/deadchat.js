@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "deadchat",
@@ -27,6 +28,6 @@ export default {
       .setFooter({ text: `» Thema gestartet von ${interaction.user.displayName}`, iconURL: `${interaction.user.displayAvatarURL()}`})
       .setTimestamp();
 
-    await interaction.channel.send({ content: "<@&1246190426646642698>, der Chat ist inaktiv, kommt doch her und schreibt bisschen!", embeds: [fragenEmbed] });
+    await interaction.channel.send({ content: `<@&${settings.get("pingRoles.deadChat")}>, der Chat ist inaktiv, kommt doch her und schreibt bisschen!`, embeds: [fragenEmbed] });
   },
 };

@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
-import userdb from "#models/userdb.js";
+import userdb from "#models/User.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "profil",
@@ -53,112 +54,112 @@ export default {
     };
 
     const TeamRoleIds = [
-      "959869691529154631", // Admin
-      "893423428558782465", // Team-leitung
-      "929349039433056276", // Developer
-      "816985466230145044", // Sr-Moderator
-      "815920052385480754", // Moderator
-      "815920170371383366", // Supporter
-      "1263645368441241700", // Builder
+      settings.get("teamRoles.admin"), // Admin
+      settings.get("teamRoles.teamLead"), // Team-leitung
+      settings.get("teamRoles.developer"), // Developer
+      settings.get("teamRoles.srModerator"), // Sr-Moderator
+      settings.get("teamRoles.moderator"), // Moderator
+      settings.get("teamRoles.supporter"), // Supporter
+      settings.get("teamRoles.builder"), // Builder
     ];
 
     const LeitungRoleIds = [
-      "1399454355349835917", // Team Leitung
-      "1154345358030282782", // Dev Leitung
-      "1155080722466488351", // Support Leitung
-      "1258773853249863734", // Builder Leitung
-      "1512871214278770860", // Creator Leitung
-      "1269383970349650087", // Clan Leitung
-      "1175879013688954980", // Partner Leitung
-      "1290377533984079923", // Social Media Leitung
-      "1246368940318392411", // Event Leitung
-      "1269370651500609586", // Bewerbung Leitung
-      "1400183875774185554", // Emoji Quiz Leitung
+      settings.get("leadRoles.team"), // Team Leitung
+      settings.get("leadRoles.developer"), // Dev Leitung
+      settings.get("leadRoles.support"), // Support Leitung
+      settings.get("leadRoles.builder"), // Builder Leitung
+      settings.get("leadRoles.creator"), // Creator Leitung
+      settings.get("leadRoles.clan"), // Clan Leitung
+      settings.get("leadRoles.partner"), // Partner Leitung
+      settings.get("leadRoles.socialMedia"), // Social Media Leitung
+      settings.get("leadRoles.event"), // Event Leitung
+      settings.get("leadRoles.application"), // Bewerbung Leitung
+      settings.get("leadRoles.emojiQuiz"), // Emoji Quiz Leitung
     ];
 
     const ExklusivRoleIds = [
-      "815920219247214644", // Creator
-      "862708375698538507", // VIP
-      "1249802165501952053", // Geldgeber (Sponsor)
-      "946040266266144768", // Kooperation
-      "1187144777595101225", // Server-Partner
-      "1150753421339676722", // Minenarbeiter (Event)
-      "1155235780541821009", // Designer
+      settings.get("exclusiveRoles.creator"), // Creator
+      settings.get("exclusiveRoles.vip"), // VIP
+      settings.get("exclusiveRoles.sponsor"), // Geldgeber (Sponsor)
+      settings.get("exclusiveRoles.cooperation"), // Kooperation
+      settings.get("exclusiveRoles.serverPartner"), // Server-Partner
+      settings.get("exclusiveRoles.leaderboardWinner"), // Minenarbeiter (Event)
+      settings.get("exclusiveRoles.designer"), // Designer
     ];
 
     const MitgliederRoleIds = [
-      "815921105407574056", // Supreme
-      "917826787977871441", // Premium
-      "815920452337139733", // Legende
-      "835775627721179167", // Diamond
-      "835775556611997697", // Emerald
-      "835775597446955048", // Episch
-      "815920703067914290", // Mitglied
+      settings.get("minecraftRoles.supreme"), // Supreme
+      settings.get("minecraftRoles.premium"), // Premium
+      settings.get("minecraftRoles.legende"), // Legende
+      settings.get("minecraftRoles.diamond"), // Diamond
+      settings.get("minecraftRoles.emerald"), // Emerald
+      settings.get("minecraftRoles.episch"), // Episch
+      settings.get("roles.member"), // Mitglied
     ];
 
     const BundeslandRoleIds = [
-      "1379411398827704362", // Baden-Württemberg
-      "1379411504394141758", // Bayern
-      "1379411613240528936", // Berlin
-      "1379411641958924338", // Brandenburg
-      "1379411675773538404", // Bremen
-      "1379411700931104830", // Hamburg
-      "1379411767452762233", // Hessen
-      "1379411797353955379", // Mecklenburg-Vorpommern
-      "1379411848482390128", // Niedersachsen
-      "1379411880828735568", // Nordrhein-Westfalen
-      "1379411970020605982", // Rheinland-Pfalz
-      "1379412016447492096", // Saarland
-      "1370492716001132699", // Sachsen
-      "1379412047103660092", // Sachsen-Anhalt
-      "1379412115240124517", // Schleswig-Holstein
-      "1379412160194805810", // Thüringen
+      settings.get("regionRoles.badenWuerttemberg"), // Baden-Württemberg
+      settings.get("regionRoles.bayern"), // Bayern
+      settings.get("regionRoles.berlin"), // Berlin
+      settings.get("regionRoles.brandenburg"), // Brandenburg
+      settings.get("regionRoles.bremen"), // Bremen
+      settings.get("regionRoles.hamburg"), // Hamburg
+      settings.get("regionRoles.hessen"), // Hessen
+      settings.get("regionRoles.mecklenburgVorpommern"), // Mecklenburg-Vorpommern
+      settings.get("regionRoles.niedersachsen"), // Niedersachsen
+      settings.get("regionRoles.nordrheinWestfalen"), // Nordrhein-Westfalen
+      settings.get("regionRoles.rheinlandPfalz"), // Rheinland-Pfalz
+      settings.get("regionRoles.saarland"), // Saarland
+      settings.get("regionRoles.sachsen"), // Sachsen
+      settings.get("regionRoles.sachsenAnhalt"), // Sachsen-Anhalt
+      settings.get("regionRoles.schleswigHolstein"), // Schleswig-Holstein
+      settings.get("regionRoles.thueringen"), // Thüringen
     ];
 
     const NationalitätRoleIds = [
-      "848163749637914674", // Österreich
-      "848163753139896330", // Schweiz
-      "1127923622653210654", // Sonstiges
+      settings.get("regionRoles.austria"), // Österreich
+      settings.get("regionRoles.switzerland"), // Schweiz
+      settings.get("regionRoles.other"), // Sonstiges
     ];
 
     const GeschlechtRoleIds = [
-      "848173921630945320", // Männlich
-      "848173917767991377", // Weiblich
-      "870646828348080159", // Divers
+      settings.get("genderRoles.male"), // Männlich
+      settings.get("genderRoles.female"), // Weiblich
+      settings.get("genderRoles.diverse"), // Divers
     ];
 
     const GameRoleIds = [
-      "1232072165654794281", // Roblox
-      "1232066510554529905", // Rocket League
-      "1232066545492955136", // Grand Theft Auto V
-      "1232066588216135880", // Minecraft
-      "1232066657896108082", // FIFA
-      "1273369483951734866", // League of Legends
-      "1232066632491208704", // Valorant
-      "1232070141127426058", // Fortnite
+      settings.get("gameRoles.roblox"), // Roblox
+      settings.get("gameRoles.rocketLeague"), // Rocket League
+      settings.get("gameRoles.gta5"), // Grand Theft Auto V
+      settings.get("gameRoles.minecraft"), // Minecraft
+      settings.get("gameRoles.fifa"), // FIFA
+      settings.get("gameRoles.lol"), // League of Legends
+      settings.get("gameRoles.valorant"), // Valorant
+      settings.get("gameRoles.fortnite"), // Fortnite
     ];
 
     const PingRoleIDs = [
-      "847805121839890463", // Umfragen Ping
-      "848085701449744394", // Neuigkeiten Ping
-      "870297686467817492", // Gewinnspiel Ping
-      "870683971846041650", // Server-Events Ping
-      "963838152815050763", // Änderungen Ping
-      "1147093175186493490", // Bot-Changelog Ping
-      "1478434516451463341", // Changelog Ping
-      "1246190426646642698", // Dead Chat Ping
-      "1230568420240527462", // Gratis Spiele Ping
+      settings.get("pingRoles.surveys"), // Umfragen Ping
+      settings.get("pingRoles.news"), // Neuigkeiten Ping
+      settings.get("pingRoles.giveaway"), // Gewinnspiel Ping
+      settings.get("pingRoles.serverEvents"), // Server-Events Ping
+      settings.get("pingRoles.changes"), // Änderungen Ping
+      settings.get("pingRoles.botChangelog"), // Bot-Changelog Ping
+      settings.get("pingRoles.changelog"), // Changelog Ping
+      settings.get("pingRoles.deadChat"), // Dead Chat Ping
+      settings.get("pingRoles.freeGames"), // Gratis Spiele Ping
     ];
 
     const LevelRoleIds = [
-      "1258827226846199808", // Level 5
-      "1258794944953319534", // Level 10
-      "1258794479570124920", // Level 20
-      "1258827956634128467", // Level 30
-      "1258794405507240038", // Level 40
-      "1258825144697360485", // Level 50
-      "1258794321533075526", // Level 75
-      "1258825307239219371", // Level 100
+      settings.get("levelRoles.level5"), // Level 5
+      settings.get("levelRoles.level10"), // Level 10
+      settings.get("levelRoles.level20"), // Level 20
+      settings.get("levelRoles.level30"), // Level 30
+      settings.get("levelRoles.level40"), // Level 40
+      settings.get("levelRoles.level50"), // Level 50
+      settings.get("levelRoles.level75"), // Level 75
+      settings.get("levelRoles.level100"), // Level 100
     ];
 
     // Initial Werte

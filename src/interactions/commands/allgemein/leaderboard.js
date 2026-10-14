@@ -1,7 +1,7 @@
 /*
 import { EmbedBuilder } from "discord.js";
-import { Coin } from "#models/coindb.js";
-import userDB from "#models/userdb.js";
+import { Coin } from "#models/Coin.js";
+import userDB from "#models/User.js";
 
 export default {
   name: "leaderboard",
@@ -145,8 +145,8 @@ export default {
 // test
 
 import { EmbedBuilder } from "discord.js";
-import { Coin } from "#models/coindb.js";
-import userDB from "#models/userdb.js";
+import { Coin } from "#models/Coin.js";
+import userDB from "#models/User.js";
 
 export default {
   name: "leaderboard",

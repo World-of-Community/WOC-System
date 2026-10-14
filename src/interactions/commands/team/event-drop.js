@@ -1,5 +1,5 @@
 import { PermissionFlagsBits, ChannelType } from "discord.js";
-import EventDropAndUser from "#models/EventDropAndUserdb.js";
+import EventDropAndUser from "#models/EventDrop.js";
 
 export default {
   name: "eventdrop",

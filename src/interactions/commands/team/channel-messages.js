@@ -1,4 +1,4 @@
-import messagedb from "#models/messagedb.js";
+import messagedb from "#models/MessageCounter.js";
 
 export default {
   name: "channel-messages",

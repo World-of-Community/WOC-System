@@ -1,8 +1,7 @@
 import { EmbedBuilder } from "discord.js";
-import bandb from "#models/bandb.js";
+import bandb from "#models/Ban.js";
 import logger from "#core/logger.js";
-
-const BANLISTE_MESSAGE_ID = "1298680434347081730"; // Falls du es automatisch speichern willst, sag Bescheid!
+import { settings } from "#core/settings.js";
 
 export default {
   name: "banliste",
@@ -12,7 +11,7 @@ export default {
   options: [],
 
   async run(client, interaction) {
-    const gebannt = interaction.guild.roles.cache.get("886989738244964362");
+    const gebannt = interaction.guild.roles.cache.get(settings.get("roles.banned"));
     if (!gebannt) {
       return interaction.reply({
         content: "> `❌` » Die Rolle für gebannte Nutzer wurde nicht gefunden.",
@@ -44,12 +43,12 @@ export default {
 
     const bannembed = new EmbedBuilder()
       .setTitle("Information zu den Gebannten Nutzern")
-      .setDescription(`Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&886989738244964362> (\`${bans.length}👥\`):\n\n${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
+      .setDescription(`Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&${settings.get("roles.banned")}> (\`${bans.length}👥\`):\n\n${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
       .setColor("Red")
       .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
 
     try {
-      const message = await interaction.channel.messages.fetch(BANLISTE_MESSAGE_ID);
+      const message = await interaction.channel.messages.fetch(settings.get("messages.banList"));
       if (message) {
         await message.edit({ embeds: [bannembed] });
         await interaction.editReply({ content: "> `✅` » Die Bannliste wurde aktualisiert." });

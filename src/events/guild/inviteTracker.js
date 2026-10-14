@@ -1,6 +1,7 @@
 import { Events, EmbedBuilder } from "discord.js";
-import { sendLog, ThreadIDs } from "#core/discordLog.js";
+import { sendLog } from "#core/discordLog.js";
 import { GUILD_ID } from "#config";
+import { settings } from "#core/settings.js";
 
 const invites = new Map();
 
@@ -28,7 +29,7 @@ export default {
         .setColor("Blurple")
         .setTimestamp();
 
-      await sendLog(ThreadIDs.INVITE, embed);
+      await sendLog(settings.get("logThreads.invite"), embed);
     }
 
     invites.set(member.guild.id, new Map(newInvites.map((invite) => [invite.code, invite.uses])));

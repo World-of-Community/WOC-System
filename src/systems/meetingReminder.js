@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import client from "#client";
-import Meeting from "#models/meetingdb.js";
+import Meeting from "#models/Meeting.js";
 import logger from "#core/logger.js";
 
 const log = logger.child("MeetingReminder");

@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
-import warndb from "#models/warndb.js";
+import warndb from "#models/Warning.js";
+import { settings } from "#core/settings.js";
 
 async function getWarnlistEmbed(interaction) {
   // Fetch all warning data for the guild
@@ -39,8 +40,8 @@ async function getWarnlistEmbed(interaction) {
 async function updateWarnlist(interaction) {
   const embed = await getWarnlistEmbed(interaction);
 
-  const channel = await interaction.guild.channels.cache.get("877446081036836884");
-  const message = await channel.messages.fetch("1283824671506301051");
+  const channel = await interaction.guild.channels.cache.get(settings.get("channels.team"));
+  const message = await channel.messages.fetch(settings.get("messages.warnList"));
 
   await message.edit({ embeds: [embed] });
 }

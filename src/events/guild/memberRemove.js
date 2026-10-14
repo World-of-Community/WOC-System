@@ -1,14 +1,12 @@
 import { Events, EmbedBuilder } from "discord.js";
-import userdb from "#models/userdb.js";
-import InviteCache from "#models/inviteCachedb.js";
-import serverdb from "#models/serverdb.js";
-import { Coin } from "#models/coindb.js";
+import userdb from "#models/User.js";
+import InviteCache from "#models/InviteCache.js";
+import serverdb from "#models/Guild.js";
+import { Coin } from "#models/Coin.js";
 import logger from "#core/logger.js";
 import { reportError } from "#core/errors.js";
-import { CHANNELS, LOG_THREADS } from "#config";
 
-const LEAVE_CHANNEL_ID = "1433189396475023380";
-const WERBUNG_CHANNEL_ID = "1172920281526960238";
+import { settings } from "#core/settings.js";
 
 const LEAVE_MESSAGES = [
   (t) => `<a:leave:1433256832851251411> **${t}** hat uns verlassen. <a:winken:1086560167442796544>`,
@@ -48,7 +46,7 @@ export default {
     if (!serverData) {return;}
     if (serverData.deactivated?.includes?.("willkommensnachrichten")) {return;}
 
-    const leaveChannel = member.guild.channels.cache.get(LEAVE_CHANNEL_ID);
+    const leaveChannel = member.guild.channels.cache.get(settings.get("channels.welcome"));
     if (leaveChannel) {
       const pick = LEAVE_MESSAGES[Math.floor(Math.random() * LEAVE_MESSAGES.length)];
       await leaveChannel.send({ content: pick(member.user.tag) }).catch((err) => logger.error("Leave message failed:", err?.message));
@@ -61,8 +59,8 @@ export default {
       .setThumbnail(member.user.displayAvatarURL({ format: "png", dynamic: true, size: 256 }))
       .setTimestamp();
 
-    const logchannel = member.guild.channels.cache.get(CHANNELS.SERVER_LOGS);
-    await logchannel?.threads.cache.get(LOG_THREADS.JOIN)?.send({ embeds: [leaveEmbed] }).catch(() => {});
+    const logchannel = member.guild.channels.cache.get(settings.get("channels.serverLogs"));
+    await logchannel?.threads.cache.get(settings.get("logThreads.join"))?.send({ embeds: [leaveEmbed] }).catch(() => {});
 
     await updateInviteStats(member).catch((error) => reportError(error, { source: "memberRemove:inviteStats" }));
     await deleteUserAds(member).catch((error) => reportError(error, { source: "memberRemove:deleteAds" }));
@@ -88,7 +86,7 @@ async function updateInviteStats(member) {
 }
 
 async function deleteUserAds(member) {
-  const channel = member.guild.channels.cache.get(WERBUNG_CHANNEL_ID);
+  const channel = member.guild.channels.cache.get(settings.get("channels.ads"));
   if (!channel) {return;}
 
   const messages = await channel.messages.fetch();

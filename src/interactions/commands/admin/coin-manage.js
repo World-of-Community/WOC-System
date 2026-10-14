@@ -1,4 +1,4 @@
-import { CoinConfig } from "#models/coindb.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "coin-manage",
@@ -31,14 +31,8 @@ export default {
         ephemeral: true,
       });
     }
-
-    // Konfiguration speichern
-    let config = await CoinConfig.findOne({ guildId: interaction.guild.id });
-    if (!config) {config = new CoinConfig({ guildId: interaction.guild.id });}
-
-    config.minCoins = min;
-    config.maxCoins = max;
-    await config.save();
+    await settings.set("coins.min", min, interaction.user.id);
+    await settings.set("coins.max", max, interaction.user.id);
 
     // Antwort
     await interaction.reply({

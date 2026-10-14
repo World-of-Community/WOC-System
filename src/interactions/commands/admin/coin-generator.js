@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
-import { Coin, CoinConfig } from "#models/coindb.js";
+import { Coin } from "#models/Coin.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "coin",
@@ -29,9 +30,8 @@ export default {
       let collectedCoins = 0;
       let tickCount = 0;
 
-      const config = await CoinConfig.findOne({ guildId: interaction.guild.id });
-      const min = config?.minCoins ?? 1;
-      const max = config?.maxCoins ?? 5;
+      const min = settings.get("coins.min");
+      const max = settings.get("coins.max");
 
       if (min > max || min < 0 || max < 1) {
         return interaction.reply({

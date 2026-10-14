@@ -1,11 +1,12 @@
-import { handleMeetingButton, TEAM_CHANNEL_ID } from "#systems/teammanager.js";
+import { handleMeetingButton } from "#systems/teammanager.js";
+import { settings } from "#core/settings.js";
 
 // Buttons on the old serverdb.meetings embeds; only valid inside the team channel
 function legacyButton(id) {
   return {
     id,
     async run(client, interaction) {
-      if (interaction.channelId !== TEAM_CHANNEL_ID) {return;}
+      if (interaction.channelId !== settings.get("channels.team")) {return;}
       await handleMeetingButton(interaction, id);
     },
   };

@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
-import serverdb from "#models/serverdb.js";
-import { config } from "#config";
+import serverdb from "#models/Guild.js";
+import { env } from "#config";
+import { settings } from "#core/settings.js";
 
 const CATEGORIES = [
   { key: "support", name: "> <:Moderator:873823260507262996> - **WOC`👮`SUPPORT (BOT)** - UPDATE" },
@@ -13,7 +14,7 @@ const CATEGORIES = [
 const ddmm = (d) => `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}`;
 
 async function isDeactivated() {
-  return Boolean(await serverdb.findOne({ guildID: config.server, deactivated: { $in: ["changelog"] } }));
+  return Boolean(await serverdb.findOne({ guildID: env.discord.guildId, deactivated: { $in: ["changelog"] } }));
 }
 
 export default [
@@ -23,12 +24,12 @@ export default [
     cron: "0 0 * * 1",
 
     async execute(client) {
-      const channel = client.channels.cache.get(config.changelog);
+      const channel = client.channels.cache.get(settings.get("channels.changelog"));
       if (!channel) {return;}
 
-      let serverData = await serverdb.findOne({ guildID: config.server });
+      let serverData = await serverdb.findOne({ guildID: env.discord.guildId });
       if (!serverData) {
-        serverData = new serverdb({ guildID: config.server });
+        serverData = new serverdb({ guildID: env.discord.guildId });
       }
       for (const { key } of CATEGORIES) {
         if (!serverData[key]) {serverData[key] = [];}
@@ -71,14 +72,14 @@ export default [
     cron: "0 18 * * 0",
 
     async execute(client) {
-      const channel = client.channels.cache.get(config.changelog);
-      const serverData = await serverdb.findOne({ guildID: config.server });
+      const channel = client.channels.cache.get(settings.get("channels.changelog"));
+      const serverData = await serverdb.findOne({ guildID: env.discord.guildId });
       if (!channel || !serverData) {return;}
       if (await isDeactivated()) {return;}
 
       if (serverData.updateMessage) {
         const msg = await channel.messages.fetch(serverData.updateMessage).catch(() => null);
-        await msg?.reply({ content: `Hier seht ihr die Änderungen **aus dieser Woche**, <@&${config.changelogRole}>!` });
+        await msg?.reply({ content: `Hier seht ihr die Änderungen **aus dieser Woche**, <@&${settings.get("pingRoles.botChangelog")}>!` });
       }
 
       serverData.updateMessage = "";

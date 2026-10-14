@@ -1,11 +1,11 @@
 import schedule from "node-schedule";
-import teamDB from "#models/teamdb.js";
-import serverDB from "#models/serverdb.js";
+import teamDB from "#models/TeamMember.js";
+import serverDB from "#models/Guild.js";
 import logger from "#core/logger.js";
 import { GUILD_ID } from "#config";
+import { settings } from "#core/settings.js";
 
 const log = logger.child("TeamManager");
-export const TEAM_CHANNEL_ID = "877446081036836884";
 
 function parseDate(dateStr) {
   if (!dateStr) {return null;}
@@ -31,7 +31,7 @@ export async function handleUrlaubMention(message) {
     const urlaubEnde = parseDate(teamData.urlaub.ende);
 
     if (urlaubBeginn && urlaubEnde && now >= urlaubBeginn && now <= urlaubEnde) {
-      const urlaubMessageUrl = `https://discord.com/channels/${message.guild.id}/${TEAM_CHANNEL_ID}/${teamData.urlaub.messageID}`;
+      const urlaubMessageUrl = `https://discord.com/channels/${message.guild.id}/${settings.get("channels.team")}/${teamData.urlaub.messageID}`;
 
       const sentMessage = await message.reply({
         content: `> \`❗\` » \`${user.displayName}\` ist derzeit im Urlaub und daher nicht erreichbar. ${urlaubMessageUrl}`,
@@ -45,7 +45,7 @@ export async function cleanupExpired(client) {
   const now = new Date();
   const expiredUrlaubs = await teamDB.find({ "urlaub.ende": { $lte: formatDate(now) } });
 
-  const channel = client.channels.cache.get(TEAM_CHANNEL_ID);
+  const channel = client.channels.cache.get(settings.get("channels.team"));
   if (!channel) {
     log.error("Team channel not found");
     return;
@@ -112,7 +112,7 @@ export async function rescheduleMeetingTasks(client) {
           const meeting = await findMeeting();
           if (!meeting?.messageID) {return;}
 
-          const channel = await client.channels.fetch(TEAM_CHANNEL_ID);
+          const channel = await client.channels.fetch(settings.get("channels.team"));
           const message = await channel?.messages.fetch(meeting.messageID).catch(() => null);
           await message?.delete();
         } catch (error) {

@@ -1,5 +1,6 @@
-import userdb from "#models/userdb.js";
+import userdb from "#models/User.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 const afktexte = [
   "Die Tür vom Nachbarn mit Brettern zunageln. <a:Ping_Hammer:1077295673289998417>",
@@ -51,7 +52,7 @@ export default {
 
     } catch (error) {
       logger.error("Fehler beim AFK-Setzen:", error);
-      await interaction.reply({ content: "> `❌` » Fehler, Falls dieser Fehler sich wiederholt, Melde dies bitte im Support (<#819555839362072606>) ", ephemeral: true });
+      await interaction.reply({ content: `> \`❌\` » Fehler, Falls dieser Fehler sich wiederholt, Melde dies bitte im Support (<#${settings.get("channels.support")}>) `, ephemeral: true });
     }
   },
 };

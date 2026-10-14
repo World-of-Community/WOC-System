@@ -1,5 +1,5 @@
 import {EmbedBuilder} from "discord.js";
-import warndb from "#models/warndb.js";
+import warndb from "#models/Warning.js";
 import logger from "#core/logger.js";
 
 export default {

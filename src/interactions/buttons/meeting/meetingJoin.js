@@ -1,4 +1,4 @@
-import Meeting from "#models/meetingdb.js";
+import Meeting from "#models/Meeting.js";
 
 export default {
   id: "meeting_join",

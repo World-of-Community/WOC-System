@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import eventItems from "#models/eventItems.js";
+import eventItems from "#models/EventItem.js";
 
 export default {
   name: "raketen",

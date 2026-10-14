@@ -1,10 +1,11 @@
 import { REST, Routes } from "discord.js";
 import logger from "#core/logger.js";
-import { env, config } from "#config";
+import { env } from "#config";
+import { settings } from "#core/settings.js";
 
-// Commands listed in config.json "disabledCommands" stay loaded but are not registered at Discord.
+// Commands listed in the setting system.disabledCommands stay loaded but are not registered at Discord.
 export default async function registerCommands(client) {
-  const disabled = new Set((config.disabledCommands ?? []).map((n) => n.toLowerCase()));
+  const disabled = new Set((settings.get("system.disabledCommands") ?? []).map((n) => n.toLowerCase()));
 
   const body = [];
   for (const command of client.slashCommands.values()) {

@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, EmbedBuilder } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "send-embed",
@@ -36,8 +37,8 @@ export default {
     const embedType = interaction.options.getString("embed");
 
     if (embedType === "ränge-info") {
-      const channel = interaction.guild.channels.cache.get("872063101640532008"); // Channel ID
-      const msg = await channel.messages.fetch("1260234136665194567"); // Nachricht ID
+      const channel = interaction.guild.channels.cache.get(settings.get("channels.rankInfo")); // Channel ID
+      const msg = await channel.messages.fetch(settings.get("messages.rankInfo")); // Nachricht ID
 
       const rängeEmbed = new EmbedBuilder()
         .setTitle("`🏆` 𑁉 ERHALTE NEUE RÄNGE & VORTEILE!")
@@ -93,8 +94,8 @@ export default {
       await msg.edit({ embeds: [rängeEmbed], components: [rängeMenu] });
 
     } else if (embedType === "regelwerk") {
-      const channel = interaction.guild.channels.cache.get("815922286502346773"); // Channel ID
-      const msg = await channel.messages.fetch("1151068177845977148"); // Nachricht ID
+      const channel = interaction.guild.channels.cache.get(settings.get("channels.rules")); // Channel ID
+      const msg = await channel.messages.fetch(settings.get("messages.rules")); // Nachricht ID
 
       const regelwerkEmbed = new EmbedBuilder()
         .setTitle("`🚨` » World Of Community - Server-Regeln")
@@ -127,8 +128,8 @@ export default {
       await msg.edit({ embeds: [regelwerkEmbed], components: [regelButton] });
 
     } else if (embedType === "partner") {
-      const channel = interaction.guild.channels.cache.get("1172819623935221810"); // Channel ID
-      const msg = await channel.messages.fetch("1187070677073801268"); // Nachricht ID
+      const channel = interaction.guild.channels.cache.get(settings.get("channels.partnerInfo")); // Channel ID
+      const msg = await channel.messages.fetch(settings.get("messages.partnerInfo")); // Nachricht ID
 
       const partnerEmbed = new EmbedBuilder()
         .setDescription(
@@ -137,9 +138,9 @@ export default {
                     "# `🔥` ᕁ **WAS SIND DIE BEDINGUNGEN?**\n\n" +
                     "<:Pfeil:1119709908540076124> Um ein Partner zu werden, musst du die **unteren Voraussetzungen** erfüllen, damit du dich bewerben kannst.\n\n" +
                     "- `👥` » Mindestens **100 Server-Mitglieder** besitzen!\n" +
-                    "- `💬` » Hält <#815922286502346773> und die **[Discord ToS](https://discord.com/terms)** ein!\n" +
+                    `- \`💬\` » Hält <#${settings.get("channels.rules")}> und die **[Discord ToS](https://discord.com/terms)** ein!\n` +
                     "- `💖` » Ist ein **vollständiger deutscher Discord-Server**!\n" +
-                    "- `📢` » Muss unserem <#1177536720229650442> Kanal **folgen**!\n" +
+                    `- \`📢\` » Muss unserem <#${settings.get("channels.advertising")}> Kanal **folgen**!\n` +
                     "# `📡` ᕁ **WAS SIND DIE VORTEILE?**\n" +
                     "<:Pfeil:1119709908540076124> Wir veranstalten regelmäßig Events um die Server unserer Partner noch etwas bekannter zu machen.",
         )
@@ -156,8 +157,8 @@ export default {
       await msg.edit({ embeds: [partnerEmbed], components: [partnerButton] });
 
     } else if (embedType === "gebannt") {
-      const channel = interaction.guild.channels.cache.get("886989426583044117"); // Channel ID
-      const msg = await channel.messages.fetch("1208816459535482961"); // Nachricht ID
+      const channel = interaction.guild.channels.cache.get(settings.get("channels.bannedInfo")); // Channel ID
+      const msg = await channel.messages.fetch(settings.get("messages.bannedInfo")); // Nachricht ID
 
       const gebanntEmbed = new EmbedBuilder()
         .setTitle("⠀⠀ ⠀⠀⠀⠀ ⠀⠀ ⛔ Du wurdest vom Server gebannt!  ⛔⠀⠀ ⠀⠀⠀⠀ ⠀⠀")

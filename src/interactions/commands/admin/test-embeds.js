@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "test-embed",
@@ -41,7 +42,7 @@ export default {
 
     const WillkommenDMEmbed = new EmbedBuilder()
       .setTitle("Herzlich Willkommen!")
-      .setDescription(`Hallo ${member.displayName}, \`💖\`-lich Willkommen auf **${interaction.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern?\nKein Problem! Besuche den Kanal <#979431125053227068> und benutze: \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\n:information_source: | Du möchtest ein Mitglied melden?\n» Benutze: \`/report <user> <grund>\`\n» Das Ausnutzen des Report-Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#815922286502346773>, damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstige Probleme auftauchen, dann wende dich gerne an unseren Support unter <#819555839362072606>.`)
+      .setDescription(`Hallo ${member.displayName}, \`💖\`-lich Willkommen auf **${interaction.guild.name}**!\n\nSchau dich in aller Ruhe um und vor allem, hab viel Spaß hier.\n\nDu möchtest dein Geburtstag mit der Community feiern?\nKein Problem! Besuche den Kanal <#${settings.get("channels.botCommands")}> und benutze: \`/birthday set\` (**MIT JAHR** für eine Altersrolle!) und trage dein Geburtstag ein.\n\n:information_source: | Du möchtest ein Mitglied melden?\n» Benutze: \`/report <user> <grund>\`\n» Das Ausnutzen des Report-Befehls wird bestraft!\n\nBitte verifiziere dich noch bei den <#${settings.get("channels.rules")}>, damit wir ein sicheres Umfeld sowie Atmosphäre bewahren können.\n\nSollten irgendwelche Fragen oder sonstige Probleme auftauchen, dann wende dich gerne an unseren Support unter <#${settings.get("channels.support")}>.`)
       .setThumbnail(member.displayAvatarURL({ dynamic: true }))
       .setColor("Orange")
       .setFooter({ text: "Viel Spaß auf dem Server!", iconURL: interaction.guild.iconURL({ dynamic: true }) })

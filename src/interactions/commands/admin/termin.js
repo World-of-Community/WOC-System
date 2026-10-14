@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import Termin from "#models/termindb.js";
+import Termin from "#models/Termin.js";
 
 // Unterstützt:
 // 30.07.2025

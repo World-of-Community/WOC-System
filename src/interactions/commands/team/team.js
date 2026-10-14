@@ -1,7 +1,9 @@
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder} from "discord.js";
-import teamdb from "#models/teamdb.js";
-import serverdb from "#models/serverdb.js";
+import teamdb from "#models/TeamMember.js";
+import serverdb from "#models/Guild.js";
 import logger from "#core/logger.js";
+import { env } from "#config";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "team",
@@ -13,7 +15,7 @@ export default {
       "type": 1,
       "name": "urlaub",
       "description": "» Teile deinen Urlaub mit. 🌴",
-      "permission": "820658664536145940",
+      "permission": settings.get("teamRoles.member"),
       "options": [
         {
           "type": 3,
@@ -69,7 +71,7 @@ export default {
   ],
 
   async run(client, interaction) {
-    const targetChannel = interaction.guild.channels.cache.get("877446081036836884");
+    const targetChannel = interaction.guild.channels.cache.get(settings.get("channels.team"));
     const sub = interaction.options.getSubcommand();
     const grund = interaction.options.getString("grund") || "Kein Grund angegeben";
 
@@ -184,7 +186,7 @@ export default {
         // Speichern des Meetings in der Datenbank
         try {
           const teamDataMeeting = await serverdb.findOneAndUpdate(
-            { guildID: "815919809379172354" },
+            { guildID: env.discord.guildId },
             {
               $push: {
                 meetings: {
@@ -238,7 +240,7 @@ export default {
           const row = new ActionRowBuilder().addComponents(remindMeButton, attendButton, declineButton, listButton);
 
           // Note: targetChannel2 and other variables seem missing in the original code, but I'll keep the logic as is while fixing syntax
-          const targetChannel2 = interaction.guild.channels.cache.get("877446081036836884"); // Fallback or assume same as targetChannel
+          const targetChannel2 = interaction.guild.channels.cache.get(settings.get("channels.team")); // Fallback or assume same as targetChannel
           if (targetChannel2) {
             const meetingMessage = await targetChannel2.send({ embeds: [TeamMeetingEmbed], components: [row] });
 
@@ -271,7 +273,7 @@ export default {
       }
 
       case "meeting": {
-        const serverData = await serverdb.findOne({ guildID: "815919809379172354" });
+        const serverData = await serverdb.findOne({ guildID: env.discord.guildId });
 
         if (!serverData || !serverData.meetings || serverData.meetings.length === 0) {
           return interaction.reply({ content: "> `❌` » Derzeit ist keine Team-Besprechung geplant.", ephemeral: true });
@@ -417,7 +419,7 @@ export default {
                         "» Zeigt Infos über einen Nutzer.\n\n" +
 
                         "- `/vorschlag`\n" +
-                        "» Verwalte Vorschläge in <#1254340245772701747>.",
+                        `» Verwalte Vorschläge in <#${settings.get("channels.suggestions")}>.`,
           )
           .setColor("Green")
           .setFooter({

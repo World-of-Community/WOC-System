@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "give-role",
@@ -35,7 +36,7 @@ export default {
       });
 
       // Log-Kanal und Thread holen
-      const logchannel = interaction.guild.channels.cache.get("1263436406655680513");
+      const logchannel = interaction.guild.channels.cache.get(settings.get("channels.serverLogs"));
       if (!logchannel) {
         return interaction.followUp({
           content: "> `❌` » Logkanal nicht gefunden.",
@@ -43,7 +44,7 @@ export default {
         });
       }
 
-      const thread = await logchannel.threads.fetch("1269998221518831721").catch(() => null);
+      const thread = await logchannel.threads.fetch(settings.get("logThreads.roles")).catch(() => null);
       if (!thread) {
         return interaction.followUp({
           content: "> `❌` » Thread nicht gefunden oder ungültig.",

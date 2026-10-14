@@ -1,11 +1,10 @@
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits} from "discord.js";
 
-import Timeout from "#models/timeoutdb.js";
-import Warn from "#models/warndb.js";
-import bandb from "#models/bandb.js";
-import Note from "#models/notedb.js";
-
-const BANNED_ROLE_ID = "886989738244964362";
+import Timeout from "#models/Timeout.js";
+import Warn from "#models/Warning.js";
+import bandb from "#models/Ban.js";
+import Note from "#models/UserNote.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "user",
@@ -282,7 +281,7 @@ export default {
       let banned = false;
       if (await bandb.findOne({ userId: user.id })) {banned = true;}
       else if (await interaction.guild.bans.fetch(user.id).catch(() => null)) {banned = true;}
-      else if (member?.roles.cache.has(BANNED_ROLE_ID)) {banned = true;}
+      else if (member?.roles.cache.has(settings.get("roles.banned"))) {banned = true;}
 
       const noteText = notes.length
         ? notes.map(n =>

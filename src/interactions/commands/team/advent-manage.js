@@ -1,4 +1,5 @@
-import Advent from "#models/adventdb.js";
+import Advent from "#models/Advent.js";
+import { settings } from "#core/settings.js";
 
 // Belohnungen definieren
 const rewards = {
@@ -7,7 +8,7 @@ const rewards = {
   3: { type: "coins", value: 300 },
   4: { type: "coins", value: 400 },
   5: { type: "coins", value: 500 },
-  6: { type: "role", value: "1442140220182106184" },
+  6: { type: "role", value: settings.get("achievementRoles.advent2025") },
   7: { type: "coins", value: 700 },
   8: { type: "coins", value: 800 },
   9: { type: "coins", value: 900 },
@@ -25,7 +26,7 @@ const rewards = {
   21: { type: "coins", value: 2100 },
   22: { type: "coins", value: 2200 },
   23: { type: "coins", value: 2300 },
-  24: { type: "role", value: "1445064222894460970" },
+  24: { type: "role", value: settings.get("achievementRoles.christmas2025") },
 };
 
 export default {

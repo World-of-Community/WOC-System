@@ -1,5 +1,6 @@
 import { AuditLogEvent, ChannelType, EmbedBuilder, Events } from "discord.js";
-import { sendLog, ThreadIDs } from "#core/discordLog.js";
+import { sendLog } from "#core/discordLog.js";
+import { settings } from "#core/settings.js";
 
 const TYPE_NAMES = {
   [ChannelType.GuildText]: "TEXT",
@@ -21,7 +22,7 @@ export default [
         .setColor("Green")
         .setTimestamp();
 
-      await sendLog(ThreadIDs.CHANNEL, embed);
+      await sendLog(settings.get("logThreads.channel"), embed);
     },
   },
   {
@@ -64,7 +65,7 @@ export default [
         embed.setAuthor({ name: `${executor.username} » ${executor.id}`, iconURL: executor.displayAvatarURL({ size: 2048 }) });
       }
 
-      await sendLog(ThreadIDs.CHANNEL, embed);
+      await sendLog(settings.get("logThreads.channel"), embed);
     },
   },
   {
@@ -78,7 +79,7 @@ export default [
         .setColor("Red")
         .setTimestamp();
 
-      await sendLog(ThreadIDs.CHANNEL, embed);
+      await sendLog(settings.get("logThreads.channel"), embed);
     },
   },
 ];

@@ -1,5 +1,6 @@
 import {EmbedBuilder} from "discord.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "spielersuche",
@@ -9,7 +10,7 @@ export default {
   options: [],
 
   async run(client, interaction) {
-    const allowedChannelId = "896743941813207081"; // Spielersuche-Channel
+    const allowedChannelId = settings.get("channels.playerSearch"); // Spielersuche-Channel
 
     if (interaction.channel.id !== allowedChannelId) {
       return interaction.reply({
@@ -32,18 +33,18 @@ export default {
         .setDescription(
           "Hier kannst du deinen Spielpartner finden, benutze `/game <rolle>` und finde deinen Spielpartner.\n\n" +
           "Server Spielmodi\n\n" +
-          "- <@&1259972154963918858>\n" +
-          "- <@&1303652117487157300>\n" +
-          "- <@&1263620833423654942>\n\n" +
+          `- <@&${settings.get("gameRoles.knockbackFfa")}>\n` +
+          `- <@&${settings.get("gameRoles.rageMode")}>\n` +
+          `- <@&${settings.get("gameRoles.jumpNRun")}>\n\n` +
           "Für erweiterte Spielersuche\n\n" +
-          "- <@&1232072165654794281>\n" +
-          "- <@&1232066510554529905>\n" +
-          "- <@&1232066545492955136>\n" +
-          "- <@&1232066588216135880>\n" +
-          "- <@&1232066657896108082>\n" +
-          "- <@&1273369483951734866>\n" +
-          "- <@&1232066632491208704>\n" +
-          "- <@&1232070141127426058>",
+          `- <@&${settings.get("gameRoles.roblox")}>\n` +
+          `- <@&${settings.get("gameRoles.rocketLeague")}>\n` +
+          `- <@&${settings.get("gameRoles.gta5")}>\n` +
+          `- <@&${settings.get("gameRoles.minecraft")}>\n` +
+          `- <@&${settings.get("gameRoles.fifa")}>\n` +
+          `- <@&${settings.get("gameRoles.lol")}>\n` +
+          `- <@&${settings.get("gameRoles.valorant")}>\n` +
+          `- <@&${settings.get("gameRoles.fortnite")}>`,
         )
         .setColor("Blurple");
 

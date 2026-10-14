@@ -7,9 +7,9 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 
-import serverDB from "#models/serverdb.js";
-import config from "#config/config.json" with { type: "json" };
+import serverDB from "#models/Guild.js";
 import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 /*
  * ============================================================
@@ -217,10 +217,10 @@ function getPartnerTags(
   );
 
   const categoryTag =
-    config.partnerKategorieIds?.[category];
+    settings.get("partner.categoryTags")?.[category];
 
   const generalTag =
-    config.partnerGeneralTagId;
+    settings.get("partner.generalTag");
 
   const configuredTagIDs = [
     categoryTag,
@@ -761,7 +761,7 @@ export default {
           highestPartnerID + 1;
 
         if (
-          !config.partnerForumChannelId
+          !settings.get("channels.partnerForum")
         ) {
           return interaction.reply({
             content:
@@ -773,7 +773,7 @@ export default {
         const forumChannel =
           await interaction.guild.channels
             .fetch(
-              config.partnerForumChannelId,
+              settings.get("channels.partnerForum"),
             )
             .catch(() => null);
 

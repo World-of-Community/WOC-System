@@ -4,6 +4,7 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   id: "partner",
@@ -20,7 +21,7 @@ export default {
       const kategorie = interaction.fields.getTextInputValue("partner-kategorie");
       const partnerBeschreibung = interaction.fields.getTextInputValue("partner-beschreibung");
 
-      const channel = await interaction.client.channels.fetch("1187028500461391984");
+      const channel = await interaction.client.channels.fetch(settings.get("channels.partnerApplications"));
 
       await channel.send({
         embeds: [

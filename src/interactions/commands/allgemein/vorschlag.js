@@ -1,4 +1,5 @@
 import { ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   name: "vorschlag",
@@ -9,7 +10,7 @@ export default {
 
   async run(client, interaction) {
     if (interaction.channel.type !== ChannelType.PublicThread) {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", ephemeral: true});}
-    if (interaction.channel.parentId !== "1254340245772701747") {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", ephemeral: true});}
+    if (interaction.channel.parentId !== settings.get("channels.suggestions")) {return await interaction.reply({content: "> `❌` » Der Befehl kann nur in ein Vorschlag Thread ausgeführt werden.", ephemeral: true});}
     const message = await interaction.channel.fetchStarterMessage();
     const vorschlagsembed = message.embeds[0];
 

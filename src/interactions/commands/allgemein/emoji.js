@@ -1,5 +1,4 @@
-import userdb from "#models/userdb.js";
-import config from "#config/config.json" with { type: "json" };
+import userdb from "#models/User.js";
 
 export default {
   name: "emoji",
@@ -16,7 +15,7 @@ export default {
 
   async run(client, interaction) {
 
-    const hasRole = config.emojiroles.some(roleId => interaction.member.roles.cache.has(roleId));
+    const hasRole = settings.get("system.emojiRoles").some(roleId => interaction.member.roles.cache.has(roleId));
 
     if(!hasRole) {return interaction.reply({ content: "> `❌` » Du hast keine Berechtigte Rolle um diesen Befehl zu benutzen.", ephemeral: true });}
 
@@ -37,3 +36,5 @@ export default {
     await interaction.reply({ content: "> `✅` » Die Emojis wurden erfolgreich hinzugefügt.", ephemeral: true });
   },
 };
+
+import { settings } from "#core/settings.js";

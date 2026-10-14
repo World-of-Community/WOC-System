@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
-import Timeout from "#models/timeoutdb.js";
-import Warn from "#models/warndb.js";
-import Note from "#models/notedb.js";
+import Timeout from "#models/Timeout.js";
+import Warn from "#models/Warning.js";
+import Note from "#models/UserNote.js";
 
 export default {
   id: "showPunishments_",

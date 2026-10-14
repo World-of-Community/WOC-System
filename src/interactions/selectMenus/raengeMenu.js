@@ -1,63 +1,64 @@
 import { EmbedBuilder } from "discord.js";
+import { settings } from "#core/settings.js";
 
 export default {
   id: "ränge-menu",
   run: async (client, interaction) => {
     switch (interaction.values[0]) {
       case "server": {
-        const year = await interaction.guild.roles.cache.get("972193356333604874");
+        const year = await interaction.guild.roles.cache.get(settings.get("achievementRoles.oneYear"));
         const roleCountY = year.members.size;
 
-        const informant = await interaction.guild.roles.cache.get("1147250265641201724");
+        const informant = await interaction.guild.roles.cache.get(settings.get("achievementRoles.informant"));
         const roleCountI = informant.members.size;
 
-        const umfrage = await interaction.guild.roles.cache.get("1147250982967836823");
+        const umfrage = await interaction.guild.roles.cache.get(settings.get("achievementRoles.surveys"));
         const roleCountU = umfrage.members.size;
 
-        const SDES = await interaction.guild.roles.cache.get("992008555987222548");
+        const SDES = await interaction.guild.roles.cache.get(settings.get("achievementRoles.since2021"));
         const roleCountSDES = SDES.members.size;
 
-        const christmas2021 = await interaction.guild.roles.cache.get("863034801036591114");
+        const christmas2021 = await interaction.guild.roles.cache.get(settings.get("achievementRoles.christmas2021"));
         const roleCountC2021 = christmas2021.members.size;
 
-        const advent2024 = await interaction.guild.roles.cache.get("1312780135530889326");
+        const advent2024 = await interaction.guild.roles.cache.get(settings.get("achievementRoles.advent2024"));
         const roleCountadvent2024 = advent2024.members.size;
 
-        const christmas2025 = await interaction.guild.roles.cache.get("1445064222894460970");
+        const christmas2025 = await interaction.guild.roles.cache.get(settings.get("achievementRoles.christmas2025"));
         const roleCountC2025 = christmas2025.members.size;
 
-        const advent2025 = await interaction.guild.roles.cache.get("1442140220182106184");
+        const advent2025 = await interaction.guild.roles.cache.get(settings.get("achievementRoles.advent2025"));
         const roleCountadvent2025 = advent2025.members.size;
 
-        const lucky = await interaction.guild.roles.cache.get("1124598019862573096");
+        const lucky = await interaction.guild.roles.cache.get(settings.get("achievementRoles.lucky"));
         const roleCountlucky = lucky.members.size;
 
-        const serverEST = await interaction.guild.roles.cache.get("882240367632744508");
+        const serverEST = await interaction.guild.roles.cache.get(settings.get("achievementRoles.opening2021"));
         const roleCountSEST = serverEST.members.size;
 
         const serverEmbed = new EmbedBuilder()
           .setTitle("<a:trophe:1112823561992818859> 𑁉 UNSERE SERVER-ERFOLGE")
           .setDescription(
             "» Mit **Erfolgen** kannst du **vor deinen Freunden** angeben und hast die Chance, in unserem Server **einzigartige Erfolge freizuschalten!**\n\n" +
-                        `\`🧡\` 𑁉 <@&972193356333604874> (\`${roleCountY}👥\`)\n` +
+                        `\`🧡\` 𑁉 <@&${settings.get("achievementRoles.oneYear")}> (\`${roleCountY}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> Mitglied seit **einem Jahr** auf dem Server.\n\n" +
-                        `\`💡\` 𑁉 <@&1147250265641201724> (\`${roleCountI}👥\`)\n` +
+                        `\`💡\` 𑁉 <@&${settings.get("achievementRoles.informant")}> (\`${roleCountI}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> Reiche **10 Server-Ideen** ein.\n\n" +
-                        `\`📢\` 𑁉 <@&1147250982967836823> (\`${roleCountU}👥\`)\n` +
+                        `\`📢\` 𑁉 <@&${settings.get("achievementRoles.surveys")}> (\`${roleCountU}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> Nimm an **20 Server-Umfragen** teil.\n\n" +
-                        `\`💚\` 𑁉 <@&992008555987222548> (\`${roleCountSDES}👥\`)\n` +
+                        `\`💚\` 𑁉 <@&${settings.get("achievementRoles.since2021")}> (\`${roleCountSDES}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Seit 2021** auf World Of Community\n\n" +
-                        `\`🎄\` 𑁉 <@&863034801036591114> (\`${roleCountC2021}👥\`)\n` +
+                        `\`🎄\` 𑁉 <@&${settings.get("achievementRoles.christmas2021")}> (\`${roleCountC2021}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> Exklusiv an **Weihnachten 2021** erhalten\n\n" +
-                        `\`📆\` 𑁉 <@&1312780135530889326> (\`${roleCountadvent2024}👥\`)\n` +
+                        `\`📆\` 𑁉 <@&${settings.get("achievementRoles.advent2024")}> (\`${roleCountadvent2024}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> Beim **Adventskalender 2024** erhalten\n\n" +
-                        `\`🎄\` 𑁉 <@&1445064222894460970> (\`${roleCountC2025}👥\`)\n` +
+                        `\`🎄\` 𑁉 <@&${settings.get("achievementRoles.christmas2025")}> (\`${roleCountC2025}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> Exklusiv an **Weihnachten 2025** erhalten\n\n" +
-                        `\`📆\` 𑁉 <@&1442140220182106184> (\`${roleCountadvent2025}👥\`)\n` +
+                        `\`📆\` 𑁉 <@&${settings.get("achievementRoles.advent2025")}> (\`${roleCountadvent2025}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> Beim **Adventskalender 2025** erhalten\n\n" +
-                        `\`☘️\` 𑁉 <@&1124598019862573096> (\`${roleCountlucky}👥\`)\n` +
+                        `\`☘️\` 𑁉 <@&${settings.get("achievementRoles.lucky")}> (\`${roleCountlucky}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Gewinne** bei einem Event auf WOC.\n\n" +
-                        `\`🔓\` 𑁉 <@&882240367632744508> (\`${roleCountSEST}👥\`)\n` +
+                        `\`🔓\` 𑁉 <@&${settings.get("achievementRoles.opening2021")}> (\`${roleCountSEST}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> War bei der **Server-Eröffnung 2021** dabei.",
           )
           .setColor("Orange")
@@ -68,39 +69,39 @@ export default {
       } break;
 
       case "minecraft": {
-        const supreme = await interaction.guild.roles.cache.get("815921105407574056");
+        const supreme = await interaction.guild.roles.cache.get(settings.get("minecraftRoles.supreme"));
         const roleCountsupreme = supreme.members.size;
 
-        const premium = await interaction.guild.roles.cache.get("917826787977871441");
+        const premium = await interaction.guild.roles.cache.get(settings.get("minecraftRoles.premium"));
         const roleCountpremium = premium.members.size;
 
-        const legende = await interaction.guild.roles.cache.get("815920452337139733");
+        const legende = await interaction.guild.roles.cache.get(settings.get("minecraftRoles.legende"));
         const roleCountlegende = legende.members.size;
 
-        const emerald = await interaction.guild.roles.cache.get("835775556611997697");
+        const emerald = await interaction.guild.roles.cache.get(settings.get("minecraftRoles.emerald"));
         const roleCountemerald = emerald.members.size;
 
-        const diamond = await interaction.guild.roles.cache.get("835775627721179167");
+        const diamond = await interaction.guild.roles.cache.get(settings.get("minecraftRoles.diamond"));
         const roleCountdiamond = diamond.members.size;
 
-        const episch = await interaction.guild.roles.cache.get("835775597446955048");
+        const episch = await interaction.guild.roles.cache.get(settings.get("minecraftRoles.episch"));
         const roleCountepisch = episch.members.size;
 
         const spielerEmbed = new EmbedBuilder()
           .setTitle("`🌍` 𑁉 UNSERE MINECRAFT-RÄNGE")
           .setDescription(
             "» Erhalte diese Ränge auf dem Discord-& Minecraft Server.\n\n" +
-                        `> \`🌟\` 𑁉 <@&815921105407574056> (\`${roleCountsupreme}👥\`)\n` +
+                        `> \`🌟\` 𑁉 <@&${settings.get("minecraftRoles.supreme")}> (\`${roleCountsupreme}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> Doppelsprung.\n\n" +
-                        `> \`⭐\` 𑁉 <@&917826787977871441> (\`${roleCountpremium}👥\`)\n` +
+                        `> \`⭐\` 𑁉 <@&${settings.get("minecraftRoles.premium")}> (\`${roleCountpremium}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> Doppelsprung\n\n" +
-                        `> \`🔮\` 𑁉 <@&815920452337139733> (\`${roleCountlegende}👥\`)\n` +
+                        `> \`🔮\` 𑁉 <@&${settings.get("minecraftRoles.legende")}> (\`${roleCountlegende}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> Doppelsprung\n\n" +
-                        `> \`💎\` 𑁉 <@&835775627721179167> (\`${roleCountdiamond}👥\`)\n` +
+                        `> \`💎\` 𑁉 <@&${settings.get("minecraftRoles.diamond")}> (\`${roleCountdiamond}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> Doppelsprung\n\n" +
-                        `> \`👻\` 𑁉 <@&835775556611997697> (\`${roleCountemerald}👥\`)\n` +
+                        `> \`👻\` 𑁉 <@&${settings.get("minecraftRoles.emerald")}> (\`${roleCountemerald}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> Doppelsprung\n\n" +
-                        `> \`🟣\` 𑁉 <@&835775597446955048> (\`${roleCountepisch}👥\`)\n` +
+                        `> \`🟣\` 𑁉 <@&${settings.get("minecraftRoles.episch")}> (\`${roleCountepisch}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> Bald Verfügbar.",
           )
           .setColor("Green")
@@ -111,49 +112,49 @@ export default {
       } break;
 
       case "level": {
-        const hyperaktiv = await interaction.guild.roles.cache.get("1258825307239219371");
+        const hyperaktiv = await interaction.guild.roles.cache.get(settings.get("levelRoles.level100"));
         const roleCounthyperaktiv = hyperaktiv.members.size;
 
-        const ultraaktiv = await interaction.guild.roles.cache.get("1258794321533075526");
+        const ultraaktiv = await interaction.guild.roles.cache.get(settings.get("levelRoles.level75"));
         const roleCountultraaktiv = ultraaktiv.members.size;
 
-        const extremaktiv = await interaction.guild.roles.cache.get("1258825144697360485");
+        const extremaktiv = await interaction.guild.roles.cache.get(settings.get("levelRoles.level50"));
         const roleCountextremaktiv = extremaktiv.members.size;
 
-        const megaaktiv = await interaction.guild.roles.cache.get("1258794405507240038");
+        const megaaktiv = await interaction.guild.roles.cache.get(settings.get("levelRoles.level40"));
         const roleCountmegaaktiv = megaaktiv.members.size;
 
-        const starkaktiv = await interaction.guild.roles.cache.get("1258827956634128467");
+        const starkaktiv = await interaction.guild.roles.cache.get(settings.get("levelRoles.level30"));
         const roleCountstarkaktiv = starkaktiv.members.size;
 
-        const sehraktiv = await interaction.guild.roles.cache.get("1258794479570124920");
+        const sehraktiv = await interaction.guild.roles.cache.get(settings.get("levelRoles.level20"));
         const roleCountsehraktiv = sehraktiv.members.size;
 
-        const aktiv = await interaction.guild.roles.cache.get("1258794944953319534");
+        const aktiv = await interaction.guild.roles.cache.get(settings.get("levelRoles.level10"));
         const roleCountaktiv = aktiv.members.size;
 
-        const inaktiv = await interaction.guild.roles.cache.get("1258827226846199808");
+        const inaktiv = await interaction.guild.roles.cache.get(settings.get("levelRoles.level5"));
         const roleCountinaktiv = inaktiv.members.size;
 
         const levelEmbed = new EmbedBuilder()
           .setTitle("`👥` 𑁉 UNSERE LEVEL-ROLLEN")
           .setDescription(
             "» Chatte mit **anderen Server-Mitgliedern** oder **unterhalte dich** in unseren Sprachkanälen um **die folgenden Rollen** freizuschalten.\n\n" +
-                        `> \`☢️\` 𑁉 <@&1258825307239219371> (\`${roleCounthyperaktiv}👥\`)\n` +
+                        `> \`☢️\` 𑁉 <@&${settings.get("levelRoles.level100")}> (\`${roleCounthyperaktiv}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> Wir schenken dir einmal <a:basic:1186636165567229972> **DISCORD NITRO BASIC!** <a:basic:1186636165567229972>\n\n" +
-                        `> \`🤩\` 𑁉 <@&1258794321533075526> (\`${roleCountultraaktiv}👥\`)\n` +
+                        `> \`🤩\` 𑁉 <@&${settings.get("levelRoles.level75")}> (\`${roleCountultraaktiv}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich **jemand erwähnt!**\n\n" +
-                        `> \`⚡️\` 𑁉 <@&1258825144697360485> (\`${roleCountextremaktiv}👥\`)\n` +
+                        `> \`⚡️\` 𑁉 <@&${settings.get("levelRoles.level50")}> (\`${roleCountextremaktiv}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> **Eine eigene Rolle:** Name + Farbe selbst wählbar!\n\n" +
-                        `> \`🥊\` 𑁉 <@&1258794405507240038> (\`${roleCountmegaaktiv}👥\`)\n` +
+                        `> \`🥊\` 𑁉 <@&${settings.get("levelRoles.level40")}> (\`${roleCountmegaaktiv}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n" +
-                        `> \`💪\` 𑁉 <@&1258827956634128467> (\`${roleCountstarkaktiv}👥\`)\n` +
-                        "<:PfeilBlau:1119711275014955080> **Schreibrechte** erhalten in den Kanal: <#1243964646449483788>\n\n" +
-                        `> \`👀\` 𑁉 <@&1258794479570124920> (\`${roleCountsehraktiv}👥\`)\n` +
+                        `> \`💪\` 𑁉 <@&${settings.get("levelRoles.level30")}> (\`${roleCountstarkaktiv}👥\`)\n` +
+                        `<:PfeilBlau:1119711275014955080> **Schreibrechte** erhalten in den Kanal: <#${settings.get("channels.birthdays")}>\n\n` +
+                        `> \`👀\` 𑁉 <@&${settings.get("levelRoles.level20")}> (\`${roleCountsehraktiv}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> **Umfragen** in **öffentliche** Chats posten\n\n" +
-                        `> \`🏃\` 𑁉 <@&1258794944953319534> (\`${roleCountaktiv}👥\`)\n` +
+                        `> \`🏃\` 𑁉 <@&${settings.get("levelRoles.level10")}> (\`${roleCountaktiv}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> **Dateien** hochladen & **Nicknamen** verändern.\n\n" +
-                        `> \`💤\` 𑁉 <@&1258827226846199808> (\`${roleCountinaktiv}👥\`)\n` +
+                        `> \`💤\` 𑁉 <@&${settings.get("levelRoles.level5")}> (\`${roleCountinaktiv}👥\`)\n` +
                         "<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden",
           )
           .setColor("Orange")
@@ -164,55 +165,55 @@ export default {
       } break;
 
       case "exklusiv": {
-        const vip = await interaction.guild.roles.cache.get("862708375698538507");
+        const vip = await interaction.guild.roles.cache.get(settings.get("exclusiveRoles.vip"));
         const roleCountvip = vip.members.size;
 
-        const booster = await interaction.guild.roles.cache.get("843013551605284864");
+        const booster = await interaction.guild.roles.cache.get(settings.get("exclusiveRoles.booster"));
         const roleCountbooster = booster.members.size;
 
-        const creator = await interaction.guild.roles.cache.get("815920219247214644");
+        const creator = await interaction.guild.roles.cache.get(settings.get("exclusiveRoles.creator"));
         const roleCountcreator = creator.members.size;
 
         //const twitchsub = await interaction.guild.roles.cache.get('1067899186542018571')
         //const roleCounttwitchsub = twitchsub.members.size
 
-        const neuesmitglied = await interaction.guild.roles.cache.get("1222122625594294272");
+        const neuesmitglied = await interaction.guild.roles.cache.get(settings.get("roles.newMember"));
         const roleCountneuesmitglied = neuesmitglied.members.size;
 
-        const birthday = await interaction.guild.roles.cache.get("1244945910262399046");
+        const birthday = await interaction.guild.roles.cache.get(settings.get("roles.birthday"));
         const roleCountbirthday = birthday.members.size;
 
-        const unterstützer = await interaction.guild.roles.cache.get("1010105569866174574");
+        const unterstützer = await interaction.guild.roles.cache.get(settings.get("exclusiveRoles.vanity"));
         const roleCountunterstützer = unterstützer.members.size;
 
         const exklusiveEmbed = new EmbedBuilder()
           .setTitle("<a:krone:1112823594649665607> 𑁉 EXKLUSIVE ROLLEN FREISCHALTEN")
           .setDescription(
             "» Alle **Rollen in dieser Liste** kannst du nur auf ganz **bestimmer Art und Weise** erhalten, dennoch haben sie **mächtige Vorteile.**\n\n" +
-                        `> \`🔮\` 𑁉 <@&843013551605284864> (\`${roleCountbooster}👥\`)\n` +
+                        `> \`🔮\` 𑁉 <@&${settings.get("exclusiveRoles.booster")}> (\`${roleCountbooster}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Rang freischalten:** Booste diesen Server!\n\n" +
                         "<:PfeilBlau:1119711275014955080> **Exklusive Community-Vorteile** für Booster.\n" +
                         "<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n" +
                         "<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n" +
                         "<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n" +
-                        `> \`😎\` 𑁉 <@&862708375698538507> (\`${roleCountvip}👥\`)\n` +
+                        `> \`😎\` 𑁉 <@&${settings.get("exclusiveRoles.vip")}> (\`${roleCountvip}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Rang freischalten:** Dieser Rang wird von uns individuell vergeben.\n\n" +
                         "<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n" +
                         "<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n" +
                         "<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n" +
-                        `> \`🎥\` 𑁉 <@&815920219247214644> (\`${roleCountcreator}👥\`)\n` +
+                        `> \`🎥\` 𑁉 <@&${settings.get("exclusiveRoles.creator")}> (\`${roleCountcreator}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Rang freischalten:** Dieser Rang wird von uns individuell vergeben.\n\n" +
                         "<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n" +
                         "<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich jemand **erwähnt!**\n" +
                         "<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n" +
-                        `> \`👋\` 𑁉 <@&1222122625594294272> (\`${roleCountneuesmitglied}👥\`)\n` +
+                        `> \`👋\` 𑁉 <@&${settings.get("roles.newMember")}> (\`${roleCountneuesmitglied}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Rang freischalten:** Erhält jeder für 24 Stunden nach Beitritt!\n\n" +
                         "<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n\n" +
-                        `> \`🎂\` 𑁉 <@&1244945910262399046> (\`${roleCountbirthday}👥\`)\n` +
+                        `> \`🎂\` 𑁉 <@&${settings.get("roles.birthday")}> (\`${roleCountbirthday}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Rang freischalten:** Heute Geburtstag feiern!\n\n" +
                         "<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n" +
-                        "<:PfeilBlau:1119711275014955080> **Zugriff** auf <#1243964646449483788>\n\n" +
-                        `> \`💛\` 𑁉 <@&1010105569866174574> (\`${roleCountunterstützer}👥\`)\n` +
+                        `<:PfeilBlau:1119711275014955080> **Zugriff** auf <#${settings.get("channels.birthdays")}>\n\n` +
+                        `> \`💛\` 𑁉 <@&${settings.get("exclusiveRoles.vanity")}> (\`${roleCountunterstützer}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Rang freischalten:** im Status `discord.gg/woc` schreiben!\n\n" +
                         "<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n" +
                         "<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!",
@@ -235,44 +236,44 @@ export default {
           if (liste.length === 0) { return "Niemand"; }
           return liste.slice(0, -2);
         }
-        const admin = await interaction.guild.roles.cache.get("959869691529154631");
+        const admin = await interaction.guild.roles.cache.get(settings.get("teamRoles.admin"));
         const roleCountadmin = admin.members.size;
 
-        const developer = await interaction.guild.roles.cache.get("929349039433056276");
+        const developer = await interaction.guild.roles.cache.get(settings.get("teamRoles.developer"));
         const roleCountdeveloper = developer.members.size;
 
-        const srmoderator = await interaction.guild.roles.cache.get("816985466230145044");
+        const srmoderator = await interaction.guild.roles.cache.get(settings.get("teamRoles.srModerator"));
         const roleCountsrmoderator = srmoderator.members.size;
 
-        const moderator = await interaction.guild.roles.cache.get("815920052385480754");
+        const moderator = await interaction.guild.roles.cache.get(settings.get("teamRoles.moderator"));
         const roleCountmoderator = moderator.members.size;
 
-        const supporter = await interaction.guild.roles.cache.get("815920170371383366");
+        const supporter = await interaction.guild.roles.cache.get(settings.get("teamRoles.supporter"));
         const roleCountsupporter = supporter.members.size;
 
-        const builder = await interaction.guild.roles.cache.get("1263645368441241700");
+        const builder = await interaction.guild.roles.cache.get(settings.get("teamRoles.builder"));
         const roleCountbuilder = builder.members.size;
 
         const teamEmbed = new EmbedBuilder()
           .setTitle("<a:security:1119708496670232646> 𑁉 UNSER SERVER-TEAM")
           .setDescription(
             "» Hier kannst du alle **unsere Team-Ränge** sehen und welche User **aktuell in unserem Server-Team** tätig sind.\n\n" +
-                        `> \`🎯\` 𑁉 <@&959869691529154631> (\`${roleCountadmin}👥\`)\n` +
+                        `> \`🎯\` 𑁉 <@&${settings.get("teamRoles.admin")}> (\`${roleCountadmin}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Die Administration kümmert sich um die ganze Server-Verwaltung, die Organisation und um die Umsetzung neuer Ideen.\n" +
                         `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(admin.id)}\n\n` +
-                        `> \`👨‍💻\` 𑁉 <@&929349039433056276> (\`${roleCountdeveloper}👥\`)\n` +
+                        `> \`👨‍💻\` 𑁉 <@&${settings.get("teamRoles.developer")}> (\`${roleCountdeveloper}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Die Developer/Entwickler kümmern sich um die Entwicklung unserer Bots sowie Plugins und helfen der Administrator bei der technischen Umsetzung.\n" +
                         `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(developer.id)}\n\n` +
-                        `> \`🕵\` 𑁉 <@&816985466230145044> (\`${roleCountsrmoderator}👥\`)\n` +
+                        `> \`🕵\` 𑁉 <@&${settings.get("teamRoles.srModerator")}> (\`${roleCountsrmoderator}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Die Senior-Mod's sind erfahrene Moderatoren und kümmern sich um die Pflege des Support-Teams. Sie agieren als eine Art von \"Mentor\" und führen neue Teammitglieder ein.\n" +
                         `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(srmoderator.id)}\n\n` +
-                        `> \`👮\` 𑁉 <@&815920052385480754> (\`${roleCountmoderator}👥\`)\n` +
+                        `> \`👮\` 𑁉 <@&${settings.get("teamRoles.moderator")}> (\`${roleCountmoderator}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Die Mod's sind wichtige Bestandteile des Teams. Sie kümmern sich um Tickets, Moderation und administrieren kleinere Elemente (wie das Bann-System & Geburtstag ändern).\n" +
                         `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(moderator.id)}\n\n` +
-                        `> \`🧩\` 𑁉 <@&815920170371383366> (\`${roleCountsupporter}👥\`)\n` +
+                        `> \`🧩\` 𑁉 <@&${settings.get("teamRoles.supporter")}> (\`${roleCountsupporter}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Die Supporter sind neu in unserem Team. Sie kümmern sich um Support-Tickets, moderieren den Chat und gewöhnen sich ein.\n" +
                         `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(supporter.id)}\n\n` +
-                        `> \`🪓\` 𑁉 <@&1263645368441241700> (\`${roleCountbuilder}👥\`)\n` +
+                        `> \`🪓\` 𑁉 <@&${settings.get("teamRoles.builder")}> (\`${roleCountbuilder}👥\`)\n` +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Neue Maps für die jeweiligen Spielmodi Bauen sowie Lobby & bei den anderen Builder unter die Arme greifen\n" +
                         `<:PfeilBlau:1119711275014955080> **Mitglieder:** ${await getMemberList(builder.id)}`,
           )
@@ -288,13 +289,13 @@ export default {
           .setTitle("<a:pin:1119708768326914100> 𑁉 UNSERE WICHTIGSTEN BOTS")
           .setDescription(
             "» Hier könnt ihr sehen **welche Aufgaben** unsere **wichtigsten Bots** haben, die speziell **von uns entwickelt** wurden.\n\n" +
-                        "> `⚙️` 𑁉 <@1020023299448786955> (Eingeführt am `15.09.2022📝`)\n" +
+                        `> \`⚙️\` 𑁉 <@${settings.get("bots.system")}> (Eingeführt am \`15.09.2022📝\`)\n` +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Die Aufgaben dieses Bots sind sehr vielfältig. Wir listen euch einmal die größten Dinge auf.\n\n" +
                         "<:PfeilBlau:1119711275014955080> **Info-& Stats-Kanäle aktuell halten**\n" +
                         "<:PfeilBlau:1119711275014955080> **Ideen-, Spielersuche-& Changelog-System**\n" +
                         "<:PfeilBlau:1119711275014955080> **Bewerbungs-& Rollen-Verwaltung**\n" +
                         "<:PfeilBlau:1119711275014955080> **Verwaltung der Gewinnspiele**\n\n" +
-                        "> `🚑` 𑁉 <@1031487336783028274> (Tickets bearbeitet: `10.000+🎫`)\n" +
+                        `> \`🚑\` 𑁉 <@${settings.get("bots.support")}> (Tickets bearbeitet: \`10.000+🎫\`)\n` +
                         "<:Pfeil:1119709908540076124> **Aufgabe:** Erstellung, Verwaltung und Organisierung von Tickets.\n\n" +
                         "> <a:pin:1119708768326914100> 𑁉 **DIE RESTLICHEN BOTS...**\n" +
                         "<:Pfeil:1119709908540076124> **Aufgaben:** Die restlichen Bots erfüllen nur noch kleine Aufgaben oder werden bald durch einen eigenen Bot von uns ersetzt.",

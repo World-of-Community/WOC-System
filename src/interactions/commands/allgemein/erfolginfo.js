@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
-import userdb from "#models/userdb.js";
+import userdb from "#models/User.js";
+import { settings } from "#core/settings.js";
 
 // Map für Track-Cooldowns: userId => timestamp
 const trackCooldowns = new Map();
@@ -91,7 +92,7 @@ export default {
       .setTitle(`\`✨\` × ${targetUser.username}'s Fortschritt`)
       .setDescription(
         "<:PfeilBlau:1119711275014955080> Mit **Erfolgen** kannst du **vor deinen Freunden** angeben und hast die Chance, in unserem Server **einzigartige Ränge freizuschalten!**\n" +
-        "<:Pfeil:1119709908540076124> **Mehr Infos:** <#872063101640532008>\n\n" +
+        `<:Pfeil:1119709908540076124> **Mehr Infos:** <#${settings.get("channels.rankInfo")}>\n\n` +
         "> `🌍` × **WIE SIEHT MEIN FORTSCHRITT AUS?**\n" +
         "<:PfeilBlau:1119711275014955080> **Beachte:** du kannst in diesem Befehl nur deinen Fortschritt von allen Erfolgen sehen, welche gelevelt werden können.\n\n" +
         `${listerfolge}\n\n` +

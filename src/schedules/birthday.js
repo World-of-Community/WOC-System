@@ -1,11 +1,7 @@
-import userdb from "#models/userdb.js";
+import userdb from "#models/User.js";
 import logger from "#core/logger.js";
 import { GUILD_ID } from "#config";
-
-const BIRTHDAY_ROLE_ID = "1244945910262399046";
-const BIRTHDAY_CHANNEL_ID = "1243964646449483788";
-const AGE_ROLE_U18 = "1199786765666500710";
-const AGE_ROLE_18PLUS = "1199786814051979344";
+import { settings } from "#core/settings.js";
 
 const BIRTHDAY_QUOTES = [
   "Genieße die kleinen Dinge. Sie machen das Leben großartig!",
@@ -23,7 +19,7 @@ export default {
     const guild = client.guilds.cache.get(GUILD_ID);
     if (!guild) {return;}
 
-    const birthdayRole = await guild.roles.fetch(BIRTHDAY_ROLE_ID);
+    const birthdayRole = await guild.roles.fetch(settings.get("roles.birthday"));
     if (!birthdayRole) {
       logger.error("Birthday role not found");
       return;
@@ -43,7 +39,7 @@ export default {
 
         if (user.birthday.jahr) {
           const age = today.getFullYear() - user.birthday.jahr;
-          const ageRole = await guild.roles.fetch(age <= 18 ? AGE_ROLE_U18 : AGE_ROLE_18PLUS);
+          const ageRole = await guild.roles.fetch(age <= 18 ? settings.get("roles.birthdayU18") : settings.get("roles.birthday18Plus"));
           if (ageRole) {await member.roles.add(ageRole);}
           list.push(`${member} (**${age}**)`);
         } else {
@@ -60,7 +56,7 @@ export default {
     const names = plural ? `${list.slice(0, -1).join(", ")} und ${list.at(-1)}` : list[0];
     const quote = BIRTHDAY_QUOTES[Math.floor(Math.random() * BIRTHDAY_QUOTES.length)];
 
-    const channel = client.channels.cache.get(BIRTHDAY_CHANNEL_ID);
+    const channel = client.channels.cache.get(settings.get("channels.birthdays"));
     if (!channel) {return;}
 
     const message = await channel.send({

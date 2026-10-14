@@ -1,4 +1,4 @@
-import NewsStatus from "#models/newsdb.js";
+import NewsStatus from "#models/NewsStatus.js";
 import logger from "#core/logger.js";
 
 export default {
