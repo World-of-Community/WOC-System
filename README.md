@@ -32,7 +32,7 @@ node update.js      # oder: npm run update
 
 `update.js` lädt den aktuellen Stand von `main`, führt bei geänderter `package-lock.json` `npm ci` aus und startet `src/index.js`.
 Beendet sich der Bot mit Exit-Code 0 (`/restart`), wird erneut aktualisiert und gestartet; nach einem Absturz wird mit Backoff neu gestartet.
-`.env`, `data/`, `backups/` und `node_modules/` werden beim Update nie überschrieben.
+`.env`, `backups/` und `node_modules/` werden beim Update nie überschrieben.
 
 ## Struktur
 
@@ -53,7 +53,7 @@ src/
     selectMenus/           Select-Menüs
   systems/                 Fachlogik (vorschlag, erfolge, teammanager, leaderboard, twitch, streamerRole, …)
   utils/
-data/                      Datendateien (flaggen.json)
+
 scripts/                   check-load.js, db-smoke.js, db-cleanup.js
 ```
 

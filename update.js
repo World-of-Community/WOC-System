@@ -23,7 +23,7 @@ const ROOT = process.cwd();
 const ENTRY = "src/index.js";
 
 // never overwritten by an update
-const KEEP = [".env", "node_modules", "data", "backups", "update.js", ".git"];
+const KEEP = [".env", "node_modules", "backups", "update.js", ".git"];
 
 const log = (msg) => console.log(`[${new Date().toISOString()}] ${msg}`);
 const sha = (file) => (fs.existsSync(file) ? crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex") : "");
