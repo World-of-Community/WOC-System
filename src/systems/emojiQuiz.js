@@ -76,9 +76,9 @@ function buildQuizMessage(channel, entry) {
       `Gesuchter Begriff • ${entry.emojis}\n\n` +
       `Schwierigkeit • **${entry.schwierigkeit}**\n\n` +
       (entry.tipp ? `Tipp: **${entry.tipp}**\n\n` : "") +
-      "Dir fällt der Begriff nicht ein? Du kannst das Emojiquiz auch überspringen."
+      "Dir fällt der Begriff nicht ein? Du kannst das Emojiquiz auch überspringen.",
     )
-    .setColor("Random")
+    .setColor("Random");
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder().setCustomId("skip_emoji").setLabel("➡️ Überspringen").setStyle(ButtonStyle.Secondary),
