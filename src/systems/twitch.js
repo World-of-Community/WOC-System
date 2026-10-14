@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import client from "#client";
 import logger from "#core/logger.js";

@@ -24,6 +24,16 @@ npm start              # oder: npm run dev (nodemon)
 Alles andere (Rollen, Kanäle, Threads, Tags, Coins, Twitch-User, …) liegt in der Datenbank
 und wird per `/settings` verwaltet – siehe [Settings](#settings).
 
+## Deployment
+
+```bash
+node update.js      # oder: npm run update
+```
+
+`update.js` lädt den aktuellen Stand von `main`, führt bei geänderter `package-lock.json` `npm ci` aus und startet `src/index.js`.
+Beendet sich der Bot mit Exit-Code 0 (`/restart`), wird erneut aktualisiert und gestartet; nach einem Absturz wird mit Backoff neu gestartet.
+`.env`, `data/`, `backups/` und `node_modules/` werden beim Update nie überschrieben.
+
 ## Struktur
 
 ```
