@@ -1,9 +1,17 @@
 import "dotenv/config";
-import { Client, GatewayIntentBits, Partials, Collection } from "discord.js";
+import {
+  Client,
+  GatewayIntentBits,
+  Partials,
+  Collection,
+  ActivityType,
+  PermissionFlagsBits,
+} from "discord.js";
 import mongoose from "mongoose";
 import fs from "fs";
 import logger from "./functions/logger.js";
 import chalk from "chalk";
+import { syncStreamerRoleForMember } from "./functions/streamerRole.js";
 
 const client = new Client({
   intents: [
@@ -80,46 +88,43 @@ function printAsciiLogo() {
     "      WORLD OF COMMUNITY   \n"));
 }
 
-// ==========================================
-// TEMPORÄRER TEST-BEFEHL (KORRIGIERTE VERSION)
-// ==========================================
 client.on("messageCreate", async (message) => {
-  if (message.content === "!teststream" && !message.author.bot) {
-    const member = message.member;
-    if (!member) return;
+  if (message.author.bot || !message.guild) {return;}
+  if (message.content.trim().toLowerCase() !== "!teststream") {return;}
 
-    message.reply("🔄 Simuliere Stream-Start für 10 Sekunden...");
-
-    // Wir erstellen ein künstliches Presence-Objekt für den Test
-    const fakePresence = {
-      member: member,
-      user: message.author,
-      guild: message.guild,
-      activities: [
-        {
-          type: 1, // ActivityType.Streaming
-          name: "Test Stream",
-          url: "https://twitch.tv"
-        }
-      ]
-    };
-
-    // Wir triggern das Event manuell und übergeben die gefälschte Presence direkt
-    client.emit("presenceUpdate", null, fakePresence);
-
-    // Nach 10 Sekunden wird das Ende simuliert
-    setTimeout(async () => {
-      message.channel.send("🔴 Simuliere Stream-Ende...");
-
-      const fakeOfflinePresence = {
-        member: member,
-        user: message.author,
-        guild: message.guild,
-        activities: []
-      };
-
-      client.emit("presenceUpdate", null, fakeOfflinePresence);
-    }, 10000);
+  const member = message.member;
+  if (!member) {
+    await message.reply("❌ Kein Guild-Member für den Test gefunden.");
+    return;
   }
-});
 
+  if (!member.permissions.has(PermissionFlagsBits.ManageRoles)) {
+    await message.reply("❌ Du brauchst die Berechtigung `Rollen verwalten` für `!teststream`.");
+    return;
+  }
+
+  const testStreamingActivity = {
+    type: ActivityType.Streaming,
+    name: "WOC Teststream",
+    url: "https://twitch.tv/worldofcommunity",
+    details: "Simulierter Stream via !teststream",
+  };
+
+  const result = await syncStreamerRoleForMember(
+    member,
+    [testStreamingActivity],
+    "teststream",
+  );
+
+  if (result.status === "added_role") {
+    await message.reply("✅ Test erfolgreich: Streaming-Rolle wurde real vergeben.");
+    return;
+  }
+
+  if (result.status === "already_had_role") {
+    await message.reply("ℹ️ Test erfolgreich: Streaming erkannt, Rolle war bereits vorhanden.");
+    return;
+  }
+
+  await message.reply(`❌ Test fehlgeschlagen: ${result.status}.`);
+});
