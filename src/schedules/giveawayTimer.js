@@ -22,7 +22,7 @@ function prizeEmoji(priceInput) {
     }
 
     return amount < 10000 ? "🪙" : "💰";
-}
+  }
   return "<a:Diamond:1018911546430210128>";
 }
 
