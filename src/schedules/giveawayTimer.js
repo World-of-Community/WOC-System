@@ -11,7 +11,7 @@ function prizeEmoji(priceInput) {
   if (input.includes("nitro") && input.includes("basic")) {return "<a:basic:1186636165567229972>";}
   if (input.includes("nitro")) {return "<a:nitro:1186636151335944283>";}
   if (input.includes("guthaben")) {return "<a:guthaben:1186636139281530970>";}
-  if (input.includes("coins")) {return coins < 10.000 ? "🪙" : "💰";}
+  if (input.includes("coins")) {const amount = Number(String(coins).replace(/\./g, "")); return amount < 10000 ? "🪙" : "💰";}
   return "<a:Diamond:1018911546430210128>";
 }
 
