@@ -242,7 +242,7 @@ export const SETTINGS_SCHEMA = {
       info: category("815922210530525264", "Infos (User-Zähler)"),
       unity: category("815922693190582284", "Unity (Online-Zähler)"),
       ads: category("1172819530599378944", "Ads (Partner-Zähler)"),
-      news: category("1230540006439915610", "News (Abo-Zähler)"),
+      //news: category("1230540006439915610", "News (Abo-Zähler)"),
       minigames: category("1269567479928197151", "Minigames (Spiele-Zähler)"),
       unban: category("886985648714682439", "Entbannungsanträge"),
     },

@@ -42,7 +42,7 @@ async function updateChannels(client) {
   await guild.channels.cache.get(settings.get("categories.info"))?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
   await guild.channels.cache.get(settings.get("categories.unity"))?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineCount})`);
   await guild.channels.cache.get(settings.get("categories.ads"))?.setName(`(⚡) - [ADS] - (PARTNER: ${partnerCount})`);
-  await guild.channels.cache.get(settings.get("categories.news"))?.setName(`(📰) - [NEWS] - (ABOS: ${newsChannels})`);
+  //await guild.channels.cache.get(settings.get("categories.news"))?.setName(`(📰) - [NEWS] - (ABOS: ${newsChannels})`);
   await guild.channels.cache.get(settings.get("categories.minigames"))?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${gameChannels})`);
 }
 
