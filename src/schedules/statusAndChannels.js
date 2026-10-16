@@ -33,9 +33,13 @@ async function updateChannels(client) {
 
   const gameChannels = guild.channels.cache.filter((c) => c.parentId === settings.get("categories.minigames")).size;
 
-  const december = new Date().getMonth() === 11;
-  const emoji1 = december ? "🎄" : "🌍";
-  const emoji2 = december ? "⛄" : "👥";
+  const month = new Date().getMonth();
+
+  const halloween = month === 9;
+  const december = month === 11;
+  
+  const emoji1 = halloween ? "🎃" : december ? "🎄" : "🌍";
+  const emoji2 = halloween ? "👻" : december ? "⛄" : "👥";
 
   await guild.channels.cache.get(settings.get("categories.info"))?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
   await guild.channels.cache.get(settings.get("categories.unity"))?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineCount})`);
