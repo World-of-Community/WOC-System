@@ -1,6 +1,7 @@
 import { Events } from "discord.js";
 import logger from "#core/logger.js";
 import { GUILD_ID } from "#config";
+import cron from "node-cron";
 
 export default {
   name: Events.ClientReady,
