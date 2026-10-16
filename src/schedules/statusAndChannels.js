@@ -31,8 +31,6 @@ async function updateChannels(client) {
   const serverData = await serverDB.findOne({ guildID: GUILD_ID });
   const partnerCount = serverData?.partner?.partners?.length ?? 0;
 
-  const newsCategory = guild.channels.cache.get(settings.get("categories.news"));
-  const newsChannels = newsCategory ? newsCategory.children.cache.size : 0;
   const gameChannels = guild.channels.cache.filter((c) => c.parentId === settings.get("categories.minigames")).size;
 
   const december = new Date().getMonth() === 11;
@@ -42,7 +40,6 @@ async function updateChannels(client) {
   await guild.channels.cache.get(settings.get("categories.info"))?.setName(`(${emoji1}) - [INFOS] - (USER: ${memberCount})`);
   await guild.channels.cache.get(settings.get("categories.unity"))?.setName(`(${emoji2}) - [UNITY] - (ONLINE: ${onlineCount})`);
   await guild.channels.cache.get(settings.get("categories.ads"))?.setName(`(⚡) - [ADS] - (PARTNER: ${partnerCount})`);
-  //await guild.channels.cache.get(settings.get("categories.news"))?.setName(`(📰) - [NEWS] - (ABOS: ${newsChannels})`);
   await guild.channels.cache.get(settings.get("categories.minigames"))?.setName(`(🎮) - [MINIGAMES] - (SPIELE: ${gameChannels})`);
 }
 
