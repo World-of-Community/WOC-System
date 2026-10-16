@@ -43,6 +43,7 @@ export default {
 
     userData.giveaway.voiceTime += duration;
     userData.stats.voiceTime += duration;
+    userData.giveawayProgress.voiceTime += duration;
     userData.giveaway.startTime = 0;
     await userData.save();
 

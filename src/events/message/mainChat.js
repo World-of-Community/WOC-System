@@ -145,10 +145,12 @@ async function trackUserStats(client, message) {
       userID: message.author.id,
       giveaway: { eventWins: 0, toggledm: true, messages: 1, voiceTime: 0, startTime: 0 },
       stats: { messages: 1, voiceTime: 0 },
+      giveawayProgress: { messages: 1, voiceTime: 0 },
     });
   } else {
     userData.giveaway.messages += 1;
     userData.stats.messages += 1;
+    userData.giveawayProgress.messages += 1;
   }
 
   const isFirstMessage = !userData.firstMessage && Boolean(message.content);

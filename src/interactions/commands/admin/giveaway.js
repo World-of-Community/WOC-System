@@ -232,7 +232,8 @@ export default {
             });
             await newGiveaway.save();
 
-            await userDB.updateMany({}, { $set: { "stats.messages": 0, "stats.voiceTime": 0 } });
+            // requirements count from the start of the newest giveaway; stats (leaderboard) and giveaway.* (profile totals) stay untouched
+            await userDB.updateMany({}, { $set: { "giveawayProgress.messages": 0, "giveawayProgress.voiceTime": 0 } });
 
             await inter.reply({ content: `> \`✅\` - **Gewinnspiel erstellt:** Das Gewinnspiel wurde so eben in dem Kanal ${channel} erstellt.`, flags: MessageFlags.Ephemeral });
             isProcessingComplete = true;

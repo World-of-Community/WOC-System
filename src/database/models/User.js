@@ -19,6 +19,11 @@ export default defineModel("User", {
     voiceTime: { type: Number, default: 0 },
     startTime: { type: Number, default: 0 },
   },
+  // counters for giveaway requirements, reset by /gw start
+  giveawayProgress: {
+    messages: { type: Number, default: 0 },
+    voiceTime: { type: Number, default: 0 },
+  },
   stats: {
     messages: { type: Number, default: 0 },
     voiceTime: { type: Number, default: 0 },

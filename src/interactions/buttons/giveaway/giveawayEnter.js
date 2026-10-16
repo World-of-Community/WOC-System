@@ -30,6 +30,7 @@ export function withParticipantCount(embed, previous, current) {
     .setThumbnail(GIFT_THUMBNAIL);
 }
 
+// user.giveawayProgress is reset whenever a new giveaway starts
 async function meetsRequirement(interaction, giveaway, statsData) {
   switch (giveaway.bedingung) {
     case "messages":
@@ -72,7 +73,7 @@ export default {
 
     if (!hasBypass) {
       const userData = await userdb.findOne({ userID: interaction.user.id });
-      const ok = await meetsRequirement(interaction, giveaway, userData?.stats ?? null);
+      const ok = await meetsRequirement(interaction, giveaway, userData?.giveawayProgress ?? null);
       if (!ok) {throw new UserError(NOT_ELIGIBLE);}
     }
 
