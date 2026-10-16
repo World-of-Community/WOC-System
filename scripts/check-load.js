@@ -20,6 +20,17 @@ logger.error = (...a) => { warnings.push(a.join(" ")); origError(...a); };
 
 await loadAll(client);
 
+// every settings.get("group.key") in the code must exist in the schema
+const { iterateSettings } = await import("#config/settings.schema.js");
+const { walkJsFiles, SRC_DIR } = await import("../src/loaders/walk.js");
+const known = new Set([...iterateSettings()].map((s) => s.path));
+const fsMod = await import("node:fs");
+for (const file of walkJsFiles(SRC_DIR)) {
+  for (const [, key] of fsMod.readFileSync(file, "utf8").matchAll(/settings\.(?:get|set|reset)\("([^"]+)"/g)) {
+    if (!known.has(key)) {warnings.push(`unknown setting "${key}" in ${file}`);}
+  }
+}
+
 const counts = {
   commands: client.slashCommands.size,
   buttons: client.buttons.size,
