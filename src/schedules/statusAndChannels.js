@@ -37,7 +37,7 @@ async function updateChannels(client) {
 
   const halloween = month === 9;
   const december = month === 11;
-  
+
   const emoji1 = halloween ? "🎃" : december ? "🎄" : "🌍";
   const emoji2 = halloween ? "👻" : december ? "⛄" : "👥";
 
