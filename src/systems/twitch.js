@@ -58,9 +58,40 @@ export async function removeStreamer(login, by = null) {
   return normalized;
 }
 
-async function saveMessageId(login, messageId) {
-  const streamers = getStreamers().map((s) => (s.login === login ? { ...s, messageId } : s));
+async function patchStreamer(login, patch) {
+  const streamers = getStreamers().map((s) => (s.login === login ? { ...s, ...patch } : s));
   await settings.set("twitch.streamers", streamers);
+}
+
+const saveMessageId = (login, messageId) => patchStreamer(login, { messageId });
+
+// Announces once per stream. lastStreamId === undefined means "never checked" – then only remember, do not ping,
+// so a deploy while someone is live does not re-announce.
+async function announceIfNewStream(streamer, stream) {
+  const known = Object.prototype.hasOwnProperty.call(streamer, "lastStreamId");
+  const currentId = stream?.id ?? null;
+  if (!stream) {
+    if (!known) {await patchStreamer(streamer.login, { lastStreamId: null });}
+    return;
+  }
+  if (known && streamer.lastStreamId === currentId) {return;}
+
+  await patchStreamer(streamer.login, { lastStreamId: currentId });
+  if (!known) {return;}
+
+  const channelId = settings.get("channels.twitchLive") || settings.get("channels.twitch");
+  const roleId = settings.get("pingRoles.twitch");
+  const channel = await client.channels.fetch(channelId).catch(() => null);
+  if (!channel?.isTextBased()) {
+    log.warn(`Live announcement channel ${channelId} not found`);
+    return;
+  }
+
+  await channel.send({
+    content: `**${stream.user_name}** ist jetzt Live auf Twitch${roleId ? ` <@&${roleId}>` : ""}`,
+    allowedMentions: { roles: roleId ? [roleId] : [] },
+  });
+  log.info(`Live announcement sent for ${streamer.login}`);
 }
 
 async function getAccessToken(force = false) {
@@ -199,7 +230,9 @@ async function runTwitchStatusUpdate() {
   const streams = await fetchStreams(streamers.map((s) => s.login));
 
   for (const streamer of streamers) {
-    await updateStreamerMessage(channel, streamer, streams.get(streamer.login));
+    const stream = streams.get(streamer.login);
+    await announceIfNewStream(streamer, stream);
+    await updateStreamerMessage(channel, getStreamers().find((x) => x.login === streamer.login) ?? streamer, stream);
   }
 }
 

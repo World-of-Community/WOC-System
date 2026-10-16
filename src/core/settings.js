@@ -73,7 +73,7 @@ export function loadDefaultsOnly() {
 
 export async function setSetting(path, value, updatedBy = null) {
   const { group, key, type } = definition(path);
-  const parsed = coerce(type, value);
+  const parsed = value === null ? null : coerce(type, value);
 
   await Settings.updateOne(
     { _id: group },

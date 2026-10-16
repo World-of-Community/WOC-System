@@ -192,6 +192,7 @@ export const SETTINGS_SCHEMA = {
       deadChat: role("1246190426646642698", "Dead Chat Ping"),
       freeGames: role("1230568420240527462", "Gratis Spiele Ping"),
       youtube: role("1337362885101359146", "YouTube Ping"),
+      twitch: role(null, "Twitch Benachrichtigung (Live-Ping)"),
     },
   },
 
@@ -233,6 +234,8 @@ export const SETTINGS_SCHEMA = {
       levelBotCommands: channel("870645033232130098", "Level-Bot Commands"),
       youtube: channel("1274833689821319308", "YouTube-Benachrichtigungen"),
       twitch: channel("1269565441513357355", "Twitch-Status"),
+      twitchLive: channel(null, "Twitch Live-Ankündigungen (leer = Twitch-Status-Kanal)"),
+      emojiQuizSuggestions: channel(null, "Emoji-Quiz Vorschläge (Team-Prüfung)"),
     },
   },
 

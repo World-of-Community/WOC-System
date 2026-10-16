@@ -71,17 +71,21 @@ async function pickEntry(schwierigkeit, excludeId) {
 }
 
 function buildQuizMessage(channel, entry) {
+  const reward = Number(settings.get("coins.emojiQuizReward")) || 0;
   const embed = new EmbedBuilder()
     .setDescription(
       `Gesuchter Begriff • ${entry.emojis}\n\n` +
-      `Schwierigkeit • **${entry.schwierigkeit}**\n\n` +
-      (entry.tipp ? `Tipp • **${entry.tipp}**\n\n` : "") +
-      "`❓` Dir fällt der Begriff nicht ein? Du kannst das Emojiquiz auch überspringen.",
+      `Schwierigkeit • **${entry.schwierigkeit}**\n` +
+      (reward > 0 ? `Belohnung • **${reward.toLocaleString("de-DE")}** 🪙\n` : "") +
+      (entry.tipp ? `\nTipp • **${entry.tipp}**\n` : "") +
+      "\n`❓` Dir fällt der Begriff nicht ein? Du kannst das Emojiquiz auch überspringen.",
     )
     .setColor("Blurple");
 
   const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId("skip_emoji").setLabel("➡️ Überspringen").setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("skip_emoji").setLabel("Überspringen").setEmoji("➡️").setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("emoji_hint").setLabel("Erster Buchstabe").setEmoji("🅰️").setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("emoji_suggest").setLabel("Neuen Begriff vorschlagen").setEmoji("❓").setStyle(ButtonStyle.Primary),
   );
 
   return { embeds: [embed], components: [row] };
@@ -176,4 +180,10 @@ export async function checkAnswer(message) {
   }, NEXT_DELAY);
 
   return entry;
+}
+
+export async function currentEntry(channelId) {
+  const quiz = await getQuiz(channelId);
+  if (!quiz?.entryId) {return null;}
+  return EmojiQuizEntry.findById(quiz.entryId).lean();
 }
