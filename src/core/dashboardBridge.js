@@ -69,6 +69,19 @@ const HANDLERS = {
     return { ok: true };
   },
 
+  // names and avatars for ids shown in the dashboard (leaderboards); unknown ids are left out
+  async [COMMANDS.usersResolve](client, { ids }) {
+    const guild = client.guilds.cache.get(env.discord.guildId);
+    const users = {};
+    await Promise.all([...new Set(ids ?? [])].slice(0, 100).map(async (id) => {
+      const member = await guild?.members.fetch(id).catch(() => null);
+      const user = member?.user ?? await client.users.fetch(id).catch(() => null);
+      if (!user) {return;}
+      users[id] = { name: member?.displayName ?? user.globalName ?? user.username, avatar: (member ?? user).displayAvatarURL({ size: 64 }) };
+    }));
+    return { ok: true, users };
+  },
+
   async [COMMANDS.emojiQuizReview](client, { suggestionId, accept, reviewerId, reviewerName }) {
     const suggestion = await reviewSuggestion(client, suggestionId, Boolean(accept), reviewerId);
     await syncReviewMessage(client, suggestion, Boolean(accept), reviewerName);

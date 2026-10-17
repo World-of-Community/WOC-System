@@ -16,4 +16,5 @@ export const COMMANDS = Object.freeze({
   settingsSet: "settings:set",
   commandsSync: "commands:sync",
   emojiQuizReview: "emojiquiz:review",
+  usersResolve: "users:resolve",
 });
