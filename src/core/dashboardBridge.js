@@ -101,7 +101,13 @@ export async function startDashboardBridge(client) {
 
   pub = new Redis(env.redis.url, { maxRetriesPerRequest: 3 });
   sub = new Redis(env.redis.url);
-  pub.on("error", (error) => log.warn("Redis:", error.message));
+  // ioredis retries on its own; one warning per minute is enough
+  let lastWarn = 0;
+  pub.on("error", (error) => {
+    if (Date.now() - lastWarn < 60_000) {return;}
+    lastWarn = Date.now();
+    log.warn(`Redis: ${error.message || error.code} – retrying in the background`);
+  });
   sub.on("error", () => {});
 
   await sub.subscribe(KEYS.commandChannel);

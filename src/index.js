@@ -41,7 +41,8 @@ async function main() {
   await loadAll(client);
   await registerCommands(client);
   await client.login(env.discord.token);
-  await startDashboardBridge(client);
+  // never blocks or fails the bot: Redis may be unreachable
+  startDashboardBridge(client).catch((error) => logger.warn("Dashboard bridge not started:", error.message));
 }
 
 main().catch(async (error) => {
