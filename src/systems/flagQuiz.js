@@ -20,11 +20,12 @@ function buildQuizMessage(channel, country) {
   const embed = new EmbedBuilder()
     .setDescription(
       "🚩 » Welche Flagge ist das?\n\n" +
-      `💡 » Tipp: Beginnt mit **${country.name.charAt(0)}**\n\n` +
+      `💡 » Tipp: Beginnt mit **${country.name.charAt(0)}**\n` +
+      "🪙 » Belohnung: **2 Coins**\n\n" +
       "✍️ » Schreibe den Ländernamen in den Chat!",
     )
     .setImage(getFlagUrl(country.code, IMAGE))
-    .setColor("Random")
+    .setColor("Blurple")
     .setFooter({ text: "» Benutze den Button, um die Flagge zu überspringen.", iconURL: channel.guild?.iconURL() ?? undefined });
 
   const row = new ActionRowBuilder().addComponents(
