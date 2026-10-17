@@ -17,10 +17,10 @@ defineProps<{ stats: Stat[] }>();
 </template>
 
 <style scoped>
-.strip { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow-x: auto; }
-.cell { padding: 14px 18px; border-left: 1px solid var(--line); min-width: 140px; }
-.cell:first-child { border-left: 0; }
-.value { font-size: 26px; font-weight: 500; letter-spacing: -0.02em; margin: 4px 0 1px; font-variant-numeric: tabular-nums; }
+.strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.cell { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; min-width: 0; }
+.eyebrow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.value { font-size: 26px; font-weight: 500; letter-spacing: -0.02em; margin: 4px 0 1px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .foot { display: flex; gap: 7px; font-size: 12px; min-height: 18px; }
 .hint { color: var(--faint); }
 .trend { font-family: var(--mono); font-size: 11.5px; }
