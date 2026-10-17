@@ -17,6 +17,7 @@ npm start              # oder: npm run dev (nodemon)
 | `DISCORD_GUILD_ID` | Server-ID (Guild-Commands) |
 | `MONGO_URI` | MongoDB-Verbindungsstring |
 | `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` | Twitch-App für das Status-System |
+| `REDIS_URL` | Redis für die Dashboard-Anbindung (optional) |
 | `YOUTUBE_API_KEY` | YouTube Data API Key (`/youtube`) |
 | `NODE_ENV` | `development` / `production` |
 | `LOG_LEVEL` | `debug` / `info` / `warn` / `error` |
@@ -33,6 +34,23 @@ node update.js      # oder: npm run update
 `update.js` lädt den aktuellen Stand von `main`, führt bei geänderter `package-lock.json` `npm ci` aus und startet `src/index.js`.
 Beendet sich der Bot mit Exit-Code 0 (`/restart`), wird erneut aktualisiert und gestartet; nach einem Absturz wird mit Backoff neu gestartet.
 `.env`, `backups/` und `node_modules/` werden beim Update nie überschrieben.
+
+## Dashboard
+
+Eigener Prozess im selben Repo: API mit [inkan](https://github.com/inkanjs/inkan) (`dashboard/server/`), Oberfläche mit Vue 3 + Vite (`dashboard/src/`).
+Es liest/schreibt dieselbe MongoDB wie der Bot und redet über Redis (`REDIS_URL`) mit dem laufenden Bot: Der Bot veröffentlicht alle 30 s einen Snapshot
+(Rollen, Channels, Commands, Status) und führt Befehle des Dashboards aus (Settings neu laden, Commands neu registrieren, Emoji-Quiz-Vorschläge bearbeiten).
+Das Protokoll steht in `src/config/dashboardProtocol.js`, die Bot-Seite in `src/core/dashboardBridge.js`.
+Die Insights (Joins, Leaves, Nachrichten, Aktivität nach Uhrzeit) stammen aus `daily_stats`, geschrieben von `src/events/stats/dailyStats.js`.
+
+```bash
+npm run dashboard:dev     # Vite: Oberfläche + API auf einem Port, mit Reload
+npm run dashboard:build   # baut dashboard/dist
+npm run dashboard         # Produktion: inkan liefert API + gebautes Frontend (Node 22.18+)
+```
+
+Neues Modul: `dashboard/server/modules/<id>.ts` (inkan-Routen mit Contract), in `server/app.ts` und `modules/core.ts` eintragen, dazu `dashboard/src/views/<Name>.vue` und eine Route in `src/router.ts`.
+Login ist aktuell ein gemeinsamer `DASHBOARD_TOKEN` (`dashboard/server/auth.ts`); Discord-Login folgt.
 
 ## Struktur
 
