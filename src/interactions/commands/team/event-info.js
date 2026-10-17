@@ -129,8 +129,7 @@ export default {
               content: message,
               files: bild ? [bild.url] : [],
             });
-            await notify(`> \`✅\` » Nachricht erfolgreich gesendet.
-> Message ID: \`${sentMessage.id}\``);
+            await notify(`> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``);
           } catch (error) {
             logger.error("Fehler beim Senden:", error);
             await notify("> `❌` » Fehler beim Senden der Nachricht.");
@@ -147,8 +146,7 @@ export default {
             content: message,
             files: bild ? [bild.url] : [],
           });
-          await interaction.editReply({ content: `> \`✅\` » Nachricht erfolgreich gesendet.
-> Message ID: \`${sentMessage.id}\`` });
+          await interaction.editReply({ content: `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\`` });
         } catch (error) {
           logger.error("Fehler beim Senden:", error);
           await interaction.editReply({ content: "> `❌` » Fehler beim Senden der Nachricht." }).catch(() => {});
