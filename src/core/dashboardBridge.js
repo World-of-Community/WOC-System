@@ -2,7 +2,8 @@ import Redis from "ioredis";
 import { ChannelType, Events } from "discord.js";
 import { env } from "#config";
 import logger from "./logger.js";
-import { loadSettings } from "./settings.js";
+import { loadSettings, setSetting, resetSetting } from "./settings.js";
+import { SETTINGS_SCHEMA } from "#config/settings.schema.js";
 import { KEYS, COMMANDS, SNAPSHOT_INTERVAL, SNAPSHOT_TTL } from "#config/dashboardProtocol.js";
 import { reviewSuggestion, syncReviewMessage } from "#systems/emojiQuiz.js";
 import registerCommands from "../loaders/registerCommands.js";
@@ -54,6 +55,12 @@ const HANDLERS = {
   async [COMMANDS.settingsReload]() {
     await loadSettings();
     return { ok: true };
+  },
+
+  // validation and cache update stay in the bot; the dashboard only sends the raw value
+  async [COMMANDS.settingsSet](_client, { path, value, reset, updatedBy }) {
+    const saved = reset ? await resetSetting(path, updatedBy) : await setSetting(path, value, updatedBy);
+    return { ok: true, value: saved };
   },
 
   async [COMMANDS.commandsSync](client) {
@@ -112,6 +119,9 @@ export async function startDashboardBridge(client) {
 
   await sub.subscribe(KEYS.commandChannel);
   sub.on("message", (_channel, raw) => { handleMessage(client, raw); });
+
+  // the dashboard builds its settings page from this, so it never needs the bot's code
+  await pub.set(KEYS.schema, JSON.stringify(SETTINGS_SCHEMA));
 
   client.on(Events.ClientReady, () => publishSnapshot(client));
   await publishSnapshot(client);

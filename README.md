@@ -37,20 +37,11 @@ Beendet sich der Bot mit Exit-Code 0 (`/restart`), wird erneut aktualisiert und 
 
 ## Dashboard
 
-Eigener Prozess im selben Repo: API mit [inkan](https://github.com/inkanjs/inkan) (`dashboard/server/`), Oberfläche mit Vue 3 + Vite (`dashboard/src/`).
-Es liest/schreibt dieselbe MongoDB wie der Bot und redet über Redis (`REDIS_URL`) mit dem laufenden Bot: Der Bot veröffentlicht alle 30 s einen Snapshot
-(Rollen, Channels, Commands, Status) und führt Befehle des Dashboards aus (Settings neu laden, Commands neu registrieren, Emoji-Quiz-Vorschläge bearbeiten).
-Das Protokoll steht in `src/config/dashboardProtocol.js`, die Bot-Seite in `src/core/dashboardBridge.js`.
-Die Insights (Joins, Leaves, Nachrichten, Aktivität nach Uhrzeit) stammen aus `daily_stats`, geschrieben von `src/events/stats/dailyStats.js`.
-
-```bash
-npm run dashboard:dev     # Vite: Oberfläche + API auf einem Port, mit Reload
-npm run dashboard:build   # baut dashboard/dist
-npm run dashboard         # Produktion: inkan liefert API + gebautes Frontend (Node 22.18+)
-```
-
-Neues Modul: `dashboard/server/modules/<id>.ts` (inkan-Routen mit Contract), in `server/app.ts` und `modules/core.ts` eintragen, dazu `dashboard/src/views/<Name>.vue` und eine Route in `src/router.ts`.
-Login ist aktuell ein gemeinsamer `DASHBOARD_TOKEN` (`dashboard/server/auth.ts`); Discord-Login folgt.
+Das Web-Dashboard liegt in einem eigenen Repo (World-of-Community/WOC-Dashboard) und läuft als eigener Prozess.
+Bot und Dashboard sprechen über Redis (`REDIS_URL`): Der Bot veröffentlicht alle 30 s einen Snapshot (Rollen, Channels, Commands, Status) und sein Settings-Schema
+und führt Befehle des Dashboards aus (Einstellung setzen, Commands neu registrieren, Emoji-Quiz-Vorschläge bearbeiten).
+Die Bot-Seite steht in `src/core/dashboardBridge.js`, das Protokoll in `src/config/dashboardProtocol.js` (Kopie im Dashboard-Repo, beide synchron halten).
+Die Insights stammen aus `daily_stats`, geschrieben von `src/events/stats/dailyStats.js`.
 
 ## Struktur
 

@@ -42,20 +42,6 @@ export default defineConfig([
     },
   },
 
-  // dashboard: nested h("tag", ...) calls read better with plain 2-space nesting
-  {
-    files: ["dashboard/**/*.js"],
-    rules: {
-      "indent": ["error", 2, { "SwitchCase": 1, "MemberExpression": 1, "CallExpression": { "arguments": 1 } }],
-      "no-console": "off",
-      "no-unused-vars": ["error", { args: "none" }],
-    },
-  },
-  {
-    files: ["dashboard/public/**/*.js"],
-    languageOptions: { globals: globals.browser },
-  },
-
   {
     files: ["**/*.json"],
     plugins: { json },
