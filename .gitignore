@@ -13,3 +13,4 @@ node_modules/
 
 # database exports from scripts/db-backup.js
 backups/
+dashboard/dist/

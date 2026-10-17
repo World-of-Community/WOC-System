@@ -1,5 +1,6 @@
 import logger from "./logger.js";
 import { disconnectDatabase } from "#db/connection.js";
+import { stopDashboardBridge } from "./dashboardBridge.js";
 import { stopSchedules } from "../loaders/loadSchedules.js";
 
 let shuttingDown = false;
@@ -32,6 +33,7 @@ export async function shutdown(client, { reason = "unknown", exitCode = 0 } = {}
     logger.error("Failed to close Discord connection:", error);
   }
 
+  await stopDashboardBridge();
   await disconnectDatabase();
 
   clearTimeout(killTimer);

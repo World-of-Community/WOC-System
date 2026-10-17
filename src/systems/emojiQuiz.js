@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import EmojiQuiz from "#models/EmojiQuiz.js";
 import EmojiQuizEntry from "#models/EmojiQuizEntry.js";
+import EmojiQuizSuggestion from "#models/EmojiQuizSuggestion.js";
 import { Coin } from "#models/Coin.js";
 import { settings } from "#core/settings.js";
 import logger from "#core/logger.js";
@@ -45,6 +46,41 @@ export async function addEntry({ begriff, emojis, tipp = "", schwierigkeit = "mi
     aliases: aliases.map((a) => String(a).trim()).filter(Boolean),
     addedBy,
   });
+}
+
+// Marks a team suggestion as accepted/denied (adds it to the pool on accept) and notifies the author.
+export async function reviewSuggestion(client, id, accepted, reviewerId) {
+  const suggestion = await EmojiQuizSuggestion.findById(id).catch(() => null);
+  if (!suggestion) {throw new Error("Vorschlag nicht gefunden.");}
+  if (suggestion.status !== "offen") {throw new Error(`Vorschlag wurde bereits ${suggestion.status}.`);}
+
+  if (accepted) {await addEntry(suggestion, reviewerId);}
+
+  suggestion.status = accepted ? "angenommen" : "abgelehnt";
+  suggestion.reviewedBy = reviewerId;
+  await suggestion.save();
+
+  const user = await client.users.fetch(suggestion.userId).catch(() => null);
+  await user?.send(
+    accepted
+      ? `> \`✅\` » Dein Emoji-Quiz Vorschlag **${suggestion.begriff}** ${suggestion.emojis} wurde angenommen!`
+      : `> \`❌\` » Dein Emoji-Quiz Vorschlag **${suggestion.begriff}** wurde leider abgelehnt.`,
+  ).catch(() => {});
+
+  return suggestion;
+}
+
+// Updates the review message in the team channel when a suggestion was handled outside of it (dashboard).
+export async function syncReviewMessage(client, suggestion, accepted, reviewerName) {
+  if (!suggestion.messageId) {return;}
+  const channel = await client.channels.fetch(settings.get("channels.emojiQuizSuggestions") ?? "0").catch(() => null);
+  const message = await channel?.messages?.fetch(suggestion.messageId).catch(() => null);
+  if (!message?.embeds[0]) {return;}
+
+  const embed = EmbedBuilder.from(message.embeds[0])
+    .setColor(accepted ? "Green" : "Red")
+    .setFooter({ text: `${accepted ? "Angenommen" : "Abgelehnt"} von ${reviewerName} (Dashboard)` });
+  await message.edit({ embeds: [embed], components: [] }).catch(() => {});
 }
 
 export async function removeEntry(begriff) {

@@ -7,6 +7,7 @@ import { registerProcessHandlers, reportError } from "#core/errors.js";
 import { registerShutdownHandlers, shutdown } from "#core/shutdown.js";
 import { connectDatabase } from "#db/connection.js";
 import { loadSettings } from "#core/settings.js";
+import { startDashboardBridge } from "#core/dashboardBridge.js";
 import { seedEntries } from "#systems/emojiQuiz.js";
 import { loadAll, registerCommands } from "./loaders/index.js";
 
@@ -40,6 +41,7 @@ async function main() {
   await loadAll(client);
   await registerCommands(client);
   await client.login(env.discord.token);
+  await startDashboardBridge(client);
 }
 
 main().catch(async (error) => {

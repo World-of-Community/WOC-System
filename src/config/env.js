@@ -31,6 +31,11 @@ export const env = Object.freeze({
     maxRetries: Number.parseInt(process.env.MONGO_MAX_RETRIES ?? "5", 10),
   }),
 
+  // optional: without it the dashboard bridge stays off
+  redis: Object.freeze({
+    url: process.env.REDIS_URL ?? "",
+  }),
+
   youtube: Object.freeze({
     apiKey: process.env.YOUTUBE_API_KEY ?? "",
   }),
