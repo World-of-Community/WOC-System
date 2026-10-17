@@ -114,53 +114,44 @@ export default {
           flags: MessageFlags.Ephemeral,
         });
 
-        setTimeout(async () => {
-
+        // the interaction token is only valid for 15 minutes, so the result may have to go out as a DM
+        const notify = async (content) => {
           try {
+            await interaction.editReply({ content });
+          } catch {
+            await interaction.user.send(content).catch(() => {});
+          }
+        };
 
+        setTimeout(async () => {
+          try {
             const sentMessage = await channel.send({
               content: message,
               files: bild ? [bild.url] : [],
             });
-
-            await interaction.editReply({
-              content: `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
-              flags: MessageFlags.Ephemeral,
-            });
-
+            await notify(`> \`✅\` » Nachricht erfolgreich gesendet.
+> Message ID: \`${sentMessage.id}\``);
           } catch (error) {
             logger.error("Fehler beim Senden:", error);
-
-            await interaction.editReply({
-              content: "> `❌` » Fehler beim Senden der Nachricht.",
-              flags: MessageFlags.Ephemeral,
-            });
+            await notify("> `❌` » Fehler beim Senden der Nachricht.");
           }
-
         }, timeMs);
 
       } else {
 
-        try {
+        // uploading an image can take longer than the 3 seconds Discord allows for the first reply
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
+        try {
           const sentMessage = await channel.send({
             content: message,
             files: bild ? [bild.url] : [],
           });
-
-          await interaction.reply({
-            content: `> \`✅\` » Nachricht erfolgreich gesendet.\n> Message ID: \`${sentMessage.id}\``,
-            flags: MessageFlags.Ephemeral,
-          });
-
+          await interaction.editReply({ content: `> \`✅\` » Nachricht erfolgreich gesendet.
+> Message ID: \`${sentMessage.id}\`` });
         } catch (error) {
-
           logger.error("Fehler beim Senden:", error);
-
-          await interaction.reply({
-            content: "> `❌` » Fehler beim Senden der Nachricht.",
-            flags: MessageFlags.Ephemeral,
-          });
+          await interaction.editReply({ content: "> `❌` » Fehler beim Senden der Nachricht." }).catch(() => {});
         }
       }
     }
@@ -173,6 +164,8 @@ export default {
       const bild = interaction.options.getAttachment("bild");
 
       const newMessage = parseText(rawMessage);
+
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
       try {
 
@@ -188,19 +181,13 @@ export default {
 
         await message.edit(editData);
 
-        await interaction.reply({
-          content: "> `✅` » Nachricht erfolgreich bearbeitet.",
-          flags: MessageFlags.Ephemeral,
-        });
+        await interaction.editReply({ content: "> `✅` » Nachricht erfolgreich bearbeitet." });
 
       } catch (error) {
 
         logger.error("Fehler beim Bearbeiten:", error);
 
-        await interaction.reply({
-          content: "> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten.",
-          flags: MessageFlags.Ephemeral,
-        });
+        await interaction.editReply({ content: "> `❌` » Nachricht nicht gefunden oder Fehler beim Bearbeiten." }).catch(() => {});
       }
     }
   },
