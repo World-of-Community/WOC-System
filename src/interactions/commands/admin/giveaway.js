@@ -243,4 +243,88 @@ export default {
           return interaction.reply({ content: "> `❌` » Kein Gewinnspiel mit dieser ID gefunden.", flags: MessageFlags.Ephemeral });
         }
         const endechannel = await interaction.client.channels.fetch(giveaway.channelID);
-        const giveawayMessage = await endechannel.messages.
+        const giveawayMessage = await endechannel.messages.fetch(giveaway.msgID);
+        if (!giveawayMessage) {
+          return interaction.reply({ content: "> `❌` » Nachricht nicht gefunden.", flags: MessageFlags.Ephemeral });
+        }
+
+        const winners = await giveawayMessage.reactions.cache.get("🎉")?.users.fetch();
+
+        if (!winners || winners.size === 0) {
+          return interaction.reply({ content: "> `❌` » Keine Gewinner für dieses Gewinnspiel gefunden.", flags: MessageFlags.Ephemeral });
+        }
+
+        const winnerList = Array.from(winners.values()).filter(user => !user.bot);
+        if (winnerList.length === 0) {
+          return interaction.reply({ content: "> `❌` » Keine gültigen Gewinner gefunden.", flags: MessageFlags.Ephemeral });
+        }
+
+        const winnersDisplay = winnerList.map((winner, index) => `**${index + 1}.** <@${winner.id}>`).join("\n");
+        const emoji = prizeEmoji(giveaway.price);
+
+        const giveawayend = new EmbedBuilder()
+          .setTitle(`${emoji} ${giveaway.price} ${emoji}`)
+          .setDescription(`<a:Neuigkeiten:1018910061348798564> » **__Gewinnspiel - Gewinner__**
+      <:PfeilBlau:1147248395837247613> Teilnehmer: **${giveaway.teilnehmer.length}**
+      <:PfeilBlau:1147248395837247613> Gewinner: ${winnersDisplay || "**`Zu wenig Teilnehmer`**"}
+      <:PfeilBlau:1147248395837247613> Erstellt von <@${giveaway.creator}>`)
+          .setColor("Red")
+          .setThumbnail("https://cdn.discordapp.com/attachments/1269341729493094400/1271147368787480621/Gift.gif?ex=66b647bd&is=66b4f63d&hm=53e18bea4e53fcfa6bef3450c65670ac3d7d1d57e3dd66a18e23d9660dfdfc6d&")
+          .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
+          .setTimestamp();
+
+        await giveawayMessage.edit({ embeds: [giveawayend] });
+
+        await giveawaydb.deleteOne({ _id: messageId });
+
+        await interaction.reply({ content: "> `✅` » Gewinnspiel erfolgreich beendet!", flags: MessageFlags.Ephemeral });
+        break;
+      }
+
+      case "reroll": {
+        const rerollId = interaction.options.getString("nachrichtenid");
+        const rerollGiveaway = await giveawaydb.findOne({ _id: rerollId });
+
+        if (!rerollGiveaway) {
+          return interaction.reply({ content: "> `❌` » Kein Gewinnspiel mit dieser ID gefunden.", flags: MessageFlags.Ephemeral });
+        }
+
+        const rerollChannel = await interaction.client.channels.fetch(rerollGiveaway.channelID);
+        const rerollMessage = await rerollChannel.messages.fetch(rerollId);
+        if (!rerollMessage) {
+          return interaction.reply({ content: "> `❌` » Nachricht nicht gefunden.", flags: MessageFlags.Ephemeral });
+        }
+
+        const rerollWinners = await rerollMessage.reactions.cache.get("🎉")?.users.fetch();
+
+        if (!rerollWinners || rerollWinners.size === 0) {
+          return interaction.reply({ content: "> `❌` » Keine Gewinner für dieses Gewinnspiel gefunden.", flags: MessageFlags.Ephemeral });
+        }
+
+        const rerollWinnerList = Array.from(rerollWinners.values()).filter(user => !user.bot);
+        if (rerollWinnerList.length === 0) {
+          return interaction.reply({ content: "> `❌` » Keine gültigen Gewinner gefunden.", flags: MessageFlags.Ephemeral });
+        }
+
+        const newWinner = rerollWinnerList[Math.floor(Math.random() * rerollWinnerList.length)];
+        const emoji = prizeEmoji(rerollGiveaway.price);
+
+        const rerollEmbed = new EmbedBuilder()
+          .setTitle(`${emoji} ${rerollGiveaway.price} ${emoji}`)
+          .setDescription(`<a:Neuigkeiten:1018910061348798564> » **__Gewinnspiel-Gewinner__**
+    <:PfeilBlau:1147248395837247613> Teilnehmer: **${rerollGiveaway.teilnehmer.length}**
+    <:PfeilBlau:1147248395837247613> Neuer Gewinner: **${newWinner ? `<@${newWinner.id}>` : "`Zu wenig Teilnehmer`"}**
+    <:PfeilBlau:1147248395837247613> Erstellt von <@${rerollGiveaway.creator}>`)
+          .setColor("Red")
+          .setThumbnail("https://cdn.discordapp.com/attachments/1145779055644393592/1148698733056381030/Gewinnspiel.gif?ex=654a8d8f&is=6538188f&hm=d624d3b0def1f058aa42c6c74fd222a12c7673690e7a3146d2bad87deb74118c&")
+          .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
+          .setTimestamp();
+
+        await rerollMessage.edit({ embeds: [rerollEmbed] });
+
+        await interaction.reply({ content: "> `✅` » Gewinner erfolgreich neu gezogen und die Nachricht aktualisiert!", flags: MessageFlags.Ephemeral });
+        break;
+      }
+    }
+  },
+};
