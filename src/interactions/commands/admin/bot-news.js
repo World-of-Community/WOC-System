@@ -52,7 +52,7 @@ export default {
       type: 3,
       choices: [
         {
-          name: "🔴 = Bug behoben",
+          name: "🔴 = Behoben",
           value: "<:PointRed:1123612255800524940>",
         },
         {
@@ -60,7 +60,7 @@ export default {
           value: "<:PointOrange:1123612277669630092>",
         },
         {
-          name: "🟢 = Neu hinzugefügt",
+          name: "🟢 = Hinzugefügt",
           value: "<:PointGreen:1123612318694117477>",
         },
       ],
