@@ -37,6 +37,11 @@ export default {
         .setLabel("Alle Rewards freischalten")
         .setEmoji("💎")
         .setStyle(ButtonStyle.Secondary),
+
+      new ButtonBuilder()
+        .setCustomId("shoppass_creator_code")
+        .setLabel("Creator Code")
+        .setStyle(ButtonStyle.Secondary),
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
