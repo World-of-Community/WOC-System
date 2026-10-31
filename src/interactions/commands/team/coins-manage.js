@@ -5,7 +5,6 @@ export default {
   name: "coins-manage",
   description: "» Verwalte Coins eines Benutzers.",
   type: 1,
-  default_member_permissions: "268435456",
 
   options: [
     {
