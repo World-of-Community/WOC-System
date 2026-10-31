@@ -1,10 +1,7 @@
-import {
-  EmbedBuilder,
-  MessageFlags,
-  PermissionFlagsBits
-} from "discord.js";
+import { MessageFlags } from "discord.js";
+import { settings } from "#core/settings.js";
 
-import Creator from "../../models/Creator.js";
+import { Creator } from "../../models/Creator.js";
 
 export default {
   name: "creator-admin",

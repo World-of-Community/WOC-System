@@ -1,8 +1,5 @@
-
-import {
-  EmbedBuilder,
-  MessageFlags
-} from "discord.js";
+import { MessageFlags } from "discord.js";
+import { settings } from "#core/settings.js";
 
 import Creator from "../../models/Creator.js";
 import CreatorRedemption from "../../models/CreatorRedemption.js";
