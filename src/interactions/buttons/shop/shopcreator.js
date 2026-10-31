@@ -5,20 +5,27 @@ import {
   ActionRowBuilder,
 } from "discord.js";
 
-const modal = new ModalBuilder()
-  .setCustomId("shoppass_creator_modal")
-  .setTitle("Creator Code");
+export default {
+  id: "shoppass_creator_code",
+  prefix: true,
 
-const input = new TextInputBuilder()
-  .setCustomId("creator_name")
-  .setLabel("Name des Creators")
-  .setPlaceholder("Creator-Namen eingeben ...")
-  .setStyle(TextInputStyle.Short)
-  .setRequired(true)
-  .setMaxLength(32);
+  async run(client, interaction) {
+    const modal = new ModalBuilder()
+      .setCustomId("shoppass_creator_modal")
+      .setTitle("Creator Code");
 
-modal.addComponents(
-  new ActionRowBuilder().addComponents(input)
-);
+    const input = new TextInputBuilder()
+      .setCustomId("creator_name")
+      .setLabel("Name des Creators")
+      .setPlaceholder("Creator-Namen eingeben ...")
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true)
+      .setMaxLength(32);
 
-return interaction.showModal(modal);
+    modal.addComponents(
+      new ActionRowBuilder().addComponents(input)
+    );
+
+    await interaction.showModal(modal);
+  },
+};

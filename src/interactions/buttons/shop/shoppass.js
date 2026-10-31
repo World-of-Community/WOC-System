@@ -1,4 +1,5 @@
 import { MessageFlags } from "discord.js";
+
 export default {
   id: "shoppass_",
   prefix: true,
