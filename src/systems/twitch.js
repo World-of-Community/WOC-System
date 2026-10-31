@@ -87,8 +87,9 @@ async function announceIfNewStream(streamer, stream) {
     return;
   }
 
+  //${roleId ? ` <@&${roleId}>` : ""}
   await channel.send({
-    content: `**${stream.user_name}** ist jetzt Live auf Twitch ${roleId ? ` <@&${roleId}>` : ""}`,
+    content: `**${stream.user_name}** ist jetzt Live auf Twitch <@&1560010284519784639>`,
     allowedMentions: { roles: roleId ? [roleId] : [] },
   });
   log.info(`Live announcement sent for ${streamer.login}`);
