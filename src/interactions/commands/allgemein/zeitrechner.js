@@ -30,7 +30,7 @@ export default {
 
     if (stunden === 0 && minuten === 0) {
       return interaction.reply({
-        content: "❌ Bitte gib mindestens eine Stunde oder Minute an.",
+        content: "> `❌` » Bitte gib mindestens eine Stunde oder Minute an.",
         ephemeral: true
       });
     }
