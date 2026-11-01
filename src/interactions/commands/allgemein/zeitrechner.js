@@ -1,4 +1,3 @@
-
 import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
@@ -23,6 +22,14 @@ export default {
       max_value: 1200,
     },
     {
+      name: "tag",
+      description: "» Anzahl der Tage.",
+      type: 4,
+      required: false,
+      min_value: 0,
+      max_value: 36500,
+    },
+    {
       name: "stunden",
       description: "» Anzahl der Stunden.",
       type: 4,
@@ -43,12 +50,19 @@ export default {
   async run(client, interaction) {
     const jahr = interaction.options.getInteger("jahr") ?? 0;
     const monat = interaction.options.getInteger("monat") ?? 0;
+    const tag = interaction.options.getInteger("tag") ?? 0;
     const stunden = interaction.options.getInteger("stunden") ?? 0;
     const minuten = interaction.options.getInteger("minuten") ?? 0;
 
-    if (jahr === 0 && monat === 0 && stunden === 0 && minuten === 0) {
+    if (
+      jahr === 0 &&
+      monat === 0 &&
+      tag === 0 &&
+      stunden === 0 &&
+      minuten === 0
+    ) {
       return interaction.reply({
-        content: "> `❌` » Bitte gib mindestens einen Zeitraum an.",
+        content: "❌ » Bitte gib mindestens einen Zeitraum an.",
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -58,6 +72,8 @@ export default {
 
     zielzeit.setFullYear(zielzeit.getFullYear() + jahr);
     zielzeit.setMonth(zielzeit.getMonth() + monat);
+    zielzeit.setDate(zielzeit.getDate() + tag);
+
     zielzeit.setTime(
       zielzeit.getTime() + (stunden * 60 + minuten) * 60 * 1000
     );
@@ -88,7 +104,7 @@ export default {
       .setDescription(
         "» Hier kannst du berechnen, wann ein bestimmter Zeitpunkt erreicht wird.\n\n" +
         `\`🕒\` » **Aktuelle Uhrzeit:** \`${aktuelleUhrzeit} Uhr\`\n` +
-        `\`➕\` » **Hinzugefügte Zeit:** \`${jahr}J ${monat}M ${stunden}h ${minuten}m\`\n\n` +
+        `\`➕\` » **Hinzugefügte Zeit:** \`${jahr}y ${monat}m ${tag}d ${stunden}h ${minuten}m\`\n\n` +
         `\`📅\` » **Datum:** ${ergebnisDatum}\n` +
         `\`⏰\` » **Ergebnis:** \`${ergebnisUhrzeit} Uhr\`\n\n` +
         `\`🗓️\` » **Discord-Zeit:** <t:${unixTimestamp}:F>\n` +
