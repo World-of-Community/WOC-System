@@ -1,87 +1,35 @@
-
 import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
-  name: "zeitrechner",
-  description: "» Berechnet einen zukünftigen Zeitpunkt. ⏰",
+  name: "uptime",
+  description: "» Zeigt dir ein paar nützliche Stats an. 🧮",
   type: 1,
-  options: [
-    {
-      name: "stunden",
-      description: "» Anzahl der Stunden.",
-      type: 4,
-      required: true,
-      min_value: 0,
-      max_value: 8760,
-    },
-    {
-      name: "minuten",
-      description: "» Anzahl der Minuten.",
-      type: 4,
-      required: false,
-      min_value: 0,
-      max_value: 59,
-    },
-  ],
+  options: [],
 
   async run(client, interaction) {
 
-    const stunden = interaction.options.getInteger("stunden");
-    const minuten = interaction.options.getInteger("minuten") ?? 0;
+    function formatUptime(uptime) {
+      const minutes = Math.floor((uptime / 60) % 60);
+      const hours = Math.floor((uptime / 3600) % 24);
+      const days = Math.floor(uptime / 86400);
 
-    if (stunden === 0 && minuten === 0) {
-      return interaction.reply({
-        content: "> `❌` » Bitte gib mindestens eine Stunde oder Minute an.",
-        flags: MessageFlags.Ephemeral,
-      });
+      return `${days}d ${hours}h ${minutes}m`;
     }
 
-    const jetzt = new Date();
+    const uptime = formatUptime(process.uptime());
+    const ping = Date.now() - interaction.createdTimestamp;
 
-    const zielzeit = new Date(
-      jetzt.getTime() + (stunden * 60 + minuten) * 60 * 1000
-    );
-
-    const formatDatum = new Intl.DateTimeFormat("de-DE", {
-      timeZone: "Europe/Berlin",
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-
-    const formatUhrzeit = new Intl.DateTimeFormat("de-DE", {
-      timeZone: "Europe/Berlin",
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23",
-    });
-
-    const aktuelleUhrzeit = formatUhrzeit.format(jetzt);
-    const ergebnisUhrzeit = formatUhrzeit.format(zielzeit);
-    const ergebnisDatum = formatDatum.format(zielzeit);
-
-    const zeitEmbed = new EmbedBuilder()
-      .setTitle("⏰ × Zeitrechner")
+    const uptimeEmbed = new EmbedBuilder()
+      .setTitle("🤖 × Interessante Bot Statistiken")
       .setDescription(
-        "» Hier kannst du berechnen, wann ein bestimmter Zeitpunkt erreicht wird.\n\n" +
-        `\`🕒\` » **Aktuelle Uhrzeit:** \`${aktuelleUhrzeit} Uhr\`\n` +
-        `\`➕\` » **Hinzugefügte Zeit:** \`${stunden}h ${minuten}m\`\n\n` +
-        `\`📅\` » **Datum:** ${ergebnisDatum}\n` +
-        `\`⏰\` » **Ergebnis:** \`${ergebnisUhrzeit} Uhr\``
+        "» Hier siehst du ein paar Interessante Infos, die in speziellen Fällen auch sehr nützlich sein könnten.\n\n" +
+                `\`🔋\` » **Online** seit \`${uptime}\`\n` +
+                `\`📡\` » Meine **Reaktionszeit** liegt bei: \`${ping}ms\``,
       )
       .setThumbnail("https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b4fba8&is=66b3aa28&hm=0c61d77ee96136f6cea2948d3ddb13c1378ec1&")
       .setColor("Orange")
-      .setFooter({
-        text: `${interaction.client.user.displayName} - Bot`,
-        iconURL: interaction.guild.iconURL()
-      })
+      .setFooter({ text: `${interaction.client.user.displayName} - Bot`, iconURL: `${interaction.guild.iconURL()}` })
       .setTimestamp();
-
-    await interaction.reply({
-      embeds: [zeitEmbed],
-      flags: MessageFlags.Ephemeral,
-    });
+    await interaction.reply({ embeds: [uptimeEmbed], flags: MessageFlags.Ephemeral });
   },
 };
-

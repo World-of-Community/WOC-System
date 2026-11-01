@@ -1,99 +1,86 @@
-import { ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType, MessageFlags } from "discord.js";
+
+import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default {
-  data: new SlashCommandBuilder()
-    .setName("zeitrechner")
-    .setDescription("Berechnet einen zukünftigen Zeitpunkt.")
-    .addIntegerOption(option =>
-      option
-        .setName("stunden")
-        .setDescription("Wie viele Stunden sollen addiert werden?")
-        .setMinValue(0)
-        .setMaxValue(8760)
-        .setRequired(true)
-    )
-    .addIntegerOption(option =>
-      option
-        .setName("minuten")
-        .setDescription("Wie viele Minuten sollen addiert werden?")
-        .setMinValue(0)
-        .setMaxValue(59)
-        .setRequired(false)
-    ),
+  name: "zeitrechner",
+  description: "» Berechnet einen zukünftigen Zeitpunkt. ⏰",
+  type: 1,
+  options: [
+    {
+      name: "stunden",
+      description: "» Anzahl der Stunden.",
+      type: 4,
+      required: true,
+      min_value: 0,
+      max_value: 8760,
+    },
+    {
+      name: "minuten",
+      description: "» Anzahl der Minuten.",
+      type: 4,
+      required: false,
+      min_value: 0,
+      max_value: 59,
+    },
+  ],
 
-  async execute(interaction) {
+  async run(client, interaction) {
+
     const stunden = interaction.options.getInteger("stunden");
     const minuten = interaction.options.getInteger("minuten") ?? 0;
 
     if (stunden === 0 && minuten === 0) {
       return interaction.reply({
-        content: "> `❌` » Bitte gib mindestens eine Stunde oder Minute an.",
-        ephemeral: true
+        content: "❌ » Bitte gib mindestens eine Stunde oder Minute an.",
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     const jetzt = new Date();
+
     const zielzeit = new Date(
       jetzt.getTime() + (stunden * 60 + minuten) * 60 * 1000
     );
 
-    const datum = new Intl.DateTimeFormat("de-DE", {
+    const formatDatum = new Intl.DateTimeFormat("de-DE", {
       timeZone: "Europe/Berlin",
       weekday: "long",
       day: "2-digit",
       month: "long",
-      year: "numeric"
-    }).format(zielzeit);
+      year: "numeric",
+    });
 
-    const uhrzeit = new Intl.DateTimeFormat("de-DE", {
+    const formatUhrzeit = new Intl.DateTimeFormat("de-DE", {
       timeZone: "Europe/Berlin",
       hour: "2-digit",
       minute: "2-digit",
-      hourCycle: "h23"
-    }).format(zielzeit);
+      hourCycle: "h23",
+    });
 
-    const aktuelleUhrzeit = new Intl.DateTimeFormat("de-DE", {
-      timeZone: "Europe/Berlin",
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23"
-    }).format(jetzt);
+    const aktuelleUhrzeit = formatUhrzeit.format(jetzt);
+    const ergebnisUhrzeit = formatUhrzeit.format(zielzeit);
+    const ergebnisDatum = formatDatum.format(zielzeit);
 
-    const embed = new EmbedBuilder()
-      .setColor("#5865F2")
-      .setTitle("⏰ Zeitrechner")
+    const zeitEmbed = new EmbedBuilder()
+      .setTitle("⏰ × Zeitrechner")
       .setDescription(
-        `Der gewünschte Zeitpunkt wurde erfolgreich berechnet!`
+        "» Hier kannst du berechnen, wann ein bestimmter Zeitpunkt erreicht wird.\n\n" +
+        `\`🕒\` » **Aktuelle Uhrzeit:** \`${aktuelleUhrzeit} Uhr\`\n` +
+        `\`➕\` » **Hinzugefügte Zeit:** \`${stunden}h ${minuten}m\`\n\n` +
+        `\`📅\` » **Datum:** ${ergebnisDatum}\n` +
+        `\`⏰\` » **Ergebnis:** \`${ergebnisUhrzeit} Uhr\``
       )
-      .addFields(
-        {
-          name: "🕒 Aktuelle Uhrzeit",
-          value: `${aktuelleUhrzeit} Uhr`,
-          inline: true
-        },
-        {
-          name: "➕ Hinzugefügte Zeit",
-          value: `${stunden} Stunden und ${minuten} Minuten`,
-          inline: true
-        },
-        {
-          name: "📅 Datum",
-          value: datum,
-          inline: false
-        },
-        {
-          name: "⏰ Ergebnis",
-          value: `**${uhrzeit} Uhr**`,
-          inline: false
-        }
-      )
+      .setThumbnail("https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b4fba8&is=66b3aa28&hm=0c61d77ee96136f6cea2948d3ddb13c1378ec1&")
+      .setColor("Orange")
       .setFooter({
-        text: "WOC • Zeitrechner"
+        text: `${interaction.client.user.displayName} - Bot`,
+        iconURL: interaction.guild.iconURL()
       })
       .setTimestamp();
 
-    return interaction.reply({
-      embeds: [embed]
+    await interaction.reply({
+      embeds: [zeitEmbed],
+      flags: MessageFlags.Ephemeral,
     });
-  }
+  },
 };
