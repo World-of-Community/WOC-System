@@ -1,7 +1,4 @@
-import {
-  SlashCommandBuilder,
-  EmbedBuilder
-} from "discord.js";
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder, ChannelType, MessageFlags } from "discord.js";
 
 export default {
   data: new SlashCommandBuilder()
