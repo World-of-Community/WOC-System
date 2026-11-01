@@ -42,6 +42,8 @@ export default {
       jetzt.getTime() + (stunden * 60 + minuten) * 60 * 1000
     );
 
+    const unixTimestamp = Math.floor(zielzeit.getTime() / 1000);
+
     const formatDatum = new Intl.DateTimeFormat("de-DE", {
       timeZone: "Europe/Berlin",
       weekday: "long",
@@ -62,13 +64,15 @@ export default {
     const ergebnisDatum = formatDatum.format(zielzeit);
 
     const zeitEmbed = new EmbedBuilder()
-      .setTitle("⏰ × Zeitrechner")
+      .setTitle("`⏰` × Zeitrechner")
       .setDescription(
         "» Hier kannst du berechnen, wann ein bestimmter Zeitpunkt erreicht wird.\n\n" +
         `\`🕒\` » **Aktuelle Uhrzeit:** \`${aktuelleUhrzeit} Uhr\`\n` +
         `\`➕\` » **Hinzugefügte Zeit:** \`${stunden}h ${minuten}m\`\n\n` +
         `\`📅\` » **Datum:** ${ergebnisDatum}\n` +
-        `\`⏰\` » **Ergebnis:** \`${ergebnisUhrzeit} Uhr\``
+        `\`⏰\` » **Ergebnis:** \`${ergebnisUhrzeit} Uhr\`\n\n` +
+        `\`🗓️\` » **Discord-Zeit:** <t:${unixTimestamp}:F>\n` +
+        `\`⏳\` » **Countdown:** <t:${unixTimestamp}:R>`
       )
       .setThumbnail("https://cdn.discordapp.com/attachments/1269339586568388670/1269341245730459749/WOC_Orange.png?ex=66b4fba8&is=66b3aa28&hm=0c61d77ee96136f6cea2948d3ddb13c1378ec1&")
       .setColor("Orange")
