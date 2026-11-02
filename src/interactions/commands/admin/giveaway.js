@@ -178,14 +178,24 @@ export default {
             const endDate = new Date(Date.now() + durationDauer);
             const timestamp = Math.floor(endDate / 1000);
 
-            const formatierteZeit = (input) => {
+            const formatierteSprachzeit = (input) => {
               if (!input) return "0 Minuten";
-              try {
-                const msWert = ms(input); // Macht aus "5m" -> 300000 ms
-                if (!msWert) return input; // Falls es kein gültiges Zeitformat war
 
-                const minuten = Math.floor(msWert / 60000);
-                return `${minuten} Minute${minuten === 1 ? '' : 'n'}`;
+              try {
+                const msWert = ms(input);
+                if (!msWert) return input;
+
+                const sekunden = Math.floor(msWert / 1000);
+                const minuten = Math.floor(sekunden / 60);
+                const stunden = Math.floor(minuten / 60);
+
+                if (stunden > 0) {
+                  return `${stunden} Stunde${stunden === 1 ? '' : 'n'}`;
+                } else if (minuten > 0) {
+                  return `${minuten} Minute${minuten === 1 ? '' : 'n'}`;
+                } else {
+                  return `${sekunden} Sekunde${sekunden === 1 ? '' : 'n'}`;
+                }
               } catch (e) {
                 return input;
               }
