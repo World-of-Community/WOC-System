@@ -45,8 +45,15 @@ export const SETTINGS_SCHEMA = {
       moderator: role("815920052385480754", "Moderator"),
       supporter: role("815920170371383366", "Supporter"),
       builder: role("1263645368441241700", "Builder"),
-      ticketSupport: role("1011207481357238272", "Ticket Support"),
-      ticketArea: role("1270369938972082177", "Ticket Bereich"),
+      ticketSupport: roleList(
+        [
+          "1011207481357238272",
+          "1209101841015504916",
+          "1270369938972082177",
+          "1155570143393488896",
+        ],
+        "Ticket Support",
+      ), ticketArea: role("1270369938972082177", "Ticket Bereich"),
       banSupport: role("1209101841015504916", "Bann Support"),
       banArea: role("1155570143393488896", "Bann Bereich"),
       reportLog: role("1285728292367892584", "Report Log"),
