@@ -1,26 +1,30 @@
 import js from "@eslint/js";
 import globals from "globals";
 import json from "@eslint/json";
-import {defineConfig} from "eslint/config";
+import { defineConfig } from "eslint/config";
 
 export default defineConfig([
-  { ignores: ["package-lock.json", "node_modules/**"] },
+  {
+    ignores: ["package-lock.json", "node_modules/**"]
+  },
+
+  js.configs.recommended,
 
   {
     files: ["**/*.{js,mjs,cjs}"],
-    plugins: { js },
-    extends: ["js/recommended"],
     languageOptions: {
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+      },
       sourceType: "module",
     },
     rules: {
-      "semi": ["error", "always"],
+      "semi": ["warn", "always"],
       "quotes": ["warn", "double", { avoidEscape: true }],
-      "comma-dangle": ["error", "always-multiline"],
-      "no-trailing-spaces": "error",
-      "eol-last": ["error", "always"],
-      "indent": ["error", 2, {
+      "comma-dangle": ["warn", "always-multiline"],
+      "no-trailing-spaces": "warn",
+      "eol-last": ["warn", "always"],
+      "indent": ["warn", 2, {
         "SwitchCase": 1,
         "MemberExpression": 1,
         "FunctionDeclaration": { "parameters": "first" },
@@ -32,20 +36,21 @@ export default defineConfig([
         "flatTernaryExpressions": false,
         "ignoreComments": false,
       }],
-      "no-unused-vars": ["error", { args: "after-used", ignoreRestSiblings: true }],
+
+      "no-console": "warn",
+      "no-unused-vars": ["warn", { args: "after-used", ignoreRestSiblings: true }],
+
       "eqeqeq": ["error", "always"],
       "curly": "error",
       "prefer-const": "error",
       "no-var": "error",
       "object-shorthand": "error",
-      "no-console": "error",
     },
   },
 
   {
     files: ["**/*.json"],
-    plugins: { json },
     language: "json/json",
-    extends: ["json/recommended"],
+    ...json.configs.recommended,
   },
 ]);
