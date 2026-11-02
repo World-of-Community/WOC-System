@@ -5,6 +5,10 @@ export default {
   prefix: true,
   async run(client, interaction) {
     const id = interaction.customId.split("_")[2];
+    if (!/^\d{17,20}$/.test(id ?? "")) {
+      return interaction.reply({ content: "> `❌` » Die Bewerber-ID ist ungültig.", flags: MessageFlags.Ephemeral });
+    }
+
     const user = await interaction.client.users.fetch(id);
 
     await user.send({

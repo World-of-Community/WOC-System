@@ -25,8 +25,8 @@ export default {
       .setTimestamp();
 
     const buttons = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId("partner_accept").setLabel("Akzeptieren").setStyle(ButtonStyle.Success),
-      new ButtonBuilder().setCustomId("partner_deny").setLabel("Ablehnen").setStyle(ButtonStyle.Danger),
+      new ButtonBuilder().setCustomId(`partner_accept_${interaction.user.id}`).setLabel("Akzeptieren").setStyle(ButtonStyle.Success),
+      new ButtonBuilder().setCustomId(`partner_deny_${interaction.user.id}`).setLabel("Ablehnen").setStyle(ButtonStyle.Danger),
     );
 
     await channel.send({ embeds: [embed], components: [buttons] });
