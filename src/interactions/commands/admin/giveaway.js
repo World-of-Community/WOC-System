@@ -5,9 +5,9 @@ import userDB from "#models/User.js";
 
 function prizeEmoji(priceInput) {
   const input = (priceInput ?? "").toLowerCase();
-  if (input.includes("nitro") && input.includes("basic")) {return "<a:basic:1186636165567229972>";}
-  if (input.includes("nitro")) {return "<a:nitro:1186636151335944283>";}
-  if (input.includes("guthaben")) {return "<a:guthaben:1186636139281530970>";}
+  if (input.includes("nitro") && input.includes("basic")) { return "<a:basic:1186636165567229972>"; }
+  if (input.includes("nitro")) { return "<a:nitro:1186636151335944283>"; }
+  if (input.includes("guthaben")) { return "<a:guthaben:1186636139281530970>"; }
   if (input.includes("coins")) {
     const amountText = input.match(/[\d.]+/);
     const amount = amountText
@@ -178,9 +178,22 @@ export default {
             const endDate = new Date(Date.now() + durationDauer);
             const timestamp = Math.floor(endDate / 1000);
 
+            const formatierteZeit = (input) => {
+              if (!input) return "0 Minuten";
+              try {
+                const msWert = ms(input); // Macht aus "5m" -> 300000 ms
+                if (!msWert) return input; // Falls es kein gültiges Zeitformat war
+
+                const minuten = Math.floor(msWert / 60000);
+                return `${minuten} Minute${minuten === 1 ? '' : 'n'}`;
+              } catch (e) {
+                return input;
+              }
+            };
+
             const bedingungsNachrichten = {
               messages: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungInput || "0"}** Nachrichten senden!`,
-              voiceTime: `\n<:Pfeil:1119709908540076124> Mindestens **${bedingungsvalue || "0"}** in Sprachkanälen!`,
+              voiceTime: `\n<:Pfeil:1119709908540076124> Mindestens **${formatierteZeit(bedingungsvalue) || "0"}** in Sprachkanälen!`,
               role: `\n<:Pfeil:1119709908540076124> Rolle <@&${bedingungInput || "0"}> **besitzen**`,
               membersince: `\n<:Pfeil:1119709908540076124> **Seit ${ms(bedingungInput, { long: true }) || "0"} auf dem Server**`,
             };
