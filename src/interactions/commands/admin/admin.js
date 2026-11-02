@@ -317,7 +317,7 @@ export default {
           const supporterRoleId = settings.get("teamRoles.supporter");
 
           const supporterExtraRoles = [
-            settings.get("teamRoles.ticketSupport"), // Ticket Support
+            ...settings.get("teamRoles.ticketSupport"), // Ticket Support
             settings.get("teamRoles.ticketArea"), // Ticket Bereich
             settings.get("teamRoles.banSupport"), // Bann Support
             settings.get("teamRoles.banArea"), // Bann Bereich
@@ -357,7 +357,7 @@ export default {
 
       case "kick": {
         const extraRoles = [
-          settings.get("teamRoles.ticketSupport"), // Ticket Support
+          ...settings.get("teamRoles.ticketSupport"), // Ticket Support
           settings.get("teamRoles.ticketArea"), // Ticket Bereich
           settings.get("teamRoles.banSupport"), // Bann Support
           settings.get("teamRoles.banArea"), // Bann Bereich

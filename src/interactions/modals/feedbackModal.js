@@ -13,7 +13,7 @@ export default {
 
       const threadName = `${title} - ${interaction.user.username}`;
       const feedbackChannelId = settings.get("channels.feedback"); // Feedback channel
-      const supportRoleId = settings.get("teamRoles.ticketSupport"); // Team-Rolle
+      const supportRoleIds = settings.get("teamRoles.ticketSupport"); // Team-Rollen
 
       const feedbackChannel = interaction.guild.channels.cache.get(feedbackChannelId);
       if (!feedbackChannel) {
@@ -61,17 +61,22 @@ export default {
       );
 
       await thread.send({
-        content: `> User: <@${interaction.user.id}> | Team: <@&${supportRoleId}>`,
+        content: `> User: <@${interaction.user.id}> | Team: ${supportRoleIds.map((roleId) => `<@&${roleId}>`).join(" ")}`,
         embeds: [ticketEmbed, ticketEmbed2],
         components: [closeButtonRow],
       });
 
-      // Rolle als Viewer hinzufügen
-      await thread.permissionOverwrites.edit(settings.get("teamRoles.ticketArea"), {
-        ViewChannel: true,
-        SendMessages: true,
-        ReadMessageHistory: true,
-      });
+      const ticketAccessRoleIds = new Set([
+        ...supportRoleIds,
+        settings.get("teamRoles.ticketArea"),
+      ]);
+      for (const roleId of ticketAccessRoleIds) {
+        await thread.permissionOverwrites.edit(roleId, {
+          ViewChannel: true,
+          SendMessages: true,
+          ReadMessageHistory: true,
+        });
+      }
 
       await interaction.editReply({ content: `> \`✅\` » Dein **Feedback-Ticket** wurde erstellt: ${thread}` });
     } catch {
