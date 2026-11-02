@@ -178,7 +178,7 @@ export default {
             const endDate = new Date(Date.now() + durationDauer);
             const timestamp = Math.floor(endDate / 1000);
 
-            const formatierteSprachzeit = (input) => {
+            const formatierteZeit = (input) => {
               if (!input) return "0 Minuten";
 
               try {
