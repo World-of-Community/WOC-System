@@ -2,7 +2,7 @@ import { MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
 
 import Creator from "../../../database/models/Creator.js";
-import CreatorRedemption from "../../models/CreatorRedemption.js";
+import CreatorRedemption from '../../../database/models/CreatorRedemption.js';
 
 import { randomUUID } from "node:crypto";
 
