@@ -46,7 +46,10 @@ export default {
     }
 
     if (action === "shop") {
-      await interaction.update(await buildShop());
+      await interaction.reply({
+        ...await buildShop(),
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 
