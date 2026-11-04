@@ -23,7 +23,15 @@ export default {
     const [, action, value] = interaction.customId.split(":");
     if (action === "show" || action === "prev" || action === "next") {
       const page = action === "prev" ? Number(value) - 1 : action === "next" ? Number(value) + 1 : Number(value);
-      await interaction.update(await buildPage(interaction.user.id, Math.max(1, Math.min(MAX_STAGE, page))));
+      const pageData = await buildPage(interaction.user.id, Math.max(1, Math.min(MAX_STAGE, page)));
+      if (action === "show") {
+        await interaction.reply({
+          ...pageData,
+          flags: MessageFlags.Ephemeral,
+        });
+      } else {
+        await interaction.update(pageData);
+      }
       return;
     }
 
