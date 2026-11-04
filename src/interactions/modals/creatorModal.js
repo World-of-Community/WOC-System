@@ -9,7 +9,7 @@ const Creator = mongoose.models.Creator || mongoose.model(
     userId: { type: String, required: true },
     active: { type: Boolean, default: true },
     bonus: { type: Number, default: 0 },
-  })
+  }),
 );
 
 export default {
@@ -30,9 +30,9 @@ export default {
     const embed = new EmbedBuilder()
       .setTitle("🎫 » CREATOR CODE")
       .setDescription(
-        `> \`✅\` » Dein Creator-Code wurde erfolgreich aktiviert!\n\n` +
+        "> `✅` » Dein Creator-Code wurde erfolgreich aktiviert!\n\n" +
         `> **Creator:** ${creator.code}\n\n` +
-        `Vielen Dank für deine Unterstützung!`
+        "Vielen Dank für deine Unterstützung!",
       )
       .setColor("Green")
       .setTimestamp();

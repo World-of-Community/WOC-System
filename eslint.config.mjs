@@ -5,10 +5,13 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    ignores: ["package-lock.json", "node_modules/**"]
+    ignores: ["package-lock.json", "node_modules/**"],
   },
 
-  js.configs.recommended,
+  {
+    files: ["**/*.{js,mjs,cjs}"],
+    ...js.configs.recommended,
+  },
 
   {
     files: ["**/*.{js,mjs,cjs}"],

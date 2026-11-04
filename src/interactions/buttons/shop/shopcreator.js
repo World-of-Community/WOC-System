@@ -23,7 +23,7 @@ export default {
       .setMaxLength(32);
 
     modal.addComponents(
-      new ActionRowBuilder().addComponents(input)
+      new ActionRowBuilder().addComponents(input),
     );
 
     await interaction.showModal(modal);

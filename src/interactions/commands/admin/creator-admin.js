@@ -1,5 +1,5 @@
-import { MessageFlags } from "discord.js";
-import { settings } from "#core/settings.js";
+import { EmbedBuilder, MessageFlags, PermissionFlagsBits } from "discord.js";
+import logger from "#core/logger.js";
 
 import Creator from "../../../database/models/Creator.js";
 
@@ -19,15 +19,15 @@ export default {
           type: 6,
           name: "creator",
           description: "Discord-Mitglied",
-          required: true
+          required: true,
         },
         {
           type: 3,
           name: "code",
           description: "Creator-Code",
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       type: 1,
@@ -38,7 +38,7 @@ export default {
           type: 3,
           name: "code",
           description: "Creator-Code",
-          required: true
+          required: true,
         },
         {
           type: 10,
@@ -46,16 +46,16 @@ export default {
           description: "Provision in Prozent",
           required: false,
           min_value: 0,
-          max_value: 100
+          max_value: 100,
         },
         {
           type: 10,
           name: "bonus",
           description: "Spielerbonus in Coins",
           required: false,
-          min_value: 0
-        }
-      ]
+          min_value: 0,
+        },
+      ],
     },
     {
       type: 1,
@@ -66,14 +66,14 @@ export default {
           type: 3,
           name: "code",
           description: "Creator-Code",
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       type: 1,
       name: "stats",
-      description: "Zeigt die Statistiken aller Creator."
+      description: "Zeigt die Statistiken aller Creator.",
     },
     {
       type: 1,
@@ -84,24 +84,24 @@ export default {
           type: 3,
           name: "code",
           description: "Creator-Code",
-          required: true
+          required: true,
         },
         {
           type: 4,
           name: "betrag",
           description: "Auszahlungsbetrag in Coins",
           required: true,
-          min_value: 1
-        }
-      ]
-    }
+          min_value: 1,
+        },
+      ],
+    },
   ],
 
   async run(client, interaction) {
     if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
       return interaction.reply({
         content: "❌ Du hast keine Berechtigung dafür.",
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -119,26 +119,26 @@ export default {
         if (!/^[A-Z0-9_-]{3,20}$/.test(code)) {
           return interaction.reply({
             content: "❌ Der Code muss 3–20 Zeichen lang sein und darf nur Buchstaben, Zahlen, _ und - enthalten.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
         const existingCode = await Creator.findOne({ code });
         const existingCreator = await Creator.findOne({
-          userId: user.id
+          userId: user.id,
         });
 
         if (existingCode) {
           return interaction.reply({
             content: "❌ Dieser Creator-Code existiert bereits.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
         if (existingCreator) {
           return interaction.reply({
             content: "❌ Dieses Mitglied besitzt bereits einen Creator-Code.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -152,7 +152,7 @@ export default {
           uses: 0,
           sales: 0,
           earned: 0,
-          paid: 0
+          paid: 0,
         });
 
         const embed = new EmbedBuilder()
@@ -162,29 +162,29 @@ export default {
             {
               name: "Creator",
               value: `${user}`,
-              inline: true
+              inline: true,
             },
             {
               name: "Code",
               value: `\`${code}\``,
-              inline: true
+              inline: true,
             },
             {
               name: "Spielerbonus",
               value: "500 Coins",
-              inline: true
+              inline: true,
             },
             {
               name: "Provision",
               value: "10 %",
-              inline: true
-            }
+              inline: true,
+            },
           )
           .setTimestamp();
 
         return interaction.reply({
           embeds: [embed],
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -197,13 +197,13 @@ export default {
 
         const creator = await Creator.findOne({
           code,
-          active: true
+          active: true,
         });
 
         if (!creator) {
           return interaction.reply({
             content: "❌ Creator-Code nicht gefunden oder deaktiviert.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -214,7 +214,7 @@ export default {
           if (!Number.isInteger(bonus) || bonus < 0) {
             return interaction.reply({
               content: "❌ Der Bonus muss eine positive ganze Zahl oder 0 sein.",
-              flags: MessageFlags.Ephemeral
+              flags: MessageFlags.Ephemeral,
             });
           }
 
@@ -225,7 +225,7 @@ export default {
           if (commission < 0 || commission > 100) {
             return interaction.reply({
               content: "❌ Die Provision muss zwischen 0 und 100 liegen.",
-              flags: MessageFlags.Ephemeral
+              flags: MessageFlags.Ephemeral,
             });
           }
 
@@ -235,7 +235,7 @@ export default {
         if (bonus === null && commission === null) {
           return interaction.reply({
             content: "❌ Du musst mindestens einen Wert zum Bearbeiten angeben.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -246,7 +246,7 @@ export default {
             `✅ Creator-Code \`${code}\` wurde aktualisiert.\n\n` +
             `**Spielerbonus:** ${creator.bonus} Coins\n` +
             `**Provision:** ${creator.commission} %`,
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -260,35 +260,35 @@ export default {
         const creator = await Creator.findOneAndUpdate(
           {
             code,
-            active: true
+            active: true,
           },
           {
             $set: {
-              active: false
-            }
+              active: false,
+            },
           },
           {
-            new: true
-          }
+            new: true,
+          },
         );
 
         if (!creator) {
           return interaction.reply({
             content: "❌ Creator-Code nicht gefunden oder bereits deaktiviert.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
         return interaction.reply({
           content: `✅ Der Creator-Code \`${code}\` wurde deaktiviert.`,
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
       // ALLE CREATOR-STATISTIKEN
       if (action === "stats") {
         const creators = await Creator.find().sort({
-          sales: -1
+          sales: -1,
         });
 
         const total = creators.reduce(
@@ -304,8 +304,8 @@ export default {
             uses: 0,
             sales: 0,
             earned: 0,
-            paid: 0
-          }
+            paid: 0,
+          },
         );
 
         const open = total.earned - total.paid;
@@ -319,7 +319,7 @@ export default {
             `**SeasonPass-Verkäufe:** ${total.sales}\n\n` +
             `**Verdient:** ${total.earned.toLocaleString("de-DE")} Coins\n` +
             `**Ausgezahlt:** ${total.paid.toLocaleString("de-DE")} Coins\n` +
-            `**Offen:** ${open.toLocaleString("de-DE")} Coins`
+            `**Offen:** ${open.toLocaleString("de-DE")} Coins`,
           )
           .setTimestamp();
 
@@ -333,19 +333,19 @@ export default {
               `Provision: ${creator.commission} %\n` +
               `Verdient: ${creator.earned} Coins\n` +
               `Ausgezahlt: ${creator.paid} Coins`,
-            inline: true
+            inline: true,
           });
         }
 
         if (creators.length > 20) {
           embed.setFooter({
-            text: `Es werden die ersten 20 von ${creators.length} Creatorn angezeigt.`
+            text: `Es werden die ersten 20 von ${creators.length} Creatorn angezeigt.`,
           });
         }
 
         return interaction.reply({
           embeds: [embed],
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -363,7 +363,7 @@ export default {
         if (!creator) {
           return interaction.reply({
             content: "❌ Creator nicht gefunden.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -372,9 +372,9 @@ export default {
         if (amount <= 0 || amount > open) {
           return interaction.reply({
             content:
-              `❌ Ungültiger Betrag oder nicht genügend offene Provision.\n` +
+              "❌ Ungültiger Betrag oder nicht genügend offene Provision.\n" +
               `**Offen:** ${open.toLocaleString("de-DE")} Coins`,
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -391,27 +391,27 @@ export default {
                 `**Code:** \`${creator.code}\`\n` +
                 `**Auszahlung:** ${amount.toLocaleString("de-DE")} Coins\n\n` +
                 `**Bereits ausgezahlt:** ${creator.paid.toLocaleString("de-DE")} Coins\n` +
-                `**Noch offen:** ${(creator.earned - creator.paid).toLocaleString("de-DE")} Coins`
+                `**Noch offen:** ${(creator.earned - creator.paid).toLocaleString("de-DE")} Coins`,
               )
-              .setTimestamp()
+              .setTimestamp(),
           ],
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
     } catch (error) {
-      console.error("[Creator-Admin]", error);
+      logger.error("[Creator-Admin]", error);
 
       if (interaction.replied || interaction.deferred) {
         return interaction.followUp({
           content: "❌ Beim Verarbeiten ist ein Fehler aufgetreten.",
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
       return interaction.reply({
         content: "❌ Beim Verarbeiten ist ein Fehler aufgetreten.",
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
-  }
+  },
 };

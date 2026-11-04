@@ -1,8 +1,8 @@
-import { MessageFlags } from "discord.js";
-import { settings } from "#core/settings.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
+import logger from "#core/logger.js";
 
 import Creator from "../../../database/models/Creator.js";
-import CreatorRedemption from '../../../database/models/CreatorRedemption.js';
+import CreatorRedemption from "../../../database/models/CreatorRedemption.js";
 
 import { randomUUID } from "node:crypto";
 
@@ -20,15 +20,15 @@ export default {
           type: 3,
           name: "code",
           description: "Creator-Code",
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       type: 1,
       name: "stats",
-      description: "Zeigt deine Creator-Statistiken."
-    }
+      description: "Zeigt deine Creator-Statistiken.",
+    },
   ],
 
   async run(client, interaction) {
@@ -44,31 +44,31 @@ export default {
 
         const creator = await Creator.findOne({
           code,
-          active: true
+          active: true,
         });
 
         if (!creator) {
           return interaction.reply({
             content: "> `❌` » Dieser Creator-Code ist ungültig.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
         if (creator.userId === interaction.user.id) {
           return interaction.reply({
             content: "> `❌` » Du kannst deinen eigenen Creator-Code nicht einlösen.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
         const alreadyUsed = await CreatorRedemption.findOne({
-          userId: interaction.user.id
+          userId: interaction.user.id,
         });
 
         if (alreadyUsed) {
           return interaction.reply({
             content: "> `❌` » Du hast bereits einen Creator-Code eingelöst.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -76,7 +76,7 @@ export default {
           _id: randomUUID(),
           userId: interaction.user.id,
           code,
-          creatorId: creator._id
+          creatorId: creator._id,
         });
 
         creator.uses += 1;
@@ -89,29 +89,29 @@ export default {
             `Du hast den Creator-Code **${code}** erfolgreich aktiviert!\n\n` +
             `\`💰\` **Dein Bonus:** ${creator.bonus.toLocaleString("de-DE")} Coins\n` +
             `\`💎\` **Creator:** <@${creator.userId}>\n\n` +
-            "Vielen Dank für deine Unterstützung!"
+            "Vielen Dank für deine Unterstützung!",
           )
           .setFooter({
-            text: "World Of Community • Creator-System"
+            text: "World Of Community • Creator-System",
           })
           .setTimestamp();
 
         return interaction.reply({
           embeds: [embed],
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
       // EIGENE CREATOR-STATISTIK
       if (action === "stats") {
         const creator = await Creator.findOne({
-          userId: interaction.user.id
+          userId: interaction.user.id,
         });
 
         if (!creator) {
           return interaction.reply({
             content: "> `❌` » Du bist kein registrierter Creator.",
-            flags: MessageFlags.Ephemeral
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -122,35 +122,35 @@ export default {
           .setTitle("📊 Creator-Statistik")
           .setThumbnail(interaction.user.displayAvatarURL())
           .setDescription(
-            `Willkommen in deiner Creator-Übersicht!\n\n` +
+            "Willkommen in deiner Creator-Übersicht!\n\n" +
             `**Creator-Code:** \`${creator.code}\`\n` +
             `**Status:** ${creator.active ? "`🟢` Aktiv" : "`🔴` Inaktiv"}\n\n` +
-            `**Statistiken**\n` +
+            "**Statistiken**\n" +
             `» Code-Einlösungen: **${creator.uses}**\n` +
             `» SeasonPass-Verkäufe: **${creator.sales}**\n` +
             `» Provision: **${creator.commission} %**\n\n` +
-            `**Coins-Übersicht**\n` +
+            "**Coins-Übersicht**\n" +
             `» Insgesamt verdient: **${creator.earned.toLocaleString("de-DE")} Coins**\n` +
             `» Bereits ausgezahlt: **${creator.paid.toLocaleString("de-DE")} Coins**\n` +
-            `» Noch offen: **${open.toLocaleString("de-DE")} Coins**`
+            `» Noch offen: **${open.toLocaleString("de-DE")} Coins**`,
           )
           .setFooter({
-            text: "World Of Community • Creator-System"
+            text: "World Of Community • Creator-System",
           })
           .setTimestamp();
 
         return interaction.reply({
           embeds: [embed],
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
     } catch (error) {
-      console.error("[Creator-System]", error);
+      logger.error("[Creator-System]", error);
 
       const response = {
         content: "> `❌` » Beim Creator-System ist ein Fehler aufgetreten.",
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       };
 
       if (interaction.replied || interaction.deferred) {
@@ -159,5 +159,5 @@ export default {
 
       return interaction.reply(response);
     }
-  }
+  },
 };

@@ -179,24 +179,24 @@ export default {
             const timestamp = Math.floor(endDate / 1000);
 
             const formatierteZeit = (input) => {
-              if (!input) return "0 Minuten";
+              if (!input) {return "0 Minuten";}
 
               try {
                 const msWert = ms(input);
-                if (!msWert) return input;
+                if (!msWert) {return input;}
 
                 const sekunden = Math.floor(msWert / 1000);
                 const minuten = Math.floor(sekunden / 60);
                 const stunden = Math.floor(minuten / 60);
 
                 if (stunden > 0) {
-                  return `${stunden} Stunde${stunden === 1 ? '' : 'n'}`;
+                  return `${stunden} Stunde${stunden === 1 ? "" : "n"}`;
                 } else if (minuten > 0) {
-                  return `${minuten} Minute${minuten === 1 ? '' : 'n'}`;
+                  return `${minuten} Minute${minuten === 1 ? "" : "n"}`;
                 } else {
-                  return `${sekunden} Sekunde${sekunden === 1 ? '' : 'n'}`;
+                  return `${sekunden} Sekunde${sekunden === 1 ? "" : "n"}`;
                 }
-              } catch (e) {
+              } catch {
                 return input;
               }
             };
