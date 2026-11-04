@@ -13,16 +13,16 @@ export default {
       .setColor("Blurple")
       .setDescription(
         "Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 20 Rewards!\n\n" +
-       "**Auf einen Blick**:\n" +
-       "» Alle 30 Tage ein Pass mit 20 Rewards\n" +
-       "» Davon 7 free, 13 Premium\n" +
-       "» Schreibe aktiv, um deine Rewards freizuschalten\n\n" +
-       "**So Geht's**:\n" +
-       "» Schreibe jeden Tag mindestens 1x\n" +
-       "» Du erhältst XP, mit denen du Rewards freischaltest\n" +
-       "» 100 XP wenn du am vorherigen Tag auch geschrieben hast\n" +
-       "» Ansonsten nur 150 XP - aktives Schreiben wird belohnt!\n\n" +
-       "`📌` » **Premium Pass**: Alle Rewards inkl. **5000 Coins**!\n",
+        "**Auf einen Blick**:\n" +
+        "» Alle 30 Tage ein Pass mit 20 Rewards\n" +
+        "» Davon 7 free, 13 Premium\n" +
+        "» Schreibe aktiv, um deine Rewards freizuschalten\n\n" +
+        "**So Geht's**:\n" +
+        "» Schreibe jeden Tag mindestens 1x\n" +
+        "» Du erhältst XP, mit denen du Rewards freischaltest\n" +
+        "» 150 XP wenn du am vorherigen Tag auch geschrieben hast\n" +
+        "» Ansonsten nur 100 XP - aktives Schreiben wird belohnt!\n\n" +
+        "`📌` » **Premium Pass**: Alle Rewards inkl. **5000 Coins**!\n",
       );
 
     const row = new ActionRowBuilder().addComponents(
