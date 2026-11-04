@@ -28,7 +28,7 @@ function formatVoiceTime(ms) {
 }
 
 function clamp(text, fallback) {
-  if (!text) {return fallback;}
+  if (!text) { return fallback; }
   return text.length > FIELD_LIMIT ? `${text.slice(0, FIELD_LIMIT - 4)}...` : text;
 }
 
@@ -81,8 +81,8 @@ export async function createLeaderboardMessage(guild) {
     .setFooter({ text: "» Zuletzt aktualisiert", iconURL: ICONS.voiceFooter })
     .setTimestamp();
 
-  if (messageEntries[0]) {messageEmbed.setThumbnail(messageEntries[0].member.displayAvatarURL());}
-  if (voiceEntries[0]) {voiceEmbed.setThumbnail(voiceEntries[0].member.displayAvatarURL());}
+  if (messageEntries[0]) { messageEmbed.setThumbnail(messageEntries[0].member.displayAvatarURL()); }
+  if (voiceEntries[0]) { voiceEmbed.setThumbnail(voiceEntries[0].member.displayAvatarURL()); }
 
   return { embeds: [infoEmbed, messageEmbed, voiceEmbed] };
 }
@@ -107,45 +107,124 @@ async function fetchLeaderboardMessage(client) {
 // Always edits the stored message, never posts a new one.
 export async function updateLeaderboard(client) {
   const target = await fetchLeaderboardMessage(client);
-  if (!target) {return;}
+  if (!target) { return; }
 
   const content = await createLeaderboardMessage(target.guild);
   await target.message.edit({ embeds: content.embeds });
 }
 
 // Monthly: hand the winner role to the top 3 of each category, then reset the stats.
-export async function resetLeaderboardStats(client) {
+
+function formatWinnerList(entries) {
+  if (!entries.length) return "> Keine Gewinner vorhanden.";
+
+  return entries.map(({ user, member }, index) =>
+    `${POSITION_EMOJIS[index]} ${member} (**${member.user.username}**)\n> ${user.stats?.messages ?? 0} Nachrichten`
+  ).join("\n");
+}
+
+// Last day of the month, 20:00: announce winners and assign roles.
+export async function announceLeaderboardWinners(client) {
+  const now = new Date();
+  const lastDay = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0
+  ).getDate();
+
+  // Only execute on the actual last day of the month.
+  if (now.getDate() !== lastDay) return;
+
   const target = await fetchLeaderboardMessage(client);
-  if (!target) {return;}
+  if (!target) return;
+
   const { guild, channel } = target;
 
   const roleId = settings.get("exclusiveRoles.leaderboardWinner");
   const role = await guild.roles.fetch(roleId).catch(() => null);
-  if (!role) {throw new Error(`leaderboard role ${roleId} not found`);}
 
-  const [topMessages, topVoice] = await Promise.all([topUsers("stats.messages", 3), topUsers("stats.voiceTime", 3)]);
-  const winnerIds = [...new Set([...topMessages, ...topVoice].map((u) => u.userID))];
-
-  const members = await guild.members.fetch({ withPresences: false });
-  for (const member of members.filter((m) => m.roles.cache.has(role.id)).values()) {
-    await member.roles.remove(role).catch((err) => log.error(`Could not remove role from ${member.user.tag}:`, err?.message));
+  if (!role) {
+    throw new Error(`Leaderboard role ${roleId} not found`);
   }
 
+  const [topMessages, topVoice] = await Promise.all([
+    topUsers("stats.messages", 3),
+    topUsers("stats.voiceTime", 3),
+  ]);
+
+  const [messageWinners, voiceWinners] = await Promise.all([
+    resolveMembers(guild, topMessages),
+    resolveMembers(guild, topVoice),
+  ]);
+
+  const winnerIds = [...new Set([
+    ...messageWinners.map(({ user }) => user.userID),
+    ...voiceWinners.map(({ user }) => user.userID),
+  ])];
+
+  // Remove the role from previous winners.
+  const members = await guild.members.fetch({ withPresences: false });
+
+  for (const member of members.values()) {
+    if (member.roles.cache.has(role.id)) {
+      await member.roles.remove(role).catch((err) =>
+        log.error(`Could not remove role from ${member.user.tag}:`, err?.message)
+      );
+    }
+  }
+
+  // Give the role to the new winners.
   for (const userID of winnerIds) {
     const member = await guild.members.fetch(userID).catch(() => null);
-    if (!member || member.roles.cache.has(role.id)) {continue;}
+    if (!member) continue;
 
     try {
       await member.roles.add(role);
       log.info(`${member.user.tag} received the leaderboard role`);
-      const notice = await channel.send({ content: `${member} hat für die hohe Aktivität die ${role} Rolle erhalten` });
-      setTimeout(() => notice.delete().catch(() => {}), 5 * 60 * 1000);
     } catch (error) {
-      log.error(`Could not add role to ${member.user.tag}:`, error?.message ?? error);
+      log.error(`Could not add role to ${member.user.tag}:`, error?.message);
     }
   }
 
-  await User.updateMany({}, { $set: { "stats.messages": 0, "stats.voiceTime": 0 } });
+  const month = MONTHS[now.getMonth()];
+
+  const announcement = new EmbedBuilder()
+    .setTitle(`🏆 ${month} – Leaderboard Gewinner`)
+    .setColor("Gold")
+    .setDescription(
+      "**Nachrichten-Leaderboard**\n" +
+      messageWinners.map(({ user, member }, i) =>
+        `${POSITION_EMOJIS[i]} ${member} – **${user.stats?.messages ?? 0} Nachrichten**`
+      ).join("\n") +
+      "\n\n**Voice-Leaderboard**\n" +
+      voiceWinners.map(({ user, member }, i) =>
+        `${POSITION_EMOJIS[i]} ${member} – **${formatVoiceTime(user.stats?.voiceTime ?? 0)}**`
+      ).join("\n")
+    )
+    .setFooter({ text: "Die Gewinnerrolle bleibt bis zur nächsten Gewinnerbekanntgabe bestehen." })
+    .setTimestamp();
+
+  await channel.send({ embeds: [announcement] });
+
+  log.info(`${month} leaderboard winners announced`);
+}
+
+// First day of the month, 00:00: reset statistics only.
+export async function resetLeaderboardStats(client) {
+  const target = await fetchLeaderboardMessage(client);
+  if (!target) return;
+
+  await User.updateMany(
+    {},
+    {
+      $set: {
+        "stats.messages": 0,
+        "stats.voiceTime": 0,
+      },
+    }
+  );
+
   await updateLeaderboard(client);
-  log.info("Monthly reset done");
+
+  log.info("Monthly leaderboard statistics reset");
 }

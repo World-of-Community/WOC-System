@@ -1,4 +1,8 @@
-import { updateLeaderboard, resetLeaderboardStats } from "#systems/leaderboard.js";
+import {
+  updateLeaderboard,
+  announceLeaderboardWinners,
+  resetLeaderboardStats,
+} from "#systems/leaderboard.js";
 
 export default [
   {
@@ -6,6 +10,11 @@ export default [
     cron: "* * * * *",
     runOnReady: true,
     execute: updateLeaderboard,
+  },
+  {
+    name: "leaderboardWinnerAnnouncement",
+    cron: "0 20 28-31 * *",
+    execute: announceLeaderboardWinners,
   },
   {
     name: "leaderboardMonthlyReset",
