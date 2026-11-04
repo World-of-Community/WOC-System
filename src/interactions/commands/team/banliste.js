@@ -45,7 +45,7 @@ export default {
       .setTitle("Information zu den Gebannten Nutzern")
       .setDescription(`Hier ist eine Liste der gebannten Nutzer\n> \`⛔\` 𑁉 <@&${settings.get("roles.banned")}> (\`${bans.length}👥\`):\n\n${bans.length > 0 ? bans.join("\n") : "Keine Bans vorhanden!"}`)
       .setColor("Red")
-      .setFooter({ text: `» Bann System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
+      .setFooter({ text: `» Bann-System - Aktualisiert am: ${currentTime}`, iconURL: interaction.guild.iconURL() });
 
     try {
       const message = await interaction.channel.messages.fetch(settings.get("messages.banList"));

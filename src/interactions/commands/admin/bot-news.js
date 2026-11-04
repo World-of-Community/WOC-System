@@ -79,12 +79,12 @@ export default {
   async run(client, interaction) {
     logger.info("Update wurde ins Changelog hinzugefügt");
 
-    if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ["changelog"] } })) {return channel.send({ content: "> `⛔` » Das Changelog System ist momentan deaktiviert." });}
+    if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ["changelog"] } })) { return channel.send({ content: "> `⛔` » Das Changelog-System ist momentan deaktiviert." }); }
     const kategorie = await interaction.options.getString("kategorie");
     const emoji = await interaction.options.getString("emoji");
     const update = await interaction.options.getString("update");
     let serverData = await serverdb.findOne({ guildID: interaction.guildId });
-    if (!serverData) {return;}
+    if (!serverData) { return; }
     const channel = await interaction.client.channels.cache.get(settings.get("channels.changelog"));
 
     if (kategorieMapping[kategorie]) {
@@ -159,7 +159,7 @@ export default {
         await interaction.editReply({ content: "> `✅` » Ich habe das Update erfolgreich hinzugefügt.", flags: MessageFlags.Ephemeral });
         const updateChannel = await interaction.guild.channels.cache.get(settings.get("channels.changelog"));
         await msg.edit({ embeds: [updateEmbed] });
-        const message = await updateChannel.send({content: "Neues Changelog Update"});
+        const message = await updateChannel.send({ content: "Neues Changelog Update" });
         setTimeout(() => {
           message.delete().catch(logger.error);
         }, 5000);

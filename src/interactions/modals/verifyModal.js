@@ -10,7 +10,7 @@ export default {
     const input = interaction.fields.getTextInputValue("verifyInput");
 
     if (input !== verifyNumber) {
-      return interaction.reply({ content: "> `❌` » Dieser Verifizierungscode war falsch, Bitte versuche es erneut.", flags: MessageFlags.Ephemeral });
+      return interaction.reply({ content: "> `❌` » Dieser Verifizierungscode war falsch, bitte versuche es erneut.", flags: MessageFlags.Ephemeral });
     }
 
     await interaction.member.roles.add(settings.get("roles.verify"));

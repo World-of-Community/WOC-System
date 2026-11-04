@@ -17,12 +17,12 @@ export function extractUserId(embed) {
 
 // Re-creates the user's forum post under the bot's name so the bot owns the embed, then deletes the original.
 export async function handleThreadCreate(thread) {
-  if (thread.ownerId === settings.get("bots.system")) {return;}
-  if (thread.parentId !== settings.get("channels.suggestions")) {return;}
+  if (thread.ownerId === settings.get("bots.system")) { return; }
+  if (thread.parentId !== settings.get("channels.suggestions")) { return; }
 
   const guild = client.guilds.cache.get(GUILD_ID);
   const channel = guild?.channels.cache.get(settings.get("channels.suggestions"));
-  if (!channel) {return;}
+  if (!channel) { return; }
 
   const member = await guild.members.fetch(thread.ownerId);
   const message = await thread.fetchStarterMessage();
@@ -43,7 +43,7 @@ export async function handleThreadCreate(thread) {
     .addFields(
       { name: "`📚` - **Kategorie**", value: `» ${matchedTagText}`, inline: true },
       { name: VOTES_FIELD_NAME, value: `» Votes: \`0\` <a:upvote:${settings.get("suggestions.upvoteEmoji")}>`, inline: true },
-      { name: HINT_FIELD_NAME, value: "> Erstelle einen Post um deine eigenen Vorschlag einzureichen" },
+      { name: HINT_FIELD_NAME, value: "> Erstelle einen Post, um deinen eigenen Vorschlag einzureichen" },
     )
     .setThumbnail("https://cdn.discordapp.com/attachments/1269339944766144574/1269340269246025872/Idee.png?ex=66b4fabf&is=66b3a93f&hm=962b53d930a743aee4a4836af336ae3aa912520db34bf6d1467d73a43fe3b3c0&")
     .setImage("https://cdn.discordapp.com/attachments/1269339771420016722/1269340833887424552/WOC_Banner_Server_Idee_Eingereicht.png?ex=66b4fb46&is=66b3a9c6&hm=ba66896d82bb10487f8e52a294cf2b259de2bfc54bf08bc25a68054496933959&")
@@ -59,17 +59,17 @@ export async function handleThreadCreate(thread) {
 }
 
 export async function handleVoteChange(reaction, user) {
-  if (user.bot) {return;}
-  if (reaction.message.channel.type !== ChannelType.PublicThread) {return;}
-  if (reaction.message.channel.parentId !== settings.get("channels.suggestions")) {return;}
-  if (reaction.emoji.id !== settings.get("suggestions.upvoteEmoji")) {return;}
+  if (user.bot) { return; }
+  if (reaction.message.channel.type !== ChannelType.PublicThread) { return; }
+  if (reaction.message.channel.parentId !== settings.get("channels.suggestions")) { return; }
+  if (reaction.emoji.id !== settings.get("suggestions.upvoteEmoji")) { return; }
 
   const message = reaction.message.partial ? await reaction.message.fetch() : reaction.message;
   const embed = message.embeds[0];
-  if (!embed) {return;}
+  if (!embed) { return; }
 
   const reactionEmoji = message.reactions.cache.find((r) => r.emoji.id === settings.get("suggestions.upvoteEmoji"));
-  if (!reactionEmoji) {return;}
+  if (!reactionEmoji) { return; }
 
   // the bot's own reaction doesn't count
   const upvoteCount = Math.max(reactionEmoji.count - 1, 0);
@@ -77,7 +77,7 @@ export async function handleVoteChange(reaction, user) {
   const updated = EmbedBuilder.from(embed);
   const fields = updated.data.fields ?? [];
   const index = fields.findIndex((field) => field.name === VOTES_FIELD_NAME);
-  if (index === -1) {return;}
+  if (index === -1) { return; }
 
   fields[index].value = `» Votes: \`${upvoteCount}\` <a:upvote:${settings.get("suggestions.upvoteEmoji")}>`;
   updated.setFields(fields);
@@ -108,7 +108,7 @@ export async function finalizeVorschlag(interaction, {
 
   const currentTags = replaceTags ? [] : [...(channel.appliedTags ?? [])];
   for (const tag of (typeof tags === "function" ? tags() : tags)) {
-    if (!currentTags.includes(tag)) {currentTags.push(tag);}
+    if (!currentTags.includes(tag)) { currentTags.push(tag); }
   }
   await channel.setAppliedTags(currentTags);
 
@@ -130,8 +130,8 @@ export async function finalizeVorschlag(interaction, {
     .setFooter(original.footer);
 
   await message.edit({ embeds: [embed], components: [] });
-  await message.reactions.removeAll().catch(() => {});
-  await channel.setLocked(true).catch(() => {});
+  await message.reactions.removeAll().catch(() => { });
+  await channel.setLocked(true).catch(() => { });
 
   if (status === "accept") {
     vorschlagEmitter.emit("accept", interaction);
@@ -140,7 +140,7 @@ export async function finalizeVorschlag(interaction, {
   const userID = extractUserId(original);
   if (userID) {
     const user = await interaction.client.users.fetch(userID).catch(() => null);
-    await user?.send(`Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`).catch(() => {});
+    await user?.send(`Hey, ${user} » Dein Vorschlag auf **World Of Community** wurde gerade bearbeitet!\n> zum Vorschlag: ${message.url}`).catch(() => { });
   } else {
     log.warn("Could not read user id from suggestion embed");
   }

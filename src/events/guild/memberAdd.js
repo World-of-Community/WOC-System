@@ -11,7 +11,7 @@ import { settings } from "#core/settings.js";
 const WELCOME_MESSAGES = [
   (m) => `<a:Join:1375559039098032299> ${m} **ist gerade auf den Server geschlittert** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> **Ein wildes** ${m} **erscheint!** <a:winken:1086560167442796544>`,
-  (m) => `<a:Join:1375559039098032299> ${m} **hat den weg gefunden** <a:winken:1086560167442796544>`,
+  (m) => `<a:Join:1375559039098032299> ${m} **hat den Weg gefunden** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> ${m} **ist gelandet** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> ${m} **ist auf den Server gehüpft** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> ${m} **bringt Kekse** <a:winken:1086560167442796544>`,
@@ -20,11 +20,11 @@ const WELCOME_MESSAGES = [
   (m) => `<a:Join:1375559039098032299> **Heißen wir** ${m} **Willkommen bei uns!** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> ${m} **gibt allen eine Runde aus, Willkommen** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> **Willkommen** ${m} **Wir hoffen, du hast Pizza mitgebracht.** <a:winken:1086560167442796544>`,
-  (m) => `<a:Join:1375559039098032299> **Hey** ${m} **sind wir froh das du uns gefunden hast** <a:winken:1086560167442796544>`,
+  (m) => `<a:Join:1375559039098032299> **Hey** ${m} **sind wir froh, dass du uns gefunden hast** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> **Juhu,** ${m} **du hast es zu uns geschafft!** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> **Herzlich Willkommen** ${m} **Sag hallo** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> ${m} **Hilft uns die Welt zu erobern.** <a:winken:1086560167442796544>`,
-  (m) => `<a:Join:1375559039098032299> **Danke dass du uns eine Chance gibst,** ${m} **Willkommen!** <a:winken:1086560167442796544>`,
+  (m) => `<a:Join:1375559039098032299> **Danke, dass du uns eine Chance gibst,** ${m} **Willkommen!** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> **Wir begrüßen** ${m} **in der Community** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> **Diese Entscheidung war kein Fehler,** ${m} **- Willkommen!** <a:winken:1086560167442796544>`,
   (m) => `<a:Join:1375559039098032299> **Schön, dass du da bist,** ${m} <a:winken:1086560167442796544>`,
@@ -34,10 +34,10 @@ export default {
   name: Events.GuildMemberAdd,
 
   async execute(client, member) {
-    if (member.user.bot) {return;}
+    if (member.user.bot) { return; }
 
     const serverData = await serverdb.findOne({ guildID: member.guild.id });
-    if (serverData?.deactivated?.includes?.("willkommensnachrichten")) {return;}
+    if (serverData?.deactivated?.includes?.("willkommensnachrichten")) { return; }
 
     const welcomeChannel = member.guild.channels.cache.get(settings.get("channels.welcome"));
     if (welcomeChannel) {
@@ -53,13 +53,13 @@ export default {
       .setTimestamp();
 
     const logchannel = member.guild.channels.cache.get(settings.get("channels.serverLogs"));
-    await logchannel?.threads.cache.get(settings.get("logThreads.join"))?.send({ embeds: [joinEmbed] }).catch(() => {});
+    await logchannel?.threads.cache.get(settings.get("logThreads.join"))?.send({ embeds: [joinEmbed] }).catch(() => { });
 
     const neuesMitglied = member.guild.roles.cache.get(settings.get("roles.newMember"));
     const mitglied = member.guild.roles.cache.get(settings.get("roles.member"));
     try {
-      if (neuesMitglied) {await member.roles.add(neuesMitglied);}
-      if (mitglied) {await member.roles.add(mitglied);}
+      if (neuesMitglied) { await member.roles.add(neuesMitglied); }
+      if (mitglied) { await member.roles.add(mitglied); }
     } catch (error) {
       logger.error("Failed to add default roles:", error?.message ?? error);
     }
@@ -79,7 +79,7 @@ async function flagSuspiciousAccount(member) {
     (username.includes("bot") || username.includes("assistant")) &&
     (joinedRecently || noAvatar);
 
-  if (!isSuspicious) {return;}
+  if (!isSuspicious) { return; }
 
   const role = member.guild.roles.cache.get(settings.get("roles.banned"));
   if (role) {
@@ -125,7 +125,7 @@ async function trackInvite(member) {
     return cached && i.uses > cached.uses;
   });
 
-  if (!usedInvite?.inviter) {return;}
+  if (!usedInvite?.inviter) { return; }
 
   await userdb.findOneAndUpdate(
     { userID: usedInvite.inviter.id },
@@ -153,7 +153,7 @@ async function trackInvite(member) {
 
 async function resetDailyStreak(member) {
   const userData = await Coin.findOne({ userId: member.id });
-  if (!userData || userData.streak === 0) {return;}
+  if (!userData || userData.streak === 0) { return; }
 
   userData.streak = 0;
   await userData.save();

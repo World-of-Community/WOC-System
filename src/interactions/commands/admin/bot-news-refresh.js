@@ -11,11 +11,11 @@ export default {
   options: [],
 
   async run(client, interaction) {
-    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {return;}
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) { return; }
 
-    if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ["changelog"] } })) {return channel.send({ content: "> `⛔` » Das Changelog System ist momentan deaktiviert." });}
+    if (await serverdb.findOne({ guildID: interaction.guildId, deactivated: { $in: ["changelog"] } })) { return channel.send({ content: "> `⛔` » Das Changelog-System ist momentan deaktiviert." }); }
     const serverData = await serverdb.findOne({ guildID: interaction.guildId });
-    if (!serverData) {return;}
+    if (!serverData) { return; }
     const channel = await interaction.client.channels.cache.get(settings.get("channels.changelog"));
     await channel.messages.fetch(serverData.updateMessage).then(async msg => {
       await interaction.reply({ content: "> `⏰` » Die Daten werden verarbeitet das kann kurz dauern.", flags: MessageFlags.Ephemeral });

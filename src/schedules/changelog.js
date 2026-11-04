@@ -25,19 +25,19 @@ export default [
 
     async execute(client) {
       const channel = client.channels.cache.get(settings.get("channels.changelog"));
-      if (!channel) {return;}
+      if (!channel) { return; }
 
       let serverData = await serverdb.findOne({ guildID: env.discord.guildId });
       if (!serverData) {
         serverData = new serverdb({ guildID: env.discord.guildId });
       }
       for (const { key } of CATEGORIES) {
-        if (!serverData[key]) {serverData[key] = [];}
+        if (!serverData[key]) { serverData[key] = []; }
       }
       await serverData.save();
 
       if (await isDeactivated()) {
-        await channel.send({ content: "> `⛔` » Das Changelog System ist momentan deaktiviert." });
+        await channel.send({ content: "> `⛔` » Das Changelog-System ist momentan deaktiviert." });
         return;
       }
 
@@ -74,8 +74,8 @@ export default [
     async execute(client) {
       const channel = client.channels.cache.get(settings.get("channels.changelog"));
       const serverData = await serverdb.findOne({ guildID: env.discord.guildId });
-      if (!channel || !serverData) {return;}
-      if (await isDeactivated()) {return;}
+      if (!channel || !serverData) { return; }
+      if (await isDeactivated()) { return; }
 
       if (serverData.updateMessage) {
         const msg = await channel.messages.fetch(serverData.updateMessage).catch(() => null);

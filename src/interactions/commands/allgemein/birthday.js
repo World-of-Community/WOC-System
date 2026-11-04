@@ -134,7 +134,7 @@ export default {
           if (user && user.id !== interaction.user.id) {
             await interaction.reply({ content: `> \`✅\` » Der Geburtstag von ${user} wurde erfolgreich gespeichert.`, flags: MessageFlags.Ephemeral });
           } else {
-            await interaction.reply({ content: "> `✅` » Danke dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>", flags: MessageFlags.Ephemeral });
+            await interaction.reply({ content: "> `✅` » Danke, dass du mit uns deinen Geburtstag feierst, dein Geburtstag wurde erfolgreich gespeichert. <a:Cool:915211628755169301>", flags: MessageFlags.Ephemeral });
           }
         } catch (error) {
           logger.error(error);
@@ -210,7 +210,7 @@ export default {
         }
         break;
 
-        //
+      //
 
       case "next": {
         const pageSize = 10;
@@ -236,8 +236,8 @@ export default {
           const dateB = new Date(currentYear, b.birthday.monat - 1, b.birthday.tag);
 
           // Wenn der Geburtstag dieses Jahr schon vorbei ist → aufs nächste Jahr schieben
-          if (dateA < today) {dateA.setFullYear(currentYear + 1);}
-          if (dateB < today) {dateB.setFullYear(currentYear + 1);}
+          if (dateA < today) { dateA.setFullYear(currentYear + 1); }
+          if (dateB < today) { dateB.setFullYear(currentYear + 1); }
 
           return dateA - dateB;
         });
@@ -270,7 +270,7 @@ export default {
           for (const birthday of pageBirthdays) {
             const { userID, birthday: { tag, monat, jahr } } = birthday;
             const member = interaction.guild.members.cache.get(userID);
-            if (!member) {continue;}
+            if (!member) { continue; }
 
             // Trennlinie, wenn Monatswechsel von hoch zu niedrig (z.B. 12 → 1)
             if (previousMonth !== null && monat < previousMonth) {

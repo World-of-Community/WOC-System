@@ -17,7 +17,7 @@ export default {
   async execute(client) {
     const today = new Date();
     const guild = client.guilds.cache.get(GUILD_ID);
-    if (!guild) {return;}
+    if (!guild) { return; }
 
     const birthdayRole = await guild.roles.fetch(settings.get("roles.birthday"));
     if (!birthdayRole) {
@@ -35,7 +35,7 @@ export default {
     }
 
     const birthdayUsers = await userdb.find({ "birthday.tag": today.getDate(), "birthday.monat": today.getMonth() + 1 });
-    if (birthdayUsers.length === 0) {return;}
+    if (birthdayUsers.length === 0) { return; }
 
     const list = [];
     for (const user of birthdayUsers) {
@@ -49,7 +49,7 @@ export default {
           if (obsoleteAgeRole && member.roles.cache.has(obsoleteAgeRole.id)) {
             await member.roles.remove(obsoleteAgeRole);
           }
-          if (ageRole) {await member.roles.add(ageRole);}
+          if (ageRole) { await member.roles.add(ageRole); }
           list.push(`${member} (**${age}**)`);
         } else {
           list.push(`${member}`);
@@ -59,21 +59,21 @@ export default {
         logger.error(`Birthday handling failed for ${user.userID}:`, error?.message ?? error);
       }
     }
-    if (list.length === 0) {return;}
+    if (list.length === 0) { return; }
 
     const plural = list.length > 1;
     const names = plural ? `${list.slice(0, -1).join(", ")} und ${list.at(-1)}` : list[0];
     const quote = BIRTHDAY_QUOTES[Math.floor(Math.random() * BIRTHDAY_QUOTES.length)];
 
     const channel = client.channels.cache.get(settings.get("channels.birthdays"));
-    if (!channel) {return;}
+    if (!channel) { return; }
 
     const message = await channel.send({
       content:
         `🎂 𑁉 ${names} ${plural ? "haben" : "hat"} **heute Geburtstag!** - <a:bier:1196502621427601498>\n` +
-        `Wünscht dem **${plural ? "Mitgliedern" : "Mitglied"}** alles Gute! <a:2herzen:1196502635465932984>\n` +
+        `Wünscht **${plural ? "den Mitgliedern" : "dem Mitglied"}** alles Gute! <a:2herzen:1196502635465932984>\n` +
         "Trage auch deinen Geburtstag ein mit `/birthday set` (**MIT JAHR** für eine Altersrolle!).\n" +
-        `<a:Chat1:976129450112593990> × ${plural ? "Ihr habt" : "Du hast"} **2x MEHR XP** für Heute in allen Chats!\n` +
+        `<a:Chat1:976129450112593990> × ${plural ? "Ihr habt" : "Du hast"} **2x MEHR XP** für heute in allen Chats!\n` +
         `\`🪙\` × ${plural ? "Ihr bekommt" : "Du bekommst"} **10.000 Coins auf unserem Minecraft-Server** – ${plural ? "meldet euch" : "melde dich"} dazu im **Ticket-Support**!\n` +
         `*${quote}*`,
     });

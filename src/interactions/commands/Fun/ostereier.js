@@ -25,7 +25,7 @@ export default {
 
     if (sameDay) {
       return interaction.reply({
-        content: "> `🐇` | Du hast heute bereits Alle Ostereier gesammelt! Komm morgen wieder.",
+        content: "> `🐇` | Du hast heute bereits alle Ostereier gesammelt! Komm morgen wieder.",
         flags: MessageFlags.Ephemeral,
       });
     }

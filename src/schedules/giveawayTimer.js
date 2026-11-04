@@ -8,9 +8,9 @@ const GIFT_THUMBNAIL = "https://cdn.discordapp.com/attachments/12693417294930944
 
 function prizeEmoji(priceInput) {
   const input = (priceInput ?? "").toLowerCase();
-  if (input.includes("nitro") && input.includes("basic")) {return "<a:basic:1186636165567229972>";}
-  if (input.includes("nitro")) {return "<a:nitro:1186636151335944283>";}
-  if (input.includes("guthaben")) {return "<a:guthaben:1186636139281530970>";}
+  if (input.includes("nitro") && input.includes("basic")) { return "<a:basic:1186636165567229972>"; }
+  if (input.includes("nitro")) { return "<a:nitro:1186636151335944283>"; }
+  if (input.includes("guthaben")) { return "<a:guthaben:1186636139281530970>"; }
   if (input.includes("coins")) {
     const amountText = input.match(/[\d.]+/);
     const amount = amountText
@@ -81,7 +81,7 @@ async function endGiveaway(client, giveaway) {
   for (const winnerId of winnerIds) {
     const userData = await userdb.findOne({ userID: winnerId });
     if (userData) {
-      if (!userData.giveaway) {userData.giveaway = { eventWins: 0 };}
+      if (!userData.giveaway) { userData.giveaway = { eventWins: 0 }; }
       userData.giveaway.eventWins += 1;
       await userData.save();
     }
@@ -92,7 +92,7 @@ async function endGiveaway(client, giveaway) {
         .setTitle("<a:Cool:915211628755169301> » GEWINNSPIEL GEWONNEN! <a:Cool:915211628755169301>")
         .setDescription("» Du hast bei dem Gewinnspiel auf **[World Of Community](https://discord.gg/dHzbdsqST8)** gewonnen!\n» Ein Teammitglied wird sich **demnächst** bei dir melden.")
         .setColor("Blurple");
-      await winner.send({ content: "Du hast bei einem Gewinnspiel **GEWONNEN!!!**", embeds: [embed] }).catch(() => {});
+      await winner.send({ content: "Du hast bei einem Gewinnspiel **GEWONNEN!!!**", embeds: [embed] }).catch(() => { });
     }
   }
 
@@ -110,9 +110,9 @@ async function endGiveaway(client, giveaway) {
   if (creator) {
     const creatorEmbed = new EmbedBuilder()
       .setTitle("<a:Information:1007267420316106903> » GEWINNSPIEL VORBEI!")
-      .setDescription("`✅` » Das Gewinnspiel auf **[World Of Community](https://discord.gg/dHzbdsqST8)** ist vorbei!\n`📌` » Da du das Event gestartet hast, habe ich **dich informiert.**\n\n`💸` » **Zahle das Gewinnspiel** selbst aus, oder kümmere dich\n`💸` » darum, dass es die zuständige Person erledigt.")
+      .setDescription("`✅` » Das Gewinnspiel auf **[World Of Community](https://discord.gg/dHzbdsqST8)** ist vorbei!\n`📌` » Da du das Event gestartet hast, habe ich **dich informiert.**\n\n`💸` » **Zahle die Gewinne** selbst aus, oder kümmere dich\n`💸` » darum, dass es die zuständige Person erledigt.")
       .setColor("Orange");
-    await creator.send({ embeds: [creatorEmbed] }).catch(() => {});
+    await creator.send({ embeds: [creatorEmbed] }).catch(() => { });
   }
 }
 
@@ -125,7 +125,7 @@ export default {
     const activeGiveaways = await giveawaydb.find({ endTime: null });
 
     for (const giveaway of activeGiveaways) {
-      if (new Date(giveaway.startTime).getTime() + giveaway.duration > now) {continue;}
+      if (new Date(giveaway.startTime).getTime() + giveaway.duration > now) { continue; }
       await endGiveaway(client, giveaway).catch((error) => reportError(error, { source: `giveawayTimer:${giveaway.msgID}` }));
     }
   },

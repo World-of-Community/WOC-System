@@ -57,12 +57,12 @@ export async function createLeaderboardMessage(guild) {
 
   const infoEmbed = new EmbedBuilder()
     .setDescription(
-      "Die Top 3 Mitglieder in Nachrichten & Voice erhalten\n" +
+      "Die Top-3-Mitglieder in den Kategorien Nachrichten und Voice erhalten\n" +
       `die <@&${settings.get("exclusiveRoles.leaderboardWinner")}>-Rolle\n\n` +
       "> `👷‍♂️` » **Vorteile**\n" +
       `- Bilder senden in <#${settings.get("channels.mainChat")}>\n` +
       "- Höher gelistet\n" +
-      "- Ping Reaktion (`/emoji`)\n\n" +
+      "- Ping-Reaktion (`/emoji`)\n\n" +
       "> `📌` » Das Leaderboard wird monatlich zurückgesetzt.",
     )
     .setColor("Orange");
@@ -75,7 +75,7 @@ export async function createLeaderboardMessage(guild) {
     .setTimestamp();
 
   const voiceEmbed = new EmbedBuilder()
-    .setAuthor({ name: `» ${month} Leaderboard - Voice Zeit`, iconURL: ICONS.voice })
+    .setAuthor({ name: `» ${month} Leaderboard - Voice-Zeit`, iconURL: ICONS.voice })
     .setDescription(clamp(renderList(voiceEntries, (u) => formatVoiceTime(u.stats?.voiceTime ?? 0)), "> Noch keine Voice-Zeit vorhanden."))
     .setColor("Blue")
     .setFooter({ text: "» Zuletzt aktualisiert", iconURL: ICONS.voiceFooter })
@@ -189,7 +189,7 @@ export async function announceLeaderboardWinners(client) {
   const month = MONTHS[now.getMonth()];
 
   const announcement = new EmbedBuilder()
-    .setTitle(`🏆 ${month} – Leaderboard Gewinner`)
+    .setTitle(`🏆 ${month} – Leaderboard-Gewinner`)
     .setColor("Gold")
     .setDescription(
       "**Nachrichten-Leaderboard**\n" +

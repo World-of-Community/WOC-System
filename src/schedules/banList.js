@@ -38,7 +38,7 @@ export default {
         (lines.length > 0 ? lines.join("\n") : "> Aktuell sind keine Bann-Einträge vorhanden."),
       )
       .setColor("Red")
-      .setFooter({ text: `» Bann System - Aktualisiert am: ${date}`, iconURL: guild.iconURL() })
+      .setFooter({ text: `» Bann-System - Aktualisiert am: ${date}`, iconURL: guild.iconURL() })
       .setTimestamp();
 
     await message.edit({ embeds: [embed] });

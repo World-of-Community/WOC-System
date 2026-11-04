@@ -43,24 +43,24 @@ async function onVorschlagAccepted(inter) {
     { upsert: true, returnDocument: "after" },
   );
 
-  if (userErfolge.idee >= 10) {return;}
+  if (userErfolge.idee >= 10) { return; }
 
   userErfolge.idee += 1;
   await userErfolge.save();
 
-  if (userErfolge.idee !== 10) {return;}
+  if (userErfolge.idee !== 10) { return; }
 
   const user = await inter.client.users.fetch(userID).catch(() => null);
-  if (!user) {return;}
+  if (!user) { return; }
 
   const embed = erfolgEmbed(
     inter.guild,
     "» `💕`**-lichen Glückwunsch zu diesem Erfolg!**\n\n" +
     "<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💡〢 Informant (10 Server-Ideen)`\n" +
-    "<:PfeilBlau:1119711275014955080> Vielen Dank dass du den Server und uns dabei unterstützt mit deinen Kreativen Ideen!\n\n" +
+    "<:PfeilBlau:1119711275014955080> Vielen Dank, dass du den Server und uns mit deinen kreativen Ideen unterstützt!\n\n" +
     `<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: ${ERFOLGE_CHANNEL_URL}`,
   );
-  await user.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] }).catch(() => {});
+  await user.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] }).catch(() => { });
 }
 
 async function onGewinnspielWin(inter) {
@@ -76,7 +76,7 @@ async function onGewinnspielWin(inter) {
     userErfolge = new erfolgDB({ userID, gewinnspiel: 0 });
   }
 
-  if (userErfolge.gewinnspiel >= 1) {return;}
+  if (userErfolge.gewinnspiel >= 1) { return; }
 
   userErfolge.gewinnspiel += 1;
   await userErfolge.save();
@@ -88,7 +88,7 @@ async function onGewinnspielWin(inter) {
   }
 
   const user = await inter.client.users.fetch(userID).catch(() => null);
-  if (!user) {return;}
+  if (!user) { return; }
 
   const embed = erfolgEmbed(
     inter.guild,
@@ -97,7 +97,7 @@ async function onGewinnspielWin(inter) {
     "<:PfeilBlau:1119711275014955080> Vielen Dank für deine Teilnahme und viel Glück beim nächsten Mal!\n\n" +
     `<a:wocbook:1178664700469317692> » Schalte noch **mehr Erfolge** frei: ${ERFOLGE_CHANNEL_URL}`,
   );
-  await user.send({ content: "<a:Cool:915211628755169301> **GEWINNSPIEL ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] }).catch(() => {});
+  await user.send({ content: "<a:Cool:915211628755169301> **GEWINNSPIEL ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] }).catch(() => { });
 }
 
 vorschlagEmitter.on("accept", (inter) => {
@@ -109,7 +109,7 @@ gewinnspielEmitter.on("win", (inter) => {
 });
 
 export async function trackFirstMessage(message) {
-  if (!message.guild || message.author.bot) {return;}
+  if (!message.guild || message.author.bot) { return; }
 
   const userAchievements = await erfolgDB.findOne({ userID: message.author.id });
   if (!userAchievements?.firstMessage) {
@@ -124,7 +124,7 @@ export async function trackFirstMessage(message) {
 export async function grantOneYearRole(client) {
   const guild = await client.guilds.fetch(GUILD_ID);
   const role = guild.roles.cache.get(settings.get("achievementRoles.oneYear"));
-  if (!role) {throw new Error(`role ${settings.get("achievementRoles.oneYear")} not found`);}
+  if (!role) { throw new Error(`role ${settings.get("achievementRoles.oneYear")} not found`); }
 
   const members = await guild.members.fetch();
   const oneYearAgo = new Date();
@@ -132,7 +132,7 @@ export async function grantOneYearRole(client) {
 
   let granted = 0;
   for (const member of members.values()) {
-    if (member.user.bot || member.roles.cache.has(settings.get("achievementRoles.oneYear")) || !member.joinedAt || member.joinedAt > oneYearAgo) {continue;}
+    if (member.user.bot || member.roles.cache.has(settings.get("achievementRoles.oneYear")) || !member.joinedAt || member.joinedAt > oneYearAgo) { continue; }
 
     try {
       await member.roles.add(role);
@@ -144,12 +144,12 @@ export async function grantOneYearRole(client) {
         "<:Pfeil:1119709908540076124> **Erfolg freigeschaltet:** `💖〢 1 Jahr Server-Mitglied`\n" +
         "<:PfeilBlau:1119711275014955080> Stell dir vor, heute vor exakt einem Jahr bist du unserer Community beigetreten! Dafür wollten wir uns bei dir bedanken. ❤️",
       );
-      await member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] }).catch(() => {});
+      await member.send({ content: "<a:Cool:915211628755169301> **ERFOLG FREIGESCHALTET!** <a:Cool:915211628755169301>", embeds: [embed] }).catch(() => { });
       log.info(`1-year role granted to ${member.user.username}`);
     } catch (error) {
       log.error(`1-year role failed for ${member.user.username}:`, error?.message ?? error);
     }
   }
 
-  if (granted > 0) {log.info(`${granted} member(s) received the 1-year role`);}
+  if (granted > 0) { log.info(`${granted} member(s) received the 1-year role`); }
 }
