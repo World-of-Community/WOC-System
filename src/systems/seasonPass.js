@@ -88,7 +88,7 @@ export async function buyPremium(userId, tier) {
   const stages = 20;
 
   if (pass.premium && (!isPlus || pass.premiumStages >= 10)) {
-    throw new UserError("Du besitzt diese Premium-Erweiterung bereits.");
+    throw new UserError("> `❗` » Du besitzt diese Premium-Erweiterung bereits.");
   }
 
   const coins = await Coin.findOneAndUpdate(
@@ -97,7 +97,7 @@ export async function buyPremium(userId, tier) {
     { returnDocument: "after" },
   );
   if (!coins) {
-    throw new UserError(`Du benötigst ${price.toLocaleString("de-DE")} Coins.`);
+    throw new UserError(`> \`❗\` » Du benötigst ${price.toLocaleString("de-DE")} Coins.`);
   }
 
   const creatorRedemption = await import("../database/models/CreatorRedemption.js")
@@ -143,15 +143,15 @@ export async function buyPremium(userId, tier) {
 export async function redeemReward(userId, stage) {
   const reward = REWARDS.find((entry) => entry.stage === stage);
   if (!reward) {
-    throw new UserError("Diese SeasonPass-Stufe existiert nicht.");
+    throw new UserError("> `❌` » Diese SeasonPass-Stufe existiert nicht.");
   }
 
   const pass = await getActiveSeasonPass(userId);
   if (pass.xp < reward.requiredXp) {
-    throw new UserError("Diese Belohnung ist noch nicht freigeschaltet.");
+    throw new UserError("> `❌` » Diese Belohnung ist noch nicht freigeschaltet.");
   }
   if (reward.premium && !pass.premium) {
-    throw new UserError("Für diese Belohnung benötigst du den Premium Pass.");
+    throw new UserError("> `❌` » Für diese Belohnung benötigst du den Premium Pass.");
   }
 
   const claimed = await SeasonPass.findOneAndUpdate(
@@ -160,7 +160,7 @@ export async function redeemReward(userId, stage) {
     { returnDocument: "after" },
   );
   if (!claimed) {
-    throw new UserError("Diese Belohnung wurde bereits eingesammelt.");
+    throw new UserError("> `❗` » Diese Belohnung wurde bereits eingesammelt.");
   }
 
   if (reward.type === "coins") {
