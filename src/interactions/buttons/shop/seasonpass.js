@@ -94,7 +94,7 @@ async function buildPage(userId, page) {
       new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId(`seasonpass:prev:${page}`)
-          .setLabel("Zurück")
+          //.setLabel("Zurück")
           .setEmoji("⬅️")
           .setStyle(ButtonStyle.Secondary)
           .setDisabled(page === 1),
@@ -105,7 +105,7 @@ async function buildPage(userId, page) {
           .setDisabled(!unlocked || premiumLocked || redeemed),
         new ButtonBuilder()
           .setCustomId(`seasonpass:next:${page}`)
-          .setLabel("Vor")
+          //.setLabel("Vor")
           .setEmoji("➡️")
           .setStyle(ButtonStyle.Secondary)
           .setDisabled(page === MAX_STAGE),
