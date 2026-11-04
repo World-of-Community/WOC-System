@@ -8,6 +8,7 @@ import logger from "#core/logger.js";
 import { reportError } from "#core/errors.js";
 import { env } from "#config";
 import { settings } from "#core/settings.js";
+import { addDailyXp } from "#systems/seasonPass.js";
 
 const TEAM_ROLE_IDS = [
   settings.get("teamRoles.admin"), // Admin
@@ -157,6 +158,7 @@ async function trackUserStats(client, message) {
   if (isFirstMessage) {userData.firstMessage = true;}
 
   await userData.save();
+  await addDailyXp(message.author.id);
   updateLeaderboard(client).catch((err) => logger.error("Leaderboard update failed:", err));
 
   if (isFirstMessage) {

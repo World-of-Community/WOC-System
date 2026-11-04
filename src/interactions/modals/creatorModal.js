@@ -1,16 +1,8 @@
 import { EmbedBuilder, MessageFlags } from "discord.js";
-import mongoose from "mongoose";
+import { randomUUID } from "node:crypto";
 import { UserError } from "#core/errors.js";
-
-const Creator = mongoose.models.Creator || mongoose.model(
-  "Creator",
-  new mongoose.Schema({
-    code: { type: String, unique: true, required: true },
-    userId: { type: String, required: true },
-    active: { type: Boolean, default: true },
-    bonus: { type: Number, default: 0 },
-  }),
-);
+import Creator from "../../database/models/Creator.js";
+import CreatorRedemption from "../../database/models/CreatorRedemption.js";
 
 export default {
   id: "shoppass_creator_modal",
@@ -26,6 +18,23 @@ export default {
     if (!creator) {
       throw new UserError("> `❌` » Dieser Creator existiert nicht oder ist derzeit inaktiv.");
     }
+
+    if (creator.userId === interaction.user.id) {
+      throw new UserError("> `❌` » Du kannst deinen eigenen Creator-Code nicht einlösen.");
+    }
+
+    const alreadyUsed = await CreatorRedemption.findOne({ userId: interaction.user.id });
+    if (alreadyUsed) {
+      throw new UserError("> `❌` » Du hast bereits einen Creator-Code eingelöst.");
+    }
+
+    await CreatorRedemption.create({
+      _id: randomUUID(),
+      userId: interaction.user.id,
+      code: creator.code,
+      creatorId: creator._id,
+    });
+    await Creator.findByIdAndUpdate(creator._id, { $inc: { uses: 1 } });
 
     const embed = new EmbedBuilder()
       .setTitle("🎫 » CREATOR CODE")

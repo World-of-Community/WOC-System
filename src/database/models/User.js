@@ -40,7 +40,6 @@ export default defineModel("User", {
     left: { type: Number, default: 0 },
   },
   invitedBy: { type: String, default: null },
-  shoppass: { type: Boolean, default: false },
   onlineTime: { type: Number, default: 0 },
   lastOnline: { type: Date, default: null },
 }, { collection: "user-datas" });

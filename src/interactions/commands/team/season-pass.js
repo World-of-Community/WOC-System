@@ -27,13 +27,13 @@ export default {
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId("shoppass_show")
+        .setCustomId("seasonpass:show:1")
         .setLabel("SeasonPass anzeigen")
         .setEmoji("🎟️")
         .setStyle(ButtonStyle.Primary),
 
       new ButtonBuilder()
-        .setCustomId("shoppass_buy")
+        .setCustomId("seasonpass:shop:open")
         .setLabel("Alle Rewards freischalten")
         .setEmoji("💎")
         .setStyle(ButtonStyle.Secondary),

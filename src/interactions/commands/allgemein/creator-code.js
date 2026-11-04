@@ -29,6 +29,11 @@ export default {
       name: "stats",
       description: "Zeigt deine Creator-Statistiken.",
     },
+    {
+      type: 1,
+      name: "info",
+      description: "Zeigt deine Creator-Statistiken.",
+    },
   ],
 
   async run(client, interaction) {
@@ -103,7 +108,7 @@ export default {
       }
 
       // EIGENE CREATOR-STATISTIK
-      if (action === "stats") {
+      if (action === "stats" || action === "info") {
         const creator = await Creator.findOne({
           userId: interaction.user.id,
         });
