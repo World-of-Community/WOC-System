@@ -55,7 +55,7 @@ export async function getActiveSeasonPass(userId) {
         },
         $setOnInsert: { userId },
       },
-      { upsert: true, new: true },
+      { upsert: true, returnDocument: "after" },
     );
   }
   return pass;
@@ -77,7 +77,7 @@ export async function addDailyXp(userId, date = new Date()) {
   return SeasonPass.findOneAndUpdate(
     { _id: pass._id, lastActiveDay: { $ne: day } },
     { $inc: { xp: amount }, $set: { lastActiveDay: day } },
-    { new: true },
+    { returnDocument: "after" },
   );
 }
 
@@ -94,7 +94,7 @@ export async function buyPremium(userId, tier) {
   const coins = await Coin.findOneAndUpdate(
     { userId, coins: { $gte: price } },
     { $inc: { coins: -price } },
-    { new: true },
+    { returnDocument: "after" },
   );
   if (!coins) {
     throw new UserError(`Du benötigst ${price.toLocaleString("de-DE")} Coins.`);
@@ -113,7 +113,7 @@ export async function buyPremium(userId, tier) {
       },
       ...(isPlus ? { $inc: { xp: 1_500 } } : {}),
     },
-    { new: true },
+    { returnDocument: "after" },
   );
 
   if (creatorRedemption) {
@@ -125,7 +125,7 @@ export async function buyPremium(userId, tier) {
           earned: Math.floor(price * 0.1),
         },
       },
-      { new: true },
+      { returnDocument: "after" },
     );
     if (creator) {
       const commission = Math.max(0, Math.min(100, creator.commission));
@@ -157,7 +157,7 @@ export async function redeemReward(userId, stage) {
   const claimed = await SeasonPass.findOneAndUpdate(
     { _id: pass._id, redeemedStages: { $ne: stage } },
     { $push: { redeemedStages: stage } },
-    { new: true },
+    { returnDocument: "after" },
   );
   if (!claimed) {
     throw new UserError("Diese Belohnung wurde bereits eingesammelt.");

@@ -268,7 +268,7 @@ export default {
             },
           },
           {
-            new: true,
+            returnDocument: "after",
           },
         );
 
