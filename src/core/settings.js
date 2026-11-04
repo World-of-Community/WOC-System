@@ -11,20 +11,20 @@ let loaded = false;
 function definition(path) {
   const [group, key] = path.split(".");
   const spec = SETTINGS_SCHEMA[group]?.keys?.[key];
-  if (!spec) {throw new Error(`Unknown setting "${path}"`);}
+  if (!spec) { throw new Error(`Unknown setting "${path}"`); }
   return { group, key, ...spec };
 }
 
 export function getSetting(path) {
   const { group, key, default: fallback } = definition(path);
-  if (!loaded) {log.debug(`getSetting("${path}") before load – using default`);}
+  if (!loaded) { log.debug(`getSetting("${path}") before load – using default`); }
   const value = cache.get(group)?.[key];
   return value === undefined ? fallback : value;
 }
 
 export function getGroup(group) {
   const def = SETTINGS_SCHEMA[group];
-  if (!def) {throw new Error(`Unknown settings group "${group}"`);}
+  if (!def) { throw new Error(`Unknown settings group "${group}"`); }
   const result = {};
   for (const key of Object.keys(def.keys)) {
     result[key] = getSetting(`${group}.${key}`);
@@ -92,7 +92,7 @@ export async function resetSetting(path, updatedBy = null) {
 export function listSettings(group) {
   const entries = [];
   for (const spec of iterateSettings()) {
-    if (group && spec.group !== group) {continue;}
+    if (group && spec.group !== group) { continue; }
     entries.push({ ...spec, value: getSetting(spec.path) });
   }
   return entries;
@@ -115,27 +115,27 @@ function extractId(raw) {
 export function coerce(type, raw) {
   if (ID_TYPES.has(type)) {
     const id = extractId(raw);
-    if (!SNOWFLAKE.test(id)) {throw new Error(`"${raw}" ist keine gültige Discord-ID`);}
+    if (!SNOWFLAKE.test(id)) { throw new Error(`"${raw}" ist keine gültige Discord-ID`); }
     return id;
   }
-  if (type === "string") {return String(raw);}
+  if (type === "string") { return String(raw); }
   if (type === "number") {
     const n = Number(raw);
-    if (!Number.isFinite(n)) {throw new Error(`"${raw}" ist keine Zahl`);}
+    if (!Number.isFinite(n)) { throw new Error(`"${raw}" ist keine Zahl`); }
     return n;
   }
   if (type === "boolean") {
-    if (typeof raw === "boolean") {return raw;}
+    if (typeof raw === "boolean") { return raw; }
     const s = String(raw).toLowerCase();
-    if (["true", "ja", "yes", "1", "on", "an"].includes(s)) {return true;}
-    if (["false", "nein", "no", "0", "off", "aus"].includes(s)) {return false;}
+    if (["true", "ja", "yes", "1", "on", "an"].includes(s)) { return true; }
+    if (["false", "nein", "no", "0", "off", "aus"].includes(s)) { return false; }
     throw new Error(`"${raw}" ist kein Wahrheitswert (ja/nein)`);
   }
   if (type === "roleList" || type === "channelList") {
     const list = Array.isArray(raw) ? raw : String(raw).split(/[,\s]+/).filter(Boolean);
     return list.map((v) => {
       const id = extractId(v);
-      if (!SNOWFLAKE.test(id)) {throw new Error(`"${v}" ist keine gültige Discord-ID`);}
+      if (!SNOWFLAKE.test(id)) { throw new Error(`"${v}" ist keine gültige Discord-ID`); }
       return id;
     });
   }
@@ -143,7 +143,7 @@ export function coerce(type, raw) {
     return Array.isArray(raw) ? raw.map(String) : String(raw).split(",").map((s) => s.trim()).filter(Boolean);
   }
   if (type === "json") {
-    if (typeof raw === "object") {return raw;}
+    if (typeof raw === "object") { return raw; }
     try {
       return JSON.parse(raw);
     } catch {
@@ -154,7 +154,7 @@ export function coerce(type, raw) {
 }
 
 export function formatValue(type, value) {
-  if (value === null || value === undefined || value === "") {return "`–`";}
+  if (value === null || value === undefined || value === "") { return "`–`"; }
   switch (type) {
     case "role": return `<@&${value}> (\`${value}\`)`;
     case "channel": case "category": case "thread": return `<#${value}> (\`${value}\`)`;

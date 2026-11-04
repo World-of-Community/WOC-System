@@ -25,6 +25,11 @@ export default {
       return;
     }
 
+    const [birthdayU18Role, birthday18PlusRole] = await Promise.all([
+      guild.roles.fetch(settings.get("roles.birthdayU18")),
+      guild.roles.fetch(settings.get("roles.birthday18Plus")),
+    ]);
+
     for (const member of birthdayRole.members.values()) {
       await member.roles.remove(birthdayRole).catch((err) => logger.error(`Failed to remove birthday role from ${member.id}:`, err?.message));
     }
@@ -39,7 +44,11 @@ export default {
 
         if (user.birthday.jahr) {
           const age = today.getFullYear() - user.birthday.jahr;
-          const ageRole = await guild.roles.fetch(age <= 18 ? settings.get("roles.birthdayU18") : settings.get("roles.birthday18Plus"));
+          const ageRole = age <= 18 ? birthdayU18Role : birthday18PlusRole;
+          const obsoleteAgeRole = age <= 18 ? birthday18PlusRole : birthdayU18Role;
+          if (obsoleteAgeRole && member.roles.cache.has(obsoleteAgeRole.id)) {
+            await member.roles.remove(obsoleteAgeRole);
+          }
           if (ageRole) {await member.roles.add(ageRole);}
           list.push(`${member} (**${age}**)`);
         } else {
