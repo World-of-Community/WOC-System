@@ -87,7 +87,7 @@ export default {
           await embedMessage.edit({
             content: "https://www.youtube.com/@Red3405YT",
             embeds: [
-              updatedEmbed.setFooter({ text: "Zuletzt aktualisiert:" }).setTimestamp(),
+              updatedEmbed.setFooter({ text: "Zuletzt aktualisiert" }).setTimestamp(),
             ],
             components: [updatedRow],
           });
