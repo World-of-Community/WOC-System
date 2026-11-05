@@ -1,3 +1,4 @@
+
 import { EmbedBuilder, MessageFlags } from "discord.js";
 import ms from "ms";
 import bandb from "#models/Ban.js";
@@ -9,32 +10,30 @@ export default {
   description: "» Banne einen User. 🔒",
   type: 1,
   default_member_permissions: "4",
+
   options: [
     {
       name: "user",
       description: "» Welcher User soll gebannt werden?",
-      required: true,
+      required: false,
       type: 6,
     },
     {
+      name: "id",
+      description: "» Discord-ID des Benutzers.",
+      required: false,
       type: 3,
+    },
+    {
+      type: 3,
+      name: "grund",
+      description: "» Wähle einen Grund.",
+      required: false,
       choices: [
-        {
-          name: "Beleidigung",
-          value: "Beleidigung",
-        },
-        {
-          name: "Spam",
-          value: "Spam",
-        },
-        {
-          name: "Rassismus",
-          value: "Rassismus",
-        },
-        {
-          name: "Regelbruch",
-          value: "Regelbruch",
-        },
+        { name: "Beleidigung", value: "Beleidigung" },
+        { name: "Spam", value: "Spam" },
+        { name: "Rassismus", value: "Rassismus" },
+        { name: "Regelbruch", value: "Regelbruch" },
         {
           name: "An Verdächtiger Spam Aktivität beteiligt",
           value: "An Verdächtiger Spam Aktivität beteiligt",
@@ -52,115 +51,198 @@ export default {
           value: "Gegen Serverregeln verstoßen",
         },
       ],
-      name: "grund",
-      description: "» Wähle einen Grund oder gebe einen eigenen an",
-      required: false,
     },
     {
       type: 3,
       name: "eigener-grund",
-      description: "» Alternativ: Eigenen Grund eingeben",
+      description: "» Alternativ: Eigenen Grund eingeben.",
       required: false,
     },
     {
       type: 3,
-      choices: [
-        {
-          name: "🕒 » 15 Minuten",
-          value: "15m",
-        },
-        {
-          name: "🕒 » 30 Minuten",
-          value: "30m",
-        },
-        {
-          name: "🕒 » 45 Minuten",
-          value: "45m",
-        },
-        {
-          name: "🕒 » 1 Stunde",
-          value: "1h",
-        },
-        {
-          name: "🕒 » 2 Stunden",
-          value: "2h",
-        },
-        {
-          name: "🕒 » 6 Stunden",
-          value: "6h",
-        },
-        {
-          name: "⛔ » PERMANENT",
-          value: "PERMANENT",
-        },
-      ],
       name: "dauer",
-      description: "» Gebe eine Dauer an (z.B. 5d 30m)",
+      description: "» Gebe eine Dauer an.",
       required: false,
+      choices: [
+        { name: "🕒 » 15 Minuten", value: "15m" },
+        { name: "🕒 » 30 Minuten", value: "30m" },
+        { name: "🕒 » 45 Minuten", value: "45m" },
+        { name: "🕒 » 1 Stunde", value: "1h" },
+        { name: "🕒 » 2 Stunden", value: "2h" },
+        { name: "🕒 » 6 Stunden", value: "6h" },
+        { name: "⛔ » PERMANENT", value: "PERMANENT" },
+      ],
     },
   ],
 
   async run(client, interaction) {
-    const member = interaction.options.getMember("user");
-    if (!member) {
-      return interaction.reply({ content: "> `❌` » Der Benutzer konnte nicht gefunden werden.", flags: MessageFlags.Ephemeral });
+    const selectedUser = interaction.options.getUser("user");
+    const userId = interaction.options.getString("id")?.trim();
+
+    // Benutzer überprüfen
+    if (!selectedUser && !userId) {
+      return interaction.reply({
+        content: "> `❌` » Bitte wähle einen Benutzer aus oder gebe eine Discord-ID an.",
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
-    if (!member.bannable) {
-      return interaction.reply({ content: "> `❌` » Ich kann diesen Benutzer nicht bannen.", flags: MessageFlags.Ephemeral });
+    if (selectedUser && userId) {
+      return interaction.reply({
+        content: "> `❌` » Bitte verwende entweder einen Benutzer oder eine Discord-ID, nicht beides.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    const targetId = selectedUser?.id || userId;
+
+    if (!/^\d{17,20}$/.test(targetId)) {
+      return interaction.reply({
+        content: "> `❌` » Die angegebene Discord-ID ist ungültig.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    if (targetId === interaction.user.id) {
+      return interaction.reply({
+        content: "> `❌` » Du kannst dich nicht selbst bannen.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    if (targetId === client.user.id) {
+      return interaction.reply({
+        content: "> `❌` » Ich kann mich nicht selbst bannen.",
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
     const selectedReason = interaction.options.getString("grund");
     const customReason = interaction.options.getString("eigener-grund");
-    const reason = customReason || selectedReason || "Kein Grund angegeben";
-    const durationInput = interaction.options.getString("dauer") || "PERMANENT";
 
-    const banRole = interaction.guild.roles.cache.get(settings.get("roles.banned"));
-    const memberRole = interaction.guild.roles.cache.get(settings.get("roles.member"));
-    const newmemberRole = interaction.guild.roles.cache.get(settings.get("roles.newMember"));
-    const logChannel = interaction.guild.channels.cache.get(settings.get("channels.serverLogs"));
-    const thread = logChannel?.threads.cache.get(settings.get("logThreads.moderation"));
+    const reason = (customReason || selectedReason || "Kein Grund angegeben").trim();
 
-    const missing = [];
-    if (!banRole) {missing.push("Ban-Rolle");}
-    if (!memberRole) {missing.push("Mitglieder-Rolle");}
-    if (!newmemberRole) {missing.push("Neue Mitglieder-Rolle");}
-    if (!thread) {missing.push("Log-Thread");}
-    if (missing.length > 0) {
-      return interaction.reply({ content: `> \`❌\` » Folgendes wurde nicht gefunden: ${missing.join(", ")}`, flags: MessageFlags.Ephemeral });
+    if (reason.length > 500) {
+      return interaction.reply({
+        content: "> `❌` » Der Bann-Grund darf maximal 500 Zeichen lang sein.",
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
-    const durationMs = durationInput !== "PERMANENT" ? ms(durationInput) : null;
+    const durationInput =
+      interaction.options.getString("dauer") || "PERMANENT";
 
-    // Dauer als Number speichern: -1 = Permanent
-    const durationToSave = durationMs !== null ? durationMs : -1;
+    const durationMs =
+      durationInput !== "PERMANENT" ? ms(durationInput) : null;
+
+    if (durationInput !== "PERMANENT" &&
+        (!durationMs || !Number.isFinite(durationMs))) {
+      return interaction.reply({
+        content: "> `❌` » Die angegebene Bann-Dauer ist ungültig.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    const durationToSave = durationMs ?? -1;
 
     const startTime = Date.now();
-    const endTime = durationToSave !== -1 ? startTime + durationToSave : null;
+    const endTime =
+      durationToSave !== -1
+        ? startTime + durationToSave
+        : null;
 
-    try {
-      await member.roles.add(banRole);
-      await member.roles.remove(memberRole).catch(() => { });
-      await member.roles.remove(newmemberRole).catch(() => { });
-    } catch {
-      return interaction.reply({ content: "> `❌` » Fehler beim Zuweisen oder Entfernen von Rollen.", flags: MessageFlags.Ephemeral });
+    // Rollen und Log-Channel
+    const banRole = interaction.guild.roles.cache.get(
+      settings.get("roles.banned")
+    );
+
+    const memberRole = interaction.guild.roles.cache.get(
+      settings.get("roles.member")
+    );
+
+    const newmemberRole = interaction.guild.roles.cache.get(
+      settings.get("roles.newMember")
+    );
+
+    const logChannel = interaction.guild.channels.cache.get(
+      settings.get("channels.serverLogs")
+    );
+
+    const thread = logChannel?.threads.cache.get(
+      settings.get("logThreads.moderation")
+    );
+
+    if (!thread) {
+      return interaction.reply({
+        content: "> `❌` » Der Moderations-Log-Thread wurde nicht gefunden.",
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
-    const createdAt = `<t:${Math.round(member.user.createdTimestamp / 1000)}>`;
-    const joinedAt = `<t:${Math.round(member.joinedTimestamp / 1000)}>`;
-    const durationText = durationToSave === -1 ? "Permanent" : ms(durationToSave, { long: true });
+    // Benutzer und Servermitglied laden
+    let user;
+    let member = null;
 
-    const banEmbed = new EmbedBuilder()
-      .setTitle(`\`⛔\` - ${member.displayName} wurde gebannt.`)
-      .setDescription(`${member} wurde von ${interaction.user} gebannt.\n\n\`👤\` **Benutzer Informationen:**\n> **Grund:** \`${reason}\`\n> **Dauer:** \`${durationText}\`\n> **Benutzername:** ${member.user.tag} (\`${member.id}\`)\n> **Account erstellt am:** ${createdAt}\n> **Beigetreten am:** ${joinedAt}`)
-      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      .setColor("Red")
-      .setFooter({ text: `© ${interaction.guild.name} | Bann-System`, iconURL: interaction.client.user.displayAvatarURL() });
+    try {
+      user = selectedUser || await client.users.fetch(targetId);
 
+      member = await interaction.guild.members.fetch({
+        user: targetId,
+        force: true,
+      }).catch(() => null);
+    } catch {
+      return interaction.reply({
+        content: "> `❌` » Der Benutzer konnte nicht gefunden werden.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    // Prüfen, ob bereits gebannt
+    const existingBan = await interaction.guild.bans.fetch(targetId).catch(() => null);
+
+    if (existingBan) {
+      return interaction.reply({
+        content: "> `❌` » Dieser Benutzer ist bereits gebannt.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    // Bei Servermitgliedern Rollen überprüfen
+    if (member) {
+      if (!member.bannable) {
+        return interaction.reply({
+          content: "> `❌` » Ich kann diesen Benutzer aufgrund seiner Rollen nicht bannen.",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
+      if (!banRole || !memberRole || !newmemberRole) {
+        return interaction.reply({
+          content: "> `❌` » Eine oder mehrere benötigte Rollen wurden nicht gefunden.",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+    }
+
+    // Discord-Bann durchführen
+    try {
+      await interaction.guild.members.ban(targetId, {
+        reason: reason,
+      });
+    } catch (err) {
+      logger.error("Fehler beim Discord-Bann:", err);
+
+      return interaction.reply({
+        content: "> `❌` » Der Benutzer konnte nicht gebannt werden.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    // Datenbankeintrag speichern
     try {
       await new bandb({
         creator: interaction.user.id,
-        userId: member.id,
+        userId: targetId,
         reason,
         duration: durationToSave,
         startTime,
@@ -168,10 +250,57 @@ export default {
       }).save();
     } catch (err) {
       logger.error("Fehler beim Speichern des Banns in der Datenbank:", err);
-      return interaction.reply({ content: "> `❌` » Fehler beim Speichern des Banns in der Datenbank. Details in der Konsole.", flags: MessageFlags.Ephemeral });
+
+      // Discord-Bann rückgängig machen, wenn Speicherung fehlschlägt
+      await interaction.guild.members.unban(targetId).catch(() => {});
+
+      return interaction.reply({
+        content: "> `❌` » Fehler beim Speichern des Banns in der Datenbank. Der Discord-Bann wurde rückgängig gemacht.",
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
-    await thread.send({ embeds: [banEmbed] });
-    await interaction.reply({ content: `> \`✅\` » ${member} wurde erfolgreich gebannt.`, flags: MessageFlags.Ephemeral });
+    // Rollen bei Servermitgliedern entfernen bzw. Ban-Rolle setzen
+    // Hinweis: Nach einem Discord-Bann ist das Mitglied nicht mehr im Server.
+    // Die Ban-Rolle kann deshalb nicht mehr zugewiesen werden.
+
+    const createdAt = `<t:${Math.round(user.createdTimestamp / 1000)}:F>`;
+
+    const durationText =
+      durationToSave === -1
+        ? "Permanent"
+        : ms(durationToSave, { long: true });
+
+    const banEmbed = new EmbedBuilder()
+      .setTitle(`⛔ - ${user.username} wurde gebannt.`)
+      .setDescription(
+        `${user} wurde von ${interaction.user} gebannt.\n\n` +
+        `👤 **Benutzer Informationen:**\n` +
+        `> **Grund:** \`${reason}\`\n` +
+        `> **Dauer:** \`${durationText}\`\n` +
+        `> **Benutzername:** ${user.tag} (\`${targetId}\`)\n` +
+        `> **Account erstellt am:** ${createdAt}\n` +
+        `> **Servermitglied:** ${member ? "Ja" : "Nein"}`
+      )
+      .setThumbnail(user.displayAvatarURL({ dynamic: true }))
+      .setColor("Red")
+      .setFooter({
+        text: `© ${interaction.guild.name} | Bann-System`,
+        iconURL: interaction.client.user.displayAvatarURL(),
+      });
+
+    // Moderations-Log
+    try {
+      await thread.send({
+        embeds: [banEmbed],
+      });
+    } catch (err) {
+      logger.error("Fehler beim Senden des Bann-Logs:", err);
+    }
+
+    return interaction.reply({
+      content: `> \`✅\` » <@${targetId}> wurde erfolgreich gebannt.`,
+      flags: MessageFlags.Ephemeral,
+    });
   },
 };
