@@ -26,6 +26,10 @@ export default {
           name: "Bann-Bereich Embed (Gebannt)",
           value: "gebannt",
         },
+        {
+          name: "SeasonPass Info (SeasonPass)",
+          value: "seasonpass",
+        }
       ],
       name: "embed",
       description: "Welches Embed?",

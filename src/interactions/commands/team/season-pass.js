@@ -12,10 +12,9 @@ export default {
       .setTitle("🎟️ SeasonPass")
       .setColor("Blurple")
       .setDescription(
-        "Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 20 Belohnungen!\n\n" +
+        "Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 100 Belohnungen!\n\n" +
         "**Auf einen Blick**:\n" +
-        "» Alle 30 Tage ein Pass mit 20 Belohnungen\n" +
-        "» Davon 7 free, 13 Premium\n" +
+        "» Alle 30 Tage ein Pass mit 100 Belohnungen\n" +
         "» Schreibe aktiv, um deine Belohnungen freizuschalten\n\n" +
         "**So Geht's**:\n" +
         "» Schreibe jeden Tag mindestens 1x\n" +
@@ -34,7 +33,7 @@ export default {
 
       new ButtonBuilder()
         .setCustomId("seasonpass:shop:open")
-        .setLabel("Alle Rewards freischalten")
+        .setLabel("Alle Belohnungen freischalten")
         .setEmoji("💎")
         .setStyle(ButtonStyle.Secondary),
 
