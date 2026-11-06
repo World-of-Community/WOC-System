@@ -142,7 +142,7 @@ export default {
           .setDescription(
             "» Chatte mit **anderen Server-Mitgliedern** oder **unterhalte dich** in unseren Sprachkanälen, um **die folgenden Rollen** freizuschalten.\n\n" +
             `> \`☢️\` 𑁉 <@&${settings.get("levelRoles.level100")}> (\`${roleCounthyperaktiv}👥\`)\n` +
-            "<:PfeilBlau:1119711275014955080> Wir schenken dir einmal <a:basic:1186636165567229972> **DISCORD NITRO BASIC!** <a:basic:1186636165567229972>\n\n" +
+            "<:PfeilBlau:1119711275014955080> Wir schenken dir einmal `🪙` **100.000 Coins** `🪙`\n\n" +
             `> \`🤩\` 𑁉 <@&${settings.get("levelRoles.level75")}> (\`${roleCountultraaktiv}👥\`)\n` +
             "<:PfeilBlau:1119711275014955080> Lege ein **Emoji** fest, wenn dich **jemand erwähnt!**\n\n" +
             `> \`⚡️\` 𑁉 <@&${settings.get("levelRoles.level50")}> (\`${roleCountextremaktiv}👥\`)\n` +
