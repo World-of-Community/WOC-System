@@ -179,7 +179,7 @@ export default {
 
       // 4. Gesamte Level der Top 10 addieren
       const total = data.reduce((acc, u) => acc + u.calculatedLevel, 0);
-      totalText = `\n\n\`🎟️\` » Insgesamt: **${total.toLocaleString("de-DE")} Level** von den Top 10 erreicht.`;
+      totalText = `\n\n\`🎟️\` » Insgesamt: **${total.toLocaleString("de-DE")} Stufen** von den Top 10 erreicht.`;
     }
     // ============================================================
     // KEINE DATEN
