@@ -224,6 +224,50 @@ export async function buyPremium(userId, tier, guild) {
   return { pass: updated, roleAssigned };
 }
 
+export async function giftPremium(senderId, recipientId, tier, guild) {
+  if (senderId === recipientId) {
+    throw new UserError("> `❌` » Du kannst den SeasonPass nicht an dich selbst verschenken.");
+  }
+
+  const recipientPass = await getActiveSeasonPass(recipientId);
+  const isPlus = tier === "plus";
+  const price = isPlus ? PREMIUM_PLUS_PRICE : PREMIUM_PRICE;
+  const stages = 20;
+
+  if (recipientPass.premium && (!isPlus || recipientPass.premiumStages >= 10)) {
+    throw new UserError("> `❗` » Dieser Nutzer besitzt diese Premium-Erweiterung bereits.");
+  }
+
+  const coins = await Coin.findOneAndUpdate(
+    { userId: senderId, coins: { $gte: price } },
+    { $inc: { coins: -price } },
+    { returnDocument: "after" },
+  );
+  if (!coins) {
+    throw new UserError(`> \`❗\` » Du benötigst ${price.toLocaleString("de-DE")} Coins.`);
+  }
+
+  const updated = await SeasonPass.findOneAndUpdate(
+    { _id: recipientPass._id },
+    {
+      $set: {
+        premium: true,
+        premiumStages: isPlus ? stages / 2 : recipientPass.premiumStages,
+      },
+      ...(isPlus ? { $inc: { xp: 1_500 } } : {}),
+    },
+    { returnDocument: "after" },
+  );
+
+  if (!updated) {
+    await Coin.findOneAndUpdate({ userId: senderId }, { $inc: { coins: price } });
+    throw new UserError("> `❌` » Das Geschenk konnte nicht angewendet werden. Deine Coins wurden zurückerstattet.");
+  }
+
+  const roleAssigned = await assignSeasonPassRole(guild, recipientId);
+  return { pass: updated, roleAssigned, price };
+}
+
 export async function assignSeasonPassRole(guild, userId) {
   if (!guild) {
     logger.error(`Cannot assign Season-Pass role: guild missing for user ${userId}`);
