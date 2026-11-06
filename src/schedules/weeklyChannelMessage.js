@@ -6,6 +6,7 @@ const log = logger.child("WeeklyChannelMessage");
 export default {
   name: "weeklyChannelMessage",
   interval: 7 * 24 * 60 * 60 * 1000,
+  runOnReady: true,
 
   async execute(client) {
     const channelIds = settings.get("channels.weeklyMessage");
