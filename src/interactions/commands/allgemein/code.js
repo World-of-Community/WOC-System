@@ -1,6 +1,5 @@
-
 import { EmbedBuilder, MessageFlags } from "discord.js";
-import User from "../../models/User.js";
+import User from '../../../database/models/User.js';
 
 // ==========================================
 // CODESYSTEM – WORLD OF COMMUNITY
