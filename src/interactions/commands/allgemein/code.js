@@ -1,5 +1,5 @@
 import { EmbedBuilder, MessageFlags } from "discord.js";
-import User from '../../../database/models/User.js';
+import Coin from "../../../database/models/Coin.js";
 
 // ==========================================
 // CODESYSTEM – WORLD OF COMMUNITY
@@ -74,11 +74,11 @@ export default {
             });
         }
 
-        // Benutzer laden oder erstellen
-        let user = await User.findOne({ userID: userId });
+        // Coin-Konto laden oder erstellen
+        let user = await Coin.findOne({ userId });
 
         if (!user) {
-            user = new User({ userID: userId });
+            user = new Coin({ userId });
         }
 
         // Bereits eingelöste Codes überprüfen
@@ -93,10 +93,6 @@ export default {
         const reward = selectedCode.reward;
 
         user.coins = (user.coins || 0) + reward;
-
-        if (!user.usedCodes) {
-            user.usedCodes = [];
-        }
 
         user.usedCodes.push(code);
 
