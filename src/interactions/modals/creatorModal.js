@@ -41,7 +41,7 @@ export default {
       .setDescription(
         "> `✅` » Dein Creator-Code wurde erfolgreich aktiviert!\n\n" +
         `> **Creator:** ${creator.code}\n\n` +
-        "Vielen Dank für deine Unterstützung!",
+        "Vielen Dank für deine Unterstützung!\nDieser Code hält 14 Tage lang.",
       )
       .setColor("Green")
       .setTimestamp();
