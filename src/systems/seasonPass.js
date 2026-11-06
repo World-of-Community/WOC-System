@@ -3,6 +3,8 @@ import SeasonPass from "../database/models/SeasonPass.js";
 import Coin from "../database/models/Coin.js";
 import Creator from "../database/models/Creator.js";
 import { UserError } from "#core/errors.js";
+import logger from "#core/logger.js";
+import { settings } from "#core/settings.js";
 
 export const PREMIUM_PRICE = 20_000;
 export const PREMIUM_PLUS_PRICE = 50_000;
@@ -10,6 +12,7 @@ export const SEASON_LENGTH_DAYS = 30;
 export const XP_PER_DAY = 100;
 export const XP_PER_STREAK_DAY = 150;
 export const MAX_STAGE = 100;
+const SEASON_PASS_ROLE_NAME = "│🎟️ Season-Pass Besitzer";
 
 export const REWARDS = [
   { stage: 1, type: "coins", amount: 20, premium: false, requiredXp: 150 },
@@ -161,7 +164,7 @@ export async function addDailyXp(userId, date = new Date()) {
   );
 }
 
-export async function buyPremium(userId, tier) {
+export async function buyPremium(userId, tier, guild) {
   const pass = await getActiveSeasonPass(userId);
   const isPlus = tier === "plus";
   const price = isPlus ? PREMIUM_PLUS_PRICE : PREMIUM_PRICE;
@@ -217,7 +220,41 @@ export async function buyPremium(userId, tier) {
     }
   }
 
-  return updated;
+  const roleAssigned = await assignSeasonPassRole(guild, userId);
+  return { pass: updated, roleAssigned };
+}
+
+export async function assignSeasonPassRole(guild, userId) {
+  if (!guild) {
+    logger.error(`Cannot assign Season-Pass role: guild missing for user ${userId}`);
+    return false;
+  }
+
+  const role = getSeasonPassRole(guild);
+  if (!role) {
+    logger.error(`Season-Pass role not found in guild ${guild.id}: ${SEASON_PASS_ROLE_NAME}`);
+    return false;
+  }
+
+  const member = await guild.members.fetch(userId).catch((error) => {
+    logger.error(`Could not fetch member ${userId} for Season-Pass role:`, error?.message ?? error);
+    return null;
+  });
+  if (!member) { return false; }
+
+  try {
+    await member.roles.add(role, "Season-Pass Premium gekauft");
+    return true;
+  } catch (error) {
+    logger.error(`Could not assign Season-Pass role to ${userId}:`, error?.message ?? error);
+    return false;
+  }
+}
+
+export function getSeasonPassRole(guild) {
+  const configuredRoleId = settings.get("roles.season-pass");
+  return (configuredRoleId && guild.roles.cache.get(configuredRoleId)) ??
+    guild.roles.cache.find((candidate) => candidate.name === SEASON_PASS_ROLE_NAME);
 }
 
 export async function redeemReward(userId, stage) {

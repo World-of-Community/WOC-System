@@ -7,6 +7,7 @@ import logger from "#core/logger.js";
 import { reportError } from "#core/errors.js";
 
 import { settings } from "#core/settings.js";
+import { assignSeasonPassRole, getActiveSeasonPass } from "#systems/seasonPass.js";
 
 const WELCOME_MESSAGES = [
   (m) => `<a:Join:1375559039098032299> ${m} **ist gerade auf den Server geschlittert** <a:winken:1086560167442796544>`,
@@ -62,6 +63,11 @@ export default {
       if (mitglied) { await member.roles.add(mitglied); }
     } catch (error) {
       logger.error("Failed to add default roles:", error?.message ?? error);
+    }
+
+    const seasonPass = await getActiveSeasonPass(member.id);
+    if (seasonPass.premium) {
+      await assignSeasonPassRole(member.guild, member.id);
     }
 
     await flagSuspiciousAccount(member).catch((error) => reportError(error, { source: "memberAdd:suspiciousAccount" }));

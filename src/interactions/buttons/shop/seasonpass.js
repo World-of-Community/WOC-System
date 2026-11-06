@@ -54,10 +54,11 @@ export default {
     }
 
     if (action === "buy") {
-      const pass = await buyPremium(interaction.user.id, value);
+      const { pass, roleAssigned } = await buyPremium(interaction.user.id, value, interaction.guild);
       await interaction.reply({
         content: `> \`✅\` » Premium aktiviert. Preis: **${value === "plus" ? PREMIUM_PLUS_PRICE : PREMIUM_PRICE}` +
-          ` Coins**. ${pass.premiumStages ? `Zusätzliche Stufen: **${pass.premiumStages}**.` : ""}`,
+          ` Coins**. ${pass.premiumStages ? `Zusätzliche Stufen: **${pass.premiumStages}**.` : ""}` +
+          `${roleAssigned ? " Die Rolle wurde vergeben." : " Die Rolle konnte nicht vergeben werden. Bitte melde dich beim Team."}`,
         flags: MessageFlags.Ephemeral,
       });
     }

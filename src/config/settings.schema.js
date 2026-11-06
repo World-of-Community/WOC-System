@@ -27,6 +27,7 @@ export const SETTINGS_SCHEMA = {
       member: role("815920703067914290", "Mitglied"),
       newMember: role("1222122625594294272", "Neues Mitglied (24h)"),
       banned: role("886989738244964362", "Gebannt"),
+      "season-pass": role(null, "Season-Pass Besitzer"),
       birthday: role("1244945910262399046", "Geburtstagskind"),
       birthdayU18: role("1199786765666500710", "Altersrolle unter 18"),
       birthday18Plus: role("1199786814051979344", "Altersrolle ab 18"),

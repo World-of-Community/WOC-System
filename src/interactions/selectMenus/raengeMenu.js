@@ -1,5 +1,6 @@
 import { EmbedBuilder, MessageFlags } from "discord.js";
 import { settings } from "#core/settings.js";
+import { getSeasonPassRole } from "#systems/seasonPass.js";
 
 export default {
   id: "ränge-menu",
@@ -183,7 +184,7 @@ export default {
         const birthday = await interaction.guild.roles.cache.get(settings.get("roles.birthday"));
         const roleCountbirthday = birthday.members.size;
 
-        const seasonpass = await interaction.guild.roles.cache.get(settings.get("roles.season-pass"));
+        const seasonpass = getSeasonPassRole(interaction.guild);
         const roleCountSeasonpass = seasonpass.members.size;
 
         const unterstützer = await interaction.guild.roles.cache.get(settings.get("exclusiveRoles.vanity"));
@@ -216,7 +217,7 @@ export default {
             "<:Pfeil:1119709908540076124> **Rang freischalten:** Heute Geburtstag feiern!\n\n" +
             "<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n" +
             `<:PfeilBlau:1119711275014955080> **Zugriff** auf <#${settings.get("channels.birthdays")}>\n\n` +
-            `> \`🎟️\` 𑁉 <@&${settings.get("roles.season-pass")}> (\`${roleCountSeasonpass}\`)\n` +
+            `> \`🎟️\` 𑁉 <@&${seasonpass.id}> (\`${roleCountSeasonpass}\`)\n` +
             "<:Pfeil:1119709908540076124> **Rang freischalten:** Kauf dir den **Season-Pass** im Shop!\n\n" +
             "<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n" +
             "<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n" +
