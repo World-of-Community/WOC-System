@@ -250,6 +250,16 @@ Emoji-Quiz: `/settings emoji add` (Modal) · `remove` (Autocomplete) · `list` �
 Vorschläge aus dem Quiz-Button landen in `emojiquizvorschlags` und als Embed mit Annehmen/Ablehnen in `channels.emojiQuizSuggestions`.
 Twitch Live-Ping: `pingRoles.twitch` und optional `channels.twitchLive` setzen.
 
+Wöchentliche Nachricht: `channels.weeklyMessage` mit kommagetrennten Kanal-IDs oder
+Kanal-Erwähnungen setzen und den Text in `system.weeklyChannelMessage` speichern:
+
+```text
+/settings set key:channels.weeklyMessage wert:#kanal-a,#kanal-b
+/settings set key:system.weeklyChannelMessage wert:Deine Nachricht
+```
+
+Der Bot sendet den Text anschließend alle 7 Tage in alle konfigurierten Textkanäle.
+
 ### Fehlerbehandlung
 
 ```js

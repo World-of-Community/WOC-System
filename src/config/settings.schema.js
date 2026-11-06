@@ -15,6 +15,7 @@ const string = (def, description) => ({ type: "string", default: def, descriptio
 const number = (def, description) => ({ type: "number", default: def, description });
 const boolean = (def, description) => ({ type: "boolean", default: def, description });
 const roleList = (def, description) => ({ type: "roleList", default: def, description });
+const channelList = (def, description) => ({ type: "channelList", default: def, description });
 const stringList = (def, description) => ({ type: "stringList", default: def, description });
 const json = (def, description) => ({ type: "json", default: def, description });
 
@@ -242,6 +243,7 @@ export const SETTINGS_SCHEMA = {
       youtube: channel("1274833689821319308", "YouTube-Benachrichtigungen"),
       twitch: channel("1269565441513357355", "Twitch-Status"),
       twitchLive: channel(null, "Twitch Live-Ankündigungen (leer = Twitch-Status-Kanal)"),
+      weeklyMessage: channelList([], "Kanäle für die wöchentliche Nachricht"),
       emojiQuizSuggestions: channel(null, "Emoji-Quiz Vorschläge (Team-Prüfung)"),
     },
   },
@@ -365,6 +367,7 @@ export const SETTINGS_SCHEMA = {
       leaderboardExcluded: stringList(["996364148361400330"], "User-IDs, die nie im Leaderboard erscheinen"),
       minecraftIp: string("worldofcommunity.de", "Minecraft-Server IP"),
       vanityCode: string("woc", "Vanity-Invite-Code"),
+      weeklyChannelMessage: string("", "Nachricht, die alle 7 Tage in den konfigurierten Kanälen gesendet wird"),
     },
   },
 };
