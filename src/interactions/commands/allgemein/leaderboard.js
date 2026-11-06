@@ -172,15 +172,8 @@ export default {
       });
 
       // 3. Zeige die errechnete Stufe im Leaderboard an
-      if (u.calculatedLevel == 1) {
-        formatValue = (u) =>
-          `${u.calculatedLevel} Stufe (${u.xp.toLocaleString("de-DE")} XP)`;
-      }
-      else {
-        formatValue = (u) =>
-          `${u.calculatedLevel} Stufen (${u.xp.toLocaleString("de-DE")} XP)`;
-
-      }
+      formatValue = (u) =>
+        `${u.calculatedLevel} ${u.calculatedLevel === 1 ? "Stufe" : "Stufen"} (${u.xp.toLocaleString("de-DE")} XP)`;
 
       title = "`🎟️` Top 10 Leaderboard (SeasonPass-Stufe)";
 
