@@ -45,7 +45,7 @@ export default {
         },
     ],
 
-    async execute(interaction) {
+    async run(interaction) {
         const code = interaction.options
             .getString("code")
             .trim()
