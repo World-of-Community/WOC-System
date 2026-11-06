@@ -9,7 +9,7 @@ export const PREMIUM_PLUS_PRICE = 50_000;
 export const SEASON_LENGTH_DAYS = 30;
 export const XP_PER_DAY = 100;
 export const XP_PER_STREAK_DAY = 150;
-export const MAX_STAGE = 20;
+export const MAX_STAGE = 100;
 
 export const REWARDS = [
   { stage: 1, type: "coins", amount: 20, premium: false, requiredXp: 150 },
