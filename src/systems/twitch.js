@@ -33,10 +33,10 @@ export function getStreamers() {
 
 export async function addStreamer(login, by = null) {
   const normalized = String(login).trim().toLowerCase().replace(/^@/, "");
-  if (!LOGIN_RE.test(normalized)) {throw new Error(`"${login}" ist kein gültiger Twitch-Name`);}
+  if (!LOGIN_RE.test(normalized)) { throw new Error(`"${login}" ist kein gültiger Twitch-Name`); }
 
   const streamers = getStreamers();
-  if (streamers.some((s) => s.login === normalized)) {throw new Error(`"${normalized}" ist bereits eingetragen`);}
+  if (streamers.some((s) => s.login === normalized)) { throw new Error(`"${normalized}" ist bereits eingetragen`); }
 
   await settings.set("twitch.streamers", [...streamers, { login: normalized, messageId: null }], by);
   return normalized;
@@ -46,14 +46,14 @@ export async function removeStreamer(login, by = null) {
   const normalized = String(login).trim().toLowerCase();
   const streamers = getStreamers();
   const entry = streamers.find((s) => s.login === normalized);
-  if (!entry) {throw new Error(`"${normalized}" ist nicht eingetragen`);}
+  if (!entry) { throw new Error(`"${normalized}" ist nicht eingetragen`); }
 
   await settings.set("twitch.streamers", streamers.filter((s) => s.login !== normalized), by);
 
   if (entry.messageId) {
     const channel = await client.channels.fetch(settings.get("channels.twitch")).catch(() => null);
     const message = await channel?.messages.fetch(entry.messageId).catch(() => null);
-    await message?.delete().catch(() => {});
+    await message?.delete().catch(() => { });
   }
   return normalized;
 }
@@ -71,13 +71,13 @@ async function announceIfNewStream(streamer, stream) {
   const known = Object.prototype.hasOwnProperty.call(streamer, "lastStreamId");
   const currentId = stream?.id ?? null;
   if (!stream) {
-    if (!known) {await patchStreamer(streamer.login, { lastStreamId: null });}
+    if (!known) { await patchStreamer(streamer.login, { lastStreamId: null }); }
     return;
   }
-  if (known && streamer.lastStreamId === currentId) {return;}
+  if (known && streamer.lastStreamId === currentId) { return; }
 
   await patchStreamer(streamer.login, { lastStreamId: currentId });
-  if (!known) {return;}
+  if (!known) { return; }
 
   const channelId = settings.get("channels.twitchLive") || settings.get("channels.twitch");
   const roleId = settings.get("pingRoles.twitch");
@@ -100,7 +100,7 @@ async function getAccessToken(force = false) {
     throw new Error("TWITCH_CLIENT_ID oder TWITCH_CLIENT_SECRET nicht in der .env gesetzt");
   }
 
-  if (!force && accessToken && Date.now() < tokenExpiresAt) {return accessToken;}
+  if (!force && accessToken && Date.now() < tokenExpiresAt) { return accessToken; }
 
   const params = new URLSearchParams({
     client_id: env.twitch.clientId,
@@ -109,7 +109,7 @@ async function getAccessToken(force = false) {
   });
   const res = await fetch("https://id.twitch.tv/oauth2/token", { method: "POST", body: params });
   const data = await res.json();
-  if (!data.access_token) {throw new Error("Konnte Access Token nicht abrufen");}
+  if (!data.access_token) { throw new Error("Konnte Access Token nicht abrufen"); }
 
   accessToken = data.access_token;
   // 5 min safety margin so the token does not expire mid-update
@@ -136,7 +136,7 @@ async function fetchStreams(logins) {
     res = await request();
   }
 
-  if (!res.ok) {throw new Error(`Twitch API Fehler: ${res.status} ${res.statusText}`);}
+  if (!res.ok) { throw new Error(`Twitch API Fehler: ${res.status} ${res.statusText}`); }
 
   const data = await res.json();
   const result = new Map(logins.map((l) => [l, null]));
@@ -204,7 +204,7 @@ async function updateStreamerMessage(channel, streamer, stream) {
       return;
     } catch (err) {
       // only re-send if the message is actually gone; rate limits / outages / missing perms should surface as errors
-      if (!MISSING_MESSAGE_CODES.includes(err?.code)) {throw err;}
+      if (!MISSING_MESSAGE_CODES.includes(err?.code)) { throw err; }
       log.warn(`Status message for ${streamer.login} is gone, looking for an existing one`);
     }
   }
@@ -222,11 +222,11 @@ async function updateStreamerMessage(channel, streamer, stream) {
 
 async function runTwitchStatusUpdate() {
   const streamers = getStreamers();
-  if (streamers.length === 0) {return;}
-  if (!env.twitch.clientId || !env.twitch.clientSecret) {throw new Error("TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET fehlen in der .env");}
+  if (streamers.length === 0) { return; }
+  if (!env.twitch.clientId || !env.twitch.clientSecret) { throw new Error("TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET fehlen in der .env"); }
 
   const channel = await client.channels.fetch(settings.get("channels.twitch"));
-  if (!channel?.isTextBased()) {throw new Error("Twitch-Kanal nicht gefunden oder kein Textkanal");}
+  if (!channel?.isTextBased()) { throw new Error("Twitch-Kanal nicht gefunden oder kein Textkanal"); }
 
   const streams = await fetchStreams(streamers.map((s) => s.login));
 
@@ -239,7 +239,7 @@ async function runTwitchStatusUpdate() {
 
 // cron and /settings twitch must not run concurrently (would create duplicate messages)
 export async function updateTwitchStatus() {
-  if (updatePromise) {return updatePromise;}
+  if (updatePromise) { return updatePromise; }
 
   updatePromise = runTwitchStatusUpdate().finally(() => {
     updatePromise = null;
