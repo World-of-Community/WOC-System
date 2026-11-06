@@ -25,6 +25,10 @@ export default {
           name: "💰 - Spenden",
           value: "spenden",
         },
+        {
+          name: "🎟️ - SeasonPass-Stufe",
+          value: "seasonpass",
+        },
       ],
       name: "kategorie",
       description: "Wähle eine Kategorie",
@@ -149,6 +153,20 @@ export default {
       totalText = `\n\n\`💰\` » Insgesamt: **${total.toLocaleString("de-DE")}€** gespendet\n` +
         "`💖` » Wir danken jedem einzelnen für die Spende!";
     }
+
+    if (category === "seasonpass") {
+      data = await userDB
+        .find({ seasonPassLevel: { $gt: 0 } })
+        .sort({ seasonPassLevel: -1 });
+
+      formatValue = (u) =>
+        `${(u.seasonPassLevel || 0).toLocaleString("de-DE")} Level`;
+
+      title = "`🎟️` Top 10 Leaderboard (SeasonPass-Stufe)";
+
+      const total = data.reduce((acc, u) => acc + (u.seasonPassLevel || 0), 0);
+      totalText = `\n\n\`🎟️\` » Insgesamt: **${total.toLocaleString("de-DE")} Level**`
+    };
 
     // ============================================================
     // KEINE DATEN
