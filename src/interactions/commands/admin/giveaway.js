@@ -179,11 +179,11 @@ export default {
             const timestamp = Math.floor(endDate / 1000);
 
             const formatierteZeit = (input) => {
-              if (!input) {return "0 Minuten";}
+              if (!input) { return "0 Minuten"; }
 
               try {
                 const msWert = ms(input);
-                if (!msWert) {return input;}
+                if (!msWert) { return input; }
 
                 const sekunden = Math.floor(msWert / 1000);
                 const minuten = Math.floor(sekunden / 60);

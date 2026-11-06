@@ -173,7 +173,7 @@ export default {
 
       // 3. Zeige die errechnete Stufe im Leaderboard an
       formatValue = (u) =>
-        `${u.calculatedLevel} Level (${u.xp.toLocaleString("de-DE")} XP)`;
+        `${u.calculatedLevel} Stufe (${u.xp.toLocaleString("de-DE")} XP)`;
 
       title = "`🎟️` Top 10 Leaderboard (SeasonPass-Stufe)";
 
