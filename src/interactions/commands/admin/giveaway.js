@@ -97,6 +97,13 @@ export default {
 
     switch (sub) {
       case "start": {
+        if (!interaction.memberPermissions?.has("Administrator")) {
+          return interaction.reply({
+            content: "> ❌ » Du hast keine Berechtigung, um ein Gewinnspiel zu starten.",
+            flags: MessageFlags.Ephemeral
+          });
+        }
+
         const sponsor = interaction.options.getMember("sponsor") || null;
         const channel = interaction.options.getChannel("kanal") || interaction.channel;
         const bedingung = interaction.options.getString("bedingung");
@@ -129,7 +136,7 @@ export default {
         const bedingungsInputs = {
           messages: createTextInput("bedingungsinput", "📚 - WIE VIELE NACHRICHTEN WERDEN BENÖTIGT?", "Gib eine Anzahl an..."),
           voiceTime: createTextInput("bedingungsinput", "🔊 - WELCHE VOICE-ZEIT SOLL JEMAND HABEN?", "Beispiel: 5h 10m"),
-          role: createTextInput("bedingungsinput", "🎭 - WAS FÜR EINE ROLLE WIRD BENÖTIGT?", "Rollen ID"),
+          role: createTextInput("bedingungsinput", "🎭 - WAS FÜR EINE ROLLE WIRD BENÖTIGT?", "Rollen-ID"),
           membersince: createTextInput("bedingungsinput", "👥 - WIE LANGE MUSS JEMAND MITGLIED SEIN?", "Beispiel: 5y oder 1mo 7d 30m"),
           server: createTextInput("bedingungsinput", "💡 - WELCHER SERVER SOLL EMPFHOLEN WERDEN", "https://discord.gg/abc"),
         };
