@@ -173,13 +173,13 @@ export default {
 
       // 3. Zeige die errechnete Stufe im Leaderboard an
       formatValue = (u) =>
-        `${u.calculatedLevel} ${u.calculatedLevel === 1 ? "Stufe" : "Stufen"} (${u.xp.toLocaleString("de-DE")} XP)`;
+        `Stufe ${u.calculatedLevel} (${u.xp.toLocaleString("de-DE")} XP)`;
 
       title = "`🎟️` Top 10 Leaderboard (SeasonPass-Stufe)";
 
       // 4. Gesamte Level der Top 10 addieren
       const total = data.reduce((acc, u) => acc + u.calculatedLevel, 0);
-      totalText = `\n\n\`🎟️\` » Insgesamt: **${total.toLocaleString("de-DE")} Stufen** von den Top 10 erreicht.`;
+      totalText = `\n\n\`🎟️\` » Insgesamt: **Stufe ${total.toLocaleString("de-DE")}** von den Top 10 erreicht.`;
     }
     // ============================================================
     // KEINE DATEN
