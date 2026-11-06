@@ -12,17 +12,17 @@ export default {
       .setTitle("🎟️ SeasonPass")
       .setColor("Blurple")
       .setDescription(
-        "Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 20 Rewards!\n\n" +
+        "Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 20 Belohnungen!\n\n" +
         "**Auf einen Blick**:\n" +
-        "» Alle 30 Tage ein Pass mit 20 Rewards\n" +
+        "» Alle 30 Tage ein Pass mit 20 Belohnungen\n" +
         "» Davon 7 free, 13 Premium\n" +
-        "» Schreibe aktiv, um deine Rewards freizuschalten\n\n" +
+        "» Schreibe aktiv, um deine Belohnungen freizuschalten\n\n" +
         "**So Geht's**:\n" +
         "» Schreibe jeden Tag mindestens 1x\n" +
-        "» Du erhältst XP, mit denen du Rewards freischaltest\n" +
+        "» Du erhältst XP, mit denen du Belohnungen freischaltest\n" +
         "» 150 XP wenn du am vorherigen Tag auch geschrieben hast\n" +
         "» Ansonsten nur 100 XP - aktives Schreiben wird belohnt!\n\n" +
-        "`📌` » **Premium Pass**: Alle Rewards inkl. **5000 Coins**!\n",
+        "`📌` » **Premium Pass**: Alle Belohnungen inkl. **5000 Coins**!\n",
       );
 
     const row = new ActionRowBuilder().addComponents(
