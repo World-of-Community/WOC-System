@@ -1,8 +1,8 @@
 import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js";
 import userDB from "#models/User.js";
-import SeasonPass from "../database/models/SeasonPass.js";
-import { REWARDS } from "./deineSeasonPassDatei.js";
+import SeasonPass from "../../../database/models/SeasonPass.js";
+import { REWARDS } from "../../../seasonPassDateiname.js";
 
 export default {
   name: "leaderboard",
