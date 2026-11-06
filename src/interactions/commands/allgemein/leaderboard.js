@@ -2,7 +2,6 @@ import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js";
 import userDB from "#models/User.js";
 import SeasonPass from "../../../database/models/SeasonPass.js";
-import { REWARDS } from "../../../seasonPassDateiname.js";
 
 export default {
   name: "leaderboard",
@@ -153,30 +152,32 @@ export default {
       totalText = `\n\n\`💰\` » Insgesamt: **${total.toLocaleString("de-DE")}€** gespendet\n` +
         "`💖` » Wir danken jedem einzelnen für die Spende!";
     }
+
     if (category === "seasonpass") {
-      // 1. Hole die Top 10 Spieler sortiert nach XP (da XP die Stufe bestimmen)
+      // 1. Hole die Top 10 Spieler sortiert nach XP
       const rawData = await SeasonPass
         .find({ xp: { $gt: 0 } })
         .sort({ xp: -1 })
         .limit(10);
 
+      // 2. Berechne die Stufe live anhand der XP (150 XP pro Stufe)
       data = rawData.map(user => {
-        const reachedStages = REWARDS.filter(r => user.xp >= r.requiredXp);
-        const currentStage = reachedStages.length > 0
-          ? Math.max(...reachedStages.map(r => r.stage))
-          : 0;
+        // Da deine Anforderungen im Muster 150, 300, 450 (also Stufe * 150) steigen:
+        const calculatedStage = Math.min(20, Math.floor(user.xp / 150));
 
         return {
           ...user.toObject(),
-          calculatedLevel: currentStage
+          calculatedLevel: calculatedStage
         };
       });
 
+      // 3. Zeige die errechnete Stufe im Leaderboard an
       formatValue = (u) =>
         `${u.calculatedLevel} Level (${u.xp.toLocaleString("de-DE")} XP)`;
 
       title = "`🎟️` Top 10 Leaderboard (SeasonPass-Stufe)";
 
+      // 4. Gesamte Level der Top 10 addieren
       const total = data.reduce((acc, u) => acc + u.calculatedLevel, 0);
       totalText = `\n\n\`🎟️\` » Insgesamt: **${total.toLocaleString("de-DE")} Level** von den Top 10 erreicht.`;
     }
