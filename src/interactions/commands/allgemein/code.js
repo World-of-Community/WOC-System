@@ -75,10 +75,10 @@ export default {
         }
 
         // Benutzer laden oder erstellen
-        let user = await User.findOne({ userId });
+        let user = await User.findOne({ userID: userId });
 
         if (!user) {
-            user = new User({ userId });
+            user = new User({ userID: userId });
         }
 
         // Bereits eingelöste Codes überprüfen
