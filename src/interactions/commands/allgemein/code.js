@@ -32,7 +32,7 @@ const codes = {
 // ==========================================
 
 export default {
-    name: "code",
+    name: "promocode",
     description: "» Löse einen Aktionscode ein. 🎁",
     type: 1,
 
