@@ -89,7 +89,13 @@ async function buildPage(userId, page) {
           `**Benötigte XP:** ${reward.requiredXp.toLocaleString("de-DE")}\n` +
           `**Deine XP:** ${pass.xp.toLocaleString("de-DE")}\n\n${status}`,
         )
-        .setFooter({ text: `Season endet ${pass.expiresAt.toLocaleDateString("de-DE")}` }),
+        .setFooter({
+          text: `Season endet ${pass.expiresAt.toLocaleDateString("de-DE", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}`,
+        }),
     ],
     components: [
       new ActionRowBuilder().addComponents(
