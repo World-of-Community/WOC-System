@@ -217,7 +217,7 @@ export default {
             "<:Pfeil:1119709908540076124> **Rang freischalten:** Heute Geburtstag feiern!\n\n" +
             "<:PfeilBlau:1119711275014955080> Eine **auffallende & besondere** Chat-Farbe & **höher gelistet!**\n" +
             `<:PfeilBlau:1119711275014955080> **Zugriff** auf <#${settings.get("channels.birthdays")}>\n\n` +
-            `> \`🎟️\` 𑁉 <@&${seasonpass.id}> (\`${roleCountSeasonpass}\`)\n` +
+            `> \`🎟️\` 𑁉 <@&${seasonpass.id}> (\`${roleCountSeasonpass}👥\`)\n` +
             "<:Pfeil:1119709908540076124> **Rang freischalten:** Kauf dir den **Season-Pass** im Shop!\n\n" +
             "<:PfeilBlau:1119711275014955080> **Fremde Emojis** verwenden & **Links** einsenden.\n" +
             "<:PfeilBlau:1119711275014955080> **Keine Voraussetzung** erfüllen für **ALLE** Gewinnspiele!\n\n" +
