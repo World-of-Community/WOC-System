@@ -1,8 +1,8 @@
-// test
-
 import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js";
 import userDB from "#models/User.js";
+import SeasonPass from "../database/models/SeasonPass.js";
+import { REWARDS } from "./deineSeasonPassDatei.js";
 
 export default {
   name: "leaderboard",
@@ -153,21 +153,33 @@ export default {
       totalText = `\n\n\`💰\` » Insgesamt: **${total.toLocaleString("de-DE")}€** gespendet\n` +
         "`💖` » Wir danken jedem einzelnen für die Spende!";
     }
-
     if (category === "seasonpass") {
-      data = await userDB
-        .find({ seasonPassLevel: { $gt: 0 } })
-        .sort({ seasonPassLevel: -1 });
+      // 1. Hole die Top 10 Spieler sortiert nach XP (da XP die Stufe bestimmen)
+      const rawData = await SeasonPass
+        .find({ xp: { $gt: 0 } })
+        .sort({ xp: -1 })
+        .limit(10);
+
+      data = rawData.map(user => {
+        const reachedStages = REWARDS.filter(r => user.xp >= r.requiredXp);
+        const currentStage = reachedStages.length > 0
+          ? Math.max(...reachedStages.map(r => r.stage))
+          : 0;
+
+        return {
+          ...user.toObject(),
+          calculatedLevel: currentStage
+        };
+      });
 
       formatValue = (u) =>
-        `${(u.seasonPassLevel || 0).toLocaleString("de-DE")} Level`;
+        `${u.calculatedLevel} Level (${u.xp.toLocaleString("de-DE")} XP)`;
 
       title = "`🎟️` Top 10 Leaderboard (SeasonPass-Stufe)";
 
-      const total = data.reduce((acc, u) => acc + (u.seasonPassLevel || 0), 0);
-      totalText = `\n\n\`🎟️\` » Insgesamt: **${total.toLocaleString("de-DE")} Level**`
-    };
-
+      const total = data.reduce((acc, u) => acc + u.calculatedLevel, 0);
+      totalText = `\n\n\`🎟️\` » Insgesamt: **${total.toLocaleString("de-DE")} Level** von den Top 10 erreicht.`;
+    }
     // ============================================================
     // KEINE DATEN
     // ============================================================
