@@ -144,7 +144,7 @@ export async function getActiveSeasonPass(userId) {
   return pass;
 }
 
-export async function addDailyXp(userId, date = new Date()) {
+export async function addDailyXp(userId, date = new Date(), discordUser = null) {
   const pass = await getActiveSeasonPass(userId);
   const day = date.toISOString().slice(0, 10);
   if (pass.lastActiveDay === day) {
@@ -157,11 +157,35 @@ export async function addDailyXp(userId, date = new Date()) {
     ? XP_PER_STREAK_DAY
     : XP_PER_DAY;
 
-  return SeasonPass.findOneAndUpdate(
+  const updated = await SeasonPass.findOneAndUpdate(
     { _id: pass._id, lastActiveDay: { $ne: day } },
     { $inc: { xp: amount }, $set: { lastActiveDay: day } },
     { returnDocument: "after" },
   );
+
+  if (updated && updated.xp > pass.xp && discordUser) {
+    await notifySeasonPassLevelUps(discordUser, pass.xp, updated.xp);
+  }
+
+  return updated;
+}
+
+async function notifySeasonPassLevelUps(user, previousXp, currentXp) {
+  const reachedStages = REWARDS.filter(({ requiredXp }) =>
+    requiredXp > previousXp && requiredXp <= currentXp,
+  );
+  if (!reachedStages.length) {return;}
+
+  const stages = reachedStages
+    .map(({ stage }) => `**Stufe ${stage}**`)
+    .join(", ");
+
+  await user.send(
+    `🎉 Du hast neue SeasonPass-Stufen erreicht: ${stages}!\n\n` +
+    "Öffne den SeasonPass im Server, um deine freigeschalteten Belohnungen einzusammeln.",
+  ).catch((error) => {
+    logger.warn(`SeasonPass-Level-DM für ${user.id} konnte nicht gesendet werden:`, error?.message ?? error);
+  });
 }
 
 export async function buyPremium(userId, tier, guild) {
