@@ -2,6 +2,8 @@
 
 Discord-Bot für **World Of Community**.
 
+## If you are here from Hack Club, look at hc_README.md!
+
 ## Setup
 
 ```bash
