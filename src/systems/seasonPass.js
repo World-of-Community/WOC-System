@@ -190,7 +190,7 @@ async function notifySeasonPassLevelUps(client, user, previousXp, currentXp) {
     }
 
     await channel.send(
-      `:cheers: LEVEL-UP! ${user} hat SeasonPass-Stufe ${stages} erreicht! 🚀 Weiter so! :Chat1:`
+      `<a:cheers:1375558102098776214> **LEVEL-UP!** ${user} hat SeasonPass-Stufe ${stages} erreicht! 🚀 Weiter so! <a:Chat1:976129450112593990>`,
     );
   } catch (error) {
     logger.error(`SeasonPass-Level-Nachricht für ${user.id} im Channel konnte nicht gesendet werden:`, error?.message ?? error);
