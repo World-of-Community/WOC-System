@@ -2,6 +2,7 @@ import { EmbedBuilder, MessageFlags } from "discord.js";
 import { Coin } from "#models/Coin.js";
 import userDB from "#models/User.js";
 import SeasonPass from "../../../database/models/SeasonPass.js";
+import { MAX_STAGE } from "../../../systems/seasonPass.js";
 
 export default {
   name: "leaderboard",
@@ -163,11 +164,11 @@ export default {
       // 2. Berechne die Stufe live anhand der XP (150 XP pro Stufe)
       data = rawData.map(user => {
         // Da deine Anforderungen im Muster 150, 300, 450 (also Stufe * 150) steigen:
-        const calculatedStage = Math.min(20, Math.floor(user.xp / 150));
+        const calculatedStage = Math.min(MAX_STAGE, Math.floor(user.xp / 150));
 
         return {
           ...user.toObject(),
-          calculatedLevel: calculatedStage
+          calculatedLevel: calculatedStage,
         };
       });
 
