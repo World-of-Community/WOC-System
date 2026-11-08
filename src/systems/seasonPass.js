@@ -177,7 +177,7 @@ async function notifySeasonPassLevelUps(client, user, previousXp, currentXp) {
   if (!reachedStages.length) { return; }
 
   const stages = reachedStages
-    .map(({ stage }) => `**Stufe ${stage}**`)
+    .map(({ stage }) => `**${stage}**`)
     .join(", ");
 
   try {
@@ -190,8 +190,7 @@ async function notifySeasonPassLevelUps(client, user, previousXp, currentXp) {
     }
 
     await channel.send(
-      `🎉 ${user} hat neue SeasonPass-Stufen erreicht: ${stages}!\n\n` +
-      "Öffne den SeasonPass im Server, um deine freigeschalteten Belohnungen einzusammeln.",
+      `:cheers: LEVEL-UP! ${user} hat SeasonPass-Stufe ${stages} erreicht! 🚀 Weiter so! :Chat1:`
     );
   } catch (error) {
     logger.error(`SeasonPass-Level-Nachricht für ${user.id} im Channel konnte nicht gesendet werden:`, error?.message ?? error);
