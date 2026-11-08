@@ -13,6 +13,7 @@ import {
   getEventPeriods,
 } from "#systems/seasonEvents.js";
 import { UserError } from "#core/errors.js";
+import { settings } from "#core/settings.js";
 
 const EVENT_CHOICES = [
   { name: "Ostern", value: "easter" },
@@ -31,6 +32,33 @@ export default {
       type: 1,
       name: "status",
       description: "Zeigt den aktuellen Season-Status.",
+    },
+    {
+      type: 1,
+      name: "aktivieren",
+      description: "Erzwingt ein Season-Event vorübergehend für Live-Tests.",
+      options: [
+        {
+          type: 3,
+          name: "event",
+          description: "Welches Event soll gestartet werden?",
+          required: true,
+          choices: EVENT_CHOICES,
+        },
+        {
+          type: 4,
+          name: "dauer",
+          description: "Dauer in Minuten (1 bis 1440).",
+          required: true,
+          min_value: 1,
+          max_value: 1440,
+        },
+      ],
+    },
+    {
+      type: 1,
+      name: "deaktivieren",
+      description: "Beendet den temporären Season-Event-Override.",
     },
     {
       type: 1,
@@ -139,6 +167,30 @@ export default {
 
     if (subcommand === "status") {
       await showStatus(interaction, user.id);
+      return;
+    }
+
+    if (subcommand === "aktivieren") {
+      const eventType = interaction.options.getString("event", true);
+      const duration = interaction.options.getInteger("dauer", true);
+      const expiresAt = new Date(Date.now() + duration * 60_000).toISOString();
+      await settings.set("seasonEvents.overrideEvent", eventType, interaction.user.id);
+      await settings.set("seasonEvents.overrideExpiresAt", expiresAt, interaction.user.id);
+
+      await interaction.reply({
+        content: `> \`✅\` » **${eventType.toUpperCase()}** wurde für **${duration} Minuten** aktiviert.\n> Ablauf: <t:${Math.floor(new Date(expiresAt).getTime() / 1000)}:F>\n> Mit \`/event-system\` kannst du die Anzeige neu senden.`,
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    if (subcommand === "deaktivieren") {
+      await settings.set("seasonEvents.overrideEvent", null, interaction.user.id);
+      await settings.set("seasonEvents.overrideExpiresAt", null, interaction.user.id);
+      await interaction.reply({
+        content: "> `✅` » Der temporäre Season-Event-Override wurde deaktiviert.",
+        flags: MessageFlags.Ephemeral,
+      });
       return;
     }
 

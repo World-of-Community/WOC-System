@@ -20,6 +20,13 @@ const stringList = (def, description) => ({ type: "stringList", default: def, de
 const json = (def, description) => ({ type: "json", default: def, description });
 
 export const SETTINGS_SCHEMA = {
+  seasonEvents: {
+    label: "Season-Events",
+    keys: {
+      overrideEvent: string(null, "Temporär erzwungenes Season-Event"),
+      overrideExpiresAt: string(null, "Ablauf des temporären Season-Event-Overrides"),
+    },
+  },
   roles: {
     label: "Allgemeine Rollen",
     keys: {
