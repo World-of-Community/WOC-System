@@ -144,7 +144,7 @@ export async function getActiveSeasonPass(userId) {
   return pass;
 }
 
-export async function addDailyXp(userId, date = new Date(), discordUser = null) {
+export async function addDailyXp(userId, date = new Date(), discordUser = null, client = null) {
   const pass = await getActiveSeasonPass(userId);
   const day = date.toISOString().slice(0, 10);
   if (pass.lastActiveDay === day) {
@@ -164,28 +164,38 @@ export async function addDailyXp(userId, date = new Date(), discordUser = null) 
   );
 
   if (updated && updated.xp > pass.xp && discordUser) {
-    await notifySeasonPassLevelUps(discordUser, pass.xp, updated.xp);
+    await notifySeasonPassLevelUps(client ?? discordUser.client, discordUser, pass.xp, updated.xp);
   }
 
   return updated;
 }
 
-async function notifySeasonPassLevelUps(user, previousXp, currentXp) {
+async function notifySeasonPassLevelUps(client, user, previousXp, currentXp) {
   const reachedStages = REWARDS.filter(({ requiredXp }) =>
     requiredXp > previousXp && requiredXp <= currentXp,
   );
-  if (!reachedStages.length) {return;}
+  if (!reachedStages.length) { return; }
 
   const stages = reachedStages
     .map(({ stage }) => `**Stufe ${stage}**`)
     .join(", ");
 
-  await user.send(
-    `🎉 Du hast neue SeasonPass-Stufen erreicht: ${stages}!\n\n` +
-    "Öffne den SeasonPass im Server, um deine freigeschalteten Belohnungen einzusammeln.",
-  ).catch((error) => {
-    logger.warn(`SeasonPass-Level-DM für ${user.id} konnte nicht gesendet werden:`, error?.message ?? error);
-  });
+  try {
+    const channelId = settings.get("channels.levelLog");
+    const channel = await client?.channels.fetch(channelId).catch(() => null);
+
+    if (!channel) {
+      logger.warn(`SeasonPass-Benachrichtigungskanal ${channelId} wurde nicht gefunden.`);
+      return;
+    }
+
+    await channel.send(
+      `🎉 ${user} hat neue SeasonPass-Stufen erreicht: ${stages}!\n\n` +
+      "Öffne den SeasonPass im Server, um deine freigeschalteten Belohnungen einzusammeln.",
+    );
+  } catch (error) {
+    logger.error(`SeasonPass-Level-Nachricht für ${user.id} im Channel konnte nicht gesendet werden:`, error?.message ?? error);
+  }
 }
 
 export async function buyPremium(userId, tier, guild) {
