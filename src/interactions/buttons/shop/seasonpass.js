@@ -22,8 +22,24 @@ export default {
   async run(client, interaction) {
     const [, action, value] = interaction.customId.split(":");
     if (action === "show" || action === "prev" || action === "next") {
-      const page = action === "prev" ? Number(value) - 1 : action === "next" ? Number(value) + 1 : Number(value);
-      const pageData = await buildPage(interaction.user.id, Math.max(1, Math.min(MAX_STAGE, page)));
+      let page;
+
+      if (action === "show") {
+        const pass = await getActiveSeasonPass(interaction.user.id);
+
+        page = REWARDS.findLast(
+          (reward) => pass.xp >= reward.requiredXp
+        )?.stage ?? 1;
+      } else {
+        page = action === "prev"
+          ? Number(value) - 1
+          : Number(value) + 1;
+      }
+
+      const pageData = await buildPage(
+        interaction.user.id,
+        Math.max(1, Math.min(MAX_STAGE, page))
+      );
       if (action === "show") {
         await interaction.reply({
           ...pageData,
