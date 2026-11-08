@@ -158,7 +158,7 @@ async function trackUserStats(client, message) {
   if (isFirstMessage) {userData.firstMessage = true;}
 
   await userData.save();
-  await addDailyXp(message.author.id, new Date(), message.author, client);
+  await addDailyXp(message.author.id, new Date(), message.author, client, message.guild);
   updateLeaderboard(client).catch((err) => logger.error("Leaderboard update failed:", err));
 
   if (isFirstMessage) {

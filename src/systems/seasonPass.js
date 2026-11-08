@@ -117,10 +117,13 @@ export const REWARDS = [
   { stage: 100, type: "xp", amount: 20_000, premium: true, requiredXp: 15_000 },
 ];
 
-export async function getActiveSeasonPass(userId) {
+export async function getActiveSeasonPass(userId, guild = null) {
   const now = new Date();
   let pass = await SeasonPass.findOne({ userId });
   if (!pass || pass.expiresAt <= now) {
+    if (pass?.premium && guild) {
+      await removeSeasonPassRole(guild, userId);
+    }
     const startedAt = now;
     pass = await SeasonPass.findOneAndUpdate(
       { userId },
@@ -144,8 +147,8 @@ export async function getActiveSeasonPass(userId) {
   return pass;
 }
 
-export async function addDailyXp(userId, date = new Date(), discordUser = null, client = null) {
-  const pass = await getActiveSeasonPass(userId);
+export async function addDailyXp(userId, date = new Date(), discordUser = null, client = null, guild = null) {
+  const pass = await getActiveSeasonPass(userId, guild);
   const day = date.toISOString().slice(0, 10);
   if (pass.lastActiveDay === day) {
     return pass;
@@ -167,7 +170,7 @@ export async function addDailyXp(userId, date = new Date(), discordUser = null, 
     await notifySeasonPassLevelUps(client ?? discordUser.client, discordUser, pass.xp, updated.xp);
   }
 
-  return updated;
+  return updated ?? pass;
 }
 
 async function notifySeasonPassLevelUps(client, user, previousXp, currentXp) {
@@ -198,7 +201,7 @@ async function notifySeasonPassLevelUps(client, user, previousXp, currentXp) {
 }
 
 export async function buyPremium(userId, tier, guild) {
-  const pass = await getActiveSeasonPass(userId);
+  const pass = await getActiveSeasonPass(userId, guild);
   const isPlus = tier === "plus";
   const price = isPlus ? PREMIUM_PLUS_PRICE : PREMIUM_PRICE;
   const stages = 20;
@@ -262,7 +265,7 @@ export async function giftPremium(senderId, recipientId, tier, guild) {
     throw new UserError("> `❌` » Du kannst den SeasonPass nicht an dich selbst verschenken.");
   }
 
-  const recipientPass = await getActiveSeasonPass(recipientId);
+  const recipientPass = await getActiveSeasonPass(recipientId, guild);
   const isPlus = tier === "plus";
   const price = isPlus ? PREMIUM_PLUS_PRICE : PREMIUM_PRICE;
   const stages = 20;
@@ -328,19 +331,37 @@ export async function assignSeasonPassRole(guild, userId) {
   }
 }
 
+async function removeSeasonPassRole(guild, userId) {
+  const role = getSeasonPassRole(guild);
+  if (!role) {
+    logger.error(`Season-Pass role not found in guild ${guild.id}: ${SEASON_PASS_ROLE_NAME}`);
+    return;
+  }
+
+  const member = await guild.members.fetch(userId).catch((error) => {
+    logger.error(`Could not fetch member ${userId} for Season-Pass role removal:`, error?.message ?? error);
+    return null;
+  });
+  if (!member?.roles.cache.has(role.id)) { return; }
+
+  await member.roles.remove(role, "Season-Pass abgelaufen").catch((error) => {
+    logger.error(`Could not remove Season-Pass role from ${userId}:`, error?.message ?? error);
+  });
+}
+
 export function getSeasonPassRole(guild) {
   const configuredRoleId = settings.get("roles.season-pass");
   return (configuredRoleId && guild.roles.cache.get(configuredRoleId)) ??
     guild.roles.cache.find((candidate) => candidate.name === SEASON_PASS_ROLE_NAME);
 }
 
-export async function redeemReward(userId, stage) {
+export async function redeemReward(userId, stage, guild = null) {
   const reward = REWARDS.find((entry) => entry.stage === stage);
   if (!reward) {
     throw new UserError("> `❌` » Diese SeasonPass-Stufe existiert nicht.");
   }
 
-  const pass = await getActiveSeasonPass(userId);
+  const pass = await getActiveSeasonPass(userId, guild);
   if (pass.xp < reward.requiredXp) {
     throw new UserError("> `❌` » Diese Belohnung ist noch nicht freigeschaltet.");
   }
@@ -357,10 +378,15 @@ export async function redeemReward(userId, stage) {
     throw new UserError("> `❗` » Diese Belohnung wurde bereits eingesammelt.");
   }
 
-  if (reward.type === "coins") {
-    await Coin.findOneAndUpdate({ userId }, { $inc: { coins: reward.amount } }, { upsert: true });
-  } else {
-    await SeasonPass.findByIdAndUpdate(pass._id, { $inc: { xp: reward.amount } });
+  try {
+    if (reward.type === "coins") {
+      await Coin.findOneAndUpdate({ userId }, { $inc: { coins: reward.amount } }, { upsert: true });
+    } else {
+      await SeasonPass.findByIdAndUpdate(pass._id, { $inc: { xp: reward.amount } });
+    }
+  } catch (error) {
+    await SeasonPass.findByIdAndUpdate(pass._id, { $pull: { redeemedStages: stage } });
+    throw error;
   }
   return reward;
 }

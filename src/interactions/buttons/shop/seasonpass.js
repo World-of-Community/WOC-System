@@ -25,10 +25,10 @@ export default {
       let page;
 
       if (action === "show") {
-        const pass = await getActiveSeasonPass(interaction.user.id);
+        const pass = await getActiveSeasonPass(interaction.user.id, interaction.guild);
 
         page = REWARDS.findLast(
-          (reward) => pass.xp >= reward.requiredXp
+          (reward) => pass.xp >= reward.requiredXp,
         )?.stage ?? 1;
       } else {
         page = action === "prev"
@@ -38,7 +38,8 @@ export default {
 
       const pageData = await buildPage(
         interaction.user.id,
-        Math.max(1, Math.min(MAX_STAGE, page))
+        Math.max(1, Math.min(MAX_STAGE, page)),
+        interaction.guild,
       );
       if (action === "show") {
         await interaction.reply({
@@ -52,8 +53,8 @@ export default {
     }
 
     if (action === "redeem") {
-      const reward = await redeemReward(interaction.user.id, Number(value));
-      await interaction.update(await buildPage(interaction.user.id, Number(value)));
+      const reward = await redeemReward(interaction.user.id, Number(value), interaction.guild);
+      await interaction.update(await buildPage(interaction.user.id, Number(value), interaction.guild));
       await interaction.followUp({
         content: `> \`✅\` » Stufe ${reward.stage} eingesammelt: **${reward.amount.toLocaleString("de-DE")} ${reward.type === "coins" ? "Coins" : "XP"}**.`,
         flags: MessageFlags.Ephemeral,
@@ -81,8 +82,8 @@ export default {
   },
 };
 
-async function buildPage(userId, page) {
-  const pass = await getActiveSeasonPass(userId);
+async function buildPage(userId, page, guild) {
+  const pass = await getActiveSeasonPass(userId, guild);
   const reward = REWARDS[page - 1];
   const unlocked = pass.xp >= reward.requiredXp;
   const redeemed = pass.redeemedStages.includes(page);

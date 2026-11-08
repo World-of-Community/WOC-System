@@ -8,7 +8,7 @@ export default [
   // purge unpinned messages in the player-search channel
   {
     name: "spielersuchePurge",
-    cron: "0 0 * * *",
+    cron: "*/5 * * * *",
 
     async execute(client) {
       const channel = await client.channels.fetch(settings.get("channels.playerSearch"));

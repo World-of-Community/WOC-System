@@ -65,7 +65,7 @@ export default {
       logger.error("Failed to add default roles:", error?.message ?? error);
     }
 
-    const seasonPass = await getActiveSeasonPass(member.id);
+    const seasonPass = await getActiveSeasonPass(member.id, member.guild);
     if (seasonPass.premium) {
       await assignSeasonPassRole(member.guild, member.id);
     }

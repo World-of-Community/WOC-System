@@ -1,5 +1,5 @@
 import { EmbedBuilder, MessageFlags } from "discord.js";
-import eventItems from "#models/EventItem.js";
+import { collectEventItem, getActiveEvent } from "#systems/seasonEvents.js";
 
 export default {
   name: "weihnachtsbäume",
@@ -11,33 +11,24 @@ export default {
     const userId = interaction.user.id;
     const eventType = "christmas";
 
-    let userData = await eventItems.findOne({ userId, eventType });
-    if (!userData) {
-      userData = new eventItems({ userId, eventType });
-    }
-
-    const today = new Date();
-    const lastCollected = userData.lastCollected || new Date(0);
-    const sameDay =
-      lastCollected.getDate() === today.getDate() &&
-      lastCollected.getMonth() === today.getMonth() &&
-      lastCollected.getFullYear() === today.getFullYear();
-
-    if (sameDay) {
+    if (getActiveEvent() !== eventType) {
       return interaction.reply({
-        content: "> `🎄` | Du hast heute bereits einen Weihnachtsbaum geschmückt! Komm morgen wieder.",
+        content: "> `🎄` | Das Weihnachts-Event ist aktuell nicht aktiv.",
         flags: MessageFlags.Ephemeral,
       });
     }
 
-    const collected = Math.floor(Math.random() * 5) + 2;
-    userData.amount += collected;
-    userData.lastCollected = today;
-    await userData.save();
+    const collected = await collectEventItem(userId, eventType);
+    if (!collected) {
+      return interaction.reply({
+        content: "> `🎄` | Du hast heute bereits einen Weihnachtsbaum gesammelt! Komm morgen wieder.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
 
     const embed = new EmbedBuilder()
       .setTitle("`🎄` Frohe Weihnachten!")
-      .setDescription(`Du hast **${collected} Weihnachtsbäume** gesammelt! \`🎁\`\n\nInsgesamt hast du nun **${userData.amount} Bäume**.`)
+      .setDescription(`Du hast **${collected.amount} Weihnachtsbäume** gesammelt! \`🎁\`\n\nInsgesamt hast du nun **${collected.total} Bäume**.`)
       .setColor("Green");
 
     return interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });

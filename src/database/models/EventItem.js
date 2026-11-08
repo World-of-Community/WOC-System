@@ -5,4 +5,7 @@ export default defineModel("EventItem", {
   eventType: { type: String, required: true },
   amount: { type: Number, default: 0 },
   lastCollected: { type: Date, default: null },
-}, { collection: "eventitems" });
+}, {
+  collection: "eventitems",
+  indexes: [[{ userId: 1, eventType: 1 }, { unique: true }]],
+});

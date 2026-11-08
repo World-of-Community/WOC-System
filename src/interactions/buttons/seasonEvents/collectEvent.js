@@ -1,21 +1,22 @@
 import { EmbedBuilder, MessageFlags } from "discord.js";
-import { eventPeriods, isEventActive } from "#systems/seasonEvents.js";
+import { collectEventItem, getActiveEvent } from "#systems/seasonEvents.js";
 
 export default {
   id: "collect_event",
   async run(client, interaction) {
-    const activeEvent = Object.keys(eventPeriods).find((key) =>
-      isEventActive(eventPeriods[key]),
-    );
+    const activeEvent = getActiveEvent();
+    const collected = activeEvent
+      ? await collectEventItem(interaction.user.id, activeEvent)
+      : null;
 
     const eventItemEmbed = new EmbedBuilder()
-      .setDescription(activeEvent ? `**Du hast ein Item aus dem aktuellen Event (${activeEvent.toUpperCase()}-Event) eingesammelt!**` : "**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**")
-      .setColor(activeEvent ? "Green" : "Red");
+      .setDescription(collected
+        ? `**Du hast ${collected.amount} Items aus dem aktuellen ${activeEvent.toUpperCase()}-Event eingesammelt!**\n\nGesamt: **${collected.total}**`
+        : activeEvent
+          ? "**Du hast heute bereits ein Item aus diesem Event eingesammelt.**"
+          : "**Zum aktuellen Zeitpunkt findet gerade kein `Season-Event` statt!**")
+      .setColor(collected ? "Green" : "Red");
 
     await interaction.reply({ embeds: [eventItemEmbed], flags: MessageFlags.Ephemeral });
-
-    if (activeEvent) {
-      await interaction.followUp({ content: "> `✅` » Du hast erfolgreich ein Event-Item eingesammelt!", flags: MessageFlags.Ephemeral });
-    }
   },
 };

@@ -1,5 +1,5 @@
 import { EmbedBuilder, MessageFlags } from "discord.js";
-import eventItems from "#models/EventItem.js";
+import { collectEventItem, getActiveEvent } from "#systems/seasonEvents.js";
 
 export default {
   name: "süßes-oder-saures",
@@ -11,34 +11,24 @@ export default {
     const userId = interaction.user.id;
     const eventType = "halloween";
 
-    let userData = await eventItems.findOne({ userId, eventType });
-    if (!userData) {
-      userData = new eventItems({ userId, eventType });
+    if (getActiveEvent() !== eventType) {
+      return interaction.reply({
+        content: "> `🎃` | Das Halloween-Event ist aktuell nicht aktiv.",
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
-    const today = new Date();
-    const lastCollected = userData.lastCollected || new Date(0);
-    const sameDay =
-      lastCollected.getDate() === today.getDate() &&
-      lastCollected.getMonth() === today.getMonth() &&
-      lastCollected.getFullYear() === today.getFullYear();
-
-    if (sameDay) {
+    const collected = await collectEventItem(userId, eventType);
+    if (!collected) {
       return interaction.reply({
         content: "> `🎃` | Du hast heute bereits alle Kürbisse gesammelt! Komm morgen wieder.",
         flags: MessageFlags.Ephemeral,
       });
     }
 
-    // 🎁 Zufällige Menge Kürbisse (z. B. 3–10)
-    const collected = Math.floor(Math.random() * 8) + 3;
-    userData.amount += collected;
-    userData.lastCollected = today;
-    await userData.save();
-
     const embed = new EmbedBuilder()
       .setTitle("`🎃` Süßes oder Saures!")
-      .setDescription(`Du hast heute **${collected} Kürbisse** gesammelt! \`🎃\`\n\nInsgesamt hast du nun **${userData.amount} Kürbisse**.`)
+      .setDescription(`Du hast heute **${collected.amount} Kürbisse** gesammelt! \`🎃\`\n\nInsgesamt hast du nun **${collected.total} Kürbisse**.`)
       .setColor("Orange");
 
     return interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
