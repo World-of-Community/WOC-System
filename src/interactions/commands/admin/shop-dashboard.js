@@ -1,4 +1,3 @@
-
 import {
   EmbedBuilder,
   ActionRowBuilder,
@@ -17,7 +16,7 @@ const INFO_THUMBNAIL =
   "https://cdn.discordapp.com/attachments/1269339944766144574/1401611554750730360/info-icon-png.jpg?ex=6af69a3b&is=6af548bb&hm=5498e0dfab45e6302b88a1b68183f227b491ec57ad036775af401ead86f6d41a&";
 
 // ==========================================
-// SHOP DASHBOARD EMBED
+// DASHBOARD EMBED
 // ==========================================
 
 function createDashboardEmbed() {
@@ -27,7 +26,7 @@ function createDashboardEmbed() {
     .setThumbnail(INFO_THUMBNAIL)
     .setDescription(
       [
-        "**Pro gesendeter Nachricht erhältst du *ShopCoins***, mit welchen du nach Belieben neue Vorteile freischalten kannst. (Mehr Infos unter \"Hilfe\")",
+        "**Pro gesendeter Nachricht erhältst du ShopCoins**, mit welchen du nach Belieben neue Vorteile freischalten kannst. (Mehr Infos unter \"Hilfe\")",
         "**Tipp:** Schreibst du regelmäßig, erhältst du automatisch genug ShopCoins, um nach und nach alle Vorteile permanent freizuschalten!",
         "",
         "*Folgendes kannst du von hier aus tun:*",
@@ -51,7 +50,7 @@ function createDashboardEmbed() {
 }
 
 // ==========================================
-// DASHBOARD BUTTONS
+// BUTTONS
 // ==========================================
 
 function createDashboardButtons() {
@@ -117,9 +116,7 @@ function createQuestsEmbed() {
         "*Weitere Quests und Belohnungen können jederzeit hinzugefügt werden.*"
       ].join("\n")
     )
-    .setFooter({
-      text: "WOC • SeasonPass Quests"
-    });
+    .setFooter({ text: "WOC • SeasonPass Quests" });
 }
 
 // ==========================================
@@ -129,7 +126,7 @@ function createQuestsEmbed() {
 function createHelpEmbed() {
   return new EmbedBuilder()
     .setColor(COLORS.primary)
-    .setTitle("`❓` Shop-Hilfe")
+    .setTitle("❓ Shop-Hilfe")
     .setThumbnail(INFO_THUMBNAIL)
     .setDescription(
       [
@@ -155,7 +152,7 @@ function createHelpEmbed() {
 function createAccountEmbed() {
   return new EmbedBuilder()
     .setColor(COLORS.warning)
-    .setTitle("`🪙` Dein ShopCoin-Konto")
+    .setTitle("🪙 Dein ShopCoin-Konto")
     .setThumbnail(INFO_THUMBNAIL)
     .setDescription(
       [
@@ -165,9 +162,7 @@ function createAccountEmbed() {
         "`Wird mit deinem ShopCoin-System verbunden.`"
       ].join("\n")
     )
-    .setFooter({
-      text: "WOC • Shop-System"
-    });
+    .setFooter({ text: "WOC • Shop-System" });
 }
 
 // ==========================================
@@ -178,19 +173,20 @@ export default {
   name: "shop",
   description: "» Öffne das Shop-Dashboard. 🛒",
   type: 1,
+  default_member_permissions: "268435456",
+  options: [],
 
-  run: async (client, interaction) => {
+  async run(client, interaction) {
     try {
-      // DASHBOARD SENDEN
-      const message = await interaction.reply({
+      // EMBED ÖFFENTLICH SENDEN
+      const message = await interaction.channel.send({
         embeds: [createDashboardEmbed()],
-        components: [createDashboardButtons()],
-        fetchReply: true
+        components: [createDashboardButtons()]
       });
 
       // PRIVATE BESTÄTIGUNG
-      await interaction.followUp({
-        content: "> `✅` » Das Shop-Dashboard-Embed wurde erfolgreich gesendet!",
+      await interaction.reply({
+        content: "> `🛒` » Shop-Dashboard-Embed wurde gesendet.",
         flags: MessageFlags.Ephemeral
       });
 
@@ -205,18 +201,14 @@ export default {
       collector.on("collect", async (i) => {
         try {
           switch (i.customId) {
-
-            // VORTEILE KAUFEN
             case "shoppass_buy": {
               await i.reply({
-                content:
-                  "> `🎁` » Das Vorteils-Menü muss noch mit deinem bestehenden Kaufsystem verbunden werden.",
+                content: "> `🎁` » Das Vorteils-Menü muss noch mit deinem bestehenden Kaufsystem verbunden werden.",
                 flags: MessageFlags.Ephemeral
               });
               break;
             }
 
-            // QUESTS
             case "shoppass_quests": {
               await i.reply({
                 embeds: [createQuestsEmbed()],
@@ -225,7 +217,6 @@ export default {
               break;
             }
 
-            // KONTO
             case "shoppass_account": {
               await i.reply({
                 embeds: [createAccountEmbed()],
@@ -234,7 +225,6 @@ export default {
               break;
             }
 
-            // HILFE
             case "shoppass_help": {
               await i.reply({
                 embeds: [createHelpEmbed()],
@@ -243,36 +233,33 @@ export default {
               break;
             }
 
-            // SHOP
             case "shoppass_shop": {
               await i.reply({
-                content:
-                  "> `🛒` » Der externe Shop-Link muss noch hinterlegt werden.",
+                content: "🛒 Der externe Shop-Link muss noch hinterlegt werden.",
                 flags: MessageFlags.Ephemeral
               });
               break;
             }
           }
-
         } catch (error) {
           console.error("[Shop Dashboard] Fehler:", error);
 
           if (!i.replied && !i.deferred) {
             await i.reply({
-              content: "> `❌` » Es ist ein Fehler aufgetreten.",
+              content: "❌ Es ist ein Fehler aufgetreten.",
               flags: MessageFlags.Ephemeral
             }).catch(() => {});
           }
         }
       });
 
-      // COLLECTOR BEENDET
+      // BUTTONS NACH 15 MINUTEN DEAKTIVIEREN
       collector.on("end", async () => {
         const disabledRow = createDashboardButtons();
 
-        disabledRow.components.forEach((button) =>
-          button.setDisabled(true)
-        );
+        disabledRow.components.forEach(button => {
+          button.setDisabled(true);
+        });
 
         await message.edit({
           components: [disabledRow]
@@ -284,7 +271,7 @@ export default {
 
       if (!interaction.replied && !interaction.deferred) {
         await interaction.reply({
-          content: "> `❌` » Das Shop-Dashboard konnte nicht gesendet werden.",
+          content: "❌ Das Shop-Dashboard konnte nicht gesendet werden.",
           flags: MessageFlags.Ephemeral
         }).catch(() => {});
       }
