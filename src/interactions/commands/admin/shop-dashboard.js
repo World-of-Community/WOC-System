@@ -13,13 +13,21 @@ const COLORS = {
   warning: 0xFEE75C
 };
 
+const INFO_THUMBNAIL =
+  "https://cdn.discordapp.com/attachments/1269339944766144574/1401611554750730360/info-icon-png.jpg?ex=6af69a3b&is=6af548bb&hm=5498e0dfab45e6302b88a1b68183f227b491ec57ad036775af401ead86f6d41a&";
+
+// ==========================================
+// SHOP DASHBOARD EMBED
+// ==========================================
+
 function createDashboardEmbed() {
   return new EmbedBuilder()
     .setColor(COLORS.primary)
     .setTitle("Shop Dashboard")
+    .setThumbnail(INFO_THUMBNAIL)
     .setDescription(
       [
-        "**Pro gesendeter Nachricht erhältst du ShopCoins**, mit welchen du nach Belieben neue Vorteile freischalten kannst. (Mehr Infos unter \"Hilfe\")",
+        "**Pro gesendeter Nachricht erhältst du *ShopCoins***, mit welchen du nach Belieben neue Vorteile freischalten kannst. (Mehr Infos unter \"Hilfe\")",
         "**Tipp:** Schreibst du regelmäßig, erhältst du automatisch genug ShopCoins, um nach und nach alle Vorteile permanent freizuschalten!",
         "",
         "*Folgendes kannst du von hier aus tun:*",
@@ -41,6 +49,10 @@ function createDashboardEmbed() {
       ].join("\n")
     );
 }
+
+// ==========================================
+// DASHBOARD BUTTONS
+// ==========================================
 
 function createDashboardButtons() {
   return new ActionRowBuilder().addComponents(
@@ -76,22 +88,27 @@ function createDashboardButtons() {
   );
 }
 
+// ==========================================
+// QUESTS EMBED
+// ==========================================
+
 function createQuestsEmbed() {
   return new EmbedBuilder()
     .setColor(COLORS.success)
     .setTitle("📜 Deine Quests")
+    .setThumbnail(INFO_THUMBNAIL)
     .setDescription(
       [
         "Erledige verschiedene Aufgaben und sammle zusätzliche Belohnungen!",
         "",
-        "**Tägliche Quests**",
+        "**🌞 Tägliche Quests**",
         "💬 Schreibe 3 Nachrichten am Tag.",
         "💬 Schreibe 10 Nachrichten am Tag.",
         "💬 Schreibe 25 Nachrichten am Tag.",
         "👋 Begrüße einen neuen User.",
         "🎮 Spiele gemeinsam mit anderen Mitgliedern.",
         "",
-        "**Wöchentliche Quests**",
+        "**📅 Wöchentliche Quests**",
         "💬 Schreibe 100 Nachrichten.",
         "💬 Schreibe an 5 verschiedenen Tagen.",
         "🤝 Hilf einem anderen Community-Mitglied.",
@@ -105,10 +122,15 @@ function createQuestsEmbed() {
     });
 }
 
+// ==========================================
+// HELP EMBED
+// ==========================================
+
 function createHelpEmbed() {
   return new EmbedBuilder()
     .setColor(COLORS.primary)
-    .setTitle("❓ Shop-Hilfe")
+    .setTitle("`❓` Shop-Hilfe")
+    .setThumbnail(INFO_THUMBNAIL)
     .setDescription(
       [
         "**Was sind ShopCoins?**",
@@ -121,22 +143,36 @@ function createHelpEmbed() {
         "Du kannst damit verschiedene Vorteile und weitere Belohnungen freischalten.",
         "",
         "**Wie funktionieren Quests?**",
-        "Erledige Aufgaben und sammle zusätzliche Belohnungen."
+        "Erledige tägliche und wöchentliche Aufgaben und sammle zusätzliche Belohnungen."
       ].join("\n")
     );
 }
 
+// ==========================================
+// ACCOUNT EMBED
+// ==========================================
+
 function createAccountEmbed() {
   return new EmbedBuilder()
     .setColor(COLORS.warning)
-    .setTitle("🪙 Dein ShopCoin-Konto")
+    .setTitle("`🪙` Dein ShopCoin-Konto")
+    .setThumbnail(INFO_THUMBNAIL)
     .setDescription(
-      "Hier kannst du dein ShopCoin-Guthaben und deine bisherigen Transaktionen einsehen."
+      [
+        "Hier kannst du dein ShopCoin-Guthaben und deine bisherigen Transaktionen einsehen.",
+        "",
+        "💰 **Dein Guthaben:**",
+        "`Wird mit deinem ShopCoin-System verbunden.`"
+      ].join("\n")
     )
     .setFooter({
       text: "WOC • Shop-System"
     });
 }
+
+// ==========================================
+// COMMAND
+// ==========================================
 
 export default {
   name: "shop",
@@ -144,81 +180,114 @@ export default {
   type: 1,
 
   run: async (client, interaction) => {
-    const message = await interaction.reply({
-      embeds: [createDashboardEmbed()],
-      components: [createDashboardButtons()],
-      fetchReply: true
-    });
+    try {
+      // DASHBOARD SENDEN
+      const message = await interaction.reply({
+        embeds: [createDashboardEmbed()],
+        components: [createDashboardButtons()],
+        fetchReply: true
+      });
 
-    const collector = message.createMessageComponentCollector({
-      time: 15 * 60 * 1000,
-      filter: (i) => i.customId.startsWith("shoppass_")
-    });
+      // PRIVATE BESTÄTIGUNG
+      await interaction.followUp({
+        content: "> `✅` » Das Shop-Dashboard-Embed wurde erfolgreich gesendet!",
+        flags: MessageFlags.Ephemeral
+      });
 
-    collector.on("collect", async (i) => {
-      try {
-        switch (i.customId) {
-          case "shoppass_quests": {
-            await i.reply({
-              embeds: [createQuestsEmbed()],
-              flags: MessageFlags.Ephemeral
-            });
-            break;
+      // BUTTON COLLECTOR
+      const collector = message.createMessageComponentCollector({
+        time: 15 * 60 * 1000,
+        filter: (i) =>
+          i.customId.startsWith("shoppass_") &&
+          i.user.id === interaction.user.id
+      });
+
+      collector.on("collect", async (i) => {
+        try {
+          switch (i.customId) {
+
+            // VORTEILE KAUFEN
+            case "shoppass_buy": {
+              await i.reply({
+                content:
+                  "> `🎁` » Das Vorteils-Menü muss noch mit deinem bestehenden Kaufsystem verbunden werden.",
+                flags: MessageFlags.Ephemeral
+              });
+              break;
+            }
+
+            // QUESTS
+            case "shoppass_quests": {
+              await i.reply({
+                embeds: [createQuestsEmbed()],
+                flags: MessageFlags.Ephemeral
+              });
+              break;
+            }
+
+            // KONTO
+            case "shoppass_account": {
+              await i.reply({
+                embeds: [createAccountEmbed()],
+                flags: MessageFlags.Ephemeral
+              });
+              break;
+            }
+
+            // HILFE
+            case "shoppass_help": {
+              await i.reply({
+                embeds: [createHelpEmbed()],
+                flags: MessageFlags.Ephemeral
+              });
+              break;
+            }
+
+            // SHOP
+            case "shoppass_shop": {
+              await i.reply({
+                content:
+                  "> `🛒` » Der externe Shop-Link muss noch hinterlegt werden.",
+                flags: MessageFlags.Ephemeral
+              });
+              break;
+            }
           }
 
-          case "shoppass_help": {
-            await i.reply({
-              embeds: [createHelpEmbed()],
-              flags: MessageFlags.Ephemeral
-            });
-            break;
-          }
+        } catch (error) {
+          console.error("[Shop Dashboard] Fehler:", error);
 
-          case "shoppass_account": {
+          if (!i.replied && !i.deferred) {
             await i.reply({
-              embeds: [createAccountEmbed()],
+              content: "> `❌` » Es ist ein Fehler aufgetreten.",
               flags: MessageFlags.Ephemeral
-            });
-            break;
-          }
-
-          case "shoppass_buy": {
-            await i.reply({
-              content:
-                "> `🎁` » Das Vorteils-Menü muss noch mit deinem bestehenden Kaufsystem verbunden werden.",
-              flags: MessageFlags.Ephemeral
-            });
-            break;
-          }
-
-          case "shoppass_shop": {
-            await i.reply({
-              content:
-                "🛒 Der externe Shop-Link muss noch hinterlegt werden.",
-              flags: MessageFlags.Ephemeral
-            });
-            break;
+            }).catch(() => {});
           }
         }
-      } catch (error) {
-        console.error("[Shop Dashboard] Fehler:", error);
+      });
 
-        if (!i.replied && !i.deferred) {
-          await i.reply({
-            content: "❌ Es ist ein Fehler aufgetreten.",
-            flags: MessageFlags.Ephemeral
-          }).catch(() => {});
-        }
+      // COLLECTOR BEENDET
+      collector.on("end", async () => {
+        const disabledRow = createDashboardButtons();
+
+        disabledRow.components.forEach((button) =>
+          button.setDisabled(true)
+        );
+
+        await message.edit({
+          components: [disabledRow]
+        }).catch(() => {});
+      });
+
+    } catch (error) {
+      console.error("[Shop Command] Fehler:", error);
+
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction.reply({
+          content: "> `❌` » Das Shop-Dashboard konnte nicht gesendet werden.",
+          flags: MessageFlags.Ephemeral
+        }).catch(() => {});
       }
-    });
-
-    collector.on("end", async () => {
-      const disabledRow = createDashboardButtons();
-      disabledRow.components.forEach(button => button.setDisabled(true));
-
-      await message.edit({
-        components: [disabledRow]
-      }).catch(() => {});
-    });
+    }
   }
 };
