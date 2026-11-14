@@ -316,7 +316,7 @@ export default {
           .setDescription(
             `**Creator:** ${creators.length}\n` +
             `**Einlösungen:** ${total.uses}\n` +
-            `**SeasonPass-Verkäufe:** ${total.sales}\n\n` +
+            `**Season-Pass-Verkäufe:** ${total.sales}\n\n` +
             `**Verdient:** ${total.earned.toLocaleString("de-DE")} Coins\n` +
             `**Ausgezahlt:** ${total.paid.toLocaleString("de-DE")} Coins\n` +
             `**Offen:** ${open.toLocaleString("de-DE")} Coins`,

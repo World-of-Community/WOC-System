@@ -9,7 +9,7 @@ export default {
 
   async run(client, interaction) {
     const embed = new EmbedBuilder()
-      .setTitle("🎟️ SeasonPass")
+      .setTitle("🎟️ Season Pass")
       .setColor("Blurple")
       .setDescription(
         "Schreibe jeden Tag mindestens 1x - erhalte jeden Monat bis zu 100 Belohnungen!\n\n" +
@@ -27,7 +27,7 @@ export default {
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("seasonpass:show:1")
-        .setLabel("SeasonPass anzeigen")
+        .setLabel("Season Pass anzeigen")
         .setEmoji("🎟️")
         .setStyle(ButtonStyle.Primary),
 
@@ -44,6 +44,6 @@ export default {
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
-    await interaction.reply({ content: "> `🎟️` » SeasonPass Embed gesendet.", flags: MessageFlags.Ephemeral });
+    await interaction.reply({ content: "> `🎟️` » Season-Pass Embed gesendet.", flags: MessageFlags.Ephemeral });
   },
 };

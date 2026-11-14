@@ -132,7 +132,7 @@ export default {
             `**Status:** ${creator.active ? "`🟢` Aktiv" : "`🔴` Inaktiv"}\n\n` +
             "**Statistiken**\n" +
             `» Code-Einlösungen: **${creator.uses}**\n` +
-            `» SeasonPass-Verkäufe: **${creator.sales}**\n` +
+            `» Season-Pass-Verkäufe: **${creator.sales}**\n` +
             `» Provision: **${creator.commission} %**\n\n` +
             "**Coins-Übersicht**\n" +
             `» Insgesamt verdient: **${creator.earned.toLocaleString("de-DE")} Coins**\n` +

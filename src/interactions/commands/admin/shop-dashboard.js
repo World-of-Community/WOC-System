@@ -35,7 +35,7 @@ function createDashboardEmbed() {
         "» Erwerb Zugriff auf verschiedene Vorteile, oder wie wär's mit einem ganz eigenem? Von exklusiven Schreibvorteilen bis Premium Rang ist hier alles mit dabei!",
         "",
         "> `📜` - **Quests**",
-        "» Erledige tägliche und wöchentliche Aufgaben und sammle zusätzliche Belohnungen für deinen SeasonPass!",
+        "» Erledige tägliche und wöchentliche Aufgaben und sammle zusätzliche Belohnungen für deinen Season Pass!",
         "",
         "> `🪙` - **Konto**",
         "» Sieh dein Guthaben ein und verwalte dein Konto.",
@@ -116,7 +116,7 @@ function createQuestsEmbed() {
         "*Weitere Quests und Belohnungen können jederzeit hinzugefügt werden.*"
       ].join("\n")
     )
-    .setFooter({ text: "WOC • SeasonPass Quests" });
+    .setFooter({ text: "WOC • Season-Pass Quests" });
 }
 
 // ==========================================

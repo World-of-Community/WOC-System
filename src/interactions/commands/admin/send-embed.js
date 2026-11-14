@@ -27,7 +27,7 @@ export default {
           value: "gebannt",
         },
         {
-          name: "SeasonPass Info (SeasonPass)",
+          name: "Season Pass Info (SeasonPass)",
           value: "seasonpass",
         }
       ],

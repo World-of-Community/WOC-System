@@ -26,7 +26,7 @@ export default {
           value: "spenden",
         },
         {
-          name: "🎟️ - SeasonPass-Stufe",
+          name: "🎟️ - Season-Pass Stufe",
           value: "seasonpass",
         },
       ],
@@ -176,7 +176,7 @@ export default {
       formatValue = (u) =>
         `Stufe ${u.calculatedLevel} (${u.xp.toLocaleString("de-DE")} XP)`;
 
-      title = "`🎟️` Top 10 Leaderboard (SeasonPass-Stufe)";
+      title = "`🎟️` Top 10 Leaderboard (Season-Pass Stufe)";
 
       // 4. Gesamte Level der Top 10 addieren
       const total = data.reduce((acc, u) => acc + u.calculatedLevel, 0);
